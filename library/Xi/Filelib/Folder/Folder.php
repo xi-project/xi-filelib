@@ -83,6 +83,21 @@ interface Folder
     public function getName();
     
     /**
+     * Sets url
+     * 
+     * @param string $url
+     */
+    public function setUrl($url);
+    
+    /**
+     * Returns url
+     * 
+     * @return string
+     */
+    public function getUrl();
+    
+    
+    /**
      * Creates a new folder item and populates it with data
      * 
      * @param array $data

@@ -22,7 +22,9 @@ class FolderItem implements Folder
     private $_parentId;
     
     private $_name;
-        
+    
+    private $_url;
+            
     /**
      * Sets filelib
      *
@@ -73,12 +75,27 @@ class FolderItem implements Folder
         return $this->_name;
     }
     
+    
+    public function setUrl($url)
+    {
+        $this->_url = $url;
+    }
+    
+    
+    public function getUrl()
+    {
+        return $this->_url;
+    }
+    
+    
+    
     public function toArray()
     {
         return array(
             'id' => $this->getId(),
             'parent_id' => $this->getParentId(),
             'name' => $this->getName(),
+            'url' => $this->getUrl(),
         );
     }
     
@@ -89,6 +106,7 @@ class FolderItem implements Folder
         } 
         $this->setParentId($data['parent_id']);
         $this->setName($data['name']);
+        $this->setUrl($data['url']);
         
         return $this;
     }

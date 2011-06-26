@@ -23,6 +23,26 @@ class FolderOperator extends \Xi\Filelib\AbstractOperator
      */
     private $_className = '\Xi\Filelib\Folder\FolderItem';
 
+    
+    
+    private function buildRoute(\Xi\Filelib\Folder\Folder $folder)
+    {
+        $rarr = array();
+
+        array_unshift($rarr, $folder->getName());
+        $imposter = clone $folder;
+        while ($imposter = $this->findParentFolder($imposter)) {
+            
+            if ($imposter->getParentId()) {
+                array_unshift($rarr, $imposter->getName() == 'root' ? '' : $imposter->getName());    
+            }
+            
+        }
+        $folder->setUrl(implode('/', $rarr));
+    }
+    
+    
+    
     /**
      * Sets folderitem class
      *
@@ -76,6 +96,8 @@ class FolderOperator extends \Xi\Filelib\AbstractOperator
      */
     public function create(\Xi\Filelib\Folder\Folder $folder)
     {
+        $this->buildRoute($folder);
+        
         $folder = $this->getBackend()->createFolder($folder);
         $folder->setFilelib($this->getFilelib());
     }
@@ -107,6 +129,8 @@ class FolderOperator extends \Xi\Filelib\AbstractOperator
      */
     public function update(\Xi\Filelib\Folder\Folder $folder)
     {
+        $this->buildRoute($folder);
+        
         $this->getBackend()->updateFolder($folder);
 
         foreach($this->findFiles($folder) as $file) {
@@ -160,6 +184,25 @@ class FolderOperator extends \Xi\Filelib\AbstractOperator
         $folder = $this->_folderItemFromArray($folder);
         return $folder;
     }
+    
+    
+    public function findByUrl($url)
+    {
+        $folder = $this->getBackend()->findFolderByUrl($url);
+
+        
+        \Zend_Debug::dump($folder);
+        
+        if (!$folder) {
+            return false;
+        }
+        
+        $folder = $this->_folderItemFromArray($folder);
+        return $folder;
+    
+    }
+    
+    
 
     /**
      * Finds subfolders
@@ -178,6 +221,35 @@ class FolderOperator extends \Xi\Filelib\AbstractOperator
         }
         return new \Xi\Filelib\Folder\FolderIterator($folders);
     }
+    
+    
+    /**
+     * Finds parent folder
+     * 
+     * @param \Xi\Filelib\Folder\Folder $folder
+     * @return false|\Xi\Filelib\Folder\Folder
+     */
+    public function findParentFolder(\Xi\Filelib\Folder\Folder $folder)
+    {
+        if(!$parentId = $folder->getParentId()) {
+            return false;
+        }
+                
+        
+        if(!$parent = $this->findCached($parentId)) {
+            $parent = $this->getBackend()->findFolder($parentId);
+        }
+        
+        if(!$parent) {
+            return false;
+        }
+        
+        return $this->_folderItemFromArray($parent);
+                
+        
+    }
+    
+    
 
 
     /**

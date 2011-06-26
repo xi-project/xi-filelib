@@ -19,7 +19,12 @@ class Folder
      * @Column(name="foldername", type="string", length=255)
      */
     protected $name;
-
+    
+    /**
+     * @Column(name="folderurl", type="string", length=5000)
+     */
+    protected $url;
+    
     /**
      * @OneToOne(targetEntity="Folder")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
@@ -57,6 +62,26 @@ class Folder
         return $this->name;
     }
     
+    /**
+     * Set url
+     *
+     * @param  string               $value
+     * @return Folder
+     */
+    public function setUrl($value)
+    {
+        $this->url = $value;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
     
     /**
      * Set parent

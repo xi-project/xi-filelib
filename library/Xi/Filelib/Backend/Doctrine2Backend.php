@@ -142,6 +142,32 @@ class Doctrine2Backend extends AbstractBackend
         return $this->_fileToArray($file);
     }
 
+
+    public function findFileByFilename($folder, $filename)
+    {
+        $folderEntity = $this->_em->find($this->_folderEntityName, $folder->getId());
+                
+        $query = $this->_em->createQuery(
+            'SELECT f FROM ' . $this->getFileEntityName() . ' f WHERE f.folder = :folder
+             AND f.name = :filename'
+        );
+        
+        $query->setParameter('folder', $folderEntity);
+                        
+        $query->setParameter('filename', $filename);
+
+        $file = $query->getResult();
+
+        
+        if (!$file) {
+            return false;
+        }
+
+        return $this->_fileToArray($file[0]);
+    }
+    
+    
+    
     /**
      * Finds all files
      *
@@ -288,6 +314,27 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
+     * Finds folder by url
+     *
+     * @param  integer                          $id
+     * @return \Xi\Filelib\Folder\Folder|false
+     */
+    public function findFolderByUrl($url)
+    {
+        $folder = $this->_em->getRepository($this->_folderEntityName)->findOneBy(array(
+            'url' => $url,
+        ));
+                
+        if(!$folder) {
+            return false;
+        }
+                
+        return $this->_folderToArray($folder);
+    }
+    
+    
+    
+    /**
      * Finds the root folder
      *
      * @return \Xi\Filelib\Folder\Folder
@@ -305,6 +352,7 @@ class Doctrine2Backend extends AbstractBackend
         } catch(\Doctrine\ORM\NoResultException $e) {
             $folder = new \Xi\Filelib\Backend\Doctrine2\Entity\Folder();
             $folder->setName('root');
+            $folder->setUrl('');
             $folder->removeParent();
             $this->_em->persist($folder);
             $this->_em->flush();        
@@ -357,8 +405,8 @@ class Doctrine2Backend extends AbstractBackend
             }
 
             $folderRow->setName($folder->getName());
+            $folderRow->setUrl($folder->getUrl());
                         
-
             $this->_em->persist($folderRow);
             $this->_em->flush();
 
@@ -390,6 +438,7 @@ class Doctrine2Backend extends AbstractBackend
             }
 
             $folderRow->setName($folder->getName());
+            $folderRow->setUrl($folder->getUrl());
             
 
             $this->_em->flush();
@@ -521,6 +570,7 @@ class Doctrine2Backend extends AbstractBackend
             'id'        => $folder->getId(),
             'parent_id' => $folder->getParent() ? $folder->getParent()->getId() : null,
             'name'      => $folder->getName(),
+            'url' => $folder->getUrl(),
         );
     }
 }

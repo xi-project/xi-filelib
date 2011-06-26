@@ -213,6 +213,23 @@ class FileOperator extends \Xi\Filelib\AbstractOperator
         return $file;
 
     }
+    
+    
+    public function findByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
+    {
+        $file = $this->getBackend()->findFileByFilename($folder, $filename);
+        
+        if(!$file) {
+            return false;
+        }
+
+        $file = $this->_fileItemFromArray($file);
+
+        return $file;
+                
+    }
+    
+    
 
     /**
      * Finds and returns all files
