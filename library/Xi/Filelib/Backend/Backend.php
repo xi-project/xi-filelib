@@ -114,5 +114,22 @@ interface Backend
      * @return \Xi\Filelib\Folder\Folder
      */
     public function findRootFolder();
-
+    
+    /**
+     * Finds folder by url
+     *
+     * @param  integer                          $id
+     * @return \Xi\Filelib\Folder\Folder|false
+     */
+    public function findFolderByUrl($url);
+        
+    /**
+     * Finds file in a folder by filename
+     * 
+     * @param unknown_type $folder
+     * @param unknown_type $filename
+     */
+    public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename);
+    
+    
 }

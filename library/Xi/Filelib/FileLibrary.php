@@ -53,14 +53,6 @@ class FileLibrary
      */
     private $_folderOperator;
     
-    
-    /**
-     * FBFS operator reference
-     * 
-     * @var \Xi\Filelib\Fbfs\FbfsOperator
-     */
-    private $_fbfsOperator;
-    
     /**
      * Cache
      * @var \Xi\Filelib\Cache\Cache
@@ -167,21 +159,6 @@ class FileLibrary
     {
         return $this->_folderOperator;
     }
-    
-    
-    /**
-     * Returns FBFS (Filebank Filesystem) operator
-     * 
-     * @return \Xi\Filelib\Fbfs\FbfsOperator
-     */
-    public function fbfs()
-    {
-        if (!$this->_fbfsOperator) {
-            $this->_fbfsOperator = new \Xi\Filelib\Fbfs\FbfsOperator($this); 
-        }
-        return $this->_fbfsOperator;
-    }
-    
     
     /**
      * Sets storage

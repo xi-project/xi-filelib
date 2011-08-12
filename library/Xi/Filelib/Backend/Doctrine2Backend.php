@@ -143,7 +143,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
 
-    public function findFileByFilename($folder, $filename)
+    public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
     {
         $folderEntity = $this->_em->find($this->_folderEntityName, $folder->getId());
                 

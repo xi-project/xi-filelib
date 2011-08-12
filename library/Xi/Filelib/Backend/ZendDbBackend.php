@@ -93,7 +93,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
         try {
             $folderRow = $this->getFolderTable()->createRow();
             $folderRow->foldername = $folder->getName();
-            $folderRow->parent_id = $folder->getParentId();            
+            $folderRow->parent_id = $folder->getParentId();
+            $folderRow->folderurl = $folder->getUrl();            
                         
             $folderRow->save();
             	
@@ -124,6 +125,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'id' => $folder->getId(),
             'parent_id' => $folder->getParentId(),
             'foldername' => $folder->getName(),
+            'folderurl' => $folder->getUrl(),
         );
         
         try {
@@ -152,7 +154,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
                 'filesize' => $file->getSize(),
                 'filename' => $file->getName(),
                 'fileprofile' => $file->getProfile(),
-                'date_uploaded' => $file->getDateUploaded()->format('Y-m-d H:i:s')
+                'date_uploaded' => $file->getDateUploaded()->format('Y-m-d H:i:s'),
+                'filelink' => $file->getLink(),
             ); 
             
             
@@ -199,7 +202,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             $file->filename = $upload->getOverrideFilename();
             $file->fileprofile = $profile->getIdentifier();
             $file->date_uploaded = $upload->getDateUploaded()->format('Y-m-d H:i:s');
-            	
+                        	
             $file->save();
             	
             $this->getDb()->commit();
@@ -241,6 +244,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             $row = $this->getFolderTable()->createRow();
             $row->foldername = 'root';
             $row->parent_id = null;
+            $row->folderurl = '';
             $row->save();
             
         }
@@ -310,6 +314,48 @@ class ZendDbBackend extends AbstractBackend implements Backend
         
     }
     
+    
+    /**
+     * Finds folder by url
+     *
+     * @param  integer                          $id
+     * @return \Xi\Filelib\Folder\Folder|false
+     */
+    public function findFolderByUrl($url)
+    {
+        $folder = $this->getFolderTable()->fetchRow(array('folderurl = ?' => $url));
+        
+        if(!$folder) {
+            return false;
+        }
+                
+        return $this->_folderRowToArray($folder);
+        
+    }
+        
+    /**
+     * Finds file in a folder by filename
+     * 
+     * @param unknown_type $folder
+     * @param unknown_type $filename
+     */
+    public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
+    {
+        $file = $this->getFileTable()->fetchRow(array(
+            'folder_id = ?' => $folder->getId(),
+            'filename = ?' => $filename,
+        ));
+                
+        if (!$file) {
+            return false;
+        }
+
+        return $this->_fileRowToArray($file);
+        
+    }
+        
+    
+    
     private function _fileRowToArray($row) 
     {
         return array(
@@ -319,6 +365,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'size' => $row->filesize,
             'name' => $row->filename,
             'profile' => $row->fileprofile,
+            'link' => $row->filelink,
             'date_uploaded' => $row->date_uploaded,
         );
         
@@ -331,10 +378,12 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'id' => $row->id,
             'parent_id' => $row->parent_id,
             'name' => $row->foldername,
-        
+            'url' => $row->folderurl,
         );
         
     }
+    
+    
 
 
 

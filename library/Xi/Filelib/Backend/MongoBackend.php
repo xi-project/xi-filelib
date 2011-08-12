@@ -289,7 +289,7 @@ class MongoBackend extends AbstractBackend implements Backend
             $root = array(
                 'parent_id' => null,
                 'name' => 'root',
-                'visible' => 1,
+                'url' => '',
             );
             
             $mongo->folders->save($root);
@@ -300,6 +300,51 @@ class MongoBackend extends AbstractBackend implements Backend
        $this->_mongoToFilelib($root);
        return $root;
     }
+    
+    
+    /**
+     * Finds folder by url
+     *
+     * @param  integer                          $id
+     * @return \Xi\Filelib\Folder\Folder|false
+     */
+    public function findFolderByUrl($url)
+    {
+        $mongo = $this->getMongo();
+        $folder = $mongo->folders->findOne(array('url' => $url));
+        
+        if(!$folder) {
+            return false;
+        }
+
+        $this->_mongoToFilelib($folder);
+        return $folder;
+        
+    }
+        
+    /**
+     * Finds file in a folder by filename
+     * 
+     * @param unknown_type $folder
+     * @param unknown_type $filename
+     */
+    public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
+    {
+        $mongo = $this->getMongo();
+        $file = $mongo->files->findOne(array(
+            'folder_id' => $folder->getId(),
+            'name' => $filename,
+        ));
+                
+        if (!$file) {
+            return false;
+        }
+
+        $this->_mongoToFilelib($file);
+        return $file;
+        
+    }
+    
     
     
     
