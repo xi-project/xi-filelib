@@ -12,6 +12,9 @@ namespace Xi\Filelib\Backend;
 interface Backend
 {
 
+    public function __construct($options = array());
+    
+    
     /**
      * Initialization. Is run when backend is set to filelib.
      */

@@ -11,6 +11,9 @@ namespace Xi\Filelib\Publisher;
  */
 interface Publisher
 {
+    
+    public function __construct($options = array());
+        
     /**
      * Publishes a file
      * 

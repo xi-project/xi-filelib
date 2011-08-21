@@ -38,16 +38,7 @@ class FilesystemStorage extends \Xi\Filelib\Storage\AbstractStorage implements \
     
     public function __construct($options = array())
     {
-        if(isset($options['directoryIdCalculator'])) {
-            $d = $options['directoryIdCalculator'];
-            unset($options['directoryIdCalculator']);
-
-            $calculator = new $d['type']($d['options']);
-
-            $this->setDirectoryIdCalculator($calculator);
-        }
-        
-        \Xi\Filelib\Options::setConstructorOptions($this, $options);
+        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
     }
     
     

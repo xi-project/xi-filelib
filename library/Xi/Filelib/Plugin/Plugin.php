@@ -12,6 +12,8 @@ namespace Xi\Filelib\Plugin;
 interface Plugin
 {
 
+    public function __construct($options = array());
+        
     /**
      * Sets filelib
      *

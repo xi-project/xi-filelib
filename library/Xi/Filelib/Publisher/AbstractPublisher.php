@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Publisher;
 
-use Xi\Filelib\Options;
+use Xi\Filelib\Configurator;
 
 /**
  * Abstract convenience publisher base class implementing common methods
@@ -13,15 +13,16 @@ use Xi\Filelib\Options;
  */
 abstract class AbstractPublisher implements Publisher
 {
+    public function __construct($options = array())
+    {
+        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
+    }
+    
+    
     /**
      * @var \Xi\Filelib\FileLibrary Filelib
      */
     private $_filelib;
-    
-    public function __construct($options = array())
-    {
-        Options::setConstructorOptions($this, $options);
-    }
     
     /**
      * Sets filelib

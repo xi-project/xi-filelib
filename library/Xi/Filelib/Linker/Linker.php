@@ -12,13 +12,6 @@ namespace Xi\Filelib\Linker;
 interface Linker
 {
 
-    /**
-     * Constructor eats filelib as parameter.
-     *
-     * @param \Zend_Config|array $options
-     */
-    public function __construct($options = array());
-
     
     public function setFilelib(\Xi\Filelib\FileLibrary $filelib);
     

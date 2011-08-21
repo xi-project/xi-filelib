@@ -15,7 +15,7 @@ abstract class AbstractCommand implements Command
     
     public function __construct($options = array())
     {
-        \Xi\Filelib\Options::setConstructorOptions($this, $options);
+        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
     }
     
 }

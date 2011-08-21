@@ -11,7 +11,8 @@ namespace Xi\Filelib\Plugin;
  */
 abstract class AbstractPlugin implements \Xi\Filelib\Plugin\Plugin
 {
-
+        
+    
     /**
      * @var \Xi\Filelib\FileLibrary Filelib
      */
@@ -21,12 +22,12 @@ abstract class AbstractPlugin implements \Xi\Filelib\Plugin\Plugin
      * @var array Array of profiles
      */
     protected $_profiles;
-
+    
     public function __construct($options = array())
     {
-        \Xi\Filelib\Options::setConstructorOptions($this, $options);
+        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
     }
-
+    
     /** 
      * Returns an array of profiles attached to the plugin
      * 

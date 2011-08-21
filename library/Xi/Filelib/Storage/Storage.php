@@ -12,6 +12,8 @@ namespace Xi\Filelib\Storage;
  */
 interface Storage
 {
+    public function __construct($options = array());
+    
     /**
      * Sets filelib
      *

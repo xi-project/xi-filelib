@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib;
 
-use \Xi\Filelib\Options, \Xi\Filelib\Cache;
+use \Xi\Filelib\Configurator, \Xi\Filelib\Cache;
 
 /**
  * Xi filelib
@@ -12,9 +12,6 @@ use \Xi\Filelib\Options, \Xi\Filelib\Cache;
  */
 class FileLibrary
 {
-
-    
-    
     /**
      * @var \Xi\Filelib\Backend\Backend Backend
      */
@@ -40,7 +37,6 @@ class FileLibrary
      */
     private $_plugins = array();
 
-
     /**
      * File operator
      * @var \Xi\Filelib\File\FileOperator
@@ -65,33 +61,28 @@ class FileLibrary
      * @var string
      */
     private $_tempDir;
-
-    public function __construct(Configuration $config)
+    
+    /**
+     * Fully qualified fileitem classname
+     * 
+     * @var string
+     */
+    private $_fileItemClass = "\Xi\Filelib\File\FileItem";
+    
+    /**
+     * Fully qualified folderitem classname
+     * 
+     * @var string
+     */
+    private $_folderItemClass = "\Xi\Filelib\Folder\FolderItem";
+    
+    
+    public function __construct()
     {
         $this->_folderOperator = new Folder\FolderOperator($this);
         $this->_fileOperator = new File\FileOperator($this);
-                
-        $this->setTempDir($config->getTempDir());
-        $this->setAcl($config->getAcl());
-        $this->setBackend($config->getBackend());
-        $this->setCache($config->getCache());
-        $this->setStorage($config->getStorage());
-        $this->setPublisher($config->getPublisher());
-        
-        $this->folder()->setClass($config->getFolderItemClass());
-        $this->file()->setClass($config->getFileItemClass());
-                
-        foreach ($config->getProfiles() as $profile)
-        {
-            $this->file()->addProfile($profile);
-        }
-        
-        foreach ($config->getPlugins() as $plugin)
-        {
-            $this->addPlugin($plugin);
-        }
-        
     }
+    
     
     
     /**
@@ -99,11 +90,10 @@ class FileLibrary
      * 
      * @param string $tempDir
      */
-    protected function setTempDir($tempDir)
+    public function setTempDir($tempDir)
     {
         $this->_tempDir = $tempDir;
     }
-    
     
     /**
      * Returns temporary directory
@@ -114,14 +104,14 @@ class FileLibrary
     {
         return $this->_tempDir ?: sys_get_temp_dir();
     }
-
+    
     /**
      * Sets cache
      * 
      * @param \Xi\Filelib\Cache\Cache $cache
      * @return \Xi\Filelib\FileLibrary
      */
-    protected function setCache(Cache\Cache $cache)
+    public function setCache(Cache\Cache $cache)
     {
         $this->_cache = $cache;
         return $this;
@@ -159,6 +149,52 @@ class FileLibrary
     {
         return $this->_folderOperator;
     }
+
+    /**
+     * Sets fully qualified fileitem classname
+     *
+     * @param string $fileItemClass Class name
+     * @return \Xi\Filelib\FileLibrary
+     */
+    public function setFileItemClass($fileItemClass)
+    {
+        $this->file()->setClass($fileItemClass);
+        return $this;
+    }
+    
+    /**
+     * Sets fully qualified folderitem classname
+     *
+     * @param string $folderItemClass Class name
+     * @return \Xi\Filelib\FileLibrary
+     */
+    public function setFolderItemClass($folderItemClass)
+    {
+        $this->folder()->setClass($folderItemClass);
+        return $this;
+    }
+    
+    
+    /**
+     * Returns fully qualified folderitem classname
+     * 
+     * @return string
+     */
+    public function getFolderItemClass()
+    {
+        return $this->folder()->getClass();
+    }
+    
+
+    /**
+     * Returns fully qualified fileitem classname
+     * 
+     * @return string
+     */
+    public function getFileItemClass()
+    {
+        return $this->file()->getClass();
+    }
     
     /**
      * Sets storage
@@ -166,7 +202,7 @@ class FileLibrary
      * @param \Xi\Filelib\Storage\Storage $storage
      * @return \Xi\Filelib\FileLibrary
      */
-    protected function setStorage(Storage\Storage $storage)
+    public function setStorage(Storage\Storage $storage)
     {
         $storage->setFilelib($this);
         $this->_storage = $storage;
@@ -180,10 +216,6 @@ class FileLibrary
      */
     public function getStorage()
     {
-        if(!$this->_storage) {
-            throw new FilelibException('Filelib storage not set');
-        }
-
         return $this->_storage;
     }
     
@@ -193,7 +225,7 @@ class FileLibrary
      * @param \Xi\Filelib\Publisher\Interface $publisher
      * @return \Xi\Filelib\FileLibrary
      */
-    protected function setPublisher(Publisher\Publisher $publisher)
+    public function setPublisher(Publisher\Publisher $publisher)
     {
         $publisher->setFilelib($this);
         $this->_publisher = $publisher;
@@ -207,10 +239,6 @@ class FileLibrary
      */
     public function getPublisher()
     {
-        if(!$this->_publisher) {
-            throw new FilelibException('Filelib Publisher not set');
-        }
-
         return $this->_publisher;
     }
 
@@ -220,7 +248,7 @@ class FileLibrary
      * @param \Xi\Filelib\Backend\Backend $backend
      * @return \Xi\Filelib\FileLibrary
      */
-    protected function setBackend(Backend\Backend $backend)
+    public function setBackend(Backend\Backend $backend)
     {
         $backend->setFilelib($this);
         $backend->init();
@@ -235,29 +263,14 @@ class FileLibrary
      */
     public function getBackend()
     {
-        if(!$this->_backend) {
-            throw new FilelibException('Filelib backend not set');
-        }
-
         return $this->_backend;
     }
-
-    /**
-     * Adds a plugin
-     *
-     * @param \Xi\Filelib\Plugin\Plugin Plugin $plugin
-     * @return \Xi\Filelib\FileLibrary
-     */
-    protected function addPlugin(Plugin\Plugin $plugin, $priority = 1000)
+    
+    public function getPlugins()
     {
-        $plugin->setFilelib($this);
-        foreach($plugin->getProfiles() as $profileIdentifier) {
-            $profile = $this->file()->getProfile($profileIdentifier);
-            $profile->addPlugin($plugin, $priority);
-        }
-        $plugin->init();
-        return $this;
+        return $this->_plugins;
     }
+    
 
     /**
      * Sets acl handler
@@ -265,7 +278,7 @@ class FileLibrary
      * @param \Xi\Filelib\Acl\Acl $acl
      * @return \Xi\Filelib\FileLibrary Filelib
      */
-    protected function setAcl(Acl\Acl $acl)
+    public function setAcl(Acl\Acl $acl)
     {
         $this->_acl = $acl;
         return $this;
@@ -278,10 +291,46 @@ class FileLibrary
      */
     public function getAcl()
     {
-        if(!$this->_acl) {
-            $this->_acl = new Acl\SimpleAcl();
-        }
         return $this->_acl;
     }
+    
+    /**
+     * Adds a file profile
+     * 
+     * @param File\FileProfile $profile
+     */
+    public function addProfile(File\FileProfile $profile)
+    {
+        $this->file()->addProfile($profile);
+    }
+    
+    /**
+     * Returns all file profiles
+     * 
+     * @return array
+     */
+    public function getProfiles()
+    {
+        return $this->file()->getProfiles();
+    }
+
+    
+    /**
+     * Adds a plugin
+     *
+     * @param \Xi\Filelib\Plugin\Plugin Plugin $plugin
+     * @return \Xi\Filelib\FileLibrary
+     */
+    public function addPlugin(Plugin\Plugin $plugin, $priority = 1000)
+    {
+        $plugin->setFilelib($this);
+        foreach($plugin->getProfiles() as $profileIdentifier) {
+            $profile = $this->file()->getProfile($profileIdentifier);
+            $profile->addPlugin($plugin, $priority);
+        }
+        $plugin->init();
+        return $this;
+    }
+    
     
 }

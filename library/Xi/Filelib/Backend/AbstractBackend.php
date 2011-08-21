@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\FileLibrary, Xi\Filelib\Options;
+use Xi\Filelib\FileLibrary, Xi\Filelib\Configurator;
 
 /**
  * Abstract backend implementing common methods
@@ -17,12 +17,14 @@ abstract class AbstractBackend implements Backend
      * @var Xi\Filelib\FileLibrary Filelib
      */
     private $_filelib;
-    
+
     public function __construct($options = array())
     {
-        Options::setConstructorOptions($this, $options);
+        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
     }
-        
+    
+    
+            
     /**
      * Sets filelib
      *

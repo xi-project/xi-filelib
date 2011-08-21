@@ -11,20 +11,10 @@ namespace Xi\Filelib\Linker;
  */
 abstract class AbstractLinker implements \Xi\Filelib\Linker\Linker
 {
-
     /**
      * @var \Xi\Filelib\FileLibrary Filelib
      */
     protected $_filelib;
-
-    /**
-     * @param array|\Zend_Config $options
-     */
-    public function __construct($options = array())
-    {
-        \Xi\Filelib\Options::setConstructorOptions($this, $options);
-    }
-
 
     /**
      * Sets filelib
@@ -34,7 +24,6 @@ abstract class AbstractLinker implements \Xi\Filelib\Linker\Linker
     {
         $this->_filelib = $filelib;
     }
-
 
     /**
      * Returns filelib

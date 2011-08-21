@@ -59,13 +59,15 @@ class FileProfile
      * @var boolean Publish original file
      */
     private $_publishOriginal = true;
+
     
     
     public function __construct($options = array())
     {
-        \Xi\Filelib\Options::setConstructorOptions($this, $options);
+        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
     }
-
+    
+    
     /**
      * Sets filelib
      *

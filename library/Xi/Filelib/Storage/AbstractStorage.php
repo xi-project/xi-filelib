@@ -18,8 +18,9 @@ abstract class AbstractStorage implements \Xi\Filelib\Storage\Storage
     
     public function __construct($options = array())
     {
-        \Xi\Filelib\Options::setConstructorOptions($this, $options);
+        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
     }
+    
     
     /**
      * Sets filelib
