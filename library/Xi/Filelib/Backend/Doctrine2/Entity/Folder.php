@@ -4,7 +4,7 @@ namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
 /**
  * @Entity
- * @Table(name="emerald_filelib_folder")
+ * @Table(name="xi_filelib_folder")
  */
 class Folder
 {
@@ -86,12 +86,12 @@ class Folder
     /**
      * Set parent
      *
-     * @param  Folder $emeraldFilelibFolder
+     * @param  Folder $filelibFolder
      * @return Folder
      */
-    public function setParent(Folder $emeraldFilelibFolder)
+    public function setParent(Folder $filelibFolder)
     {
-        $this->parent = $emeraldFilelibFolder;
+        $this->parent = $filelibFolder;
 
         return $this;
     }

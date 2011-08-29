@@ -115,10 +115,8 @@ class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionPr
         }
         
         foreach($deletions as $deletion) {
-            // \Zend_Debug::dump('deleting poo poo');
             unset($imageMagicks[$key]);
         }
-        
         
         if(!isset($imageMagicks[$file->getId()])) {
 

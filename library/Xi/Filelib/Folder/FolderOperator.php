@@ -16,7 +16,7 @@ class FolderOperator extends \Xi\Filelib\AbstractOperator
      * 
      * @var string
      */
-    protected $_cachePrefix = 'emerald_filelib_folderoperator';
+    protected $_cachePrefix = 'xi_filelib_folderoperator';
 
     /**
      * @var string Folderitem class
@@ -189,9 +189,6 @@ class FolderOperator extends \Xi\Filelib\AbstractOperator
     public function findByUrl($url)
     {
         $folder = $this->getBackend()->findFolderByUrl($url);
-
-        
-        \Zend_Debug::dump($folder);
         
         if (!$folder) {
             return false;

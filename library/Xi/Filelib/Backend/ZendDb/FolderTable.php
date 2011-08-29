@@ -11,7 +11,7 @@ namespace Xi\Filelib\Backend\ZendDb;
  */
 class FolderTable extends \Zend_Db_Table_Abstract
 {
-    protected $_name = 'emerald_filelib_folder';
+    protected $_name = 'xi_filelib_folder';
     protected $_id = array('id');
     protected $_rowClass = '\Xi\Filelib\Backend\ZendDb\FolderRow';
 

@@ -12,18 +12,27 @@ namespace Xi\Filelib\Acl;
 class SimpleAcl implements Acl
 {
 
+    /** 
+     * {@inheritdoc}
+     */
     public function isReadable($resource)
     {
         return true;
     }
 
 
+    /**
+     * {@inheritdoc}
+     */
     public function isWriteable($resource)
     {
         return true;
     }
 
 
+    /** 
+     * {@inheritdoc}
+     */
     public function isReadableByAnonymous($resource)
     {
         return true;

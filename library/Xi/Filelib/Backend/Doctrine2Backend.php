@@ -223,26 +223,11 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function updateFile(\Xi\Filelib\File\File $file)
     {
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: Update begin");
-            }
-                
         try {
             $file->setLink($file->getProfileObject()->getLinker()->getLink($file, true));
-
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: Link was set");
-            }
                         
             $fileRow = $this->_em->getReference($this->_fileEntityName,
             $file->getId());
-
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: Reference gotten");
-            }
                         
             $fileRow->setFolder($this->_em->getReference($this->_folderEntityName,
             $file->getFolderId()));
@@ -253,29 +238,12 @@ class Doctrine2Backend extends AbstractBackend
             $fileRow->setName($file->getName());
             $fileRow->setLink($file->getLink());
             $fileRow->setDateUploaded($file->getDateUploaded());
-
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: Updates updated");
-            }
             
             $this->_em->flush();
-            
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: Entity manager flushed");
-            }
-            
             
         } catch (Exception $e) {
             throw new \Xi\Filelib\FilelibException($e->getMessage());
         }
-        
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: Update end");
-            }
-        
         
     }
 
@@ -480,19 +448,9 @@ class Doctrine2Backend extends AbstractBackend
     ){
         try {
             
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: upload start");
-            }
-            
             $conn = $this->_em->getConnection();
             $conn->beginTransaction();
 
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: Transaction started");
-            }
-            
             $file = new $this->_fileEntityName();
 
             $file->setFolder($this->_em->getReference($this->_folderEntityName,
@@ -502,33 +460,13 @@ class Doctrine2Backend extends AbstractBackend
             $file->setName($upload->getOverrideFilename());
             $file->setProfile($profile->getIdentifier());
             $file->setDateUploaded($upload->getDateUploaded());
-
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: File created");
-            }
             
             $this->_em->persist($file);
 
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: File persisted");
-            }
-                        
             $this->_em->flush();
 
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: Entity manager flushed");
-            }
-            
             $conn->commit();
             
-            $t = $this->getFilelib()->file()->getTimer();
-            if($t) {
-                $t->time("\t\tBackend: Transaction committed");
-            }
-                                    
             return $this->_fileToArray($file);
             
         } catch (Exception $e) {

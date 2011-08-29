@@ -96,7 +96,7 @@ class ZendAcl implements Acl
 
     public function isWriteable($resource)
     {
-        return $this->getAcl()->isAllowed($this->getRole(), $resource, 'read');
+        return $this->getAcl()->isAllowed($this->getRole(), $resource, 'write');
     }
 
     public function isReadableByAnonymous($resource)

@@ -4,7 +4,7 @@ namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
 /**
  * @Entity
- * @Table(name="emerald_filelib_file")
+ * @Table(name="xi_filelib_file")
  */
 class File
 {
@@ -184,7 +184,7 @@ class File
 
     
     /**
-     * Set emerald filelib folder
+     * Set filelib folder
      *
      * @param  Folder $folder
      * @return File

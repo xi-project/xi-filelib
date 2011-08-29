@@ -33,11 +33,6 @@ class FileLibrary
     private $_acl;
 
     /**
-     * @var array Array of installed plugins
-     */
-    private $_plugins = array();
-
-    /**
      * File operator
      * @var \Xi\Filelib\File\FileOperator
      */
@@ -62,28 +57,17 @@ class FileLibrary
      */
     private $_tempDir;
     
-    /**
-     * Fully qualified fileitem classname
-     * 
-     * @var string
-     */
-    private $_fileItemClass = "\Xi\Filelib\File\FileItem";
-    
-    /**
-     * Fully qualified folderitem classname
-     * 
-     * @var string
-     */
-    private $_folderItemClass = "\Xi\Filelib\Folder\FolderItem";
-    
     
     public function __construct()
     {
         $this->_folderOperator = new Folder\FolderOperator($this);
         $this->_fileOperator = new File\FileOperator($this);
+        
+        if (!$this->getTempDir()) {
+            $this->setTempDir(sys_get_temp_dir());
+        }
+        
     }
-    
-    
     
     /**
      * Sets temporary directory
@@ -102,7 +86,7 @@ class FileLibrary
      */
     public function getTempDir()
     {
-        return $this->_tempDir ?: sys_get_temp_dir();
+        return $this->_tempDir;
     }
     
     /**
@@ -120,7 +104,7 @@ class FileLibrary
     /**
      * Returns cache. If cache does not exist, init a mock cache
      * 
-     * @return \Zend_Cache_Core
+     * @return \Xi\Filelib\Cache\Cache
      */
     public function getCache()
     {
@@ -184,7 +168,6 @@ class FileLibrary
     {
         return $this->folder()->getClass();
     }
-    
 
     /**
      * Returns fully qualified fileitem classname
@@ -265,12 +248,6 @@ class FileLibrary
     {
         return $this->_backend;
     }
-    
-    public function getPlugins()
-    {
-        return $this->_plugins;
-    }
-    
 
     /**
      * Sets acl handler
@@ -313,7 +290,6 @@ class FileLibrary
     {
         return $this->file()->getProfiles();
     }
-
     
     /**
      * Adds a plugin

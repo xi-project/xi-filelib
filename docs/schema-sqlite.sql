@@ -1,16 +1,16 @@
 
 
-CREATE TABLE emerald_filelib_folder(
+CREATE TABLE xi_filelib_folder(
 id integer PRIMARY KEY AUTOINCREMENT,
 parent_id integer NULL,
 foldername varchar(255) NOT NULL,
 folderurl varchar(5000) NOT NULL,
 UNIQUE (parent_id, foldername),
 UNIQUE(folderurl),
-FOREIGN KEY(parent_id) REFERENCES emerald_filelib_folder (id) ON DELETE NO ACTION ON UPDATE CASCADE
+FOREIGN KEY(parent_id) REFERENCES xi_filelib_folder (id) ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
-CREATE TABLE emerald_filelib_file
+CREATE TABLE xi_filelib_file
 (
   id integer  NOT NULL PRIMARY KEY AUTOINCREMENT,
   folder_id integer  NOT NULL,
@@ -21,6 +21,6 @@ CREATE TABLE emerald_filelib_file
   filelink varchar(1000) DEFAULT NULL,
   date_uploaded timestamp NOT NULL,
   UNIQUE (filename,folder_id),
-  FOREIGN KEY (folder_id) REFERENCES emerald_filelib_folder (id) ON DELETE NO ACTION ON UPDATE CASCADE
+  FOREIGN KEY (folder_id) REFERENCES xi_filelib_folder (id) ON DELETE NO ACTION ON UPDATE CASCADE
 );
 

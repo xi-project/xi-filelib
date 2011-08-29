@@ -5,7 +5,7 @@ namespace Xi\Filelib;
 use \Xi\Filelib\Configuration;
 
 /**
- * Unified object option setter. Somewhat follows a one-time ZF 2.0 proposition.
+ * Filelib configurator
  *
  * @author pekkis
  *
@@ -16,7 +16,7 @@ class Configurator
     /**
      * Configuration to configurate
      *
-     * @var \Xi\Filelib\Configuration
+     * @var \Xi\Filelib\FileLibrary
      */
     private $config;
 
@@ -25,43 +25,43 @@ class Configurator
         $this->configuration = $config;
     }
 
-
-    public static function classifier(\RecursiveArrayIterator $riter, $classify = false)
+    
+    
+    public function configurate(array $config)
     {
-        foreach ($riter as $key => $value) {
-            if ($riter->hasChildren()) {
-                $child = $riter->getChildren();
-                if ($child->offsetExists('class')) {
-                    self::classifier($child, true);
-
-                    if ($classify) {
-                        $lusser = new $child['class']();
-                        self::setConstructorOptions($lusser, $child['options']);
-                        \Zend_Debug::dump($lusser);
-
-
-                        $riter[$key] = $lusser;
-
-                        \Zend_Debug::dump($riter, 'riter');
-                    }
-
-
-
-
-
-                }
-
-                self::classifier($child, true);
-            }
-
+        if (isset($config['backend'])) {
+            $this->configurateBackend($config['backend']); 
         }
-
-
+        
+        if (isset($config['storage'])) {
+            $this->configurateStorage($config['storage']); 
+        }
+        
+        if (isset($config['publisher'])) {
+            $this->configuratePublisher($config['publisher']); 
+        }
+        
+        if (isset($config['profiles'])) {
+            array_walk($config['profiles'], array($this, 'configurateProfile'));
+            // $this->configuratePublisher($config['publisher']); 
+        }
+        
+        if (isset($config['plugins'])) {
+            array_walk($config['plugins'], array($this, 'configuratePlugin'));
+            // $this->configuratePlugin($config['publisher']); 
+        }
+        
+        
     }
+    
 
 
-
-    public function configurateBackend($config)
+    /**
+     * Configurates backend from config array
+     * 
+     * @param array $config
+     */
+    public function configurateBackend(array $config)
     {
         $backend = new $config['class']($config['options']);
         // self::setConstructorOptions($backend, $config['options']);
@@ -69,14 +69,24 @@ class Configurator
     }
 
 
-    public function configurateStorage($config)
+    /**
+     * Configurates storage from config array
+     * 
+     * @param array $config
+     */
+    public function configurateStorage(array $config)
     {
         $storage = new $config['class']($config['options']);
         // self::setConstructorOptions($storage, $config['options']);
         $this->configuration->setStorage($storage);
     }
 
-    public function configuratePublisher($config)
+    /**
+     * Configurates publisher from config array
+     * 
+     * @param array $config
+     */
+    public function configuratePublisher(array $config)
     {
         $publisher = new $config['class']($config['options']);
         // self::setConstructorOptions($publisher, $config['options']);
@@ -84,7 +94,12 @@ class Configurator
     }
 
 
-    public function configuratePlugin($pluginOptions)
+    /**
+     * Configurates a plugin from config array
+     * 
+     * @param array $pluginOptions
+     */
+    public function configuratePlugin(array $pluginOptions)
     {
         // If no profiles are defined, use in all profiles.
         if (!isset($pluginOptions['profiles'])) {
@@ -95,16 +110,18 @@ class Configurator
         $this->configuration->addPlugin($plugin);
     }
 
-
-
-    public function configurateProfile($profileOptions)
+    
+    /**
+     * Configurates a profile from config array
+     * 
+     * @param array $profileOptions
+     */
+    public function configurateProfile(array $profileOptions)
     {
         $profile = new \Xi\Filelib\File\FileProfile();
         self::setConstructorOptions($profile, $profileOptions);
         $this->configuration->addProfile($profile);
     }
-
-
 
     /**
      * Sets object options via compatible setters.

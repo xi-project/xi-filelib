@@ -16,7 +16,7 @@ class FileOperator extends \Xi\Filelib\AbstractOperator
     /**
      * @var string
      */
-    protected $_cachePrefix = 'emerald_filelib_fileoperator';
+    protected $_cachePrefix = 'xi_filelib_fileoperator';
 
     /**
      * @var \Xi\Filelib\File\Uploader
@@ -32,26 +32,6 @@ class FileOperator extends \Xi\Filelib\AbstractOperator
      * @var string Fileitem class
      */
     private $_className = '\Xi\Filelib\File\FileItem';
-        
-    private $_timer = null;
-    
-    public function setTimer(\Xi\Debug\Timer $timer)
-    {
-        $this->_timer = $timer;
-    }
-        
-    /**
-     * Returns timer
-     * 
-     * @return \Xi\Debug\Timer
-     */
-    public function getTimer()
-    {
-        return $this->_timer;
-    }
-    
-    
-    
     
     /**
      * Sets fileitem class
@@ -322,25 +302,14 @@ class FileOperator extends \Xi\Filelib\AbstractOperator
      */
     public function upload($upload, $folder, $profile = 'default')
     {
-        if($this->getTimer()) {
-            $this->getTimer()->clear()->time("Upload begins");    
-        }
-        
-        
         if(!($folder instanceof \Xi\Filelib\Folder\Folder)) {
             throw new \Xi\Filelib\FilelibException('Invalid folder supplied for upload');
         }
-       
         
         if(!$upload instanceof \Xi\Filelib\File\FileUpload) {
             $upload = $this->prepareUpload($upload);
         }
 
-        if($this->getTimer()) {
-            $this->getTimer()->time("Upload is prepared");    
-        }
-        
-        
         if(!$this->getFilelib()->getAcl()->isWriteable($folder)) {
             throw new \Xi\Filelib\FilelibException("Folder '{$folder->getId()}'not writeable");
         }
@@ -349,32 +318,12 @@ class FileOperator extends \Xi\Filelib\AbstractOperator
             throw new \Xi\Filelib\FilelibException("Can not upload");
         }
         
-        if($this->getTimer()) {
-            $this->getTimer()->time("Starting beforeUpload hook");    
-        }
-           
-        
         $profile = $this->getFilelib()->file()->getProfile($profile);
         foreach($profile->getPlugins() as $plugin) {
             $upload = $plugin->beforeUpload($upload);
-            
-            if($this->getTimer()) {
-                $this->getTimer()->time("\tPlugin of class '" . get_class($plugin) . " did beforeUpload");    
-            }
         }
 
-        if($this->getTimer()) {
-            $this->getTimer()->time("Hook beforeUpload is done");    
-        }
-                
         $file = $this->getBackend()->upload($upload, $folder, $profile);
-        
-        if($this->getTimer()) {
-            $this->getTimer()->time("Upload is done");    
-        }
-        
-        // \Zend_Debug::dump($file);
-        
         
         if(!$file) {
             throw new \Xi\Filelib\FilelibException("Can not upload");
@@ -385,48 +334,22 @@ class FileOperator extends \Xi\Filelib\AbstractOperator
         $file->setLink($profile->getLinker()->getLink($file, true));
         
         $this->getBackend()->updateFile($file);
-
-        if($this->getTimer()) {
-            $this->getTimer()->time("Link is updated");    
-        }
-        
-                        
         
         try {
             
             $this->getFilelib()->getStorage()->store($file, $upload->getRealPath());
-
-            
-            if($this->getTimer()) {
-                $this->getTimer()->time("File is stored. Starting afterUpload hook");    
-            }
-                        
             
             foreach($file->getProfileObject()->getPlugins() as $plugin) {
                 
                 $upload = $plugin->afterUpload($file);
                 
-                if($this->getTimer()) {
-                    $this->getTimer()->time("\tPlugin of class '" . get_class($plugin) . " did afterUpload");    
-                }
-                                
             }
             
-            if($this->getTimer()) {
-                $this->getTimer()->time("Hook afterUpload is done");    
-            }
-                        
             if($this->isReadableByAnonymous($file)) {
                 $this->publish($file);
             }
             
-            if($this->getTimer()) {
-                $this->getTimer()->time("Publish hook is done");    
-            }
-            
         } catch(Exception $e) {
-
-            
             
             // Maybe log here?
             throw $e;
@@ -594,23 +517,11 @@ class FileOperator extends \Xi\Filelib\AbstractOperator
             $this->getFilelib()->getPublisher()->publish($file);    
         }                
         
-        if($this->getTimer()) {
-            $this->getTimer()->time("Starting publish hook");    
-        }
-        
         foreach($file->getProfileObject()->getPlugins() as $plugin) {
             
             $plugin->onPublish($file);
             
-            if($this->getTimer()) {
-                $this->getTimer()->time("\tPlugin of class '" . get_class($plugin) . " did publish");    
-            }
         }
-        
-        if($this->getTimer()) {
-            $this->getTimer()->time("Ending publish hook");    
-        }
-        
         
     }
     

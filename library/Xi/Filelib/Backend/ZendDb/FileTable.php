@@ -11,7 +11,7 @@ namespace Xi\Filelib\Backend\ZendDb;
  */
 class FileTable extends \Zend_Db_Table_Abstract
 {
-    protected $_name = 'emerald_filelib_file';
+    protected $_name = 'xi_filelib_file';
     protected $_id = array('id');
     protected $_rowClass = '\Xi\Filelib\Backend\ZendDb\FileRow';
 

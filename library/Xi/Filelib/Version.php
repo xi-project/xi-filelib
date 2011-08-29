@@ -13,7 +13,7 @@ final class Version
     /**
      * Current Xi Filelib version
      */
-    const VERSION = '1.0.0-beta1-dev';
+    const VERSION = '1.0.0BETA1';
 
     /**
      * Compares a Xi Filelib version with the current one.
@@ -26,6 +26,7 @@ final class Version
     {
         $currentVersion = str_replace(' ', '', strtolower(self::VERSION));
         $version = str_replace(' ', '', $version);
+
         return version_compare($version, $currentVersion);
     }
         
