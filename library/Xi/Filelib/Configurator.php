@@ -23,6 +23,7 @@ class Configurator
     public function __construct(\Xi\Filelib\FileLibrary $config)
     {
         $this->configuration = $config;
+            
     }
 
     

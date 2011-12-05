@@ -17,14 +17,14 @@ class Doctrine2Backend extends AbstractBackend
      *
      * @var string
      */
-    private $_fileEntityName = '\Xi\Filelib\Backend\Doctrine2\Entity\File';
+    private $_fileEntityName = 'Xi\Filelib\Integration\Symfony\FilelibBundle\Entity\File';
 
     /**
      * Folder entity name
      *
      * @var string
      */
-    private $_folderEntityName = '\Xi\Filelib\Backend\Doctrine2\Entity\File';
+    private $_folderEntityName = 'Xi\Filelib\Integration\Symfony\FilelibBundle\Entity\Folder';
 
     /**
      * Entity manager
@@ -318,7 +318,10 @@ class Doctrine2Backend extends AbstractBackend
         try {
             $folder = $qb->getQuery()->getSingleResult();    
         } catch(\Doctrine\ORM\NoResultException $e) {
-            $folder = new \Xi\Filelib\Backend\Doctrine2\Entity\Folder();
+            
+            $className = $this->getFolderEntityName();
+            
+            $folder = new $className();
             $folder->setName('root');
             $folder->setUrl('');
             $folder->removeParent();

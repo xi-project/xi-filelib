@@ -300,6 +300,7 @@ class FileLibrary
     public function addPlugin(Plugin\Plugin $plugin, $priority = 1000)
     {
         $plugin->setFilelib($this);
+        
         foreach($plugin->getProfiles() as $profileIdentifier) {
             $profile = $this->file()->getProfile($profileIdentifier);
             $profile->addPlugin($plugin, $priority);

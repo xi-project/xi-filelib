@@ -37,6 +37,18 @@ class ChangeFormatPlugin extends \Xi\Filelib\Plugin\AbstractPlugin
 
     }
    
+    
+    /**
+     * Sets ImageMagick options
+     *
+     * @param array $imageMagickOptions
+     */
+    public function setImageMagickOptions($imageMagickOptions)
+    {
+        $this->_imageMagickOptions = $imageMagickOptions;
+    }
+
+    
 
     /**
      * Return ImageMagick options
