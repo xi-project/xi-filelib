@@ -134,8 +134,6 @@ class FilelibExtension extends Extension
         {
                                     
             if (!isset($pluginOptions['profiles'])) {
-                
-                                
                 $pluginOptions['profiles'] = array_keys($this->configuration->getProfiles());
             }
             
@@ -148,20 +146,11 @@ class FilelibExtension extends Extension
         }
         
         
-        // Acl what to actually do?!?!?!
+        // Acl mockin' what to actually do HELP?!?!?!
         
         $definition = new Definition('Xi\\Filelib\\Acl\\SimpleAcl');
         $container->setDefinition('filelib.acl', $definition);
                 
-                
-        // die();
-        
-        
-        // $profile = new \Xi\Filelib\File\FileProfile();
-        // self::setConstructorOptions($profile, $profileOptions);
-        // $this->configuration->addProfile($profile);
-
-        
         
         // Main
         

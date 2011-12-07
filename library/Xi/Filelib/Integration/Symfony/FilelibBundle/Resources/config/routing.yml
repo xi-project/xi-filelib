@@ -1,0 +1,3 @@
+renderer:
+    pattern:  /file/render/{id}/{version}
+    defaults: { _controller: FilelibBundle:File:render, version: original }

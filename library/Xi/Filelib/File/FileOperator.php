@@ -502,7 +502,7 @@ class FileOperator extends \Xi\Filelib\AbstractOperator
             throw new \Xi\Filelib\FilelibException('File not readable', 404);
         }
 
-        readfile($res->getPathname());
+        return file_get_contents($res->getPathname());
 
     }
 

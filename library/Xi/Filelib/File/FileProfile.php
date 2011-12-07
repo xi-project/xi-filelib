@@ -160,6 +160,10 @@ class FileProfile
      */
     public function setIdentifier($identifier)
     {
+        if ($identifier === 'original') {
+            throw new Xi\Filelib\FilelibException("Invalid profile identifier '{$identifier}'");
+        }
+        
         $this->_identifier = $identifier;
     }
 
