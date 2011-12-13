@@ -129,7 +129,7 @@ class Doctrine2Backend extends AbstractBackend
      * Finds a file
      *
      * @param  integer                        $id
-     * @return \Xi\Filelib\File\File|false
+     * @return array|false
      */
     public function findFile($id)
     {
@@ -268,7 +268,7 @@ class Doctrine2Backend extends AbstractBackend
      * Finds folder
      *
      * @param  integer                          $id
-     * @return \Xi\Filelib\Folder\Folder|false
+     * @return array|false
      */
     public function findFolder($id)
     {
