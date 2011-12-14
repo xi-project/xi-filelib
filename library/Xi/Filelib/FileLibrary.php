@@ -2,7 +2,9 @@
 
 namespace Xi\Filelib;
 
-use \Xi\Filelib\Configurator, \Xi\Filelib\Cache;
+use \Xi\Filelib\Cache;
+use \Xi\Filelib\Folder\FolderOperator;
+use \Xi\Filelib\Folder\FileOperator;
 
 /**
  * Xi filelib
@@ -60,13 +62,8 @@ class FileLibrary
     
     public function __construct()
     {
-        $this->_folderOperator = new Folder\FolderOperator($this);
-        $this->_fileOperator = new File\FileOperator($this);
-        
-        if (!$this->getTempDir()) {
-            $this->setTempDir(sys_get_temp_dir());
-        }
-        
+        // $this->_folderOperator = new Folder\FolderOperator($this);
+        // $this->_fileOperator = new File\FileOperator($this);
     }
     
     /**
@@ -86,7 +83,12 @@ class FileLibrary
      */
     public function getTempDir()
     {
+        if (!$this->_tempDir) {
+            $this->setTempDir(sys_get_temp_dir());
+        }
+        
         return $this->_tempDir;
+        
     }
     
     /**
@@ -115,25 +117,80 @@ class FileLibrary
     }
 
     /**
-     * Returns file operator
+     * Shortcut to getFileOperator
      * 
      * @return \Xi\Filelib\File\FileOperator
      */
     public function file()
     {
-        return $this->_fileOperator;
+        return $this->getFileOperator();
     }
 
     /**
-     * Returns folder operator
+     * Shortcut to getFolderOperator
      * 
      * @return \Xi\Filelib\Folder\FolderOperator
      */
     public function folder()
     {
-        return $this->_folderOperator;
+        return $this->getFolderOperator();
     }
 
+    
+    /**
+     * Sets file operator
+     * 
+     * @param \Xi\Filelib\File\FileOperator $fileOperator 
+     */
+    public function setFileOperator(FileOperator $fileOperator)
+    {
+        $this->_fileOperator = $fileOperator;
+    }
+    
+    /**
+     * Sets folder operator
+     * 
+     * @param \Xi\Filelib\Folder\FolderOperator $fileOperator 
+     */
+    public function setFolderOperator(FolderOperator $folderOperator)
+    {
+        $this->_folderOperator = $folderOperator;
+    }
+        
+    /**
+     * Returns file operator
+     * 
+     * @return \Xi\Filelib\File\FileOperator
+     */
+    public function getFileOperator()
+    {
+        if (!$this->_fileOperator) {
+            $this->_fileOperator = new File\DefaultFileOperator($this);
+        }
+        
+        return $this->_fileOperator;
+    }
+
+    
+    
+    /**
+     * Returns folder operator
+     * 
+     * @return Xi\Filelib\Folder\FolderOperator 
+     */
+    public function getFolderOperator()
+    {
+        if (!$this->_folderOperator) {
+            $this->_folderOperator = new Folder\DefaultFolderOperator($this);
+        }
+        
+        return $this->_folderOperator;
+    }
+    
+    
+        
+    
+    
     /**
      * Sets fully qualified fileitem classname
      *

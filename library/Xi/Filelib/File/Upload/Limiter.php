@@ -1,20 +1,17 @@
 <?php
 
-namespace Xi\Filelib\File;
+namespace Xi\Filelib\File\Upload;
+
+use \Xi\Filelib\File\FileUpload;
+
 /**
- * Defines the file types that are allowed / denied to be uploaded
+ * Limits file types that are allowed / denied to be uploaded
  *
- * @package Xi_Filelib
  * @author pekkis
  *
  */
-class Uploader
+class Limiter
 {
-
-    /**
-     * @var \Xi\Filelib\FileLibrary
-     */
-    private $_filelib;
 
     /**
      * @var array
@@ -26,25 +23,6 @@ class Uploader
      */
     private $_denied = array();
 
-    /**
-     * Sets filelib
-     *
-     * @param \Xi\Filelib\FileLibrary $filelib
-     */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib)
-    {
-        $this->_filelib = $filelib;
-    }
-
-    /**
-     * Returns filelib
-     *
-     * @return \Xi\Filelib\FileLibrary
-     */
-    public function getFilelib()
-    {
-        return $this->_filelib;
-    }
 
     /**
      * Accept a file type. A regex or an array of regexes to accept.
@@ -125,7 +103,7 @@ class Uploader
      * @param \Xi\Filelib\File\FileUpload $upload
      * @return boolean
      */
-    public function isAccepted(\Xi\Filelib\File\FileUpload $upload)
+    public function isAccepted(FileUpload $upload)
     {
         $mimeType = $upload->getMimeType();
 
