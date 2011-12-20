@@ -5,4 +5,8 @@
             <directory>.</directory>
         </testsuite>
     </testsuites>
+
+    <php>
+        <const name="ROOT_TESTS" value="/path/to/xi-filelib/tests" />
+    </php>
 </phpunit>
