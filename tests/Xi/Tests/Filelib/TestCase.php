@@ -2,6 +2,8 @@
 
 namespace Xi\Tests\Filelib;
 
+use Xi\Filelib\FileLibrary;
+
 class TestCase extends \Xi\Tests\TestCase
 {
     
@@ -36,7 +38,7 @@ class TestCase extends \Xi\Tests\TestCase
     
     public function getMockConfiguration()
     {
-        $configuration = new \Xi\Filelib\Configuration();
+        $configuration = new FileLibrary();
         $configuration->setStorage($this->getMockStorage());
         $configuration->setAcl($this->getMockAcl());
         $configuration->setBackend($this->getMockBackend());
@@ -48,7 +50,7 @@ class TestCase extends \Xi\Tests\TestCase
     
     public function getMockFilelib()
     {
-        return new \Xi\Filelib\Filelibrary($this->getMockConfiguration());
+        return new FileLibrary($this->getMockConfiguration());
     }
     
     

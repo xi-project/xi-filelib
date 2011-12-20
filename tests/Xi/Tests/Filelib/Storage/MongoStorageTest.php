@@ -22,7 +22,10 @@ class MongoStorageTest extends \Xi\Tests\Filelib\TestCase
     
     protected function setUp()
     {
-        
+        if (!extension_loaded('mongo')) {
+            $this->markTestSkipped('MongoDB extension is not loaded.');
+        }
+
         $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1));
         
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
@@ -56,10 +59,11 @@ class MongoStorageTest extends \Xi\Tests\Filelib\TestCase
     
     protected function tearDown()
     {
-        $list = $this->mongo->listCollections();
-        foreach ($list as $collection) {
-            $collection->drop();
-        }        
+        if (extension_loaded('mongo')) {
+            foreach ($this->mongo->listCollections() as $collection) {
+                $collection->drop();
+            }
+        }
     }
     
     public function testPrefixSetAndGet()

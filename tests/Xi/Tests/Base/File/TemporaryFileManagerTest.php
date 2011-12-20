@@ -5,6 +5,10 @@ namespace Xi\Tests\Base\File;
 
 class TemporaryFileManagerTest extends \Xi\Tests\TestCase
 {
+    public function setUp()
+    {
+        $this->markTestSkipped('Xi\Base not found.');
+    }
     
     public function tearDown()
     {

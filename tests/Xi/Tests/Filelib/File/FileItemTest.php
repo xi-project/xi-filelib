@@ -2,7 +2,8 @@
 
 namespace Xi\Tests\Filelib\File;
 
-use DateTime;
+use Xi\Filelib\FileLibrary,
+    DateTime;
 
 class FileItemTest extends \PHPUnit_Framework_TestCase
 {
@@ -109,7 +110,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $lusser = $this->getMock('\Xi\Filelib\Storage\Storage');
 
         
-        $conf = new \Xi\Filelib\Configuration();
+        $conf = new FileLibrary();
         
         $conf->setStorage($lusser);
         

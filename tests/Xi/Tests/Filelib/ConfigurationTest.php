@@ -2,13 +2,15 @@
 
 namespace Xi\Tests\Filelib;
 
+use Xi\Filelib\FileLibrary;
+
 class ConfigurationTest extends \PHPUnit_Framework_TestCase
 {
     protected $configuration;
     
     public function setUp()
     {
-        $this->configuration = new \Xi\Filelib\Configuration();
+        $this->configuration = new FileLibrary();
     }
     
     
