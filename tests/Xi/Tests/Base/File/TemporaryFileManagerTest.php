@@ -1,9 +1,9 @@
 <?php
 
-namespace Emerald\Tests\Base\File;
+namespace Xi\Tests\Base\File;
 
 
-class TemporaryFileManagerTest extends \Emerald\Tests\TestCase
+class TemporaryFileManagerTest extends \Xi\Tests\TestCase
 {
     
     public function tearDown()
@@ -18,7 +18,7 @@ class TemporaryFileManagerTest extends \Emerald\Tests\TestCase
         
         copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path);
                 
-        $manager = new \Emerald\Base\File\TemporaryFileManager();
+        $manager = new \Xi\Base\File\TemporaryFileManager();
         
         $this->assertFileExists($path);
 
@@ -43,7 +43,7 @@ class TemporaryFileManagerTest extends \Emerald\Tests\TestCase
         copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path);
         copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path2);
                 
-        $manager = new \Emerald\Base\File\TemporaryFileManager();
+        $manager = new \Xi\Base\File\TemporaryFileManager();
         
         $farray = array(
             ROOT_TESTS . '/data/temp/foo.jpg' => ROOT_TESTS . '/data/temp/foo.jpg',
@@ -79,7 +79,7 @@ class TemporaryFileManagerTest extends \Emerald\Tests\TestCase
         copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path);
         copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path2);
                 
-        $manager = new \Emerald\Base\File\TemporaryFileManager();
+        $manager = new \Xi\Base\File\TemporaryFileManager();
         
         $this->assertFileExists($path);
         $this->assertFileExists($path2);
@@ -107,7 +107,7 @@ class TemporaryFileManagerTest extends \Emerald\Tests\TestCase
         copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path);
         copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path2);
                 
-        $manager = new \Emerald\Base\File\TemporaryFileManager();
+        $manager = new \Xi\Base\File\TemporaryFileManager();
         
         $this->assertFileExists($path);
         $this->assertFileExists($path2);
@@ -127,11 +127,11 @@ class TemporaryFileManagerTest extends \Emerald\Tests\TestCase
     
     /**
      * 
-     * @expectedException \Emerald\Base\File\FileException
+     * @expectedException \Xi\Base\File\FileException
      */
     public function testUnreadableRegister()
     {
-         $manager = new \Emerald\Base\File\TemporaryFileManager();
+         $manager = new \Xi\Base\File\TemporaryFileManager();
          
          $manager->registerFile("/etc/passwd");
                   
@@ -142,11 +142,11 @@ class TemporaryFileManagerTest extends \Emerald\Tests\TestCase
         
     /**
      * 
-     * @expectedException \Emerald\Base\File\FileException
+     * @expectedException \Xi\Base\File\FileException
      */
     public function testInvalidRegister()
     {
-        $manager = new \Emerald\Base\File\TemporaryFileManager();
+        $manager = new \Xi\Base\File\TemporaryFileManager();
          
         $manager->registerFile("/etc/lamantiini/manaatti/superlosoposki");
     }

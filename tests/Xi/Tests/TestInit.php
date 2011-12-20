@@ -10,10 +10,10 @@ require_once "../../../library/Zend/Loader/Autoloader.php";
 
 Zend_Loader_Autoloader::getInstance();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Emerald\Tests', __DIR__ . "/../..");
+$classLoader = new \Doctrine\Common\ClassLoader('Xi\Tests', __DIR__ . "/../..");
 $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Emerald', __DIR__ . '/../../../library');
+$classLoader = new \Doctrine\Common\ClassLoader('Xi', __DIR__ . '/../../../library');
 $classLoader->register();
 
 $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');

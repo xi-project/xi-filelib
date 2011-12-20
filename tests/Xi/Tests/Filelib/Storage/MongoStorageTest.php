@@ -1,10 +1,10 @@
 <?php
 
-namespace Emerald\Tests\Filelib\Storage;
+namespace Xi\Tests\Filelib\Storage;
 
 use \Mongo, \MongoDB;
 
-class MongoStorageTest extends \Emerald\Tests\Filelib\TestCase
+class MongoStorageTest extends \Xi\Tests\Filelib\TestCase
 {
 
     protected $mongo;
@@ -23,7 +23,7 @@ class MongoStorageTest extends \Emerald\Tests\Filelib\TestCase
     protected function setUp()
     {
         
-        $this->file = \Emerald\Filelib\File\FileItem::create(array('id' => 1));
+        $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1));
         
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
         
@@ -34,12 +34,12 @@ class MongoStorageTest extends \Emerald\Tests\Filelib\TestCase
         $mongo = new Mongo($dns, array('connect' => true));
         $this->mongo = $mongo->filelib_tests;    
                
-        $storage = new \Emerald\Filelib\Storage\GridfsStorage();
+        $storage = new \Xi\Filelib\Storage\GridfsStorage();
         $storage->setMongo($this->mongo);
         
         $this->storage = $storage;
         
-        $vp = $this->getMock('\Emerald\Filelib\Plugin\VersionProvider\VersionProvider');
+        $vp = $this->getMock('\Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $vp->expects($this->any())
              ->method('getIdentifier')
              ->will($this->returnValue('xoo'));
@@ -73,7 +73,7 @@ class MongoStorageTest extends \Emerald\Tests\Filelib\TestCase
     
     public function ytestRootGetAndSet()
     {
-        $storage = new \Emerald\Filelib\Storage\FilesystemStorage();
+        $storage = new \Xi\Filelib\Storage\FilesystemStorage();
         $this->assertNull($storage->getRoot());
         $storage->setRoot(ROOT_TESTS . '/data');     
 
@@ -93,9 +93,9 @@ class MongoStorageTest extends \Emerald\Tests\Filelib\TestCase
     
     public function ytestDirectoryCalculatorGetAndSet()
     {
-         $storage = new \Emerald\Filelib\Storage\FilesystemStorage();
+         $storage = new \Xi\Filelib\Storage\FilesystemStorage();
 
-         $dc = $this->getMock('\Emerald\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
          $dc->expects($this->any())
              ->method('calculateDirectoryId')
              ->will($this->returnValue('1'));
@@ -114,7 +114,7 @@ class MongoStorageTest extends \Emerald\Tests\Filelib\TestCase
     
     public function ytestDirectoryIdCalculationWithoutCaching()
     {
-        $dc = $this->getMock('\Emerald\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+        $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->exactly(3))
              ->method('calculateDirectoryId')
              ->will($this->returnValue('1'));
@@ -132,7 +132,7 @@ class MongoStorageTest extends \Emerald\Tests\Filelib\TestCase
     
     public function ytestDirectoryIdCalculationWithCaching()
     {
-        $dc = $this->getMock('\Emerald\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+        $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->exactly(1))
              ->method('calculateDirectoryId')
              ->will($this->returnValue('1'));
@@ -159,7 +159,7 @@ class MongoStorageTest extends \Emerald\Tests\Filelib\TestCase
          $this->assertFileEquals($this->fileResource, $this->storage->getRoot() . '/1/1');
          
          $retrieved = $this->storage->retrieve($this->file);
-         $this->assertInstanceof('\Emerald\Base\Spl\FileObject', $retrieved);
+         $this->assertInstanceof('\Xi\Base\Spl\FileObject', $retrieved);
          $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
          
          $this->storage->delete($this->file);
@@ -176,7 +176,7 @@ class MongoStorageTest extends \Emerald\Tests\Filelib\TestCase
          $this->assertFileEquals($this->fileResource, $this->storage->getRoot() . '/1/xoo/1');
                   
          $retrieved = $this->storage->retrieveVersion($this->file, $this->versionProvider);
-         $this->assertInstanceof('\Emerald\Base\Spl\FileObject', $retrieved);
+         $this->assertInstanceof('\Xi\Base\Spl\FileObject', $retrieved);
          $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
                   
          $this->storage->deleteVersion($this->file, $this->versionProvider);

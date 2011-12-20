@@ -1,6 +1,6 @@
 <?php
 
-namespace Emerald\Tests\Base;
+namespace Xi\Tests\Base;
 
 
 class Phaker
@@ -22,14 +22,14 @@ class Phaker
 
 
 
-class OptionsTest extends \Emerald\Tests\TestCase
+class OptionsTest extends \Xi\Tests\TestCase
 {
 
 
     public function testSetOptions()
     {
         
-        $mock = $this->getMock('\Emerald\Tests\Base\Phaker');
+        $mock = $this->getMock('\Xi\Tests\Base\Phaker');
         $mock->expects($this->once())
              ->method('setPuuppa')
              ->with('tussi')
@@ -45,14 +45,14 @@ class OptionsTest extends \Emerald\Tests\TestCase
             'loco' => 'looooso'
         );
         
-        \Emerald\Base\Options::setOptions($mock, $arr);
+        \Xi\Base\Options::setOptions($mock, $arr);
         
     }
 
     
     public function testSetOptionsEmpty()
     {
-        $mock = $this->getMock('\Emerald\Tests\Base\Phaker');
+        $mock = $this->getMock('\Xi\Tests\Base\Phaker');
         $mock->expects($this->exactly(0))
              ->method('setPuuppa')
              ->will($this->returnValue('1'))
@@ -64,7 +64,7 @@ class OptionsTest extends \Emerald\Tests\TestCase
              
         $arr = array();
         
-        \Emerald\Base\Options::setOptions($mock, $arr);
+        \Xi\Base\Options::setOptions($mock, $arr);
         
     }
     
@@ -73,7 +73,7 @@ class OptionsTest extends \Emerald\Tests\TestCase
      */ 
     public function testSetOptionsInvalid()
     {
-        $mock = $this->getMock('\Emerald\Tests\Base\Phaker');
+        $mock = $this->getMock('\Xi\Tests\Base\Phaker');
         $mock->expects($this->exactly(0))
              ->method('setPuuppa')
              ->will($this->returnValue('1'))
@@ -85,7 +85,7 @@ class OptionsTest extends \Emerald\Tests\TestCase
              
         $arr = array();
         
-        \Emerald\Base\Options::setOptions($mock, 'lussutilukset');
+        \Xi\Base\Options::setOptions($mock, 'lussutilukset');
     }
     
     

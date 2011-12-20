@@ -1,6 +1,6 @@
 <?php
 
-namespace Emerald\Tests\Filelib\File;
+namespace Xi\Tests\Filelib\File;
 
 use DateTime;
 
@@ -38,7 +38,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
      */
     public function testFromArray($data)
     {
-        $file = new \Emerald\Filelib\File\FileItem();
+        $file = new \Xi\Filelib\File\FileItem();
         $file->fromArray($data);
 
         $map = array(
@@ -64,7 +64,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         
     public function testToArray()
     {
-        $file = new \Emerald\Filelib\File\FileItem();
+        $file = new \Xi\Filelib\File\FileItem();
         $file->setId(1);
         $file->setFolderId(655);
         $file->setMimeType('tussi/lussutus');
@@ -87,7 +87,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         ));
 
         
-        $file = new \Emerald\Filelib\File\FileItem();
+        $file = new \Xi\Filelib\File\FileItem();
         $this->assertEquals($file->toArray(), array(
             'id' => null,
             'folder_id' => null,
@@ -106,10 +106,10 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
     public function testFilelibSetAndGet()
     {
 
-        $lusser = $this->getMock('\Emerald\Filelib\Storage\Storage');
+        $lusser = $this->getMock('\Xi\Filelib\Storage\Storage');
 
         
-        $conf = new \Emerald\Filelib\Configuration();
+        $conf = new \Xi\Filelib\Configuration();
         
         $conf->setStorage($lusser);
         
