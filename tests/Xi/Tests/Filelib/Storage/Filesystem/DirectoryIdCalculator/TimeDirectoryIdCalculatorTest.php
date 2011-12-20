@@ -1,6 +1,6 @@
 <?php
 
-namespace Emerald\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
+namespace Xi\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use \DateTime;
 
@@ -13,8 +13,8 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
     
     protected function setUp()
     {
-        $this->calc = new \Emerald\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator();
-        $this->file = new \Emerald\Filelib\File\FileItem();
+        $this->calc = new \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator();
+        $this->file = new \Xi\Filelib\File\FileItem();
     }
     
     public function testDifferentFormats()
@@ -34,7 +34,7 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
     
     /**
      * 
-     * @expectedException \Emerald\Filelib\FilelibException
+     * @expectedException \Xi\Filelib\FilelibException
      */
     public function testNullDateUploaded()
     {
