@@ -1,8 +1,8 @@
 <?php
 
-namespace Emerald\Tests\Filelib\Storage;
+namespace Xi\Tests\Filelib\Storage;
 
-class AbstractStorageTest extends \Emerald\Tests\Filelib\TestCase
+class AbstractStorageTest extends \Xi\Tests\Filelib\TestCase
 {
     
     public function testTest()

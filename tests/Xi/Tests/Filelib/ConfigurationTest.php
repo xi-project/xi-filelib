@@ -1,6 +1,8 @@
 <?php
 
-namespace Emerald\Tests\Filelib;
+namespace Xi\Tests\Filelib;
+
+use Xi\Filelib\FileLibrary;
 
 class ConfigurationTest extends \PHPUnit_Framework_TestCase
 {
@@ -8,7 +10,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->configuration = new \Emerald\Filelib\Configuration();  
+        $this->configuration = new FileLibrary();
     }
     
     
@@ -17,7 +19,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertNull($this->configuration->getBackend());
 
-        $backend = new \Emerald\Filelib\Backend\ZendDbBackend();
+        $backend = new \Xi\Filelib\Backend\ZendDbBackend();
 
         $this->configuration->setBackend($backend);
         
@@ -31,7 +33,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertNull($this->configuration->getStorage());
 
-        $storage = new \Emerald\Filelib\Storage\FilesystemStorage();
+        $storage = new \Xi\Filelib\Storage\FilesystemStorage();
 
         $this->configuration->setStorage($storage);
         

@@ -1,14 +1,16 @@
 <?php
 
-namespace Emerald\Tests\Filelib;
+namespace Xi\Tests\Filelib;
 
-class TestCase extends \Emerald\Tests\TestCase
+use Xi\Filelib\FileLibrary;
+
+class TestCase extends \Xi\Tests\TestCase
 {
     
     
     public function getMockAcl()
     {
-        $acl = $this->getMock('\Emerald\Filelib\Acl\Acl');
+        $acl = $this->getMock('\Xi\Filelib\Acl\Acl');
         return $acl;
         
     }
@@ -16,27 +18,27 @@ class TestCase extends \Emerald\Tests\TestCase
     
     public function getMockStorage()
     {
-        $storage = $this->getMockForAbstractClass('\Emerald\Filelib\Storage\AbstractStorage');
+        $storage = $this->getMockForAbstractClass('\Xi\Filelib\Storage\AbstractStorage');
         return $storage;
     }
 
     
     public function getMockBackend()
     {
-        $backend = $this->getMockForAbstractClass('\Emerald\Filelib\Backend\AbstractBackend');
+        $backend = $this->getMockForAbstractClass('\Xi\Filelib\Backend\AbstractBackend');
         return $backend;
     }
     
     
     public function getMockPublisher()
     {
-        $backend = $this->getMockForAbstractClass('\Emerald\Filelib\Publisher\AbstractPublisher');
+        $backend = $this->getMockForAbstractClass('\Xi\Filelib\Publisher\AbstractPublisher');
         return $backend;
     }
     
     public function getMockConfiguration()
     {
-        $configuration = new \Emerald\Filelib\Configuration();
+        $configuration = new FileLibrary();
         $configuration->setStorage($this->getMockStorage());
         $configuration->setAcl($this->getMockAcl());
         $configuration->setBackend($this->getMockBackend());
@@ -48,7 +50,7 @@ class TestCase extends \Emerald\Tests\TestCase
     
     public function getMockFilelib()
     {
-        return new \Emerald\Filelib\Filelibrary($this->getMockConfiguration());    
+        return new FileLibrary($this->getMockConfiguration());
     }
     
     

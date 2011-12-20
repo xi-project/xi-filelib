@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit bootstrap="bootstrap.php" colors="true">
+    <testsuites>
+        <testsuite name="xi-filelib tests">
+            <directory>.</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <const name="ROOT_TESTS" value="/path/to/xi-filelib/tests" />
+    </php>
+</phpunit>
