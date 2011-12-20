@@ -44,6 +44,12 @@ class Configuration implements ConfigurationInterface
                             ->isRequired()
                         ->end()
                 
+                        ->scalarNode('fileEntity')
+                        ->end()
+
+                        ->scalarNode('folderEntity')
+                        ->end()
+                
                         ->scalarNode('type')
                             ->isRequired()
                         ->end()

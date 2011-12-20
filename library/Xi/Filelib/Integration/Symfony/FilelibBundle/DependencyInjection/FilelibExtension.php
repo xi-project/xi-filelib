@@ -67,9 +67,18 @@ class FilelibExtension extends Extension
         $backend->addMethodCall('setEntityManager', array(
             new Reference($config['backend']['key'])
         ));
-        $backend->addMethodCall('setFolderEntityName', array('Xi\\Filelib\\Integration\\Symfony\\FilelibBundle\\Entity\\Folder'));
-        $backend->addMethodCall('setFileEntityName', array('Xi\\Filelib\\Integration\\Symfony\\FilelibBundle\\Entity\\File'));
-
+        
+        
+        if (isset($config['backend']['folderEntity'])) {
+        
+           $backend->addMethodCall('setFolderEntityName', array($config['backend']['folderEntity']));
+        }
+        
+        if (isset($config['backend']['fileEntity'])) {
+            $backend->addMethodCall('setFileEntityName', array($config['backend']['fileEntity']));
+        }
+                
+        
         // Storage
         
         // Dir id calc
