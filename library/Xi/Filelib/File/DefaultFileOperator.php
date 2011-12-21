@@ -223,11 +223,11 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      * Gets a new upload
      *
      * @param string $path Path to upload file
-     * @return \Xi\Filelib\File\FileUpload
+     * @return \Xi\Filelib\File\Upload\FileUpload
      */
     public function prepareUpload($path)
     {
-        $upload = new \Xi\Filelib\File\FileUpload($path);
+        $upload = new \Xi\Filelib\File\Upload\FileUpload($path);
         $upload->setFilelib($this->getFilelib());
         return $upload;
     }
@@ -250,7 +250,6 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
                 throw new \Xi\Filelib\FilelibException('Invalid upload detected in batch');
             }
         }
-        
                 
         $ret = new \ArrayIterator(array());
         foreach ($batch as $item) {
@@ -280,53 +279,11 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             throw new \Xi\Filelib\FilelibException('Invalid folder supplied for upload');
         }
         
-        if(!$upload instanceof \Xi\Filelib\File\FileUpload) {
+        if(!$upload instanceof \Xi\Filelib\File\Upload\FileUpload) {
             $upload = $this->prepareUpload($upload);
         }
 
-        if(!$this->getFilelib()->getAcl()->isWriteable($folder)) {
-            throw new \Xi\Filelib\FilelibException("Folder '{$folder->getId()}'not writeable");
-        }
-        
-        $profile = $this->getFilelib()->file()->getProfile($profile);
-        foreach($profile->getPlugins() as $plugin) {
-            $upload = $plugin->beforeUpload($upload);
-        }
-
-        $file = $this->getBackend()->upload($upload, $folder, $profile);
-        
-        if(!$file) {
-            throw new \Xi\Filelib\FilelibException("Can not upload");
-        }
-
-        $file = $this->_fileItemFromArray($file);
-        
-        $file->setLink($profile->getLinker()->getLink($file, true));
-        
-        $this->getBackend()->updateFile($file);
-        
-        try {
-            
-            $this->getFilelib()->getStorage()->store($file, $upload->getRealPath());
-            
-            foreach($file->getProfileObject()->getPlugins() as $plugin) {
-                
-                $upload = $plugin->afterUpload($file);
-                
-            }
-            
-            if($this->isReadableByAnonymous($file)) {
-                $this->publish($file);
-            }
-            
-        } catch(Exception $e) {
-            
-            // Maybe log here?
-            throw $e;
-        }
-
-
-        return $file;
+        return $upload->upload($folder, $profile);
     }
 
 
@@ -413,7 +370,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         }
         
         
-        if(isset($opts['version'])) {
+        if (isset($opts['version']) && $opts['version'] !== 'original') {
             $version = $opts['version'];
             
             if(!$this->hasVersion($file, $version)) {
@@ -452,7 +409,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             throw new \Xi\Filelib\FilelibException('Not readable', 404);
         }
         
-        if(isset($opts['version'])) {
+        if (isset($opts['version']) && $opts['version'] !== 'original') {
             $version = $opts['version'];
             if(!$this->hasVersion($file, $version)) {
                 throw new \Xi\Filelib\FilelibException("Version '{$version}' is not available");

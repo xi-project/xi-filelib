@@ -81,7 +81,7 @@ class ChangeFormatPlugin extends \Xi\Filelib\Plugin\AbstractPlugin
     }
     
     
-    public function beforeUpload(\Xi\Filelib\File\FileUpload $upload)
+    public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload)
     {
         $mimetype = $upload->getMimeType();
         

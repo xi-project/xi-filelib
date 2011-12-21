@@ -38,7 +38,7 @@ class RandomizeNamePlugin extends \Xi\Filelib\Plugin\AbstractPlugin
         return $this->_prefix;
     }
 
-    public function beforeUpload(\Xi\Filelib\File\FileUpload $upload)
+    public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload)
     {
         $pinfo = pathinfo($upload->getOverrideFilename());
         $newname = uniqid($this->getPrefix(), false);

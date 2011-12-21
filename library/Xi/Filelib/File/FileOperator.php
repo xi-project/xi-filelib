@@ -79,7 +79,7 @@ interface FileOperator
      * Gets a new upload
      *
      * @param string $path Path to upload file
-     * @return \Xi\Filelib\File\FileUpload
+     * @return \Xi\Filelib\File\Upload\FileUpload
      */
     public function prepareUpload($path);
     

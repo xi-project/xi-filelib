@@ -50,10 +50,10 @@ interface Plugin
     /**
      * Runs before upload
      *
-     * @param \Xi\Filelib\File\FileUpload $upload
-     * @return \Xi\Filelib\File\FileUpload
+     * @param \Xi\Filelib\File\Upload\FileUpload $upload
+     * @return \Xi\Filelib\File\Upload\FileUpload
      */
-    public function beforeUpload(\Xi\Filelib\File\FileUpload $upload);
+    public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload);
 
     /**
      * Runs after succesful upload.

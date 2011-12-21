@@ -440,12 +440,12 @@ class Doctrine2Backend extends AbstractBackend
     /**
      * Uploads a file
      *
-     * @param  \Xi\Filelib\File\FileUpload $upload Fileobject to upload
+     * @param  \Xi\Filelib\File\Upload\FileUpload $upload Fileobject to upload
      * @param  \Xi\Filelib\Folder\Folder $folder Folder
      * @return \Xi\Filelib\File\File   File item
      * @throws \Xi\Filelib\FilelibException  When fails
      */
-    public function upload(\Xi\Filelib\File\FileUpload $upload,
+    public function upload(\Xi\Filelib\File\Upload\FileUpload $upload,
     \Xi\Filelib\Folder\Folder $folder,
     \Xi\Filelib\File\FileProfile $profile
     ){

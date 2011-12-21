@@ -71,7 +71,7 @@ abstract class AbstractPlugin implements \Xi\Filelib\Plugin\Plugin
     public function init()
     { }
 
-    public function beforeUpload(\Xi\Filelib\File\FileUpload $upload)
+    public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload)
     {
         return $upload;
     }

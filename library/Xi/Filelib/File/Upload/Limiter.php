@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\File\Upload;
 
-use \Xi\Filelib\File\FileUpload;
+use \Xi\Filelib\File\Upload\FileUpload;
 
 /**
  * Limits file types that are allowed / denied to be uploaded
@@ -100,7 +100,7 @@ class Limiter
     /**
      * Returns whether a file upload may be uploaded
      * 
-     * @param \Xi\Filelib\File\FileUpload $upload
+     * @param \Xi\Filelib\File\Upload\FileUpload $upload
      * @return boolean
      */
     public function isAccepted(FileUpload $upload)

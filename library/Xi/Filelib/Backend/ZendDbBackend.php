@@ -188,7 +188,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
     }
 
-    public function upload(\Xi\Filelib\File\FileUpload $upload, \Xi\Filelib\Folder\Folder $folder, \Xi\Filelib\File\FileProfile $profile)
+    public function upload(\Xi\Filelib\File\Upload\FileUpload $upload, \Xi\Filelib\Folder\Folder $folder, \Xi\Filelib\File\FileProfile $profile)
     {
         try {
                         

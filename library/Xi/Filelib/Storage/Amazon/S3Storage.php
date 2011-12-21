@@ -91,7 +91,6 @@ class S3Storage extends \Xi\Filelib\Storage\AbstractStorage implements \Xi\Filel
     /**
      * Stores an uploaded file
      * 
-     * @param \Xi\Filelib\File\FileUpload $upload
      * @param \Xi\Filelib\File\File $file
      */
     public function store(\Xi\Filelib\File\File $file, $tempFile)
