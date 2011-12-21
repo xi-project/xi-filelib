@@ -1,15 +1,170 @@
-Unstaged changes after reset:
-M	library/Xi/Filelib/Backend/Backend.php
-M	library/Xi/Filelib/Backend/Doctrine2Backend.php
-M	library/Xi/Filelib/Backend/MongoBackend.php
-M	library/Xi/Filelib/Backend/ZendDbBackend.php
-M	library/Xi/Filelib/File/DefaultFileOperator.php
-M	library/Xi/Filelib/File/FileOperator.php
-M	library/Xi/Filelib/File/FileUpload.php
-M	library/Xi/Filelib/File/Upload/FileUpload.php
-M	library/Xi/Filelib/File/Upload/Limiter.php
-M	library/Xi/Filelib/Plugin/AbstractPlugin.php
-M	library/Xi/Filelib/Plugin/Image/ChangeFormatPlugin.php
-M	library/Xi/Filelib/Plugin/Plugin.php
-M	library/Xi/Filelib/Plugin/RandomizeNamePlugin.php
-M	library/Xi/Filelib/Storage/Amazon/S3Storage.php
+<?php
+
+namespace Xi\Filelib\File\Upload;
+
+use \Xi\Filelib\Folder\Folder;
+
+/**
+ * Uploadable file
+ *
+ * @package Xi_Filelib
+ * @author pekkis
+ *
+ */
+class FileUpload extends \Xi\Filelib\File\FileObject
+{
+    /**
+     * @var string Override filename
+     */
+    private $_overrideFilename;
+
+    /**
+     * @var \Xi_Filelib_Filelib
+     */
+    private $_filelib;
+
+    /**
+     * @var \DateTime
+     */
+    private $_dateUploaded;
+
+    
+    private $_temporary = false;
+    
+    
+    /**
+     * Sets filelib
+     *
+     * @param \Xi_Filelib $filelib
+     */
+    public function setFilelib(\Xi\Filelib\FileLibrary $filelib)
+    {
+        $this->_filelib = $filelib;
+    }
+
+    /**
+     * Returns filelib
+     *
+     * @return \Xi\Filelib\FileLibrary
+     */
+    public function getFilelib()
+    {
+        return $this->_filelib;
+    }
+
+    /**
+     * Overrides real filename
+     *
+     * @param string Overriding filename
+     */
+    public function setOverrideFilename($filename)
+    {
+        $this->_overrideFilename = $filename;
+    }
+
+    /**
+     * Returns filename, overridden if defined, default if not
+     *
+     * @return string Filename
+     *
+     */
+    public function getOverrideFilename()
+    {
+        return ($this->_overrideFilename) ? $this->_overrideFilename : $this->getFilename();
+    }
+    
+    /**
+     * Returns upload date
+     * 
+     * @return \DateTime
+     */
+    public function getDateUploaded()
+    {
+        if(!$this->_dateUploaded) {
+            $this->_dateUploaded = new \DateTime();
+        }
+        return $this->_dateUploaded;
+    }
+    
+    /**
+     * Sets upload date
+     * 
+     * @param \DateTime $dateUploaded
+     */
+    public function setDateUploaded(\DateTime $dateUploaded)
+    {
+        $this->_dateUploaded = $dateUploaded;
+    }
+    
+    
+    
+    public function setTemporary($temporary)
+    {
+        $this->_temporary = $temporary;
+    }
+
+    
+    public function isTemporary()
+    {
+        return $this->_temporary;
+    }
+
+    
+    public function __destruct()
+    {
+        if ($this->isTemporary()) {
+            unlink($this->getRealPath());
+        }
+    }
+    
+    
+    public function upload(Folder $folder, $profile = 'default')
+    {
+        
+        if (!$this->getFilelib()->getAcl()->isWriteable($folder)) {
+            throw new \Xi\Filelib\FilelibException("Folder '{$folder->getId()}'not writeable");
+        }
+        
+        $profile = $this->getFilelib()->file()->getProfile($profile);
+        foreach($profile->getPlugins() as $plugin) {
+            $upload = $plugin->beforeUpload($this);
+        }
+
+        $file = $this->getFilelib()->getBackend()->upload($this, $folder, $profile);
+        
+        if(!$file) {
+            throw new \Xi\Filelib\FilelibException("Can not upload");
+        }
+
+        $file = $this->getFilelib()->getFileOperator()->getInstance($file);
+        
+        $file->setLink($profile->getLinker()->getLink($file, true));
+        
+        $this->getFilelib()->getBackend()->updateFile($file);
+        
+        try {
+            
+            $this->getFilelib()->getStorage()->store($file, $this->getRealPath());
+            
+            foreach($file->getProfileObject()->getPlugins() as $plugin) {
+                $upload = $plugin->afterUpload($file);
+            }
+            
+            if($this->getFilelib()->getAcl()->isReadableByAnonymous($file)) {
+                $this->getFilelib()->getFileOperator()->publish($file);
+            }
+            
+        } catch(Exception $e) {
+            
+            // Maybe log here?
+            throw $e;
+        }
+
+
+        return $file;
+
+    }
+    
+    
+
+}
