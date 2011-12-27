@@ -2,12 +2,17 @@
 
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
+use \DateTime,
+    Xi\Filelib\FilelibException,
+    Xi\Filelib\File\File
+    ;
+
 class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
 {
     /**
      * @var string
      */
-    private $_format = 'Y/m/d';
+    private $format = 'Y/m/d';
     
     
     /**
@@ -17,7 +22,7 @@ class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
      */
     public function setFormat($format)
     {
-        $this->_format = $format;
+        $this->format = $format;
     }
         
     /**
@@ -27,15 +32,15 @@ class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
      */
     public function getFormat()
     {
-        return $this->_format;
+        return $this->format;
     }
     
-    public function calculateDirectoryId(\Xi\Filelib\File\File $file)
+    public function calculateDirectoryId(File $file)
     {
         $dt = $file->getDateUploaded();
         
-        if(!($dt instanceof \DateTime)) {
-            throw new \Xi\Filelib\FilelibException("Upload date not set in file");
+        if(!($dt instanceof DateTime)) {
+            throw new FilelibException("Upload date not set in file");
         }
         
         $path = $dt->format($this->getFormat());

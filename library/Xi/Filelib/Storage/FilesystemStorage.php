@@ -2,6 +2,17 @@
 
 namespace Xi\Filelib\Storage;
 
+use \Xi\Filelib\FileLibrary,
+    \Xi\Filelib\Storage\Storage,
+    \Xi\Filelib\Storage\AbstractStorage,
+    \Xi\Filelib\File\File,
+    \Xi\Filelib\Configurator,
+    \Xi\Filelib\File\FileObject,
+    \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator,
+    \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+    ;
+    
+
 /**
  * Stores files in a filesystem
  * 
@@ -9,83 +20,101 @@ namespace Xi\Filelib\Storage;
  * @package Xi_Filelib
  *
  */
-class FilesystemStorage extends \Xi\Filelib\Storage\AbstractStorage implements \Xi\Filelib\Storage\Storage
+class FilesystemStorage extends AbstractStorage implements Storage
 {
     /**
      * @var string Physical root
      */
-    private $_root;
+    private $root;
 
     /**
      * @var integer Octal representation for directory permissions
      */
-    private $_directoryPermission = 0700;
+    private $directoryPermission = 0700;
 
     /**
      * @var integer Octal representation for file permissions
      */
-    private $_filePermission = 0600;
+    private $filePermission = 0600;
     
     /**
-     * @var \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator
+     * @var DirectoryIdCalculator
      */
-    private $_directoryIdCalculator;
+    private $directoryIdCalculator;
     
     /**
      * @var boolean Do we cache calculated directory ids?
      */
-    private $_cacheDirectoryIds = true;
+    private $cacheDirectoryIds = true;
     
     public function __construct($options = array())
     {
-        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
+        Configurator::setConstructorOptions($this, $options);
     }
     
-    
+    /**
+     * Sets caching of directory ids
+     * 
+     * @param boolean $cacheDirectoryIds
+     * @return FilesystemStorage 
+     */
     public function setCacheDirectoryIds($cacheDirectoryIds)
     {
-        $this->_cacheDirectoryIds = $cacheDirectoryIds;
+        $this->cacheDirectoryIds = $cacheDirectoryIds;
+        return $this;
     }
-    
-    
+
+    /**
+     * Returns whether caching of ids is turned on
+     * 
+     * @return boolean 
+     */
     public function getCacheDirectoryIds()
     {
-        return $this->_cacheDirectoryIds;
+        return $this->cacheDirectoryIds;
     }
         
     
     /**
      * Sets directory id calculator
      * 
-     * @param Filesystem\DirectoryIdCalculator\DirectoryIdCalculator $directoryIdCalculator
+     * @param DirectoryIdCalculator $directoryIdCalculator
+     * @return FilesystemStorage
      */
-    public function setDirectoryIdCalculator(Filesystem\DirectoryIdCalculator\DirectoryIdCalculator $directoryIdCalculator)
+    public function setDirectoryIdCalculator(DirectoryIdCalculator $directoryIdCalculator)
     {
-        $this->_directoryIdCalculator = $directoryIdCalculator;
+        $this->directoryIdCalculator = $directoryIdCalculator;
+        return $this;
     }
     
     
     /**
      * Returns directory id calculator
      * 
-     * @return \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator
+     * @return DirectoryIdCalculator
      */
     public function getDirectoryIdCalculator()
     {
-        return $this->_directoryIdCalculator;
+        return $this->directoryIdCalculator;
     }
     
-    
-    public function getDirectoryId(\Xi\Filelib\File\File $file)
+    /**
+     *
+     * Returns directory id for a file
+     * 
+     * @param File $file
+     * @return string 
+     */
+    public function getDirectoryId(File $file)
     {
         if(!$this->getCacheDirectoryIds()) {
             return $this->getDirectoryIdCalculator()->calculateDirectoryId($file);    
         }
         
-        if(!isset($this->_cache[$file->getId()])) {
-            $this->_cache[$file->getId()] = $this->getDirectoryIdCalculator()->calculateDirectoryId($file);
+        if(!isset($this->cache[$file->getId()])) {
+            $this->cache[$file->getId()] = $this->getDirectoryIdCalculator()->calculateDirectoryId($file);
         }
-        return $this->_cache[$file->getId()];
+        return $this->cache[$file->getId()];
     }
     
     
@@ -94,11 +123,11 @@ class FilesystemStorage extends \Xi\Filelib\Storage\AbstractStorage implements \
      * Sets directory permission
      *
      * @param integer $directoryPermission
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @return FilesystemStorage
      */
     public function setDirectoryPermission($directoryPermission)
     {
-        $this->_directoryPermission = octdec($directoryPermission);
+        $this->directoryPermission = octdec($directoryPermission);
         return $this;
     }
 
@@ -109,18 +138,18 @@ class FilesystemStorage extends \Xi\Filelib\Storage\AbstractStorage implements \
      */
     public function getDirectoryPermission()
     {
-        return $this->_directoryPermission;
+        return $this->directoryPermission;
     }
 
     /**
      * Sets file permission
      *
      * @param integer $filePermission
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @return FilesystemStorage
      */
     public function setFilePermission($filePermission)
     {
-        $this->_filePermission = octdec($filePermission);
+        $this->filePermission = octdec($filePermission);
         return $this;
     }
 
@@ -131,18 +160,18 @@ class FilesystemStorage extends \Xi\Filelib\Storage\AbstractStorage implements \
      */
     public function getFilePermission()
     {
-        return $this->_filePermission;
+        return $this->filePermission;
     }
 
     /**
      * Sets root
      *
      * @param string $root
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @return FilesystemStorage
      */
     public function setRoot($root)
     {
-        $this->_root = $root;
+        $this->root = $root;
     }
 
     /**
@@ -152,10 +181,10 @@ class FilesystemStorage extends \Xi\Filelib\Storage\AbstractStorage implements \
      */
     public function getRoot()
     {
-        return $this->_root;
+        return $this->root;
     }
     
-    public function store(\Xi\Filelib\File\File $file, $tempFile)
+    public function store(File $file, $tempFile)
     {
         $root = $this->getRoot();
         $dir = $root . '/' . $this->getDirectoryId($file);
@@ -165,7 +194,7 @@ class FilesystemStorage extends \Xi\Filelib\Storage\AbstractStorage implements \
         }
 
         if(!is_dir($dir) || !is_writable($dir)) {
-            throw new \Xi\Filelib\FilelibException("Could not write into directory", 500);
+            throw new FilelibException("Could not write into directory", 500);
         }
             
         $fileTarget = $dir . '/' . $file->getId();
@@ -174,11 +203,11 @@ class FilesystemStorage extends \Xi\Filelib\Storage\AbstractStorage implements \
         chmod($fileTarget, $this->getFilePermission());
             
         if(!is_readable($fileTarget)) {
-            throw new \Xi\Filelib\FilelibException('Could not copy file to folder');
+            throw new FilelibException('Could not copy file to folder');
         }
     }
     
-    public function storeVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version, $tempFile)
+    public function storeVersion(File $file, VersionProvider $version, $tempFile)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version->getIdentifier();
                  
@@ -189,44 +218,44 @@ class FilesystemStorage extends \Xi\Filelib\Storage\AbstractStorage implements \
         copy($tempFile, $path . '/' . $file->getId());
     }
     
-    public function retrieve(\Xi\Filelib\File\File $file)
+    public function retrieve(File $file)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $file->getId();
         
         if(!is_file($path)) {
-            throw new \Xi\Filelib\FilelibException('Could not retrieve file');
+            throw new FilelibException('Could not retrieve file');
         }
         
-        return new \Xi\Filelib\File\FileObject($path);
+        return new FileObject($path);
     }
     
-    public function retrieveVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function retrieveVersion(File $file, VersionProvider $version)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version->getIdentifier() . '/' . $file->getId();
         
         if(!is_file($path)) {
-            throw new \Xi\Filelib\FilelibException('Could not retrieve file');
+            throw new FilelibException('Could not retrieve file');
         }
         
-        return new \Xi\Filelib\File\FileObject($path);
+        return new FileObject($path);
     }
     
-    public function delete(\Xi\Filelib\File\File $file)
+    public function delete(File $file)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $file->getId();
             
-        $fileObj = new \SplFileObject($path);
+        $fileObj = new FileObject($path);
         
         if(!$fileObj->isFile() || !$fileObj->isWritable()) {
-            throw new \Xi\Filelib\FilelibException('Can not delete file');
+            throw new FilelibException('Can not delete file');
         }
         if(!@unlink($fileObj->getPathname())) {
-            throw new \Xi\Filelib\FilelibException('Can not delete file');
+            throw new FilelibException('Can not delete file');
         }
     }
     
     
-    public function deleteVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function deleteVersion(File $file, VersionProvider $version)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version->getIdentifier() . '/' . $file->getId();
         unlink($path);

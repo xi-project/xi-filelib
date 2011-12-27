@@ -2,11 +2,13 @@
 
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
+use Xi\Filelib\Configurator;
+
 abstract class AbstractDirectoryIdCalculator implements DirectoryIdCalculator
 {
     public function __construct($options = array())
     {
-        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
+        Configurator::setConstructorOptions($this, $options);
     }
     
 }

@@ -2,6 +2,12 @@
 
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
+use Xi\Filelib\FileLibrary,
+    Xi\Filelib\File\File,
+    Xi\Filelib\FilelibException
+    ;
+
+
 /**
  * Creates directories in a leveled hierarchy based on a numeric file id
  * 
@@ -14,22 +20,22 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     /**
      * @var integer Files per directory
      */
-    private $_filesPerDirectory = 500;
+    private $filesPerDirectory = 500;
 
     /**
      * @var integer Levels in directory structure
      */
-    private $_directoryLevels = 1;
+    private $directoryLevels = 1;
 
     /**
      * Sets files per directory
      *
      * @param integer $filesPerDirectory
-     * @return \Xi\Filelib\FileLibrary
+     * @return LeveledDirectoryCalculator
      */
     public function setFilesPerDirectory($filesPerDirectory)
     {
-        $this->_filesPerDirectory = $filesPerDirectory;
+        $this->filesPerDirectory = $filesPerDirectory;
         return $this;
     }
 
@@ -40,18 +46,18 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
      */
     public function getFilesPerDirectory()
     {
-        return $this->_filesPerDirectory;
+        return $this->filesPerDirectory;
     }
 
     /**
      * Sets levels per directory hierarchy
      *
      * @param integer $directoryLevels
-     * @return \Xi\Filelib\FileLibrary
+     * @return LeveledDirectoryCalculator
      */
     public function setDirectoryLevels($directoryLevels)
     {
-        $this->_directoryLevels = $directoryLevels;
+        $this->directoryLevels = $directoryLevels;
         return $this;
     }
 
@@ -62,13 +68,13 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
      */
     public function getDirectoryLevels()
     {
-        return $this->_directoryLevels;
+        return $this->directoryLevels;
     }
     
-    public function calculateDirectoryId(\Xi\Filelib\File\File $file)
+    public function calculateDirectoryId(File $file)
     {
         if(!is_numeric($file->getId())) {
-            throw new \Xi\Filelib\FilelibException("Leveled directory id calculator requires numeric file ids ('{$file->getId()}' was provided)");
+            throw new FilelibException("Leveled directory id calculator requires numeric file ids ('{$file->getId()}' was provided)");
         }
         
         $fileId = $file->getId();
@@ -77,7 +83,7 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
         $filesPerDirectory = $this->getFilesPerDirectory();
 
         if($directoryLevels < 1) {
-            throw new \Xi\Filelib\FilelibException("Invalid number of directory levels ('{$directoryLevels}')");
+            throw new FilelibException("Invalid number of directory levels ('{$directoryLevels}')");
         }
 
         $arr = array();

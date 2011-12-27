@@ -2,46 +2,59 @@
 
 namespace Xi\Filelib\Storage;
 
+use \MongoDB,
+    \MongoGridFS,
+    \MongoGridFSFile,
+    \Xi\Filelib\FileLibrary,
+    \Xi\Filelib\Storage\Storage,
+    \Xi\Filelib\Storage\AbstractStorage,
+    \Xi\Filelib\File\File,
+    \Xi\Filelib\Configurator,
+    \Xi\Filelib\File\FileObject,
+    \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator,
+    \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+    ;
+
+
 /**
  * Stores files in MongoDB's GridFS filesystem
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
-class GridfsStorage extends \Xi\Filelib\Storage\AbstractStorage implements \Xi\Filelib\Storage\Storage
+class GridfsStorage extends AbstractStorage implements Storage
 {
     /**
-     * @var \MongoDB Mongo reference
+     * @var MongoDB Mongo reference
      */
-    private $_mongo;
+    private $mongo;
     
     /**
      * @var string Collection name
      */
-    private $_collection;
+    private $collection;
     
     /**
      * @var string GridFS prefix
      */
-    private $_prefix;
+    private $prefix;
     
     /**
-     * @var \MongoGridFS GridFS reference
+     * @var MongoGridFS GridFS reference
      */
-    private $_gridFs;
+    private $gridFs;
     
     /**
      * @var array Registered temporary files
      */
-    private $_tempFiles = array();
+    private $tempFiles = array();
     
     /**
      * Deletes all temp files on destruct
      */
     public function __destruct()
     {
-        foreach($this->_tempFiles as $tempFile) {
+        foreach($this->tempFiles as $tempFile) {
             unlink($tempFile->getPathname());
         }
     }
@@ -49,21 +62,21 @@ class GridfsStorage extends \Xi\Filelib\Storage\AbstractStorage implements \Xi\F
     /**
      * Sets mongo
      * 
-     * @param \MongoDB $mongo
+     * @param MongoDB $mongo
      */
-    public function setMongo(\MongoDB $mongo)
+    public function setMongo(MongoDB $mongo)
     {
-        $this->_mongo = $mongo;
+        $this->mongo = $mongo;
     }
     
     /**
      * Returns mongo
      * 
-     * @return \MongoDB
+     * @return MongoDB
      */
     public function getMongo()
     {
-        return $this->_mongo;
+        return $this->mongo;
     }
     
     /**
@@ -73,10 +86,10 @@ class GridfsStorage extends \Xi\Filelib\Storage\AbstractStorage implements \Xi\F
      */
     public function getGridFS()
     {
-        if(!$this->_gridFs) {
-            $this->_gridFs = $this->getMongo()->getGridFS($this->getPrefix());    
+        if(!$this->gridFs) {
+            $this->gridFs = $this->getMongo()->getGridFS($this->getPrefix());    
         }
-        return $this->_gridFs;
+        return $this->gridFs;
     }
     
     /**
@@ -86,7 +99,7 @@ class GridfsStorage extends \Xi\Filelib\Storage\AbstractStorage implements \Xi\F
      */
     public function setPrefix($prefix)
     {
-        $this->_prefix = $prefix;
+        $this->prefix = $prefix;
     }
     
     /**
@@ -96,24 +109,24 @@ class GridfsStorage extends \Xi\Filelib\Storage\AbstractStorage implements \Xi\F
      */
     public function getPrefix()
     {
-        return $this->_prefix;
+        return $this->prefix;
     }
     
     /**
      * Writes a mongo file to temporary file and registers it as an internal temp file
      * 
-     * @param \MongoGridFSFile $file
-     * @return \Xi\Base\Spl\Fileobject 
+     * @param MongoGridFSFile $file
+     * @return FileObject 
      * 
      */
-    private function _toTemp(\MongoGridFSFile $file)
+    private function _toTemp(MongoGridFSFile $file)
     {
         $tmp = $this->getFilelib()->getTempDir() . '/' . tmpfile();
         $file->write($tmp);
         
-        $fo = new \Xi\Filelib\File\FileObject($tmp);
+        $fo = new FileObject($tmp);
         
-        $this->_registerTempFile($fo);
+        $this->registerTempFile($fo);
         
         return $fo;
         
@@ -122,76 +135,76 @@ class GridfsStorage extends \Xi\Filelib\Storage\AbstractStorage implements \Xi\F
     /**
      * Registers an internal temp file
      * 
-     * @param \Xi\Filelib\File\FileObject $fo
+     * @param FileObject $fo
      */
-    private function _registerTempFile(\Xi\Filelib\File\FileObject $fo)
+    private function _registerTempFile(FileObject $fo)
     {
-        $this->_tempFiles[] = $fo;
+        $this->tempFiles[] = $fo;
     }
     
-    public function store(\Xi\Filelib\File\File $file, $tempFile)
+    public function store(File $file, $tempFile)
     {
-        $filename = $this->_getFilename($file);
+        $filename = $this->getFilename($file);
         
         $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $file->getId(), 'version' => 'original', 'mimetype' => $file->getMimetype()) ));
     }
     
-    public function storeVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version, $tempFile)
+    public function storeVersion(File $file, VersionProvider $version, $tempFile)
     {
-        $filename = $this->_getFilenameVersion($file, $version);
+        $filename = $this->getFilenameVersion($file, $version);
         
         $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $file->getId(), 'version' => $version->getIdentifier(), 'mimetype' => $file->getMimetype()) ));
     }
     
-    public function retrieve(\Xi\Filelib\File\File $file)
+    public function retrieve(File $file)
     {
-        $filename = $this->_getFilename($file);
+        $filename = $this->getFilename($file);
         
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
 
         if(!$file) {
-            throw new \Xi\Filelib\FilelibException("Filename '{$filename}' not retrievable");
+            throw new FilelibException("Filename '{$filename}' not retrievable");
         }
         
         
-        return $this->_toTemp($file);
+        return $this->toTemp($file);
     }
     
-    public function retrieveVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function retrieveVersion(File $file, VersionProvider $version)
     {
-        $filename = $this->_getFilenameVersion($file, $version);
+        $filename = $this->getFilenameVersion($file, $version);
         
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
         
         if(!$file) {
-            throw new \Xi\Filelib\FilelibException("Filename '{$filename}' not retrievable");
+            throw new FilelibException("Filename '{$filename}' not retrievable");
         }
         
         
-        return $this->_toTemp($file);
+        return $this->toTemp($file);
     }
     
-    public function delete(\Xi\Filelib\File\File $file)
+    public function delete(File $file)
     {
-        $filename = $this->_getFilename($file);
+        $filename = $this->getFilename($file);
         
         $this->getGridFS()->remove(array('filename' => $filename));
     }
     
-    public function deleteVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function deleteVersion(File $file, VersionProvider $version)
     {
-        $filename = $this->_getFilenameVersion($file, $version);
+        $filename = $this->getFilenameVersion($file, $version);
         
         $this->getGridFS()->remove(array('filename' => $filename));
     }
     
     
-    private function _getFilename(\Xi\Filelib\File\File $file)
+    private function _getFilename(File $file)
     {
         return $file->getFolderId() . '/' . $file->getId();
     }
     
-    private function _getFilenameVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    private function _getFilenameVersion(File $file, VersionProvider $version)
     {
         return $file->getFolderId() . '/' . $file->getId() . '/' . $version->getIdentifier();
     }

@@ -2,11 +2,16 @@
 
 namespace Xi\Filelib\Storage;
 
+use \Xi\Filelib\FileLibrary,
+    \Xi\Filelib\File\File,
+    \Xi\Filelib\FilelibException,
+    \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+    ;
+
 /**
- * Storage interface
+ * Filelib Storage interface
  * 
  * @author pekkis
- * @package Xi_Filelib
  * @todo Something is not perfect yet... Rethink and finalize
  *
  */
@@ -17,66 +22,66 @@ interface Storage
     /**
      * Sets filelib
      *
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @return FileLibrary
      */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib);
+    public function setFilelib(FileLibrary $filelib);
 
     /**
      * Returns filelib
      *
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @return FileLibrary
      */
     public function getFilelib();
     
     /**
      * Stores an uploaded file
      * 
-     * @param \Xi\Filelib\File\File $file
+     * @param File $file
      * @param string $tempFile
-     * @throws \Xi\Filelib\FilelibException
+     * @throws FilelibException
      */
-    public function store(\Xi\Filelib\File\File $file, $tempFile);
+    public function store(File $file, $tempFile);
     
     /**
      * Stores a version of a file
      * 
-     * @param \Xi\Filelib\File\File $file
-     * @param \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version
+     * @param File $file
+     * @param VersionProvider $version
      * @param string $tempFile File to be stored
-     * @throws \Xi\Filelib\FilelibException
+     * @throws FilelibException
      */
-    public function storeVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version, $tempFile);
+    public function storeVersion(File $file, VersionProvider $version, $tempFile);
     
     /**
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      * 
-     * @param \Xi\Filelib\File\File $file
-     * @return \Xi\Filelib\File\FileObject
+     * @param File $file
+     * @return FileObject
      */
-    public function retrieve(\Xi\Filelib\File\File $file);
+    public function retrieve(File $file);
     
     /**
      * Retrieves a version of a file and temporarily stores it somewhere so it can be read.
      * 
-     * @param \Xi\Filelib\File\File $file
-     * @param \Xi_Filelib_VersionProvider_Interface $version
-     * @return \Xi\Filelib\File\FileObject
+     * @param File $file
+     * @param VersionProvider $version
+     * @return FileObject
      */
-    public function retrieveVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version);
+    public function retrieveVersion(File $file, VersionProvider $version);
     
     /**
      * Deletes a file
      * 
-     * @param \Xi\Filelib\File\File $file
+     * @param File $file
      */
-    public function delete(\Xi\Filelib\File\File $file);
+    public function delete(File $file);
     
     /**
      * Deletes a version of a file
      * 
-     * @param \Xi\Filelib\File\File $file
-     * @param \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version
+     * @param File $file
+     * @param VersionProvider $version
      */
-    public function deleteVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version);
+    public function deleteVersion(File $file, VersionProvider $version);
     
 }

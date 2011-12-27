@@ -17,7 +17,11 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
         $this->file = new \Xi\Filelib\File\FileItem();
     }
     
-    public function testDifferentFormats()
+    /**
+     * @test
+     * 
+     */
+    public function differentFormatsShouldReturnCorrectResults()
     {
         $this->calc->setFormat('Y/m/d');
 
@@ -33,10 +37,11 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * 
+     * @test
      * @expectedException \Xi\Filelib\FilelibException
+     * 
      */
-    public function testNullDateUploaded()
+    public function unsetDateUploadedShouldThrowException()
     {
         $this->calc->calculateDirectoryId($this->file);
     }
