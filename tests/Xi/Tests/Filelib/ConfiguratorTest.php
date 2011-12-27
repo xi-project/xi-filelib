@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Tests\Base;
+namespace Xi\Tests\Filelib;
 
 
 class Phaker
@@ -18,21 +18,23 @@ class Phaker
     }
     
     
+    
+    
 }
 
 
 
-class OptionsTest extends \Xi\Tests\TestCase
+class ConfiguratorTest extends \Xi\Tests\TestCase
 {
     public function setUp()
     {
-        $this->markTestSkipped('Xi\Base not found.');
+        
     }
 
     public function testSetOptions()
     {
         
-        $mock = $this->getMock('\Xi\Tests\Base\Phaker');
+        $mock = $this->getMock('\Xi\Tests\Filelib\Phaker');
         $mock->expects($this->once())
              ->method('setPuuppa')
              ->with('tussi')
@@ -48,14 +50,14 @@ class OptionsTest extends \Xi\Tests\TestCase
             'loco' => 'looooso'
         );
         
-        \Xi\Base\Options::setOptions($mock, $arr);
+        \Xi\Filelib\Configurator::setOptions($mock, $arr);
         
     }
 
     
     public function testSetOptionsEmpty()
     {
-        $mock = $this->getMock('\Xi\Tests\Base\Phaker');
+        $mock = $this->getMock('\Xi\Tests\Filelib\Phaker');
         $mock->expects($this->exactly(0))
              ->method('setPuuppa')
              ->will($this->returnValue('1'))
@@ -67,7 +69,7 @@ class OptionsTest extends \Xi\Tests\TestCase
              
         $arr = array();
         
-        \Xi\Base\Options::setOptions($mock, $arr);
+        \Xi\Filelib\Configurator::setOptions($mock, $arr);
         
     }
     
@@ -76,7 +78,7 @@ class OptionsTest extends \Xi\Tests\TestCase
      */ 
     public function testSetOptionsInvalid()
     {
-        $mock = $this->getMock('\Xi\Tests\Base\Phaker');
+        $mock = $this->getMock('\Xi\Tests\Filelib\Phaker');
         $mock->expects($this->exactly(0))
              ->method('setPuuppa')
              ->will($this->returnValue('1'))
@@ -88,12 +90,35 @@ class OptionsTest extends \Xi\Tests\TestCase
              
         $arr = array();
         
-        \Xi\Base\Options::setOptions($mock, 'lussutilukset');
+        \Xi\Filelib\Configurator::setOptions($mock, 'lussutilukset');
     }
     
     
     public function testSetConstructorOptions()
     {
+         $arr = array(
+            'puuppa' => 'tussi',
+         );
+        
+        
+        $mock = $this->getMock('\Xi\Tests\Filelib\Phaker');
+        $mock->expects($this->exactly(1))
+             ->method('setPuuppa')
+             ->with($this->isInstanceOf('\Xi\Tests\Filelib\Phaker'))
+             ->will($this->returnValue('1'))
+             ;
+
+        $arr = array(
+            'puuppa' => array(
+                'class' => '\\Xi\\Tests\\Filelib\\Phaker',
+                'options' => array(
+                    'loso' => 'tussi',
+                ),
+            )
+            
+        );
+        
+        \Xi\Filelib\Configurator::setConstructorOptions($mock, $arr);
         
     }
     

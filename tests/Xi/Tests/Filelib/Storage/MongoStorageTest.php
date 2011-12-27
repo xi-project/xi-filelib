@@ -23,6 +23,7 @@ class MongoStorageTest extends \Xi\Tests\Filelib\TestCase
     protected function setUp()
     {
         if (!extension_loaded('mongo')) {
+           
             $this->markTestSkipped('MongoDB extension is not loaded.');
         }
 

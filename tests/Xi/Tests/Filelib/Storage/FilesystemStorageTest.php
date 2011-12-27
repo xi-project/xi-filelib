@@ -18,21 +18,26 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     protected function setUp()
     {
         
+                
         $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1));
         
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
-                
+                        
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->any())
              ->method('calculateDirectoryId')
              ->will($this->returnValue('1'));
        
+        
+        
         $storage = new \Xi\Filelib\Storage\FilesystemStorage();
         $storage->setDirectoryIdCalculator($dc);
         $storage->setCacheDirectoryIds(false);
         $storage->setRoot(ROOT_TESTS . '/data/files');    
         
         $this->storage = $storage;
+        
+        
         
         $vp = $this->getMock('\Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $vp->expects($this->any())
@@ -62,6 +67,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     
     protected function tearDown()
     {
+                        
         $diter = new \RecursiveDirectoryIterator($this->storage->getRoot());
         $riter = new \RecursiveIteratorIterator($diter, \RecursiveIteratorIterator::CHILD_FIRST);
         
@@ -175,7 +181,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
          $this->assertFileEquals($this->fileResource, $this->storage->getRoot() . '/1/1');
          
          $retrieved = $this->storage->retrieve($this->file);
-         $this->assertInstanceof('\Xi\Base\Spl\FileObject', $retrieved);
+         $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
          $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
          
          $this->storage->delete($this->file);
@@ -192,7 +198,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
          $this->assertFileEquals($this->fileResource, $this->storage->getRoot() . '/1/xoo/1');
                   
          $retrieved = $this->storage->retrieveVersion($this->file, $this->versionProvider);
-         $this->assertInstanceof('\Xi\Base\Spl\FileObject', $retrieved);
+         $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
          $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
                   
          $this->storage->deleteVersion($this->file, $this->versionProvider);
