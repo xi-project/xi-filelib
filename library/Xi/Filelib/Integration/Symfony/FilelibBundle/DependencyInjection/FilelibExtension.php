@@ -86,7 +86,7 @@ class FilelibExtension extends Extension
         $container->setDefinition('filelib.storage.directoryIdCalculator', $definition);
         
         // Storage
-        $definition = new Definition('Xi\\Filelib\\Storage\\FileSystemStorage', array(array(
+        $definition = new Definition('Xi\\Filelib\\Storage\\FilesystemStorage', array(array(
             'directoryPermission' => $config['storage_filesystem']['directoryPermission'],
             'filePermission' => $config['storage_filesystem']['filePermission'],
             'root' => $config['storage_filesystem']['root'],
