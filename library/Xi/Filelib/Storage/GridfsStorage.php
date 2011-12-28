@@ -37,7 +37,7 @@ class GridfsStorage extends AbstractStorage implements Storage
     /**
      * @var string GridFS prefix
      */
-    private $prefix;
+    private $prefix = 'xi_filelib';
     
     /**
      * @var MongoGridFS GridFS reference
@@ -119,7 +119,7 @@ class GridfsStorage extends AbstractStorage implements Storage
      * @return FileObject 
      * 
      */
-    private function _toTemp(MongoGridFSFile $file)
+    private function toTemp(MongoGridFSFile $file)
     {
         $tmp = $this->getFilelib()->getTempDir() . '/' . tmpfile();
         $file->write($tmp);
@@ -137,7 +137,7 @@ class GridfsStorage extends AbstractStorage implements Storage
      * 
      * @param FileObject $fo
      */
-    private function _registerTempFile(FileObject $fo)
+    private function registerTempFile(FileObject $fo)
     {
         $this->tempFiles[] = $fo;
     }
@@ -199,12 +199,12 @@ class GridfsStorage extends AbstractStorage implements Storage
     }
     
     
-    private function _getFilename(File $file)
+    public function getFilename(File $file)
     {
         return $file->getFolderId() . '/' . $file->getId();
     }
     
-    private function _getFilenameVersion(File $file, VersionProvider $version)
+    public function getFilenameVersion(File $file, VersionProvider $version)
     {
         return $file->getFolderId() . '/' . $file->getId() . '/' . $version->getIdentifier();
     }

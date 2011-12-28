@@ -36,21 +36,12 @@ class TestCase extends \Xi\Tests\TestCase
         return $backend;
     }
     
-    public function getMockConfiguration()
+    public function getFilelib()
     {
-        $configuration = new FileLibrary();
-        $configuration->setStorage($this->getMockStorage());
-        $configuration->setAcl($this->getMockAcl());
-        $configuration->setBackend($this->getMockBackend());
-        $configuration->setPublisher($this->getMockPublisher());
-        $configuration->setTempDir(ROOT_TESTS . '/data/temp');
+        $filelib = new FileLibrary();
+        $filelib->setTempDir(ROOT_TESTS . '/data/temp');
         
-        return $configuration;
-    }
-    
-    public function getMockFilelib()
-    {
-        return new FileLibrary($this->getMockConfiguration());
+        return $filelib;
     }
     
     

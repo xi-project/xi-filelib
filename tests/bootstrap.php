@@ -27,4 +27,3 @@ spl_autoload_register(function($class) {
     return class_exists($class, false);
 });
 
-define('ROOT_TESTS', __DIR__);

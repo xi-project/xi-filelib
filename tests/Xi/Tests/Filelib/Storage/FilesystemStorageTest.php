@@ -46,25 +46,9 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
         
         $this->versionProvider = $vp;
              
-        $diter = new \RecursiveDirectoryIterator($this->storage->getRoot());
-        $riter = new \RecursiveIteratorIterator($diter, \RecursiveIteratorIterator::CHILD_FIRST);
-                
-        foreach ($riter as $item) {
-            if($item->isFile()) {
-                @unlink($item->getPathName());
-            }            
-        }
-        
-        foreach ($riter as $item) {
-            if($item->isDir() && !in_array($item->getPathName(), array('.', '..'))) {
-                @rmdir($item->getPathName());
-            }            
-        }
-        
         
     }
-    
-    
+        
     protected function tearDown()
     {
                         
@@ -85,15 +69,20 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
         
     }
     
-    public function testFilePermissionGetAndSet()
+    /**
+     * @test
+     */
+    public function filePermissionGetAndSetShouldWorkAsExpected()
     {
         $this->assertEquals(0600, $this->storage->getFilePermission());
         $this->storage->setFilePermission(755);
         $this->assertEquals(0755, $this->storage->getFilePermission());
     }
 
-    
-    public function testRootGetAndSet()
+    /**
+     * @test
+     */
+    public function rootGetAndSetShouldWorkAsExpected()
     {
         $storage = new \Xi\Filelib\Storage\FilesystemStorage();
         $this->assertNull($storage->getRoot());
@@ -104,8 +93,10 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     }
     
     
-    
-    public function testDirectoryPermissionGetAndSet()
+    /**
+     * @test
+     */
+    public function directoryPermissionGetAndSetShouldWorkAsExpected()
     {
         $this->assertEquals(0700, $this->storage->getDirectoryPermission());
         $this->storage->setDirectoryPermission(755);
@@ -113,7 +104,10 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     }
     
     
-    public function testDirectoryCalculatorGetAndSet()
+    /**
+     * @test
+     */
+    public function directoryCalculatorGetAndSetShouldWorkAsExpected()
     {
          $storage = new \Xi\Filelib\Storage\FilesystemStorage();
 
@@ -133,8 +127,10 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     }
     
     
-    
-    public function testDirectoryIdCalculationWithoutCaching()
+    /**
+     * @test
+     */
+    public function directoryIdCalculationWithoutCachingShouldCallMethodEveryTime()
     {
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->exactly(3))
@@ -151,8 +147,10 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
         
     }
        
-    
-    public function testDirectoryIdCalculationWithCaching()
+    /**
+     * @test
+     */
+    public function directoryIdCalculationWithCachingShouldCallMethodOnlyOnce()
     {
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->exactly(1))
@@ -172,8 +170,10 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     }
     
     
-    
-    public function testStoreAndRetrieveAndDelete()
+    /**
+     * @test
+     */
+    public function storeAndRetrieveAndDeleteShouldWorkInHarmony()
     {
          $this->storage->store($this->file, $this->fileResource);
          
@@ -190,7 +190,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     }
     
 
-    public function testVersionStoreAndRetrieveAndDelete()
+    public function vrsionStoreAndRetrieveAndDeleteShouldWorkInHarmony()
     {
          $this->storage->storeVersion($this->file, $this->versionProvider, $this->fileResource);
          

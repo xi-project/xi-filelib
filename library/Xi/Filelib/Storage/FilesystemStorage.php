@@ -17,7 +17,7 @@ use \Xi\Filelib\FileLibrary,
  * Stores files in a filesystem
  * 
  * @author pekkis
- * @package Xi_Filelib
+ * @todo Fucktor caching to directoryIdCalculator
  *
  */
 class FilesystemStorage extends AbstractStorage implements Storage
