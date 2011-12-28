@@ -47,7 +47,7 @@ class GridFsStorageTest extends \Xi\Tests\Filelib\TestCase
         $this->filelib = $this->getFilelib();
         
         // @todo: to config
-        $dns = "mongodb://localhost:27017/";
+        $dns = MONGO_DNS;
         $mongo = new Mongo($dns, array('connect' => true));
         $this->mongo = $mongo->filelib_tests;    
                
@@ -135,6 +135,8 @@ class GridFsStorageTest extends \Xi\Tests\Filelib\TestCase
      */
     public function storeAndRetrieveAndDeleteVersionShouldWorkInHarmony()
     {
+        
+        
         $this->storage->setFilelib($this->getFilelib()); 
         
         $this->storage->storeVersion($this->file, $this->versionProvider, $this->fileResource);
