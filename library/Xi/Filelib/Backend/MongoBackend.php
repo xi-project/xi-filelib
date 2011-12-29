@@ -174,7 +174,7 @@ class MongoBackend extends AbstractBackend implements Backend
             $file['folder_id'] = $folder->getId();
             $file['mimetype'] = $upload->getMimeType();
             $file['size'] = $upload->getSize();
-            $file['name'] = $upload->getOverrideFilename();
+            $file['name'] = $upload->getUploadFilename();
             $file['profile'] = $profile->getIdentifier();
             $file['date_uploaded'] = new MongoDate($upload->getDateUploaded()->getTimestamp()); 
                 

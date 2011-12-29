@@ -107,6 +107,8 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
     public function create(\Xi\Filelib\Folder\Folder $folder)
     {
         $route = $this->buildRoute($folder);
+        
+                
         $folder->setUrl($route);
         
         $folder = $this->getBackend()->createFolder($folder);
@@ -211,6 +213,48 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         $folder = $this->_folderItemFromArray($folder);
         return $folder;
     
+    }
+    
+    
+    public function createByUrl($url)
+    {
+        $folder = $this->findByUrl($url);
+        if ($folder) {
+            return $folder;
+        }
+        
+        $rootFolder = $this->findRoot();
+        
+        $exploded = explode('/', $url);
+
+        $folderNames = array();
+        
+        $created = null;
+        $previous = null;
+        
+        $count = 0;
+        
+        while (sizeof($exploded) || !$created) {
+            
+            $folderNames[] = $folderCurrent = array_shift($exploded);
+            
+            $folderName = implode('/', $folderNames);
+            
+            $created = $this->findByUrl($folderName);
+
+            if (!$created) {
+                $created = $this->getInstance(array(
+                    'parent_id' => $previous ? $previous->getId() : $rootFolder->getId(),
+                    'name' => $folderCurrent,
+                ));
+                $this->create($created);
+                
+                $previous = $created;
+            }
+        }
+        
+        return $created;
+        
     }
     
     

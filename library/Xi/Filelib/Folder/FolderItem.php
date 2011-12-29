@@ -106,8 +106,11 @@ class FolderItem implements Folder
         } 
         $this->setParentId($data['parent_id']);
         $this->setName($data['name']);
-        $this->setUrl($data['url']);
         
+        if(isset($data['url'])) {
+            $this->setUrl($data['url']);
+        }
+                
         return $this;
     }
     

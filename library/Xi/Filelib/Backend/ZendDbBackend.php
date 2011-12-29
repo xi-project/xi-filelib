@@ -199,7 +199,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             $file->folder_id = $folder->getId();
             $file->mimetype = $upload->getMimeType();
             $file->filesize = $upload->getSize();
-            $file->filename = $upload->getOverrideFilename();
+            $file->filename = $upload->getUploadFilename();
             $file->fileprofile = $profile->getIdentifier();
             $file->date_uploaded = $upload->getDateUploaded()->format('Y-m-d H:i:s');
                         	

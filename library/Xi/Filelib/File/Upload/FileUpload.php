@@ -18,6 +18,8 @@ class FileUpload extends \Xi\Filelib\File\FileObject
      */
     private $_overrideFilename;
 
+    private $_overrideBasename;
+        
     /**
      * @var \Xi_Filelib_Filelib
      */
@@ -61,6 +63,42 @@ class FileUpload extends \Xi\Filelib\File\FileObject
     {
         $this->_overrideFilename = $filename;
     }
+    
+    public function setOverrideBasename($basename)
+    {
+        $this->_overrideBasename = $basename;
+    }
+    
+    
+    public function getOverrideBasename()
+    {
+        return $this->_overrideBasename;
+    }
+    
+    
+    public function getUploadFilename()
+    {
+        if(!$uploadName = $this->getOverrideFilename()) {
+            $uploadName = $this->getFilename();
+        }
+        
+        if (!$overrideBase = $this->getOverrideBasename()) {
+            return $uploadName;
+        }
+        
+        
+        $pinfo = pathinfo($uploadName);
+
+        
+        $uploadName = $overrideBase;
+        if (isset($pinfo['extension']) && $pinfo['extension'])  {
+            $uploadName .= '.' . $pinfo['extension'];
+        }
+
+        return $uploadName;
+    }
+    
+    
 
     /**
      * Returns filename, overridden if defined, default if not
@@ -70,8 +108,9 @@ class FileUpload extends \Xi\Filelib\File\FileObject
      */
     public function getOverrideFilename()
     {
-        return ($this->_overrideFilename) ? $this->_overrideFilename : $this->getFilename();
+        return $this->_overrideFilename;
     }
+    
     
     /**
      * Returns upload date

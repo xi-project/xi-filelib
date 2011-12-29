@@ -14,6 +14,12 @@ use \Xi\Filelib\Linker\Linker,
  */
 abstract class AbstractLinker implements Linker
 {
+    
+    public function __construct($options = array())
+    {
+        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
+    }
+    
     /**
      * @var FileLibrary Filelib
      */

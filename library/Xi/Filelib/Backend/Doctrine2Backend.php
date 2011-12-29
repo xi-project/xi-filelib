@@ -460,7 +460,7 @@ class Doctrine2Backend extends AbstractBackend
             $folder->getId()));
             $file->setMimetype($upload->getMimeType());
             $file->setSize($upload->getSize());
-            $file->setName($upload->getOverrideFilename());
+            $file->setName($upload->getUploadFilename());
             $file->setProfile($profile->getIdentifier());
             $file->setDateUploaded($upload->getDateUploaded());
             
