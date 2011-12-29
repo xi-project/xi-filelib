@@ -2,42 +2,46 @@
 
 namespace Xi\Filelib\Linker;
 
+use \Xi\Filelib\FileLibrary,
+    \Xi\Filelib\File\File,
+    \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+    ;
+
 /**
  * Linker interface
  * 
  * @author pekkis
- * @package \Xi_Filelib
  *
  */
 interface Linker
 {
 
     
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib);
+    public function setFilelib(FileLibrary $filelib);
     
     /**
      * Returns filelib
      *
-     * @return \Xi\Filelib\FileLibrary
+     * @return FileLibrary
      */
     public function getFilelib();
 
     /**
      * Returns link for a version of a file
      *
-     * @param \Xi\Filelib\File\File $file
-     * @param \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version Version plugin
+     * @param File $file
+     * @param VersionProvider $version Version plugin
      * @return string Versioned link
      */
-    public function getLinkVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version);
+    public function getLinkVersion(File $file, VersionProvider $version);
 
     /**
      * Returns a link for a file
      *
-     * @param \Xi\Filelib\File\File $file
+     * @param File $file
      * @return string Link
      */
-    public function getLink(\Xi\Filelib\File\File $file);
+    public function getLink(File $file);
 
     
     /**

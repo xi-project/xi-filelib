@@ -2,36 +2,50 @@
 
 namespace Xi\Filelib\Linker;
 
+use \Xi\Filelib\Linker\AbstractLinker,
+    \Xi\Filelib\Linker\Linker,
+    \Xi\Filelib\File\File,
+    \Xi\Filelib\Folder\Folder,
+    \Xi\Filelib\Plugin\VersionProvider\VersionProvider,
+    \Xi\Filelib\FilelibException,
+    \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator
+    ;
+
 /**
  * Sequential linker creates a sequential link with n levels of directories with m files per directory
  *
- * @package Xi_Filelib
  * @author pekkis
  * @author Petri Mahanen
  *
  */
-class SequentialLinker extends \Xi\Filelib\Linker\AbstractLinker implements \Xi\Filelib\Linker\Linker
+class SequentialLinker extends AbstractLinker implements Linker
 {
-
+    
     /**
      * @var integer Files per directory
      */
-    private $_filesPerDirectory = 500;
+    private $filesPerDirectory = 500;
 
     /**
      * @var integer Levels in directory structure
      */
-    private $_directoryLevels = 1;
-    
+    private $directoryLevels = 1;
+        
+    /**
+     *
+     * @var LeveledDirectoryIdCalculator
+     */
+    private $directoryIdCalculator;
+        
     /**
      * Sets files per directory
      *
      * @param integer $filesPerDirectory
-     * @return \Xi\Filelib\Linker\SequentialLinker
+     * @return SequentialLinker
      */
     public function setFilesPerDirectory($filesPerDirectory)
     {
-        $this->_filesPerDirectory = $filesPerDirectory;
+        $this->getDirectoryIdCalculator()->setFilesPerDirectory($filesPerDirectory);
         return $this;
     }
 
@@ -42,18 +56,18 @@ class SequentialLinker extends \Xi\Filelib\Linker\AbstractLinker implements \Xi\
      */
     public function getFilesPerDirectory()
     {
-        return $this->_filesPerDirectory;
+        return $this->filesPerDirectory;
     }
 
     /**
      * Sets levels per directory hierarchy
      *
      * @param integer $directoryLevels
-     * @return \Xi\Filelib\Linker\SequentialLinker
+     * @return SequentialLinker
      */
     public function setDirectoryLevels($directoryLevels)
     {
-        $this->_directoryLevels = $directoryLevels;
+        $this->getDirectoryIdCalculator()->setDirectoryLevels($directoryLevels);
         return $this;
     }
 
@@ -64,46 +78,25 @@ class SequentialLinker extends \Xi\Filelib\Linker\AbstractLinker implements \Xi\
      */
     public function getDirectoryLevels()
     {
-        return $this->_directoryLevels;
+        return $this->directoryLevels;
     }
-    
-    
     
     /**
      * Returns directory path for specified file id
      *
-     * @param integer $fileId File id
+     * @param File $file
      * @return string
      */
-    public function getDirectoryId($fileId)
+    public function getDirectoryId($file)
     {
-        $directoryLevels = $this->getDirectoryLevels() + 1;
-        $filesPerDirectory = $this->getFilesPerDirectory();
-
-        if($directoryLevels < 1) {
-            throw new \Xi\Filelib\FilelibException("Invalid number of directory levels ('{$directoryLevels}')");
-        }
-
-        $arr = array();
-        $tmpfileid = $fileId - 1;
-
-        for($count = 1; $count <= $directoryLevels; ++$count) {
-            $lus = $tmpfileid / pow($filesPerDirectory, $directoryLevels - $count);
-            $tmpfileid = $tmpfileid % pow($filesPerDirectory, $directoryLevels - $count);
-            $arr[] = floor($lus) + 1;
-        }
-
-        $puuppa = array_pop($arr);
-        return implode(DIRECTORY_SEPARATOR, $arr);
-
+        return $this->getDirectoryIdCalculator()->calculateDirectoryId($file);
     }
     
     
-    
-    public function getLinkVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function getLinkVersion(File $file, VersionProvider $version)
     {
+            
         $link = $this->getLink($file);
-
         $pinfo = pathinfo($link);
         $link = $pinfo['dirname'] . '/' . $pinfo['filename'] . '-' . $version->getIdentifier();
         $link .= '.' . $version->getExtension();
@@ -112,16 +105,31 @@ class SequentialLinker extends \Xi\Filelib\Linker\AbstractLinker implements \Xi\
     }
 
 
-    public function getLink(\Xi\Filelib\File\File $file)
+    public function getLink(File $file)
     {
         $url = array();
-        $url[] = $this->getDirectoryId($file->getId());
+        $url[] = $this->getDirectoryId($file);
         $name = $file->getName();
         $url[] = $name;
         $url = implode(DIRECTORY_SEPARATOR, $url);
         return $url;
     }
-
-
+    
+    /**
+     *
+     * Returns directory id calculator
+     * 
+     * @return LeveledDirectoryIdCalculator 
+     */
+    private function getDirectoryIdCalculator()
+    {
+        if (!$this->directoryIdCalculator) {
+            $this->directoryIdCalculator = new LeveledDirectoryIdCalculator();
+            $this->directoryIdCalculator->setDirectoryLevels($this->getDirectoryLevels());
+            $this->directoryIdCalculator->setFilesPerDirectory($this->getFilesPerDirectory());
+        }
+        
+        return $this->directoryIdCalculator;
+    }
     
 }

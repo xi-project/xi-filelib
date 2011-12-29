@@ -2,37 +2,40 @@
 
 namespace Xi\Filelib\Linker;
 
+use \Xi\Filelib\Linker\Linker,
+    \Xi\Filelib\FileLibrary
+    ;
+
 /**
  * An abstract linker class with common methods implemented.
  *
- * @package Xi_Filelib
  * @author pekkis
  *
  */
-abstract class AbstractLinker implements \Xi\Filelib\Linker\Linker
+abstract class AbstractLinker implements Linker
 {
     /**
-     * @var \Xi\Filelib\FileLibrary Filelib
+     * @var FileLibrary Filelib
      */
-    protected $_filelib;
+    protected $filelib;
 
     /**
      * Sets filelib
      *
      */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib)
+    public function setFilelib(FileLibrary $filelib)
     {
-        $this->_filelib = $filelib;
+        $this->filelib = $filelib;
     }
 
     /**
      * Returns filelib
      *
-     * @return \Xi\Filelib\FileLibrary
+     * @return FileLibrary
      */
     public function getFilelib()
     {
-        return $this->_filelib;
+        return $this->filelib;
     }
 
     /**

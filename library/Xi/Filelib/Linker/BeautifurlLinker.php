@@ -2,20 +2,27 @@
 
 namespace Xi\Filelib\Linker;
 
+use \Xi\Filelib\Linker\AbstractLinker,
+    \Xi\Filelib\Linker\Linker,
+    \Xi\Filelib\File\File,
+    \Xi\Filelib\Folder\Folder,
+    \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+    ;
+
+
 /**
- * Creates beautifurls(tm) from the virtual directory structure and names.
+ * Creates beautifurls(tm) from the virtual directory structure and file names.
  *
- * @package Xi_Filelib
  * @author pekkis
  *
  */
-class BeautifurlLinker extends \Xi\Filelib\Linker\AbstractLinker implements \Xi\Filelib\Linker\Linker
+class BeautifurlLinker extends AbstractLinker implements Linker
 {
 
     /**
      * @var boolean Exclude root folder from beautifurls or not
      */
-    private $_excludeRoot = false;
+    private $excludeRoot = false;
 
     /**
      * Sets whether the root folder is excluded from beautifurls.
@@ -24,7 +31,7 @@ class BeautifurlLinker extends \Xi\Filelib\Linker\AbstractLinker implements \Xi\
      */
     public function setExcludeRoot($excludeRoot)
     {
-        $this->_excludeRoot = $excludeRoot;
+        $this->excludeRoot = $excludeRoot;
     }
 
 
@@ -35,32 +42,33 @@ class BeautifurlLinker extends \Xi\Filelib\Linker\AbstractLinker implements \Xi\
      */
     public function getExcludeRoot()
     {
-        return $this->_excludeRoot;
+        return $this->excludeRoot;
     }
 
 
 
-    public function getLinkVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function getLinkVersion(File $file, VersionProvider $version)
     {
         $link = $this->getLink($file);
         $pinfo = pathinfo($link);
         $link = ($pinfo['dirname'] === '.' ? '' : $pinfo['dirname'] . '/') . $pinfo['filename'] . '-' . $version->getIdentifier();
+        
         $link .= '.' . $version->getExtension();
         
         return $link;
     }
 
 
-    public function getLink(\Xi\Filelib\File\File $file, $force = false)
+    public function getLink(File $file, $force = false)
     {
         
         if($force || !isset($file->link)) {
             	
             $folders = array();
-            $folders[] = $folder = $file->getFilelib()->folder()->find($file->getFolderId());
+            $folders[] = $folder = $this->getFilelib()->folder()->find($file->getFolderId());
 
             while($folder->getParentId()) {
-                $folder = $folder->getFilelib()->folder()->find($folder->getParentId());
+                $folder = $this->getFilelib()->folder()->find($folder->getParentId());
                 array_unshift($folders, $folder);
             }
 
