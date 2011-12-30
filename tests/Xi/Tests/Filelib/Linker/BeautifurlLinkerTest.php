@@ -59,7 +59,14 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
                          'url' => '/lussuttaja/banaanin'
                      ));
                      
-                     
+                 } elseif($id == 5) {
+
+                     return FolderItem::create(array(
+                         'id' => 5,
+                         'name' => 'sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú',
+                         'parent_id' => 4,
+                         'url' => '/lussuttaja/banaanin/suuren-ugrilaisen-kansan-sielu'
+                     ));
                  }
                  
                  return null;
@@ -121,6 +128,15 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
                 )), array('juurekas.nom', 'juurekas-xoo.xoo'),
                 
             ),         
+            array(
+                FileItem::create(array(
+                    'name' => 'salainen-suunnitelma.pdf',
+                    'folder_id' => 5
+                    
+                )), array('lussuttaja/banaanin/suuren-ugrilaisen-kansan-sielu/salainen-suunnitelma.pdf', 'lussuttaja/banaanin/suuren-ugrilaisen-kansan-sielu/salainen-suunnitelma-xoo.xoo'),
+                
+            ),         
+
         );
     }
     

@@ -13,7 +13,7 @@ final class Version
     /**
      * Current Xi Filelib version
      */
-    const VERSION = '1.0.0BETA1';
+    const VERSION = '1.0.0dev';
 
     /**
      * Compares a Xi Filelib version with the current one.

@@ -6,7 +6,8 @@ use \Xi\Filelib\Linker\AbstractLinker,
     \Xi\Filelib\Linker\Linker,
     \Xi\Filelib\File\File,
     \Xi\Filelib\Folder\Folder,
-    \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+    \Xi\Filelib\Plugin\VersionProvider\VersionProvider,
+    \Xi\Filelib\Tool\Slugifier
     ;
 
 
@@ -24,6 +25,8 @@ class BeautifurlLinker extends AbstractLinker implements Linker
      */
     private $excludeRoot = false;
 
+    private $slugifier;
+    
     /**
      * Sets whether the root folder is excluded from beautifurls.
      *
@@ -43,6 +46,14 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     public function getExcludeRoot()
     {
         return $this->excludeRoot;
+    }
+    
+    public function getSlugifier()
+    {
+        if (!$this->slugifier) {
+            $this->slugifier = new Slugifier();
+        }
+        return $this->slugifier;
     }
 
 
@@ -77,7 +88,15 @@ class BeautifurlLinker extends AbstractLinker implements Linker
             foreach($folders as $folder) {
                 $beautifurl[] = $folder->getName();
             }
-            	
+
+            $slugifier = $this->getSlugifier();
+            
+            array_walk($beautifurl, function(&$frag) use ($slugifier) {
+                $frag = $slugifier->slugify($frag);
+            });
+            
+            // $beautifurl = $this->getSlugifier()->slugify($beautifurl);
+            
             $beautifurl[] = $file->getName();
 
             if($this->getExcludeRoot()) {
@@ -86,6 +105,8 @@ class BeautifurlLinker extends AbstractLinker implements Linker
 
             $beautifurl = implode(DIRECTORY_SEPARATOR, $beautifurl);
            
+            
+                        
             $file->link = $beautifurl;
 
         }
