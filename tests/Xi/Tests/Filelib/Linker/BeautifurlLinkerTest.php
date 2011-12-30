@@ -12,9 +12,15 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
     protected $filelib;
     
     
+    
+    
+    
     public function setUp()
     {
-        
+        if (!class_exists('\\Zend\\Filter\\FilterChain')) {
+            $this->markTestSkipped('Zend Framework 2 filters not loadable');
+        }
+                
         $fo = $this->getMockBuilder('\Xi\Filelib\Folder\FolderOperator')->getMock();
         $fo->expects($this->any())
              ->method('find')

@@ -14,6 +14,11 @@ class SlugifierTest extends \Xi\Tests\Filelib\TestCase {
     
     public function setUp()
     {
+        if (!class_exists('\\Zend\\Filter\\FilterChain')) {
+            $this->markTestSkipped('Zend Framework 2 filters not loadable');
+        }
+
+        
         $this->slugifier = new Slugifier();
     }
     

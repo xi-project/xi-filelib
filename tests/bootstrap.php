@@ -13,6 +13,8 @@ set_include_path(implode(PATH_SEPARATOR, array(
     get_include_path(),
 )));
 
+echo get_include_path();
+
 /**
  * Register a trivial autoloader
  */
