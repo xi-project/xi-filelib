@@ -3,7 +3,9 @@
 namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Filelib\Backend\ZendDbBackend,
-    \Zend_Db;
+    \Zend_Db,
+    Xi\Filelib\Folder\FolderItem
+    ;
 
 /**
  * Description of ZendDbTest
@@ -19,50 +21,12 @@ class ZendDbBackendTest extends TestCase
     protected $backend;
     
     
-    /**
-     * @return PHPUnit_Extensions_Database_DB_IDatabaseConnection
-     */
-    public function getDataSet()
-    {
-        return new ArrayDataSet(array(
-            'xi_filelib_folder' => array(
-
-                array(
-                    'id' => 1,
-                    'parent_id' => null,
-                    'url' => '',
-                    'name' => 'root',
-                ),
-                
-                array(
-                    'id' => 2,
-                    'parent_id' => 1,
-                    'url' => 'lussuttaja',
-                    'name' => 'lussuttaja',
-                ),
-                
-                array(
-                    'id' => 3,
-                    'parent_id' => 2,
-                    'url' => 'lussuttaja/tussin',
-                    'name' => 'tussin',
-                ),
-
-                array(
-                    'id' => 4,
-                    'parent_id' => 2,
-                    'url' => 'lussuttaja/banskun',
-                    'name' => 'banskun',
-                ),
-                
-                
-            ),
-        ));
-    }
     
     
     public function setUp()
     {
+        parent::setUp();
+        
         $db = Zend_Db::factory('PDO_SQLITE', array(
             'dbname' => ROOT_TESTS . '/data/filelib-test.db',
         ));
@@ -70,11 +34,11 @@ class ZendDbBackendTest extends TestCase
         $this->backend = new ZendDbBackend();
         $this->backend->setDb($db);
         
-        $conn = $this->getConnection()->getConnection();
+        // $conn = $this->getConnection()->getConnection();
         
                 
         // $conn->exec('DELETE FROM xi_filelib_folder');
-        $conn->exec("DELETE FROM sqlite_sequence where name='xi_filelib_folder'");
+       // $n->exec("DELETE FROM sqlite_sequence where name='xi_filelib_folder'");
 
 
         
@@ -89,12 +53,8 @@ class ZendDbBackendTest extends TestCase
     public function findRootFolderShouldReturnRootFolder()
     {
     
-        var_dump($this->backend->getFolderTable()->fetchAll()->toArray());
-        
         
         $folder = $this->backend->findRootFolder();
-        
-        var_dump($folder);
         
         $this->assertArrayHasKey('id', $folder);
         $this->assertArrayHasKey('parent_id', $folder);
@@ -110,11 +70,21 @@ class ZendDbBackendTest extends TestCase
     public function provideForFindFolder()
     {
         return array(
-            array(1, array(array('name' => 'root'))),
-            array(2, array(array('name' => 'lussuttaja'))),
-            array(3, array(array('name' => 'tussin'))),
-            array(4, array(array('name' => 'banskun'))),
+            array(1, array('name' => 'root')),
+            array(2, array('name' => 'lussuttaja')),
+            array(3, array('name' => 'tussin')),
+            array(4, array('name' => 'banskun')),
         );
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function zendDbGettersShouldReturnCorrectObjects()
+    {
+        $this->assertInstanceOf('Xi\Filelib\Backend\ZendDb\FileTable', $this->backend->getFileTable());
+        $this->assertInstanceOf('Xi\Filelib\Backend\ZendDb\FolderTable', $this->backend->getFolderTable());
     }
     
     
@@ -128,15 +98,62 @@ class ZendDbBackendTest extends TestCase
         $lus = $this->backend->getFolderTable()->fetchAll();
         
         $folder = $this->backend->findFolder($folderId);
-                
+        
         $this->assertArrayHasKey('id', $folder);
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
         
-        $this->assertEquals($folderId, $data['id']);
+        $this->assertEquals($folderId, $folder['id']);
+        $this->assertEquals($data['name'], $folder['name']);
         
     }
+    
+    /**
+     * @test
+     */
+    public function createFolderShouldCreateFolder()
+    {
+        $data = array(
+            'parent_id' => 3,
+            'name' => 'lusander',
+            'url' => 'lussuttaja/tussin/lusander',
+        );
+        
+        $folder = FolderItem::create($data);
+
+        
+        $this->assertNull($folder->getId());
+                
+        $ret = $this->backend->createFolder($folder);
+        
+        $this->assertInternalType('integer', $ret->getId());
+        
+    }
+    
+    
+    /**
+     * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function createFolderShouldThrowExceptionWhenFolderIsInvalid()
+    {
+        $data = array(
+            'parent_id' => 666,
+            'name' => 'lusander',
+            'url' => 'lussuttaja/tussin/lusander',
+        );
+        
+        $folder = FolderItem::create($data);
+        
+        $ret = $this->backend->createFolder($folder);
+    
+        
+        var_dump($ret);
+        
+    }
+    
+    
     
     
     
