@@ -98,7 +98,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
                         
             $folderRow->save();
             	
-            $folder->setId($folderRow->id);
+            $folder->setId((int) $folderRow->id);
             return $folder;
             	
         } catch(Exception $e) {
@@ -375,8 +375,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
     private function _folderRowToArray($row)
     {
         return array(
-            'id' => $row->id,
-            'parent_id' => $row->parent_id,
+            'id' => (int) $row->id,
+            'parent_id' => (int) $row->parent_id,
             'name' => $row->foldername,
             'url' => $row->folderurl,
         );

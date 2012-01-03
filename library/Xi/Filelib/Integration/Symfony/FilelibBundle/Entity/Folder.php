@@ -28,11 +28,16 @@ class Folder
     protected $url;
     
     /**
-     * @ORM\OneToOne(targetEntity="Folder")
+     * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent")
+     */
+    private $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
-    protected $parent;
-
+    private $parent;
+    // ...
     /**
      * Get id
      *
