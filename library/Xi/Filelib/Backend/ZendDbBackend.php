@@ -2,7 +2,9 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib, \DateTime;
+use Xi\Filelib\FileLibrary, \DateTime, \Exception;
+
+use Xi\Filelib\FilelibException;
 
 /**
  * Zend Db backend for filelib.
@@ -49,14 +51,10 @@ class ZendDbBackend extends AbstractBackend implements Backend
      */
     public function getDb()
     {
-        if(!$this->_db) {
-            throw new FilelibException('Db handler has no db');
-        }
-
         return $this->_db;
     }
 
-
+    
     /**
      * Returns file table
      *
@@ -83,11 +81,43 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
         return $this->_folderTable;
     }
+   
 
+    public function findRootFolder()
+    {
+        $row = $this->getFolderTable()->fetchRow(array('parent_id IS NULL'));
+        
+        if(!$row) {
+            
+            $row = $this->getFolderTable()->createRow();
+            $row->foldername = 'root';
+            $row->parent_id = null;
+            $row->folderurl = '';
+            $row->save();
+            
+        }
+        
+        return $this->_folderRowToArray($row);
+    }
+    
+    
+    public function findFolder($id)
+    {
+        if(!is_numeric($id)) {
+            throw new FilelibException("File id must be numeric");
+        }
+        
+        $row = $this->getFolderTable()->find($id)->current();
 
+        if(!$row) {
+            return false;
+        }
 
+        return $this->_folderRowToArray($row);
+                
+    }
 
-
+    
     public function createFolder(\Xi\Filelib\Folder\Folder $folder)
     {
         try {
@@ -105,20 +135,22 @@ class ZendDbBackend extends AbstractBackend implements Backend
             throw new \Xi\Filelib\FilelibException($e->getMessage());
         }
 
-
     }
 
-
+    
     public function deleteFolder(\Xi\Filelib\Folder\Folder $folder)
     {
         try {
-            $this->getFolderTable()->delete($this->getFolderTable()->getAdapter()->quoteInto("id = ?", $folder->getId()));
+            $ret = $this->getFolderTable()->delete($this->getFolderTable()->getAdapter()->quoteInto("id = ?", $folder->getId()));
+            
+            return (bool) $ret;
+            
         } catch(Exception $e) {
             throw new \Xi\Filelib\FilelibException($e->getMessage());
         }
 
     }
-
+    
     public function updateFolder(\Xi\Filelib\Folder\Folder $folder)
     {
         $data = array(
@@ -129,17 +161,111 @@ class ZendDbBackend extends AbstractBackend implements Backend
         );
         
         try {
-            $this->getFolderTable()->update(
+            $ret = $this->getFolderTable()->update(
                 $data,
                 $this->getFolderTable()->getAdapter()->quoteInto('id = ?', $folder->getId())
             );
+            
+            return (bool) $ret;
+            
             	
         } catch(Exception $e) {
             throw new \Xi\Filelib\FilelibException($e->getMessage());
         }
 
     }
+    
+    
+    
+    public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
+    {
+        try {
+            $folderRows = $this->getFolderTable()->fetchAll(array('parent_id = ?' => $folder->getId()));
+        } catch(Exception $e) {
+            throw new FilelibException('Invalid folder');
+        }
+        
+        $ret = array();
+        foreach($folderRows as $folderRow) {
+            $ret[] = $this->_folderRowToArray($folderRow);
+        }
+        
+        return $ret;
+    }
+    
+    
+    /**
+     * Finds folder by url
+     *
+     * @param  integer                          $id
+     * @return \Xi\Filelib\Folder\Folder|false
+     */
+    public function findFolderByUrl($url)
+    {
+        try {
+            $folder = $this->getFolderTable()->fetchRow(array('folderurl = ?' => $url));
+        } catch(Exception $e) {
+            throw new FilelibException($e->getMessage());
+        }
+        
+        if(!$folder) {
+            return false;
+        }
+                
+        return $this->_folderRowToArray($folder);
+        
+    }
+    
+    public function findFilesIn(\Xi\Filelib\Folder\Folder $folder)
+    {
+        try {
+            $res = $this->getFileTable()->fetchAll(array('folder_id = ?' => $folder->getId()));
+        } catch(Exception $e) {
+            throw new FilelibException($e->getMessage());
+        }
+       
+        $ret = array();
+        foreach($res as $awww) {
+            $ret[] = $this->_fileRowToArray($awww);
+        }
+                
+        array_walk($ret, function(&$ret) {
+            $ret['date_uploaded'] = new DateTime($ret['date_uploaded']); 
+        });      
+        return $ret;
+    }
 
+    
+    public function findFile($id)
+    {
+        $fileRow = $this->getFileTable()->find($id)->current();
+        if(!$fileRow) {
+            return false;
+        }
+        
+        $ret = $this->_fileRowToArray($fileRow);
+        $ret['date_uploaded'] = new \DateTime($ret['date_uploaded']);
+        return $ret;
+        
+    }
+    
+    
+    public function findAllFiles()
+    {
+        $res = $this->getFileTable()->fetchAll(array(), "id ASC");
+        
+        $ret = array();
+        foreach($res as $awww) {
+            $ret[] = $this->_fileRowToArray($awww);
+        }
+                
+        array_walk($ret, function(&$ret) {
+            $ret['date_uploaded'] = new DateTime($ret['date_uploaded']); 
+        });      
+        return $ret;
+        
+    }
+    
 
     public function updateFile(\Xi\Filelib\File\File $file)
     {
@@ -187,6 +313,9 @@ class ZendDbBackend extends AbstractBackend implements Backend
         }
 
     }
+    
+    
+    
 
     public function upload(\Xi\Filelib\File\Upload\FileUpload $upload, \Xi\Filelib\Folder\Folder $folder, \Xi\Filelib\File\FileProfile $profile)
     {
@@ -222,116 +351,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
 
-    public function findFolder($id)
-    {
-        $row = $this->getFolderTable()->find($id)->current();
-
-        if(!$row) {
-            return false;
-        }
-
-        return $this->_folderRowToArray($row);
-                
-    }
-
-
-    public function findRootFolder()
-    {
-        $row = $this->getFolderTable()->fetchRow(array('parent_id IS NULL'));
-        
-        if(!$row) {
-            
-            $row = $this->getFolderTable()->createRow();
-            $row->foldername = 'root';
-            $row->parent_id = null;
-            $row->folderurl = '';
-            $row->save();
-            
-        }
-        
-        return $this->_folderRowToArray($row);
-    }
-
-
-
-    public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
-    {
-        $folderRows = $this->getFolderTable()->fetchAll(array('parent_id = ?' => $folder->getId()));
-        
-        $ret = array();
-        foreach($folderRows as $folderRow) {
-            $ret[] = $this->_folderRowToArray($folderRow);
-        }
-        
-        return $ret;
-    }
-
-
-
-    public function findFile($id)
-    {
-        $fileRow = $this->getFileTable()->find($id)->current();
-        if(!$fileRow) {
-            return false;
-        }
-        
-        $ret = $this->_fileRowToArray($fileRow);
-        $ret['date_uploaded'] = new \DateTime($ret['date_uploaded']);
-        return $ret;
-        
-    }
-
-
-    public function findFilesIn(\Xi\Filelib\Folder\Folder $folder)
-    {
-        $res = $this->getFileTable()->fetchAll(array('folder_id = ?' => $folder->getId()));
-       
-        $ret = array();
-        foreach($res as $awww) {
-            $ret[] = $this->_fileRowToArray($awww);
-        }
-                
-        array_walk($ret, function(&$ret) {
-            $ret['date_uploaded'] = new DateTime($ret['date_uploaded']); 
-        });      
-        return $ret;
-    }
-
-
-    public function findAllFiles()
-    {
-        $res = $this->getFileTable()->fetchAll(array(), "id ASC");
-        
-        $ret = array();
-        foreach($res as $awww) {
-            $ret[] = $this->_fileRowToArray($awww);
-        }
-                
-        array_walk($ret, function(&$ret) {
-            $ret['date_uploaded'] = new DateTime($ret['date_uploaded']); 
-        });      
-        return $ret;
-        
-    }
     
     
-    /**
-     * Finds folder by url
-     *
-     * @param  integer                          $id
-     * @return \Xi\Filelib\Folder\Folder|false
-     */
-    public function findFolderByUrl($url)
-    {
-        $folder = $this->getFolderTable()->fetchRow(array('folderurl = ?' => $url));
-        
-        if(!$folder) {
-            return false;
-        }
-                
-        return $this->_folderRowToArray($folder);
-        
-    }
         
     /**
      * Finds file in a folder by filename
