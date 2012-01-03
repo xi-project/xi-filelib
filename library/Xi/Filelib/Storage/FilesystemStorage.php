@@ -9,7 +9,8 @@ use \Xi\Filelib\FileLibrary,
     \Xi\Filelib\Configurator,
     \Xi\Filelib\File\FileObject,
     \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator,
-    \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+    \Xi\Filelib\Plugin\VersionProvider\VersionProvider,
+    \Xi\Filelib\FilelibException
     ;
     
 
