@@ -4,7 +4,9 @@ namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Filelib\Backend\ZendDbBackend,
     \Zend_Db,
-    Xi\Filelib\Folder\FolderItem
+    Xi\Filelib\Folder\FolderItem,
+    Xi\Filelib\File\FileItem,
+    \DateTime
     ;
 
 /**
@@ -509,6 +511,16 @@ class ZendDbBackendTest extends TestCase
     
     /**
      * @test
+     * @expectedException \Xi\Filelib\FilelibException
+     */
+    public function findFileShouldThrowExceptionWithErroneousId()
+    {
+        $ret = $this->backend->findFile('xooxoeroe');
+    }
+    
+    
+    /**
+     * @test
      */
     public function findAllFilesShouldReturnAllFiles()
     {
@@ -535,5 +547,111 @@ class ZendDbBackendTest extends TestCase
         }
         
     }
+    
+    /**
+     * @test
+     */
+    public function updateFileShouldUpdateFile()
+    {
+        
+        $data = array(
+            'id' => 1,
+            'folder_id' => 1,
+            'mimetype' => 'image/png',
+            'profile' => 'versioned',
+            'size' => '1000',
+            'name' => 'tohtori-vesala.png',
+            'link' => 'tohtori-vesala.png',
+            'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+        );
+        
+        $updated = array(
+            'id' => 1,
+            'folder_id' => 2,
+            'mimetype' => 'image/jpg',
+            'profile' => 'lussed',
+            'size' => '1006',
+            'name' => 'tohtori-sykero.png',
+            'link' => 'tohtori-sykero.png',
+            'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
+        );
+                
+        $file = FileItem::create($updated);
+        
+        $updated = $this->backend->updateFile($file);
+        
+        $this->assertTrue($updated);
+        
+        
+        $row = $this->backend->getDb()->fetchRow("SELECT * FROM xi_filelib_file WHERE id = 1");
+                
+        $this->assertEquals($row['id'], 1);
+        $this->assertEquals($row['folder_id'], 2);
+        $this->assertEquals($row['mimetype'], 'image/jpg');
+        $this->assertEquals($row['fileprofile'], 'lussed');
+        $this->assertEquals($row['filesize'], 1006);
+        $this->assertEquals($row['filename'], 'tohtori-sykero.png');
+        $this->assertEquals($row['filelink'], 'tohtori-sykero.png');
+        $this->assertEquals($row['date_uploaded'], '2011-01-02 16:16:16');
+       
+    }
+    
+    
+    /**
+     * @test
+     * @expectedException \Xi\Filelib\FilelibException
+     */
+    public function updateFileShouldThrowExceptionWithErroneousFile()
+    {
+        $updated = array(
+            'id' => 1,
+            'folder_id' => 666666,
+            'mimetype' => 'image/jpg',
+            'profile' => 'lussed',
+            'size' => '1006',
+            'name' => 'tohtori-sykero.png',
+            'link' => 'tohtori-sykero.png',
+            'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
+        );
+        
+        $file = FileItem::create($updated);
+        
+        $updated = $this->backend->updateFile($file);
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function deleteFileShouldDeleteFile()
+    {
+        $file = FileItem::create(array('id' => 5));
+        
+        $deleted = $this->backend->deleteFile($file);
+        
+        $this->assertTrue($deleted);
+        
+        $row = $this->backend->getDb()->fetchRow("SELECT * FROM xi_filelib_file WHERE id = 5");
+        
+        $this->assertFalse($row);
+                
+    }
+    
+    /**
+     * @test
+     * @expectedException \Xi\Filelib\FilelibException
+     */
+    public function deleteFileShouldThrowExceptionWithErroneousFile()
+    {
+        $file = FileItem::create(array('id' => 'xooxoox'));
+        
+        $this->backend->deleteFile($file);
+        
+    }
+    
+    
+    
+    
+    
     
 }

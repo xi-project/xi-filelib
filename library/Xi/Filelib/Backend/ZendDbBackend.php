@@ -236,20 +236,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     
-    public function findFile($id)
-    {
-        $fileRow = $this->getFileTable()->find($id)->current();
-        if(!$fileRow) {
-            return false;
-        }
-        
-        $ret = $this->_fileRowToArray($fileRow);
-        $ret['date_uploaded'] = new \DateTime($ret['date_uploaded']);
-        return $ret;
-        
-    }
-    
-    
     public function findAllFiles()
     {
         $res = $this->getFileTable()->fetchAll(array(), "id ASC");
@@ -265,32 +251,54 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return $ret;
         
     }
+
+    
+    public function findFile($id)
+    {
+         try {
+            $fileRow = $this->getFileTable()->find($id)->current();
+            
+            if (!$fileRow) {
+                return false;
+            }
+            
+            $ret = $this->_fileRowToArray($fileRow);
+            $ret['date_uploaded'] = new \DateTime($ret['date_uploaded']);
+            return $ret;
+            
+        } catch(Exception $e) {
+            throw new FilelibException($e->getMessage());
+        }
+                
+        
+    }
+    
+    
     
 
     public function updateFile(\Xi\Filelib\File\File $file)
     {
         try {
-
-            $file->setLink($file->getProfileObject()->getLinker()->getLink($file, true));
             
-            $data = array(
-                'id' => $file->getId(),
-                'folder_id' => $file->getFolderId(),
-                'mimetype' => $file->getMimetype(),
-                'filesize' => $file->getSize(),
-                'filename' => $file->getName(),
-                'fileprofile' => $file->getProfile(),
-                'date_uploaded' => $file->getDateUploaded()->format('Y-m-d H:i:s'),
-                'filelink' => $file->getLink(),
+            $data = $file->toArray();
+            
+            $fixed = array(
+                'folder_id' => $data['folder_id'],
+                'mimetype' => $data['mimetype'],
+                'filesize' => $data['size'],
+                'filename' => $data['name'],
+                'fileprofile' => $data['profile'],
+                'date_uploaded' => $data['date_uploaded']->format('Y-m-d H:i:s'),
+                'filelink' => $data['link'],
             ); 
             
             
-            $this->getFileTable()->update(
-                $data,
-                $this->getFileTable()->getAdapter()->quoteInto('id = ?', $file->getId())
+            $ret = $this->getFileTable()->update(
+                $fixed,
+                $this->getFileTable()->getAdapter()->quoteInto('id = ?', $data['id'])
             );
 
-            // $file->link = $file->link;
+            return (boolean) $ret;
             	
         } catch(Exception $e) {
             throw new \Xi\Filelib\FilelibException($e->getMessage());
@@ -304,9 +312,15 @@ class ZendDbBackend extends AbstractBackend implements Backend
         try {
             $this->getDb()->beginTransaction();
             $fileRow = $this->getFileTable()->find($file->getId())->current();
-            $fileRow->delete();
+            
+            if (!$fileRow) {
+                return false;
+            }
+            
+            $ret = $fileRow->delete();
             $this->getDb()->commit();
             return true;
+            
         } catch(Exception $e) {
             $this->getDb()->rollBack();
             throw new \Xi\Filelib\FilelibException($e->getMessage());
