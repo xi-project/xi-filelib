@@ -173,7 +173,7 @@ class FileUpload extends \Xi\Filelib\File\FileObject
             'folder_id' => $folder->getId(),
             'mimetype' => $upload->getMimeType(),
             'size' => $upload->getSize(),
-            'name' => $upload->getUploadName(),
+            'name' => $this->getUploadFilename(),
             'profile' => $profile,
             'date_uploaded' => $upload->getDateUploaded(),
         ));
@@ -187,7 +187,7 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
         // $file = $this->getFilelib()->getFileOperator()->getInstance($file);
         
-        $file->setLink($profile->getLinker()->getLink($file, true));
+        $file->setLink($profileObj->getLinker()->getLink($file, true));
         
         $this->getFilelib()->getBackend()->updateFile($file);
         
