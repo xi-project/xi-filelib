@@ -4,7 +4,7 @@ namespace Xi\Tests\Filelib\Backend;
 
 use \PDO;
 
-abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase {
+abstract class DbTestCase extends \PHPUnit_Extensions_Database_TestCase {
     
 
     protected $connection;

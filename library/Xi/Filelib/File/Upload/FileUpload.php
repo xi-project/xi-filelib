@@ -164,18 +164,28 @@ class FileUpload extends \Xi\Filelib\File\FileObject
             throw new \Xi\Filelib\FilelibException("Folder '{$folder->getId()}'not writeable");
         }
         
-        $profile = $this->getFilelib()->file()->getProfile($profile);
-        foreach($profile->getPlugins() as $plugin) {
+        $profileObj = $this->getFilelib()->file()->getProfile($profile);
+        foreach($profileObj->getPlugins() as $plugin) {
             $upload = $plugin->beforeUpload($this);
         }
 
-        $file = $this->getFilelib()->getBackend()->upload($this, $folder, $profile);
+        $file = $this->getFilelib()->getFileOperator()->getInstance(array(
+            'folder_id' => $folder->getId(),
+            'mimetype' => $upload->getMimeType(),
+            'size' => $upload->getSize(),
+            'name' => $upload->getUploadName(),
+            'profile' => $profile,
+            'date_uploaded' => $upload->getDateUploaded(),
+        ));
         
-        if(!$file) {
-            throw new \Xi\Filelib\FilelibException("Can not upload");
+        $this->getFilelib()->getBackend()->upload($file, $folder);
+        
+        // @todo: identity map, unit o work etc
+        if(!$file->getId()) {
+            throw new \Xi\Filelib\FilelibException("Upload failed");
         }
 
-        $file = $this->getFilelib()->getFileOperator()->getInstance($file);
+        // $file = $this->getFilelib()->getFileOperator()->getInstance($file);
         
         $file->setLink($profile->getLinker()->getLink($file, true));
         

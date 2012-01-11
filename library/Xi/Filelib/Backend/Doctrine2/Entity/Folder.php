@@ -2,6 +2,8 @@
 
 namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
+use Doctrine\ORM\Mapping;
+
 /**
  * @Entity
  * @Table(name="xi_filelib_folder")
@@ -26,11 +28,16 @@ class Folder
     protected $url;
     
     /**
-     * @OneToOne(targetEntity="Folder")
+     * @OneToMany(targetEntity="Folder", mappedBy="parent")
+     */
+    private $children;
+
+    /**
+     * @ManyToOne(targetEntity="Folder", inversedBy="children")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */
-    protected $parent;
-
+    private $parent;
+    // ...
     /**
      * Get id
      *

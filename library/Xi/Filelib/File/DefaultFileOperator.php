@@ -285,7 +285,8 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         if(!$upload instanceof \Xi\Filelib\File\Upload\FileUpload) {
             $upload = $this->prepareUpload($upload);
         }
-
+        
+        
         return $upload->upload($folder, $profile);
     }
 

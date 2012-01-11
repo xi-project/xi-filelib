@@ -2,9 +2,14 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\FileLibrary, \DateTime, \Exception;
+use \Xi\Filelib\FileLibrary,
+    \Xi\Filelib\FilelibException,
+    \DateTime,
+    \Exception,
+    \Xi\Filelib\File\File,
+    \Xi\Filelib\Folder\Folder
+    ;
 
-use Xi\Filelib\FilelibException;
 
 /**
  * Zend Db backend for filelib.
@@ -229,9 +234,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
             $ret[] = $this->_fileRowToArray($awww);
         }
                 
-        array_walk($ret, function(&$ret) {
-            $ret['date_uploaded'] = new DateTime($ret['date_uploaded']); 
-        });      
         return $ret;
     }
 
@@ -244,10 +246,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
         foreach($res as $awww) {
             $ret[] = $this->_fileRowToArray($awww);
         }
-                
-        array_walk($ret, function(&$ret) {
-            $ret['date_uploaded'] = new DateTime($ret['date_uploaded']); 
-        });      
         return $ret;
         
     }
@@ -263,7 +261,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             }
             
             $ret = $this->_fileRowToArray($fileRow);
-            $ret['date_uploaded'] = new \DateTime($ret['date_uploaded']);
+            
             return $ret;
             
         } catch(Exception $e) {
@@ -328,32 +326,30 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
     }
     
-    
-    
 
-    public function upload(\Xi\Filelib\File\Upload\FileUpload $upload, \Xi\Filelib\Folder\Folder $folder, \Xi\Filelib\File\FileProfile $profile)
+    public function upload(File $file, \Xi\Filelib\Folder\Folder $folder)
     {
         try {
                         
             $this->getDb()->beginTransaction();
 
-            $file = $this->getFileTable()->createRow();
+            $row = $this->getFileTable()->createRow();
             
-            $file->folder_id = $folder->getId();
-            $file->mimetype = $upload->getMimeType();
-            $file->filesize = $upload->getSize();
-            $file->filename = $upload->getUploadFilename();
-            $file->fileprofile = $profile->getIdentifier();
-            $file->date_uploaded = $upload->getDateUploaded()->format('Y-m-d H:i:s');
+            $row->folder_id = $folder->getId();
+            $row->mimetype = $file->getMimeType();
+            $row->filesize = $file->getSize();
+            $row->filename = $file->getName();
+            $row->fileprofile = $file->getProfile();
+            $row->date_uploaded = $file->getDateUploaded()->format('Y-m-d H:i:s');
                         	
-            $file->save();
-            	
+            $row->save();
+                                    	
             $this->getDb()->commit();
-            	
-            $ret = $this->_fileRowToArray($file);
-            $ret['date_uploaded'] = new \DateTime($ret['date_uploaded']);
             
-            return $ret;
+            $file->setId($row->id);
+            $file->setFolderId($row->folder_id);
+            
+            return $file;
 
         } catch(Exception $e) {
             	
@@ -376,11 +372,16 @@ class ZendDbBackend extends AbstractBackend implements Backend
      */
     public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
     {
-        $file = $this->getFileTable()->fetchRow(array(
-            'folder_id = ?' => $folder->getId(),
-            'filename = ?' => $filename,
-        ));
-                
+        
+        try {
+            $file = $this->getFileTable()->fetchRow(array(
+                'folder_id = ?' => $folder->getId(),
+                'filename = ?' => $filename,
+            ));
+        } catch (Exception $e) {
+            throw new FilelibException($e->getMessage());
+        }
+        
         if (!$file) {
             return false;
         }
@@ -401,7 +402,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'name' => $row->filename,
             'profile' => $row->fileprofile,
             'link' => $row->filelink,
-            'date_uploaded' => $row->date_uploaded,
+            'date_uploaded' => new DateTime($row->date_uploaded),
         );
         
     }
@@ -424,4 +425,3 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
 
 }
-?>

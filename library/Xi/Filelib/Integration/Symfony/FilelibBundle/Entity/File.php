@@ -6,7 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="xi_filelib_file")
+ * @ORM\Table(name="xi_filelib_file",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="folderid_filename_unique",columns={"folder_id","filename"})}
+ * )
  */
 class File
 {
@@ -45,7 +47,7 @@ class File
     protected $name;
 
     /**
-     * @ORM\Column(name="filelink", type="string", length=1000, nullable=true)
+     * @ORM\Column(name="filelink", type="string", length=1000, nullable=true, unique=true)
      */
     protected $link;
     

@@ -2,56 +2,71 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use Xi\Filelib\Backend\ZendDbBackend,
-    \Zend_Db,
+use Xi\Filelib\Backend\Doctrine2Backend,
     Xi\Filelib\Folder\FolderItem,
     Xi\Filelib\File\FileItem,
-    \DateTime
+    \DateTime,
+        
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Configuration,
+    Doctrine\DBAL\Connection
     ;
 
-/**
- * Description of ZendDbTest
- *
- * @author pekkis
- */
-class ZendDbBackendTest extends DbTestCase
+class Doctrine2BackendTest extends DbTestCase
 {
     /**
      *
-     * @var ZendDbBackend
+     * @var Doctrine2Backend
      */
     protected $backend;
-    
-    
-    protected static $conn;
-    
-    public static function setUpBeforeClass()
-    {
-        self::$conn = Zend_Db::factory('PDO_PGSQL', array(
-            'host' => '127.0.0.1',
-            'dbname' => 'filelib_test',
-            'username' => 'pekkis',
-            'password' => 'g04753m135'
-        ));
         
-    }
+    /**
+     *
+     * @var Connection
+     */
+    protected $conn;
     
-    
+    /**
+     *
+     * @var EntityManager
+     */
+    protected $em;
     
     public function setUp()
     {
+        
         parent::setUp();
-        
-        
-        $this->backend = new ZendDbBackend();
-        $this->backend->setDb(self::$conn);
-        
-        // $conn = $this->getConnection()->getConnection();
-        
                 
-        // $conn->exec('DELETE FROM xi_filelib_folder');
-       // $n->exec("DELETE FROM sqlite_sequence where name='xi_filelib_folder'");
+        $this->backend = new Doctrine2Backend();
+                
+        $cache = new \Doctrine\Common\Cache\ArrayCache;
+    
+        $config = new Configuration;
+        $config->setMetadataCacheImpl($cache);
+        $driverImpl = $config->newDefaultAnnotationDriver(ROOT_TESTS . '/../library/Xi/Filelib/Backend/Doctrine2/Entity');
+        $config->setMetadataDriverImpl($driverImpl);
+        $config->setQueryCacheImpl($cache);
+        $config->setProxyDir(ROOT_TESTS . '/data/temp');
+        $config->setProxyNamespace('FilelibTest\Proxies');
+        $config->setAutoGenerateProxyClasses(true);
+    
+        $connectionOptions = array(
+            'driver' => 'pdo_pgsql',
+            'dbname' => 'filelib_test',
+            'user' => 'pekkis',
+            'password' => 'g04753m135',
+            'host' => '127.0.0.1',
+        );
+
+    
+        $em = EntityManager::create($connectionOptions, $config);        
+
+        $this->em = $em;
         
+        $this->conn = $em->getConnection();
+        
+        $this->backend->setEntityManager($em);
+                
                 
     }
     
@@ -59,6 +74,7 @@ class ZendDbBackendTest extends DbTestCase
     public function tearDown()
     {
         parent::tearDown();
+
     }
     
     
@@ -98,12 +114,11 @@ class ZendDbBackendTest extends DbTestCase
     /**
      * @test
      */
-    public function zendDbGettersShouldReturnCorrectObjects()
+    public function entityClassGettersShouldReturnCorrectClassNames()
     {
-        $this->assertInstanceOf('Xi\Filelib\Backend\ZendDb\FileTable', $this->backend->getFileTable());
-        $this->assertInstanceOf('Xi\Filelib\Backend\ZendDb\FolderTable', $this->backend->getFolderTable());
+        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\File', $this->backend->getFileEntityName());
+        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\Folder', $this->backend->getFolderEntityName());
     }
-    
     
     
     /**
@@ -200,16 +215,16 @@ class ZendDbBackendTest extends DbTestCase
         
         $folder = FolderItem::create($data);
                 
-        $rows = $this->backend->getFolderTable()->fetchAll('id = 5');
+        $rows = $this->conn->fetchAll("SELECT * FROM xi_filelib_folder WHERE id = 5");
         
-        $this->assertEquals(1, $rows->count());
+        $this->assertEquals(1, sizeof($rows));
         
         $deleted = $this->backend->deleteFolder($folder);
         $this->assertTrue($deleted);
         
         
-        $rows = $this->backend->getFolderTable()->fetchAll('id = 5');
-        $this->assertEquals(0, $rows->count());
+        $rows = $this->conn->fetchAll('SELECT * FROM xi_filelib_folder WHERE id = 5');
+        $this->assertEquals(0, sizeof($rows));
                 
         $this->assertFalse($this->backend->findFolder(5));
         
@@ -230,9 +245,9 @@ class ZendDbBackendTest extends DbTestCase
         
         $folder = FolderItem::create($data);
                 
-        $rows = $this->backend->getFolderTable()->fetchAll('id = 5');
+        $rows = $this->conn->fetchAll('SELECT * FROM xi_filelib_folder WHERE id = 5');
         
-        $this->assertEquals(1, $rows->count());
+        $this->assertEquals(1, sizeof($rows));
         
         $deleted = $this->backend->deleteFolder($folder);
         
@@ -251,8 +266,9 @@ class ZendDbBackendTest extends DbTestCase
         );
         
         $folder = FolderItem::create($data);
-        
+                
         $deleted = $this->backend->deleteFolder($folder);
+                
         $this->assertEquals(false, $deleted);
 
     }
@@ -270,8 +286,8 @@ class ZendDbBackendTest extends DbTestCase
             'foldername' => 'tussin',
         );
         
-        $row = $this->backend->getFolderTable()->fetchRow('id = 3')->toArray();
-        
+        $row = $this->conn->fetchAssoc('SELECT * FROM xi_filelib_folder WHERE id = 3');
+       
         $this->assertEquals($data, $row);
         
         
@@ -292,8 +308,8 @@ class ZendDbBackendTest extends DbTestCase
         $ret = $this->backend->updateFolder($folder);
         $this->assertTrue($ret);
         
-        $row = $this->backend->getFolderTable()->fetchRow('id = 3')->toArray();
-        
+        $row = $this->conn->fetchAssoc('SELECT * FROM xi_filelib_folder WHERE id = 3');
+                        
         $this->assertEquals($data, $row);
         
 
@@ -586,7 +602,7 @@ class ZendDbBackendTest extends DbTestCase
         $this->assertTrue($updated);
         
         
-        $row = $this->backend->getDb()->fetchRow("SELECT * FROM xi_filelib_file WHERE id = 1");
+        $row = $this->conn->fetchAssoc("SELECT * FROM xi_filelib_file WHERE id = 1");
                 
         $this->assertEquals($row['id'], 1);
         $this->assertEquals($row['folder_id'], 2);
@@ -634,7 +650,7 @@ class ZendDbBackendTest extends DbTestCase
         
         $this->assertTrue($deleted);
         
-        $row = $this->backend->getDb()->fetchRow("SELECT * FROM xi_filelib_file WHERE id = 5");
+        $row = $this->conn->fetchAssoc("SELECT * FROM xi_filelib_file WHERE id = 5");
         
         $this->assertFalse($row);
                 
