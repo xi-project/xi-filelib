@@ -86,11 +86,11 @@ class LeveledDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
         $this->file->setId(100001);
         $this->assertEquals('1/1/1/11/1', $this->calc->calculateDirectoryId($this->file));
 
-        $this->file->setId(1000000000000);
-        $this->assertEquals('100/100/100/100/100', $this->calc->calculateDirectoryId($this->file));
+        $this->file->setId(100000000);
+        $this->assertEquals('1/1/100/100/100', $this->calc->calculateDirectoryId($this->file));
         
-        $this->file->setId(1000000000001);
-        $this->assertEquals('101/1/1/1/1', $this->calc->calculateDirectoryId($this->file));
+        $this->file->setId(100000001);
+        $this->assertEquals('1/2/1/1/1', $this->calc->calculateDirectoryId($this->file));
         
     }
 
