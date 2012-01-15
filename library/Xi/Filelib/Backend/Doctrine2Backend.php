@@ -38,7 +38,7 @@ class Doctrine2Backend extends AbstractBackend
     /**
      * Entity manager
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManager
      */
     private $_em;
 
@@ -235,16 +235,8 @@ class Doctrine2Backend extends AbstractBackend
     public function updateFile(File $file)
     {
         try {
-            $fileRow = $this->_em->getReference(
-                $this->_fileEntityName,
-                $file->getId()
-            );
-
-            $fileRow->setFolder($this->_em->getReference(
-                $this->_folderEntityName,
-                $file->getFolderId()
-            ));
-
+            $fileRow = $this->getFileReference($file);
+            $fileRow->setFolder($this->getFolderReference($file->getFolderId()));
             $fileRow->setMimetype($file->getMimetype());
             $fileRow->setProfile($file->getProfile());
             $fileRow->setSize($file->getSize());
@@ -272,8 +264,7 @@ class Doctrine2Backend extends AbstractBackend
         $this->assertValidIdentifier($file->getId());
 
         try {
-            $fileRow = $this->_em->getReference($this->_fileEntityName, $file->getId());
-            $this->_em->remove($fileRow);
+            $this->_em->remove($this->getFileReference($file));
             $this->_em->flush();
 
             return true;
@@ -394,8 +385,7 @@ class Doctrine2Backend extends AbstractBackend
             $folderRow = new $this->_folderEntityName();
 
             if ($folder->getParentId()) {
-                $folderRow->setParent($this->_em->getReference(
-                    $this->_folderEntityName,
+                $folderRow->setParent($this->getFolderReference(
                     $folder->getParentId()
                 ));
             }
@@ -426,14 +416,10 @@ class Doctrine2Backend extends AbstractBackend
         $this->assertValidIdentifier($folder->getId());
 
         try {
-            $folderRow = $this->_em->getReference(
-                $this->_folderEntityName,
-                $folder->getId()
-            );
+            $folderRow = $this->getFolderReference($folder->getId());
 
             if ($folder->getParentId()) {
-                $folderRow->setParent($this->_em->getReference(
-                    $this->_folderEntityName,
+                $folderRow->setParent($this->getFolderReference(
                     $folder->getParentId()
                 ));
             } else {
@@ -494,12 +480,7 @@ class Doctrine2Backend extends AbstractBackend
                 $fileEntityName = $self->getFileEntityName();
 
                 $file = new $fileEntityName;
-
-                $file->setFolder($em->getReference(
-                    $self->getFolderEntityName(),
-                    $folder->getId()
-                ));
-
+                $file->setFolder($self->getFolderReference($folder->getId()));
                 $file->setMimetype($upload->getMimeType());
                 $file->setSize($upload->getSize());
                 $file->setName($upload->getName());
@@ -571,5 +552,25 @@ class Doctrine2Backend extends AbstractBackend
                 $id
             ));
         }
+    }
+
+    /**
+     * @param  File        $file
+     * @return object|null
+     */
+    private function getFileReference(File $file)
+    {
+        return $this->_em->getReference($this->_fileEntityName, $file->getId());
+    }
+
+    /**
+     * NOTE: Should be private!
+     *
+     * @param  integer     $id
+     * @return object|null
+     */
+    public function getFolderReference($id)
+    {
+        return $this->_em->getReference($this->_folderEntityName, $id);
     }
 }
