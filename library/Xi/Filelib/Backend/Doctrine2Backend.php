@@ -160,15 +160,13 @@ class Doctrine2Backend extends AbstractBackend
         $this->assertValidIdentifier($folder->getId());
 
         try {
-            $folderEntity = $this->em->find($this->folderEntityName, $folder->getId());
-
             $qb = $this->em->createQueryBuilder();
 
             $qb->select('f')
                ->from($this->fileEntityName, 'f')
                ->where('f.folder = :folder')
                ->andWhere('f.name = :filename')
-               ->setParameter('folder', $folderEntity)
+               ->setParameter('folder', $folder->getId())
                ->setParameter('filename', $filename);
 
             $file = $qb->getQuery()->getResult();
