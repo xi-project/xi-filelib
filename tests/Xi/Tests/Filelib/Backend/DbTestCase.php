@@ -5,7 +5,11 @@ namespace Xi\Tests\Filelib\Backend;
 use PDO,
     PHPUnit_Extensions_Database_TestCase,
     PHPUnit_Extensions_Database_DB_IDatabaseConnection,
-    PHPUnit_Extensions_Database_Operation_Factory;
+    PHPUnit_Extensions_Database_Operation_Factory,
+    PHPUnit_Extensions_Database_Operation_Composite,
+    PHPUnit_Extensions_Database_Operation_IDatabaseOperation,
+    PHPUnit_Extensions_Database_DB_MetaData_MySQL,
+    Xi\Tests\PHPUnit\Extensions\Database\Operation\MySQL55Truncate;
 
 abstract class DbTestCase extends PHPUnit_Extensions_Database_TestCase
 {
@@ -114,18 +118,37 @@ abstract class DbTestCase extends PHPUnit_Extensions_Database_TestCase
     }
 
     /**
-     * @return PHPUnit_Extensions_Database_Operation_Factory
+     * @return PHPUnit_Extensions_Database_Operation_IDatabaseOperation
      */
     protected function getSetUpOperation()
     {
+        if ($this->isMySQL()) {
+            return new PHPUnit_Extensions_Database_Operation_Composite(array(
+                new MySQL55Truncate(true),
+                PHPUnit_Extensions_Database_Operation_Factory::INSERT()
+            ));
+        }
+
         return PHPUnit_Extensions_Database_Operation_Factory::CLEAN_INSERT(true);
     }
 
     /**
-     * @return PHPUnit_Extensions_Database_Operation_Factory
+     * @return PHPUnit_Extensions_Database_Operation_IDatabaseOperation
      */
     protected function getTearDownOperation()
     {
+        if ($this->isMySQL()) {
+            return PHPUnit_Extensions_Database_Operation_Factory::NONE();
+        }
+
         return PHPUnit_Extensions_Database_Operation_Factory::DELETE_ALL();
+    }
+
+    /**
+     * @return boolean
+     */
+    private function isMySQL()
+    {
+        return $this->getConnection()->getMetaData() instanceof PHPUnit_Extensions_Database_DB_MetaData_MySQL;
     }
 }
