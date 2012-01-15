@@ -27,9 +27,8 @@ require SYMFONY2_VENDOR_DIR . '/doctrine-common/lib/Doctrine/Common/ClassLoader.
 $classLoader = new \Doctrine\Common\ClassLoader('Xi\Tests', ROOT_TESTS);
 $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Zend', SYMFONY2_VENDOR_DIR . '/zend-framework/library');
+$classLoader = new \Doctrine\Common\ClassLoader('Zend', ZENDFRAMEWORK_DIR);
 $classLoader->register();
-
 
 $classLoader = new \Doctrine\Common\ClassLoader('Xi\Filelib', ROOT_TESTS . '/../library');
 $classLoader->register();
