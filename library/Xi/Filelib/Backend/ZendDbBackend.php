@@ -158,6 +158,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
     
     public function updateFolder(\Xi\Filelib\Folder\Folder $folder)
     {
+        $this->assertValidIdentifier($folder->getId());
+
         $data = array(
             'id' => $folder->getId(),
             'parent_id' => $folder->getParentId(),
@@ -184,6 +186,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
     
     public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
     {
+        $this->assertValidIdentifier($folder->getId());
+
         try {
             $folderRows = $this->getFolderTable()->fetchAll(array('parent_id = ?' => $folder->getId()));
         } catch(Exception $e) {
@@ -223,6 +227,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
     
     public function findFilesIn(\Xi\Filelib\Folder\Folder $folder)
     {
+        $this->assertValidIdentifier($folder->getId());
+
         try {
             $res = $this->getFileTable()->fetchAll(array('folder_id = ?' => $folder->getId()));
         } catch(Exception $e) {
@@ -253,6 +259,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
     
     public function findFile($id)
     {
+        $this->assertValidIdentifier($id);
+
          try {
             $fileRow = $this->getFileTable()->find($id)->current();
             
@@ -307,6 +315,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
     public function deleteFile(\Xi\Filelib\File\File $file)
     {
+        $this->assertValidIdentifier($file->getId());
+
         try {
             
             $fileRow = $this->getFileTable()->find($file->getId())->current();
@@ -343,7 +353,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
                         	
             $row->save();
             
-            $file->setId($row->id);
+            $file->setId((int) $row->id);
             $file->setFolderId($row->folder_id);
             
             return $file;
@@ -368,6 +378,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
      */
     public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
     {
+        $this->assertValidIdentifier($folder->getId());
         
         try {
             $file = $this->getFileTable()->fetchRow(array(
@@ -415,9 +426,17 @@ class ZendDbBackend extends AbstractBackend implements Backend
         
     }
     
-    
-
-
-
-
+    /**
+     * @param  mixed            $id
+     * @throws FilelibException
+     */
+    private function assertValidIdentifier($id)
+    {
+        if (!is_numeric($id)) {
+            throw new FilelibException(sprintf(
+                'Id must be numeric; %s given.',
+                $id
+            ));
+        }
+    }
 }

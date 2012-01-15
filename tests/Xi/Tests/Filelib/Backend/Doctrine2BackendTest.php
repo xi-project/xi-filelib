@@ -12,6 +12,9 @@ use Xi\Filelib\Backend\Doctrine2Backend,
     Doctrine\DBAL\Connection
     ;
 
+/**
+ * @group doctrine
+ */
 class Doctrine2BackendTest extends DbTestCase
 {
     /**

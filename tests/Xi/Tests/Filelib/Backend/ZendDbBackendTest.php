@@ -13,6 +13,7 @@ use Xi\Filelib\Backend\ZendDbBackend,
  * Description of ZendDbTest
  *
  * @author pekkis
+ * @group  zenddb
  */
 class ZendDbBackendTest extends DbTestCase
 {

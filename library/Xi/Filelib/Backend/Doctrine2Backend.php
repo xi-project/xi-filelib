@@ -138,7 +138,8 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function findFile($id)
     {
-        
+        $this->assertValidIdentifier($id);
+
         try {
             $file = $this->_em->find($this->_fileEntityName, $id);
         } catch (Exception $e) {
@@ -156,6 +157,7 @@ class Doctrine2Backend extends AbstractBackend
 
     public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
     {
+        $this->assertValidIdentifier($folder->getId());
 
         try {
 
@@ -217,6 +219,8 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function findFilesIn(\Xi\Filelib\Folder\Folder $folder)
     {
+        $this->assertValidIdentifier($folder->getId());
+
         $qb = $this->_em->createQueryBuilder();
 
         $qb->select('f')
@@ -285,6 +289,8 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function deleteFile(\Xi\Filelib\File\File $file)
     {
+        $this->assertValidIdentifier($file->getId());
+
         try {
             $fileRow = $this->_em->getReference($this->_fileEntityName, $file->getId());
             $this->_em->remove($fileRow);
@@ -305,6 +311,8 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function findFolder($id)
     {
+        $this->assertValidIdentifier($id);
+
         try {
             $folder = $this->_em->find($this->_folderEntityName, $id);
         } catch (Exception $e) {
@@ -378,6 +386,7 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
     {
+        $this->assertValidIdentifier($folder->getId());
 
         try {
             $qb = $this->_em->createQueryBuilder();
@@ -443,6 +452,8 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function updateFolder(\Xi\Filelib\Folder\Folder $folder)
     {
+        $this->assertValidIdentifier($folder->getId());
+
         try {
             $folderRow = $this->_em->getReference($this->_folderEntityName,
             $folder->getId());
@@ -567,5 +578,19 @@ class Doctrine2Backend extends AbstractBackend
             'name'      => $folder->getName(),
             'url' => $folder->getUrl(),
         );
+    }
+
+    /**
+     * @param  mixed            $id
+     * @throws FilelibException
+     */
+    private function assertValidIdentifier($id)
+    {
+        if (!is_numeric($id)) {
+            throw new FilelibException(sprintf(
+                'Id must be numeric; %s given.',
+                $id
+            ));
+        }
     }
 }
