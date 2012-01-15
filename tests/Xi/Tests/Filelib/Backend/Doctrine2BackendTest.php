@@ -51,11 +51,11 @@ class Doctrine2BackendTest extends DbTestCase
         $config->setAutoGenerateProxyClasses(true);
     
         $connectionOptions = array(
-            'driver' => 'pdo_pgsql',
-            'dbname' => 'filelib_test',
-            'user' => 'pekkis',
-            'password' => 'g04753m135',
-            'host' => '127.0.0.1',
+            'driver'   => 'pdo_' . PDO_DRIVER,
+            'dbname'   => PDO_DBNAME,
+            'user'     => PDO_USERNAME,
+            'password' => PDO_PASSWORD,
+            'host'     => PDO_HOST,
         );
 
     

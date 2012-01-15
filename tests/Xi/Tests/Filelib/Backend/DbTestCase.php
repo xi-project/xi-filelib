@@ -127,14 +127,10 @@ abstract class DbTestCase extends \PHPUnit_Extensions_Database_TestCase {
      */
     public function getConnection()
     {
-        $dsn = 'pgsql:host=127.0.0.1;dbname=filelib_test';
-
-        $pdo = new PDO($dsn, 'pekkis', 'g04753m135');
-        
-        $pdo->exec('PRAGMA foreign_keys = ON');
+        $dsn = sprintf('%s:host=%s;dbname=%s', PDO_DRIVER, PDO_HOST, PDO_DBNAME);
+        $pdo = new PDO($dsn, PDO_USERNAME, PDO_PASSWORD);
 
         return $this->createDefaultDBConnection($pdo);
-        
     }
     
     protected function getSetUpOperation()

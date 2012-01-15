@@ -27,13 +27,12 @@ class ZendDbBackendTest extends DbTestCase
     
     public static function setUpBeforeClass()
     {
-        self::$conn = Zend_Db::factory('PDO_PGSQL', array(
-            'host' => '127.0.0.1',
-            'dbname' => 'filelib_test',
-            'username' => 'pekkis',
-            'password' => 'g04753m135'
+        self::$conn = Zend_Db::factory('pdo_' . PDO_DRIVER, array(
+            'host'     => PDO_HOST,
+            'dbname'   => PDO_DBNAME,
+            'username' => PDO_USERNAME,
+            'password' => PDO_PASSWORD,
         ));
-        
     }
     
     

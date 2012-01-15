@@ -11,6 +11,11 @@
         <const name="ROOT_TESTS" value="/path/to/xi-filelib/tests" />
         <const name="SYMFONY2_VENDOR_DIR" value="/path/to/vendor" />
         <const name="ZENDFRAMEWORK_DIR" value="/path/to/zend-framework-2/library" />
+        <const name="PDO_DRIVER" value="pgsql" />
+        <const name="PDO_HOST" value="127.0.0.1" />
+        <const name="PDO_DBNAME" value="filelib_test" />
+        <const name="PDO_USERNAME" value="username" />
+        <const name="PDO_PASSWORD" value="password" />
         <const name="MONGO_DNS" value="mongodb://localhost:27017/" />
         <const name="S3_KEY" value="s3_key" />
         <const name="S3_SECRETKEY" value="s3_secret_key" />
