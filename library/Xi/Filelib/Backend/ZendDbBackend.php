@@ -308,7 +308,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     public function deleteFile(\Xi\Filelib\File\File $file)
     {
         try {
-            $this->getDb()->beginTransaction();
+            
             $fileRow = $this->getFileTable()->find($file->getId())->current();
             
             if (!$fileRow) {
@@ -316,7 +316,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             }
             
             $ret = $fileRow->delete();
-            $this->getDb()->commit();
+
             return true;
             
         } catch(Exception $e) {
@@ -331,7 +331,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
     {
         try {
                         
-            $this->getDb()->beginTransaction();
 
             $row = $this->getFileTable()->createRow();
             
@@ -343,8 +342,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
             $row->date_uploaded = $file->getDateUploaded()->format('Y-m-d H:i:s');
                         	
             $row->save();
-                                    	
-            $this->getDb()->commit();
             
             $file->setId($row->id);
             $file->setFolderId($row->folder_id);
@@ -353,7 +350,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
         } catch(Exception $e) {
             	
-            $this->getDb()->rollBack();
             throw new \Xi\Filelib\FilelibException($e->getMessage());
         }
         	
