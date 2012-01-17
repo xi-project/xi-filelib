@@ -8,9 +8,6 @@
 
     <php>
         <includePath>.:/path/to/Zend_Framework</includePath>
-        <const name="ROOT_TESTS" value="/path/to/xi-filelib/tests" />
-        <const name="SYMFONY2_VENDOR_DIR" value="/path/to/vendor" />
-        <const name="ZENDFRAMEWORK_DIR" value="/path/to/zend-framework-2/library" />
         <const name="PDO_DRIVER" value="pgsql" />
         <const name="PDO_HOST" value="127.0.0.1" />
         <const name="PDO_DBNAME" value="filelib_test" />
