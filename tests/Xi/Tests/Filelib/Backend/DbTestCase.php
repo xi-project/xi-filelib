@@ -3,6 +3,7 @@
 namespace Xi\Tests\Filelib\Backend;
 
 use PDO,
+    PDOException,
     PHPUnit_Extensions_Database_TestCase,
     PHPUnit_Extensions_Database_DB_IDatabaseConnection,
     PHPUnit_Extensions_Database_Operation_Factory,
@@ -112,7 +113,12 @@ abstract class DbTestCase extends PHPUnit_Extensions_Database_TestCase
     public function getConnection()
     {
         $dsn = sprintf('%s:host=%s;dbname=%s', PDO_DRIVER, PDO_HOST, PDO_DBNAME);
-        $pdo = new PDO($dsn, PDO_USERNAME, PDO_PASSWORD);
+
+        try {
+            $pdo = new PDO($dsn, PDO_USERNAME, PDO_PASSWORD);
+        } catch (PDOException $e) {
+            $this->markTestSkipped('Could not connect to database.');
+        }
 
         return $this->createDefaultDBConnection($pdo);
     }
