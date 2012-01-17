@@ -10,7 +10,7 @@ use PDO,
     PHPUnit_Extensions_Database_Operation_Composite,
     PHPUnit_Extensions_Database_Operation_IDatabaseOperation,
     PHPUnit_Extensions_Database_DB_MetaData_MySQL,
-    Xi\Tests\PHPUnit\Extensions\Database\Operation\Mysql55Truncate;
+    Xi\Tests\PHPUnit\Extensions\Database\Operation\MySQL55Truncate;
 
 abstract class DbTestCase extends PHPUnit_Extensions_Database_TestCase
 {
@@ -130,7 +130,7 @@ abstract class DbTestCase extends PHPUnit_Extensions_Database_TestCase
     {
         if ($this->isMySQL()) {
             return new PHPUnit_Extensions_Database_Operation_Composite(array(
-                new Mysql55Truncate(true),
+                new MySQL55Truncate(true),
                 PHPUnit_Extensions_Database_Operation_Factory::INSERT()
             ));
         }
