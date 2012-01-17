@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Backend;
 
-use \MongoDb, \MongoId, \MongoDate, \DateTime;
+use \MongoDb, \MongoId, \MongoDate, \DateTime, \MongoCursorException;
 
 /**
  * MongoDB backend for Filelib
@@ -160,12 +160,11 @@ class MongoBackend extends AbstractBackend implements Backend
     /**
      * Uploads a file
      *
-     * @param \Xi\Filelib\File\Upload\FileUpload $upload Fileobject to upload
+     * @param \Xi\Filelib\File\File $upload File to upload
      * @param \Xi\Filelib\Folder\Folder $folder Folder
-     * @return \Xi\Filelib\File\File File item
      * @throws \Xi\Filelib\FilelibException When fails
      */
-    public function upload(\Xi\Filelib\File\Upload\FileUpload $upload, \Xi\Filelib\Folder\Folder $folder, \Xi\Filelib\File\FileProfile $profile)
+    public function upload(\Xi\Filelib\File\File $upload, \Xi\Filelib\Folder\Folder $folder)
     {
         try {
 
@@ -174,17 +173,24 @@ class MongoBackend extends AbstractBackend implements Backend
             $file['folder_id'] = $folder->getId();
             $file['mimetype'] = $upload->getMimeType();
             $file['size'] = $upload->getSize();
-            $file['name'] = $upload->getUploadFilename();
-            $file['profile'] = $profile->getIdentifier();
+            $file['name'] = $upload->getName();
+            $file['profile'] = $upload->getProfile();
             $file['date_uploaded'] = new MongoDate($upload->getDateUploaded()->getTimestamp()); 
-                
-            $this->getMongo()->files->insert($file);
             
             $this->getMongo()->files->ensureIndex(array('folder_id' => 1, 'name' => 1), array('unique' => true));
+            
+            try {
+                $this->getMongo()->files->insert($file, array('safe' => true));
+            } catch (MongoCursorException $e) {
+                throw new \Xi\Filelib\FilelibException($e->getMessage());
+            }
                        
             $this->_mongoToFilelib($file);
-                        
-            return $file;
+            
+            $upload->setId($file['id']);
+            $upload->setFolderId($folder->getId());
+            
+            return $upload;
             
 
         } catch(Exception $e) {
@@ -222,8 +228,8 @@ class MongoBackend extends AbstractBackend implements Backend
      */
     public function deleteFolder(\Xi\Filelib\Folder\Folder $folder)
     {
-        $this->getMongo()->folders->remove(array('_id' => new MongoId($folder->getId())));
-    
+        $ret = $this->getMongo()->folders->remove(array('_id' => new MongoId($folder->getId())), array('safe' => true));
+        return (boolean) $ret['n'];
     }
     
     /**
@@ -234,7 +240,10 @@ class MongoBackend extends AbstractBackend implements Backend
      */
     public function deleteFile(\Xi\Filelib\File\File $file)
     {
-        $this->getMongo()->files->remove(array('_id' => new MongoId($file->getId())));
+        $ret = $this->getMongo()->files->remove(array('_id' => new MongoId($file->getId())), array('safe' => true));
+        
+        return (bool) $ret['n'];
+        
     }
     
     /**
@@ -248,9 +257,9 @@ class MongoBackend extends AbstractBackend implements Backend
     	$arr = $folder->toArray();
         $this->_filelibToMongo($arr);
     	
-        $this->getMongo()->folders->update(array('_id' => new MongoId($folder->getId())), $arr);
+        $ret = $this->getMongo()->folders->update(array('_id' => new MongoId($folder->getId())), $arr, array('safe' => true));
         
-        return $folder;
+        return (bool) $ret['n'];
         
         
     }
@@ -266,8 +275,9 @@ class MongoBackend extends AbstractBackend implements Backend
         $arr = $file->toArray();
         $this->_filelibToMongo($arr);
                 
-        $this->getMongo()->files->update(array('_id' => new MongoId($file->getId())), $arr);
-        return $file;
+        $ret = $this->getMongo()->files->update(array('_id' => new MongoId($file->getId())), $arr, array('safe' => true));
+        
+        return (bool) $ret['n'];
         
     }
     
@@ -357,9 +367,14 @@ class MongoBackend extends AbstractBackend implements Backend
     private function _mongoToFilelib(array &$data)
     {
         $data['id'] = $data['_id']->__toString();
-        
+       
         if(isset($data['date_uploaded'])) {
             $data['date_uploaded'] = DateTime::createFromFormat('U', $data['date_uploaded']->sec);    
+        }
+        
+        
+        if(isset($data['size'])) {
+            $data['size'] = (int) $data['size'];
         }
         
     }
@@ -372,6 +387,9 @@ class MongoBackend extends AbstractBackend implements Backend
      */
     private function _filelibToMongo(array &$data)
     {
+       
+        
+        
         unset($data['id']);
         if(isset($data['date_uploaded'])) {
             $data['date_uploaded'] = new MongoDate($data['date_uploaded']->getTimestamp());    
