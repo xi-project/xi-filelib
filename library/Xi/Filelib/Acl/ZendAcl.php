@@ -2,7 +2,10 @@
 
 namespace Xi\Filelib\Acl;
 
-use \Zend_Acl;
+use \Zend_Acl,
+    Xi\Filelib\Folder\Folder,
+    Xi\Filelib\File\File
+    ;
 
 /**
  * Zend ACL for Filelib
@@ -91,16 +94,39 @@ class ZendAcl implements Acl
 
     public function isReadable($resource)
     {
-        return $this->getAcl()->isAllowed($this->getRole(), $resource, 'read');
+        $resourceName = $this->getResourceIdentifier($resource);
+        
+        return $this->getAcl()->isAllowed($this->getRole(), $resourceName, 'read');
     }
 
     public function isWriteable($resource)
     {
-        return $this->getAcl()->isAllowed($this->getRole(), $resource, 'write');
+        $resourceName = $this->getResourceIdentifier($resource);
+        
+        return $this->getAcl()->isAllowed($this->getRole(), $resourceName, 'write');
     }
 
     public function isReadableByAnonymous($resource)
     {
-        return $this->getAcl()->isAllowed($this->getAnonymousRole(), $resource, 'read');
+        $resourceName = $this->getResourceIdentifier($resource);
+        
+        return $this->getAcl()->isAllowed($this->getAnonymousRole(), $resourceName, 'read');
     }
+    
+    
+    
+    public function getResourceIdentifier($resource)
+    {
+        if ($resource instanceof File) {
+            return 'Xi_Filelib_File_' . $resource->getId();
+        } elseif ($resource instanceof Folder) {
+            return 'Xi_Filelib_Folder_' . $resource->getId();
+        }
+        
+        $class = get_class($resource);
+        throw new \Xi\Filelib\FilelibException("Resource of class '{$class}' not identified");
+        
+    }
+    
+    
 }

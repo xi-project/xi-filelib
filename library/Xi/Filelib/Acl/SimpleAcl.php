@@ -12,6 +12,15 @@ namespace Xi\Filelib\Acl;
 class SimpleAcl implements Acl
 {
 
+    private $isReadableByAnonymous = true;
+    
+    
+    public function __construct($isReadableByAnonymous = true)
+    {
+        $this->isReadableByAnonymous = $isReadableByAnonymous;
+    }
+    
+    
     /** 
      * {@inheritdoc}
      */
@@ -35,7 +44,7 @@ class SimpleAcl implements Acl
      */
     public function isReadableByAnonymous($resource)
     {
-        return true;
+        return $this->isReadableByAnonymous;
     }
 
 
