@@ -107,7 +107,7 @@ class LeveledDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException Xi\Filelib\FilelibException
      */
-    public function nonNumericFileId()
+    public function throwsExceptionOnNonNumericFileId()
     {
         $this->file->setId('xoo');
         $this->assertEquals('1/1/1/1/1', $this->calc->calculateDirectoryId($this->file));
