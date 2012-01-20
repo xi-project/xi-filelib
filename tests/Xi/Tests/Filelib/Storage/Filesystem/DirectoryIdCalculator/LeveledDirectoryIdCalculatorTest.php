@@ -103,9 +103,15 @@ class LeveledDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
         $this->file->setId('xoo');
         $this->assertEquals('1/1/1/1/1', $this->calc->calculateDirectoryId($this->file));
     }
-      
-    
-    
-    
-    
+
+    /**
+     * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function throwsExceptionWithDirectoryLevelSmallerThanOne()
+    {
+        $this->file->setId(1);
+        $this->calc->setDirectoryLevels(-1);
+        $this->calc->calculateDirectoryId($this->file);
+    }
 }
