@@ -2,7 +2,7 @@
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="xi-filelib tests">
-            <directory>.</directory>
+            <directory>./Xi</directory>
         </testsuite>
     </testsuites>
 
