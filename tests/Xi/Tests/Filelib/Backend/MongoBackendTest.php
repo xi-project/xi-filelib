@@ -11,7 +11,8 @@ use Xi\Filelib\Backend\MongoBackend,
     \MongoDB,
     \MongoId,
     \MongoDate,
-    \MongoCursorException
+    \MongoCursorException,
+    MongoConnectionException
         
     ;
 
