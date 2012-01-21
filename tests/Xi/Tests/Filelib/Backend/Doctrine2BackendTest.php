@@ -5,12 +5,11 @@ namespace Xi\Tests\Filelib\Backend;
 use Xi\Filelib\Backend\Doctrine2Backend,
     Xi\Filelib\Folder\FolderItem,
     Xi\Filelib\File\FileItem,
-    \DateTime,
-        
+    DateTime,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Configuration,
-    Doctrine\DBAL\Connection
-    ;
+    Doctrine\DBAL\Connection,
+    Doctrine\Common\Cache\ArrayCache;
 
 /**
  * @group doctrine
@@ -18,41 +17,38 @@ use Xi\Filelib\Backend\Doctrine2Backend,
 class Doctrine2BackendTest extends DbTestCase
 {
     /**
-     *
      * @var Doctrine2Backend
      */
     protected $backend;
-        
+
     /**
-     *
      * @var Connection
      */
     protected $conn;
-    
+
     /**
-     *
      * @var EntityManager
      */
     protected $em;
-    
+
     public function setUp()
     {
-        
         parent::setUp();
-                
-        $this->backend = new Doctrine2Backend();
-                
-        $cache = new \Doctrine\Common\Cache\ArrayCache;
-    
-        $config = new Configuration;
+
+        $cache = new ArrayCache();
+
+        $config = new Configuration();
         $config->setMetadataCacheImpl($cache);
-        $driverImpl = $config->newDefaultAnnotationDriver(ROOT_TESTS . '/../library/Xi/Filelib/Backend/Doctrine2/Entity');
-        $config->setMetadataDriverImpl($driverImpl);
+        $config->setMetadataDriverImpl(
+            $config->newDefaultAnnotationDriver(
+                ROOT_TESTS . '/../library/Xi/Filelib/Backend/Doctrine2/Entity'
+            )
+        );
         $config->setQueryCacheImpl($cache);
         $config->setProxyDir(ROOT_TESTS . '/data/temp');
         $config->setProxyNamespace('FilelibTest\Proxies');
         $config->setAutoGenerateProxyClasses(true);
-    
+
         $connectionOptions = array(
             'driver'   => 'pdo_' . PDO_DRIVER,
             'dbname'   => PDO_DBNAME,
@@ -61,48 +57,33 @@ class Doctrine2BackendTest extends DbTestCase
             'host'     => PDO_HOST,
         );
 
-    
-        $em = EntityManager::create($connectionOptions, $config);        
+        $em = EntityManager::create($connectionOptions, $config);
 
-        $this->em = $em;
-        
+        $this->em   = $em;
         $this->conn = $em->getConnection();
-        
-        $this->backend->setEntityManager($em);
-                
-                
-    }
-    
-    
-    public function tearDown()
-    {
-        parent::tearDown();
 
+        $this->backend = new Doctrine2Backend();
+        $this->backend->setEntityManager($em);
     }
-    
-    
-    
-    
+
     /**
      * @test
      */
     public function findRootFolderShouldReturnRootFolder()
     {
-    
-        
         $folder = $this->backend->findRootFolder();
-        
+
         $this->assertArrayHasKey('id', $folder);
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
-        
-        $this->assertEquals(null, $folder['parent_id']);
-        
-        
-    }
-    
 
+        $this->assertNull($folder['parent_id']);
+    }
+
+    /**
+     * @return array
+     */
     public function provideForFindFolder()
     {
         return array(
@@ -112,57 +93,55 @@ class Doctrine2BackendTest extends DbTestCase
             array(4, array('name' => 'banskun')),
         );
     }
-    
-    
+
     /**
      * @test
      */
     public function entityClassGettersShouldReturnCorrectClassNames()
     {
-        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\File', $this->backend->getFileEntityName());
-        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\Folder', $this->backend->getFolderEntityName());
+        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\File',
+                            $this->backend->getFileEntityName());
+
+        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\Folder',
+                            $this->backend->getFolderEntityName());
     }
-    
-    
+
     /**
      * @test
      * @dataProvider provideForFindFolder
+     * @param integer $folderId
+     * @param array   $data
      */
-    public function findFolderShouldReturnCorrectFolder($folderId, $data)
+    public function findFolderShouldReturnCorrectFolder($folderId, array $data)
     {
         $folder = $this->backend->findFolder($folderId);
-        
+
         $this->assertArrayHasKey('id', $folder);
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
-        
+
         $this->assertEquals($folderId, $folder['id']);
         $this->assertEquals($data['name'], $folder['name']);
-        
     }
-    
+
     /**
      * @test
      */
     public function findFolderShouldReturnNullWhenTryingToFindNonExistingFolder()
     {
-        $folder = $this->backend->findFolder(900);
-        
-        $this->assertEquals(false, $folder);
+        $this->assertFalse($this->backend->findFolder(900));
     }
 
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function findFolderShouldThrowExceptionWhenTryingToFindErroneousFolder()
     {
-        $folder = $this->backend->findFolder('xoo');
-
+        $this->backend->findFolder('xoo');
     }
-    
-    
+
     /**
      * @test
      */
@@ -170,22 +149,19 @@ class Doctrine2BackendTest extends DbTestCase
     {
         $data = array(
             'parent_id' => 3,
-            'name' => 'lusander',
-            'url' => 'lussuttaja/tussin/lusander',
+            'name'      => 'lusander',
+            'url'       => 'lussuttaja/tussin/lusander',
         );
-        
+
         $folder = FolderItem::create($data);
 
-        
         $this->assertNull($folder->getId());
-                
+
         $ret = $this->backend->createFolder($folder);
-        
+
         $this->assertInternalType('integer', $ret->getId());
-        
     }
-    
-    
+
     /**
      * @test
      * @expectedException Xi\Filelib\FilelibException
@@ -194,16 +170,12 @@ class Doctrine2BackendTest extends DbTestCase
     {
         $data = array(
             'parent_id' => 666,
-            'name' => 'lusander',
-            'url' => 'lussuttaja/tussin/lusander',
+            'name'      => 'lusander',
+            'url'       => 'lussuttaja/tussin/lusander',
         );
-        
-        $folder = FolderItem::create($data);
-        
-        $ret = $this->backend->createFolder($folder);
-        
+
+        $ret = $this->backend->createFolder(FolderItem::create($data));
     }
-    
 
     /**
      * @test
@@ -211,313 +183,282 @@ class Doctrine2BackendTest extends DbTestCase
     public function deleteFolderShouldDeleteFolder()
     {
         $data = array(
-            'id' => 5,
+            'id'        => 5,
             'parent_id' => null,
-            'name' => 'klus',
+            'name'      => 'klus',
         );
-        
+
         $folder = FolderItem::create($data);
-                
-        $rows = $this->conn->fetchAll("SELECT * FROM xi_filelib_folder WHERE id = 5");
-        
-        $this->assertEquals(1, sizeof($rows));
-        
-        $deleted = $this->backend->deleteFolder($folder);
-        $this->assertTrue($deleted);
-        
-        
-        $rows = $this->conn->fetchAll('SELECT * FROM xi_filelib_folder WHERE id = 5');
-        $this->assertEquals(0, sizeof($rows));
-                
+
+        $this->assertCount(
+            1,
+            $this->conn->fetchAll("SELECT * FROM xi_filelib_folder WHERE id = 5")
+        );
+
+        $this->assertTrue($this->backend->deleteFolder($folder));
+
+        $this->assertCount(
+            0,
+            $this->conn->fetchAll('SELECT * FROM xi_filelib_folder WHERE id = 5')
+        );
+
         $this->assertFalse($this->backend->findFolder(5));
-        
     }
 
-    
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function deleteFolderShouldThrowExceptionWhenDeletingFolderWithFiles()
     {
         $data = array(
-            'id' => 4,
+            'id'        => 4,
             'parent_id' => null,
-            'name' => 'klus',
+            'name'      => 'klus',
         );
-        
+
         $folder = FolderItem::create($data);
-                
-        $rows = $this->conn->fetchAll('SELECT * FROM xi_filelib_folder WHERE id = 5');
-        
-        $this->assertEquals(1, sizeof($rows));
-        
-        $deleted = $this->backend->deleteFolder($folder);
-        
+
+        $this->assertCount(
+            1,
+            $this->conn->fetchAll('SELECT * FROM xi_filelib_folder WHERE id = 5')
+        );
+
+        $this->backend->deleteFolder($folder);
     }
 
-    
     /**
      * @test
      */
     public function deleteFolderShouldNotDeleteNonExistingFolder()
     {
         $data = array(
-            'id' => 423789,
+            'id'        => 423789,
             'parent_id' => null,
-            'name' => 'klus',
+            'name'      => 'klus',
         );
-        
-        $folder = FolderItem::create($data);
-                
-        $deleted = $this->backend->deleteFolder($folder);
-                
-        $this->assertEquals(false, $deleted);
 
+        $folder = FolderItem::create($data);
+
+        $this->assertFalse($this->backend->deleteFolder($folder));
     }
-    
-    
+
     /**
      * @test
      */
     public function updateFolderShouldUpdateFolder()
     {
         $data = array(
-            'id' => 3,
-            'parent_id' => 2,
-            'folderurl' => 'lussuttaja/tussin',
+            'id'         => 3,
+            'parent_id'  => 2,
+            'folderurl'  => 'lussuttaja/tussin',
             'foldername' => 'tussin',
         );
-        
-        $row = $this->conn->fetchAssoc('SELECT * FROM xi_filelib_folder WHERE id = 3');
-       
-        $this->assertEquals($data, $row);
-        
-        
+
+        $this->assertEquals(
+            $data,
+            $this->conn->fetchAssoc('SELECT * FROM xi_filelib_folder WHERE id = 3')
+        );
+
         $folder = FolderItem::create(array(
-            'id' => 3,
+            'id'        => 3,
             'parent_id' => 1,
-            'url' => 'lussuttaja/lussander',
-            'name' => 'lussander',
+            'url'       => 'lussuttaja/lussander',
+            'name'      => 'lussander',
         ));
 
         $data = array(
-            'id' => 3,
-            'parent_id' => 1,
-            'folderurl' => 'lussuttaja/lussander',
+            'id'         => 3,
+            'parent_id'  => 1,
+            'folderurl'  => 'lussuttaja/lussander',
             'foldername' => 'lussander',
         );
 
-        $ret = $this->backend->updateFolder($folder);
-        $this->assertTrue($ret);
-        
-        $row = $this->conn->fetchAssoc('SELECT * FROM xi_filelib_folder WHERE id = 3');
-                        
-        $this->assertEquals($data, $row);
-        
+        $this->assertTrue($this->backend->updateFolder($folder));
 
+        $this->assertEquals(
+            $data,
+            $this->conn->fetchAssoc('SELECT * FROM xi_filelib_folder WHERE id = 3')
+        );
     }
-    
-    
+
     /**
      * @test
      */
     public function updateFolderShouldNotUpdateNonExistingFolder()
     {
         $folder = FolderItem::create(array(
-            'id' => 333,
+            'id'        => 333,
             'parent_id' => 1,
-            'url' => 'lussuttaja/lussander',
-            'name' => 'lussander',
+            'url'       => 'lussuttaja/lussander',
+            'name'      => 'lussander',
         ));
-        
-        $ret = $this->backend->updateFolder($folder);
-        
-        $this->assertFalse($ret);
-        
+
+        $this->assertFalse($this->backend->updateFolder($folder));
     }
-    
-    
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function updateFolderShouldThrowExceptionWhenUpdatingErroneousFolder()
     {
         $folder = FolderItem::create(array(
-            'id' => 'xoofiili',
+            'id'        => 'xoofiili',
             'parent_id' => 'xoo',
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         ));
-        
-        $ret = $this->backend->updateFolder($folder);
-        
-        $this->assertFalse($ret);
-        
+
+        $this->assertFalse($this->backend->updateFolder($folder));
     }
-    
+
     /**
      * @test
      */
     public function findSubFoldersShouldReturnArrayOfSubFolders()
     {
         $folder = FolderItem::create(array(
-            'id' => 1,
+            'id'        => 1,
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         ));
-                
+
         $ret = $this->backend->findSubFolders($folder);
-        
+
         $this->assertInternalType('array', $ret);
         $this->assertCount(1, $ret);
-        
-        $folder = FolderItem::create(array(
-            'id' => 2,
-            'parent_id' => null,
-            'url' => '',
-            'name' => '',
-        ));
-                
-        $ret = $this->backend->findSubFolders($folder);
-        
-        $this->assertInternalType('array', $ret);
-        $this->assertCount(3, $ret);
-        
 
         $folder = FolderItem::create(array(
-            'id' => 4,
+            'id'        => 2,
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         ));
-                
+
         $ret = $this->backend->findSubFolders($folder);
-        
+
+        $this->assertInternalType('array', $ret);
+        $this->assertCount(3, $ret);
+
+        $folder = FolderItem::create(array(
+            'id'        => 4,
+            'parent_id' => null,
+            'url'       => '',
+            'name'      => '',
+        ));
+
+        $ret = $this->backend->findSubFolders($folder);
+
         $this->assertInternalType('array', $ret);
         $this->assertCount(0, $ret);
-        
     }
-    
-    
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function findSubFoldersShouldThrowExceptionForErroneousFolder()
     {
         $folder = FolderItem::create(array(
-            'id' => 'xooxer',
+            'id'        => 'xooxer',
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         ));
-                
-        $ret = $this->backend->findSubFolders($folder);
+
+        $this->backend->findSubFolders($folder);
     }
-    
-    
+
     /**
      * @test
      */
     public function findFolderByUrlShouldReturnFolder()
     {
         $ret = $this->backend->findFolderByUrl('lussuttaja/tussin');
-        
+
         $this->assertInternalType('array', $ret);
-        
         $this->assertEquals(3, $ret['id']);
-        
     }
-    
+
     /**
      * @test
      */
     public function findFolderByUrlShouldNotReturnNonExistingFolder()
     {
-        $ret = $this->backend->findFolderByUrl('lussuttaja/tussinnnnn');
-        
-        $this->assertFalse($ret);
-        
+        $this->assertFalse(
+            $this->backend->findFolderByUrl('lussuttaja/tussinnnnn')
+        );
     }
-    
+
     /**
      * @test
      */
     public function findFilesInShouldReturnArrayOfFiles()
     {
         $folder = FolderItem::create(array(
-            'id' => 1,
+            'id'        => 1,
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         ));
-        
+
         $ret = $this->backend->findFilesIn($folder);
-        
+
         $this->assertInternalType('array', $ret);
-        
         $this->assertCount(1, $ret);
-        
 
         $folder = FolderItem::create(array(
-            'id' => 4,
+            'id'        => 4,
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         ));
-        
+
         $ret = $this->backend->findFilesIn($folder);
-        
+
         $this->assertInternalType('array', $ret);
-        
         $this->assertCount(2, $ret);
-        
-        
-        $folder = FolderItem::create(array(
-            'id' => 5,
-            'parent_id' => null,
-            'url' => '',
-            'name' => '',
-        ));
-        
-        $ret = $this->backend->findFilesIn($folder);
-        
-        $this->assertInternalType('array', $ret);
-        
-        $this->assertCount(0, $ret);
 
-        
+        $folder = FolderItem::create(array(
+            'id'        => 5,
+            'parent_id' => null,
+            'url'       => '',
+            'name'      => '',
+        ));
+
+        $ret = $this->backend->findFilesIn($folder);
+
+        $this->assertInternalType('array', $ret);
+        $this->assertCount(0, $ret);
     }
-    
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function findFilesInShouldThrowExceptionWithErroneousFolder()
     {
         $folder = FolderItem::create(array(
-            'id' => 'xoo',
+            'id'        => 'xoo',
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         ));
-        
+
         $ret = $this->backend->findFilesIn($folder);
-        
     }
-    
+
     /**
      * @test
      */
     public function findFileShouldReturnFile()
     {
         $ret = $this->backend->findFile(1);
-        
+
         $this->assertInternalType('array', $ret);
-        
+
         $this->assertArrayHasKey('id', $ret);
         $this->assertArrayHasKey('folder_id', $ret);
         $this->assertArrayHasKey('mimetype', $ret);
@@ -526,34 +467,30 @@ class Doctrine2BackendTest extends DbTestCase
         $this->assertArrayHasKey('name', $ret);
         $this->assertArrayHasKey('link', $ret);
         $this->assertArrayHasKey('date_uploaded', $ret);
-        
-        $this->assertInstanceOf('\\DateTime', $ret['date_uploaded']);
-        
+
+        $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
     }
-    
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function findFileShouldThrowExceptionWithErroneousId()
     {
-        $ret = $this->backend->findFile('xooxoeroe');
+        $this->backend->findFile('xooxoeroe');
     }
-    
-    
+
     /**
      * @test
      */
     public function findAllFilesShouldReturnAllFiles()
     {
         $rets = $this->backend->findAllFiles();
-        
+
         $this->assertInternalType('array', $rets);
-        
         $this->assertCount(5, $rets);
-        
+
         foreach ($rets as $ret) {
-            
             $this->assertInternalType('array', $ret);
 
             $this->assertArrayHasKey('id', $ret);
@@ -565,48 +502,32 @@ class Doctrine2BackendTest extends DbTestCase
             $this->assertArrayHasKey('link', $ret);
             $this->assertArrayHasKey('date_uploaded', $ret);
 
-            $this->assertInstanceOf('\\DateTime', $ret['date_uploaded']);
+            $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
         }
-        
     }
-    
+
     /**
      * @test
      */
     public function updateFileShouldUpdateFile()
     {
-        
-        $data = array(
-            'id' => 1,
-            'folder_id' => 1,
-            'mimetype' => 'image/png',
-            'profile' => 'versioned',
-            'size' => '1000',
-            'name' => 'tohtori-vesala.png',
-            'link' => 'tohtori-vesala.png',
-            'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
-        );
-        
         $updated = array(
-            'id' => 1,
-            'folder_id' => 2,
-            'mimetype' => 'image/jpg',
-            'profile' => 'lussed',
-            'size' => '1006',
-            'name' => 'tohtori-sykero.png',
-            'link' => 'tohtori-sykero.png',
+            'id'            => 1,
+            'folder_id'     => 2,
+            'mimetype'      => 'image/jpg',
+            'profile'       => 'lussed',
+            'size'          => '1006',
+            'name'          => 'tohtori-sykero.png',
+            'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
         );
-                
+
         $file = FileItem::create($updated);
-        
-        $updated = $this->backend->updateFile($file);
-        
-        $this->assertTrue($updated);
-        
-        
+
+        $this->assertTrue($this->backend->updateFile($file));
+
         $row = $this->conn->fetchAssoc("SELECT * FROM xi_filelib_file WHERE id = 1");
-                
+
         $this->assertEquals($row['id'], 1);
         $this->assertEquals($row['folder_id'], 2);
         $this->assertEquals($row['mimetype'], 'image/jpg');
@@ -615,264 +536,223 @@ class Doctrine2BackendTest extends DbTestCase
         $this->assertEquals($row['filename'], 'tohtori-sykero.png');
         $this->assertEquals($row['filelink'], 'tohtori-sykero.png');
         $this->assertEquals($row['date_uploaded'], '2011-01-02 16:16:16');
-       
     }
-    
-    
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function updateFileShouldThrowExceptionWithErroneousFile()
     {
         $updated = array(
-            'id' => 1,
-            'folder_id' => 666666,
-            'mimetype' => 'image/jpg',
-            'profile' => 'lussed',
-            'size' => '1006',
-            'name' => 'tohtori-sykero.png',
-            'link' => 'tohtori-sykero.png',
+            'id'            => 1,
+            'folder_id'     => 666666,
+            'mimetype'      => 'image/jpg',
+            'profile'       => 'lussed',
+            'size'          => '1006',
+            'name'          => 'tohtori-sykero.png',
+            'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
         );
-        
+
         $file = FileItem::create($updated);
-        
-        $updated = $this->backend->updateFile($file);
+
+        $this->backend->updateFile($file);
     }
-    
-    
+
     /**
      * @test
      */
     public function deleteFileShouldDeleteFile()
     {
         $file = FileItem::create(array('id' => 5));
-        
-        $deleted = $this->backend->deleteFile($file);
-        
-        $this->assertTrue($deleted);
-        
-        $row = $this->conn->fetchAssoc("SELECT * FROM xi_filelib_file WHERE id = 5");
-        
-        $this->assertFalse($row);
-                
+
+        $this->assertTrue($this->backend->deleteFile($file));
+
+        $this->assertFalse(
+            $this->conn->fetchAssoc("SELECT * FROM xi_filelib_file WHERE id = 5")
+        );
     }
-    
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function deleteFileShouldThrowExceptionWithErroneousFile()
     {
         $file = FileItem::create(array('id' => 'xooxoox'));
-        
+
         $this->backend->deleteFile($file);
-        
     }
-    
-    
+
     /**
      * @test
      */
     public function fileUploadShouldUploadFile()
     {
         $fidata = array(
-            'mimetype' => 'image/png',
-            'profile' => 'versioned',
-            'size' => '1000',
-            'name' => 'tohtori-tussi.png',
-            'link' => 'tohtori-tussi.png',
+            'mimetype'      => 'image/png',
+            'profile'       => 'versioned',
+            'size'          => '1000',
+            'name'          => 'tohtori-tussi.png',
+            'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
         );
-        
+
         $fodata = array(
-            'id' => 1,
+            'id'        => 1,
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         );
-        
+
         $file = FileItem::create($fidata);
         $folder = FolderItem::create($fodata);
-        
-        $file = $this->backend->upload($file, $folder); 
-        
-        $this->assertInstanceOf('\\Xi\\Filelib\\File\\File', $file);
+
+        $file = $this->backend->upload($file, $folder);
+
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
         $this->assertInternalType('integer', $file->getId());
-        
+
         $this->assertEquals($fodata['id'], $file->getFolderId());
         $this->assertEquals($fidata['mimetype'], $file->getMimeType());
         $this->assertEquals($fidata['profile'], $file->getProfile());
-
         $this->assertEquals($fidata['link'], $file->getLink());
-        
         $this->assertEquals($fidata['date_uploaded'], $file->getDateUploaded());
-        
     }
-    
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function fileUploadShouldThrowExceptionWithErroneousFolder()
-    {        
+    {
         $fidata = array(
-            'mimetype' => 'image/png',
-            'profile' => 'versioned',
-            'size' => '1000',
-            'name' => 'tohtori-tussi.png',
-            'link' => 'tohtori-tussi.png',
+            'mimetype'      => 'image/png',
+            'profile'       => 'versioned',
+            'size'          => '1000',
+            'name'          => 'tohtori-tussi.png',
+            'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
         );
-        
+
         $fodata = array(
-            'id' => 666666,
+            'id'        => 666666,
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         );
-        
+
         $file = FileItem::create($fidata);
         $folder = FolderItem::create($fodata);
-        
-        $file = $this->backend->upload($file, $folder); 
 
-        
+        $this->backend->upload($file, $folder);
     }
-    
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function fileUploadShouldThrowExceptionWithAlreadyExistingFile()
-    {        
+    {
         $fidata = array(
-            'mimetype' => 'image/png',
-            'profile' => 'versioned',
-            'size' => '1000',
-            'name' => 'tohtori-vesala.png',
-            'link' => 'tohtori-vesala.png',
+            'mimetype'      => 'image/png',
+            'profile'       => 'versioned',
+            'size'          => '1000',
+            'name'          => 'tohtori-vesala.png',
+            'link'          => 'tohtori-vesala.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
         );
-        
+
         $fodata = array(
-            'id' => 1,
+            'id'        => 1,
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         );
-        
+
         $file = FileItem::create($fidata);
         $folder = FolderItem::create($fodata);
-        
-        $file = $this->backend->upload($file, $folder); 
 
-        
+        $this->backend->upload($file, $folder);
     }
-    
-    
+
     /**
      * @test
      */
     public function findFileByFilenameShouldReturnCorrectFile()
     {
         $fidata = array(
-            'mimetype' => 'image/png',
-            'profile' => 'versioned',
-            'size' => 1000,
-            'name' => 'tohtori-vesala.png',
-            'link' => 'tohtori-vesala.png',
+            'mimetype'      => 'image/png',
+            'profile'       => 'versioned',
+            'size'          => 1000,
+            'name'          => 'tohtori-vesala.png',
+            'link'          => 'tohtori-vesala.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
-            'id' => 1,
-            'folder_id' => 1,
+            'id'            => 1,
+            'folder_id'     => 1,
         );
-        
+
         $fodata = array(
-            'id' => 1,
+            'id'        => 1,
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         );
-        
-        $folder = FolderItem::create($fodata);    
-        
-        
+
+        $folder = FolderItem::create($fodata);
+
         $file = $this->backend->findFileByFileName($folder, 'tohtori-vesala.png');
-        
+
         $this->assertInternalType('array', $file);
-                
         $this->assertEquals($fidata, $file);
-        
-        
     }
-    
+
     /**
      * @test
      */
     public function findFileByFilenameShouldNotFindNonExistingFile()
     {
         $fidata = array(
-            'mimetype' => 'image/png',
-            'profile' => 'versioned',
-            'size' => 1000,
-            'name' => 'tohtori-vesala.png',
-            'link' => 'tohtori-vesala.png',
+            'mimetype'      => 'image/png',
+            'profile'       => 'versioned',
+            'size'          => 1000,
+            'name'          => 'tohtori-vesala.png',
+            'link'          => 'tohtori-vesala.png',
             'date_uploaded' => '2011-01-01 16:16:16',
-            'id' => 1,
-            'folder_id' => 1,
+            'id'            => 1,
+            'folder_id'     => 1,
         );
-        
+
         $fodata = array(
-            'id' => 1,
+            'id'        => 1,
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
         );
-        
-        $folder = FolderItem::create($fodata);    
-        
-        $file = $this->backend->findFileByFileName($folder, 'tohtori-tussi.png');
-        
-        $this->assertFalse($file);
-        
+
+        $folder = FolderItem::create($fodata);
+
+        $this->assertFalse(
+            $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
+        );
     }
-    
-       
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function findFileByFileNameShouldThrowExceptionWithErroneousFolder()
     {
-        $fidata = array(
-            'mimetype' => 'image/png',
-            'profile' => 'versioned',
-            'size' => 1000,
-            'name' => 'tohtori-vesala.png',
-            'link' => 'tohtori-vesala.png',
-            'date_uploaded' => '2011-01-01 16:16:16',
-            'id' => 1,
-            'folder_id' => 1,
-        );
-        
-        $fodata = array(
-            'id' => 'shjisioshio',
+        $folder = FolderItem::create(array(
+            'id'        => 'shjisioshio',
             'parent_id' => null,
-            'url' => '',
-            'name' => '',
+            'url'       => '',
+            'name'      => '',
+        ));
+
+        $this->assertFalse(
+            $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
         );
-        
-        $folder = FolderItem::create($fodata);    
-        
-        $file = $this->backend->findFileByFileName($folder, 'tohtori-tussi.png');
-        
-        $this->assertFalse($file);
-    
     }
-    
-    
-    
-    
-    
 }
