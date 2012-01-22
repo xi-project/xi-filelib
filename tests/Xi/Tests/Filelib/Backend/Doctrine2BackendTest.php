@@ -146,6 +146,21 @@ class Doctrine2BackendTest extends DbTestCase
 
     /**
      * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function findFolderRethrowsException()
+    {
+        $em = $this->createEntityManagerMock();
+        $em->expects($this->once())
+           ->method('find')
+           ->will($this->throwException(new Exception()));
+
+        $this->backend->setEntityManager($em);
+        $this->backend->findFolder(1);
+    }
+
+    /**
+     * @test
      */
     public function createFolderShouldCreateFolder()
     {
