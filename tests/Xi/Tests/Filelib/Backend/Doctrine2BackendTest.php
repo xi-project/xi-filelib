@@ -6,10 +6,12 @@ use Xi\Filelib\Backend\Doctrine2Backend,
     Xi\Filelib\Folder\FolderItem,
     Xi\Filelib\File\FileItem,
     DateTime,
+    Exception,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Configuration,
     Doctrine\DBAL\Connection,
-    Doctrine\Common\Cache\ArrayCache;
+    Doctrine\Common\Cache\ArrayCache,
+    PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * @group doctrine
@@ -482,6 +484,36 @@ class Doctrine2BackendTest extends DbTestCase
 
     /**
      * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function findFileRethrowsException()
+    {
+        $em = $this->createEntityManagerMock();
+        $em->expects($this->once())
+           ->method('find')
+           ->will($this->throwException(new Exception()));
+
+        $this->backend->setEntityManager($em);
+        $this->backend->findFile(1);
+    }
+
+    /**
+     * @test
+     */
+    public function findFileReturnsFalseIfFileIsNotFound()
+    {
+        $em = $this->createEntityManagerMock();
+        $em->expects($this->once())
+           ->method('find')
+           ->will($this->returnValue(null));
+
+        $this->backend->setEntityManager($em);
+
+        $this->assertFalse($this->backend->findFile(1));
+    }
+
+    /**
+     * @test
      */
     public function findAllFilesShouldReturnAllFiles()
     {
@@ -793,9 +825,7 @@ class Doctrine2BackendTest extends DbTestCase
      */
     public function getsAndsetsEntityManager()
     {
-        $em = $this->getMockBuilder('Doctrine\ORM\EntityManager')
-                   ->disableOriginalConstructor()
-                   ->getMock();
+        $em = $this->createEntityManagerMock();
 
         $this->assertNotSame($em, $this->backend->getEntityManager());
 
@@ -818,5 +848,15 @@ class Doctrine2BackendTest extends DbTestCase
         $this->backend->setFilelib($filelib);
 
         $this->assertSame($filelib, $this->backend->getFilelib());
+    }
+
+    /**
+     * @return PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createEntityManagerMock()
+    {
+        return $this->getMockBuilder('Doctrine\ORM\EntityManager')
+                    ->disableOriginalConstructor()
+                    ->getMock();
     }
 }
