@@ -2,50 +2,49 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\FileLibrary, Xi\Filelib\Configurator;
+use Xi\Filelib\FileLibrary,
+    Xi\Filelib\Configurator;
 
 /**
  * Abstract backend implementing common methods
- * 
- * @author pekkis
- * @package Xi_Filelib
  *
+ * @author  pekkis
+ * @package Xi_Filelib
  */
 abstract class AbstractBackend implements Backend
 {
     /**
-     * @var Xi\Filelib\FileLibrary Filelib
+     * @var FileLibrary
      */
-    private $_filelib;
+    private $filelib;
 
+    /**
+     * @param mixed $options
+     */
     public function __construct($options = array())
     {
-        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
+        Configurator::setConstructorOptions($this, $options);
     }
-    
-    
-            
+
     /**
-     * Sets filelib
-     *
-     * @param Xi_Filelib $filelib
+     * @param  FileLibrary     $filelib
+     * @return AbstractBackend
      */
     public function setFilelib(FileLibrary $filelib)
     {
-        $this->_filelib = $filelib;
+        $this->filelib = $filelib;
+
+        return $this;
     }
 
     /**
-     * Returns filelib
-     *
-     * @return Xi\Filelib\FileLibrary
+     * @return FileLibrary
      */
     public function getFilelib()
     {
-        return $this->_filelib;
+        return $this->filelib;
     }
-    
+
     public function init()
-    { }
-    
+    {}
 }
