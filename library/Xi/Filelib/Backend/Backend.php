@@ -27,8 +27,8 @@ interface Backend
     /**
      * Finds folder
      *
-     * @param  mixed        $id
-     * @return Folder|false False if folder is not found.
+     * @param  mixed       $id
+     * @return array|false False if folder is not found.
      */
     public function findFolder($id);
 
@@ -50,8 +50,8 @@ interface Backend
     /**
      * Finds a file
      *
-     * @param  mixed      $id
-     * @return File|false False if file is not found.
+     * @param  mixed       $id
+     * @return array|false False if file is not found.
      */
     public function findFile($id);
 
@@ -86,6 +86,7 @@ interface Backend
      * Deletes a folder
      *
      * @param  Folder           $folder
+     * @return boolean          True if deleted successfully.
      * @throws FilelibException If folder could not be deleted.
      */
     public function deleteFolder(Folder $folder);
@@ -93,7 +94,8 @@ interface Backend
     /**
      * Deletes a file
      *
-     * @param  File $file
+     * @param  File             $file
+     * @return boolean
      * @throws FilelibException If file could not be deleted.
      */
     public function deleteFile(File $file);
@@ -102,6 +104,7 @@ interface Backend
      * Updates a folder
      *
      * @param  Folder           $folder
+     * @return boolean          True if updated successfully.
      * @throws FilelibException If folder coult not be updated.
      */
     public function updateFolder(Folder $folder);
@@ -110,6 +113,7 @@ interface Backend
      * Updates a file
      *
      * @param  File             $file
+     * @return boolean          True if updated successfully.
      * @throws FilelibException If file could not be updated.
      */
     public function updateFile(File $file);
@@ -117,15 +121,15 @@ interface Backend
     /**
      * Returns the root folder. Creates it if it does not exist.
      *
-     * @return Folder
+     * @return array
      */
     public function findRootFolder();
 
     /**
      * Finds folder by url
      *
-     * @param  string       $url
-     * @return Folder|false False if folder was not found.
+     * @param  string      $url
+     * @return array|false False if folder was not found.
      */
     public function findFolderByUrl($url);
 
