@@ -430,6 +430,25 @@ class Doctrine2BackendTest extends DbTestCase
 
     /**
      * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function findSubFoldersRethrowsException()
+    {
+        $em = $this->createEntityManagerMock();
+        $em->expects($this->once())
+            ->method('createQueryBuilder')
+            ->will($this->throwException(new Exception()));
+
+        $this->backend->setEntityManager($em);
+        $this->backend->findSubFolders(FolderItem::create(array(
+            'id'        => 1,
+            'parent_id' => null,
+            'name'      => 'foo',
+        )));
+    }
+
+    /**
+     * @test
      */
     public function findFolderByUrlShouldReturnFolder()
     {
