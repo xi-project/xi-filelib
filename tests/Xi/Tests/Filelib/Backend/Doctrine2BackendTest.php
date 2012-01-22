@@ -364,6 +364,31 @@ class Doctrine2BackendTest extends DbTestCase
     /**
      * @test
      */
+    public function updatesRootFolder()
+    {
+        $folder = FolderItem::create(array(
+            'id'        => 3,
+            'parent_id' => null,
+            'url'       => 'foo/bar',
+            'name'      => 'xoo',
+        ));
+
+        $this->assertTrue($this->backend->updateFolder($folder));
+
+        $this->assertEquals(
+            array(
+                'id'         => 3,
+                'parent_id'  => null,
+                'folderurl'  => 'foo/bar',
+                'foldername' => 'xoo',
+            ),
+            $this->conn->fetchAssoc('SELECT * FROM xi_filelib_folder WHERE id = 3')
+        );
+    }
+
+    /**
+     * @test
+     */
     public function updateFolderShouldNotUpdateNonExistingFolder()
     {
         $folder = FolderItem::create(array(
@@ -390,6 +415,27 @@ class Doctrine2BackendTest extends DbTestCase
         ));
 
         $this->assertFalse($this->backend->updateFolder($folder));
+    }
+
+    /**
+     * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function updateFolderRethrowsException()
+    {
+        $em = $this->createEntityManagerMock();
+        $em->expects($this->once())
+           ->method('getReference')
+           ->will($this->throwException(new Exception()));
+
+        $folder = FolderItem::create(array(
+            'id'        => 1,
+            'parent_id' => null,
+            'name'      => '',
+        ));
+
+        $this->backend->setEntityManager($em);
+        $this->backend->updateFolder($folder);
     }
 
     /**
