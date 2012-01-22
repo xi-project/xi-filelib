@@ -11,6 +11,7 @@ use Xi\Filelib\Backend\Doctrine2Backend,
     Doctrine\ORM\Configuration,
     Doctrine\DBAL\Connection,
     Doctrine\ORM\NoResultException,
+    Doctrine\ORM\EntityNotFoundException,
     Doctrine\Common\Cache\ArrayCache,
     PHPUnit_Framework_MockObject_MockObject;
 
@@ -296,6 +297,27 @@ class Doctrine2BackendTest extends DbTestCase
         );
 
         $folder = FolderItem::create($data);
+
+        $this->assertFalse($this->backend->deleteFolder($folder));
+    }
+
+    /**
+     * @test
+     */
+    public function deleteFolderReturnsFalseOnEntityNotFound()
+    {
+        $em = $this->createEntityManagerMock();
+        $em->expects($this->once())
+            ->method('find')
+            ->will($this->throwException(new EntityNotFoundException()));
+
+        $this->backend->setEntityManager($em);
+
+        $folder = FolderItem::create(array(
+            'id'        => 1,
+            'parent_id' => null,
+            'name'      => 'foo',
+        ));
 
         $this->assertFalse($this->backend->deleteFolder($folder));
     }
