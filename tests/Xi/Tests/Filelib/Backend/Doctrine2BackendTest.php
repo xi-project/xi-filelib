@@ -790,6 +790,28 @@ class Doctrine2BackendTest extends DbTestCase
 
     /**
      * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function findFileByFileNameRethrowsException()
+    {
+        $folder = FolderItem::create(array(
+            'id'        => 1,
+            'parent_id' => null,
+            'url'       => '',
+            'name'      => '',
+        ));
+
+        $em = $this->createEntityManagerMock();
+        $em->expects($this->once())
+           ->method('createQueryBuilder')
+           ->will($this->throwException(new Exception()));
+
+        $this->backend->setEntityManager($em);
+        $this->backend->findFileByFileName($folder, 'xoo.png');
+    }
+
+    /**
+     * @test
      */
     public function getsAndSetsFileEntityName()
     {
