@@ -755,4 +755,52 @@ class Doctrine2BackendTest extends DbTestCase
             $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
         );
     }
+
+    /**
+     * @test
+     */
+    public function getsAndSetsFileEntityName()
+    {
+        $fileEntityName = 'Foo\Bar';
+
+        $this->assertNotEquals($fileEntityName,
+                               $this->backend->getFileEntityName());
+
+        $this->backend->setFileEntityName($fileEntityName);
+
+        $this->assertEquals($fileEntityName,
+                            $this->backend->getFileEntityName());
+    }
+
+    /**
+     * @test
+     */
+    public function getsAndSetsFolderEntityName()
+    {
+        $folderEntityName = 'Xoo\Bar';
+
+        $this->assertNotEquals($folderEntityName,
+                               $this->backend->getFolderEntityName());
+
+        $this->backend->setFolderEntityName($folderEntityName);
+
+        $this->assertEquals($folderEntityName,
+                            $this->backend->getFolderEntityName());
+    }
+
+    /**
+     * @test
+     */
+    public function getsAndsetsEntityManager()
+    {
+        $em = $this->getMockBuilder('Doctrine\ORM\EntityManager')
+                   ->disableOriginalConstructor()
+                   ->getMock();
+
+        $this->assertNotSame($em, $this->backend->getEntityManager());
+
+        $this->backend->setEntityManager($em);
+
+        $this->assertSame($em, $this->backend->getEntityManager());
+    }
 }
