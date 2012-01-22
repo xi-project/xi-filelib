@@ -619,6 +619,21 @@ class Doctrine2BackendTest extends DbTestCase
 
     /**
      * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function deleteFileReThrowsException()
+    {
+        $em = $this->createEntityManagerMock();
+        $em->expects($this->once())
+           ->method('remove')
+           ->will($this->throwException(new Exception()));
+
+        $this->backend->setEntityManager($em);
+        $this->backend->deleteFile(FileItem::create(array('id' => 1)));
+    }
+
+    /**
+     * @test
      */
     public function fileUploadShouldUploadFile()
     {
