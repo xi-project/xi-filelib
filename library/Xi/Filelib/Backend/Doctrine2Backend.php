@@ -103,29 +103,6 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Sets filelib
-     *
-     * @param  FileLibrary      $filelib
-     * @return Doctrine2Backend
-     */
-    public function setFilelib(FileLibrary $filelib)
-    {
-        $this->_filelib = $filelib;
-
-        return $this;
-    }
-
-    /**
-     * Returns filelib
-     *
-     * @return FileLibrary
-     */
-    public function getFilelib()
-    {
-        return $this->_filelib;
-    }
-
-    /**
      * Finds a file
      *
      * @param  integer          $id

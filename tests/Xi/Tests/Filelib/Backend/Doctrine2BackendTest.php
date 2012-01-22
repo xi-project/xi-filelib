@@ -803,4 +803,20 @@ class Doctrine2BackendTest extends DbTestCase
 
         $this->assertSame($em, $this->backend->getEntityManager());
     }
+
+    /**
+     * @test
+     */
+    public function getsAndSetsFilelib()
+    {
+        $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')
+                        ->disableOriginalConstructor()
+                        ->getMock();
+
+        $this->assertNotSame($filelib, $this->backend->getFilelib());
+
+        $this->backend->setFilelib($filelib);
+
+        $this->assertSame($filelib, $this->backend->getFilelib());
+    }
 }
