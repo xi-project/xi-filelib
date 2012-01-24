@@ -11,10 +11,6 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
     protected $filelib;
     
-    
-    
-    
-    
     public function setUp()
     {
         if (!class_exists('\\Zend\\Filter\\FilterChain')) {
@@ -157,6 +153,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
         $linker = new BeautifurlLinker();
         $linker->setFilelib($this->filelib);
         $linker->setExcludeRoot(true);
+        $linker->setSlugify(true);
                 
         $this->assertEquals($beautifurl[0], $linker->getLink($file, true));
         
@@ -173,6 +170,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
         $linker = new BeautifurlLinker();
         $linker->setFilelib($this->filelib);
         $linker->setExcludeRoot(true);
+        $linker->setSlugify(true);
                 
         $this->assertEquals($beautifurl[1], $linker->getLinkVersion($file, $this->versionProvider, true));
         
@@ -203,6 +201,27 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
         $linker->setExcludeRoot(true);                
         $this->assertEquals('lussuttaja/lamantiini.lus', $linker->getLink($file, true));
                 
+    }
+    
+    /**
+     * @test
+     */
+    public function linkerShouldNotSlugifyWhenSlugifyIsSetToFalse()
+    {
+         
+        $linker = new BeautifurlLinker();
+        $linker->setSlugify(false);
+        $linker->setFilelib($this->filelib);
+        
+         $file = FileItem::create(array(
+            'name' => 'lamantiini.lus',
+            'folder_id' => 5,
+        ));
+
+        
+        $this->assertEquals('root/lussuttaja/banaanin/sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú/lamantiini.lus', $linker->getLink($file));
+         
+         
     }
     
     
