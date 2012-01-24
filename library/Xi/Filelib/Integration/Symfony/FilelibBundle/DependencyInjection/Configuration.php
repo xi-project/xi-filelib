@@ -44,6 +44,10 @@ class Configuration implements ConfigurationInterface
                             ->isRequired()
                         ->end()
                 
+                        ->scalarNode('method')
+                        ->defaultValue('setEntityManager')
+                        ->end()
+                
                         ->scalarNode('fileEntity')
                         ->end()
 

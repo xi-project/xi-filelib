@@ -53,6 +53,9 @@ class RecreateCommand extends ContainerAwareCommand
         
         foreach ($files as $file) {
 
+            $output->writeln($file->getId());
+            
+            
             $po = $file->getProfileObject();
             
             foreach ($po->getPlugins() as $plugin) {
@@ -63,10 +66,33 @@ class RecreateCommand extends ContainerAwareCommand
                     // and plugin is valid for the specific file's type
                     if ($plugin->providesFor($file)) {
 
-                        $plugin->deleteVersion($file);
-
+                        try {
+                            $this->filelib->getPublisher()->unpublishVersion($file, $plugin);
+                        } catch (\Exception $e) {
+                            $output->writeln($e->getMessage());
+                        }
                         
-                        $plugin->createVersion($file);
+                        try {
+                            $plugin->deleteVersion($file);
+                        } catch (\Exception $e) {
+                            $output->writeln($e->getMessage());
+                        }
+                        
+                        try {
+                            $tmp = $plugin->createVersion($file);
+                            $this->filelib->getStorage()->storeVersion($file, $plugin, $tmp);
+
+                        } catch (\Exception $e) {
+                            $output->writeln($e->getMessage());
+                        }
+                        
+                        
+                        try {
+                            $this->filelib->getPublisher()->publishVersion($file, $plugin);
+                        } catch (\Exception $e) {
+                            $output->writeln($e->getMessage());
+                        }
+
                         
                     }
                 }
