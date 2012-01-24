@@ -55,7 +55,7 @@ class FilelibExtension extends Extension
         
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        
+         
                 
 
         // die();
@@ -64,9 +64,9 @@ class FilelibExtension extends Extension
         
         $backend = new Definition($config['backend']['type'], array($config['backend']['options']));
         $container->setDefinition('filelib.backend', $backend);
-        $backend->addMethodCall('setEntityManager', array(
-            new Reference($config['backend']['key'])
-        ));
+        
+        // @todo: dirty quick kludge to make d-porssi work. How to actually do?!?!?!? Must... investigate... Doctrine f.ex
+        $backend->addMethodCall($config['backend']['method'], array(new Reference($config['backend']['key'])));
         
         
         if (isset($config['backend']['folderEntity'])) {
