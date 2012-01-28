@@ -24,27 +24,21 @@ class ZendDbBackendTest extends RelationalDbTestCase
     protected $backend;
     
     
-    protected static $conn;
-    
-    public static function setUpBeforeClass()
+    protected $conn;
+
+    public function setUp()
     {
-        self::$conn = Zend_Db::factory('pdo_' . PDO_DRIVER, array(
+        parent::setUp();
+
+        $this->conn = Zend_Db::factory('pdo_' . PDO_DRIVER, array(
             'host'     => PDO_HOST,
             'dbname'   => PDO_DBNAME,
             'username' => PDO_USERNAME,
             'password' => PDO_PASSWORD,
         ));
-    }
-    
-    
-    
-    public function setUp()
-    {
-        parent::setUp();
-        
-        
+
         $this->backend = new ZendDbBackend();
-        $this->backend->setDb(self::$conn);
+        $this->backend->setDb($this->conn);
         
         // $conn = $this->getConnection()->getConnection();
         
@@ -54,17 +48,6 @@ class ZendDbBackendTest extends RelationalDbTestCase
         
                 
     }
-
-    public function provideForFindFolder()
-    {
-        return array(
-            array(1, array('name' => 'root')),
-            array(2, array('name' => 'lussuttaja')),
-            array(3, array('name' => 'tussin')),
-            array(4, array('name' => 'banskun')),
-        );
-    }
-    
     
     /**
      * @test
@@ -74,160 +57,6 @@ class ZendDbBackendTest extends RelationalDbTestCase
         $this->assertInstanceOf('Xi\Filelib\Backend\ZendDb\FileTable', $this->backend->getFileTable());
         $this->assertInstanceOf('Xi\Filelib\Backend\ZendDb\FolderTable', $this->backend->getFolderTable());
     }
-    
-    
-    
-    /**
-     * @test
-     * @dataProvider provideForFindFolder
-     */
-    public function findFolderShouldReturnCorrectFolder($folderId, $data)
-    {
-        $folder = $this->backend->findFolder($folderId);
-        
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-        
-        $this->assertEquals($folderId, $folder['id']);
-        $this->assertEquals($data['name'], $folder['name']);
-        
-    }
-    
-    /**
-     * @test
-     */
-    public function findFolderShouldReturnNullWhenTryingToFindNonExistingFolder()
-    {
-        $folder = $this->backend->findFolder(900);
-        
-        $this->assertEquals(false, $folder);
-    }
-
-    /**
-     * @test
-     * @expectedException \Xi\Filelib\FilelibException
-     */
-    public function findFolderShouldThrowExceptionWhenTryingToFindErroneousFolder()
-    {
-        $folder = $this->backend->findFolder('xoo');
-
-    }
-    
-    
-    /**
-     * @test
-     */
-    public function createFolderShouldCreateFolder()
-    {
-        $data = array(
-            'parent_id' => 3,
-            'name' => 'lusander',
-            'url' => 'lussuttaja/tussin/lusander',
-        );
-        
-        $folder = FolderItem::create($data);
-
-        
-        $this->assertNull($folder->getId());
-                
-        $ret = $this->backend->createFolder($folder);
-        
-        $this->assertInternalType('integer', $ret->getId());
-        
-    }
-    
-    
-    /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function createFolderShouldThrowExceptionWhenFolderIsInvalid()
-    {
-        $data = array(
-            'parent_id' => 666,
-            'name' => 'lusander',
-            'url' => 'lussuttaja/tussin/lusander',
-        );
-        
-        $folder = FolderItem::create($data);
-        
-        $ret = $this->backend->createFolder($folder);
-        
-    }
-    
-
-    /**
-     * @test
-     */
-    public function deleteFolderShouldDeleteFolder()
-    {
-        $data = array(
-            'id' => 5,
-            'parent_id' => null,
-            'name' => 'klus',
-        );
-        
-        $folder = FolderItem::create($data);
-                
-        $rows = $this->backend->getFolderTable()->fetchAll('id = 5');
-        
-        $this->assertEquals(1, $rows->count());
-        
-        $deleted = $this->backend->deleteFolder($folder);
-        $this->assertTrue($deleted);
-        
-        
-        $rows = $this->backend->getFolderTable()->fetchAll('id = 5');
-        $this->assertEquals(0, $rows->count());
-                
-        $this->assertFalse($this->backend->findFolder(5));
-        
-    }
-
-    
-    /**
-     * @test
-     * @expectedException \Xi\Filelib\FilelibException
-     */
-    public function deleteFolderShouldThrowExceptionWhenDeletingFolderWithFiles()
-    {
-        $data = array(
-            'id' => 4,
-            'parent_id' => null,
-            'name' => 'klus',
-        );
-        
-        $folder = FolderItem::create($data);
-                
-        $rows = $this->backend->getFolderTable()->fetchAll('id = 5');
-        
-        $this->assertEquals(1, $rows->count());
-        
-        $deleted = $this->backend->deleteFolder($folder);
-        
-    }
-
-    
-    /**
-     * @test
-     */
-    public function deleteFolderShouldNotDeleteNonExistingFolder()
-    {
-        $data = array(
-            'id' => 423789,
-            'parent_id' => null,
-            'name' => 'klus',
-        );
-        
-        $folder = FolderItem::create($data);
-        
-        $deleted = $this->backend->deleteFolder($folder);
-        $this->assertEquals(false, $deleted);
-
-    }
-    
     
     /**
      * @test
