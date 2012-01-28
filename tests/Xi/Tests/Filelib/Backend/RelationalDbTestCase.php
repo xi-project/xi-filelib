@@ -2,7 +2,9 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\File\FileItem,
+    Xi\Filelib\Folder\FolderItem,
+    DateTime;
 
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
@@ -430,5 +432,27 @@ abstract class RelationalDbTestCase extends DbTestCase
 
             $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
         }
+    }
+
+    /**
+     * @test
+     */
+    public function updateFileShouldUpdateFile()
+    {
+        $data = array(
+            'id'            => 1,
+            'folder_id'     => 2,
+            'mimetype'      => 'image/jpg',
+            'profile'       => 'lussed',
+            'size'          => '1006',
+            'name'          => 'tohtori-sykero.png',
+            'link'          => 'tohtori-sykero.png',
+            'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
+        );
+
+        $file = FileItem::create($data);
+
+        $this->assertTrue($this->backend->updateFile($file));
+        $this->assertEquals($data, $this->backend->findFile(1));
     }
 }

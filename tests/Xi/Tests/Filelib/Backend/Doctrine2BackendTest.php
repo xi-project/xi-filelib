@@ -229,38 +229,6 @@ class Doctrine2BackendTest extends RelationalDbTestCase
 
     /**
      * @test
-     */
-    public function updateFileShouldUpdateFile()
-    {
-        $updated = array(
-            'id'            => 1,
-            'folder_id'     => 2,
-            'mimetype'      => 'image/jpg',
-            'profile'       => 'lussed',
-            'size'          => '1006',
-            'name'          => 'tohtori-sykero.png',
-            'link'          => 'tohtori-sykero.png',
-            'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
-        );
-
-        $file = FileItem::create($updated);
-
-        $this->assertTrue($this->backend->updateFile($file));
-
-        $row = $this->conn->fetchAssoc("SELECT * FROM xi_filelib_file WHERE id = 1");
-
-        $this->assertEquals($row['id'], 1);
-        $this->assertEquals($row['folder_id'], 2);
-        $this->assertEquals($row['mimetype'], 'image/jpg');
-        $this->assertEquals($row['fileprofile'], 'lussed');
-        $this->assertEquals($row['filesize'], 1006);
-        $this->assertEquals($row['filename'], 'tohtori-sykero.png');
-        $this->assertEquals($row['filelink'], 'tohtori-sykero.png');
-        $this->assertEquals($row['date_uploaded'], '2011-01-02 16:16:16');
-    }
-
-    /**
-     * @test
      * @expectedException Xi\Filelib\FilelibException
      */
     public function updateFileShouldThrowExceptionWithErroneousFile()
