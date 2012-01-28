@@ -5,11 +5,9 @@ namespace Xi\Tests\Filelib\Backend;
 use Xi\Filelib\Backend\Doctrine2Backend,
     Xi\Filelib\Folder\FolderItem,
     Xi\Filelib\File\FileItem,
-    DateTime,
     Exception,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Configuration,
-    Doctrine\DBAL\Connection,
     Doctrine\ORM\NoResultException,
     Doctrine\ORM\EntityNotFoundException,
     Doctrine\Common\Cache\ArrayCache,
@@ -20,21 +18,6 @@ use Xi\Filelib\Backend\Doctrine2Backend,
  */
 class Doctrine2BackendTest extends RelationalDbTestCase
 {
-    /**
-     * @var Doctrine2Backend
-     */
-    protected $backend;
-
-    /**
-     * @var Connection
-     */
-    protected $conn;
-
-    /**
-     * @var EntityManager
-     */
-    protected $em;
-
     /**
      * @return Doctrine2Backend
      */
@@ -63,9 +46,6 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         );
 
         $em = EntityManager::create($connectionOptions, $config);
-
-        $this->em   = $em;
-        $this->conn = $em->getConnection();
 
         $backend = new Doctrine2Backend();
         $backend->setEntityManager($em);
