@@ -121,17 +121,9 @@ abstract class RelationalDbTestCase extends DbTestCase
 
         $folder = FolderItem::create($data);
 
-        $this->assertCount(
-            1,
-            $this->conn->fetchAll("SELECT * FROM xi_filelib_folder WHERE id = 5")
-        );
+        $this->assertInternalType('array', $this->backend->findFolder(5));
 
         $this->assertTrue($this->backend->deleteFolder($folder));
-
-        $this->assertCount(
-            0,
-            $this->conn->fetchAll('SELECT * FROM xi_filelib_folder WHERE id = 5')
-        );
 
         $this->assertFalse($this->backend->findFolder(5));
     }
@@ -150,10 +142,7 @@ abstract class RelationalDbTestCase extends DbTestCase
 
         $folder = FolderItem::create($data);
 
-        $this->assertCount(
-            1,
-            $this->conn->fetchAll('SELECT * FROM xi_filelib_folder WHERE id = 5')
-        );
+        $this->assertInternalType('array', $this->backend->findFolder(5));
 
         $this->backend->deleteFolder($folder);
     }
