@@ -4,6 +4,7 @@ namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Filelib\File\FileItem,
     Xi\Filelib\Folder\FolderItem,
+    Xi\Filelib\Backend\Backend,
     DateTime;
 
 /**
@@ -11,6 +12,23 @@ use Xi\Filelib\File\FileItem,
  */
 abstract class RelationalDbTestCase extends DbTestCase
 {
+    /**
+     * @return Backend
+     */
+    protected abstract function setUpBackend();
+
+    /**
+     * @var Backend
+     */
+    protected $backend;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->backend = $this->setUpBackend();
+    }
+
     /**
      * @test
      */

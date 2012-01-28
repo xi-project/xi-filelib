@@ -35,10 +35,11 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     protected $em;
 
-    public function setUp()
+    /**
+     * @return Doctrine2Backend
+     */
+    protected function setUpBackend()
     {
-        parent::setUp();
-
         $cache = new ArrayCache();
 
         $config = new Configuration();
@@ -66,8 +67,10 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         $this->em   = $em;
         $this->conn = $em->getConnection();
 
-        $this->backend = new Doctrine2Backend();
-        $this->backend->setEntityManager($em);
+        $backend = new Doctrine2Backend();
+        $backend->setEntityManager($em);
+
+        return $backend;
     }
 
     /**

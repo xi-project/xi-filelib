@@ -12,14 +12,10 @@ use Xi\Filelib\Backend\ZendDbBackend,
 class ZendDbBackendTest extends RelationalDbTestCase
 {
     /**
-     * @var ZendDbBackend
+     * @return ZendDbBackend
      */
-    protected $backend;
-
-    public function setUp()
+    protected function setUpBackend()
     {
-        parent::setUp();
-
         $db = Zend_Db::factory('pdo_' . PDO_DRIVER, array(
             'host'     => PDO_HOST,
             'dbname'   => PDO_DBNAME,
@@ -27,8 +23,10 @@ class ZendDbBackendTest extends RelationalDbTestCase
             'password' => PDO_PASSWORD,
         ));
 
-        $this->backend = new ZendDbBackend();
-        $this->backend->setDb($db);
+        $backend = new ZendDbBackend();
+        $backend->setDb($db);
+
+        return $backend;
     }
 
     /**
