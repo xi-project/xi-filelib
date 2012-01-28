@@ -18,7 +18,7 @@ use Xi\Filelib\Backend\Doctrine2Backend,
 /**
  * @group doctrine
  */
-class Doctrine2BackendTest extends DbTestCase
+class Doctrine2BackendTest extends RelationalDbTestCase
 {
     /**
      * @var Doctrine2Backend
@@ -68,21 +68,6 @@ class Doctrine2BackendTest extends DbTestCase
 
         $this->backend = new Doctrine2Backend();
         $this->backend->setEntityManager($em);
-    }
-
-    /**
-     * @test
-     */
-    public function findRootFolderShouldReturnRootFolder()
-    {
-        $folder = $this->backend->findRootFolder();
-
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-
-        $this->assertNull($folder['parent_id']);
     }
 
     /**

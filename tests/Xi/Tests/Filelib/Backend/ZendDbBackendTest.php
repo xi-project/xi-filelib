@@ -15,7 +15,7 @@ use Xi\Filelib\Backend\ZendDbBackend,
  * @author pekkis
  * @group  zenddb
  */
-class ZendDbBackendTest extends DbTestCase
+class ZendDbBackendTest extends RelationalDbTestCase
 {
     /**
      *
@@ -54,35 +54,6 @@ class ZendDbBackendTest extends DbTestCase
         
                 
     }
-    
-    
-    public function tearDown()
-    {
-       parent::tearDown();
-    }
-    
-    
-    
-    
-    /**
-     * @test
-     */
-    public function findRootFolderShouldReturnRootFolder()
-    {
-    
-        
-        $folder = $this->backend->findRootFolder();
-        
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-        
-        $this->assertEquals(null, $folder['parent_id']);
-        
-        
-    }
-    
 
     public function provideForFindFolder()
     {

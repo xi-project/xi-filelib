@@ -7,8 +7,8 @@ use \Xi\Filelib\FileLibrary,
     \DateTime,
     \Exception,
     \Xi\Filelib\File\File,
-    \Xi\Filelib\Folder\Folder
-    ;
+    \Xi\Filelib\Folder\Folder,
+    Xi\Filelib\Backend\ZendDb\FolderRow;
 
 
 /**
@@ -414,16 +414,18 @@ class ZendDbBackend extends AbstractBackend implements Backend
         
     }
     
-    
-    private function _folderRowToArray($row)
+    /**
+     * @param  FolderRow $row
+     * @return array
+     */
+    private function _folderRowToArray(FolderRow $row)
     {
         return array(
-            'id' => (int) $row->id,
-            'parent_id' => (int) $row->parent_id,
-            'name' => $row->foldername,
-            'url' => $row->folderurl,
+            'id'        => (int) $row->id,
+            'parent_id' => $row->parent_id ? (int) $row->parent_id : null,
+            'name'      => $row->foldername,
+            'url'       => $row->folderurl,
         );
-        
     }
     
     /**
