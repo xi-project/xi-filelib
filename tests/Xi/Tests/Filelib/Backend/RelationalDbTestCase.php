@@ -5,6 +5,7 @@ namespace Xi\Tests\Filelib\Backend;
 use Xi\Filelib\File\FileItem,
     Xi\Filelib\Folder\FolderItem,
     Xi\Filelib\Backend\Backend,
+    PHPUnit_Framework_MockObject_MockObject,
     DateTime,
     Exception;
 
@@ -536,6 +537,16 @@ abstract class RelationalDbTestCase extends DbTestCase
 
     /**
      * @test
+     */
+    public function findFileReturnsFalseIfFileIsNotFound()
+    {
+        $this->setUpEmptyDataSet();
+
+        $this->assertFalse($this->backend->findFile(1));
+    }
+
+    /**
+     * @test
      * @expectedException Xi\Filelib\FilelibException
      */
     public function findFileShouldThrowExceptionWithErroneousId()
@@ -828,5 +839,33 @@ abstract class RelationalDbTestCase extends DbTestCase
         $this->assertFalse(
             $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
         );
+    }
+
+    /**
+     * @test
+     */
+    public function getsAndSetsFilelib()
+    {
+        $this->setUpEmptyDataSet();
+
+        $filelib = $this->getMockAndDisableOriginalConstructor(
+            'Xi\Filelib\FileLibrary'
+        );
+
+        $this->assertNotSame($filelib, $this->backend->getFilelib());
+
+        $this->backend->setFilelib($filelib);
+
+        $this->assertSame($filelib, $this->backend->getFilelib());
+    }
+
+    /**
+     * @return PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getMockAndDisableOriginalConstructor($className)
+    {
+        return $this->getMockBuilder($className)
+                    ->disableOriginalConstructor()
+                    ->getMock();
     }
 }

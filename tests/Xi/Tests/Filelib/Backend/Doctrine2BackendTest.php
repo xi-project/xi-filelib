@@ -169,23 +169,6 @@ class Doctrine2BackendTest extends RelationalDbTestCase
 
     /**
      * @test
-     */
-    public function findFileReturnsFalseIfFileIsNotFound()
-    {
-        $this->setUpEmptyDataSet();
-
-        $em = $this->createEntityManagerMock();
-        $em->expects($this->once())
-           ->method('find')
-           ->will($this->returnValue(null));
-
-        $this->backend->setEntityManager($em);
-
-        $this->assertFalse($this->backend->findFile(1));
-    }
-
-    /**
-     * @test
      * @expectedException Xi\Filelib\FilelibException
      */
     public function deleteFileReThrowsException()
@@ -278,24 +261,6 @@ class Doctrine2BackendTest extends RelationalDbTestCase
     }
 
     /**
-     * @test
-     */
-    public function getsAndSetsFilelib()
-    {
-        $this->setUpEmptyDataSet();
-
-        $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-
-        $this->assertNotSame($filelib, $this->backend->getFilelib());
-
-        $this->backend->setFilelib($filelib);
-
-        $this->assertSame($filelib, $this->backend->getFilelib());
-    }
-
-    /**
      * @return PHPUnit_Framework_MockObject_MockObject
      */
     private function createEntityManagerMock()
@@ -303,15 +268,5 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         return $this->getMockAndDisableOriginalConstructor(
             'Doctrine\ORM\EntityManager'
         );
-    }
-
-    /**
-     * @return PHPUnit_Framework_MockObject_MockObject
-     */
-    private function getMockAndDisableOriginalConstructor($className)
-    {
-        return $this->getMockBuilder($className)
-                    ->disableOriginalConstructor()
-                    ->getMock();
     }
 }
