@@ -8,7 +8,8 @@ use \Xi\Filelib\FileLibrary,
     \Exception,
     \Xi\Filelib\File\File,
     \Xi\Filelib\Folder\Folder,
-    Xi\Filelib\Backend\ZendDb\FolderRow;
+    Xi\Filelib\Backend\ZendDb\FolderRow,
+    Zend_Db_Table_Abstract;
 
 
 /**
@@ -76,7 +77,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     /**
      * Returns folder table
      *
-     * @return \Xi\Filelib\Backend\ZendDb\FolderTable
+     * @return Zend_Db_Table_Abstract
      */
     public function getFolderTable()
     {
@@ -86,7 +87,17 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
         return $this->_folderTable;
     }
-   
+
+    /**
+     * @param  Zend_Db_Table_Abstract $folderTable
+     * @return ZendDbBackend
+     */
+    public function setFolderTable(Zend_Db_Table_Abstract $folderTable)
+    {
+        $this->_folderTable = $folderTable;
+
+        return $this;
+    }
 
     public function findRootFolder()
     {
