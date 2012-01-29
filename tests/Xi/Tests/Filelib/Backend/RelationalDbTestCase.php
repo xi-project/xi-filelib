@@ -5,7 +5,8 @@ namespace Xi\Tests\Filelib\Backend;
 use Xi\Filelib\File\FileItem,
     Xi\Filelib\Folder\FolderItem,
     Xi\Filelib\Backend\Backend,
-    DateTime;
+    DateTime,
+    Exception;
 
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
@@ -22,11 +23,65 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     protected $backend;
 
-    public function setUp()
+    /**
+     * @var string|null
+     */
+    private $dataSet;
+
+    protected function setUp()
     {
-        parent::setUp();
+        // Do not call parent setUp, because we wan't to use different data sets
+        // per test.
 
         $this->backend = $this->setUpBackend();
+    }
+
+    /**
+     * @throws Exception If no data set was used.
+     */
+    protected function tearDown()
+    {
+        // Do not call parent tearDown.
+
+        $this->getDatabaseTester()->setTearDownOperation($this->getTearDownOperation());
+        $this->getDatabaseTester()->setDataSet($this->getDataSet($this->dataSet));
+        $this->getDatabaseTester()->onTearDown();
+
+        // Destroy the tester after the test is run to keep DB connections
+        // from piling up.
+        $this->databaseTester = null;
+
+        $this->dataSet = null;
+    }
+
+    /**
+     * Set up a test using an empty data set.
+     */
+    protected function setUpEmptyDataSet()
+    {
+        $this->setUpDataSet('empty');
+    }
+
+    /**
+     * Set up a test using a simple data set.
+     */
+    protected function setUpSimpleDataSet()
+    {
+        $this->setUpDataSet('simple');
+    }
+
+    /**
+     * @param string $dataSet
+     */
+    private function setUpDataSet($dataSet)
+    {
+        $this->dataSet = $dataSet;
+
+        $this->databaseTester = null;
+
+        $this->getDatabaseTester()->setSetUpOperation($this->getSetUpOperation());
+        $this->getDatabaseTester()->setDataSet($this->getDataSet($dataSet));
+        $this->getDatabaseTester()->onSetUp();
     }
 
     /**
@@ -34,6 +89,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findRootFolderShouldReturnRootFolder()
     {
+        $this->setUpSimpleDataSet();
+
         $folder = $this->backend->findRootFolder();
 
         $this->assertArrayHasKey('id', $folder);
@@ -52,6 +109,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFolderShouldReturnCorrectFolder($folderId, array $data)
     {
+        $this->setUpSimpleDataSet();
+
         $folder = $this->backend->findFolder($folderId);
 
         $this->assertArrayHasKey('id', $folder);
@@ -81,6 +140,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFolderShouldReturnNullWhenTryingToFindNonExistingFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $this->assertFalse($this->backend->findFolder(900));
     }
 
@@ -90,6 +151,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFolderShouldThrowExceptionWhenTryingToFindErroneousFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $this->backend->findFolder('xoo');
     }
 
@@ -98,6 +161,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function createFolderShouldCreateFolder()
     {
+        $this->setUpSimpleDataSet();
+
         $data = array(
             'parent_id' => 3,
             'name'      => 'lusander',
@@ -119,6 +184,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function createFolderShouldThrowExceptionWhenFolderIsInvalid()
     {
+        $this->setUpEmptyDataSet();
+
         $data = array(
             'parent_id' => 666,
             'name'      => 'lusander',
@@ -133,6 +200,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function deleteFolderShouldDeleteFolder()
     {
+        $this->setUpSimpleDataSet();
+
         $data = array(
             'id'        => 5,
             'parent_id' => null,
@@ -154,6 +223,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function deleteFolderShouldThrowExceptionWhenDeletingFolderWithFiles()
     {
+        $this->setUpSimpleDataSet();
+
         $data = array(
             'id'        => 4,
             'parent_id' => null,
@@ -172,6 +243,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function deleteFolderShouldNotDeleteNonExistingFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $data = array(
             'id'        => 423789,
             'parent_id' => null,
@@ -188,6 +261,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function updateFolderShouldUpdateFolder()
     {
+        $this->setUpSimpleDataSet();
+
         $data = array(
             'id'        => 3,
             'parent_id' => 2,
@@ -215,6 +290,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function updatesRootFolder()
     {
+        $this->setUpSimpleDataSet();
+
         $data = array(
             'id'        => 3,
             'parent_id' => null,
@@ -233,6 +310,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function updateFolderShouldNotUpdateNonExistingFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $folder = FolderItem::create(array(
             'id'        => 333,
             'parent_id' => 1,
@@ -249,6 +328,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function updateFolderShouldThrowExceptionWhenUpdatingErroneousFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $folder = FolderItem::create(array(
             'id'        => 'xoofiili',
             'parent_id' => 'xoo',
@@ -264,6 +345,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findSubFoldersShouldReturnArrayOfSubFolders()
     {
+        $this->setUpSimpleDataSet();
+
         $folder = FolderItem::create(array(
             'id'        => 1,
             'parent_id' => null,
@@ -307,6 +390,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findSubFoldersShouldThrowExceptionForErroneousFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $folder = FolderItem::create(array(
             'id'        => 'xooxer',
             'parent_id' => null,
@@ -322,6 +407,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFolderByUrlShouldReturnFolder()
     {
+        $this->setUpSimpleDataSet();
+
         $ret = $this->backend->findFolderByUrl('lussuttaja/tussin');
 
         $this->assertInternalType('array', $ret);
@@ -333,6 +420,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFolderByUrlShouldNotReturnNonExistingFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $this->assertFalse(
             $this->backend->findFolderByUrl('lussuttaja/tussinnnnn')
         );
@@ -343,6 +432,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFilesInShouldReturnArrayOfFiles()
     {
+        $this->setUpSimpleDataSet();
+
         $folder = FolderItem::create(array(
             'id'        => 1,
             'parent_id' => null,
@@ -386,6 +477,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFilesInShouldThrowExceptionWithErroneousFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $folder = FolderItem::create(array(
             'id'        => 'xoo',
             'parent_id' => null,
@@ -401,6 +494,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFileShouldReturnFile()
     {
+        $this->setUpSimpleDataSet();
+
         $ret = $this->backend->findFile(1);
 
         $this->assertInternalType('array', $ret);
@@ -423,6 +518,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFileShouldThrowExceptionWithErroneousId()
     {
+        $this->setUpEmptyDataSet();
+
         $this->backend->findFile('xooxoeroe');
     }
 
@@ -431,6 +528,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findAllFilesShouldReturnAllFiles()
     {
+        $this->setUpSimpleDataSet();
+
         $rets = $this->backend->findAllFiles();
 
         $this->assertInternalType('array', $rets);
@@ -457,6 +556,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function updateFileShouldUpdateFile()
     {
+        $this->setUpSimpleDataSet();
+
         $data = array(
             'id'            => 1,
             'folder_id'     => 2,
@@ -480,6 +581,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function updateFileShouldThrowExceptionWithErroneousFile()
     {
+        $this->setUpSimpleDataSet();
+
         $updated = array(
             'id'            => 1,
             'folder_id'     => 666666,
@@ -501,6 +604,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function deleteFileShouldDeleteFile()
     {
+        $this->setUpSimpleDataSet();
+
         $file = FileItem::create(array('id' => 5));
 
         $this->assertTrue($this->backend->deleteFile($file));
@@ -513,6 +618,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function deleteFileShouldThrowExceptionWithErroneousFile()
     {
+        $this->setUpEmptyDataSet();
+
         $file = FileItem::create(array('id' => 'xooxoox'));
 
         $this->backend->deleteFile($file);
@@ -523,6 +630,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function fileUploadShouldUploadFile()
     {
+        $this->setUpSimpleDataSet();
+
         $fidata = array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
@@ -560,6 +669,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function fileUploadShouldThrowExceptionWithErroneousFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $fidata = array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
@@ -588,6 +699,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function fileUploadShouldThrowExceptionWithAlreadyExistingFile()
     {
+        $this->setUpSimpleDataSet();
+
         $fidata = array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
@@ -615,6 +728,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFileByFilenameShouldReturnCorrectFile()
     {
+        $this->setUpSimpleDataSet();
+
         $fidata = array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
@@ -646,6 +761,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFileByFilenameShouldNotFindNonExistingFile()
     {
+        $this->setUpSimpleDataSet();
+
         $fidata = array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
@@ -677,6 +794,8 @@ abstract class RelationalDbTestCase extends DbTestCase
      */
     public function findFileByFileNameShouldThrowExceptionWithErroneousFolder()
     {
+        $this->setUpEmptyDataSet();
+
         $folder = FolderItem::create(array(
             'id'        => 'shjisioshio',
             'parent_id' => null,

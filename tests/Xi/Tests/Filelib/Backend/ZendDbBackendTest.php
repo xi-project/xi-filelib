@@ -3,6 +3,7 @@
 namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Filelib\Backend\ZendDbBackend,
+    Xi\Filelib\Folder\FolderItem,
     Zend_Db;
 
 /**
@@ -34,6 +35,8 @@ class ZendDbBackendTest extends RelationalDbTestCase
      */
     public function zendDbGettersShouldReturnCorrectObjects()
     {
+        $this->setUpEmptyDataSet();
+
         $this->assertInstanceOf(
             'Xi\Filelib\Backend\ZendDb\FileTable',
             $this->backend->getFileTable()

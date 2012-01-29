@@ -10,14 +10,41 @@ use PDO,
     PHPUnit_Extensions_Database_Operation_Composite,
     PHPUnit_Extensions_Database_Operation_IDatabaseOperation,
     PHPUnit_Extensions_Database_DB_MetaData_MySQL,
+    PHPUnit_Extensions_Database_DataSet_AbstractDataSet,
+    PHPUnit_Extensions_Database_DataSet_DefaultDataSet,
+    Exception,
     Xi\Tests\PHPUnit\Extensions\Database\Operation\MySQL55Truncate;
 
 abstract class DbTestCase extends PHPUnit_Extensions_Database_TestCase
 {
     /**
-     * @return PHPUnit_Extensions_Database_DB_IDatabaseConnection
+     * @param  string                                              $dataSet
+     * @return PHPUnit_Extensions_Database_DataSet_AbstractDataSet
+     * @throws Exception
      */
-    public function getDataSet()
+    public function getDataSet($dataSet = null)
+    {
+        if ($dataSet === 'empty') {
+            return $this->getEmptyDataSet();
+        } else if ($dataSet === 'simple') {
+            return $this->getSimpleDataSet();
+        }
+
+        throw new Exception('Please specify a data set to be used.');
+    }
+
+    /**
+     * @return PHPUnit_Extensions_Database_DataSet_DefaultDataSet
+     */
+    private function getEmptyDataSet()
+    {
+        return new PHPUnit_Extensions_Database_DataSet_DefaultDataSet();
+    }
+
+    /**
+     * @return ArrayDataSet
+     */
+    private function getSimpleDataSet()
     {
         return new ArrayDataSet(array(
             'xi_filelib_folder' => array(
@@ -144,7 +171,9 @@ abstract class DbTestCase extends PHPUnit_Extensions_Database_TestCase
     protected function getTearDownOperation()
     {
         if ($this->isMySQL()) {
-            return PHPUnit_Extensions_Database_Operation_Factory::NONE();
+            return new PHPUnit_Extensions_Database_Operation_Composite(array(
+                new MySQL55Truncate(true)
+            ));
         }
 
         return PHPUnit_Extensions_Database_Operation_Factory::DELETE_ALL();

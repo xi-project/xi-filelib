@@ -58,6 +58,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function findRootFolderCreatesRootFolderIfItDoesNotExist()
     {
+        $this->setUpEmptyDataSet();
+
         $query = $this->createQueryMock();
         $query->expects($this->once())
               ->method('getSingleResult')
@@ -97,6 +99,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function entityClassGettersShouldReturnCorrectClassNames()
     {
+        $this->setUpEmptyDataSet();
+
         $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\File',
                             $this->backend->getFileEntityName());
 
@@ -110,6 +114,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function findFolderRethrowsException()
     {
+        $this->setUpEmptyDataSet();
+
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
            ->method('find')
@@ -124,6 +130,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function deleteFolderReturnsFalseOnEntityNotFound()
     {
+        $this->setUpEmptyDataSet();
+
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
             ->method('find')
@@ -146,6 +154,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function updateFolderRethrowsException()
     {
+        $this->setUpEmptyDataSet();
+
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
            ->method('getReference')
@@ -167,6 +177,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function findSubFoldersRethrowsException()
     {
+        $this->setUpEmptyDataSet();
+
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
             ->method('createQueryBuilder')
@@ -186,6 +198,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function findFileRethrowsException()
     {
+        $this->setUpEmptyDataSet();
+
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
            ->method('find')
@@ -200,6 +214,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function findFileReturnsFalseIfFileIsNotFound()
     {
+        $this->setUpEmptyDataSet();
+
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
            ->method('find')
@@ -216,6 +232,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function deleteFileReThrowsException()
     {
+        $this->setUpEmptyDataSet();
+
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
            ->method('remove')
@@ -231,6 +249,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function findFileByFileNameRethrowsException()
     {
+        $this->setUpEmptyDataSet();
+
         $folder = FolderItem::create(array(
             'id'        => 1,
             'parent_id' => null,
@@ -252,6 +272,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function getsAndSetsFileEntityName()
     {
+        $this->setUpEmptyDataSet();
+
         $fileEntityName = 'Foo\Bar';
 
         $this->assertNotEquals($fileEntityName,
@@ -268,6 +290,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function getsAndSetsFolderEntityName()
     {
+        $this->setUpEmptyDataSet();
+
         $folderEntityName = 'Xoo\Bar';
 
         $this->assertNotEquals($folderEntityName,
@@ -284,6 +308,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function getsAndsetsEntityManager()
     {
+        $this->setUpEmptyDataSet();
+
         $em = $this->createEntityManagerMock();
 
         $this->assertNotSame($em, $this->backend->getEntityManager());
@@ -298,6 +324,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
      */
     public function getsAndSetsFilelib()
     {
+        $this->setUpEmptyDataSet();
+
         $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')
                         ->disableOriginalConstructor()
                         ->getMock();
