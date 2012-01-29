@@ -279,6 +279,8 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function findFolderByUrl($url)
     {
+        $this->assertValidUrl($url);
+
         $folder = $this->em->getRepository($this->folderEntityName)->findOneBy(array(
             'url' => $url,
         ));

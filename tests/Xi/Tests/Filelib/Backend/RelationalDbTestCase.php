@@ -452,6 +452,30 @@ abstract class RelationalDbTestCase extends DbTestCase
 
     /**
      * @test
+     * @expectedException Xi\Filelib\FilelibException
+     * @dataProvider invalidFolderUrlProvider
+     * @param mixed $url
+     */
+    public function findFolderByUrlShouldThrowExceptionIfUrlIsNotAString($url)
+    {
+        $this->setUpEmptyDataSet();
+
+        $this->backend->findFolderByUrl($url);
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidFolderUrlProvider()
+    {
+        return array(
+            array(array()),
+            array(new \stdClass()),
+        );
+    }
+
+    /**
+     * @test
      */
     public function findFilesInShouldReturnArrayOfFiles()
     {

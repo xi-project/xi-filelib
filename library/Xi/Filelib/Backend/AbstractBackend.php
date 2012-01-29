@@ -3,7 +3,8 @@
 namespace Xi\Filelib\Backend;
 
 use Xi\Filelib\FileLibrary,
-    Xi\Filelib\Configurator;
+    Xi\Filelib\Configurator,
+    Xi\Filelib\FilelibException;
 
 /**
  * Abstract backend implementing common methods
@@ -47,4 +48,15 @@ abstract class AbstractBackend implements Backend
 
     public function init()
     {}
+
+    /**
+     * @param  string           $url
+     * @throws FilelibException
+     */
+    protected function assertValidUrl($url)
+    {
+        if (is_array($url) || is_object($url)) {
+            throw new FilelibException('URL must be a string.');
+        }
+    }
 }

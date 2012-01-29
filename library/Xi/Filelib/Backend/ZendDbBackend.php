@@ -206,16 +206,14 @@ class ZendDbBackend extends AbstractBackend implements Backend
     /**
      * Finds folder by url
      *
-     * @param  integer                          $id
-     * @return \Xi\Filelib\Folder\Folder|false
+     * @param  string      $url
+     * @return array|false
      */
     public function findFolderByUrl($url)
     {
-        try {
-            $folder = $this->getFolderTable()->fetchRow(array('folderurl = ?' => $url));
-        } catch(Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        $this->assertValidUrl($url);
+
+        $folder = $this->getFolderTable()->fetchRow(array('folderurl = ?' => $url));
         
         if(!$folder) {
             return false;
