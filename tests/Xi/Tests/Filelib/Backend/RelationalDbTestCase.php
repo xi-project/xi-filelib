@@ -91,6 +91,28 @@ abstract class RelationalDbTestCase extends DbTestCase
     {
         $this->setUpSimpleDataSet();
 
+        $rootFolder = $this->backend->findFolder(1);
+
+        // Check that root folder exists already.
+        $this->assertNull($rootFolder['parent_id']);
+
+        $folder = $this->backend->findRootFolder();
+
+        $this->assertArrayHasKey('id', $folder);
+        $this->assertArrayHasKey('parent_id', $folder);
+        $this->assertArrayHasKey('name', $folder);
+        $this->assertArrayHasKey('url', $folder);
+
+        $this->assertNull($folder['parent_id']);
+    }
+
+    /**
+     * @test
+     */
+    public function findRootFolderCreatesRootFolderIfItDoesNotExist()
+    {
+        $this->setUpEmptyDataSet();
+
         $folder = $this->backend->findRootFolder();
 
         $this->assertArrayHasKey('id', $folder);

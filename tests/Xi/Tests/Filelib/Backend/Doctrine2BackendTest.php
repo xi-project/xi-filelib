@@ -8,7 +8,6 @@ use Xi\Filelib\Backend\Doctrine2Backend,
     Exception,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Configuration,
-    Doctrine\ORM\NoResultException,
     Doctrine\ORM\EntityNotFoundException,
     Doctrine\Common\Cache\ArrayCache,
     PHPUnit_Framework_MockObject_MockObject;
@@ -51,47 +50,6 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         $backend->setEntityManager($em);
 
         return $backend;
-    }
-
-    /**
-     * @test
-     */
-    public function findRootFolderCreatesRootFolderIfItDoesNotExist()
-    {
-        $this->setUpEmptyDataSet();
-
-        $query = $this->createQueryMock();
-        $query->expects($this->once())
-              ->method('getSingleResult')
-              ->will($this->throwException(new NoResultException()));
-
-        $qb = $this->createQueryBuilderMock();
-        $qb->expects($this->once())
-           ->method('getQuery')
-           ->will($this->returnValue($query));
-
-        $qb->expects($this->once())
-           ->method('select')
-           ->will($this->returnSelf());
-
-        $qb->expects($this->once())
-           ->method('from')
-           ->will($this->returnSelf());
-
-        $em = $this->createEntityManagerMock();
-        $em->expects($this->once())
-           ->method('createQueryBuilder')
-           ->will($this->returnValue($qb));
-
-        $this->backend->setEntityManager($em);
-
-        $folder = $this->backend->findRootFolder();
-
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-        $this->assertNull($folder['parent_id']);
     }
 
     /**
@@ -344,33 +302,6 @@ class Doctrine2BackendTest extends RelationalDbTestCase
     {
         return $this->getMockAndDisableOriginalConstructor(
             'Doctrine\ORM\EntityManager'
-        );
-    }
-
-    /**
-     * @return PHPUnit_Framework_MockObject_MockObject
-     */
-    private function createQueryBuilderMock()
-    {
-        return $this->getMockAndDisableOriginalConstructor(
-            'Doctrine\ORM\QueryBuilder'
-        );
-    }
-
-    /**
-     * @return PHPUnit_Framework_MockObject_MockObject
-     */
-    private function createQueryMock()
-    {
-        // Mocking with PHPUnit is so easy.
-        return $this->getMockForAbstractClass(
-            'Doctrine\ORM\AbstractQuery',
-            array(),
-            '',
-            false,
-            true,
-            true,
-            array('getSingleResult')
         );
     }
 
