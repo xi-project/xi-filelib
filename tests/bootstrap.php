@@ -31,6 +31,7 @@ $paths = array(
     'Doctrine\Common' => ROOT_TESTS . '/vendor/doctrine/common/lib',
     'Doctrine\DBAL'   => ROOT_TESTS . '/vendor/doctrine/dbal/lib',
     'Doctrine\ORM'    => ROOT_TESTS . '/vendor/doctrine/orm/lib',
+    'Symfony\Component\HttpFoundation' => ROOT_TESTS . '/vendor/symfony/http-foundation'
 );
 
 foreach ($paths as $namespace => $path) {
