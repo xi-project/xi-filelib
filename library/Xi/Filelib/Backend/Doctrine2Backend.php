@@ -113,11 +113,7 @@ class Doctrine2Backend extends AbstractBackend
     {
         $this->assertValidIdentifier($id);
 
-        try {
-            $file = $this->em->find($this->fileEntityName, $id);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        $file = $this->em->find($this->fileEntityName, $id);
 
         if (!$file) {
             return false;
@@ -127,35 +123,30 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  Folder           $folder
-     * @param  string           $filename
+     * @param  Folder $folder
+     * @param  string $filename
      * @return array
-     * @throws FilelibException
      */
     public function findFileByFilename(Folder $folder, $filename)
     {
         $this->assertValidIdentifier($folder->getId());
 
-        try {
-            $qb = $this->em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
-            $qb->select('f')
-               ->from($this->fileEntityName, 'f')
-               ->where('f.folder = :folder')
-               ->andWhere('f.name = :filename')
-               ->setParameter('folder', $folder->getId())
-               ->setParameter('filename', $filename);
+        $qb->select('f')
+           ->from($this->fileEntityName, 'f')
+           ->where('f.folder = :folder')
+           ->andWhere('f.name = :filename')
+           ->setParameter('folder', $folder->getId())
+           ->setParameter('filename', $filename);
 
-            $file = $qb->getQuery()->getResult();
+        $file = $qb->getQuery()->getResult();
 
-            if (!$file) {
-                return false;
-            }
-
-            return $this->_fileToArray($file[0]);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
+        if (!$file) {
+            return false;
         }
+
+        return $this->_fileToArray($file[0]);
     }
 
     /**
@@ -230,22 +221,17 @@ class Doctrine2Backend extends AbstractBackend
     /**
      * Deletes a file
      *
-     * @param  File             $file
+     * @param  File    $file
      * @return boolean
-     * @throws FilelibException When fails
      */
     public function deleteFile(File $file)
     {
         $this->assertValidIdentifier($file->getId());
 
-        try {
-            $this->em->remove($this->getFileReference($file));
-            $this->em->flush();
+        $this->em->remove($this->getFileReference($file));
+        $this->em->flush();
 
-            return true;
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        return true;
     }
 
     /**
@@ -332,21 +318,17 @@ class Doctrine2Backend extends AbstractBackend
     {
         $this->assertValidIdentifier($folder->getId());
 
-        try {
-            $qb = $this->em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
-            $qb->select('f')
-               ->from($this->folderEntityName, 'f')
-               ->where('f.parent = :folder')
-               ->setParameter('folder', $folder->getId());
+        $qb->select('f')
+           ->from($this->folderEntityName, 'f')
+           ->where('f.parent = :folder')
+           ->setParameter('folder', $folder->getId());
 
-            return array_map(
-                array($this, '_folderToArray'),
-                $qb->getQuery()->getResult()
-            );
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        return array_map(
+            array($this, '_folderToArray'),
+            $qb->getQuery()->getResult()
+        );
     }
 
     /**

@@ -199,11 +199,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     {
         $this->assertValidIdentifier($folder->getId());
 
-        try {
-            $folderRows = $this->getFolderTable()->fetchAll(array('parent_id = ?' => $folder->getId()));
-        } catch(Exception $e) {
-            throw new FilelibException('Invalid folder');
-        }
+        $folderRows = $this->getFolderTable()->fetchAll(array('parent_id = ?' => $folder->getId()));
         
         $ret = array();
         foreach($folderRows as $folderRow) {
@@ -238,11 +234,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     {
         $this->assertValidIdentifier($folder->getId());
 
-        try {
-            $res = $this->getFileTable()->fetchAll(array('folder_id = ?' => $folder->getId()));
-        } catch(Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        $res = $this->getFileTable()->fetchAll(array('folder_id = ?' => $folder->getId()));
        
         $ret = array();
         foreach($res as $awww) {
@@ -270,22 +262,15 @@ class ZendDbBackend extends AbstractBackend implements Backend
     {
         $this->assertValidIdentifier($id);
 
-         try {
-            $fileRow = $this->getFileTable()->find($id)->current();
-            
-            if (!$fileRow) {
-                return false;
-            }
-            
-            $ret = $this->_fileRowToArray($fileRow);
-            
-            return $ret;
-            
-        } catch(Exception $e) {
-            throw new FilelibException($e->getMessage());
+        $fileRow = $this->getFileTable()->find($id)->current();
+
+        if (!$fileRow) {
+            return false;
         }
-                
-        
+
+        $ret = $this->_fileRowToArray($fileRow);
+
+        return $ret;
     }
     
     
@@ -325,24 +310,16 @@ class ZendDbBackend extends AbstractBackend implements Backend
     public function deleteFile(\Xi\Filelib\File\File $file)
     {
         $this->assertValidIdentifier($file->getId());
+            
+        $fileRow = $this->getFileTable()->find($file->getId())->current();
 
-        try {
-            
-            $fileRow = $this->getFileTable()->find($file->getId())->current();
-            
-            if (!$fileRow) {
-                return false;
-            }
-            
-            $ret = $fileRow->delete();
-
-            return true;
-            
-        } catch(Exception $e) {
-            $this->getDb()->rollBack();
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
+        if (!$fileRow) {
+            return false;
         }
 
+        $ret = $fileRow->delete();
+
+        return true;
     }
     
 
@@ -389,14 +366,10 @@ class ZendDbBackend extends AbstractBackend implements Backend
     {
         $this->assertValidIdentifier($folder->getId());
         
-        try {
-            $file = $this->getFileTable()->fetchRow(array(
-                'folder_id = ?' => $folder->getId(),
-                'filename = ?' => $filename,
-            ));
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        $file = $this->getFileTable()->fetchRow(array(
+            'folder_id = ?' => $folder->getId(),
+            'filename = ?' => $filename,
+        ));
         
         if (!$file) {
             return false;
