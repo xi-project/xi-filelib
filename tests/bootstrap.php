@@ -17,6 +17,8 @@ set_include_path(implode(PATH_SEPARATOR, array(
     get_include_path(),
 )));
 
+define('ROOT_TESTS', realpath(__DIR__));
+
 require ROOT_TESTS . '/vendor/doctrine/common/lib/Doctrine/Common/ClassLoader.php';
 
 $paths = array(
