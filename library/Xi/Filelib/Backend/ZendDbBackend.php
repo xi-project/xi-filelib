@@ -2,53 +2,49 @@
 
 namespace Xi\Filelib\Backend;
 
-use \Xi\Filelib\FileLibrary,
-    \Xi\Filelib\FilelibException,
-    \DateTime,
-    \Exception,
-    \Xi\Filelib\File\File,
-    \Xi\Filelib\Folder\Folder,
+use Xi\Filelib\FilelibException,
+    Xi\Filelib\File\File,
+    Xi\Filelib\Folder\Folder,
     Xi\Filelib\Backend\ZendDb\FolderRow,
-    Zend_Db_Table_Abstract;
-
+    Xi\Filelib\Backend\ZendDb\FileTable,
+    Xi\Filelib\Backend\ZendDb\FolderTable,
+    Zend_Db_Adapter_Abstract,
+    Zend_Db_Table_Abstract,
+    DateTime;
 
 /**
- * Zend Db backend for filelib.
+ * ZendDb backend for filelib
  *
- * @package Xi_Filelib
- * @author pekkis
- *
+ * @author   pekkis
+ * @category Xi
+ * @package  Filelib
  */
 class ZendDbBackend extends AbstractBackend implements Backend
 {
-
     /**
      * @var Zend_Db_Adapter_Abstract Zend Db adapter
      */
-    private $_db;
+    private $db;
 
     /**
-     * @var \Xi\Filelib\Backend\ZendDb\FileTable File table
+     * @var FileTable File table
      */
-    private $_fileTable;
+    private $fileTable;
 
     /**
-     * @var \Xi\Filelib\Backend\ZendDb\FolderTable Folder table
+     * @var FolderTable Folder table
      */
-    private $_folderTable;
-
+    private $folderTable;
 
     /**
      * Sets db adapter
      *
-     * @param \Zend_Db_Adapter_Abstract $db
-     * @return unknown_type
+     * @param Zend_Db_Adapter_Abstract $db
      */
-    public function setDb(\Zend_Db_Adapter_Abstract $db)
+    public function setDb(Zend_Db_Adapter_Abstract $db)
     {
-        $this->_db = $db;
+        $this->db = $db;
     }
-
 
     /**
      * Returns db adapter
@@ -57,35 +53,34 @@ class ZendDbBackend extends AbstractBackend implements Backend
      */
     public function getDb()
     {
-        return $this->_db;
+        return $this->db;
     }
 
-    
     /**
      * Returns file table
      *
-     * @return \Xi\Filelib\Backend\ZendDb\FolderTable
+     * @return FileTable
      */
     public function getFileTable()
     {
-        if(!$this->_fileTable) {
-            $this->_fileTable = new \Xi\Filelib\Backend\ZendDb\FileTable($this->getDb());
+        if (!$this->fileTable) {
+            $this->fileTable = new FileTable($this->getDb());
         }
-        return $this->_fileTable;
+        return $this->fileTable;
     }
 
     /**
      * Returns folder table
      *
-     * @return Zend_Db_Table_Abstract
+     * @return FolderTable
      */
     public function getFolderTable()
     {
-        if(!$this->_folderTable) {
-            $this->_folderTable = new \Xi\Filelib\Backend\ZendDb\FolderTable($this->getDb());
+        if (!$this->folderTable) {
+            $this->folderTable = new FolderTable($this->getDb());
         }
 
-        return $this->_folderTable;
+        return $this->folderTable;
     }
 
     /**
@@ -94,7 +89,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
      */
     public function setFolderTable(Zend_Db_Table_Abstract $folderTable)
     {
-        $this->_folderTable = $folderTable;
+        $this->folderTable = $folderTable;
 
         return $this;
     }
@@ -105,7 +100,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     protected function doFindRootFolder()
     {
         $folder = $this->getFolderTable()->fetchRow(array('parent_id IS NULL'));
-        
+
         if (!$folder) {
             $folder = $this->getFolderTable()->createRow();
 
@@ -118,7 +113,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
         return $folder;
     }
-    
+
     /**
      * @param  integer   $id
      * @return FolderRow
@@ -178,8 +173,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
                  ->quoteInto('id = ?', $folder->getId())
         );
     }
-    
-    
+
     /**
      * @param  integer $id
      * @return array
@@ -190,11 +184,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'parent_id = ?' => $id,
         ))->toArray();
     }
-    
-    
+
     /**
-     * Finds folder by url
-     *
      * @param  string     $url
      * @return array|null
      */
@@ -232,9 +223,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     {
         return $this->getFileTable()->find($id)->current();
     }
-    
-    
-    
+
     /**
      * @param  File    $file
      * @return boolean
@@ -275,7 +264,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
         return true;
     }
-    
+
     /**
      * @param  File   $file
      * @param  Folder $folder
@@ -300,10 +289,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return $file;
     }
 
-
-    
-    
-        
     /**
      * @param  Folder     $folder
      * @param  string     $filename
@@ -316,8 +301,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'filename = ?'  => $filename,
         ));
     }
-        
-    
+
     /**
      * @param  FileRow $row
      * @return array
@@ -335,7 +319,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'date_uploaded' => new DateTime($fileRow['date_uploaded']),
         );
     }
-    
+
     /**
      * @param  FolderRow $folder
      * @return array
