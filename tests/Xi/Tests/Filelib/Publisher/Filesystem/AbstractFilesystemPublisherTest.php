@@ -40,7 +40,7 @@ class AbstractFilesystemPublisherTest extends TestCase
         $dirPerm = "777";
         $filePerm = "666";
 
-        $publicRoot = '/wwwroot/tussi';
+        $publicRoot = ROOT_TESTS . '/data/publisher/public';
         $baseUrl = 'http://dr-kobros.com/files';
         
         
@@ -148,6 +148,56 @@ class AbstractFilesystemPublisherTest extends TestCase
                       
     }
     
+    
+    
+    /**
+     * @test
+     * @expectedException \LogicException
+     */
+    public function setPublicRootShouldThrowExceptionWhenDirectoryDoesNotExist()
+    {
+       $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher')
+        ->setMethods(array(
+            'publish',
+            'unpublish',
+            'publishVersion',
+            'unpublishVersion',
+            'getFilelib',
+            'setFilelib'
+        ))
+        ->getMock();
+       
+        $unexistingDir = ROOT_TESTS . '/data/unexisting_dir';
+        
+        $publisher->setPublicRoot($unexistingDir);
+        
+    }
+    
+    
+    /**
+     * @test
+     * @expectedException \LogicException
+     */
+    public function setPublicRootShouldThrowExceptionWhenDirectoryIsNotReadable()
+    {
+       $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher')
+        ->setMethods(array(
+            'publish',
+            'unpublish',
+            'publishVersion',
+            'unpublishVersion',
+            'getFilelib',
+            'setFilelib'
+        ))
+        ->getMock();
+       
+        $unexistingDir = ROOT_TESTS . '/data/unwritable_dir';
+        
+        $publisher->setPublicRoot($unexistingDir);
+        
+    }
+    
+
     
     
 }
