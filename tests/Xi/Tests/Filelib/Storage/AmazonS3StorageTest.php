@@ -25,9 +25,14 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
     public function setUp()
     {
         
-        if (!class_exists('\\Zend_Service_Amazon_S3') || true) {
+        if (!class_exists('\\Zend_Service_Amazon_S3')) {
             $this->markTestSkipped('Zend_Service_Amazon_S3 class could not be loaded');
         }
+        
+        if (S3_KEY === 's3_key') {
+            $this->markTestSkipped('S3 not configured');
+        }
+        
                 
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
                         
@@ -63,8 +68,12 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
     
     public function tearDown()
     {
-        if (!class_exists('\\Zend_Service_Amazon_S3') || true) {
+        if (!class_exists('\\Zend_Service_Amazon_S3')) {
             return;
+        }
+        
+        if (S3_KEY === 's3_key') {
+            $this->markTestSkipped('S3 not configured');
         }
         
         $this->storage->getAmazonService()->cleanBucket($this->storage->getBucket());
