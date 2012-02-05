@@ -8,52 +8,45 @@ use Xi\Filelib\File\File,
     MongoDb,
     MongoId,
     MongoDate,
-    DateTime,
-    MongoCursorException;
+    DateTime;
 
 /**
  * MongoDB backend for Filelib
- * 
- * @author pekkis
- * @package Xi_Filelib
- * @todo Prototype, to be error-proofed
  *
+ * @author   pekkis
+ * @category Xi
+ * @package  Filelib
  */
 class MongoBackend extends AbstractBackend implements Backend
 {
-    
     /**
      * MongoDB reference
-     * 
-     * @var \MongoDB
+     *
+     * @var MongoDB
      */
-    private $_mongo;
-    
+    private $mongo;
+
     /**
      * Sets MongoDB
-     * 
-     * @param \MongoDB $mongo
+     *
+     * @param MongoDB $mongo
      */
-    public function setMongo(\MongoDB $mongo)
+    public function setMongo(MongoDB $mongo)
     {
-        $this->_mongo = $mongo;
+        $this->mongo = $mongo;
     }
-    
-    
+
     /**
      * Returns MongoDB
-     * 
-     * @return \MongoDB
+     *
+     * @return MongoDB
      */
     public function getMongo()
     {
-        return $this->_mongo;
+        return $this->mongo;
     }
-    
-    
+
     /**
-     * Finds folder
-     *
      * @param  string     $id
      * @return array|null
      */
@@ -65,8 +58,6 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * Finds subfolders of a folder
-     *
      * @param  string $id
      * @return array
      */
@@ -76,22 +67,16 @@ class MongoBackend extends AbstractBackend implements Backend
             'parent_id' => $id,
         )));
     }
-    
 
     /**
-     * Finds all files
-     *
      * @return array
      */
     protected function doFindAllFiles()
     {
         return iterator_to_array($this->getMongo()->files->find());
     }
-    
 
     /**
-     * Finds a file
-     *
      * @param  string     $id
      * @return array|null
      */
@@ -101,10 +86,8 @@ class MongoBackend extends AbstractBackend implements Backend
             '_id' => new MongoId($id),
         ));
     }
-    
+
     /**
-     * Finds a file
-     *
      * @param  string $id
      * @return array
      */
@@ -114,10 +97,8 @@ class MongoBackend extends AbstractBackend implements Backend
             'folder_id' => $id,
         )));
     }
-    
+
     /**
-     * Uploads a file
-     *
      * @param  File   $file
      * @param  Folder $folder
      * @return File
@@ -148,12 +129,10 @@ class MongoBackend extends AbstractBackend implements Backend
 
         return $file;
     }
-    
+
     /**
-     * Creates a folder
-     *
      * @param  Folder $folder
-     * @return Folder Created folder
+     * @return Folder
      */
     protected function doCreateFolder(Folder $folder)
     {
@@ -167,12 +146,9 @@ class MongoBackend extends AbstractBackend implements Backend
 
         return $folder;
     }
-    
 
     /**
-     * Deletes a folder
-     *
-     * @param  Folder $folder
+     * @param  Folder  $folder
      * @return boolean
      */
     protected function doDeleteFolder(Folder $folder)
@@ -183,10 +159,8 @@ class MongoBackend extends AbstractBackend implements Backend
 
         return (boolean) $ret['n'];
     }
-    
+
     /**
-     * Deletes a file
-     *
      * @param  File    $file
      * @return boolean
      */
@@ -198,10 +172,8 @@ class MongoBackend extends AbstractBackend implements Backend
 
         return (bool) $ret['n'];
     }
-    
+
     /**
-     * Updates a folder
-     *
      * @param  Folder  $folder
      * @return boolean
      */
@@ -209,18 +181,16 @@ class MongoBackend extends AbstractBackend implements Backend
     {
         $document = $folder->toArray();
 
-        $this->_filelibToMongo($document);
-    	
+        unset($document['id']);
+
         $ret = $this->getMongo()->folders->update(array(
             '_id' => new MongoId($folder->getId()),
         ), $document, array('safe' => true));
-        
+
         return (bool) $ret['n'];
     }
-    
+
     /**
-     * Updates a file
-     *
      * @param  File    $file
      * @return boolean
      */
@@ -228,7 +198,11 @@ class MongoBackend extends AbstractBackend implements Backend
     {
         $document = $file->toArray();
 
-        $this->_filelibToMongo($document);
+        unset($document['id']);
+
+        $document['date_uploaded'] = new MongoDate(
+            $document['date_uploaded']->getTimestamp()
+        );
 
         $ret = $this->getMongo()->files->update(array(
             '_id' => new MongoId($file->getId()),
@@ -236,12 +210,8 @@ class MongoBackend extends AbstractBackend implements Backend
 
         return (bool) $ret['n'];
     }
-    
 
-        
     /**
-     * Finds the root folder
-     *
      * @return array
      */
     protected function doFindRootFolder()
@@ -262,11 +232,8 @@ class MongoBackend extends AbstractBackend implements Backend
 
         return $folder;
     }
-    
-    
+
     /**
-     * Finds folder by url
-     *
      * @param  string     $url
      * @return array|null
      */
@@ -274,7 +241,7 @@ class MongoBackend extends AbstractBackend implements Backend
     {
         return $this->getMongo()->folders->findOne(array('url' => $url));
     }
-        
+
     /**
      * @param  Folder     $folder
      * @param  string     $filename
@@ -287,10 +254,8 @@ class MongoBackend extends AbstractBackend implements Backend
             'name'      => $filename,
         ));
     }
-    
+
     /**
-     * File to array
-     *
      * @param  array $file
      * @return array
      */
@@ -314,8 +279,6 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * Folder to array
-     *
      * @param  array $folder
      * @return array
      */
@@ -341,48 +304,4 @@ class MongoBackend extends AbstractBackend implements Backend
             throw new FilelibException('Id must be a string.');
         }
     }
-
-    /**
-     * Processes mongo data to fit Filelib requirements
-     * 
-     * @param array $data
-     */
-    private function _mongoToFilelib(array &$data)
-    {
-        $data['id'] = $data['_id']->__toString();
-       
-        if(isset($data['date_uploaded'])) {
-            $data['date_uploaded'] = DateTime::createFromFormat('U', $data['date_uploaded']->sec);    
-        }
-        
-        
-        if(isset($data['size'])) {
-            $data['size'] = (int) $data['size'];
-        }
-        
-    }
-    
-    
-    /**
-     * Processes Filelib data to fit Mongo requirements
-     * 
-     * @param array $data
-     */
-    private function _filelibToMongo(array &$data)
-    {
-       
-        
-        
-        unset($data['id']);
-        if(isset($data['date_uploaded'])) {
-            $data['date_uploaded'] = new MongoDate($data['date_uploaded']->getTimestamp());    
-        }
-    }
-    
-    
-    
-    
-    
-    
-    
 }
