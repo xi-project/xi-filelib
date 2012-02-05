@@ -13,6 +13,29 @@ use Xi\Filelib\Backend\ZendDbBackend,
  */
 class ZendDbBackendTest extends RelationalDbTestCase
 {
+    public function setUp()
+    {
+        if (!class_exists('\Zend_Db')) {
+            $this->markTestSkipped("Zend Db could not be loaded");
+        }
+        
+        parent::setUp();
+
+    }
+
+    
+    public function tearDown()
+    {
+        if (!class_exists('\Zend_Db')) {
+            $this->markTestSkipped("Zend Db could not be loaded");
+        }
+        
+        parent::tearDown();
+
+    }
+
+    
+    
     /**
      * @return ZendDbBackend
      */

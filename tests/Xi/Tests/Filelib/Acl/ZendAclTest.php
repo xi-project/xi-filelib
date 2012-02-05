@@ -24,6 +24,10 @@ class ZendAclTest extends TestCase
     
     public function setUp()
     {
+        if (!class_exists('\Zend_Acl')) {
+            $this->markTestSkipped("Zend Acl could not be loaded");
+        }
+        
         $this->acl = new ZendAcl(true);
         
         
