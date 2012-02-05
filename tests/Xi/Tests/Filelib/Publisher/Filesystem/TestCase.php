@@ -232,7 +232,7 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
         $riter = new \RecursiveIteratorIterator($diter, \RecursiveIteratorIterator::CHILD_FIRST);
         
         foreach ($riter as $lus) {
-            if (!in_array($lus->getFilename(), array('.', '..'))) {
+            if (!in_array($lus->getFilename(), array('.', '..', '.gitignore'))) {
                 if (!$lus->isDir() || $lus->isLink()) {
                     unlink($lus->getPathname());
                 }
