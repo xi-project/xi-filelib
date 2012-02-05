@@ -136,7 +136,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
         }
         
         foreach ($riter as $lus) {
-            if (!in_array($lus->getFilename(), array('.', '..'))) {
+            if (!in_array($lus->getFilename(), array('.', '..', '.gitignore'))) {
                 if ($lus->isDir()) {
                     rmdir($lus->getPathname());
                 }

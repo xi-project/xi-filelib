@@ -152,7 +152,6 @@ class AbstractFilesystemPublisherTest extends TestCase
     
     /**
      * @test
-     * @expectedException \LogicException
      */
     public function setPublicRootShouldThrowExceptionWhenDirectoryDoesNotExist()
     {
@@ -167,16 +166,25 @@ class AbstractFilesystemPublisherTest extends TestCase
         ))
         ->getMock();
        
-        $unexistingDir = ROOT_TESTS . '/data/unexisting_dir';
+        $unexistingDir = ROOT_TESTS . '/data/publisher/unexisting_dir';
         
-        $publisher->setPublicRoot($unexistingDir);
+        try {
+            $publisher->setPublicRoot($unexistingDir);
+            
+            $this->fail("Expected \LogicException!");
+            
+        } catch (\LogicException $e) {
+            
+            $this->assertRegExp("/does not exist/", $e->getMessage());
+            
+        }
+
         
     }
     
     
     /**
      * @test
-     * @expectedException \LogicException
      */
     public function setPublicRootShouldThrowExceptionWhenDirectoryIsNotReadable()
     {
@@ -191,9 +199,19 @@ class AbstractFilesystemPublisherTest extends TestCase
         ))
         ->getMock();
        
-        $unexistingDir = ROOT_TESTS . '/data/unwritable_dir';
+        $unwritableDir = ROOT_TESTS . '/data/publisher/unwritable_dir';
         
-        $publisher->setPublicRoot($unexistingDir);
+        try {
+            $publisher->setPublicRoot($unwritableDir);
+            
+            $this->fail("Expected \LogicException!");
+            
+        } catch (\LogicException $e) {
+            
+            $this->assertRegExp("/not writeable/", $e->getMessage());
+            
+        }
+        
         
     }
     
