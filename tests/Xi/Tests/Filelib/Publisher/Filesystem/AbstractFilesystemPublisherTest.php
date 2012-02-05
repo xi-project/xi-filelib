@@ -11,7 +11,6 @@ use Xi\Tests\Filelib\TestCase;
 
 class AbstractFilesystemPublisherTest extends TestCase
 {
-
     
     /**
      * @test
