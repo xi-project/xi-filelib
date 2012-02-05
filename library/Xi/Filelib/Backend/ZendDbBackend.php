@@ -99,328 +99,256 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return $this;
     }
 
-    public function findRootFolder()
+    /**
+     * @return object
+     */
+    protected function doFindRootFolder()
     {
-        $row = $this->getFolderTable()->fetchRow(array('parent_id IS NULL'));
+        $folder = $this->getFolderTable()->fetchRow(array('parent_id IS NULL'));
         
-        if(!$row) {
-            
-            $row = $this->getFolderTable()->createRow();
-            $row->foldername = 'root';
-            $row->parent_id = null;
-            $row->folderurl = '';
-            $row->save();
-            
+        if (!$folder) {
+            $folder = $this->getFolderTable()->createRow();
+
+            $folder->foldername = 'root';
+            $folder->parent_id  = null;
+            $folder->folderurl  = '';
+
+            $folder->save();
         }
-        
-        return $this->_folderRowToArray($row);
+
+        return $folder;
     }
     
-    
-    public function findFolder($id)
+    /**
+     * @param  integer   $id
+     * @return FolderRow
+     */
+    protected function doFindFolder($id)
     {
-        if(!is_numeric($id)) {
-            throw new FilelibException("File id must be numeric");
-        }
-        
-        $row = $this->getFolderTable()->find($id)->current();
-
-        if(!$row) {
-            return false;
-        }
-
-        return $this->_folderRowToArray($row);
-                
+        return $this->getFolderTable()->find($id)->current();
     }
 
-    
-    public function createFolder(\Xi\Filelib\Folder\Folder $folder)
+    /**
+     * @param  Folder $folder
+     * @return Folder
+     */
+    protected function doCreateFolder(Folder $folder)
     {
-        try {
-            $folderRow = $this->getFolderTable()->createRow();
-            $folderRow->foldername = $folder->getName();
-            $folderRow->parent_id = $folder->getParentId();
-            $folderRow->folderurl = $folder->getUrl();            
-                        
-            $folderRow->save();
-            	
-            $folder->setId((int) $folderRow->id);
-            return $folder;
-            	
-        } catch(Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
-        }
+        $folderRow = $this->getFolderTable()->createRow();
 
+        $folderRow->foldername = $folder->getName();
+        $folderRow->parent_id  = $folder->getParentId();
+        $folderRow->folderurl  = $folder->getUrl();
+
+        $folderRow->save();
+
+        $folder->setId((int) $folderRow->id);
+
+        return $folder;
     }
 
-    
-    public function deleteFolder(\Xi\Filelib\Folder\Folder $folder)
+    /**
+     * @param  Folder $folder
+     * @return boolean
+     */
+    protected function doDeleteFolder(Folder $folder)
     {
-        try {
-            $ret = $this->getFolderTable()->delete($this->getFolderTable()->getAdapter()->quoteInto("id = ?", $folder->getId()));
-            
-            return (bool) $ret;
-            
-        } catch(Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
-        }
-
-    }
-    
-    public function updateFolder(\Xi\Filelib\Folder\Folder $folder)
-    {
-        $this->assertValidIdentifier($folder->getId());
-
-        $data = array(
-            'id' => $folder->getId(),
-            'parent_id' => $folder->getParentId(),
-            'foldername' => $folder->getName(),
-            'folderurl' => $folder->getUrl(),
+        return (bool) $this->getFolderTable()->delete(
+            $this->getFolderTable()
+                 ->getAdapter()
+                 ->quoteInto("id = ?", $folder->getId())
         );
-        
-        try {
-            $ret = $this->getFolderTable()->update(
-                $data,
-                $this->getFolderTable()->getAdapter()->quoteInto('id = ?', $folder->getId())
-            );
-            
-            return (bool) $ret;
-            
-            	
-        } catch(Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
-        }
+    }
 
+    /**
+     * @param  Folder  $folder
+     * @return boolean
+     */
+    protected function doUpdateFolder(Folder $folder)
+    {
+        return (bool) $this->getFolderTable()->update(
+            array(
+                'id'         => $folder->getId(),
+                'parent_id'  => $folder->getParentId(),
+                'foldername' => $folder->getName(),
+                'folderurl'  => $folder->getUrl(),
+            ),
+            $this->getFolderTable()
+                 ->getAdapter()
+                 ->quoteInto('id = ?', $folder->getId())
+        );
     }
     
     
-    
-    public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
+    /**
+     * @param  integer $id
+     * @return array
+     */
+    protected function doFindSubFolders($id)
     {
-        $this->assertValidIdentifier($folder->getId());
-
-        $folderRows = $this->getFolderTable()->fetchAll(array('parent_id = ?' => $folder->getId()));
-        
-        $ret = array();
-        foreach($folderRows as $folderRow) {
-            $ret[] = $this->_folderRowToArray($folderRow);
-        }
-        
-        return $ret;
+        return $this->getFolderTable()->fetchAll(array(
+            'parent_id = ?' => $id,
+        ))->toArray();
     }
     
     
     /**
      * Finds folder by url
      *
-     * @param  string      $url
-     * @return array|false
+     * @param  string     $url
+     * @return array|null
      */
-    public function findFolderByUrl($url)
+    protected function doFindFolderByUrl($url)
     {
-        $this->assertValidUrl($url);
-
-        $folder = $this->getFolderTable()->fetchRow(array('folderurl = ?' => $url));
-        
-        if(!$folder) {
-            return false;
-        }
-                
-        return $this->_folderRowToArray($folder);
-        
-    }
-    
-    public function findFilesIn(\Xi\Filelib\Folder\Folder $folder)
-    {
-        $this->assertValidIdentifier($folder->getId());
-
-        $res = $this->getFileTable()->fetchAll(array('folder_id = ?' => $folder->getId()));
-       
-        $ret = array();
-        foreach($res as $awww) {
-            $ret[] = $this->_fileRowToArray($awww);
-        }
-                
-        return $ret;
+        return $this->getFolderTable()->fetchRow(array(
+            'folderurl = ?' => $url,
+        ));
     }
 
-    
-    public function findAllFiles()
+    /**
+     * @param  integer $id
+     * @return array
+     */
+    protected function doFindFilesIn($id)
     {
-        $res = $this->getFileTable()->fetchAll(array(), "id ASC");
-        
-        $ret = array();
-        foreach($res as $awww) {
-            $ret[] = $this->_fileRowToArray($awww);
-        }
-        return $ret;
-        
+        return $this->getFileTable()->fetchAll(array(
+            'folder_id = ?' => $id,
+        ))->toArray();
     }
 
-    
-    public function findFile($id)
+    /**
+     * @return array
+     */
+    protected function doFindAllFiles()
     {
-        $this->assertValidIdentifier($id);
+        return $this->getFileTable()->fetchAll(array(), "id ASC")->toArray();
+    }
 
-        $fileRow = $this->getFileTable()->find($id)->current();
-
-        if (!$fileRow) {
-            return false;
-        }
-
-        $ret = $this->_fileRowToArray($fileRow);
-
-        return $ret;
+    /**
+     * @param  integer    $id
+     * @return array|null
+     */
+    protected function doFindFile($id)
+    {
+        return $this->getFileTable()->find($id)->current();
     }
     
     
     
-
-    public function updateFile(\Xi\Filelib\File\File $file)
+    /**
+     * @param  File    $file
+     * @return boolean
+     */
+    protected function doUpdateFile(File $file)
     {
-        try {
-            
-            $data = $file->toArray();
-            
-            $fixed = array(
-                'folder_id' => $data['folder_id'],
-                'mimetype' => $data['mimetype'],
-                'filesize' => $data['size'],
-                'filename' => $data['name'],
-                'fileprofile' => $data['profile'],
+        $data = $file->toArray();
+
+        return (bool) $this->getFileTable()->update(
+            array(
+                'folder_id'     => $data['folder_id'],
+                'mimetype'      => $data['mimetype'],
+                'filesize'      => $data['size'],
+                'filename'      => $data['name'],
+                'fileprofile'   => $data['profile'],
                 'date_uploaded' => $data['date_uploaded']->format('Y-m-d H:i:s'),
-                'filelink' => $data['link'],
-            ); 
-            
-            
-            $ret = $this->getFileTable()->update(
-                $fixed,
-                $this->getFileTable()->getAdapter()->quoteInto('id = ?', $data['id'])
-            );
-
-            return (boolean) $ret;
-            	
-        } catch(Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
-        }
-
+                'filelink'      => $data['link'],
+            ),
+            $this->getFileTable()
+                 ->getAdapter()
+                 ->quoteInto('id = ?', $data['id'])
+        );
     }
 
-
-    public function deleteFile(\Xi\Filelib\File\File $file)
+    /**
+     * @param  File    $file
+     * @return boolean
+     */
+    protected function doDeleteFile(File $file)
     {
-        $this->assertValidIdentifier($file->getId());
-            
         $fileRow = $this->getFileTable()->find($file->getId())->current();
 
         if (!$fileRow) {
             return false;
         }
 
-        $ret = $fileRow->delete();
+        $fileRow->delete();
 
         return true;
     }
     
-
-    public function upload(File $file, \Xi\Filelib\Folder\Folder $folder)
-    {
-        try {
-                        
-
-            $row = $this->getFileTable()->createRow();
-            
-            $row->folder_id = $folder->getId();
-            $row->mimetype = $file->getMimeType();
-            $row->filesize = $file->getSize();
-            $row->filename = $file->getName();
-            $row->fileprofile = $file->getProfile();
-            $row->date_uploaded = $file->getDateUploaded()->format('Y-m-d H:i:s');
-                        	
-            $row->save();
-            
-            $file->setId((int) $row->id);
-            $file->setFolderId($row->folder_id);
-            
-            return $file;
-
-        } catch(Exception $e) {
-            	
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
-        }
-        	
-        	
-    }
-
-
-    
-    
-        
     /**
-     * Finds file in a folder by filename
-     * 
-     * @param unknown_type $folder
-     * @param unknown_type $filename
+     * @param  File   $file
+     * @param  Folder $folder
+     * @return File
      */
-    public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
+    protected function doUpload(File $file, Folder $folder)
     {
-        $this->assertValidIdentifier($folder->getId());
-        
-        $file = $this->getFileTable()->fetchRow(array(
-            'folder_id = ?' => $folder->getId(),
-            'filename = ?' => $filename,
-        ));
-        
-        if (!$file) {
-            return false;
-        }
+        $row = $this->getFileTable()->createRow();
 
-        return $this->_fileRowToArray($file);
-        
+        $row->folder_id     = $folder->getId();
+        $row->mimetype      = $file->getMimeType();
+        $row->filesize      = $file->getSize();
+        $row->filename      = $file->getName();
+        $row->fileprofile   = $file->getProfile();
+        $row->date_uploaded = $file->getDateUploaded()->format('Y-m-d H:i:s');
+
+        $row->save();
+
+        $file->setId((int) $row->id);
+        $file->setFolderId($row->folder_id);
+
+        return $file;
     }
+
+
+    
+    
         
-    
-    
-    private function _fileRowToArray($row) 
+    /**
+     * @param  Folder     $folder
+     * @param  string     $filename
+     * @return array|null
+     */
+    protected function doFindFileByFilename(Folder $folder, $filename)
     {
-        return array(
-            'id' => $row->id,
-            'folder_id' => $row->folder_id,
-            'mimetype' => $row->mimetype,
-            'size' => $row->filesize,
-            'name' => $row->filename,
-            'profile' => $row->fileprofile,
-            'link' => $row->filelink,
-            'date_uploaded' => new DateTime($row->date_uploaded),
-        );
-        
+        return $this->getFileTable()->fetchRow(array(
+            'folder_id = ?' => $folder->getId(),
+            'filename = ?'  => $filename,
+        ));
     }
+        
     
     /**
-     * @param  FolderRow $row
+     * @param  FileRow $row
      * @return array
      */
-    private function _folderRowToArray(FolderRow $row)
+    protected function fileToArray($fileRow)
     {
         return array(
-            'id'        => (int) $row->id,
-            'parent_id' => $row->parent_id ? (int) $row->parent_id : null,
-            'name'      => $row->foldername,
-            'url'       => $row->folderurl,
+            'id'            => $fileRow['id'],
+            'folder_id'     => $fileRow['folder_id'],
+            'mimetype'      => $fileRow['mimetype'],
+            'size'          => $fileRow['filesize'],
+            'name'          => $fileRow['filename'],
+            'profile'       => $fileRow['fileprofile'],
+            'link'          => $fileRow['filelink'],
+            'date_uploaded' => new DateTime($fileRow['date_uploaded']),
         );
     }
     
     /**
-     * @param  mixed            $id
-     * @throws FilelibException
+     * @param  FolderRow $folder
+     * @return array
      */
-    private function assertValidIdentifier($id)
+    protected function folderToArray($folder)
     {
-        if (!is_numeric($id)) {
-            throw new FilelibException(sprintf(
-                'Id must be numeric; %s given.',
-                $id
-            ));
-        }
+        return array(
+            'id'        => (int) $folder['id'],
+            'parent_id' => $folder['parent_id']
+                               ? (int) $folder['parent_id']
+                               : null,
+            'name'      => $folder['foldername'],
+            'url'       => $folder['folderurl'],
+        );
     }
 }

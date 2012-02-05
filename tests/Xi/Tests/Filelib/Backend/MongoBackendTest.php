@@ -293,7 +293,7 @@ class MongoBackendTest extends TestCase
         
         $this->assertEquals(0, $rows->count());
                 
-        $this->assertFalse($this->backend->findFolder(5));
+        $this->assertFalse($this->backend->findFolder('5'));
         
     }
 

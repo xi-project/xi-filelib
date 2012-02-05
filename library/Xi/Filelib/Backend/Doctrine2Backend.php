@@ -105,48 +105,34 @@ class Doctrine2Backend extends AbstractBackend
     /**
      * Finds a file
      *
-     * @param  integer          $id
-     * @return array|false
-     * @throws FilelibException
+     * @param  integer    $id
+     * @return array|null
      */
-    public function findFile($id)
+    protected function doFindFile($id)
     {
-        $this->assertValidIdentifier($id);
-
-        $file = $this->em->find($this->fileEntityName, $id);
-
-        if (!$file) {
-            return false;
-        }
-
-        return $this->_fileToArray($file);
+        return $this->em->find($this->fileEntityName, $id);
     }
 
     /**
-     * @param  Folder $folder
-     * @param  string $filename
-     * @return array
+     * @param  Folder     $folder
+     * @param  string     $filename
+     * @return array|null
      */
-    public function findFileByFilename(Folder $folder, $filename)
+    public function doFindFileByFilename(Folder $folder, $filename)
     {
-        $this->assertValidIdentifier($folder->getId());
+        try {
+            $qb = $this->em->createQueryBuilder();
+            $qb->select('f')
+               ->from($this->fileEntityName, 'f')
+               ->where('f.folder = :folder')
+               ->andWhere('f.name = :filename')
+               ->setParameter('folder', $folder->getId())
+               ->setParameter('filename', $filename);
 
-        $qb = $this->em->createQueryBuilder();
-
-        $qb->select('f')
-           ->from($this->fileEntityName, 'f')
-           ->where('f.folder = :folder')
-           ->andWhere('f.name = :filename')
-           ->setParameter('folder', $folder->getId())
-           ->setParameter('filename', $filename);
-
-        $file = $qb->getQuery()->getResult();
-
-        if (!$file) {
-            return false;
+            return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $e) {
+            return null;
         }
-
-        return $this->_fileToArray($file[0]);
     }
 
     /**
@@ -154,68 +140,53 @@ class Doctrine2Backend extends AbstractBackend
      *
      * @return array
      */
-    public function findAllFiles()
+    protected function doFindAllFiles()
     {
         $qb = $this->em->createQueryBuilder();
-
         $qb->select('f')
            ->from($this->fileEntityName, 'f')
            ->orderBy('f.id', 'ASC');
 
-        return array_map(
-            array($this, '_fileToArray'),
-            $qb->getQuery()->getResult()
-        );
+        return $qb->getQuery()->getResult();
     }
 
     /**
      * Finds files in folder
      *
-     * @param  Folder $folder
+     * @param  integer $id
      * @return array
      */
-    public function findFilesIn(Folder $folder)
+    protected function doFindFilesIn($id)
     {
-        $this->assertValidIdentifier($folder->getId());
-
         $qb = $this->em->createQueryBuilder();
-
         $qb->select('f')
            ->from($this->fileEntityName, 'f')
            ->where('f.folder = :folder')
-           ->setParameter('folder', $folder->getId());
+           ->setParameter('folder', $id);
 
-        return array_map(
-            array($this, '_fileToArray'),
-            $qb->getQuery()->getResult()
-        );
+        return $qb->getQuery()->getResult();
     }
 
     /**
      * Updates a file
      *
-     * @param  File             $file
+     * @param  File    $file
      * @return boolean
-     * @throws FilelibException When fails
      */
-    public function updateFile(File $file)
+    protected function doUpdateFile(File $file)
     {
-        try {
-            $fileRow = $this->getFileReference($file);
-            $fileRow->setFolder($this->getFolderReference($file->getFolderId()));
-            $fileRow->setMimetype($file->getMimetype());
-            $fileRow->setProfile($file->getProfile());
-            $fileRow->setSize($file->getSize());
-            $fileRow->setName($file->getName());
-            $fileRow->setLink($file->getLink());
-            $fileRow->setDateUploaded($file->getDateUploaded());
+        $entity = $this->getFileReference($file);
+        $entity->setFolder($this->getFolderReference($file->getFolderId()));
+        $entity->setMimetype($file->getMimetype());
+        $entity->setProfile($file->getProfile());
+        $entity->setSize($file->getSize());
+        $entity->setName($file->getName());
+        $entity->setLink($file->getLink());
+        $entity->setDateUploaded($file->getDateUploaded());
 
-            $this->em->flush();
+        $this->em->flush();
 
-            return true;
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        return true;
     }
 
     /**
@@ -224,10 +195,8 @@ class Doctrine2Backend extends AbstractBackend
      * @param  File    $file
      * @return boolean
      */
-    public function deleteFile(File $file)
+    protected function doDeleteFile(File $file)
     {
-        $this->assertValidIdentifier($file->getId());
-
         $this->em->remove($this->getFileReference($file));
         $this->em->flush();
 
@@ -238,52 +207,32 @@ class Doctrine2Backend extends AbstractBackend
      * Finds folder
      *
      * @param  integer     $id
-     * @return array|false
+     * @return Folder|null
      */
-    public function findFolder($id)
+    protected function dofindFolder($id)
     {
-        $this->assertValidIdentifier($id);
-
-        try {
-            $folder = $this->em->find($this->folderEntityName, $id);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
-
-        if (!$folder) {
-            return false;
-        }
-
-        return $this->_folderToArray($folder);
+        return $this->em->find($this->folderEntityName, $id);
     }
 
     /**
      * Finds folder by url
      *
-     * @param  string      $url
-     * @return array|false
+     * @param  string     $url
+     * @return array|null
      */
-    public function findFolderByUrl($url)
+    protected function doFindFolderByUrl($url)
     {
-        $this->assertValidUrl($url);
-
-        $folder = $this->em->getRepository($this->folderEntityName)->findOneBy(array(
+        return $this->em->getRepository($this->folderEntityName)->findOneBy(array(
             'url' => $url,
         ));
-
-        if (!$folder) {
-            return false;
-        }
-
-        return $this->_folderToArray($folder);
     }
 
     /**
      * Finds the root folder
      *
-     * @return array
+     * @return object Folder entity
      */
-    public function findRootFolder()
+    protected function doFindRootFolder()
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -305,75 +254,61 @@ class Doctrine2Backend extends AbstractBackend
             $this->em->flush();
         }
 
-        return $this->_folderToArray($folder);
+        return $folder;
     }
 
     /**
      * Finds subfolders of a folder
      *
-     * @param  Folder $folder
+     * @param  integer $id
      * @return array
      */
-    public function findSubFolders(Folder $folder)
+    protected function doFindSubFolders($id)
     {
-        $this->assertValidIdentifier($folder->getId());
-
         $qb = $this->em->createQueryBuilder();
-
         $qb->select('f')
            ->from($this->folderEntityName, 'f')
            ->where('f.parent = :folder')
-           ->setParameter('folder', $folder->getId());
+           ->setParameter('folder', $id);
 
-        return array_map(
-            array($this, '_folderToArray'),
-            $qb->getQuery()->getResult()
-        );
+        return $qb->getQuery()->getResult();
     }
 
     /**
      * Creates a folder
      *
-     * @param  Folder           $folder
-     * @return Folder           Created folder
-     * @throws FilelibException When fails
+     * @param  Folder $folder
+     * @return Folder
      */
-    public function createFolder(Folder $folder)
+    protected function doCreateFolder(Folder $folder)
     {
-        try {
-            $folderRow = new $this->folderEntityName();
+        $folderRow = new $this->folderEntityName();
 
-            if ($folder->getParentId()) {
-                $folderRow->setParent($this->getFolderReference(
-                    $folder->getParentId()
-                ));
-            }
-
-            $folderRow->setName($folder->getName());
-            $folderRow->setUrl($folder->getUrl());
-
-            $this->em->persist($folderRow);
-            $this->em->flush();
-
-            $folder->setId($folderRow->getId());
-
-            return $folder;
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
+        if ($folder->getParentId()) {
+            $folderRow->setParent($this->getFolderReference(
+                $folder->getParentId()
+            ));
         }
+
+        $folderRow->setName($folder->getName());
+        $folderRow->setUrl($folder->getUrl());
+
+        $this->em->persist($folderRow);
+        $this->em->flush();
+
+        $folder->setId($folderRow->getId());
+
+        return $folder;
     }
 
     /**
      * Updates a folder
      *
-     * @param  Folder           $folder
+     * @param  Folder  $folder
      * @return boolean
-     * @throws FilelibException When fails
      */
-    public function updateFolder(Folder $folder)
+    protected function doUpdateFolder(Folder $folder)
     {
-        $this->assertValidIdentifier($folder->getId());
-
         try {
             $folderRow = $this->getFolderReference($folder->getId());
 
@@ -393,19 +328,16 @@ class Doctrine2Backend extends AbstractBackend
             return true;
         } catch (EntityNotFoundException $e) {
             return false;
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
         }
     }
 
     /**
      * Deletes a folder
      *
-     * @param  Folder           $folder
+     * @param  Folder  $folder
      * @return boolean
-     * @throws FilelibException When fails
      */
-    public function deleteFolder(Folder $folder)
+    protected function doDeleteFolder(Folder $folder)
     {
         try {
             $folderEntity = $this->em->find($this->folderEntityName, $folder->getId());
@@ -420,52 +352,46 @@ class Doctrine2Backend extends AbstractBackend
             return true;
         } catch (EntityNotFoundException $e) {
             return false;
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
         }
     }
 
     /**
-     * @param  File   $upload
+     * @param  File   $file
      * @param  Folder $folder
      * @return File
      */
-    public function upload(File $upload, Folder $folder)
+    protected function doUpload(File $file, Folder $folder)
     {
-        try {
-            $self = $this;
+        $self = $this;
 
-            return $this->em->transactional(function(EntityManager $em) use ($self, $upload, $folder) {
-                $fileEntityName = $self->getFileEntityName();
+        return $this->em->transactional(function(EntityManager $em) use ($self, $file, $folder) {
+            $fileEntityName = $self->getFileEntityName();
 
-                $file = new $fileEntityName;
-                $file->setFolder($self->getFolderReference($folder->getId()));
-                $file->setMimetype($upload->getMimeType());
-                $file->setSize($upload->getSize());
-                $file->setName($upload->getName());
-                $file->setProfile($upload->getProfile());
-                $file->setDateUploaded($upload->getDateUploaded());
+            $entity = new $fileEntityName;
+            $entity->setFolder($self->getFolderReference($folder->getId()));
+            $entity->setMimetype($file->getMimeType());
+            $entity->setSize($file->getSize());
+            $entity->setName($file->getName());
+            $entity->setProfile($file->getProfile());
+            $entity->setDateUploaded($file->getDateUploaded());
 
-                $em->persist($file);
-                $em->flush();
+            $em->persist($entity);
+            $em->flush();
 
-                $upload->setId($file->getId());
-                $upload->setFolderId($file->getFolder()->getId());
+            $file->setId($entity->getId());
+            $file->setFolderId($entity->getFolder()->getId());
 
-                return $upload;
-            });
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+            return $file;
+        });
     }
 
     /**
      * File to array
      *
-     * @param  object $file
+     * @param  File  $file
      * @return array
      */
-    private function _fileToArray($file)
+    protected function fileToArray($file)
     {
         return array(
             'id'            => $file->getId(),
@@ -484,10 +410,10 @@ class Doctrine2Backend extends AbstractBackend
     /**
      * Folder to array
      *
-     * @param  object $folder
+     * @param  Folder $folder
      * @return array
      */
-    private function _folderToArray($folder)
+    protected function folderToArray($folder)
     {
         return array(
             'id'        => $folder->getId(),
@@ -497,20 +423,6 @@ class Doctrine2Backend extends AbstractBackend
             'name'      => $folder->getName(),
             'url'       => $folder->getUrl(),
         );
-    }
-
-    /**
-     * @param  mixed            $id
-     * @throws FilelibException
-     */
-    private function assertValidIdentifier($id)
-    {
-        if (!is_numeric($id)) {
-            throw new FilelibException(sprintf(
-                'Id must be numeric; %s given.',
-                $id
-            ));
-        }
     }
 
     /**
