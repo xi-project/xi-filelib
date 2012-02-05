@@ -2,11 +2,8 @@
 
 namespace Xi\Filelib\Backend;
 
-use Exception,
-    Xi\Filelib\FileLibrary,
-    Xi\Filelib\File\File,
+use Xi\Filelib\File\File,
     Xi\Filelib\Folder\Folder,
-    Xi\Filelib\FilelibException,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\NoResultException,
     Doctrine\ORM\EntityNotFoundException;
@@ -15,7 +12,7 @@ use Exception,
  * Doctrine 2 backend for filelib
  *
  * @category Xi
- * @package  Xi_Filelib
+ * @package  Filelib
  * @author   Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  * @author   pekkis
  */
@@ -103,8 +100,6 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Finds a file
-     *
      * @param  integer    $id
      * @return array|null
      */
@@ -120,24 +115,13 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function doFindFileByFilename(Folder $folder, $filename)
     {
-        try {
-            $qb = $this->em->createQueryBuilder();
-            $qb->select('f')
-               ->from($this->fileEntityName, 'f')
-               ->where('f.folder = :folder')
-               ->andWhere('f.name = :filename')
-               ->setParameter('folder', $folder->getId())
-               ->setParameter('filename', $filename);
-
-            return $qb->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
-            return null;
-        }
+        return $this->em->getRepository($this->fileEntityName)->findOneBy(array(
+            'folder' => $folder->getId(),
+            'name'   => $filename,
+        ));
     }
 
     /**
-     * Finds all files
-     *
      * @return array
      */
     protected function doFindAllFiles()
@@ -151,25 +135,17 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Finds files in folder
-     *
      * @param  integer $id
      * @return array
      */
     protected function doFindFilesIn($id)
     {
-        $qb = $this->em->createQueryBuilder();
-        $qb->select('f')
-           ->from($this->fileEntityName, 'f')
-           ->where('f.folder = :folder')
-           ->setParameter('folder', $id);
-
-        return $qb->getQuery()->getResult();
+        return $this->em->getRepository($this->fileEntityName)->findBy(array(
+            'folder' => $id,
+        ));
     }
 
     /**
-     * Updates a file
-     *
      * @param  File    $file
      * @return boolean
      */
@@ -190,8 +166,6 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Deletes a file
-     *
      * @param  File    $file
      * @return boolean
      */
@@ -204,8 +178,6 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Finds folder
-     *
      * @param  integer     $id
      * @return Folder|null
      */
@@ -215,8 +187,6 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Finds folder by url
-     *
      * @param  string     $url
      * @return array|null
      */
@@ -228,8 +198,6 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Finds the root folder
-     *
      * @return object Folder entity
      */
     protected function doFindRootFolder()
@@ -258,25 +226,17 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Finds subfolders of a folder
-     *
      * @param  integer $id
      * @return array
      */
     protected function doFindSubFolders($id)
     {
-        $qb = $this->em->createQueryBuilder();
-        $qb->select('f')
-           ->from($this->folderEntityName, 'f')
-           ->where('f.parent = :folder')
-           ->setParameter('folder', $id);
-
-        return $qb->getQuery()->getResult();
+        return $this->em->getRepository($this->folderEntityName)->findBy(array(
+            'parent' => $id,
+        ));
     }
 
     /**
-     * Creates a folder
-     *
      * @param  Folder $folder
      * @return Folder
      */
@@ -302,8 +262,6 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Updates a folder
-     *
      * @param  Folder  $folder
      * @return boolean
      */
@@ -332,15 +290,14 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Deletes a folder
-     *
      * @param  Folder  $folder
      * @return boolean
      */
     protected function doDeleteFolder(Folder $folder)
     {
         try {
-            $folderEntity = $this->em->find($this->folderEntityName, $folder->getId());
+            $folderEntity = $this->em->find($this->folderEntityName,
+                                            $folder->getId());
 
             if (!$folderEntity) {
                 return false;
