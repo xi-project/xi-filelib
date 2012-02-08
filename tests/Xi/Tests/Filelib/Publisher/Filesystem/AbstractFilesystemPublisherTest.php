@@ -12,6 +12,20 @@ use Xi\Tests\Filelib\TestCase;
 class AbstractFilesystemPublisherTest extends TestCase
 {
     
+    public function setUp()
+    {
+        chmod(ROOT_TESTS . '/data/publisher/unwritable_dir', 0444);
+        parent::setUp();
+    }
+
+    public function tearDown()
+    {
+        chmod(ROOT_TESTS . '/data/publisher/unwritable_dir', 0755);
+        parent::tearDown();
+    }
+
+    
+    
     /**
      * @test
      */
