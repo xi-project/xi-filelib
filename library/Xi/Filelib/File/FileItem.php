@@ -179,6 +179,13 @@ class FileItem implements File
         return $this;
     }
 
+    
+    
+    /**
+     *
+     * @param array $data
+     * @return type FileItem
+     */
     public static function create(array $data)
     {
         $file = new self();

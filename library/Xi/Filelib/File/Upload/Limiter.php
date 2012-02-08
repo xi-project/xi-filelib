@@ -16,13 +16,12 @@ class Limiter
     /**
      * @var array
      */
-    private $_accepted = array();
+    private $accepted = array();
 
     /**
      * @var array
      */
-    private $_denied = array();
-
+    private $denied = array();
 
     /**
      * Accept a file type. A regex or an array of regexes to accept.
@@ -32,24 +31,21 @@ class Limiter
      */
     public function accept($what)
     {
-        if(!is_array($what)) {
+        if (!is_array($what)) {
             $what = array($what);
         }
 
-        foreach($what as $w) {
+        foreach ($what as $w) {
             $accept = "[" . $w . "]";
-            $this->_accepted[] = $accept;
+            $this->accepted[$accept] = $accept;
 
-            if(in_array($accept, $this->_denied)) {
-                unset($this->_denied[$accept]);
+            if (in_array($accept, $this->denied)) {
+                unset($this->denied[$accept]);
             }
-
         }
 
         return $this;
-
     }
-
 
     /**
      * Deny a file type. A regex or an array of regexes to deny.
@@ -59,22 +55,20 @@ class Limiter
      */
     public function deny($what)
     {
-        if(!is_array($what)) {
+        if (!is_array($what)) {
             $what = array($what);
         }
 
-        foreach($what as $w) {
+        foreach ($what as $w) {
             $deny = "[" . $w . "]";
-            $this->_denied[] = $deny;
-             
-            if(in_array($deny, $this->_accepted)) {
-                unset($this->_accepted[$deny]);
+            $this->denied[$deny] = $deny;
+
+            if (in_array($deny, $this->accepted)) {
+                unset($this->accepted[$deny]);
             }
-             
         }
 
         return $this;
-
     }
 
     /**
@@ -84,7 +78,7 @@ class Limiter
      */
     public function getAccepted()
     {
-        return $this->_accepted;
+        return $this->accepted;
     }
 
     /**
@@ -94,7 +88,7 @@ class Limiter
      */
     public function getDenied()
     {
-        return $this->_denied;
+        return $this->denied;
     }
 
     /**
@@ -107,30 +101,28 @@ class Limiter
     {
         $mimeType = $upload->getMimeType();
 
-        if(!$this->getAccepted() && !$this->getDenied()) {
+        if (!$this->getAccepted() && !$this->getDenied()) {
             return true;
         }
 
-        foreach($this->getDenied() as $denied) {
-            if(preg_match($denied, $mimeType)) {
+        foreach ($this->getDenied() as $denied) {
+            if (preg_match($denied, $mimeType)) {
                 return false;
             }
         }
 
-        if(!$this->getAccepted()) {
+        if (!$this->getAccepted()) {
             return true;
         }
 
-        foreach($this->getAccepted() as $accepted) {
-            if(preg_match($accepted, $mimeType)) {
+        foreach ($this->getAccepted() as $accepted) {
+            if (preg_match($accepted, $mimeType)) {
                 return true;
             }
         }
 
         return false;
-
     }
-
 
 }
 

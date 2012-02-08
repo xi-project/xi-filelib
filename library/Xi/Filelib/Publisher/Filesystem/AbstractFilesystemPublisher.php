@@ -4,6 +4,10 @@ namespace Xi\Filelib\Publisher\Filesystem;
 
 use \Xi\Filelib\Publisher\AbstractPublisher;
 
+use \LogicException;
+
+use \SplFileInfo;
+
 /**
  * Abstract filesystem publisher base class
  * 
@@ -69,7 +73,17 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
      */
     public function setPublicRoot($publicRoot)
     {
-        $this->_publicRoot = $publicRoot;
+        $dir = new SplFileInfo($publicRoot);
+        
+        if (!$dir->isDir()) {
+            throw new LogicException("Directory '{$publicRoot}' does not exist");
+        }
+        
+        if (!$dir->isWritable()) {
+            throw new LogicException("Directory '{$publicRoot}' is not writeable");
+        }
+        
+        $this->_publicRoot = $dir->getRealPath();
         return $this;
     }
 

@@ -1,27 +1,4 @@
-CREATE TABLE xi_filelib_folder (
-  id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  parent_id int(10) unsigned DEFAULT NULL,
-  foldername varchar(255) NOT NULL,
-  folderurl varchar(255) NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY parent_id_name (parent_id, foldername),
-  UNIQUE KEY folderurl (folderurl),
-  KEY parent_id (parent_id),
-  CONSTRAINT filelib_folder_ibfk_1 FOREIGN KEY (parent_id) REFERENCES xi_filelib_folder (id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE xi_filelib_file (
-  id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  folder_id int(10) unsigned NOT NULL,
-  mimetype varchar(255) NOT NULL,
-  fileprofile varchar(255) NOT NULL DEFAULT 'default',
-  filesize int(11) DEFAULT NULL,
-  filename varchar(255) NOT NULL,
-  filelink varchar(255) DEFAULT NULL,
-  date_uploaded datetime NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY (filename,folder_id),
-  KEY folder_id (folder_id),
-  KEY mimetype (mimetype),
-  CONSTRAINT filelib_file_ibfk_1 FOREIGN KEY (folder_id) REFERENCES xi_filelib_folder (id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE xi_filelib_file (id INT AUTO_INCREMENT NOT NULL, folder_id INT DEFAULT NULL, mimetype VARCHAR(255) NOT NULL, fileprofile VARCHAR(255) NOT NULL, filesize INT DEFAULT NULL, filename VARCHAR(255) NOT NULL, filelink VARCHAR(255) DEFAULT NULL, date_uploaded DATETIME NOT NULL, UNIQUE INDEX UNIQ_E860652454840E92 (filelink), INDEX IDX_E8606524162CB942 (folder_id), UNIQUE INDEX folderid_filename_unique (folder_id, filename), PRIMARY KEY(id)) ENGINE = InnoDB;
+CREATE TABLE xi_filelib_folder (id INT AUTO_INCREMENT NOT NULL, parent_id INT DEFAULT NULL, foldername VARCHAR(255) NOT NULL, folderurl VARCHAR(255) NOT NULL, INDEX IDX_A5EA9E8B727ACA70 (parent_id), PRIMARY KEY(id)) ENGINE = InnoDB;
+ALTER TABLE xi_filelib_file ADD CONSTRAINT FK_E8606524162CB942 FOREIGN KEY (folder_id) REFERENCES xi_filelib_folder(id);
+ALTER TABLE xi_filelib_folder ADD CONSTRAINT FK_A5EA9E8B727ACA70 FOREIGN KEY (parent_id) REFERENCES xi_filelib_folder(id)

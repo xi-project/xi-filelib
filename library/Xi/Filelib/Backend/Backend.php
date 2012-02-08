@@ -2,19 +2,23 @@
 
 namespace Xi\Filelib\Backend;
 
+use Xi\Filelib\File\File,
+    Xi\Filelib\Folder\Folder,
+    Xi\Filelib\FilelibException;
+
 /**
  * Filelib backend interface
  *
  * @package Xi_Filelib
- * @author pekkis
- *
+ * @author  pekkis
  */
 interface Backend
 {
-
+    /**
+     * @param mixed $options
+     */
     public function __construct($options = array());
-    
-    
+
     /**
      * Initialization. Is run when backend is set to filelib.
      */
@@ -23,116 +27,118 @@ interface Backend
     /**
      * Finds folder
      *
-     * @param integer $id
-     * @return Xi\Filelib\Folder\Folder|false
+     * @param  mixed       $id
+     * @return array|false False if folder is not found.
      */
     public function findFolder($id);
 
     /**
      * Finds subfolders of a folder
      *
-     * @param \Xi\Filelib\Folder\Folder $id
-     * @return \Xi\Filelib\Folder\FolderIterator
+     * @param  Folder $folder
+     * @return array
      */
-    public function findSubFolders(\Xi\Filelib\Folder\Folder $folder);
+    public function findSubFolders(Folder $folder);
 
     /**
      * Finds all files
      *
-     * @return \Xi\Filelib\File\FileIterator
+     * @return array
      */
     public function findAllFiles();
 
     /**
      * Finds a file
      *
-     * @param integer $id
-     * @return \Xi\Filelib\File\File|false
+     * @param  mixed       $id
+     * @return array|false False if file is not found.
      */
     public function findFile($id);
 
     /**
-     * Finds a file
+     * Finds files in a folder
      *
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @return \Xi\Filelib\File\FileIterator
+     * @param  Folder $folder
+     * @return array
      */
-    public function findFilesIn(\Xi\Filelib\Folder\Folder $folder);
+    public function findFilesIn(Folder $folder);
 
     /**
      * Uploads a file
      *
-     * @param \Xi\Filelib\File\Upload\FileUpload $upload Fileobject to upload
-     * @param \Xi\Filelib\Folder\Folder $folder Folder
-     * @return \Xi\Filelib\File\File File item
-     * @throws \Xi\Filelib\FilelibException When fails
+     * @param  File             $file
+     * @param  Folder           $folder
+     * @return File             Uploaded file
+     * @throws FilelibException If file could not be uploaded.
      */
-    public function upload(\Xi\Filelib\File\Upload\FileUpload $upload, \Xi\Filelib\Folder\Folder $folder, \Xi\Filelib\File\FileProfile $profile);
+    public function upload(File $file, Folder $folder);
 
     /**
      * Creates a folder
      *
-     * @param Xi\Filelib\Folder\Folder $folder
-     * @return Xi\Filelib\Folder\Folder Created folder
-     * @throws Xi\Filelib\FilelibException When fails
+     * @param  Folder           $folder
+     * @return Folder           Created folder
+     * @throws FilelibException If folder could not be created.
      */
-    public function createFolder(\Xi\Filelib\Folder\Folder $folder);
-
+    public function createFolder(Folder $folder);
 
     /**
      * Deletes a folder
      *
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @throws \Xi\Filelib\FilelibException When fails
+     * @param  Folder           $folder
+     * @return boolean          True if deleted successfully.
+     * @throws FilelibException If folder could not be deleted.
      */
-    public function deleteFolder(\Xi\Filelib\Folder\Folder $folder);
+    public function deleteFolder(Folder $folder);
 
     /**
      * Deletes a file
      *
-     * @param \Xi\Filelib\File\File $file
-     * @throws \Xi\Filelib\FilelibException When fails
+     * @param  File             $file
+     * @return boolean
+     * @throws FilelibException If file could not be deleted.
      */
-    public function deleteFile(\Xi\Filelib\File\File $file);
+    public function deleteFile(File $file);
 
     /**
      * Updates a folder
      *
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @throws \Xi\Filelib\FilelibException When fails
+     * @param  Folder           $folder
+     * @return boolean          True if updated successfully.
+     * @throws FilelibException If folder coult not be updated.
      */
-    public function updateFolder(\Xi\Filelib\Folder\Folder $folder);
+    public function updateFolder(Folder $folder);
 
     /**
      * Updates a file
      *
-     * @param \Xi\Filelib\File\File $file
-     * @throws \Xi\Filelib\FilelibException When fails
+     * @param  File             $file
+     * @return boolean          True if updated successfully.
+     * @throws FilelibException If file could not be updated.
      */
-    public function updateFile(\Xi\Filelib\File\File $file);
-    	
+    public function updateFile(File $file);
+
     /**
      * Returns the root folder. Creates it if it does not exist.
      *
-     * @return \Xi\Filelib\Folder\Folder
+     * @return array
      */
     public function findRootFolder();
-    
+
     /**
      * Finds folder by url
      *
-     * @param  integer                          $id
-     * @return \Xi\Filelib\Folder\Folder|false
+     * @param  string      $url
+     * @return array|false False if folder was not found.
      */
     public function findFolderByUrl($url);
-        
+
     /**
      * Finds file in a folder by filename
-     * 
-     * @param unknown_type $folder
-     * @param unknown_type $filename
+     *
+     * @param  Folder $folder
+     * @param  string $filename
+     * @return array
      */
-    public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename);
-    
-    
+    public function findFileByFilename(Folder $folder, $filename);
 }

@@ -1,0 +1,54 @@
+{
+    "require": {
+        "doctrine/orm": "=2.1.5",
+        "doctrine/dbal": "=2.1.5",
+        "doctrine/common": "=2.1.4",
+        "zendframework/filter": "=2.0.0beta2",
+        "zendframework/stdlib": "=2.0.0beta2",
+        "zendframework/locale": "=2.0.0beta2",
+        "zendframework/registry": "=2.0.0beta2",
+	"symfony/http-foundation": "=2.0.9"
+    },
+    "repositories": {
+        "zendframework/filter": {
+            "package": {
+                "name": "zendframework/filter",
+                "version": "2.0.0beta2",
+                "dist": {
+                    "url": "http://packages.zendframework.com/get/Zend_Filter-2.0.0beta2.tgz",
+                    "type": "pear"
+                }
+            }
+        },
+        "zendframework/stdlib": {
+            "package": {
+                "name": "zendframework/stdlib",
+                "version": "2.0.0beta2",
+                "dist": {
+                    "url": "http://packages.zendframework.com/get/Zend_Stdlib-2.0.0beta2.tgz",
+                    "type": "pear"
+                }
+            }
+        },
+        "zendframework/locale": {
+            "package": {
+                "name": "zendframework/locale",
+                "version": "2.0.0beta2",
+                "dist": {
+                    "url": "http://packages.zendframework.com/get/Zend_Locale-2.0.0beta2.tgz",
+                    "type": "pear"
+                }
+            }
+        },
+        "zendframework/registry": {
+            "package": {
+                "name": "zendframework/registry",
+                "version": "2.0.0beta2",
+                "dist": {
+                    "url": "http://packages.zendframework.com/get/Zend_Registry-2.0.0beta2.tgz",
+                    "type": "pear"
+                }
+            }
+        }
+    }
+}

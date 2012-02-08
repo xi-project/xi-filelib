@@ -2,386 +2,306 @@
 
 namespace Xi\Filelib\Backend;
 
-use \MongoDb, \MongoId, \MongoDate, \DateTime;
+use Xi\Filelib\File\File,
+    Xi\Filelib\Folder\Folder,
+    Xi\Filelib\FilelibException,
+    MongoDb,
+    MongoId,
+    MongoDate,
+    DateTime;
 
 /**
  * MongoDB backend for Filelib
- * 
- * @author pekkis
- * @package Xi_Filelib
- * @todo Prototype, to be error-proofed
  *
+ * @author   pekkis
+ * @category Xi
+ * @package  Filelib
  */
 class MongoBackend extends AbstractBackend implements Backend
 {
-    
     /**
      * MongoDB reference
-     * 
-     * @var \MongoDB
+     *
+     * @var MongoDB
      */
-    private $_mongo;
-    
+    private $mongo;
+
     /**
      * Sets MongoDB
-     * 
-     * @param \MongoDB $mongo
+     *
+     * @param MongoDB $mongo
      */
-    public function setMongo(\MongoDB $mongo)
+    public function setMongo(MongoDB $mongo)
     {
-        $this->_mongo = $mongo;
+        $this->mongo = $mongo;
     }
-    
-    
+
     /**
      * Returns MongoDB
-     * 
-     * @return \MongoDB
+     *
+     * @return MongoDB
      */
     public function getMongo()
     {
-        return $this->_mongo;
-    }
-    
-    
-    /**
-     * Finds folder
-     *
-     * @param integer $id
-     * @return \Xi\Filelib\Folder\Folder|false
-     */
-    public function findFolder($id)
-    {
-        $mongo = $this->getMongo();
-                
-        $doc = $mongo->folders->findOne(array('_id' => new MongoId($id)));
-        
-        if(!$doc) {
-            return false;
-        }
-        
-        $this->_mongoToFilelib($doc);    
-                
-        return $doc;
+        return $this->mongo;
     }
 
     /**
-     * Finds subfolders of a folder
-     *
-     * @param \Xi\Filelib\Folder\Folder $id
-     * @return \Xi\Filelib\Folder\FolderIterator
+     * @param  string     $id
+     * @return array|null
      */
-    public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
+    protected function doFindFolder($id)
     {
-        $mongo = $this->getMongo();
-
-        $res = $mongo->folders->find(array('parent_id' => $folder->getId()));
-
-        $ret = array();
-        
-        foreach($res as $row) {
-            $this->_mongoToFilelib($row);
-            $ret[] = $row;
-        }
-        
-        return $ret;
-                
-    }
-    
-
-    /**
-     * Finds all files
-     *
-     * @return \Xi\Filelib\File\FileIterator
-     */
-    public function findAllFiles()
-    {
-        $mongo = $this->getMongo();
-
-        $res = $mongo->files->find();
-        
-        $files = array();
-        
-        foreach($res as $row) {
-
-            $file = $row;
-            $this->_mongoToFilelib($file);
-            $files[] = $file;
-        }
-                
-        return $files;        
-    }
-    
-
-    /**
-     * Finds a file
-     *
-     * @param integer $id
-     * @return \Xi\Filelib\File\File|false
-     */
-    public function findFile($id)
-    {
-        $mongo = $this->getMongo();
-                
-        $file = $mongo->files->findOne(array('_id' => new MongoId($id)));
-
-        if(!$file) {
-            return false;
-        }
-                
-        $this->_mongoToFilelib($file);    
-        return $file;
-    }
-    
-    /**
-     * Finds a file
-     *
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @return \Xi\Filelib\File\FileIterator
-     */
-    public function findFilesIn(\Xi\Filelib\Folder\Folder $folder)
-    {
-        $mongo = $this->getMongo();
-
-        $res = $mongo->files->find(array('folder_id' => $folder->getId()));
-        
-        $files = array();
-
-        foreach($res as $row) {
-
-            $file = $row;
-            $this->_mongoToFilelib($file);
-            $files[] = $file;
-        }
-                
-        return $files;        
-    }
-    
-    /**
-     * Uploads a file
-     *
-     * @param \Xi\Filelib\File\Upload\FileUpload $upload Fileobject to upload
-     * @param \Xi\Filelib\Folder\Folder $folder Folder
-     * @return \Xi\Filelib\File\File File item
-     * @throws \Xi\Filelib\FilelibException When fails
-     */
-    public function upload(\Xi\Filelib\File\Upload\FileUpload $upload, \Xi\Filelib\Folder\Folder $folder, \Xi\Filelib\File\FileProfile $profile)
-    {
-        try {
-
-            $file = array();
-
-            $file['folder_id'] = $folder->getId();
-            $file['mimetype'] = $upload->getMimeType();
-            $file['size'] = $upload->getSize();
-            $file['name'] = $upload->getUploadFilename();
-            $file['profile'] = $profile->getIdentifier();
-            $file['date_uploaded'] = new MongoDate($upload->getDateUploaded()->getTimestamp()); 
-                
-            $this->getMongo()->files->insert($file);
-            
-            $this->getMongo()->files->ensureIndex(array('folder_id' => 1, 'name' => 1), array('unique' => true));
-                       
-            $this->_mongoToFilelib($file);
-                        
-            return $file;
-            
-
-        } catch(Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
-        }
-    	
-    	
-    }
-    
-    /**
-     * Creates a folder
-     *
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @return \Xi\Filelib\Folder\Folder Created folder
-     * @throws \Xi\Filelib\FilelibException When fails
-     */
-    public function createFolder(\Xi\Filelib\Folder\Folder $folder)
-    {
-    	$arr = $folder->toArray();
-    	$this->getMongo()->folders->insert($arr);
-    	$this->getMongo()->folders->ensureIndex(array('name' => 1), array('unique' => true));
-    	
-    	$folder->setId($arr['_id']->__toString());
-    	    	
-    	return $folder;
-    	
-    }
-    
-
-    /**
-     * Deletes a folder
-     *
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @throws \Xi\Filelib\FilelibException When fails
-     */
-    public function deleteFolder(\Xi\Filelib\Folder\Folder $folder)
-    {
-        $this->getMongo()->folders->remove(array('_id' => new MongoId($folder->getId())));
-    
-    }
-    
-    /**
-     * Deletes a file
-     *
-     * @param \Xi\Filelib\File\File $file
-     * @throws \Xi\Filelib\FilelibException When fails
-     */
-    public function deleteFile(\Xi\Filelib\File\File $file)
-    {
-        $this->getMongo()->files->remove(array('_id' => new MongoId($file->getId())));
-    }
-    
-    /**
-     * Updates a folder
-     *
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @throws \Xi\Filelib\FilelibException When fails
-     */
-    public function updateFolder(\Xi\Filelib\Folder\Folder $folder)
-    {
-    	$arr = $folder->toArray();
-        $this->_filelibToMongo($arr);
-    	
-        $this->getMongo()->folders->update(array('_id' => new MongoId($folder->getId())), $arr);
-        
-        return $folder;
-        
-        
-    }
-    
-    /**
-     * Updates a file
-     *
-     * @param \Xi\Filelib\File\File $file
-     * @throws \Xi\Filelib\FilelibException When fails
-     */
-    public function updateFile(\Xi\Filelib\File\File $file)
-    {
-        $arr = $file->toArray();
-        $this->_filelibToMongo($arr);
-                
-        $this->getMongo()->files->update(array('_id' => new MongoId($file->getId())), $arr);
-        return $file;
-        
-    }
-    
-
-        
-    /**
-     * Finds the root folder
-     *
-     * @return \Xi\Filelib\Folder\Folder
-     */
-    public function findRootFolder()
-    {
-        $mongo = $this->getMongo();
-        
-        $root = $mongo->folders->findOne(array('parent_id' => null));
-        
-        if(!$root) {
-
-            $root = array(
-                'parent_id' => null,
-                'name' => 'root',
-                'url' => '',
-            );
-            
-            $mongo->folders->save($root);
-                        
-        }
-        
-                            
-       $this->_mongoToFilelib($root);
-       return $root;
-    }
-    
-    
-    /**
-     * Finds folder by url
-     *
-     * @param  integer                          $id
-     * @return \Xi\Filelib\Folder\Folder|false
-     */
-    public function findFolderByUrl($url)
-    {
-        $mongo = $this->getMongo();
-        $folder = $mongo->folders->findOne(array('url' => $url));
-        
-        if(!$folder) {
-            return false;
-        }
-
-        $this->_mongoToFilelib($folder);
-        return $folder;
-        
-    }
-        
-    /**
-     * Finds file in a folder by filename
-     * 
-     * @param unknown_type $folder
-     * @param unknown_type $filename
-     */
-    public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
-    {
-        $mongo = $this->getMongo();
-        $file = $mongo->files->findOne(array(
-            'folder_id' => $folder->getId(),
-            'name' => $filename,
+        return $this->getMongo()->folders->findOne(array(
+            '_id' => new MongoId($id),
         ));
-                
-        if (!$file) {
-            return false;
+    }
+
+    /**
+     * @param  string $id
+     * @return array
+     */
+    protected function doFindSubFolders($id)
+    {
+        return iterator_to_array($this->getMongo()->folders->find(array(
+            'parent_id' => $id,
+        )));
+    }
+
+    /**
+     * @return array
+     */
+    protected function doFindAllFiles()
+    {
+        return iterator_to_array($this->getMongo()->files->find());
+    }
+
+    /**
+     * @param  string     $id
+     * @return array|null
+     */
+    protected function doFindFile($id)
+    {
+        return $this->getMongo()->files->findOne(array(
+            '_id' => new MongoId($id),
+        ));
+    }
+
+    /**
+     * @param  string $id
+     * @return array
+     */
+    protected function doFindFilesIn($id)
+    {
+        return iterator_to_array($this->getMongo()->files->find(array(
+            'folder_id' => $id,
+        )));
+    }
+
+    /**
+     * @param  File   $file
+     * @param  Folder $folder
+     * @return File
+     */
+    protected function doUpload(File $file, Folder $folder)
+    {
+        $document = array(
+            'folder_id'     => $folder->getId(),
+            'mimetype'      => $file->getMimeType(),
+            'size'          => $file->getSize(),
+            'name'          => $file->getName(),
+            'profile'       => $file->getProfile(),
+            'date_uploaded' => new MongoDate($file->getDateUploaded()
+                                                  ->getTimestamp()),
+        );
+
+        $this->getMongo()->files->ensureIndex(array(
+            'folder_id' => 1,
+            'name'      => 1,
+        ), array(
+            'unique' => true,
+        ));
+
+        $this->getMongo()->files->insert($document, array('safe' => true));
+
+        $file->setId((string) $document['_id']);
+        $file->setFolderId($folder->getId());
+
+        return $file;
+    }
+
+    /**
+     * @param  Folder $folder
+     * @return Folder
+     */
+    protected function doCreateFolder(Folder $folder)
+    {
+        $document = $folder->toArray();
+
+        $this->getMongo()->folders->insert($document);
+        $this->getMongo()->folders->ensureIndex(array('name' => 1),
+                                                array('unique' => true));
+
+        $folder->setId($document['_id']->__toString());
+
+        return $folder;
+    }
+
+    /**
+     * @param  Folder  $folder
+     * @return boolean
+     */
+    protected function doDeleteFolder(Folder $folder)
+    {
+        $ret = $this->getMongo()->folders->remove(array(
+            '_id' => new MongoId($folder->getId()),
+        ), array('safe' => true));
+
+        return (boolean) $ret['n'];
+    }
+
+    /**
+     * @param  File    $file
+     * @return boolean
+     */
+    protected function doDeleteFile(File $file)
+    {
+        $ret = $this->getMongo()->files->remove(array(
+            '_id' => new MongoId($file->getId()),
+        ), array('safe' => true));
+
+        return (bool) $ret['n'];
+    }
+
+    /**
+     * @param  Folder  $folder
+     * @return boolean
+     */
+    protected function doUpdateFolder(Folder $folder)
+    {
+        $document = $folder->toArray();
+
+        unset($document['id']);
+
+        $ret = $this->getMongo()->folders->update(array(
+            '_id' => new MongoId($folder->getId()),
+        ), $document, array('safe' => true));
+
+        return (bool) $ret['n'];
+    }
+
+    /**
+     * @param  File    $file
+     * @return boolean
+     */
+    protected function doUpdateFile(File $file)
+    {
+        $document = $file->toArray();
+
+        unset($document['id']);
+
+        $document['date_uploaded'] = new MongoDate(
+            $document['date_uploaded']->getTimestamp()
+        );
+
+        $ret = $this->getMongo()->files->update(array(
+            '_id' => new MongoId($file->getId()),
+        ), $document, array('safe' => true));
+
+        return (bool) $ret['n'];
+    }
+
+    /**
+     * @return array
+     */
+    protected function doFindRootFolder()
+    {
+        $mongo = $this->getMongo();
+
+        $folder = $mongo->folders->findOne(array('parent_id' => null));
+
+        if (!$folder) {
+            $folder = array(
+                'parent_id' => null,
+                'name'      => 'root',
+                'url'       => '',
+            );
+
+            $mongo->folders->save($folder);
         }
 
-        $this->_mongoToFilelib($file);
-        return $file;
-        
+        return $folder;
     }
-    
-    
-    
-    
-    
+
     /**
-     * Processes mongo data to fit Filelib requirements
-     * 
-     * @param array $data
+     * @param  string     $url
+     * @return array|null
      */
-    private function _mongoToFilelib(array &$data)
+    protected function doFindFolderByUrl($url)
     {
-        $data['id'] = $data['_id']->__toString();
-        
-        if(isset($data['date_uploaded'])) {
-            $data['date_uploaded'] = DateTime::createFromFormat('U', $data['date_uploaded']->sec);    
-        }
-        
+        return $this->getMongo()->folders->findOne(array('url' => $url));
     }
-    
-    
+
     /**
-     * Processes Filelib data to fit Mongo requirements
-     * 
-     * @param array $data
+     * @param  Folder     $folder
+     * @param  string     $filename
+     * @return array|null
      */
-    private function _filelibToMongo(array &$data)
+    protected function doFindFileByFilename(Folder $folder, $filename)
     {
-        unset($data['id']);
-        if(isset($data['date_uploaded'])) {
-            $data['date_uploaded'] = new MongoDate($data['date_uploaded']->getTimestamp());    
+        return $this->getMongo()->files->findOne(array(
+            'folder_id' => $folder->getId(),
+            'name'      => $filename,
+        ));
+    }
+
+    /**
+     * @param  array $file
+     * @return array
+     */
+    protected function fileToArray($file)
+    {
+        return array(
+            'id'            => (string) $file['_id'],
+            'folder_id'     => isset($file['folder_id'])
+                                   ? $file['folder_id']
+                                   : null,
+            'mimetype'      => $file['mimetype'],
+            'profile'       => $file['profile'],
+            'size'          => (int) $file['size'],
+            'name'          => $file['name'],
+            'link'          => $file['link'],
+            'date_uploaded' => DateTime::createFromFormat(
+                                   'U',
+                                   $file['date_uploaded']->sec
+                               ),
+        );
+    }
+
+    /**
+     * @param  array $folder
+     * @return array
+     */
+    protected function folderToArray($folder)
+    {
+        return array(
+            'id'        => (string) $folder['_id'],
+            'parent_id' => isset($folder['folder_id'])
+                               ? $folder['folder_id']
+                               : null,
+            'name'      => $folder['name'],
+            'url'       => $folder['url']
+        );
+    }
+
+    /**
+     * @param  string           $id
+     * @throws FilelibException
+     */
+    protected function assertValidIdentifier($id)
+    {
+        if (!is_string($id)) {
+            throw new FilelibException('Id must be a string.');
         }
     }
-    
-    
-    
-    
-    
-    
-    
 }

@@ -2,14 +2,15 @@
 
 namespace Xi\Tests\Filelib\Storage;
 
-use \Mongo,
-    \MongoDB,
-    \MongoGridFS,
-    \MongoCollection,
-    \Xi\Filelib\Storage\GridfsStorage
-    ;
+use Mongo,
+    MongoDB,
+    MongoGridFS,
+    MongoCollection,
+    MongoConnectionException,
+    Xi\Tests\Filelib\TestCase,
+    Xi\Filelib\Storage\GridfsStorage;
 
-class GridFsStorageTest extends \Xi\Tests\Filelib\TestCase
+class GridFsStorageTest extends TestCase
 {
 
     /**
@@ -39,6 +40,12 @@ class GridFsStorageTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('MongoDB extension is not loaded.');
         }
 
+        try {
+            $mongo = new Mongo(MONGO_DNS, array('connect' => true));
+        } catch (MongoConnectionException $e) {
+            $this->markTestSkipped('Can not connect to MongoDB.');
+        }
+
         $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1));
         
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
@@ -46,9 +53,6 @@ class GridFsStorageTest extends \Xi\Tests\Filelib\TestCase
                 
         $this->filelib = $this->getFilelib();
         
-        // @todo: to config
-        $dns = MONGO_DNS;
-        $mongo = new Mongo($dns, array('connect' => true));
         $this->mongo = $mongo->filelib_tests;    
                
         $storage = new \Xi\Filelib\Storage\GridfsStorage();
@@ -79,7 +83,7 @@ class GridFsStorageTest extends \Xi\Tests\Filelib\TestCase
     
     protected function tearDown()
     {
-        if (extension_loaded('mongo')) {
+        if (extension_loaded('mongo') && $this->mongo) {
             foreach ($this->mongo->listCollections() as $collection) {
                 $collection->drop();
             }
