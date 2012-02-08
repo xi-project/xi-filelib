@@ -2,12 +2,18 @@
 
 namespace Xi\Filelib\Backend;
 
+use Xi\Filelib\File\File,
+    Xi\Filelib\Folder\Folder,
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\NoResultException,
+    Doctrine\ORM\EntityNotFoundException;
+
 /**
  * Doctrine 2 backend for filelib
  *
  * @category Xi
- * @package  Xi_Filelib
- * @author   Mikko Hirvonen
+ * @package  Filelib
+ * @author   Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  * @author   pekkis
  */
 class Doctrine2Backend extends AbstractBackend
@@ -17,484 +23,343 @@ class Doctrine2Backend extends AbstractBackend
      *
      * @var string
      */
-    private $_fileEntityName = 'Xi\Filelib\Integration\Symfony\FilelibBundle\Entity\File';
+    private $fileEntityName = 'Xi\Filelib\Backend\Doctrine2\Entity\File';
 
     /**
      * Folder entity name
      *
      * @var string
      */
-    private $_folderEntityName = 'Xi\Filelib\Integration\Symfony\FilelibBundle\Entity\Folder';
+    private $folderEntityName = 'Xi\Filelib\Backend\Doctrine2\Entity\Folder';
 
     /**
      * Entity manager
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManager
      */
-    private $_em;
+    private $em;
 
-    
     /**
      * Sets the fully qualified file entity classname
-     * 
+     *
      * @param string $fileEntityName
      */
     public function setFileEntityName($fileEntityName)
     {
-        $this->_fileEntityName = $fileEntityName;
+        $this->fileEntityName = $fileEntityName;
     }
-    
-    
+
     /**
      * Returns the fully qualified file entity classname
-     * 
+     *
      * @return string
      */
     public function getFileEntityName()
     {
-        return $this->_fileEntityName;
+        return $this->fileEntityName;
     }
-    
-    
-    
+
     /**
      * Sets the entity manager
-     * 
-     * @param \Doctrine\Orm\EntityManager $em
+     *
+     * @param EntityManager $em
      */
-    public function setEntityManager(\Doctrine\Orm\EntityManager $em)
+    public function setEntityManager(EntityManager $em)
     {
-        $this->_em = $em;
+        $this->em = $em;
     }
-    
-    
+
     /**
      * Returns the entity manager
-     * 
-     * @return null
+     *
+     * @return EntityManager
      */
     public function getEntityManager()
     {
-        return $this->_em;
+        return $this->em;
     }
-    
-    
-    
+
     /**
      * Sets the fully qualified folder entity classname
-     * 
+     *
      * @param string $folderEntityName
      */
     public function setFolderEntityName($folderEntityName)
     {
-        $this->_folderEntityName = $folderEntityName;
+        $this->folderEntityName = $folderEntityName;
     }
-    
-    
+
     /**
      * Returns the fully qualified folder entity classname
-     * 
+     *
      * @return string
      */
     public function getFolderEntityName()
     {
-        return $this->_folderEntityName;
-    }
-    
-    
-    /**
-     * Sets filelib
-     *
-     * @param  \Xi_Filelib                   $filelib
-     * @return \Xi\Filelib\Backend\Doctrine2Backend
-     */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib)
-    {
-        $this->_filelib = $filelib;
-
-        return $this;
+        return $this->folderEntityName;
     }
 
     /**
-     * Returns filelib
-     *
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @param  integer    $id
+     * @return array|null
      */
-    public function getFilelib()
+    protected function doFindFile($id)
     {
-        return $this->_filelib;
+        return $this->em->find($this->fileEntityName, $id);
     }
 
     /**
-     * Finds a file
-     *
-     * @param  integer                        $id
-     * @return array|false
+     * @param  Folder     $folder
+     * @param  string     $filename
+     * @return array|null
      */
-    public function findFile($id)
+    public function doFindFileByFilename(Folder $folder, $filename)
     {
-        $file = $this->_em->find($this->_fileEntityName, $id);
-
-        if (!$file) {
-            return false;
-        }
-
-        return $this->_fileToArray($file);
+        return $this->em->getRepository($this->fileEntityName)->findOneBy(array(
+            'folder' => $folder->getId(),
+            'name'   => $filename,
+        ));
     }
 
-
-    public function findFileByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
-    {
-        $folderEntity = $this->_em->find($this->_folderEntityName, $folder->getId());
-                
-        $query = $this->_em->createQuery(
-            'SELECT f FROM ' . $this->getFileEntityName() . ' f WHERE f.folder = :folder
-             AND f.name = :filename'
-        );
-        
-        $query->setParameter('folder', $folderEntity);
-                        
-        $query->setParameter('filename', $filename);
-
-        $file = $query->getResult();
-
-        
-        if (!$file) {
-            return false;
-        }
-
-        return $this->_fileToArray($file[0]);
-    }
-    
-    
-    
     /**
-     * Finds all files
-     *
-     * @return \Xi\Filelib\File\FileIterator
+     * @return array
      */
-    public function findAllFiles()
+    protected function doFindAllFiles()
     {
-        $qb = $this->_em->createQueryBuilder();
-
+        $qb = $this->em->createQueryBuilder();
         $qb->select('f')
-        ->from($this->_fileEntityName, 'f')
-        ->orderBy('f.id', 'ASC');
+           ->from($this->fileEntityName, 'f')
+           ->orderBy('f.id', 'ASC');
 
-        $files = array();
-
-        foreach ($qb->getQuery()->getResult() as $file) {
-            $files[] = $this->_fileToArray($file);
-        }
-
-        return $files;
+        return $qb->getQuery()->getResult();
     }
 
     /**
-     * Finds a file
-     *
-     * @param  \Xi\Filelib\Folder\Folder       $folder
-     * @return \Xi\Filelib\File\FileIterator
+     * @param  integer $id
+     * @return array
      */
-    public function findFilesIn(\Xi\Filelib\Folder\Folder $folder)
+    protected function doFindFilesIn($id)
     {
-        $qb = $this->_em->createQueryBuilder();
-
-        $qb->select('f')
-        ->from($this->_fileEntityName, 'f')
-        ->where('f.folder = :folder');
-
-        $qb->setParameter('folder', $folder->getId());
-
-        $files = array();
-        
-        foreach ($qb->getQuery()->getResult() as $file) {
-            $files[] = $this->_fileToArray($file);
-        }
-
-        return $files;
+        return $this->em->getRepository($this->fileEntityName)->findBy(array(
+            'folder' => $id,
+        ));
     }
 
     /**
-     * Updates a file
-     *
-     * @param  \Xi\Filelib\File\File  $file
-     * @throws \Xi\Filelib\FilelibException When fails
+     * @param  File    $file
+     * @return boolean
      */
-    public function updateFile(\Xi\Filelib\File\File $file)
+    protected function doUpdateFile(File $file)
     {
-        try {
-            $file->setLink($file->getProfileObject()->getLinker()->getLink($file, true));
-                        
-            $fileRow = $this->_em->getReference($this->_fileEntityName,
-            $file->getId());
-                        
-            $fileRow->setFolder($this->_em->getReference($this->_folderEntityName,
-            $file->getFolderId()));
+        $entity = $this->getFileReference($file);
+        $entity->setFolder($this->getFolderReference($file->getFolderId()));
+        $entity->setMimetype($file->getMimetype());
+        $entity->setProfile($file->getProfile());
+        $entity->setSize($file->getSize());
+        $entity->setName($file->getName());
+        $entity->setLink($file->getLink());
+        $entity->setDateUploaded($file->getDateUploaded());
 
-            $fileRow->setMimetype($file->getMimetype());
-            $fileRow->setProfile($file->getProfile());
-            $fileRow->setSize($file->getSize());
-            $fileRow->setName($file->getName());
-            $fileRow->setLink($file->getLink());
-            $fileRow->setDateUploaded($file->getDateUploaded());
-            
-            $this->_em->flush();
-            
-        } catch (Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
-        }
-        
+        $this->em->flush();
+
+        return true;
     }
 
     /**
-     * Deletes a file
-     *
-     * @param  \Xi\Filelib\File\File  $file
-     * @throws \Xi\Filelib\FilelibException When fails
+     * @param  File    $file
+     * @return boolean
      */
-    public function deleteFile(\Xi\Filelib\File\File $file)
+    protected function doDeleteFile(File $file)
     {
-        try {
-            $fileRow = $this->_em->getReference($this->_fileEntityName, $file->getId());
-            $this->_em->remove($fileRow);
-            $this->_em->flush();
-        } catch (Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
-        }
+        $this->em->remove($this->getFileReference($file));
+        $this->em->flush();
+
+        return true;
     }
 
     /**
-     * Finds folder
-     *
-     * @param  integer                          $id
-     * @return array|false
+     * @param  integer     $id
+     * @return Folder|null
      */
-    public function findFolder($id)
+    protected function dofindFolder($id)
     {
-        $folder = $this->_em->find($this->_folderEntityName, $id);
-
-        if(!$folder) {
-            return false;
-        }
-                
-        return $this->_folderToArray($folder);
+        return $this->em->find($this->folderEntityName, $id);
     }
 
     /**
-     * Finds folder by url
-     *
-     * @param  integer                          $id
-     * @return \Xi\Filelib\Folder\Folder|false
+     * @param  string     $url
+     * @return array|null
      */
-    public function findFolderByUrl($url)
+    protected function doFindFolderByUrl($url)
     {
-        $folder = $this->_em->getRepository($this->_folderEntityName)->findOneBy(array(
+        return $this->em->getRepository($this->folderEntityName)->findOneBy(array(
             'url' => $url,
         ));
-                
-        if(!$folder) {
-            return false;
-        }
-                
-        return $this->_folderToArray($folder);
     }
-    
-    
-    
+
     /**
-     * Finds the root folder
-     *
-     * @return \Xi\Filelib\Folder\Folder
+     * @return object Folder entity
      */
-    public function findRootFolder()
+    protected function doFindRootFolder()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
         $qb->select('f')
-        ->from($this->_folderEntityName, 'f')
-        ->where('f.parent IS NULL');
+           ->from($this->folderEntityName, 'f')
+           ->where('f.parent IS NULL');
 
         try {
-            $folder = $qb->getQuery()->getSingleResult();    
-        } catch(\Doctrine\ORM\NoResultException $e) {
-            
+            $folder = $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $e) {
             $className = $this->getFolderEntityName();
-            
+
             $folder = new $className();
             $folder->setName('root');
             $folder->setUrl('');
             $folder->removeParent();
-            $this->_em->persist($folder);
-            $this->_em->flush();        
+
+            $this->em->persist($folder);
+            $this->em->flush();
         }
-        
-        return $this->_folderToArray($folder);       
-        
+
+        return $folder;
     }
 
     /**
-     * Finds subfolders of a folder
-     *
-     * @param  \Xi\Filelib\Folder\Folder         $id
-     * @return \Xi\Filelib\Folder\FolderIterator
+     * @param  integer $id
+     * @return array
      */
-    public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
+    protected function doFindSubFolders($id)
     {
-        $qb = $this->_em->createQueryBuilder();
-
-        $qb->select('f')
-        ->from($this->_folderEntityName, 'f')
-        ->where('f.parent = :folder');
-
-        $qb->setParameter('folder', $folder->getId());
-
-        $folders = array();
-
-        foreach ($qb->getQuery()->getResult() as $folderRow) {
-            $folders[] = $this->_folderToArray($folderRow);
-        }
-
-        return $folders;
+        return $this->em->getRepository($this->folderEntityName)->findBy(array(
+            'parent' => $id,
+        ));
     }
 
     /**
-     * Creates a folder
-     *
-     * @param  \Xi\Filelib\Folder\Folder $folder
-     * @return \Xi\Filelib\Folder\Folder Created folder
-     * @throws \Xi\Filelib\FilelibException  When fails
+     * @param  Folder $folder
+     * @return Folder
      */
-    public function createFolder(\Xi\Filelib\Folder\Folder $folder)
+    protected function doCreateFolder(Folder $folder)
     {
-        try {
-            $folderRow = new $this->_folderEntityName();
+        $folderRow = new $this->folderEntityName();
 
-            if ($folder->getParentId()) {
-                $folderRow->setParent($this->_em->getReference($this->_folderEntityName,
-                $folder->getParentId()));
-            }
-
-            $folderRow->setName($folder->getName());
-            $folderRow->setUrl($folder->getUrl());
-                        
-            $this->_em->persist($folderRow);
-            $this->_em->flush();
-
-            $folder->setId($folderRow->getId());
-
-            return $folder;
-        } catch (Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
+        if ($folder->getParentId()) {
+            $folderRow->setParent($this->getFolderReference(
+                $folder->getParentId()
+            ));
         }
+
+        $folderRow->setName($folder->getName());
+        $folderRow->setUrl($folder->getUrl());
+
+        $this->em->persist($folderRow);
+        $this->em->flush();
+
+        $folder->setId($folderRow->getId());
+
+        return $folder;
     }
 
     /**
-     * Updates a folder
-     *
-     * @param  \Xi\Filelib\Folder\Folder $folder
-     * @throws \Xi\Filelib\FilelibException  When fails
+     * @param  Folder  $folder
+     * @return boolean
      */
-    public function updateFolder(\Xi\Filelib\Folder\Folder $folder)
+    protected function doUpdateFolder(Folder $folder)
     {
         try {
-            $folderRow = $this->_em->getReference($this->_folderEntityName,
-            $folder->getId());
+            $folderRow = $this->getFolderReference($folder->getId());
 
             if ($folder->getParentId()) {
-                $folderRow->setParent($this->_em->getReference($this->_folderEntityName,
-                $folder->getParentId()));
+                $folderRow->setParent($this->getFolderReference(
+                    $folder->getParentId()
+                ));
             } else {
                 $folderRow->removeParent();
             }
 
             $folderRow->setName($folder->getName());
             $folderRow->setUrl($folder->getUrl());
-            
 
-            $this->_em->flush();
-            
-        } catch (Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
+            $this->em->flush();
+
+            return true;
+        } catch (EntityNotFoundException $e) {
+            return false;
         }
     }
 
     /**
-     * Deletes a folder
-     *
-     * @param  \Xi\Filelib\Folder\Folder $folder
-     * @throws \Xi\Filelib\FilelibException  When fails
+     * @param  Folder  $folder
+     * @return boolean
      */
-    public function deleteFolder(\Xi\Filelib\Folder\Folder $folder)
+    protected function doDeleteFolder(Folder $folder)
     {
         try {
-            $folder = $this->_em->getReference($this->_folderEntityName, $folder->getId());
+            $folderEntity = $this->em->find($this->folderEntityName,
+                                            $folder->getId());
 
-            $this->_em->remove($folder);
-            $this->_em->flush();
-        } catch (Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
+            if (!$folderEntity) {
+                return false;
+            }
+
+            $this->em->remove($folderEntity);
+            $this->em->flush();
+
+            return true;
+        } catch (EntityNotFoundException $e) {
+            return false;
         }
     }
 
     /**
-     * Uploads a file
-     *
-     * @param  \Xi\Filelib\File\Upload\FileUpload $upload Fileobject to upload
-     * @param  \Xi\Filelib\Folder\Folder $folder Folder
-     * @return \Xi\Filelib\File\File   File item
-     * @throws \Xi\Filelib\FilelibException  When fails
+     * @param  File   $file
+     * @param  Folder $folder
+     * @return File
      */
-    public function upload(\Xi\Filelib\File\Upload\FileUpload $upload,
-    \Xi\Filelib\Folder\Folder $folder,
-    \Xi\Filelib\File\FileProfile $profile
-    ){
-        try {
-            
-            $conn = $this->_em->getConnection();
-            $conn->beginTransaction();
+    protected function doUpload(File $file, Folder $folder)
+    {
+        $self = $this;
 
-            $file = new $this->_fileEntityName();
+        return $this->em->transactional(function(EntityManager $em) use ($self, $file, $folder) {
+            $fileEntityName = $self->getFileEntityName();
 
-            $file->setFolder($this->_em->getReference($this->_folderEntityName,
-            $folder->getId()));
-            $file->setMimetype($upload->getMimeType());
-            $file->setSize($upload->getSize());
-            $file->setName($upload->getUploadFilename());
-            $file->setProfile($profile->getIdentifier());
-            $file->setDateUploaded($upload->getDateUploaded());
-            
-            $this->_em->persist($file);
+            $entity = new $fileEntityName;
+            $entity->setFolder($self->getFolderReference($folder->getId()));
+            $entity->setMimetype($file->getMimeType());
+            $entity->setSize($file->getSize());
+            $entity->setName($file->getName());
+            $entity->setProfile($file->getProfile());
+            $entity->setDateUploaded($file->getDateUploaded());
 
-            $this->_em->flush();
+            $em->persist($entity);
+            $em->flush();
 
-            $conn->commit();
-            
-            return $this->_fileToArray($file);
-            
-        } catch (Exception $e) {
-            $conn->rollback();
+            $file->setId($entity->getId());
+            $file->setFolderId($entity->getFolder()->getId());
 
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
-        }
+            return $file;
+        });
     }
 
     /**
      * File to array
      *
-     * @param  object $file
+     * @param  File  $file
      * @return array
      */
-    private function _fileToArray($file)
+    protected function fileToArray($file)
     {
         return array(
-            'id'        => $file->getId(),
-            'folder_id' => $file->getFolder() ? $file->getFolder()->getId() : null,
-            'mimetype'  => $file->getMimetype(),
-            'profile'   => $file->getProfile(),
-            'size'      => $file->getSize(),
-            'name'      => $file->getName(),
-            'link'      => $file->getLink(),
+            'id'            => $file->getId(),
+            'folder_id'     => $file->getFolder()
+                                   ? $file->getFolder()->getId()
+                                   : null,
+            'mimetype'      => $file->getMimetype(),
+            'profile'       => $file->getProfile(),
+            'size'          => $file->getSize(),
+            'name'          => $file->getName(),
+            'link'          => $file->getLink(),
             'date_uploaded' => $file->getDateUploaded(),
         );
     }
@@ -502,16 +367,38 @@ class Doctrine2Backend extends AbstractBackend
     /**
      * Folder to array
      *
-     * @param  object $folder
+     * @param  Folder $folder
      * @return array
      */
-    private function _folderToArray($folder)
+    protected function folderToArray($folder)
     {
         return array(
             'id'        => $folder->getId(),
-            'parent_id' => $folder->getParent() ? $folder->getParent()->getId() : null,
+            'parent_id' => $folder->getParent()
+                               ? $folder->getParent()->getId()
+                               : null,
             'name'      => $folder->getName(),
-            'url' => $folder->getUrl(),
+            'url'       => $folder->getUrl(),
         );
+    }
+
+    /**
+     * @param  File        $file
+     * @return object|null
+     */
+    private function getFileReference(File $file)
+    {
+        return $this->em->getReference($this->fileEntityName, $file->getId());
+    }
+
+    /**
+     * NOTE: Should be private!
+     *
+     * @param  integer     $id
+     * @return object|null
+     */
+    public function getFolderReference($id)
+    {
+        return $this->em->getReference($this->folderEntityName, $id);
     }
 }

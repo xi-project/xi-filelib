@@ -27,6 +27,8 @@ class BeautifurlLinker extends AbstractLinker implements Linker
 
     private $slugifier;
     
+    private $slugify = true;
+        
     /**
      * Sets whether the root folder is excluded from beautifurls.
      *
@@ -56,6 +58,18 @@ class BeautifurlLinker extends AbstractLinker implements Linker
         return $this->slugifier;
     }
 
+    
+    public function setSlugify($slugify)
+    {
+        $this->slugify = $slugify;
+    }
+    
+    
+    public function getSlugify()
+    {
+        return $this->slugify;
+    }
+    
 
 
     public function getLinkVersion(File $file, VersionProvider $version)
@@ -89,13 +103,14 @@ class BeautifurlLinker extends AbstractLinker implements Linker
                 $beautifurl[] = $folder->getName();
             }
 
-            $slugifier = $this->getSlugifier();
             
-            array_walk($beautifurl, function(&$frag) use ($slugifier) {
-                $frag = $slugifier->slugify($frag);
-            });
+            if ($this->getSlugify()) {
+                $slugifier = $this->getSlugifier();
+                array_walk($beautifurl, function(&$frag) use ($slugifier) {
+                    $frag = $slugifier->slugify($frag);
+                });
+            }
             
-            // $beautifurl = $this->getSlugifier()->slugify($beautifurl);
             
             $beautifurl[] = $file->getName();
 

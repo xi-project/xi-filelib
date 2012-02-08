@@ -2,9 +2,13 @@
 
 namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
+use Doctrine\ORM\Mapping;
+
 /**
  * @Entity
- * @Table(name="xi_filelib_file")
+ * @Table(name="xi_filelib_file",
+ *     uniqueConstraints={@UniqueConstraint(name="folderid_filename_unique",columns={"folder_id","filename"})}
+ * )
  */
 class File
 {
@@ -43,7 +47,7 @@ class File
     protected $name;
 
     /**
-     * @Column(name="filelink", type="string", length=1000, nullable=true)
+     * @Column(name="filelink", type="string", length=1000, nullable=true, unique=true)
      */
     protected $link;
     

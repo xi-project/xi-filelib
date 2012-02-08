@@ -13,6 +13,7 @@ interface FileOperator
      * Returns an instance of the currently set fileitem class
      * 
      * @param mixed $data Data as array or a file instance
+     * @return File
      */
     public function getInstance($data = null);
     

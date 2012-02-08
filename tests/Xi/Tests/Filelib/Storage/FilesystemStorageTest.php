@@ -189,8 +189,10 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
          
     }
     
-
-    public function vrsionStoreAndRetrieveAndDeleteShouldWorkInHarmony()
+    /**
+     * @test
+     */
+    public function versionStoreAndRetrieveAndDeleteShouldWorkInHarmony()
     {
          $this->storage->storeVersion($this->file, $this->versionProvider, $this->fileResource);
          

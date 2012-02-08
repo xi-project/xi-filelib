@@ -13,9 +13,7 @@ class FinfoTypeResolver implements TypeResolver
     {
         $fileinfo = new finfo(FILEINFO_MIME_TYPE);
         $mimeType = $fileinfo->file($file->getRealPath());
-
         return $mimeType;
-        
     }
     
     

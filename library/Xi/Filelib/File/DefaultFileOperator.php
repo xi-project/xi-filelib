@@ -132,7 +132,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         $this->unpublish($file);        
         
+        $file->setLink($file->getProfileObject()->getLinker()->getLink($file, true));
+                
         $this->getBackend()->updateFile($file);
+
         $this->storeCached($file->getId(), $file);
 
         if($this->isReadableByAnonymous($file)) {
@@ -282,7 +285,8 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         if(!$upload instanceof \Xi\Filelib\File\Upload\FileUpload) {
             $upload = $this->prepareUpload($upload);
         }
-
+        
+        
         return $upload->upload($folder, $profile);
     }
 

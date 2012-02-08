@@ -2,9 +2,9 @@
 
 namespace Xi\Filelib;
 
-use \Xi\Filelib\Cache;
-use \Xi\Filelib\Folder\FolderOperator;
-use \Xi\Filelib\Folder\FileOperator;
+use Xi\Filelib\Cache,
+    Xi\Filelib\Folder\FolderOperator,
+    Xi\Filelib\File\FileOperator;
 
 /**
  * Xi filelib
