@@ -47,7 +47,7 @@ class File
     protected $name;
 
     /**
-     * @ORM\Column(name="filelink", type="string", length=1000, nullable=true, unique=true)
+     * @ORM\Column(name="filelink", type="string", length=255, nullable=true, unique=true)
      */
     protected $link;
     
