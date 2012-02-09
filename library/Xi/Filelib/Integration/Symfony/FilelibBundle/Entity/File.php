@@ -58,7 +58,7 @@ class File
     
     /**
      * @ORM\ManyToOne(targetEntity="Folder")
-     * @ORM\JoinColumn(name="folder_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
      */
     protected $folder;
    
