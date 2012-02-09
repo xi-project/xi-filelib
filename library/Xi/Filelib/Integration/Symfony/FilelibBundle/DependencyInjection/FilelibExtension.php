@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\Loader;
 
 /**
  * FilelibExtension
@@ -55,7 +56,11 @@ class FilelibExtension extends Extension
         
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-         
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yml');
+
+        
                 
 
         // die();

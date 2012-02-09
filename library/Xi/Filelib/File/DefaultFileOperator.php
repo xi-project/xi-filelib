@@ -231,7 +231,6 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     public function prepareUpload($path)
     {
         $upload = new \Xi\Filelib\File\Upload\FileUpload($path);
-        $upload->setFilelib($this->getFilelib());
         return $upload;
     }
 
@@ -286,9 +285,58 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $upload = $this->prepareUpload($upload);
         }
         
+        if (!$this->getFilelib()->getAcl()->isWriteable($folder)) {
+            throw new \Xi\Filelib\FilelibException("Folder '{$folder->getId()}'not writeable");
+        }
         
-        return $upload->upload($folder, $profile);
+        $profileObj = $this->getFilelib()->file()->getProfile($profile);
+        foreach($profileObj->getPlugins() as $plugin) {
+            $upload = $plugin->beforeUpload($upload);
+        }
+                
+        $file = $this->getFilelib()->getFileOperator()->getInstance(array(
+            'folder_id' => $folder->getId(),
+            'mimetype' => $upload->getMimeType(),
+            'size' => $upload->getSize(),
+            'name' => $upload->getUploadFilename(),
+            'profile' => $profile,
+            'date_uploaded' => $upload->getDateUploaded(),
+        ));
+        
+        $this->getFilelib()->getBackend()->upload($file, $folder);
+        
+        // @todo: identity map, unit o work etc
+        if(!$file->getId()) {
+            throw new \Xi\Filelib\FilelibException("Upload failed");
+        }
+                
+        $file->setLink($profileObj->getLinker()->getLink($file, true));
+        
+        $this->getFilelib()->getBackend()->updateFile($file);
+        
+        try {
+            
+            $this->getFilelib()->getStorage()->store($file, $upload->getRealPath());
+            
+            foreach($file->getProfileObject()->getPlugins() as $plugin) {
+                $plugin->afterUpload($file);
+            }
+            
+            if($this->getFilelib()->getAcl()->isReadableByAnonymous($file)) {
+                $this->getFilelib()->getFileOperator()->publish($file);
+            }
+            
+        } catch(Exception $e) {
+            
+            // Maybe log here?
+            throw $e;
+        }
+
+
+        return $file;
+
     }
+    
 
 
     /**
