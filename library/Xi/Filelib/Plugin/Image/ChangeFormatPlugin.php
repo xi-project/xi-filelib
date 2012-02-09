@@ -83,6 +83,7 @@ class ChangeFormatPlugin extends \Xi\Filelib\Plugin\AbstractPlugin
     
     public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload)
     {
+        
         $mimetype = $upload->getMimeType();
         
         // @todo: use filebanksta type detection
@@ -90,6 +91,8 @@ class ChangeFormatPlugin extends \Xi\Filelib\Plugin\AbstractPlugin
             return $upload;   
         }
 
+        
+                
         $img = new Imagick($upload->getPathname());
         
         foreach($this->getImageMagickOptions() as $key => $value) {
