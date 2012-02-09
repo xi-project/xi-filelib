@@ -2,9 +2,6 @@
 
 namespace Xi\Filelib\Integration\Symfony\FilelibBundle\Twig\Extension;
 
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Bundle\TwigBundle\Loader\FilesystemLoader;
-
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileItem;
 
@@ -29,15 +26,6 @@ class FilelibExtension extends \Twig_Extension
         );
     }
     
-    
-    public function getFilters()
-    {
-        return array(
-            'ceil' => new \Twig_Filter_Function('ceil'),
-        );
-    }
-    
-
 
     /**
      * Returns the name of the extension.
@@ -46,7 +34,7 @@ class FilelibExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'dporssi';
+        return 'filelib';
     }
     
     
@@ -57,10 +45,9 @@ class FilelibExtension extends \Twig_Extension
         }
         
         if (!$file instanceof FileItem) {
-            return '';
+            throw new \InvalidArgumentException('Invalid file');
         }        
         
-
         return $this->filelib->getFileOperator()->getUrl($file, array('version' => $version));
     }
     
