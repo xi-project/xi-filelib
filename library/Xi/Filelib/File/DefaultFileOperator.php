@@ -231,7 +231,6 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     public function prepareUpload($path)
     {
         $upload = new \Xi\Filelib\File\Upload\FileUpload($path);
-        $upload->setFilelib($this->getFilelib());
         return $upload;
     }
 
