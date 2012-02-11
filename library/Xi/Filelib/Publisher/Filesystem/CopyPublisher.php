@@ -42,9 +42,11 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
             
         $link = $this->getPublicRoot() . '/' . $file->getProfileObject()->getLinker()->getLinkVersion($file, $version);
         
+                
         if(!is_file($link)) {
 
             $path = dirname($link);
+            
             if(!is_dir($path)) {
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
@@ -58,7 +60,7 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
     public function unpublish(\Xi\Filelib\File\File $file)
     {
         $link = $this->getPublicRoot() . '/' . $file->getProfileObject()->getLinker()->getLink($file);
-        
+                        
         if(is_file($link)) {
             unlink($link);
         }
