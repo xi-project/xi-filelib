@@ -16,7 +16,11 @@ use \Xi\Filelib\FileLibrary,
 interface Linker
 {
 
-    
+    /**
+     * Sets filelib
+     * 
+     * @return Linker
+     */
     public function setFilelib(FileLibrary $filelib);
     
     /**
@@ -46,6 +50,8 @@ interface Linker
     
     /**
      * Initialization is run when a linker is set to filelib.
+     * 
+     * @return Linker
      */
     public function init();
     
