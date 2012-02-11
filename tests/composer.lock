@@ -1,12 +1,24 @@
 {
-    "hash": "aa9b03d37ef753a8132d30a199d2d3a1",
+    "hash": "dda1ac66a1cf85d3aa16b7835e176b87",
     "packages": [
         {
-            "package": "zendframework\/registry",
-            "version": "2.0.0beta2"
+            "package": "symfony\/http-foundation",
+            "version": "v2.0.9"
         },
         {
-            "package": "zendframework\/locale",
+            "package": "doctrine\/common",
+            "version": "2.1.4"
+        },
+        {
+            "package": "doctrine\/dbal",
+            "version": "2.1.5"
+        },
+        {
+            "package": "doctrine\/orm",
+            "version": "2.1.5"
+        },
+        {
+            "package": "zendframework\/filter",
             "version": "2.0.0beta2"
         },
         {
@@ -14,24 +26,12 @@
             "version": "2.0.0beta2"
         },
         {
-            "package": "zendframework\/filter",
+            "package": "zendframework\/locale",
             "version": "2.0.0beta2"
         },
         {
-            "package": "doctrine\/orm",
-            "version": "2.1.5"
-        },
-        {
-            "package": "doctrine\/dbal",
-            "version": "2.1.5"
-        },
-        {
-            "package": "doctrine\/common",
-            "version": "2.1.4"
-        },
-        {
-            "package": "symfony\/http-foundation",
-            "version": "v2.0.9"
+            "package": "zendframework\/registry",
+            "version": "2.0.0beta2"
         }
     ]
 }
