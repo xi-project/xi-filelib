@@ -6,7 +6,6 @@ namespace Xi\Filelib\Backend\ZendDb;
  * Folder row
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class FolderRow extends \Zend_Db_Table_Row_Abstract
