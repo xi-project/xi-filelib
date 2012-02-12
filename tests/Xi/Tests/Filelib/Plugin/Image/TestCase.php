@@ -2,7 +2,7 @@
 
 namespace Xi\Tests\Filelib\Plugin\Image;
 
-use \Imagick;
+use Imagick;
 
 class TestCase extends \Xi\Tests\Filelib\TestCase
 {
