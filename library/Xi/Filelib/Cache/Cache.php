@@ -11,9 +11,5 @@ interface Cache
     public function remove($id);
     
     public function contains($id);
-        
-    public function setAutoSerialize($autoSerialize);
-    
-    public function getAutoSerialize();
     
 }
