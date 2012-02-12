@@ -13,7 +13,7 @@ class ChangeFormatPluginTest extends TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Plugin\Image\ChangeFormatPlugin'));
-        $this->assertArrayHasKey('Xi\Filelib\Plugin\Image\AbstractImagePlugin', class_parents('Xi\Filelib\Plugin\Image\ChangeFormatPlugin'));
+        $this->assertArrayHasKey('Xi\Filelib\Plugin\AbstractPlugin', class_parents('Xi\Filelib\Plugin\Image\ChangeFormatPlugin'));
         
     }
     

@@ -3,6 +3,8 @@
 namespace Xi\Filelib\Plugin\Image;
 
 use \Imagick;
+use Xi\Filelib\Plugin\AbstractPlugin;
+use Xi\Filelib\Configurator;
 
 /**
  * Changes images' formats before uploading them.
@@ -11,9 +13,30 @@ use \Imagick;
  * @package Xi_Filelib
  *
  */
-class ChangeFormatPlugin extends AbstractImagePlugin
+class ChangeFormatPlugin extends AbstractPlugin
 {
     
+    protected $imageMagickHelper;
+        
+    public function __construct($options = array())
+    {
+        parent::__construct($options);
+        Configurator::setOptions($this->getImageMagickHelper(), $options);
+    }
+    
+    
+    /**
+     * Returns ImageMagick helper
+     * 
+     * @return ImageMagickHelper
+     */
+    public function getImageMagickHelper()
+    {
+        if (!$this->imageMagickHelper) {
+            $this->imageMagickHelper = new ImageMagickHelper();
+        }
+        return $this->imageMagickHelper;        
+    }
     
     /**
      * Sets target file's extension
@@ -46,10 +69,10 @@ class ChangeFormatPlugin extends AbstractImagePlugin
             return $upload;   
         }
                 
-        $img = $this->createImagick($upload->getPathname());
-        
-        $this->execute($img);
-        
+        $img = new Imagick($upload->getPathname());
+
+        $this->getImageMagickHelper()->execute($img);
+                
         $tempnam = $this->getFilelib()->getTempDir() . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);
 

@@ -2,7 +2,8 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use \Imagick;
+use Imagick;
+use Xi\Filelib\Configurator;
 
 /**
  * Versions an image
@@ -11,11 +12,42 @@ use \Imagick;
  * @package Xi_Filelib
  *
  */
-class VersionPlugin extends AbstractImagePlugin
+class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider
 {
     const IMAGEMAGICK_LIFETIME = 5;
     
     protected $_providesFor = array('image');
+
+    protected $_commands = array();
+    
+    /**
+     * @var array Scale options
+     */
+    protected $_scaleOptions = array();
+
+    protected $imageMagickHelper;
+    
+    
+    
+    public function __construct($options = array())
+    {
+        parent::__construct($options);
+        Configurator::setOptions($this->getImageMagickHelper(), $options);
+    }
+    
+    
+    /**
+     * Returns ImageMagick helper
+     * 
+     * @return ImageMagickHelper
+     */
+    public function getImageMagickHelper()
+    {
+        if (!$this->imageMagickHelper) {
+            $this->imageMagickHelper = new ImageMagickHelper();
+        }
+        return $this->imageMagickHelper;        
+    }
 
     /**
      * Creates and stores version
@@ -31,8 +63,8 @@ class VersionPlugin extends AbstractImagePlugin
         // $img = new Imagick($this->getFilelib()->getStorage()->retrieve($file)->getPathname());
         $img = $this->_getImageMagick($file);
 
-        $this->execute($img);
-     
+        $this->getImageMagickHelper()->execute($img);
+             
         $tmp = $this->getFilelib()->getTempDir() . '/' . uniqid('', true);
         $img->writeImage($tmp);
         

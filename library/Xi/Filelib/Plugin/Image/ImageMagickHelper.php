@@ -2,21 +2,27 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use Xi\Filelib\Plugin\AbstractPlugin;
 use Imagick;
+use Xi\Filelib\Configurator;
 
 /**
- * Abstract image plugin
+ * Imagemagick helper
  *
  * @author pekkis
  */
-class AbstractImagePlugin extends AbstractPlugin
+class ImageMagickHelper
 {
 
     protected $_commands = array();
     
     protected $_imageMagickOptions = array();
 
+    
+    public function __construct($options = array())
+    {
+        Configurator::setConstructorOptions($this, $options);
+    }
+    
     
     public function addCommand(Command\Command $command)
     {
@@ -30,7 +36,7 @@ class AbstractImagePlugin extends AbstractPlugin
     
     public function setCommands(array $commands = array())
     {
-        foreach($commands as $command)
+        foreach ($commands as $command)
         {
             $command = new $command['type']($command);
             $this->addCommand($command);
@@ -72,8 +78,6 @@ class AbstractImagePlugin extends AbstractPlugin
         }
 
     }
-    
-    
     
     /**
      * Creates a new imagick resource from path
