@@ -11,54 +11,9 @@ use \Imagick;
  * @package Xi_Filelib
  *
  */
-class ChangeFormatPlugin extends \Xi\Filelib\Plugin\AbstractPlugin
+class ChangeFormatPlugin extends AbstractImagePlugin
 {
-    protected $_commands = array();
     
-    protected $_imageMagickOptions = array();
-    
-    public function addCommand(Command\Command $command)
-    {
-        $this->_commands[] = $command;
-    }
-    
-    public function getCommands()
-    {
-        return $this->_commands;
-    }
-    
-    public function setCommands(array $commands = array())
-    {
-        foreach($commands as $command)
-        {
-            $command = new $command['type']($command);
-            $this->addCommand($command);
-        }
-
-    }
-   
-    
-    /**
-     * Sets ImageMagick options
-     *
-     * @param array $imageMagickOptions
-     */
-    public function setImageMagickOptions($imageMagickOptions)
-    {
-        $this->_imageMagickOptions = $imageMagickOptions;
-    }
-
-    
-
-    /**
-     * Return ImageMagick options
-     *
-     * @return array
-     */
-    public function getImageMagickOptions()
-    {
-        return $this->_imageMagickOptions;
-    }
     
     /**
      * Sets target file's extension
@@ -90,20 +45,10 @@ class ChangeFormatPlugin extends \Xi\Filelib\Plugin\AbstractPlugin
         if(!preg_match("/^image/", $mimetype)) {
             return $upload;   
         }
-
-        
                 
-        $img = new Imagick($upload->getPathname());
+        $img = $this->createImagick($upload->getPathname());
         
-        foreach($this->getImageMagickOptions() as $key => $value) {
-            $method = 'set' . $key;
-            $img->$method($value);
-        }
-        
-        
-        foreach($this->getCommands() as $command) {
-            $command->execute($img);
-        }
+        $this->execute($img);
         
         $tempnam = $this->getFilelib()->getTempDir() . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);
