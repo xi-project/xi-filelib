@@ -6,10 +6,6 @@ use Xi\Filelib\Configurator;
 
 class ConfiguratorTest extends \Xi\Tests\TestCase
 {
-    public function setUp()
-    {
-        
-    }
 
     /**
      * @test
@@ -126,12 +122,8 @@ class ConfiguratorTest extends \Xi\Tests\TestCase
             
         );
         
-        
-        
-        
         Configurator::setConstructorOptions($mock, $arr);
-     
-                    }
+    }
     
     
     
