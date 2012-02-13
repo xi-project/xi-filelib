@@ -165,9 +165,6 @@ class ZendAclTest extends TestCase
         $this->assertEquals($role, $acl->getRole());
         $this->assertEquals($anonymousRole, $acl->getAnonymousRole());
         
-        
-        
-        
     }
     
     
@@ -211,11 +208,15 @@ class ZendAclTest extends TestCase
         
     }
     
-    
+    /**
+     * @test
+     * @expectedException \InvalidArgumentException
+     */
     public function getResourceIdentifierShouldThrowExceptionForNonIdentifiableObjects()
     {
+        $diterator = new \DirectoryIterator(ROOT_TESTS);
         
-        
+        return $this->acl->getResourceIdentifier($diterator);
         
     }
     
@@ -287,6 +288,10 @@ class ZendAclTest extends TestCase
         $res = FolderItem::create($res);        
         $this->assertEquals($readableByAnonymous, $this->acl->isReadableByAnonymous($res));
     }
+    
+    
+    
+    
     
     
 }

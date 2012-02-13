@@ -124,7 +124,7 @@ class ZendAcl implements Acl
         }
         
         $class = get_class($resource);
-        throw new \Xi\Filelib\FilelibException("Resource of class '{$class}' not identified");
+        throw new \InvalidArgumentException("Resource of class '{$class}' not identified");
         
     }
     

@@ -2,44 +2,46 @@
 
 namespace Xi\Filelib\Plugin\Image\Command;
 
-use \Imagick;
-
+use Imagick;
+use BadMethodCallException;
 
 class ExecuteMethodCommand extends AbstractCommand
 {
-    private $_method;
 
-    private $_parameters = array();
+    private $method;
+    private $parameters = array();
 
-    
     public function setMethod($method)
     {
-        $this->_method = $method;
+        $this->method = $method;
+        return $this;
     }
-    
-    
+
     public function getMethod()
     {
-        return $this->_method;
+        return $this->method;
     }
-    
-    
-    public function setParameters($parameters)
+
+    public function setParameters(array $parameters)
     {
-        $this->_parameters = $parameters;
+        $this->parameters = $parameters;
+        return $this;
     }
-    
-    
+
     public function getParameters()
     {
-        return $this->_parameters;
+        return $this->parameters;
     }
-    
-    
+
     public function execute(Imagick $img)
     {
-        call_user_func_array(array($img, $this->getMethod()), $this->getParameters());
+        $callable = array($img, $this->getMethod());
+
+        if (!is_callable($callable)) {
+            throw new BadMethodCallException(sprintf("Method '%s' not callable", $this->getMethod()));
+        }
+
+        call_user_func_array($callable, $this->getParameters());
     }
-    
-    
+
 }

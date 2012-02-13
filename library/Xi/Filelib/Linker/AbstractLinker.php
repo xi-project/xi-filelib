@@ -2,8 +2,9 @@
 
 namespace Xi\Filelib\Linker;
 
-use \Xi\Filelib\Linker\Linker,
-    \Xi\Filelib\FileLibrary
+use Xi\Filelib\Linker\Linker,
+    Xi\Filelib\FileLibrary,
+    Xi\Filelib\Configurator
     ;
 
 /**
@@ -17,7 +18,7 @@ abstract class AbstractLinker implements Linker
     
     public function __construct($options = array())
     {
-        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
+        Configurator::setConstructorOptions($this, $options);
     }
     
     /**
@@ -27,11 +28,14 @@ abstract class AbstractLinker implements Linker
 
     /**
      * Sets filelib
+     * 
+     * @return Linker
      *
      */
     public function setFilelib(FileLibrary $filelib)
     {
         $this->filelib = $filelib;
+        return $this;
     }
 
     /**
@@ -48,7 +52,9 @@ abstract class AbstractLinker implements Linker
      * Initialization is run once when linker is set to filelib
      */
     public function init()
-    { }
+    {
+        return $this;
+    }
     
 
 

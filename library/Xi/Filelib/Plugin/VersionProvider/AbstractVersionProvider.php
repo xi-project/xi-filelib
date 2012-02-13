@@ -26,6 +26,11 @@ abstract class AbstractVersionProvider extends \Xi\Filelib\Plugin\AbstractPlugin
      */
     protected $_extension;
     
+    
+    
+    abstract public function createVersion(\Xi\Filelib\File\File $file);
+    
+    
     /**
      * Registers a version to all profiles
      */
@@ -41,7 +46,8 @@ abstract class AbstractVersionProvider extends \Xi\Filelib\Plugin\AbstractPlugin
 
         foreach($this->getProvidesFor() as $fileType) {
             foreach($this->getProfiles() as $profile) {
-                $this->getFilelib()->file()->getProfile($profile)->addFileVersion($fileType, $this->getIdentifier(), $this);
+                $profile = $this->getFilelib()->getFileOperator()->getProfile($profile);
+                $profile->addFileVersion($fileType, $this->getIdentifier(), $this);
             }
         }
 
@@ -52,10 +58,12 @@ abstract class AbstractVersionProvider extends \Xi\Filelib\Plugin\AbstractPlugin
      * Sets identifier
      *
      * @param string $identifier
+     * @return VersionProvider
      */
     public function setIdentifier($identifier)
     {
         $this->_identifier = $identifier;
+        return $this;
     }
 
     /**
@@ -72,10 +80,12 @@ abstract class AbstractVersionProvider extends \Xi\Filelib\Plugin\AbstractPlugin
      * Sets file types for this version plugin.
      *
      * @param array $providesFor Array of file types
+     * @return VersionProvider
      */
     public function setProvidesFor(array $providesFor)
     {
         $this->_providesFor = $providesFor;
+        return $this;
     }
 
     /**
@@ -96,7 +106,7 @@ abstract class AbstractVersionProvider extends \Xi\Filelib\Plugin\AbstractPlugin
      */
     public function providesFor(\Xi\Filelib\File\File $file)
     {
-        if(in_array($this->getFilelib()->file()->getType($file), $this->getProvidesFor())) {
+        if(in_array($this->getFilelib()->getFileOperator()->getType($file), $this->getProvidesFor())) {
             if(in_array($file->getProfile(), $this->getProfiles())) {
                 return true;
             }
@@ -109,11 +119,13 @@ abstract class AbstractVersionProvider extends \Xi\Filelib\Plugin\AbstractPlugin
      * Sets file extension
      *
      * @param string $extension File extension
+     * @return VersionProvider
      */
     public function setExtension($extension)
     {
         $extension = str_replace('.', '', $extension);
         $this->_extension = $extension;
+        return $this;
     }
 
     /**
@@ -180,6 +192,8 @@ abstract class AbstractVersionProvider extends \Xi\Filelib\Plugin\AbstractPlugin
         $this->getFilelib()->getStorage()->deleteVersion($file, $this);
     }
 
+    
+    
 
 
 }

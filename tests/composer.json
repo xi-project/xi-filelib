@@ -1,4 +1,16 @@
 {
+
+    "autoload": {
+        "psr-0": {
+            "Xi\\Tests": "./",
+            "Xi\\Filelib": "../library/",
+            "Zend\\Filter": "./vendor/zendframework/filter/php",
+            "Zend\\Stdlib": "./vendor/zendframework/stdlib/php",
+            "Zend\\Locale": "./vendor/zendframework/locale/php",
+            "Zend": "./vendor/zendframework/registry/php"
+        }
+    },
+
     "require": {
         "doctrine/orm": "=2.1.5",
         "doctrine/dbal": "=2.1.5",

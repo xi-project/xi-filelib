@@ -2,6 +2,10 @@
 
 namespace Xi\Filelib\Plugin;
 
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\File\File;
+
 /**
  * Xi Filelib plugin interface
  *
@@ -13,21 +17,22 @@ interface Plugin
 {
 
     public function __construct($options = array());
-        
+
     /**
      * Sets filelib
      *
-     * @param \Xi_Filelib $filelib Filelib
+     * @param FileLibrary $filelib Filelib
+     * @return Plugin
      */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib);
+    public function setFilelib(FileLibrary $filelib);
 
     /**
      * Returns filelib
      *
-     * @return \Xi\Filelib\FileLibrary
+     * @return FileLibrary
      */
     public function getFilelib();
-    
+
     /**
      * Returns an array of profiles
      * 
@@ -39,6 +44,7 @@ interface Plugin
      * Sets profiles
      * 
      * @param array $profiles Array of profiles
+     * @return Plugin
      */
     public function setProfiles(array $profiles);
 
@@ -46,41 +52,40 @@ interface Plugin
      * Runs when plugin is added.
      */
     public function init();
-    
+
     /**
      * Runs before upload
      *
-     * @param \Xi\Filelib\File\Upload\FileUpload $upload
-     * @return \Xi\Filelib\File\Upload\FileUpload
+     * @param FileUpload $upload
+     * @return FileUpload
      */
-    public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload);
+    public function beforeUpload(FileUpload $upload);
 
     /**
      * Runs after succesful upload.
      *
-     * @param \Xi\Filelib\File\File $file
+     * @param File $file
      */
-    public function afterUpload(\Xi\Filelib\File\File $file);
+    public function afterUpload(File $file);
 
     /**
      * Runs after successful delete.
      *
-     * @param \Xi\Filelib\File\File $file
+     * @param File $file
      */
-    public function onDelete(\Xi\Filelib\File\File $file);
+    public function onDelete(File $file);
 
     /**
      * Runs on publish
      *
-     * @param \Xi\Filelib\File\File $file
+     * @param File $file
      */
-    public function onPublish(\Xi\Filelib\File\File $file);
+    public function onPublish(File $file);
 
     /**
      * Runs on unpublish
      *
-     * @param \Xi\Filelib\File\File $file
+     * @param File $file
      */
-    public function onUnpublish(\Xi\Filelib\File\File $file);
-
+    public function onUnpublish(File $file);
 }

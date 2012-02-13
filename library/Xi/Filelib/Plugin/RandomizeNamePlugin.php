@@ -2,21 +2,22 @@
 
 namespace Xi\Filelib\Plugin;
 
+use Xi\Filelib\File\Upload\FileUpload;
+
 /**
  * Randomizes all uploads' file names before uploading. Ensures that same file may be uploaded
  * to the same directory time and again
  *
- * @package Xi_Filelib
  * @author pekkis
  *
  */
-class RandomizeNamePlugin extends \Xi\Filelib\Plugin\AbstractPlugin
+class RandomizeNamePlugin extends AbstractPlugin
 {
 
     /**
      * @var string Prefix (for uniqid)
      */
-    protected $_prefix = '';
+    protected $prefix = '';
 
     /**
      * Sets prefix
@@ -25,7 +26,8 @@ class RandomizeNamePlugin extends \Xi\Filelib\Plugin\AbstractPlugin
      */
     public function setPrefix($prefix)
     {
-        $this->_prefix = $prefix;
+        $this->prefix = $prefix;
+        return $this;
     }
 
     /**
@@ -35,15 +37,17 @@ class RandomizeNamePlugin extends \Xi\Filelib\Plugin\AbstractPlugin
      */
     public function getPrefix()
     {
-        return $this->_prefix;
+        return $this->prefix;
     }
 
-    public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload)
+    public function beforeUpload(FileUpload $upload)
     {
-        $pinfo = pathinfo($upload->getOverrideFilename());
-        $newname = uniqid($this->getPrefix(), false);
+        $pinfo = pathinfo($upload->getUploadFilename());
+        $newname = uniqid($this->getPrefix(), true);
 
-        if(isset($pinfo['extension'])) {
+        $newname = str_replace('.', '_', $newname);
+
+        if (isset($pinfo['extension'])) {
             $newname .= '.' . $pinfo['extension'];
         }
 
@@ -52,6 +56,4 @@ class RandomizeNamePlugin extends \Xi\Filelib\Plugin\AbstractPlugin
     }
 
 }
-
-
 

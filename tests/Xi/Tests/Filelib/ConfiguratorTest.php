@@ -2,69 +2,50 @@
 
 namespace Xi\Tests\Filelib;
 
-
-class Phaker
-{
-    
-    public function setPuuppa($puuppa)
-    {
-        
-    }
-    
-    
-    public function setLoso($loso)
-    {
-        
-    }
-    
-    
-    
-    
-}
-
-
+use Xi\Filelib\Configurator;
 
 class ConfiguratorTest extends \Xi\Tests\TestCase
 {
-    public function setUp()
-    {
-        
-    }
 
-    public function testSetOptions()
+    /**
+     * @test
+     */
+    public function setOptionsShouldSetOptions()
     {
         
-        $mock = $this->getMock('\Xi\Tests\Filelib\Phaker');
+        $mock = $this->getMock('\Xi\Filelib\File\FileItem');
         $mock->expects($this->once())
-             ->method('setPuuppa')
-             ->with('tussi')
+             ->method('setName')
+             ->with('looooso')
              ->will($this->returnValue('1'))
              ;
         
         $mock->expects($this->exactly(0))
-             ->method('setLoso')
+             ->method('setMimetype')
              ->will($this->returnValue('1'));
              
         $arr = array(
-            'puuppa' => 'tussi',
-            'loco' => 'looooso'
+            'mimetypeee' => 'tussi',
+            'name' => 'looooso'
         );
         
         \Xi\Filelib\Configurator::setOptions($mock, $arr);
         
     }
 
-    
-    public function testSetOptionsEmpty()
+    /**
+     * @test
+     */
+    public function emptyOptionsShouldDoNothing()
     {
         $mock = $this->getMock('\Xi\Tests\Filelib\Phaker');
         $mock->expects($this->exactly(0))
-             ->method('setPuuppa')
+             ->method('setName')
              ->will($this->returnValue('1'))
              ;
         
         $mock->expects($this->exactly(0))
-             ->method('setLoso')
+             ->method('setMimetype')
              ->will($this->returnValue('1'));
              
         $arr = array();
@@ -72,54 +53,76 @@ class ConfiguratorTest extends \Xi\Tests\TestCase
         \Xi\Filelib\Configurator::setOptions($mock, $arr);
         
     }
+
     
     /**
-     * @expectedException \PHPUnit_Framework_Error
+     * @test
+     * @expectedException \InvalidArgumentException
      */ 
-    public function testSetOptionsInvalid()
+    public function setOptionsShouldThrowExceptioWithNonObjectSubject()
     {
-        $mock = $this->getMock('\Xi\Tests\Filelib\Phaker');
-        $mock->expects($this->exactly(0))
-             ->method('setPuuppa')
-             ->will($this->returnValue('1'))
-             ;
-        
-        $mock->expects($this->exactly(0))
-             ->method('setLoso')
-             ->will($this->returnValue('1'));
-             
-        $arr = array();
-        
-        \Xi\Filelib\Configurator::setOptions($mock, 'lussutilukset');
+        Configurator::setOptions('luuden', array());
+    }
+    
+   
+    /**
+     * @test
+     * @expectedException \InvalidArgumentException
+     */ 
+    public function setOptionsShouldThrowExceptioWithNonArrayOptions()
+    {
+        $mock = $this->getMock('Xi\Filelib\File\FileItem');
+        Configurator::setOptions($mock, 'lussutilukset');
+    }
+
+    
+    /**
+     * @test
+     * @expectedException \InvalidArgumentException
+     */ 
+    public function setConstructorOptionsShouldThrowExceptioWithNonObjectSubject()
+    {
+        Configurator::setConstructorOptions('lus', array());
+    }
+    
+   
+    /**
+     * @test
+     * @expectedException \InvalidArgumentException
+     */ 
+    public function setConstructorOptionsShouldThrowExceptioWithNonArrayOptions()
+    {
+        $mock = $this->getMock('Xi\Filelib\File\FileItem');
+        Configurator::setConstructorOptions($mock, 'xoo-xer');
     }
     
     
-    public function testSetConstructorOptions()
+    /**
+     * @test
+     */
+    public function constructorOptionsShouldRecurseToInnerClasses()
     {
-         $arr = array(
-            'puuppa' => 'tussi',
-         );
+                
+        $mock = $this->getMockBuilder('Xi\Tests\Filelib\File\FileItem')->setMethods(array('setName'))->getMock();
         
-        
-        $mock = $this->getMock('\Xi\Tests\Filelib\Phaker');
+                
         $mock->expects($this->exactly(1))
-             ->method('setPuuppa')
-             ->with($this->isInstanceOf('\Xi\Tests\Filelib\Phaker'))
+             ->method('setName')
+             ->with($this->isInstanceOf('Xi\Tests\Filelib\File\FileItem'))
              ->will($this->returnValue('1'))
              ;
 
         $arr = array(
-            'puuppa' => array(
-                'class' => '\\Xi\\Tests\\Filelib\\Phaker',
+            'name' => array(
+                'class' => 'Xi\Tests\Filelib\File\FileItem',
                 'options' => array(
-                    'loso' => 'tussi',
+                    'mimetype' => 'tussi',
                 ),
             )
             
         );
         
-        \Xi\Filelib\Configurator::setConstructorOptions($mock, $arr);
-        
+        Configurator::setConstructorOptions($mock, $arr);
     }
     
     

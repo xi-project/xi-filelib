@@ -133,7 +133,7 @@ class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionPr
         $imageMagicks[$file->getId()]['last_access'] = $unixNow;
         
         
-        return $imageMagicks[$file->getId()]['obj']->clone();
+        return clone $imageMagicks[$file->getId()]['obj'];
     }
 
 
