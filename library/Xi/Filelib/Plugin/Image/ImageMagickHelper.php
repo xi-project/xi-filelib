@@ -3,7 +3,10 @@
 namespace Xi\Filelib\Plugin\Image;
 
 use Imagick;
+use ImagickException;
+use InvalidArgumentException;
 use Xi\Filelib\Configurator;
+use Xi\Filelib\Plugin\Image\Command\Command;
 
 /**
  * Imagemagick helper
@@ -13,47 +16,40 @@ use Xi\Filelib\Configurator;
 class ImageMagickHelper
 {
 
-    protected $_commands = array();
-    
-    protected $_imageMagickOptions = array();
+    protected $commands = array();
+    protected $imageMagickOptions = array();
 
-    
     public function __construct($options = array())
     {
         Configurator::setConstructorOptions($this, $options);
     }
-    
-    
-    public function addCommand(Command\Command $command)
+
+    public function addCommand(Command $command)
     {
-        $this->_commands[] = $command;
+        $this->commands[] = $command;
     }
-    
+
     public function getCommands()
     {
-        return $this->_commands;
+        return $this->commands;
     }
-    
+
     public function setCommands(array $commands = array())
     {
-        foreach ($commands as $command)
-        {
-            $command = new $command['type']($command);
-            $this->addCommand($command);
+        foreach ($commands as $command) {
+            $this->addCommand($this->createCommandFromArray($command));
         }
-
     }
-       
+
     /**
      * Sets ImageMagick options
      *
      * @param array $imageMagickOptions
      */
-    public function setImageMagickOptions($imageMagickOptions)
+    public function setImageMagickOptions(array $imageMagickOptions)
     {
-        $this->_imageMagickOptions = $imageMagickOptions;
+        $this->imageMagickOptions = $imageMagickOptions;
     }
-    
 
     /**
      * Return ImageMagick options
@@ -62,23 +58,27 @@ class ImageMagickHelper
      */
     public function getImageMagickOptions()
     {
-        return $this->_imageMagickOptions;
+        return $this->imageMagickOptions;
     }
 
-    
     public function execute($img)
     {
         foreach ($this->getImageMagickOptions() as $key => $value) {
+
+            if (!is_array($value)) {
+                $value = array($value);
+            }
+
             $method = 'set' . $key;
-            $img->$method($value);
+
+            call_user_func_array(array($img, $method), $value);
         }
-        
+
         foreach ($this->getCommands() as $command) {
             $command->execute($img);
         }
-
     }
-    
+
     /**
      * Creates a new imagick resource from path
      * 
@@ -95,5 +95,27 @@ class ImageMagickHelper
         }
     }
 
-        
+    /**
+     * Creates and returns a command from config array
+     * 
+     * @param array $arr Config array
+     * @return Command 
+     */
+    public function createCommandFromArray($arr)
+    {
+        if (!is_array($arr) || !isset($arr['type']) || !is_string($arr['type'])) {
+            throw new \InvalidArgumentException("Command class missing");
+        }
+
+        $className = $arr['type'];
+        unset($arr['type']);
+
+        if (!class_exists($className)) {
+            throw new \InvalidArgumentException(sprintf("Class '%s' does not exist", $className));
+        }
+
+        $command = new $className($arr);
+        return $command;
+    }
+
 }
