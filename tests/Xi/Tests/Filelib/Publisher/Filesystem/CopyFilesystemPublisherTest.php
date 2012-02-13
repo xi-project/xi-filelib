@@ -10,6 +10,125 @@ use Xi\Filelib\Publisher\Filesystem\CopyPublisher;
 class CopyFilesystemPublisherTest extends TestCase
 {
     
+        public function provideDataForPublishingTests()
+    {
+        $files = array();
+        
+        $linker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
+        
+        $linker->expects($this->any())->method('getLinkVersion')
+                ->will($this->returnCallback(function($file, $version) { 
+                    
+                    switch ($file->getId()) {
+                        
+                        case 1:
+                            $prefix = 'lussin/tussin';
+                            break;
+                        case 2:
+                            $prefix = 'lussin/tussin/jussin/pussin';
+                            break;
+                        case 3:
+                            $prefix = 'tohtori/vesalan/suuri/otsa';
+                            break;
+                        case 4:
+                            $prefix = 'lussen/hof';
+                            break;
+                        case 5:
+                            $prefix = '';
+                            break;
+                    }
+                    
+                    
+                    return $prefix . '/' . $file->getId() . '-' . $version->getIdentifier() . '.lus';
+                    
+                }));
+        $linker->expects($this->any())->method('getLink')
+                ->will($this->returnCallback(function($file) {
+                    
+                    switch ($file->getId()) {
+                        
+                        case 1:
+                            $prefix = 'lussin/tussin';
+                            break;
+                        case 2:
+                            $prefix = 'lussin/tussin/jussin/pussin';
+                            break;
+                        case 3:
+                            $prefix = 'tohtori/vesalan/suuri/otsa';
+                            break;
+                        case 4:
+                            $prefix = 'lussen/hof';
+                            break;
+                        case 5:
+                            $prefix = '';
+                            break;
+
+                        
+                    }
+                    
+                    return $prefix . '/' . $file->getId() . '.lus';
+                 }));
+        
+        
+        $profileObject = $this->getMockBuilder('Xi\Filelib\File\FileProfile')
+                                ->getMock();
+        $profileObject->expects($this->any())->method('getLinker')
+                      ->will($this->returnCallback(function() use ($linker) { return $linker; }));
+                                
+        for ($x = 1; $x <= 5; $x++) {
+            $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
+            $file->expects($this->any())->method('getProfileObject')
+                    ->will($this->returnCallback(function() use ($profileObject) { return $profileObject; }));
+            $file->expects($this->any())->method('getId')->will($this->returnValue($x));
+            
+            $files[$x-1] = $file;
+        }
+        
+        $ret = array(
+            array(
+                $files[0],
+                ROOT_TESTS . '/data/publisher/public/lussin/tussin/1.lus',
+                ROOT_TESTS . '/data/publisher/public/lussin/tussin/1-xooxer.lus',
+                ROOT_TESTS . '/data/publisher/private/1/1',
+                '../../../private/1/1',
+            ),
+            array(
+                $files[1],
+                ROOT_TESTS . '/data/publisher/public/lussin/tussin/jussin/pussin/2.lus',
+                ROOT_TESTS . '/data/publisher/public/lussin/tussin/jussin/pussin/2-xooxer.lus',
+                ROOT_TESTS . '/data/publisher/private/2/2/2',
+                '../../../../../private/2/2/2',
+            ),
+            array(
+                $files[2],
+                ROOT_TESTS . '/data/publisher/public/tohtori/vesalan/suuri/otsa/3.lus',
+                ROOT_TESTS . '/data/publisher/public/tohtori/vesalan/suuri/otsa/3-xooxer.lus',
+                ROOT_TESTS . '/data/publisher/private/3/3/3/3',
+                '../../../../../private/3/3/3/3',
+            ),
+            array(
+                $files[3],
+                ROOT_TESTS . '/data/publisher/public/lussen/hof/4.lus',
+                ROOT_TESTS . '/data/publisher/public/lussen/hof/4-xooxer.lus',
+                ROOT_TESTS . '/data/publisher/private/666/4',
+                '../../../private/666/4',
+            ),
+            array(
+                $files[4],
+                ROOT_TESTS . '/data/publisher/public/5.lus',
+                ROOT_TESTS . '/data/publisher/public/5-xooxer.lus',
+                ROOT_TESTS . '/data/publisher/private/1/5',
+                '../../../private/1/5',
+            ),
+
+            
+        );
+        
+        return $ret;
+        
+    }
+
+    
     
     /**
      * @test
@@ -71,7 +190,9 @@ class CopyFilesystemPublisherTest extends TestCase
 
     private function createFile($target, $link)
     {
-        mkdir(dirname($link), 0700, true);
+        if (!is_dir(dirname($link))) {
+            mkdir(dirname($link), 0700, true);
+        }
         copy($target, $link);
     }
     

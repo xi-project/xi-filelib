@@ -12,9 +12,17 @@ use \Imagick;
  */
 interface Command
 {
-    
 
+    /**
+     * Executes command
+     */
     public function execute(Imagick $img);
-    
-   
+
+    /**
+     * Creates a new imagick resource
+     * 
+     * @param string $path Image path
+     * @return Imagick
+     */
+    public function createImagick($path);
 }

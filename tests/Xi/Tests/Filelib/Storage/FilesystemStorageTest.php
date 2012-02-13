@@ -56,7 +56,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
         $riter = new \RecursiveIteratorIterator($diter, \RecursiveIteratorIterator::CHILD_FIRST);
         
         foreach ($riter as $item) {
-            if($item->isFile()) {
+            if($item->isFile() && $item->getFilename() !== '.gitignore') {
                 @unlink($item->getPathName());
             }            
         }

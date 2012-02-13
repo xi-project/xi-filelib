@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Plugin\Image\Command;
 
-use \Imagick;
+use Imagick;
 
 /**
  * Watermarks an image version
@@ -12,34 +12,36 @@ use \Imagick;
  */
 class WatermarkCommand extends AbstractCommand
 {
+
     /**
      * @var string Watermark image
      */
-    protected $_watermarkImage = null;
-    
+    protected $watermarkImage = null;
+
     /**
      * @var string Watermark position
      */
-    protected $_watermarkPosition = 'sw';
-    
+    protected $watermarkPosition = 'sw';
+
     /**
      * @var integer Watermark padding
      */
-    protected $_watermarkPadding = 0;
+    protected $watermarkPadding = 0;
     
-    protected $_watermark;
-    
-        
+    protected $watermark;
+
     /**
      * Sets watermark image
      * 
      * @param string $image
+     * @return WatermarkCommand
      */
     public function setWatermarkImage($image)
     {
-        $this->_watermarkImage = $image;
+        $this->watermarkImage = $image;
+        return $this;
     }
-    
+
     /**
      * Returns watermark image
      * 
@@ -47,20 +49,29 @@ class WatermarkCommand extends AbstractCommand
      */
     public function getWatermarkImage()
     {
-        return $this->_watermarkImage;
+        return $this->watermarkImage;
     }
-        
+
     /**
      * Sets watermark position (nw, ne, se or sw)
      * 
      * @param string $position
+     * @return WatermarkCommand
      */
     public function setWatermarkPosition($position)
     {
-        $this->_watermarkPosition = $position;
+        if (!is_string($position)) {
+            throw new \InvalidArgumentException("Non-string watermark position");
+        }
+        
+        if (!in_array($position, array('nw', 'ne', 'sw', 'se'))) {
+            throw new \InvalidArgumentException(sprintf("Invalid watermark position '%s'", $position));
+        }
+                        
+        $this->watermarkPosition = $position;
+        return $this;
     }
-    
-    
+
     /**
      * Returns watermark position
      * 
@@ -68,20 +79,21 @@ class WatermarkCommand extends AbstractCommand
      */
     public function getWatermarkPosition()
     {
-        return $this->_watermarkPosition;
+        return $this->watermarkPosition;
     }
-    
-    
+
     /**
      * Sets padding for watermark image (in pixels)
      * 
      * @param int $padding
+     * @return WatermarkCommand
      */
     public function setWatermarkPadding($padding)
     {
-        $this->_watermarkPadding = $padding;
+        $this->watermarkPadding = $padding;
+        return $this;
     }
-    
+
     /**
      * Returns padding for watermark image (in pixels)
      * 
@@ -89,77 +101,85 @@ class WatermarkCommand extends AbstractCommand
      */
     public function getWatermarkPadding()
     {
-        return $this->_watermarkPadding;
+        return $this->watermarkPadding;
     }
-    
-    
+
     public function execute(Imagick $img)
     {
-        if(!$this->getWatermarkImage()) {
-            return;
-        }
-        
-        $watermark = $this->_getWatermark(); 
-        
-        $imageWidth 		= $img->getImageWidth();
-	    $imageHeight 		= $img->getImageHeight();
+        $watermark = $this->getWatermarkResource();
 
-	    $wWidth = $watermark->getImageWidth();
-	    $wHeight = $watermark->getImageHeight();
+        $coordinates = $this->calculateCoordinates($img);
+        
+        $img->compositeImage(
+                $this->getWatermarkResource(), Imagick::COMPOSITE_OVER, $coordinates['x'], $coordinates['y']
+        );
 
-	    
-	    switch($this->getWatermarkPosition()) {
-	        
-	        case 'sw':
+        return;
+    }
+
+    
+    public function calculateCoordinates(Imagick $img)
+    {
+        $watermark = $this->getWatermarkResource();
+        
+        $imageWidth = $img->getImageWidth();
+        $imageHeight = $img->getImageHeight();
+
+        $wWidth = $watermark->getImageWidth();
+        $wHeight = $watermark->getImageHeight();
+
+        switch ($this->getWatermarkPosition()) {
+
+            case 'sw':
                 $x = 0 + $this->getWatermarkPadding();
                 $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
                 break;
-                
-	        case 'nw':
+
+            case 'nw':
                 $x = 0 + $this->getWatermarkPadding();
                 $y = 0 + $this->getWatermarkPadding();
-	            break;
-	            
-	        case 'ne':
+                break;
+
+            case 'ne':
                 $x = $imageWidth - $wWidth - $this->getWatermarkPadding();
                 $y = 0 + $this->getWatermarkPadding();
-	            break;
-	            
-	        case 'se':
-	            $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
-	            $x = $imageWidth - $wWidth - $this->getWatermarkPadding();
-	            break;
-	        
-	    }
-	    
-	    
-        $img->compositeImage(
-		    $watermark,
-		    Imagick::COMPOSITE_OVER,
-		    $x,
-		    $y
-		);
+                break;
 
-		return;
+            case 'se':
+                $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
+                $x = $imageWidth - $wWidth - $this->getWatermarkPadding();
+                break;
+        }
+
+        return array('x' => $x, 'y' => $y);
     }
     
-    
-    protected function _getWatermark()
+    /**
+     * Returns watermark imagick resource
+     * 
+     * @return Imagick
+     */
+    public function getWatermarkResource()
+    {   
+        if (!$this->watermark) {
+            $this->watermark = $this->createImagick($this->getWatermarkImage());
+        }
+        return $this->watermark;
+    }
+
+    /**
+     * Destroys watermark resource if it exists
+     */
+    public function destroyWatermarkResource()
     {
-        if(!$this->_watermark) {
-            $this->_watermark = new Imagick($this->getWatermarkImage());
-        }
-        return $this->_watermark;
-    }
-  
-    
-    public function __destruct(){
-        if($this->_watermark) {
-            $this->_watermark->destroy();
+        if ($this->watermark) {
+            $this->watermark->destroy();
         }
     }
-    
-    
-    
-    
+
+    public function __destruct()
+    {
+        $this->destroyWatermarkResource();
+    }
+
 }

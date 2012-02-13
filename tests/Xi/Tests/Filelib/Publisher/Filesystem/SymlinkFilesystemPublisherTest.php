@@ -138,8 +138,12 @@ class SymlinkFilesystemPublisherTest extends TestCase
                         case 3:
                             $prefix = 'tohtori/vesalan/suuri/otsa';
                             break;
-                        default:
+                        case 4:
                             $prefix = 'lussen/hof';
+                            break;
+                        case 5:
+                            $prefix = '';
+                            break;
                         
                     }
                     
@@ -161,8 +165,12 @@ class SymlinkFilesystemPublisherTest extends TestCase
                         case 3:
                             $prefix = 'tohtori/vesalan/suuri/otsa';
                             break;
-                        default:
+                        case 4:
                             $prefix = 'lussen/hof';
+                            break;
+                        case 5:
+                            $prefix = '';
+                            break;
                         
                     }
                     
@@ -175,7 +183,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
         $profileObject->expects($this->any())->method('getLinker')
                       ->will($this->returnCallback(function() use ($linker) { return $linker; }));
                                 
-        for ($x = 1; $x <= 4; $x++) {
+        for ($x = 1; $x <= 5; $x++) {
             $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
             $file->expects($this->any())->method('getProfileObject')
                     ->will($this->returnCallback(function() use ($profileObject) { return $profileObject; }));
@@ -213,6 +221,14 @@ class SymlinkFilesystemPublisherTest extends TestCase
                 ROOT_TESTS . '/data/publisher/private/666/4',
                 '../../../private/666/4',
             ),
+            array(
+                $files[4],
+                ROOT_TESTS . '/data/publisher/public/5.lus',
+                ROOT_TESTS . '/data/publisher/public/5-xooxer.lus',
+                ROOT_TESTS . '/data/publisher/private/1/5',
+                '../private/1/5',
+            ),
+
         );
         
         return $ret;
@@ -339,7 +355,9 @@ class SymlinkFilesystemPublisherTest extends TestCase
 
     private function createLink($target, $link)
     {
-        mkdir(dirname($link), 0700, true);
+        if (!is_dir(dirname($link))) {
+            mkdir(dirname($link), 0700, true);
+        }
         symlink($target, $link);
     }
     

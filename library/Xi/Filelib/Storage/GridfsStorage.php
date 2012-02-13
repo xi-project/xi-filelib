@@ -2,17 +2,18 @@
 
 namespace Xi\Filelib\Storage;
 
-use \MongoDB,
-    \MongoGridFS,
-    \MongoGridFSFile,
-    \Xi\Filelib\FileLibrary,
-    \Xi\Filelib\Storage\Storage,
-    \Xi\Filelib\Storage\AbstractStorage,
-    \Xi\Filelib\File\File,
-    \Xi\Filelib\Configurator,
-    \Xi\Filelib\File\FileObject,
-    \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator,
-    \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+use MongoDB,
+    MongoGridFS,
+    MongoGridFSFile,
+    Xi\Filelib\FileLibrary,
+    Xi\Filelib\Storage\Storage,
+    Xi\Filelib\Storage\AbstractStorage,
+    Xi\Filelib\File\File,
+    Xi\Filelib\Configurator,
+    Xi\Filelib\File\FileObject,
+    Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator,
+    Xi\Filelib\Plugin\VersionProvider\VersionProvider,
+    Xi\Filelib\FilelibException
     ;
 
 

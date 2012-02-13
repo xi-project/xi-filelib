@@ -2,32 +2,69 @@
 
 namespace Xi\Filelib\Plugin;
 
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Configurator;
+use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\File\File;
+
 /**
- * Abstract plugin class provides convenience methods for all event hooks.
+ * Abstract plugin class provides empty convenience methods for all hooks.
  *
- * @package Xi_Filelib
  * @author pekkis
  *
  */
-abstract class AbstractPlugin implements \Xi\Filelib\Plugin\Plugin
+abstract class AbstractPlugin implements Plugin
 {
-        
     
     /**
-     * @var \Xi\Filelib\FileLibrary Filelib
+     * @var FileLibrary Filelib
      */
-    protected $_filelib;
+    protected $filelib;
 
     /**
      * @var array Array of profiles
      */
-    protected $_profiles;
+    protected $profiles = array();
     
     public function __construct($options = array())
     {
-        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
+        Configurator::setConstructorOptions($this, $options);
     }
     
+    
+    /**
+     * Sets filelib
+     *
+     * @param FileLibrary $filelib
+     * @returns Plugin
+     */
+    public function setFilelib(FileLibrary $filelib)
+    {
+        $this->filelib = $filelib;
+        return $this;
+    }
+
+    /**
+     * Returns filelib
+     *
+     * @return FileLibrary
+     */
+    public function getFilelib()
+    {
+        return $this->filelib;
+    }
+
+    /** 
+     * Sets the profiles attached to the plugin
+     * 
+     * @return Plugin
+     */
+    public function setProfiles(array $profiles)
+    {
+        $this->profiles = $profiles;
+        return $this;
+    }
+
     /** 
      * Returns an array of profiles attached to the plugin
      * 
@@ -35,57 +72,27 @@ abstract class AbstractPlugin implements \Xi\Filelib\Plugin\Plugin
      */
     public function getProfiles()
     {
-        return $this->_profiles;
-    }
-
-    /** 
-     * Sets the profiles attached to the plugin
-     * 
-     * @return array
-     */
-    public function setProfiles(array $profiles)
-    {
-        $this->_profiles = $profiles;
-    }
-
-    /**
-     * Sets filelib
-     *
-     * @param \Xi_Filelib $filelib
-     */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib)
-    {
-        $this->_filelib = $filelib;
-    }
-
-    /**
-     * Returns filelib
-     *
-     * @return \Xi\Filelib\FileLibrary
-     */
-    public function getFilelib()
-    {
-        return $this->_filelib;
+        return $this->profiles;
     }
 
     public function init()
     { }
 
-    public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload)
+    public function beforeUpload(FileUpload $upload)
     {
         return $upload;
     }
 
-    public function afterUpload(\Xi\Filelib\File\File $file)
+    public function afterUpload(File $file)
     { }
 
-    public function onDelete(\Xi\Filelib\File\File $file)
+    public function onDelete(File $file)
     { }
     
-    public function onPublish(\Xi\Filelib\File\File $file)
+    public function onPublish(File $file)
     { }
     
-    public function onUnpublish(\Xi\Filelib\File\File $file)
+    public function onUnpublish(File $file)
     { }
     
 

@@ -8,7 +8,10 @@ use Mongo,
     MongoCollection,
     MongoConnectionException,
     Xi\Tests\Filelib\TestCase,
-    Xi\Filelib\Storage\GridfsStorage;
+    Xi\Filelib\Storage\GridfsStorage,
+    Xi\Filelib\File\FileItem,
+    Xi\Filelib\FilelibException
+    ;
 
 class GridFsStorageTest extends TestCase
 {
@@ -133,6 +136,35 @@ class GridFsStorageTest extends TestCase
          $this->assertNull($file);
          
     }
+    
+    /**
+     * @test
+     */
+    public function destructorShouldDeleteRetrievedFile()
+    {
+        $this->storage->setFilelib($this->getFilelib()); 
+        
+        $this->storage->store($this->file, $this->fileResource);
+         
+        $file = $this->storage->getGridFs()->findOne(array(
+            'filename' => $this->storage->getFilename($this->file)       
+        ));
+         
+        $this->assertInstanceOf('\\MongoGridFSFile', $file);         
+         
+        $retrieved = $this->storage->retrieve($this->file);
+                        
+        $realPath = $retrieved->getPathname();
+        
+        $this->assertFileExists($realPath);
+        
+        unset($this->storage);       
+        
+        $this->assertFileNotExists($realPath);
+        
+    }
+    
+    
 
     /**
      * @test
@@ -166,7 +198,27 @@ class GridFsStorageTest extends TestCase
          
     }
     
+    /**
+     * @test
+     * @expectedException Xi\Filelib\FilelibException 
+     */
+    public function retrievingUnexistingFileShouldThrowException()
+    {
+        $file = FileItem::create(array('id' => 'lussenhofer.lus'));
+        
+        $this->storage->retrieve($file);
+                
+    }
     
+    /**
+     * @test
+     * @expectedException Xi\Filelib\FilelibException 
+     */
+    public function retrievingUnexistingFileVersionShouldThrowException()
+    {
+        $file = FileItem::create(array('id' => 'lussenhofer.lus'));
+        $this->storage->retrieveVersion($file, $this->versionProvider);
+    }
     
     
 }

@@ -4,7 +4,6 @@ namespace Xi\Filelib\Cache;
 
 abstract class AbstractCache implements Cache
 {
-    private $_autoSerialize = false;
     
     abstract protected function _save($id, $data);
     
@@ -13,16 +12,6 @@ abstract class AbstractCache implements Cache
     abstract protected function _remove($id);
 
     abstract protected function _contains($id);
-    
-    public function setAutoSerialize($autoSerialize)
-    {
-        $this->_autoSerialize = (bool) $autoSerialize;
-    }
-    
-    public function getAutoSerialize()
-    {
-        return $this->_autoSerialize;
-    }
 
     public function save($id, $data)
     {
