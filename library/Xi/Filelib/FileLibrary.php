@@ -2,8 +2,7 @@
 
 namespace Xi\Filelib;
 
-use Xi\Filelib\Cache,
-    Xi\Filelib\Folder\FolderOperator,
+use Xi\Filelib\Folder\FolderOperator,
     Xi\Filelib\File\FileOperator;
 
 /**
@@ -14,6 +13,7 @@ use Xi\Filelib\Cache,
  */
 class FileLibrary
 {
+
     /**
      * @var \Xi\Filelib\Backend\Backend Backend
      */
@@ -28,7 +28,7 @@ class FileLibrary
      * @var \Xi\Filelib\Publisher\Publisher Publisher
      */
     private $_publisher;
-    
+
     /**
      * @var \Xi\Filelib\Acl\Acl Acl handler
      */
@@ -45,27 +45,14 @@ class FileLibrary
      * @var \Xi\Filelib\Folder\FolderOperator
      */
     private $_folderOperator;
-    
-    /**
-     * Cache
-     * @var \Xi\Filelib\Cache\Cache
-     */
-    private $_cache;
-        
+
     /**
      * Temporary directory
      * 
      * @var string
      */
     private $_tempDir;
-    
-    
-    public function __construct()
-    {
-        // $this->_folderOperator = new Folder\FolderOperator($this);
-        // $this->_fileOperator = new File\FileOperator($this);
-    }
-    
+
     /**
      * Sets temporary directory
      * 
@@ -73,9 +60,12 @@ class FileLibrary
      */
     public function setTempDir($tempDir)
     {
+        if (!is_dir($tempDir) || !is_writable($tempDir)) {
+            throw new \InvalidArgumentException("Temp dir is not writable or does not exist");
+        }
         $this->_tempDir = $tempDir;
     }
-    
+
     /**
      * Returns temporary directory
      * 
@@ -86,34 +76,8 @@ class FileLibrary
         if (!$this->_tempDir) {
             $this->setTempDir(sys_get_temp_dir());
         }
-        
-        return $this->_tempDir;
-        
-    }
-    
-    /**
-     * Sets cache
-     * 
-     * @param \Xi\Filelib\Cache\Cache $cache
-     * @return \Xi\Filelib\FileLibrary
-     */
-    public function setCache(Cache\Cache $cache)
-    {
-        $this->_cache = $cache;
-        return $this;
-    }
 
-    /**
-     * Returns cache. If cache does not exist, init a mock cache
-     * 
-     * @return \Xi\Filelib\Cache\Cache
-     */
-    public function getCache()
-    {
-        if(!$this->_cache) {
-            $this->_cache = new Cache\MockCache();
-        }
-        return $this->_cache;
+        return $this->_tempDir;
     }
 
     /**
@@ -136,27 +100,30 @@ class FileLibrary
         return $this->getFolderOperator();
     }
 
-    
     /**
      * Sets file operator
      * 
      * @param \Xi\Filelib\File\FileOperator $fileOperator 
+     * @return FileLibrary
      */
     public function setFileOperator(FileOperator $fileOperator)
     {
         $this->_fileOperator = $fileOperator;
+        return $this;
     }
-    
+
     /**
      * Sets folder operator
      * 
      * @param \Xi\Filelib\Folder\FolderOperator $fileOperator 
+     * @return FileLibrary
      */
     public function setFolderOperator(FolderOperator $folderOperator)
     {
         $this->_folderOperator = $folderOperator;
+        return $this;
     }
-        
+
     /**
      * Returns file operator
      * 
@@ -167,12 +134,9 @@ class FileLibrary
         if (!$this->_fileOperator) {
             $this->_fileOperator = new File\DefaultFileOperator($this);
         }
-        
         return $this->_fileOperator;
     }
 
-    
-    
     /**
      * Returns folder operator
      * 
@@ -183,14 +147,10 @@ class FileLibrary
         if (!$this->_folderOperator) {
             $this->_folderOperator = new Folder\DefaultFolderOperator($this);
         }
-        
+
         return $this->_folderOperator;
     }
-    
-    
-        
-    
-    
+
     /**
      * Sets fully qualified fileitem classname
      *
@@ -199,10 +159,10 @@ class FileLibrary
      */
     public function setFileItemClass($fileItemClass)
     {
-        $this->file()->setClass($fileItemClass);
+        $this->getFileOperator()->setClass($fileItemClass);
         return $this;
     }
-    
+
     /**
      * Sets fully qualified folderitem classname
      *
@@ -211,11 +171,10 @@ class FileLibrary
      */
     public function setFolderItemClass($folderItemClass)
     {
-        $this->folder()->setClass($folderItemClass);
+        $this->getFolderOperator()->setClass($folderItemClass);
         return $this;
     }
-    
-    
+
     /**
      * Returns fully qualified folderitem classname
      * 
@@ -223,7 +182,7 @@ class FileLibrary
      */
     public function getFolderItemClass()
     {
-        return $this->folder()->getClass();
+        return $this->getFolderOperator()->getClass();
     }
 
     /**
@@ -233,9 +192,9 @@ class FileLibrary
      */
     public function getFileItemClass()
     {
-        return $this->file()->getClass();
+        return $this->getFileOperator()->getClass();
     }
-    
+
     /**
      * Sets storage
      *
@@ -258,7 +217,7 @@ class FileLibrary
     {
         return $this->_storage;
     }
-    
+
     /**
      * Sets publisher
      *
@@ -327,7 +286,7 @@ class FileLibrary
     {
         return $this->_acl;
     }
-    
+
     /**
      * Adds a file profile
      * 
@@ -335,9 +294,9 @@ class FileLibrary
      */
     public function addProfile(File\FileProfile $profile)
     {
-        $this->file()->addProfile($profile);
+        $this->getFileOperator()->addProfile($profile);
     }
-    
+
     /**
      * Returns all file profiles
      * 
@@ -345,9 +304,9 @@ class FileLibrary
      */
     public function getProfiles()
     {
-        return $this->file()->getProfiles();
+        return $this->getFileOperator()->getProfiles();
     }
-    
+
     /**
      * Adds a plugin
      *
@@ -357,14 +316,9 @@ class FileLibrary
     public function addPlugin(Plugin\Plugin $plugin, $priority = 1000)
     {
         $plugin->setFilelib($this);
-        
-        foreach($plugin->getProfiles() as $profileIdentifier) {
-            $profile = $this->file()->getProfile($profileIdentifier);
-            $profile->addPlugin($plugin, $priority);
-        }
+        $this->getFileOperator()->addPlugin($plugin, $priority);
         $plugin->init();
         return $this;
     }
-    
-    
+
 }

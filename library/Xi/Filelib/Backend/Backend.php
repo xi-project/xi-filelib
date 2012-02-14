@@ -2,7 +2,8 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\File\File,
+use Xi\Filelib\FileLibrary,
+    Xi\Filelib\File\File,
     Xi\Filelib\Folder\Folder,
     Xi\Filelib\FilelibException;
 
@@ -141,4 +142,11 @@ interface Backend
      * @return array
      */
     public function findFileByFilename(Folder $folder, $filename);
+    
+    /**
+     * Sets filelib
+     * @param FileLibrary
+     */
+    public function setFilelib(FileLibrary $filelib);
+    
 }
