@@ -2,62 +2,39 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use \Imagick;
+use Imagick;
+use Xi\Filelib\Plugin\AbstractPlugin;
+use Xi\Filelib\Configurator;
 
 /**
  * Changes images' formats before uploading them.
  *
  * @author pekkis
- * @package Xi_Filelib
  *
  */
-class ChangeFormatPlugin extends \Xi\Filelib\Plugin\AbstractPlugin
+class ChangeFormatPlugin extends AbstractPlugin
 {
-    protected $_commands = array();
+    protected $imageMagickHelper;
     
-    protected $_imageMagickOptions = array();
-    
-    public function addCommand(Command\Command $command)
+    protected $targetExtension;
+        
+    public function __construct($options = array())
     {
-        $this->_commands[] = $command;
+        parent::__construct($options);
+        Configurator::setOptions($this->getImageMagickHelper(), $options);
     }
     
-    public function getCommands()
+    /**
+     * Returns ImageMagick helper
+     * 
+     * @return ImageMagickHelper
+     */
+    public function getImageMagickHelper()
     {
-        return $this->_commands;
-    }
-    
-    public function setCommands(array $commands = array())
-    {
-        foreach($commands as $command)
-        {
-            $command = new $command['type']($command);
-            $this->addCommand($command);
+        if (!$this->imageMagickHelper) {
+            $this->imageMagickHelper = new ImageMagickHelper();
         }
-
-    }
-   
-    
-    /**
-     * Sets ImageMagick options
-     *
-     * @param array $imageMagickOptions
-     */
-    public function setImageMagickOptions($imageMagickOptions)
-    {
-        $this->_imageMagickOptions = $imageMagickOptions;
-    }
-
-    
-
-    /**
-     * Return ImageMagick options
-     *
-     * @return array
-     */
-    public function getImageMagickOptions()
-    {
-        return $this->_imageMagickOptions;
+        return $this->imageMagickHelper;        
     }
     
     /**
@@ -67,7 +44,8 @@ class ChangeFormatPlugin extends \Xi\Filelib\Plugin\AbstractPlugin
      */
     public function setTargetExtension($targetExtension)
     {
-        $this->_targetExtension = $targetExtension;
+        $this->targetExtension = $targetExtension;
+        return $this;
     }
 
     /**
@@ -77,40 +55,27 @@ class ChangeFormatPlugin extends \Xi\Filelib\Plugin\AbstractPlugin
      */
     public function getTargetExtension()
     {
-        return $this->_targetExtension;
+        return $this->targetExtension;
     }
     
     
     public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload)
     {
-        
         $mimetype = $upload->getMimeType();
-        
-        // @todo: use filebanksta type detection
+        // @todo: use filebankstas type detection
         if(!preg_match("/^image/", $mimetype)) {
             return $upload;   
         }
-
-        
                 
-        $img = new Imagick($upload->getPathname());
-        
-        foreach($this->getImageMagickOptions() as $key => $value) {
-            $method = 'set' . $key;
-            $img->$method($value);
-        }
-        
-        
-        foreach($this->getCommands() as $command) {
-            $command->execute($img);
-        }
-        
+        $img = $this->getImageMagickHelper()->createImagick($upload->getPathname());
+        $this->getImageMagickHelper()->execute($img);
+                
         $tempnam = $this->getFilelib()->getTempDir() . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);
 
         $pinfo = pathinfo($upload->getPathname());
 
-        $nupload = $this->getFilelib()->file()->prepareUpload($tempnam);
+        $nupload = $this->getFilelib()->getFileOperator()->prepareUpload($tempnam);
         $nupload->setTemporary(true);
         
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $this->getTargetExtension());

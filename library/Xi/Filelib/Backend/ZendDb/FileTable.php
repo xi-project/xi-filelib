@@ -6,7 +6,6 @@ namespace Xi\Filelib\Backend\ZendDb;
  * File table
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class FileTable extends \Zend_Db_Table_Abstract

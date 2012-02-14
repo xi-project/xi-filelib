@@ -2,7 +2,9 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use \Imagick;
+use Imagick;
+use Xi\Filelib\Configurator;
+use Xi\Filelib\File\File;
 
 /**
  * Versions an image
@@ -13,87 +15,43 @@ use \Imagick;
  */
 class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider
 {
-    const IMAGEMAGICK_LIFETIME = 5;
     
     protected $_providesFor = array('image');
 
-    protected $_commands = array();
+    protected $imageMagickHelper;
+    
+    public function __construct($options = array())
+    {
+        parent::__construct($options);
+        Configurator::setOptions($this->getImageMagickHelper(), $options);
+    }
     
     /**
-     * @var array Scale options
+     * Returns ImageMagick helper
+     * 
+     * @return ImageMagickHelper
      */
-    protected $_scaleOptions = array();
-
-    
-    public function addCommand(Command\Command $command)
+    public function getImageMagickHelper()
     {
-        $this->_commands[] = $command;
-    }
-    
-    
-    public function getCommands()
-    {
-        return $this->_commands;
-    }
-    
-    
-    public function setCommands(array $commands = array())
-    {
-        foreach($commands as $command)
-        {
-            $command = new $command['type']($command);
-            $this->addCommand($command);
+        if (!$this->imageMagickHelper) {
+            $this->imageMagickHelper = new ImageMagickHelper();
         }
-
-    }
-    
-    
-    
-    
-    
-    /**
-     * Sets ImageMagick options
-     *
-     * @param array $imageMagickOptions
-     */
-    public function setImageMagickOptions($imageMagickOptions)
-    {
-        $this->_imageMagickOptions = $imageMagickOptions;
-    }
-
-    /**
-     * Return ImageMagick options
-     *
-     * @return array
-     */
-    public function getImageMagickOptions()
-    {
-        return $this->_imageMagickOptions;
+        return $this->imageMagickHelper;        
     }
 
     /**
      * Creates and stores version
      *
-     * @param \Xi_FileItem $file
+     * @param File $file
      */
     public function createVersion(\Xi\Filelib\File\File $file)
     {
-        if($this->getFilelib()->file()->getType($file) != 'image') {
-            throw new Exception('File must be an image');
-        }
-   
-        // $img = new Imagick($this->getFilelib()->getStorage()->retrieve($file)->getPathname());
-        $img = $this->_getImageMagick($file);
+        // Todo: optimize
+        $retrieved = $this->getFilelib()->getStorage()->retrieve($file)->getPathname();
+        $img = $this->getImageMagickHelper()->createImagick($retrieved);
 
-        foreach($this->getImageMagickOptions() as $key => $value) {
-            $method = 'set' . $key;
-            $img->$method($value);
-        }
-        
-        foreach($this->getCommands() as $command) {
-            $command->execute($img);
-        }
-     
+        $this->getImageMagickHelper()->execute($img);
+             
         $tmp = $this->getFilelib()->getTempDir() . '/' . uniqid('', true);
         $img->writeImage($tmp);
         
@@ -101,40 +59,6 @@ class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionPr
     }
     
     
-    private function _getImageMagick(\Xi\Filelib\File\File $file)
-    {
-        static $imageMagicks = array();
-
-        $unixNow = time();
-        
-        $deletions = array();
-        foreach($imageMagicks as $key => $im) {
-            if($im['last_access'] < ($unixNow - self::IMAGEMAGICK_LIFETIME)) {
-                $deletions[] = $key;
-            }
-        }
-        
-        foreach($deletions as $deletion) {
-            unset($imageMagicks[$key]);
-        }
-        
-        if(!isset($imageMagicks[$file->getId()])) {
-
-            $img = new Imagick($this->getFilelib()->getStorage()->retrieve($file)->getPathname());
-            
-            $imageMagicks[$file->getId()] = array(
-                'obj' => $img,
-                'last_access' => 0,
-            );
-            
-            
-        }
-
-        $imageMagicks[$file->getId()]['last_access'] = $unixNow;
-        
-        
-        return clone $imageMagicks[$file->getId()]['obj'];
-    }
 
 
 }
