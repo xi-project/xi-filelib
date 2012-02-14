@@ -4,6 +4,7 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Imagick;
 use Xi\Filelib\Configurator;
+use Xi\Filelib\File\File;
 
 /**
  * Versions an image
@@ -14,27 +15,16 @@ use Xi\Filelib\Configurator;
  */
 class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider
 {
-    const IMAGEMAGICK_LIFETIME = 5;
     
     protected $_providesFor = array('image');
 
-    protected $_commands = array();
-    
-    /**
-     * @var array Scale options
-     */
-    protected $_scaleOptions = array();
-
     protected $imageMagickHelper;
-    
-    
     
     public function __construct($options = array())
     {
         parent::__construct($options);
         Configurator::setOptions($this->getImageMagickHelper(), $options);
     }
-    
     
     /**
      * Returns ImageMagick helper
@@ -52,16 +42,13 @@ class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionPr
     /**
      * Creates and stores version
      *
-     * @param \Xi_FileItem $file
+     * @param File $file
      */
     public function createVersion(\Xi\Filelib\File\File $file)
     {
-        if($this->getFilelib()->file()->getType($file) != 'image') {
-            throw new Exception('File must be an image');
-        }
-   
-        // $img = new Imagick($this->getFilelib()->getStorage()->retrieve($file)->getPathname());
-        $img = $this->_getImageMagick($file);
+        // Todo: optimize
+        $retrieved = $this->getFilelib()->getStorage()->retrieve($file)->getPathname();
+        $img = $this->getImageMagickHelper()->createImagick($retrieved);
 
         $this->getImageMagickHelper()->execute($img);
              
@@ -72,40 +59,6 @@ class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionPr
     }
     
     
-    private function _getImageMagick(\Xi\Filelib\File\File $file)
-    {
-        static $imageMagicks = array();
-
-        $unixNow = time();
-        
-        $deletions = array();
-        foreach($imageMagicks as $key => $im) {
-            if($im['last_access'] < ($unixNow - self::IMAGEMAGICK_LIFETIME)) {
-                $deletions[] = $key;
-            }
-        }
-        
-        foreach($deletions as $deletion) {
-            unset($imageMagicks[$key]);
-        }
-        
-        if(!isset($imageMagicks[$file->getId()])) {
-
-            $img = new Imagick($this->getFilelib()->getStorage()->retrieve($file)->getPathname());
-            
-            $imageMagicks[$file->getId()] = array(
-                'obj' => $img,
-                'last_access' => 0,
-            );
-            
-            
-        }
-
-        $imageMagicks[$file->getId()]['last_access'] = $unixNow;
-        
-        
-        return clone $imageMagicks[$file->getId()]['obj'];
-    }
 
 
 }

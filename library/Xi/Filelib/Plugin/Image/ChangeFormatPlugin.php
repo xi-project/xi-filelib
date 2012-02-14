@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use \Imagick;
+use Imagick;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Configurator;
 
@@ -10,20 +10,19 @@ use Xi\Filelib\Configurator;
  * Changes images' formats before uploading them.
  *
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class ChangeFormatPlugin extends AbstractPlugin
 {
-    
     protected $imageMagickHelper;
+    
+    protected $targetExtension;
         
     public function __construct($options = array())
     {
         parent::__construct($options);
         Configurator::setOptions($this->getImageMagickHelper(), $options);
     }
-    
     
     /**
      * Returns ImageMagick helper
@@ -45,7 +44,8 @@ class ChangeFormatPlugin extends AbstractPlugin
      */
     public function setTargetExtension($targetExtension)
     {
-        $this->_targetExtension = $targetExtension;
+        $this->targetExtension = $targetExtension;
+        return $this;
     }
 
     /**
@@ -55,22 +55,19 @@ class ChangeFormatPlugin extends AbstractPlugin
      */
     public function getTargetExtension()
     {
-        return $this->_targetExtension;
+        return $this->targetExtension;
     }
     
     
     public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload)
     {
-        
         $mimetype = $upload->getMimeType();
-        
-        // @todo: use filebanksta type detection
+        // @todo: use filebankstas type detection
         if(!preg_match("/^image/", $mimetype)) {
             return $upload;   
         }
                 
-        $img = new Imagick($upload->getPathname());
-
+        $img = $this->getImageMagickHelper()->createImagick($upload->getPathname());
         $this->getImageMagickHelper()->execute($img);
                 
         $tempnam = $this->getFilelib()->getTempDir() . '/' . uniqid('cfp', true);
@@ -78,7 +75,7 @@ class ChangeFormatPlugin extends AbstractPlugin
 
         $pinfo = pathinfo($upload->getPathname());
 
-        $nupload = $this->getFilelib()->file()->prepareUpload($tempnam);
+        $nupload = $this->getFilelib()->getFileOperator()->prepareUpload($tempnam);
         $nupload->setTemporary(true);
         
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $this->getTargetExtension());
