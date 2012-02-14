@@ -2,6 +2,8 @@
 
 namespace Xi\Tests\Filelib;
 
+use Xi\Filelib\Version;
+
 class VersionTest extends TestCase
 {
     /**
@@ -10,6 +12,26 @@ class VersionTest extends TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Version'));
+    }
+    
+    
+    public function provideVersions()
+    {
+        return array(
+            array(-1, '0.5.0'),
+            array(0, '0.6.0dev'),
+            array(1, '0.6.0')
+        );
+    }
+    
+    
+    /**
+     * @test
+     * @dataProvider provideVersions
+     */
+    public function testVersionShouldBeCorrect($expected, $version)
+    {
+        $this->assertEquals($expected, Version::compare($version));
     }
     
     
