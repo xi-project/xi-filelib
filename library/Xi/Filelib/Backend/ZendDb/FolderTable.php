@@ -6,7 +6,6 @@ namespace Xi\Filelib\Backend\ZendDb;
  * Folder table
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class FolderTable extends \Zend_Db_Table_Abstract

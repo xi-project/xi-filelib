@@ -41,7 +41,7 @@ class FilelibExtension extends \Twig_Extension
     public function getFileUrl($file, $version = 'default')
     {
         if (is_numeric($file)) {
-            $file = $this->filelib->getFileOperator()->find($id);
+            $file = $this->filelib->getFileOperator()->find($file);
         }
         
         if (!$file instanceof FileItem) {
