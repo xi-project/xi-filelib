@@ -2,6 +2,9 @@
 
 namespace Xi\Filelib\File;
 
+use Xi\Filelib\Plugin\Plugin;
+
+
 /**
  *
  * @author pekkis
@@ -63,7 +66,7 @@ interface FileOperator
     /**
      * Finds and returns all files
      *
-     * @return \Xi\Filelib\File\FileIterator
+     * @return \ArrayIterator
      */
     public function findAll();
 
@@ -151,5 +154,18 @@ interface FileOperator
     public function publish(\Xi\Filelib\File\File $file);
     
     public function unpublish(\Xi\Filelib\File\File $file);
+    
+    /**
+     * Sets file item class name
+     */
+    public function setClass($className);
+    
+    /**
+     * Sets file item class name
+     */
+    public function getClass();
+
+    
+    public function addPlugin(Plugin $plugin, $priority = 0);
     
 }
