@@ -84,49 +84,40 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     }
 
 
-    public function getLink(File $file, $force = false)
+    public function getLink(File $file)
     {
-        
-        if($force || !isset($file->link)) {
-            	
-            $folders = array();
-            $folders[] = $folder = $this->getFilelib()->folder()->find($file->getFolderId());
+        $folders = array();
+        $folders[] = $folder = $this->getFilelib()->folder()->find($file->getFolderId());
 
-            while($folder->getParentId()) {
-                $folder = $this->getFilelib()->folder()->find($folder->getParentId());
-                array_unshift($folders, $folder);
-            }
-
-            $beautifurl = array();
-            	
-            foreach($folders as $folder) {
-                $beautifurl[] = $folder->getName();
-            }
-
-            
-            if ($this->getSlugify()) {
-                $slugifier = $this->getSlugifier();
-                array_walk($beautifurl, function(&$frag) use ($slugifier) {
-                    $frag = $slugifier->slugify($frag);
-                });
-            }
-            
-            
-            $beautifurl[] = $file->getName();
-
-            if($this->getExcludeRoot()) {
-                array_shift($beautifurl);
-            }
-
-            $beautifurl = implode(DIRECTORY_SEPARATOR, $beautifurl);
-           
-            
-                        
-            $file->link = $beautifurl;
-
+        while($folder->getParentId()) {
+            $folder = $this->getFilelib()->folder()->find($folder->getParentId());
+            array_unshift($folders, $folder);
         }
 
-        return $file->link;
+        $beautifurl = array();
+
+        foreach($folders as $folder) {
+            $beautifurl[] = $folder->getName();
+        }
+
+
+        if ($this->getSlugify()) {
+            $slugifier = $this->getSlugifier();
+            array_walk($beautifurl, function(&$frag) use ($slugifier) {
+                $frag = $slugifier->slugify($frag);
+            });
+        }
+
+
+        $beautifurl[] = $file->getName();
+
+        if($this->getExcludeRoot()) {
+            array_shift($beautifurl);
+        }
+
+        $beautifurl = implode(DIRECTORY_SEPARATOR, $beautifurl);
+
+        return $beautifurl;
 
     }
 
