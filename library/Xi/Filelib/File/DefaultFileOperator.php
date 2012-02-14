@@ -5,6 +5,7 @@ namespace Xi\Filelib\File;
 use \Xi\Filelib\File\FileOperator;
 use \Xi\Filelib\AbstractOperator;
 use \Xi\Filelib\FilelibException;
+use Xi\Filelib\Plugin\Plugin;
 
 
 /**
@@ -16,11 +17,6 @@ use \Xi\Filelib\FilelibException;
  */
 class DefaultFileOperator extends AbstractOperator implements FileOperator
 {
-    /**
-     * @var string
-     */
-    protected $_cachePrefix = 'xi_filelib_fileoperator';
-
     
     /**
      * @var array Profiles
@@ -136,13 +132,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
                 
         $this->getBackend()->updateFile($file);
 
-        $this->storeCached($file->getId(), $file);
 
         if($this->isReadableByAnonymous($file)) {
             $this->publish($file);
         }
-
-        $this->storeCached($file->getId(), $file);
         
         return $this;
 
@@ -157,16 +150,13 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function find($id)
     {
-        if(!$file = $this->findCached($id)) {
-            $file = $this->getBackend()->findFile($id);
-        }
+        $file = $this->getBackend()->findFile($id);
                     
         if(!$file) {
             return false;
         }
 
         $file = $this->_fileItemFromArray($file);
-        $this->storeCached($file->getId(), $file);
         return $file;
 
     }
@@ -191,7 +181,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     /**
      * Finds and returns all files
      *
-     * @return \Xi\Filelib\File\FileIterator
+     * @return \ArrayIterator
      */
     public function findAll()
     {
@@ -352,7 +342,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $this->unpublish($file);
             
             $this->getBackend()->deleteFile($file);
-            $this->clearCached($file->getId());
+            
             $this->getFilelib()->getStorage()->delete($file);
 
             foreach($file->getProfileObject()->getPlugins() as $plugin) {
@@ -516,6 +506,15 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $plugin->onUnpublish($file);
         }
         
+    }
+
+    
+    public function addPlugin(Plugin $plugin, $priority = 0)
+    {
+        foreach ($plugin->getProfiles() as $profileIdentifier) {
+            $profile = $this->getProfile($profileIdentifier);
+            $profile->addPlugin($plugin, $priority);
+        }
     }
 
     
