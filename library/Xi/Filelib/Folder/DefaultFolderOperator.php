@@ -18,7 +18,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
     /**
      * @var string Folderitem class
      */
-    private $_className = '\Xi\Filelib\Folder\FolderItem';
+    private $_className = 'Xi\Filelib\Folder\FolderItem';
     
     /**
      * Returns directory route for folder
