@@ -5,6 +5,8 @@ namespace Xi\Filelib\File;
 use \Xi\Filelib\File\FileOperator;
 use \Xi\Filelib\AbstractOperator;
 use \Xi\Filelib\FilelibException;
+use Xi\Filelib\Plugin\Plugin;
+use \InvalidArgumentException;
 
 
 /**
@@ -16,11 +18,6 @@ use \Xi\Filelib\FilelibException;
  */
 class DefaultFileOperator extends AbstractOperator implements FileOperator
 {
-    /**
-     * @var string
-     */
-    protected $_cachePrefix = 'xi_filelib_fileoperator';
-
     
     /**
      * @var array Profiles
@@ -30,7 +27,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     /**
      * @var string Fileitem class
      */
-    private $_className = '\Xi\Filelib\File\FileItem';
+    private $_className = 'Xi\Filelib\File\FileItem';
     
     /**
      * Sets fileitem class
@@ -61,13 +58,8 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      * 
      * @param mixed $data Data as array or a file instance
      */
-    public function getInstance($data = null)
+    public function getInstance($data = array())
     {
-        if($data instanceof File) {
-            $data->setFilelib($this->getFilelib());
-            return $data;
-        }
-        
         $className = $this->getClass();
         $file = new $className();
         $file->setFilelib($this->getFilelib());
@@ -80,8 +72,8 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     /**
      * Adds a file profile
      * 
-     * @param \Xi\Filelib\File\FileProfile $profile
-     * @return \Xi\Filelib\FileLibrary
+     * @param FileProfile $profile
+     * @return FileLibrary
      */
     public function addProfile(FileProfile $profile)
     {
@@ -99,13 +91,13 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      * Returns a file profile
      * 
      * @param string $identifier File profile identifier
-     * @throws \Xi\Filelib\FilelibException
-     * @return \Xi\Filelib\File\FileProfile
+     * @throws InvalidArgumentException
+     * @return FileProfile
      */
     public function getProfile($identifier)
     {
         if(!isset($this->_profiles[$identifier])) {
-            throw new FilelibException("File profile '{$identifier}' not found");
+            throw new InvalidArgumentException("File profile '{$identifier}' not found");
         }
 
         return $this->_profiles[$identifier];
@@ -136,13 +128,9 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
                 
         $this->getBackend()->updateFile($file);
 
-        $this->storeCached($file->getId(), $file);
-
         if($this->isReadableByAnonymous($file)) {
             $this->publish($file);
         }
-
-        $this->storeCached($file->getId(), $file);
         
         return $this;
 
@@ -152,21 +140,18 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     /**
      * Finds a file
      *
-     * @param mixed $idFile File id
+     * @param mixed $id File id
      * @return \Xi\Filelib\File\File
      */
     public function find($id)
     {
-        if(!$file = $this->findCached($id)) {
-            $file = $this->getBackend()->findFile($id);
-        }
+        $file = $this->getBackend()->findFile($id);
                     
         if(!$file) {
             return false;
         }
 
-        $file = $this->_fileItemFromArray($file);
-        $this->storeCached($file->getId(), $file);
+        $file = $this->getInstance($file);
         return $file;
 
     }
@@ -180,7 +165,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             return false;
         }
 
-        $file = $this->_fileItemFromArray($file);
+        $file = $this->getInstance($file);
 
         return $file;
                 
@@ -191,7 +176,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     /**
      * Finds and returns all files
      *
-     * @return \Xi\Filelib\File\FileIterator
+     * @return \ArrayIterator
      */
     public function findAll()
     {
@@ -199,7 +184,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
         $items = array();
         foreach($ritems as $ritem) {
-            $item = $this->_fileItemFromArray($ritem);
+            $item = $this->getInstance($ritem);
             $items[] = $item;
         }
         return $items;
@@ -352,7 +337,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $this->unpublish($file);
             
             $this->getBackend()->deleteFile($file);
-            $this->clearCached($file->getId());
+            
             $this->getFilelib()->getStorage()->delete($file);
 
             foreach($file->getProfileObject()->getPlugins() as $plugin) {
@@ -516,6 +501,15 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $plugin->onUnpublish($file);
         }
         
+    }
+
+    
+    public function addPlugin(Plugin $plugin, $priority = 0)
+    {
+        foreach ($plugin->getProfiles() as $profileIdentifier) {
+            $profile = $this->getProfile($profileIdentifier);
+            $profile->addPlugin($plugin, $priority);
+        }
     }
 
     

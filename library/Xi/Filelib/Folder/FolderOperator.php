@@ -59,7 +59,7 @@ interface FolderOperator
      * Finds subfolders
      *
      * @param \Xi_Fildlib_FolderItem $folder Folder
-     * @return \Xi\Filelib\Folder\FolderIterator
+     * @return \ArrayIterator
      */
     public function findSubFolders(\Xi\Filelib\Folder\Folder $folder);
     
@@ -73,8 +73,20 @@ interface FolderOperator
     
     /**
      * @param \Xi\Filelib\Folder\Folder $folder Folder
-     * @return \Xi\Filelib\File\FileIterator Collection of file items
+     * @return \ArrayIterator Collection of file items
      */
     public function findFiles(\Xi\Filelib\Folder\Folder $folder);
         
+    
+    /**
+     * Sets file item class name
+     */
+    public function setClass($className);
+    
+    /**
+     * Sets file item class name
+     */
+    public function getClass();
+
+    
 }

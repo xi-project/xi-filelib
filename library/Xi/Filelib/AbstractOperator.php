@@ -12,13 +12,6 @@ namespace Xi\Filelib;
 abstract class AbstractOperator
 {
     /**
-     * Cache prefix
-     * 
-     * @var string
-     */
-    protected $_cachePrefix = '';
-    
-    /**
      * Filelib reference
      * 
      * @var \Xi\Filelib\FileLibrary
@@ -50,64 +43,6 @@ abstract class AbstractOperator
         return $this->_filelib;
     }
     
-    /**
-     * Returns cache
-     * 
-     * @return \Xi\Filelib\Cache\Cache
-     */
-    public function getCache()
-    {
-        return $this->getFilelib()->getCache();
-    }
-
-    /**
-     * Returns cache identifier
-     * 
-     * @param mixed $id Id
-     * @return string
-     */
-    public function getCacheIdentifier($id)
-    {
-        if(is_array($id)) {
-            $id = implode('_', $id);
-        }
-        return $this->_cachePrefix . '_' . $id;
-    }
-
-    /**
-     * Tries to load folder from cache, returns object on success.
-     * 
-     * @param mixed $id
-     * @return mixed 
-     */
-    public function findCached($id) {
-        return $this->getCache()->load($this->getCacheIdentifier($id));
-    }
-
-
-    /**
-     * Clears cache for id
-     * 
-     * @param mixed $id
-     */
-    public function clearCached($id)
-    {
-        $this->getCache()->remove($this->getCacheIdentifier($id));
-    }
-
-
-    /**
-     * Stores folder to cache
-     * 
-     * @param mixed $id
-     * @param mixed $data
-     */
-    public function storeCached($id, $data)
-    {
-        $this->getCache()->save($this->getCacheIdentifier($id), $data->toArray());
-    }
-
-    
      /**
      * Transforms raw array to folder item
      * @param array $data
@@ -115,7 +50,7 @@ abstract class AbstractOperator
      */
     protected function _folderItemFromArray(array $data)
     {
-        return $this->getFilelib()->folder()->getInstance($data);
+        return $this->getFilelib()->getFolderOperator()->getInstance($data);
     }
         
     /**
@@ -125,7 +60,7 @@ abstract class AbstractOperator
      */
     protected function _fileItemFromArray(array $data)
     {
-        return $this->getFilelib()->file()->getInstance($data);
+        return $this->getFilelib()->getFileOperator()->getInstance($data);
     }
     
     

@@ -14,18 +14,11 @@ use \Xi\Filelib\FilelibException;
  */
 class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 {
-    /**
-     * Cache prefix
-     * 
-     * @var string
-     */
-    protected $_cachePrefix = 'xi_filelib_folderoperator';
 
     /**
      * @var string Folderitem class
      */
-    private $_className = '\Xi\Filelib\Folder\FolderItem';
-
+    private $_className = 'Xi\Filelib\Folder\FolderItem';
     
     /**
      * Returns directory route for folder
@@ -131,7 +124,6 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         }
 
         $this->getBackend()->deleteFolder($folder);
-        $this->clearCached($folder->getId());
     }
 
     /**
@@ -155,7 +147,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         foreach($this->findSubFolders($folder) as $subFolder) {
             $this->update($subFolder);
         }
-        $this->storeCached($folder->getId(), $folder);
+        
     }
 
 
@@ -188,10 +180,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function find($id)
     {
-        if(!$folder = $this->findCached($id)) {
-            $folder = $this->getBackend()->findFolder($id);
-        }
-        
+        $folder = $this->getBackend()->findFolder($id);
         if(!$folder) {
             return false;
         }
@@ -264,7 +253,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      * Finds subfolders
      *
      * @param \Xi_Fildlib_FolderItem $folder Folder
-     * @return \Xi\Filelib\Folder\FolderIterator
+     * @return \ArrayIterator
      */
     public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
     {
@@ -275,7 +264,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
             $folder = $this->_folderItemFromArray($rawFolder);
             $folders[] = $folder;
         }
-        return new \Xi\Filelib\Folder\FolderIterator($folders);
+        return new \ArrayIterator($folders);
     }
     
     
@@ -290,18 +279,14 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         if(!$parentId = $folder->getParentId()) {
             return false;
         }
-                
         
-        if(!$parent = $this->findCached($parentId)) {
-            $parent = $this->getBackend()->findFolder($parentId);
-        }
+        $parent = $this->getBackend()->findFolder($parentId);
         
         if(!$parent) {
             return false;
         }
         
         return $this->_folderItemFromArray($parent);
-                
         
     }
     
@@ -310,7 +295,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 
     /**
      * @param \Xi\Filelib\Folder\Folder $folder Folder
-     * @return \Xi\Filelib\File\FileIterator Collection of file items
+     * @return \ArrayIterator Collection of file items
      */
     public function findFiles(\Xi\Filelib\Folder\Folder $folder)
     {
@@ -325,8 +310,5 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         return $items;
     }
 
-
-
-    
 
 }
