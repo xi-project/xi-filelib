@@ -2,7 +2,8 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use Xi\Filelib\Backend\MongoBackend,
+use PHPUnit_Framework_TestCase,
+    Xi\Filelib\Backend\MongoBackend,
     Xi\Filelib\Folder\FolderItem,
     Xi\Filelib\File\FileItem,
     \DateTime,
@@ -19,7 +20,7 @@ use Xi\Filelib\Backend\MongoBackend,
 /**
  * @group doctrine
  */
-class MongoBackendTest extends TestCase
+class MongoBackendTest extends PHPUnit_Framework_TestCase
 {
     /**
      *
