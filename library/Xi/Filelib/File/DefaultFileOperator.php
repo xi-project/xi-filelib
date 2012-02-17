@@ -438,6 +438,11 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function render(\Xi\Filelib\File\File $file, $opts = array())
     {
+
+        
+        
+        
+        
         if(!$file->getId()) {
             throw new \Xi\Filelib\FilelibException('File has no id');
         }
