@@ -41,7 +41,7 @@ class SlugifierTest extends \Xi\Tests\Filelib\TestCase {
     {
         return array(
             array('uber', 'über'),
-            array('aaaaaaccccccccddddeeeeeeeeeegggg', 'ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğ'),
+            array('aaaaaaccccccccddeeeeeeeeeegggg', 'ĀāĂăĄąĆćĈĉĊċČčĎďĒēĔĕĖėĘęĚěĜĝĞğ'),
             array('oyao', 'ôÿäö'),
             array('suuren-ugrilaisen-kansan-sielu', 'sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú'),
         );
