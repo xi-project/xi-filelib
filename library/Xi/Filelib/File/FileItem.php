@@ -2,6 +2,8 @@
 
 namespace Xi\Filelib\File;
 
+use Xi\Filelib\FileLibrary;
+
 /**
  * Default file implementation
  *
@@ -15,7 +17,7 @@ class FileItem implements File
      * 
      * @var array
      */
-    protected static $_map = array(
+    protected static $map = array(
         'id' => 'setId',
         'folder_id' => 'setFolderId',
         'mimetype' => 'setMimeType',
@@ -27,131 +29,143 @@ class FileItem implements File
     );
         
     /**
-     * @var \Xi\Filelib\FileLibrary Filelib
+     * @var FileLibrary Filelib
      */
-    private $_filelib;
-
-    private $_profileObj;
+    private $filelib;
     
-    private $_id;
+    private $id;
     
-    private $_folderId;
+    private $folderId;
     
-    private $_mimetype;
+    private $mimetype;
     
-    private $_profile;
+    private $profile;
     
-    private $_size;
+    private $size;
     
-    private $_name;
+    private $name;
     
-    private $_link;
+    private $link;
     
-    private $_dateUploaded;
+    private $dateUploaded;
     
     /**
      * Sets filelib
      *
-     * @param \Xi_Filelib $filelib
+     * @param FileLibrary $filelib
+     * @return FileItem
      */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib)
+    public function setFilelib(FileLibrary $filelib)
     {
-        $this->_filelib = $filelib;
+        $this->filelib = $filelib;
+        return $this;
     }
 
     /**
      * Returns filelib
      *
-     * @return \Xi\Filelib\FileLibrary
+     * @return FileLibrary
      */
     public function getFilelib()
     {
-        return $this->_filelib;
+        return $this->filelib;
     }
     
+    /**
+     * @param type $id
+     * @return FileItem 
+     */
     public function setId($id)
     {
-        $this->_id = $id;
+        $this->id = $id;
+        return $this;
     }
     
     public function getId()
     {
-        return $this->_id;
+        return $this->id;
     }
     
     public function setFolderId($folderId)
     {
-        $this->_folderId = $folderId;
+        $this->folderId = $folderId;
+        return $this;
     }
     
     public function getFolderId()
     {
-        return $this->_folderId;
+        return $this->folderId;
     }
 
     public function setMimetype($mimetype)
     {
-        $this->_mimetype = $mimetype;
+        $this->mimetype = $mimetype;
+        return $this;
     }
     
     public function getMimetype()
     {
-        return $this->_mimetype;
+        return $this->mimetype;
     }
     
     public function setProfile($profile)
     {
-        $this->_profile = $profile;        
+        $this->profile = $profile;
+        return $this;
     }
     
     public function getProfile()
     {
-        return $this->_profile;
+        return $this->profile;
     }
     
     public function setSize($size)
     {
-        $this->_size = $size;
+        $this->size = $size;
+        return $this;
     }
     
     public function getSize()
     {
-        return $this->_size;
+        return $this->size;
     }
     
     public function setName($name)
     {
-        $this->_name = $name;
+        $this->name = $name;
+        return $this;
     }
     
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
     
     public function setLink($link)
     {
-        $this->_link = $link;
+        $this->link = $link;
+        return $this;
     }
     
     public function getLink()
     {
-        return $this->_link;
+        return $this->link;
     }
     
     public function getProfileObject()
     {
-        return $this->getFilelib()->file()->getProfile($this->getProfile());
+        return $this->getFilelib()->getFileOperator()->getProfile($this->getProfile());
     }
     
     public function getDateUploaded()
     {
-        return $this->_dateUploaded;
+        return $this->dateUploaded;
     }
     
     public function setDateUploaded(\DateTime $dateUploaded)
     {
-        $this->_dateUploaded = $dateUploaded;
+        $this->dateUploaded = $dateUploaded;
+        return $this;
     }
     
     
@@ -171,7 +185,7 @@ class FileItem implements File
     
     public function fromArray(array $data)
     {
-        foreach(static::$_map as $key => $method) {
+        foreach(static::$map as $key => $method) {
             if(isset($data[$key])) {
                 $this->$method($data[$key]);
             }

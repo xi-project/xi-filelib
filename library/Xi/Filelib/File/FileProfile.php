@@ -2,121 +2,111 @@
 
 namespace Xi\Filelib\File;
 
-use \Xi\Filelib\Plugin\PriorityQueue;
-use \Xi\Filelib\FilelibException;
+use Xi\Filelib\Plugin\PriorityQueue;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Configurator;
+use Xi\Filelib\Linker\Linker;
+use Xi\Filelib\Plugin\Plugin;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\File\File;
 
 /**
  * File profile
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class FileProfile
 {
+
     /**
      * @var \Xi\Filelib\FileLibrary
      */
-    private $_filelib;
+    private $filelib;
 
     /**
      * @var \Xi_Filelib_Linker Linker
      */
-    private $_linker;
+    private $linker;
 
     /**
      * @var array Versions for file types
      */
-    private $_fileVersions = array();
-    
+    private $fileVersions = array();
+
     /**
      * @var string Human readable identifier
      */
-    private $_description;
+    private $description;
 
     /**
      * @var string Machine readable identifier
      */
-    private $_identifier;
-
-    /**
-     * @var boolean Selectable (in uis for example)
-     */
-    private $_selectable = true;
+    private $identifier;
 
     /**
      * @var array Array of plugins
      */
-    private $_plugins = array();
-
+    private $plugins = array();
 
     /**
      * @var boolean Allow access to original file
      */
-    private $_accessToOriginal = true;
-    
+    private $accessToOriginal = true;
+
     /**
      * @var boolean Publish original file
      */
-    private $_publishOriginal = true;
+    private $publishOriginal = true;
 
-    
-    
     public function __construct($options = array())
     {
-        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
+        Configurator::setConstructorOptions($this, $options);
     }
-    
-    
+
     /**
      * Sets filelib
      *
-     * @param \Xi_Filelib $filelib
+     * @param FileLibrary $filelib
+     * 
      */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib)
+    public function setFilelib(FileLibrary $filelib)
     {
-        $this->_filelib = $filelib;
+        $this->filelib = $filelib;
+        return $this;
     }
 
     /**
      * Returns filelib
      *
-     * @return \Xi_Filelib_Filelib
+     * @return FileLibrary
      */
     public function getFilelib()
     {
-        return $this->_filelib;
+        return $this->filelib;
     }
 
     /**
      * Returns linker
      *
-     * @return \Xi\Filelib\Linker\Linker
+     * @return Linker
      */
     public function getLinker()
     {
-        if(!$this->_linker) {
-            throw new \Xi\Filelib\FilelibException("File profile '{$this->getIdentifier()}' does not have a linker");
-        }
-        return $this->_linker;
+        return $this->linker;
     }
-
 
     /**
      * Sets linker
      *
-     * @param \Xi\Filelib\Linker\Linker|string $linker
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @param Linker
+     * @return FileLibrary
      */
     public function setLinker($linker)
     {
-        if(!$linker instanceof \Xi\Filelib\Linker\Linker) {
-            $linker = new $linker($this);
-
-        }
+        $this->linker = $linker;
         $linker->init();
-        $this->_linker = $linker;
-
         return $this;
     }
 
@@ -124,12 +114,13 @@ class FileProfile
      * Sets human readable identifier
      * 
      * @param string $description
+     * @return FileProfile
      */
     public function setDescription($description)
     {
-        $this->_description = $description;
+        $this->description = $description;
+        return $this;
     }
-
 
     /**
      * Returns human readable identifier
@@ -138,9 +129,8 @@ class FileProfile
      */
     public function getDescription()
     {
-        return $this->_description;
+        return $this->description;
     }
-
 
     /**
      * Returns identifier
@@ -149,56 +139,34 @@ class FileProfile
      */
     public function getIdentifier()
     {
-        return $this->_identifier;
+        return $this->identifier;
     }
-
 
     /**
      * Sets identifier
      * 
      * @param string $identifier
+     * @throws \InvalidArgumentException
+     * @return FileProfile
      */
     public function setIdentifier($identifier)
     {
         if ($identifier === 'original') {
-            throw new Xi\Filelib\FilelibException("Invalid profile identifier '{$identifier}'");
+            throw new \InvalidArgumentException("Invalid profile identifier '{$identifier}'");
         }
-        
-        $this->_identifier = $identifier;
+        $this->identifier = $identifier;
+        return $this;
     }
-
-
-    /**
-     * Returns whether profile is selectable
-     * 
-     * @return boolean
-     */
-    public function getSelectable()
-    {
-        return $this->_selectable;
-    }
-
-
-    /**
-     * Sets whether the profile is selectable
-     * 
-     * @param boolean $selectable
-     */
-    public function setSelectable($selectable)
-    {
-        $this->_selectable = $selectable;
-    }
-
 
     /**
      * Adds a plugin
      *
-     * @param \Xi\Filelib\Plugin\Plugin Plugin $plugin
-     * @return \Xi\Filelib\File\FileProfile
+     * @param Plugin Plugin $plugin
+     * @return FileProfile
      */
-    public function addPlugin(\Xi\Filelib\Plugin\Plugin $plugin, $priority = 1000)
+    public function addPlugin(Plugin $plugin, $priority = 1000)
     {
-        $this->_plugins[] = $plugin;
+        $this->plugins[] = $plugin;
         return $this;
     }
 
@@ -209,28 +177,24 @@ class FileProfile
      */
     public function getPlugins()
     {
-        return $this->_plugins;
+        return $this->plugins;
     }
-
 
     /**
      * Adds a file version
      *
      * @param string $fileType string File type
      * @param string $versionIdentifier Version identifier
-     * @param object $versionProvider Version provider reference
+     * @param VersionProvider $versionProvider Version provider
      * @return \Xi\Filelib\File\FileProfile
      */
-    public function addFileVersion($fileType, $versionIdentifier, $versionProvider)
+    public function addFileVersion($fileType, $versionIdentifier, VersionProvider $versionProvider)
     {
-        if(!isset($this->_fileVersions[$fileType])) {
-            $this->_fileVersions[$fileType] = array();
-        }
-        $this->_fileVersions[$fileType][$versionIdentifier] = $versionProvider;
+        $this->ensureFileVersionArrayExists($fileType);
+        $this->fileVersions[$fileType][$versionIdentifier] = $versionProvider;
 
         return $this;
     }
-
 
     /**
      * Returns all defined versions of a file
@@ -241,16 +205,9 @@ class FileProfile
     public function getFileVersions(\Xi\Filelib\File\File $file)
     {
         $fileType = $this->getFilelib()->file()->getType($file);
-
-        if(!isset($this->_fileVersions[$fileType])) {
-            $this->_fileVersions[$fileType] = array();
-        }
-
-        return array_keys($this->_fileVersions[$fileType]);
-
+        $this->ensureFileVersionArrayExists($fileType);
+        return array_keys($this->fileVersions[$fileType]);
     }
-
-
 
     /**
      * Returns whether a file has a certain version
@@ -261,38 +218,38 @@ class FileProfile
      */
     public function fileHasVersion(\Xi\Filelib\File\File $file, $version)
     {
-        $filetype = $this->getFilelib()->file()->getType($file);
-
-        if(isset($this->_fileVersions[$filetype][$version])) {
-            return true;
-        }
-        return false;
+        return (in_array($version, $this->getFileVersions($file)));
     }
 
     /**
      * Returns version provider for a file/version
      *
-     * @param \Xi\Filelib\File\File $file File item
+     * @param File $file File item
      * @param string $version Version
-     * @return \Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider Provider
+     * @return VersionProvider Provider
      */
-    public function getVersionProvider(\Xi\Filelib\File\File $file, $version)
+    public function getVersionProvider(File $file, $version)
     {
+        if (!$this->fileHasVersion($file, $version)) {
+            throw new \InvalidArgumentException("File has no version '{$version}'");
+        }
+        
         $filetype = $this->getFilelib()->file()->getType($file);
-        return $this->_fileVersions[$filetype][$version];
+        return $this->fileVersions[$filetype][$version];
     }
 
-    
     /**
      * Sets whether access to the original file is allowed
      * 
      * @param boolean $accessToOriginal
+     * @return FileLibrary
      */
     public function setAccessToOriginal($accessToOriginal)
     {
-        $this->_accessToOriginal = $accessToOriginal;
+        $this->accessToOriginal = $accessToOriginal;
+        return $this;
     }
-        
+
     /**
      * Returns whether access to the original file is allowed
      * 
@@ -300,21 +257,21 @@ class FileProfile
      */
     public function getAccessToOriginal()
     {
-        return $this->_accessToOriginal;
+        return $this->accessToOriginal;
     }
-    
-    
+
     /**
      * Sets whether the original file is published
      * 
      * @param boolean $publishOriginal
+     * @return FileLibrary
      */
     public function setPublishOriginal($publishOriginal)
     {
-        $this->_publishOriginal = $publishOriginal;
+        $this->publishOriginal = $publishOriginal;
+        return $this;
     }
-    
-    
+
     /**
      * Returns whether the original file is published
      * 
@@ -322,14 +279,14 @@ class FileProfile
      */
     public function getPublishOriginal()
     {
-        return $this->_publishOriginal;
+        return $this->publishOriginal;
     }
-    
-    
 
-    public function __toString()
+    private function ensureFileVersionArrayExists($fileType)
     {
-        return $this->getIdentifier();
+        if (!isset($this->fileVersions[$fileType])) {
+            $this->fileVersions[$fileType] = array();
+        }
     }
 
 }

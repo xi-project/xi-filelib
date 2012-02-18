@@ -450,6 +450,16 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function findFileShouldFailWhenIdentifierIsInvalid()
+    {
+        $ret = $this->backend->findFile(155);
+    }
+        
+    
+    /**
+     * @test
      */
     public function findFileReturnsFalseIfFileIsNotFound()
     {
@@ -630,4 +640,24 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
             $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
         );
     }
+    
+    /**
+     * @test
+     */
+    public function findRootFolderShouldCreateRootFolderIfItDoesNotExist()
+    {
+        $this->mongo->folders->remove(array(), array('safe' => true));
+        
+        $folder = $this->backend->findRootFolder();
+
+        $this->assertArrayHasKey('id', $folder);
+        $this->assertArrayHasKey('parent_id', $folder);
+        $this->assertArrayHasKey('name', $folder);
+        $this->assertArrayHasKey('url', $folder);
+
+        $this->assertNull($folder['parent_id']);
+        
+    }
+    
+    
 }

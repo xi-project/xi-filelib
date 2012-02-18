@@ -2,6 +2,8 @@
 
 namespace Xi\Filelib\Publisher;
 
+use Xi\Filelib\FileLibrary;
+
 /**
  * Publisher interface
  * 
@@ -60,5 +62,14 @@ interface Publisher
      * @return string
      */
     public function getUrlVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version);
+    
+    
+    /**
+     * Sets filelib
+     * @param FileLibrary
+     * @return Publisher
+     */
+    public function setFilelib(FileLibrary $filelib);
+
     
 }

@@ -2,6 +2,8 @@
 
 namespace Xi\Tests\Filelib\Storage;
 
+use Xi\Filelib\Storage\FilesystemStorage;
+
 class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
 {
        
@@ -30,7 +32,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
        
         
         
-        $storage = new \Xi\Filelib\Storage\FilesystemStorage();
+        $storage = new FilesystemStorage();
         $storage->setDirectoryIdCalculator($dc);
         $storage->setCacheDirectoryIds(false);
         $storage->setRoot(ROOT_TESTS . '/data/files');    
@@ -191,6 +193,53 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     
     /**
      * @test
+     * @expectedException \LogicException
+     */
+    public function storeShouldFailIfRootIsNotDefined()
+    {
+        $storage = new FilesystemStorage();
+        $storage->store($this->file, $this->fileResource);
+    }
+
+    
+    /**
+     * @test
+     * @expectedException \LogicException
+     */
+    public function storeShouldFailIfRootIsNotWritable()
+    {
+        $storage = new FilesystemStorage();
+        $storage->setRoot(ROOT_TESTS . '/data/illusive_directory');
+        $storage->store($this->file, $this->fileResource);
+    }
+
+
+    /**
+     * @test
+     * @expectedException \LogicException
+     */
+    public function storeVersionShouldFailIfRootIsNotDefined()
+    {
+        $storage = new FilesystemStorage();
+        $storage->storeVersion($this->file, $this->versionProvider, $this->fileResource);
+    }
+
+    
+    /**
+     * @test
+     * @expectedException \LogicException
+     */
+    public function storeVersionShouldFailIfRootIsNotWritable()
+    {
+        $storage = new FilesystemStorage();
+        $storage->setRoot(ROOT_TESTS . '/data/illusive_directory');
+        $storage->storeVersion($this->file, $this->versionProvider, $this->fileResource);
+    }
+
+    
+    
+    /**
+     * @test
      */
     public function versionStoreAndRetrieveAndDeleteShouldWorkInHarmony()
     {
@@ -205,6 +254,24 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
                   
          $this->storage->deleteVersion($this->file, $this->versionProvider);
          $this->assertFalse(file_exists($this->storage->getRoot() . '/1/xoo/1'));
+    }
+    
+    /**
+     * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function retrieveShouldFailWithNonExistingFile()
+    {
+        $retrieved = $this->storage->retrieve($this->file);
+    }
+    
+    /**
+     * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function retrieveVersionShouldFailWithNonExistingFile()
+    {
+         $retrieved = $this->storage->retrieveVersion($this->file, $this->versionProvider);
     }
     
     

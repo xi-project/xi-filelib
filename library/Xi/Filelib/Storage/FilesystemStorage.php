@@ -187,15 +187,12 @@ class FilesystemStorage extends AbstractStorage implements Storage
     
     public function store(File $file, $tempFile)
     {
-        $root = $this->getRoot();
-        $dir = $root . '/' . $this->getDirectoryId($file);
+        $this->assertRootExistsAndIsWritable();
+        
+        $dir = $this->getRoot() . '/' . $this->getDirectoryId($file);
 
         if(!is_dir($dir)) {
-            @mkdir($dir, $this->getDirectoryPermission(), true);
-        }
-
-        if(!is_dir($dir) || !is_writable($dir)) {
-            throw new FilelibException("Could not write into directory", 500);
+            mkdir($dir, $this->getDirectoryPermission(), true);
         }
             
         $fileTarget = $dir . '/' . $file->getId();
@@ -203,15 +200,14 @@ class FilesystemStorage extends AbstractStorage implements Storage
         copy($tempFile, $fileTarget);
         chmod($fileTarget, $this->getFilePermission());
             
-        if(!is_readable($fileTarget)) {
-            throw new FilelibException('Could not copy file to folder');
-        }
     }
     
     public function storeVersion(File $file, VersionProvider $version, $tempFile)
     {
+        $this->assertRootExistsAndIsWritable();
+        
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version->getIdentifier();
-                 
+        
         if(!is_dir($path)) {
             mkdir($path, $this->getDirectoryPermission(), true);
         }
@@ -244,21 +240,35 @@ class FilesystemStorage extends AbstractStorage implements Storage
     public function delete(File $file)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $file->getId();
-            
-        $fileObj = new FileObject($path);
         
-        if(!$fileObj->isFile() || !$fileObj->isWritable()) {
-            throw new FilelibException('Can not delete file');
+        if (is_file($path) && is_writable($path)) {
+            unlink($path);
         }
-        if(!@unlink($fileObj->getPathname())) {
-            throw new FilelibException('Can not delete file');
-        }
+
     }
     
     
     public function deleteVersion(File $file, VersionProvider $version)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version->getIdentifier() . '/' . $file->getId();
-        unlink($path);
+        
+        if (is_file($path) && is_writable($path)) {
+            unlink($path);
+        }
+        
     }
+    
+    
+    private function assertRootExistsAndIsWritable()
+    {
+        if (!$root = $this->getRoot()) {
+            throw new \LogicException('Root must be defined');
+        }
+                
+        if (!is_dir($root) || !is_writable($root)) {
+            throw new \LogicException('Defined root is not writable');
+        }
+
+    }
+    
 }

@@ -2,6 +2,9 @@
 
 namespace Xi\Filelib\Folder;
 
+use Xi\Filelib\Folder\Folder;
+use ArrayIterator;
+
 interface FolderOperator
 {
     /**
@@ -9,34 +12,33 @@ interface FolderOperator
      * 
      * @param mixed $data Data as array or a folder item instance
      */
-    public function getInstance($data = null);
+    public function getInstance(array $data = array());
     
     /**
      * Creates a folder
      *
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @return unknown_type
+     * @param Folder $folder
      */
-    public function create(\Xi\Filelib\Folder\Folder $folder);
+    public function create(Folder $folder);
     
     /**
      * Deletes a folder
      *
-     * @param \Xi\Filelib\Folder\Folder $folder Folder
+     * @param Folder $folder Folder
      */
-    public function delete(\Xi\Filelib\Folder\Folder $folder);
+    public function delete(Folder $folder);
     
     /**
      * Updates a folder
      *
-     * @param \Xi\Filelib\Folder\Folder $folder Folder
+     * @param Folder $folder Folder
      */
-    public function update(\Xi\Filelib\Folder\Folder $folder);
+    public function update(Folder $folder);
     
     /**
      * Finds and returns the root folder
      *
-     * @return \Xi\Filelib\Folder\Folder
+     * @return Folder
      */
     public function findRoot();
     
@@ -44,7 +46,7 @@ interface FolderOperator
      * Finds a folder
      *
      * @param mixed $id Folder id
-     * @return \Xi\Filelib\Folder\Folder
+     * @return Folder
      */
     public function find($id);
     
@@ -58,23 +60,34 @@ interface FolderOperator
     /**
      * Finds subfolders
      *
-     * @param \Xi_Fildlib_FolderItem $folder Folder
-     * @return \Xi\Filelib\Folder\FolderIterator
+     * @param Folder $folder Folder
+     * @return ArrayIterator
      */
-    public function findSubFolders(\Xi\Filelib\Folder\Folder $folder);
+    public function findSubFolders(Folder $folder);
     
     /**
      * Finds parent folder
      * 
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @return false|\Xi\Filelib\Folder\Folder
+     * @param Folder $folder
+     * @return Folder|false
      */
-    public function findParentFolder(\Xi\Filelib\Folder\Folder $folder);
+    public function findParentFolder(Folder $folder);
     
     /**
-     * @param \Xi\Filelib\Folder\Folder $folder Folder
-     * @return \Xi\Filelib\File\FileIterator Collection of file items
+     * @param Folder $folder Folder
+     * @return ArrayIterator Collection of file items
      */
-    public function findFiles(\Xi\Filelib\Folder\Folder $folder);
-        
+    public function findFiles(Folder $folder);
+    
+    /**
+     * Sets file item class name
+     */
+    public function setClass($className);
+    
+    /**
+     * Sets file item class name
+     */
+    public function getClass();
+
+    
 }

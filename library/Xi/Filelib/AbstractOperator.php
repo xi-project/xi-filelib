@@ -2,130 +2,105 @@
 
 namespace Xi\Filelib;
 
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Plugin\Plugin;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Backend\Backend;
+use Xi\Filelib\Publisher\Publisher;
+
+
 /**
- * Base class for operators
+ * Abstract convenience class for operators
  * 
- * @package Xi_Filelib
  * @author pekkis
  * 
  */
 abstract class AbstractOperator
 {
     /**
-     * Cache prefix
-     * 
-     * @var string
-     */
-    protected $_cachePrefix = '';
-    
-    /**
      * Filelib reference
      * 
-     * @var \Xi\Filelib\FileLibrary
+     * @var FileLibrary
      */
-    protected $_filelib;
+    protected $filelib;
     
-    public function __construct(\Xi\Filelib\FileLibrary $filelib)
+    public function __construct(FileLibrary $filelib)
     {
-        $this->_filelib = $filelib;
+        $this->filelib = $filelib;
     }
     
     /**
      * Returns backend
      *
-     * @return \Xi\Filelib\Backend\Backend
+     * @return Backend
      */
     public function getBackend()
     {
         return $this->getFilelib()->getBackend();
     }
 
+    
     /**
-     * Returns filelib
+     * Returns storage
      *
-     * @return \Xi\Filelib\FileLibrary
+     * @return Storage
      */
-    public function getFilelib()
+    public function getStorage()
     {
-        return $this->_filelib;
+        return $this->getFilelib()->getStorage();
     }
     
     /**
-     * Returns cache
-     * 
-     * @return \Xi\Filelib\Cache\Cache
+     * Returns publisher
+     *
+     * @return Publisher
      */
-    public function getCache()
+    public function getPublisher()
     {
-        return $this->getFilelib()->getCache();
+        return $this->getFilelib()->getPublisher();
     }
-
+    
     /**
-     * Returns cache identifier
-     * 
-     * @param mixed $id Id
-     * @return string
+     * Returns filelib
+     *
+     * @return FileLibrary
      */
-    public function getCacheIdentifier($id)
+    public function getFilelib()
     {
-        if(is_array($id)) {
-            $id = implode('_', $id);
-        }
-        return $this->_cachePrefix . '_' . $id;
+        return $this->filelib;
     }
 
+    
     /**
-     * Tries to load folder from cache, returns object on success.
-     * 
-     * @param mixed $id
-     * @return mixed 
+     * Returns Acl
+     *
+     * @return Acl
      */
-    public function findCached($id) {
-        return $this->getCache()->load($this->getCacheIdentifier($id));
-    }
-
-
-    /**
-     * Clears cache for id
-     * 
-     * @param mixed $id
-     */
-    public function clearCached($id)
+    public function getAcl()
     {
-        $this->getCache()->remove($this->getCacheIdentifier($id));
+        return $this->getFilelib()->getAcl();
     }
-
-
-    /**
-     * Stores folder to cache
-     * 
-     * @param mixed $id
-     * @param mixed $data
-     */
-    public function storeCached($id, $data)
-    {
-        $this->getCache()->save($this->getCacheIdentifier($id), $data->toArray());
-    }
-
     
      /**
      * Transforms raw array to folder item
      * @param array $data
-     * @return \Xi\Filelib\Folder\Folder
+     * @return Folder
      */
     protected function _folderItemFromArray(array $data)
     {
-        return $this->getFilelib()->folder()->getInstance($data);
+        return $this->getFilelib()->getFolderOperator()->getInstance($data);
     }
         
     /**
      * Transforms raw array to file item
      * @param array $data
-     * @return null
+     * @return File
      */
     protected function _fileItemFromArray(array $data)
     {
-        return $this->getFilelib()->file()->getInstance($data);
+        return $this->getFilelib()->getFileOperator()->getInstance($data);
     }
     
     
