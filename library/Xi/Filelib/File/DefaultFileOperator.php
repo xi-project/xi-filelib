@@ -2,45 +2,48 @@
 
 namespace Xi\Filelib\File;
 
-use \Xi\Filelib\File\FileOperator;
-use \Xi\Filelib\AbstractOperator;
-use \Xi\Filelib\FilelibException;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\AbstractOperator;
+use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\Plugin;
 use \InvalidArgumentException;
-
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Acl\Acl;
+use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
 /**
- * Operates on files
+ * File operator
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class DefaultFileOperator extends AbstractOperator implements FileOperator
 {
-    
+
     /**
      * @var array Profiles
      */
     private $_profiles = array();
-    
+
     /**
      * @var string Fileitem class
      */
     private $_className = 'Xi\Filelib\File\FileItem';
-    
+
     /**
      * Sets fileitem class
      *
      * @param string $className Class name
-     * @return \Xi\Filelib\FileLibrary
+     * @return DefaultFileOperator
      */
     public function setClass($className)
     {
         $this->_className = $className;
         return $this;
     }
-
 
     /**
      * Returns fileitem class
@@ -51,8 +54,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->_className;
     }
-    
-    
+
     /**
      * Returns an instance of the currently set fileitem class
      * 
@@ -63,12 +65,12 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         $className = $this->getClass();
         $file = new $className();
         $file->setFilelib($this->getFilelib());
-        if($data) {
-            $file->fromArray($data);   
+        if ($data) {
+            $file->fromArray($data);
         }
-        return $file;        
+        return $file;
     }
-    
+
     /**
      * Adds a file profile
      * 
@@ -80,10 +82,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         $profile->setFilelib($this->getFilelib());
         $profile->getLinker()->setFilelib($this->getFilelib());
 
-        if(!isset($this->_profiles[$profile->getIdentifier()])) {
+        if (!isset($this->_profiles[$profile->getIdentifier()])) {
             $this->_profiles[$profile->getIdentifier()] = $profile;
         }
-        
+
         return $this;
     }
 
@@ -96,7 +98,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function getProfile($identifier)
     {
-        if(!isset($this->_profiles[$identifier])) {
+        if (!isset($this->_profiles[$identifier])) {
             throw new InvalidArgumentException("File profile '{$identifier}' not found");
         }
 
@@ -112,30 +114,29 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->_profiles;
     }
-    
 
     /**
      * Updates a file
      *
-     * @param \Xi\Filelib\File\File $file
-     * @return unknown_type
+     * @param File $file
+     * @return DefaultFileOperator
      */
-    public function update(\Xi\Filelib\File\File $file)
+    public function update(File $file)
     {
-        $this->unpublish($file);        
-        
-        $file->setLink($file->getProfileObject()->getLinker()->getLink($file, true));
-                
+        $this->unpublish($file);
+
+        $linker = $this->getProfile($file->getProfile())->getLinker();
+
+        $file->setLink($linker->getLink($file, true));
+
         $this->getBackend()->updateFile($file);
 
-        if($this->isReadableByAnonymous($file)) {
+        if ($this->isReadableByAnonymous($file)) {
             $this->publish($file);
         }
-        
+
         return $this;
-
     }
-
 
     /**
      * Finds a file
@@ -146,32 +147,27 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     public function find($id)
     {
         $file = $this->getBackend()->findFile($id);
-                    
-        if(!$file) {
+
+        if (!$file) {
             return false;
         }
 
         $file = $this->getInstance($file);
         return $file;
-
     }
-    
-    
+
     public function findByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
     {
         $file = $this->getBackend()->findFileByFilename($folder, $filename);
-        
-        if(!$file) {
+
+        if (!$file) {
             return false;
         }
 
         $file = $this->getInstance($file);
 
         return $file;
-                
     }
-    
-    
 
     /**
      * Finds and returns all files
@@ -183,103 +179,61 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         $ritems = $this->getBackend()->findAllFiles();
 
         $items = array();
-        foreach($ritems as $ritem) {
+        foreach ($ritems as $ritem) {
             $item = $this->getInstance($ritem);
             $items[] = $item;
         }
         return $items;
     }
 
-
-
-
     /**
      * Returns whether a file is anonymous
      *
-     * @todo This is still mock!
-     * @param \Xi\Filelib\File\File $file File
+     * @param File $file File
      * @return boolean
      */
-    public function isReadableByAnonymous(\Xi\Filelib\File\File $file)
+    public function isReadableByAnonymous(File $file)
     {
-        return $this->getFilelib()->getAcl()->isReadableByAnonymous($file);
-
+        return $this->getAcl()->isReadableByAnonymous($file);
     }
-
 
     /**
      * Gets a new upload
      *
      * @param string $path Path to upload file
-     * @return \Xi\Filelib\File\Upload\FileUpload
+     * @return FileUpload
      */
     public function prepareUpload($path)
     {
-        $upload = new \Xi\Filelib\File\Upload\FileUpload($path);
+        $upload = new FileUpload($path);
         return $upload;
     }
-
-    
-    /**
-     * Uploads many files at once
-     * 
-     * @param Iterator $batch Collection of \SplFileInfo objects
-     * @return ArrayIterator Collection of uploaded file items
-     */
-    public function uploadBatch(\Iterator $batch, $folder, $profile = 'default')
-    {
-        if(!($folder instanceof \Xi\Filelib\Folder\Folder)) {
-            throw new \Xi\Filelib\FilelibException('Invalid folder supplied for batch upload');
-        }
-        
-        foreach ($batch as $item) {
-            if (!($item instanceof \SplFileInfo)) {
-                throw new \Xi\Filelib\FilelibException('Invalid upload detected in batch');
-            }
-        }
-                
-        $ret = new \ArrayIterator(array());
-        foreach ($batch as $item) {
-            if($item->isFile()) {
-                $upload = $this->prepareUpload($item->getPathname());
-                $uploaded = $this->upload($upload, $folder, $profile);
-                $ret->append($uploaded);
-            }
-        }
-        
-        return $ret;
-    }
-    
-    
 
     /**
      * Uploads file to filelib.
      *
      * @param mixed $upload Uploadable, path or object
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @return \Xi\Filelib\File\File
+     * @param Folder $folder
+     * @return File
      * @throws \Xi\Filelib\FilelibException
+     * @todo Remove the upload kludgeration with prepareUpload
      */
-    public function upload($upload, $folder, $profile = 'default')
+    public function upload($upload, Folder $folder, $profile = 'default')
     {
-        if(!($folder instanceof \Xi\Filelib\Folder\Folder)) {
-            throw new \Xi\Filelib\FilelibException('Invalid folder supplied for upload');
-        }
-        
-        if(!$upload instanceof \Xi\Filelib\File\Upload\FileUpload) {
+        if (!$upload instanceof FileUpload) {
             $upload = $this->prepareUpload($upload);
         }
-        
-        if (!$this->getFilelib()->getAcl()->isWriteable($folder)) {
-            throw new \Xi\Filelib\FilelibException("Folder '{$folder->getId()}'not writeable");
+
+        if (!$this->getAcl()->isWriteable($folder)) {
+            throw new FilelibException("Folder '{$folder->getId()}'not writeable");
         }
-        
-        $profileObj = $this->getFilelib()->file()->getProfile($profile);
-        foreach($profileObj->getPlugins() as $plugin) {
+
+        $profileObj = $this->getProfile($profile);
+        foreach ($profileObj->getPlugins() as $plugin) {
             $upload = $plugin->beforeUpload($upload);
         }
-                
-        $file = $this->getFilelib()->getFileOperator()->getInstance(array(
+
+        $file = $this->getInstance(array(
             'folder_id' => $folder->getId(),
             'mimetype' => $upload->getMimeType(),
             'size' => $upload->getSize(),
@@ -287,73 +241,46 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             'profile' => $profile,
             'date_uploaded' => $upload->getDateUploaded(),
         ));
-        
-        $this->getFilelib()->getBackend()->upload($file, $folder);
-        
-        // @todo: identity map, unit o work etc
-        if(!$file->getId()) {
-            throw new \Xi\Filelib\FilelibException("Upload failed");
-        }
-                
+
+        $this->getBackend()->upload($file, $folder);
+
         $file->setLink($profileObj->getLinker()->getLink($file, true));
-        
-        $this->getFilelib()->getBackend()->updateFile($file);
-        
-        try {
-            
-            $this->getFilelib()->getStorage()->store($file, $upload->getRealPath());
-            
-            foreach($file->getProfileObject()->getPlugins() as $plugin) {
-                $plugin->afterUpload($file);
-            }
-            
-            if($this->getFilelib()->getAcl()->isReadableByAnonymous($file)) {
-                $this->getFilelib()->getFileOperator()->publish($file);
-            }
-            
-        } catch(Exception $e) {
-            
-            // Maybe log here?
-            throw $e;
+
+        $this->getBackend()->updateFile($file);
+
+        $this->getStorage()->store($file, $upload->getRealPath());
+
+        foreach ($profileObj->getPlugins() as $plugin) {
+            $plugin->afterUpload($file);
         }
 
+        if ($this->getAcl()->isReadableByAnonymous($file)) {
+            $this->publish($file);
+        }
 
         return $file;
-
     }
-    
-
 
     /**
      * Deletes a file
      *
-     * @param \Xi\Filelib\File\File $file
-     * @throws \Xi\Filelib\FilelibException
+     * @param File $file
      */
     public function delete(\Xi\Filelib\File\File $file)
     {
-        try {
+        $this->unpublish($file);
 
-            $this->unpublish($file);
-            
-            $this->getBackend()->deleteFile($file);
-            
-            $this->getFilelib()->getStorage()->delete($file);
+        $this->getBackend()->deleteFile($file);
 
-            foreach($file->getProfileObject()->getPlugins() as $plugin) {
-                if($plugin instanceof \Xi\Filelib\Plugin\VersionProvider\VersionProvider && $plugin->providesFor($file)) {
-                    $plugin->onDelete($file);
-                }
-            }
-            	
-            return true;
-            	
-        } catch(Exception $e) {
-            throw new \Xi\Filelib\FilelibException($e->getMessage());
+        $this->getStorage()->delete($file);
+
+        // @todo: refactor dem goddamn plugins to Symfony events
+        foreach ($this->getProfile($file->getProfile())->getPlugins() as $plugin) {
+            $plugin->onDelete($file);
         }
 
+        return true;
     }
-
 
     /**
      * Returns file type of a file
@@ -368,147 +295,55 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         return $split[0];
     }
 
-
     /**
      * Returns whether a file has a certain version
      *
-     * @param \Xi\Filelib\File\File $file File item
+     * @param File $file File item
      * @param string $version Version
      * @return boolean
      */
-    public function hasVersion(\Xi\Filelib\File\File $file, $version)
+    public function hasVersion(File $file, $version)
     {
-        $filetype = $this->getType($file);
-        $profile = $file->getProfileObject();
-        if($profile->fileHasVersion($file, $version)) {
-            return true;
-        }
-        return false;
+        $profile = $this->getProfile($file->getProfile());
+        return $profile->fileHasVersion($file, $version);
     }
-
 
     /**
      * Returns version provider for a file/version
      *
-     * @param \Xi\Filelib\File\File $file File item
+     * @param File $file File item
      * @param string $version Version
-     * @return object Provider
+     * @return VersionProvider Provider
      */
-    public function getVersionProvider(\Xi\Filelib\File\File $file, $version)
+    public function getVersionProvider(File $file, $version)
     {
-        return $file->getProfileObject()->getVersionProvider($file, $version);
+        $profile = $this->getProfile($file->getProfile());
+        return $profile->getVersionProvider($file, $version);
     }
 
-    
-    public function getUrl(\Xi\Filelib\File\File $file, $opts = array())
-    {
-        if(!$file->getId()) {
-            throw new \Xi\Filelib\FilelibException('File has no id');
-        }
-        
-        
-        if (isset($opts['version']) && $opts['version'] !== 'original') {
-            $version = $opts['version'];
-            
-            if(!$this->hasVersion($file, $version)) {
-                throw new \Xi\Filelib\FilelibException("Version '{$version}' is not available", 404);
-            }
-            
-            $provider = $this->getVersionProvider($file, $version);
-            $url = $this->getFilelib()->getPublisher()->getUrlVersion($file, $provider);
-                     
-        } else {
-                        
-            if(!$file->getProfileObject()->getAccessToOriginal()) {
-                throw new \Xi\Filelib\FilelibException("Access to the original file is not allowed", 403);
-            }
-            
-            $url = $this->getFilelib()->getPublisher()->getUrl($file);
-        }
-        return $url;
-    }
-    
-
-    /**
-     * Renders a file to a response
-     *
-     * @param \Xi_Filelib File $file item
-     * @param \Zend_Controller_Response_Http $response Response
-     * @param array $opts Options
-     */
-    public function render(\Xi\Filelib\File\File $file, $opts = array())
-    {
-
-        
-        
-        
-        
-        if(!$file->getId()) {
-            throw new \Xi\Filelib\FilelibException('File has no id');
-        }
-        
-        if(!$this->getFilelib()->getAcl()->isReadable($file)) {
-            throw new \Xi\Filelib\FilelibException('Not readable', 404);
-        }
-        
-        if (isset($opts['version']) && $opts['version'] !== 'original') {
-            $version = $opts['version'];
-            if(!$this->hasVersion($file, $version)) {
-                throw new \Xi\Filelib\FilelibException("Version '{$version}' is not available");
-            }
-            $provider = $this->getVersionProvider($file, $version);
-            $res = $this->getFilelib()->getStorage()->retrieveVersion($file, $provider);
-        } else {
-
-            if(!$file->getProfileObject()->getAccessToOriginal()) {
-                throw new \Xi\Filelib\FilelibException("Access to the original file is not allowed", 403);
-            }
-            
-            $res = $this->getFilelib()->getStorage()->retrieve($file);
-        }
-
-        if(!is_readable($res->getPathname())) {
-            throw new \Xi\Filelib\FilelibException('File not readable', 404);
-        }
-
-        return file_get_contents($res->getPathname());
-
-    }
-
-    
     public function publish(\Xi\Filelib\File\File $file)
     {
-        if(!$file->getId()) {
-            throw new \Xi\Filelib\FilelibException('File has no id');
+        $profile = $this->getProfile($file->getProfile());
+        if ($profile->getPublishOriginal()) {
+            $this->getPublisher()->publish($file);
         }
-        
-        if($file->getProfileObject()->getPublishOriginal()) {
-            $this->getFilelib()->getPublisher()->publish($file);    
-        }                
-        
-        foreach($file->getProfileObject()->getPlugins() as $plugin) {
-            
+
+        foreach ($profile->getPlugins() as $plugin) {
             $plugin->onPublish($file);
-            
         }
-        
-    }
-    
-    public function unpublish(\Xi\Filelib\File\File $file)
-    {
-        if(!$file->getId()) {
-            throw new \Xi\Filelib\FilelibException('File has no id');
-        }
-        
-        $this->getFilelib()->getPublisher()->unpublish($file);
-        
-        foreach($file->getProfileObject()->getPlugins() as $plugin) {
-            $plugin->onUnpublish($file);
-        }
-        
     }
 
-    
+    public function unpublish(\Xi\Filelib\File\File $file)
+    {
+        $profile = $this->getProfile($file->getProfile());
+
+        $this->getFilelib()->getPublisher()->unpublish($file);
+
+        foreach ($profile->getPlugins() as $plugin) {
+            $plugin->onUnpublish($file);
+        }
+    }
+
     public function addPlugin(Plugin $plugin, $priority = 0)
     {
         foreach ($plugin->getProfiles() as $profileIdentifier) {
@@ -517,6 +352,4 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         }
     }
 
-    
-    
 }
