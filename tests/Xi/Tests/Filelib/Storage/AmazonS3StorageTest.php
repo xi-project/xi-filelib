@@ -131,8 +131,6 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         
     }
     
-    
-    
     /**
      * @test
      */
@@ -151,6 +149,27 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         $this->assertFalse($ret);
          
     }
+    
+    /**
+     * @test
+     */
+    public function amazonServiceShouldCreateBucketIfItDoesNotExist()
+    {
+        $storage = new AmazonS3Storage();
+        $storage->setFilelib($this->getFilelib());
+        $storage->setKey(S3_KEY);
+        $storage->setSecretKey(S3_SECRETKEY);
+        $storage->setBucket(S3_BUCKET . '_lus');
+        
+        $storage->store($this->file, $this->fileResource);
+        
+        $retrieved = $storage->retrieve($this->file);
+        $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
+        
+        $storage->getAmazonService()->cleanBucket($storage->getBucket());
+        $storage->getAmazonService()->removeBucket($storage->getBucket());
+    }
+    
     
     
 }
