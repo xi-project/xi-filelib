@@ -2,8 +2,16 @@
 
 namespace Xi\Filelib\File;
 
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Plugin\Plugin;
-
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Backend\Backend;
+use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\File\Upload\FileUpload;
 
 /**
  *
@@ -23,8 +31,8 @@ interface FileOperator
     /**
      * Adds a file profile
      * 
-     * @param \Xi\Filelib\File\FileProfile $profile
-     * @return \Xi\Filelib\FileLibrary
+     * @param FileProfile $profile
+     * @return FileLibrary
      */
     public function addProfile(FileProfile $profile);
 
@@ -32,8 +40,8 @@ interface FileOperator
      * Returns a file profile
      * 
      * @param string $identifier File profile identifier
-     * @throws \Xi\Filelib\FilelibException
-     * @return \Xi\Filelib\File\FileProfile
+     * @throws FilelibException
+     * @return FileProfile
      */
     public function getProfile($identifier);
 
@@ -47,20 +55,20 @@ interface FileOperator
     /**
      * Updates a file
      *
-     * @param \Xi\Filelib\File\File $file
+     * @param File $file
      * @return unknown_type
      */
-    public function update(\Xi\Filelib\File\File $file);
+    public function update(File $file);
 
     /**
      * Finds a file
      *
-     * @param mixed $idFile File id
-     * @return \Xi\Filelib\File\File
+     * @param mixed $id File id
+     * @return File
      */
     public function find($id);
     
-    public function findByFilename(\Xi\Filelib\Folder\Folder $folder, $filename);
+    public function findByFilename(Folder $folder, $filename);
     
 
     /**
@@ -77,49 +85,42 @@ interface FileOperator
      * @param \Xi\Filelib\File\File $file File
      * @return boolean
      */
-    public function isReadableByAnonymous(\Xi\Filelib\File\File $file);
+    public function isReadableByAnonymous(File $file);
 
     /**
      * Gets a new upload
      *
      * @param string $path Path to upload file
-     * @return \Xi\Filelib\File\Upload\FileUpload
+     * @return FileUpload
      */
     public function prepareUpload($path);
     
-    /**
-     * Uploads many files at once
-     * 
-     * @param Iterator $batch Collection of \SplFileInfo objects
-     * @return ArrayIterator Collection of uploaded file items
-     */
-    public function uploadBatch(\Iterator $batch, $folder, $profile = 'default');
 
     /**
      * Uploads file to filelib.
      *
      * @param mixed $upload Uploadable, path or object
-     * @param \Xi\Filelib\Folder\Folder $folder
-     * @return \Xi\Filelib\File\File
-     * @throws \Xi\Filelib\FilelibException
+     * @param Folder $folder
+     * @return File
+     * @throws FilelibException
      */
-    public function upload($upload, $folder, $profile = 'default');
+    public function upload($upload, Folder $folder, $profile = 'default');
 
     /**
      * Deletes a file
      *
-     * @param \Xi\Filelib\File\File $file
-     * @throws \Xi\Filelib\FilelibException
+     * @param File $file
+     * @throws FilelibException
      */
-    public function delete(\Xi\Filelib\File\File $file);
+    public function delete(File $file);
 
     /**
      * Returns file type of a file
      *
-     * @param \Xi\Filelib\File\File File $file item
+     * @param File File $file item
      * @return string File type
      */
-    public function getType(\Xi\Filelib\File\File $file);
+    public function getType(File $file);
 
     /**
      * Returns whether a file has a certain version
@@ -128,32 +129,21 @@ interface FileOperator
      * @param string $version Version
      * @return boolean
      */
-    public function hasVersion(\Xi\Filelib\File\File $file, $version);
+    public function hasVersion(File $file, $version);
 
 
     /**
      * Returns version provider for a file/version
      *
-     * @param \Xi\Filelib\File\File $file File item
+     * @param File $file File item
      * @param string $version Version
      * @return object Provider
      */
-    public function getVersionProvider(\Xi\Filelib\File\File $file, $version);
+    public function getVersionProvider(File $file, $version);
     
-    public function getUrl(\Xi\Filelib\File\File $file, $opts = array());
-
-    /**
-     * Renders a file to a response
-     *
-     * @param \Xi_Filelib File $file item
-     * @param \Zend_Controller_Response_Http $response Response
-     * @param array $opts Options
-     */
-    public function render(\Xi\Filelib\File\File $file, $opts = array());
+    public function publish(File $file);
     
-    public function publish(\Xi\Filelib\File\File $file);
-    
-    public function unpublish(\Xi\Filelib\File\File $file);
+    public function unpublish(File $file);
     
     /**
      * Sets file item class name
@@ -167,5 +157,26 @@ interface FileOperator
 
     
     public function addPlugin(Plugin $plugin, $priority = 0);
+    
+    /**
+     * @return Publisher
+     */
+    public function getPublisher();
+    
+    /**
+     * @return Storage
+     */
+    public function getStorage();
+    
+    /**
+     * @return Backend
+     */
+    public function getBackend();
+    
+    /**
+     * @return Acl
+     */
+    public function getAcl();
+    
     
 }

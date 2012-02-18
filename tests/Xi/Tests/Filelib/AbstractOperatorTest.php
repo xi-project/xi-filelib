@@ -31,6 +31,62 @@ class AbstractOperatorTest extends TestCase
         
     }
 
+    
+    /**
+     * @test
+     */
+    public function getStorageShouldDelegateToFilelib()
+    {
+        $filelib = $this->getMockedFilelib();
+        $filelib->expects($this->once())->method('getStorage');
+        
+        $operator = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+                         ->setMethods(array())
+                         ->setConstructorArgs(array($filelib))
+                         ->getMockForAbstractClass();
+                
+        $operator->getStorage();
+        
+    }
+
+    
+    /**
+     * @test
+     */
+    public function getPublisherShouldDelegateToFilelib()
+    {
+        $filelib = $this->getMockedFilelib();
+        $filelib->expects($this->once())->method('getPublisher');
+        
+        $operator = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+                         ->setMethods(array())
+                         ->setConstructorArgs(array($filelib))
+                         ->getMockForAbstractClass();
+                
+        $operator->getPublisher();
+        
+    }
+
+    
+    /**
+     * @test
+     */
+    public function getAclShouldDelegateToFilelib()
+    {
+        $filelib = $this->getMockedFilelib();
+        $filelib->expects($this->once())->method('getAcl');
+        
+        $operator = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+                         ->setMethods(array())
+                         ->setConstructorArgs(array($filelib))
+                         ->getMockForAbstractClass();
+                
+        $operator->getAcl();
+    }
+
+    
+    
+    
     /**
      * @test
      */

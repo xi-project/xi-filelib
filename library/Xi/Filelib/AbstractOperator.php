@@ -2,10 +2,18 @@
 
 namespace Xi\Filelib;
 
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Plugin\Plugin;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Backend\Backend;
+use Xi\Filelib\Publisher\Publisher;
+
+
 /**
- * Base class for operators
+ * Abstract convenience class for operators
  * 
- * @package Xi_Filelib
  * @author pekkis
  * 
  */
@@ -14,39 +22,71 @@ abstract class AbstractOperator
     /**
      * Filelib reference
      * 
-     * @var \Xi\Filelib\FileLibrary
+     * @var FileLibrary
      */
-    protected $_filelib;
+    protected $filelib;
     
-    public function __construct(\Xi\Filelib\FileLibrary $filelib)
+    public function __construct(FileLibrary $filelib)
     {
-        $this->_filelib = $filelib;
+        $this->filelib = $filelib;
     }
     
     /**
      * Returns backend
      *
-     * @return \Xi\Filelib\Backend\Backend
+     * @return Backend
      */
     public function getBackend()
     {
         return $this->getFilelib()->getBackend();
     }
 
+    
+    /**
+     * Returns storage
+     *
+     * @return Storage
+     */
+    public function getStorage()
+    {
+        return $this->getFilelib()->getStorage();
+    }
+    
+    /**
+     * Returns publisher
+     *
+     * @return Publisher
+     */
+    public function getPublisher()
+    {
+        return $this->getFilelib()->getPublisher();
+    }
+    
     /**
      * Returns filelib
      *
-     * @return \Xi\Filelib\FileLibrary
+     * @return FileLibrary
      */
     public function getFilelib()
     {
-        return $this->_filelib;
+        return $this->filelib;
+    }
+
+    
+    /**
+     * Returns Acl
+     *
+     * @return Acl
+     */
+    public function getAcl()
+    {
+        return $this->getFilelib()->getAcl();
     }
     
      /**
      * Transforms raw array to folder item
      * @param array $data
-     * @return \Xi\Filelib\Folder\Folder
+     * @return Folder
      */
     protected function _folderItemFromArray(array $data)
     {
@@ -56,7 +96,7 @@ abstract class AbstractOperator
     /**
      * Transforms raw array to file item
      * @param array $data
-     * @return null
+     * @return File
      */
     protected function _fileItemFromArray(array $data)
     {
