@@ -261,6 +261,8 @@ class MongoBackend extends AbstractBackend implements Backend
      */
     protected function fileToArray($file)
     {
+        $date = new DateTime();
+
         return array(
             'id'            => (string) $file['_id'],
             'folder_id'     => isset($file['folder_id'])
@@ -274,7 +276,7 @@ class MongoBackend extends AbstractBackend implements Backend
             'date_uploaded' => DateTime::createFromFormat(
                                    'U',
                                    $file['date_uploaded']->sec
-                               ),
+                               )->setTimezone($date->getTimezone()),
         );
     }
 
@@ -286,8 +288,8 @@ class MongoBackend extends AbstractBackend implements Backend
     {
         return array(
             'id'        => (string) $folder['_id'],
-            'parent_id' => isset($folder['folder_id'])
-                               ? $folder['folder_id']
+            'parent_id' => isset($folder['parent_id'])
+                               ? $folder['parent_id']
                                : null,
             'name'      => $folder['name'],
             'url'       => $folder['url']
