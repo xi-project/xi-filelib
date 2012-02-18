@@ -90,17 +90,48 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         $this->storage->store($this->file, $this->fileResource);
                
         $retrieved = $this->storage->retrieve($this->file);
+        
         $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
+        
         $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
          
         $this->storage->delete($this->file);
         
         $ret = $this->storage->getAmazonService()->isObjectAvailable($this->storage->getPath($this->file));
-
-                
+        
         $this->assertFalse($ret);
+        
+        $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
          
     }
+    
+    /**
+     * @test
+     */
+    public function destructorShouldCleanUpTheStoragesMess()
+    {
+        $storage = new AmazonS3Storage();
+        $storage->setFilelib($this->getFilelib());
+        $storage->setKey(S3_KEY);
+        $storage->setSecretKey(S3_SECRETKEY);
+        $storage->setBucket(S3_BUCKET);
+        
+        $storage->store($this->file, $this->fileResource);
+        
+        $retrieved = $storage->retrieve($this->file);
+        $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
+                
+        $retrievedPath = $retrieved->getRealPath();
+        
+        unset($storage);
+        
+        $this->assertFileNotExists($retrievedPath);
+
+        
+        
+    }
+    
+    
     
     /**
      * @test
