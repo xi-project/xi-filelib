@@ -946,25 +946,12 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
     {
         $this->setUpSimpleDataSet();
 
-        $fidata = array(
-            'mimetype'      => 'image/png',
-            'profile'       => 'versioned',
-            'size'          => 1000,
-            'name'          => 'tohtori-vesala.png',
-            'link'          => 'tohtori-vesala.png',
-            'date_uploaded' => '2011-01-01 16:16:16',
-            'id'            => 1,
-            'folder_id'     => 1,
-        );
-
-        $fodata = array(
+        $folder = FolderItem::create(array(
             'id'        => 1,
             'parent_id' => null,
             'url'       => '',
             'name'      => '',
-        );
-
-        $folder = FolderItem::create($fodata);
+        ));
 
         $this->assertFalse(
             $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
