@@ -5,6 +5,9 @@ namespace Xi\Tests\Filelib;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileProfile;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 class FileLibraryTest extends TestCase
 {
     private $dirname;
@@ -307,6 +310,38 @@ class FileLibraryTest extends TestCase
         
         
     }
+    
+    
+    /**
+     * @test
+     */
+    public function getEventDispatcherShouldDefaultToSymfonyDefaultImplementation()
+    {
+        $filelib = new FileLibrary();
+        $dispatcher = $filelib->getEventDispatcher();
+        
+        $this->assertInstanceOf('Symfony\Component\EventDispatcher\EventDispatcher', $dispatcher);
+        
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function getEventDispatcherShouldObeySetter()
+    {
+        $filelib = new FileLibrary();
+        
+        $mock = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        
+        $this->assertSame($filelib, $filelib->setEventDispatcher($mock));
+                
+        $dispatcher = $filelib->getEventDispatcher();
+        
+        $this->assertSame($mock, $dispatcher);
+        
+    }
+    
     
     
 }
