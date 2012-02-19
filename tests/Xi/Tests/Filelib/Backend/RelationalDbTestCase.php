@@ -811,6 +811,18 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
     /**
      * @test
      */
+    public function deleteFileReturnsFalseIfFileIsNotFound()
+    {
+        $this->setUpEmptyDataSet();
+
+        $file = FileItem::create(array('id' => 1));
+
+        $this->assertFalse($this->backend->deleteFile($file));
+    }
+
+    /**
+     * @test
+     */
     public function fileUploadShouldUploadFile()
     {
         $this->setUpSimpleDataSet();
@@ -994,6 +1006,16 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
         $this->backend->setFilelib($filelib);
 
         $this->assertSame($filelib, $this->backend->getFilelib());
+    }
+
+    /**
+     * @test
+     */
+    public function initCanBeCalled()
+    {
+        $this->setUpEmptyDataSet();
+
+        $this->backend->init();
     }
 
     /**
