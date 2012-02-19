@@ -4,8 +4,8 @@ namespace Xi\Tests\Filelib\Plugin;
 
 use Xi\Tests\Filelib\TestCase;
 use Xi\Filelib\File\Upload\FileUpload;
-
 use Xi\Filelib\Plugin\AbstractPlugin;
+use Xi\Filelib\Event\FileProfileEvent;
 
 class AbstractPluginTest extends TestCase
 {
@@ -67,7 +67,52 @@ class AbstractPluginTest extends TestCase
      */
     public function getSubscribedEventsShouldReturnEmptyArray()
     {
-        $subscribedEvents = AbstractPlugin::getSubscribedEvents();
-        $this->assertEquals(array(), $subscribedEvents);
+        $events = AbstractPlugin::getSubscribedEvents();
+        $this->assertArrayHasKey('fileprofile.add', $events);
     }
+    
+    
+    /**
+     * @test
+     */
+    public function onFileProfileAddShouldAddPluginToProfileIfPluginHasProfile()
+    {
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+                       ->setMethods(array('getProfiles'))
+                       ->getMock();
+        
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('lussen'));
+        $profile->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
+        
+                      
+        $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussen', 'hofer')));
+        
+        
+        $event = new FileProfileEvent($profile);
+        
+        $plugin->onFileProfileAdd($event);
+                
+    }
+    
+    /**
+     * @test
+     */
+    public function onFileProfileAddShouldNotAddPluginToProfileIfPluginDoesNotHaveProfile()
+    {
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+                       ->setMethods(array('getProfiles'))
+                       ->getMock();
+        
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('lussentussen'));
+        $profile->expects($this->never())->method('addPlugin');
+                              
+        $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussen', 'hofer')));
+        
+        $event = new FileProfileEvent($profile);
+        $plugin->onFileProfileAdd($event);
+                
+    }
+    
 }
