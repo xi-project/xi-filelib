@@ -115,5 +115,17 @@ class RandomizeNamePluginTest extends TestCase
         
     }
     
+    /**
+     * @test
+     */
+    public function getSubscribedEventsShouldReturnCorrectEvents()
+    {
+        $events = RandomizeNamePlugin::getSubscribedEvents();
+        
+        $this->assertArrayHasKey('file.beforeUpload', $events);
+        
+        
+    }
+    
     
 }

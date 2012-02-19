@@ -14,6 +14,10 @@ use Xi\Filelib\File\Upload\FileUpload;
 class RandomizeNamePlugin extends AbstractPlugin
 {
 
+    static protected $subscribedEvents = array(
+        'file.beforeUpload' => 'beforeUpload'
+    );
+    
     /**
      * @var string Prefix (for uniqid)
      */
