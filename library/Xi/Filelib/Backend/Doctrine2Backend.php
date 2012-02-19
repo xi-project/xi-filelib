@@ -171,7 +171,11 @@ class Doctrine2Backend extends AbstractBackend
      */
     protected function doDeleteFile(File $file)
     {
-        $this->em->remove($this->getFileReference($file));
+        if (!$entity = $this->em->find($this->fileEntityName, $file->getId())) {
+            return false;
+        }
+
+        $this->em->remove($entity);
         $this->em->flush();
 
         return true;

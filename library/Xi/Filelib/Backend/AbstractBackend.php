@@ -158,11 +158,7 @@ abstract class AbstractBackend implements Backend
     {
         $this->assertValidIdentifier($id);
 
-        try {
-            $folder = $this->doFindFolder($id);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        $folder = $this->doFindFolder($id);
 
         if (!$folder) {
             return false;
