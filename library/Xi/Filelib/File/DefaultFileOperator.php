@@ -7,7 +7,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\AbstractOperator;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\Plugin;
-use \InvalidArgumentException;
+use InvalidArgumentException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Acl\Acl;
@@ -26,12 +26,12 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     /**
      * @var array Profiles
      */
-    private $_profiles = array();
+    private $profiles = array();
 
     /**
      * @var string Fileitem class
      */
-    private $_className = 'Xi\Filelib\File\FileItem';
+    private $className = 'Xi\Filelib\File\FileItem';
 
     /**
      * Sets fileitem class
@@ -41,7 +41,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function setClass($className)
     {
-        $this->_className = $className;
+        $this->className = $className;
         return $this;
     }
 
@@ -52,7 +52,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function getClass()
     {
-        return $this->_className;
+        return $this->className;
     }
 
     /**
@@ -76,15 +76,19 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      * 
      * @param FileProfile $profile
      * @return FileLibrary
+     * @throws InvalidArgumentException
      */
     public function addProfile(FileProfile $profile)
     {
+        $identifier = $profile->getIdentifier();
+        if (isset($this->profiles[$identifier])) {
+            throw new InvalidArgumentException("Profile '{$identifier}' already exists");
+        }
+        $this->profiles[$identifier] = $profile;
         $profile->setFilelib($this->getFilelib());
         $profile->getLinker()->setFilelib($this->getFilelib());
-
-        if (!isset($this->_profiles[$profile->getIdentifier()])) {
-            $this->_profiles[$profile->getIdentifier()] = $profile;
-        }
+        
+        $this->getEventDispatcher()->addSubscriber($profile);
 
         return $this;
     }
@@ -98,11 +102,11 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function getProfile($identifier)
     {
-        if (!isset($this->_profiles[$identifier])) {
+        if (!isset($this->profiles[$identifier])) {
             throw new InvalidArgumentException("File profile '{$identifier}' not found");
         }
 
-        return $this->_profiles[$identifier];
+        return $this->profiles[$identifier];
     }
 
     /**
@@ -112,7 +116,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function getProfiles()
     {
-        return $this->_profiles;
+        return $this->profiles;
     }
 
     /**
