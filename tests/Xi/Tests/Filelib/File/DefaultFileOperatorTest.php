@@ -89,6 +89,9 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFileOperator($filelib);
         
+        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($eventDispatcher));
+        
         $this->assertEquals(array(), $op->getProfiles());
         
         $linker = $this->getMockForAbstractClass('Xi\Filelib\Linker\Linker');
@@ -104,6 +107,9 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $profile2 = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile2->expects($this->any())->method('getIdentifier')->will($this->returnValue('lusser'));
         $profile2->expects($this->any())->method('getLinker')->will($this->returnValue($linker2));
+
+        $eventDispatcher->expects($this->at(0))->method('addSubscriber')->with($this->equalTo($profile));
+        $eventDispatcher->expects($this->at(1))->method('addSubscriber')->with($this->equalTo($profile2));
         
         $op->addProfile($profile);
         $this->assertCount(1, $op->getProfiles());
@@ -115,6 +121,33 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertSame($profile2, $op->getProfile('lusser'));
         
     }
+    
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     */
+    public function addProfileShouldFailWhenProfileAlreadyExists()
+    {
+        $linker = $this->getMockForAbstractClass('Xi\Filelib\Linker\Linker');
+        
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile->expects($this->any())->method('getIdentifier')->will($this->returnValue('xooxer'));
+        $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
+        
+        $profile2 = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile2->expects($this->any())->method('getIdentifier')->will($this->returnValue('xooxer'));
+        $profile2->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
+        
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($eventDispatcher));
+        
+        $op = new DefaultFileOperator($filelib);
+        
+        $op->addProfile($profile);
+        $op->addProfile($profile2);
+    }
+    
     
     /**
      * @test

@@ -5,8 +5,20 @@ namespace Xi\Tests\Filelib\Plugin;
 use Xi\Tests\Filelib\TestCase;
 use Xi\Filelib\File\Upload\FileUpload;
 
+use Xi\Filelib\Plugin\AbstractPlugin;
+
 class AbstractPluginTest extends TestCase
 {
+ 
+    /**
+     * @test
+     */
+    public function classShouldExist()
+    {
+        $this->assertTrue(class_exists('Xi\Filelib\Plugin\AbstractPlugin'));
+        $this->assertContains('Xi\Filelib\Plugin\Plugin', class_implements('Xi\Filelib\Plugin\AbstractPlugin'));
+    }
+    
     
     /**
      * @test
@@ -50,5 +62,12 @@ class AbstractPluginTest extends TestCase
     }
     
     
-    
+    /**
+     * @test
+     */
+    public function getSubscribedEventsShouldReturnEmptyArray()
+    {
+        $subscribedEvents = AbstractPlugin::getSubscribedEvents();
+        $this->assertEquals(array(), $subscribedEvents);
+    }
 }

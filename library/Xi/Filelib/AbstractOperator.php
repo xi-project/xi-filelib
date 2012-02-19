@@ -9,7 +9,8 @@ use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Publisher\Publisher;
-
+use Xi\Filelib\Acl\Acl;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Abstract convenience class for operators
@@ -81,6 +82,17 @@ abstract class AbstractOperator
     public function getAcl()
     {
         return $this->getFilelib()->getAcl();
+    }
+
+    
+    /**
+     * Returns Event dispatcher
+     *
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        return $this->getFilelib()->getEventDispatcher();
     }
     
      /**

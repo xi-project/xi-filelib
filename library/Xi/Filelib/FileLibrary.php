@@ -2,8 +2,20 @@
 
 namespace Xi\Filelib;
 
-use Xi\Filelib\Folder\FolderOperator,
-    Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\DefaultFolderOperator;
+use Xi\Filelib\File\DefaultFileOperator;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Backend\Backend;
+use Xi\Filelib\Plugin\Plugin;
+use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\Acl\Acl;
+use Xi\Filelib\File\FileProfile;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use InvalidArgumentException;
+use Xi\Filelib\Event\PluginEvent;
 
 /**
  * Xi filelib
@@ -15,44 +27,68 @@ class FileLibrary
 {
 
     /**
-     * @var \Xi\Filelib\Backend\Backend Backend
+     * @var EventDispatcherInterface
      */
-    private $_backend;
+    private $eventDispatcher;
+    
+    /**
+     * @var Backend Backend
+     */
+    private $backend;
 
     /**
-     * @var \Xi\Filelib\Storage\Storage Storage
+     * @var Storage Storage
      */
-    private $_storage;
+    private $storage;
 
     /**
-     * @var \Xi\Filelib\Publisher\Publisher Publisher
+     * @var Publisher Publisher
      */
-    private $_publisher;
+    private $publisher;
 
     /**
-     * @var \Xi\Filelib\Acl\Acl Acl handler
+     * @var Acl Acl handler
      */
-    private $_acl;
+    private $acl;
 
     /**
-     * File operator
-     * @var \Xi\Filelib\File\FileOperator
+     * @var FileOperator
      */
-    private $_fileOperator;
+    private $fileOperator;
 
     /**
-     * Folder operator
-     * @var \Xi\Filelib\Folder\FolderOperator
+     * @var FolderOperator
      */
-    private $_folderOperator;
+    private $folderOperator;
 
     /**
      * Temporary directory
      * 
      * @var string
      */
-    private $_tempDir;
+    private $tempDir;
 
+    
+    /**
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        if (!$this->eventDispatcher) {
+            $this->eventDispatcher = new EventDispatcher();
+        }
+        return $this->eventDispatcher;
+    }
+
+    
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+        return $this;
+    }
+    
+    
+    
     /**
      * Sets temporary directory
      * 
@@ -61,9 +97,9 @@ class FileLibrary
     public function setTempDir($tempDir)
     {
         if (!is_dir($tempDir) || !is_writable($tempDir)) {
-            throw new \InvalidArgumentException("Temp dir is not writable or does not exist");
+            throw new InvalidArgumentException("Temp dir is not writable or does not exist");
         }
-        $this->_tempDir = $tempDir;
+        $this->tempDir = $tempDir;
     }
 
     /**
@@ -73,17 +109,17 @@ class FileLibrary
      */
     public function getTempDir()
     {
-        if (!$this->_tempDir) {
+        if (!$this->tempDir) {
             $this->setTempDir(sys_get_temp_dir());
         }
 
-        return $this->_tempDir;
+        return $this->tempDir;
     }
 
     /**
      * Shortcut to getFileOperator
      * 
-     * @return \Xi\Filelib\File\FileOperator
+     * @return FileOperator
      */
     public function file()
     {
@@ -93,7 +129,7 @@ class FileLibrary
     /**
      * Shortcut to getFolderOperator
      * 
-     * @return \Xi\Filelib\Folder\FolderOperator
+     * @return FolderOperator
      */
     public function folder()
     {
@@ -108,7 +144,7 @@ class FileLibrary
      */
     public function setFileOperator(FileOperator $fileOperator)
     {
-        $this->_fileOperator = $fileOperator;
+        $this->fileOperator = $fileOperator;
         return $this;
     }
 
@@ -120,42 +156,42 @@ class FileLibrary
      */
     public function setFolderOperator(FolderOperator $folderOperator)
     {
-        $this->_folderOperator = $folderOperator;
+        $this->folderOperator = $folderOperator;
         return $this;
     }
 
     /**
      * Returns file operator
      * 
-     * @return \Xi\Filelib\File\FileOperator
+     * @return FileOperator
      */
     public function getFileOperator()
     {
-        if (!$this->_fileOperator) {
-            $this->_fileOperator = new File\DefaultFileOperator($this);
+        if (!$this->fileOperator) {
+            $this->fileOperator = new DefaultFileOperator($this);
         }
-        return $this->_fileOperator;
+        return $this->fileOperator;
     }
 
     /**
      * Returns folder operator
      * 
-     * @return Xi\Filelib\Folder\FolderOperator 
+     * @return FolderOperator 
      */
     public function getFolderOperator()
     {
-        if (!$this->_folderOperator) {
-            $this->_folderOperator = new Folder\DefaultFolderOperator($this);
+        if (!$this->folderOperator) {
+            $this->folderOperator = new DefaultFolderOperator($this);
         }
 
-        return $this->_folderOperator;
+        return $this->folderOperator;
     }
 
     /**
      * Sets fully qualified fileitem classname
      *
      * @param string $fileItemClass Class name
-     * @return \Xi\Filelib\FileLibrary
+     * @return FileLibrary
      */
     public function setFileItemClass($fileItemClass)
     {
@@ -198,101 +234,101 @@ class FileLibrary
     /**
      * Sets storage
      *
-     * @param \Xi\Filelib\Storage\Storage $storage
-     * @return \Xi\Filelib\FileLibrary
+     * @param Storage $storage
+     * @return FileLibrary
      */
-    public function setStorage(Storage\Storage $storage)
+    public function setStorage(Storage $storage)
     {
         $storage->setFilelib($this);
-        $this->_storage = $storage;
+        $this->storage = $storage;
         return $this;
     }
 
     /**
      * Returns storage
      *
-     * @return \Xi\Filelib\Storage\Storage
+     * @return Storage
      */
     public function getStorage()
     {
-        return $this->_storage;
+        return $this->storage;
     }
 
     /**
      * Sets publisher
      *
-     * @param \Xi\Filelib\Publisher\Interface $publisher
-     * @return \Xi\Filelib\FileLibrary
+     * @param Publisher $publisher
+     * @return FileLibrary
      */
-    public function setPublisher(Publisher\Publisher $publisher)
+    public function setPublisher(Publisher $publisher)
     {
         $publisher->setFilelib($this);
-        $this->_publisher = $publisher;
+        $this->publisher = $publisher;
         return $this;
     }
 
     /**
      * Returns publisher
      *
-     * @return \Xi\Filelib\Publisher\Publisher
+     * @return Publisher
      */
     public function getPublisher()
     {
-        return $this->_publisher;
+        return $this->publisher;
     }
 
     /**
      * Sets backend
      *
-     * @param \Xi\Filelib\Backend\Backend $backend
-     * @return \Xi\Filelib\FileLibrary
+     * @param Backend $backend
+     * @return FileLibrary
      */
-    public function setBackend(Backend\Backend $backend)
+    public function setBackend(Backend $backend)
     {
         $backend->setFilelib($this);
         $backend->init();
-        $this->_backend = $backend;
+        $this->backend = $backend;
         return $this;
     }
 
     /**
      * Returns backend
      *
-     * @return \Xi\Filelib\Backend\Backend
+     * @return Backend
      */
     public function getBackend()
     {
-        return $this->_backend;
+        return $this->backend;
     }
 
     /**
      * Sets acl handler
      *
-     * @param \Xi\Filelib\Acl\Acl $acl
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @param Acl $acl
+     * @return FileLibrary Filelib
      */
-    public function setAcl(Acl\Acl $acl)
+    public function setAcl(Acl $acl)
     {
-        $this->_acl = $acl;
+        $this->acl = $acl;
         return $this;
     }
 
     /**
      * Returns acl handler
      *
-     * @return \Xi\Filelib\Acl\Acl
+     * @return Acl
      */
     public function getAcl()
     {
-        return $this->_acl;
+        return $this->acl;
     }
 
     /**
      * Adds a file profile
      * 
-     * @param File\FileProfile $profile
+     * @param FileProfile $profile
      */
-    public function addProfile(File\FileProfile $profile)
+    public function addProfile(FileProfile $profile)
     {
         $this->getFileOperator()->addProfile($profile);
     }
@@ -310,13 +346,18 @@ class FileLibrary
     /**
      * Adds a plugin
      *
-     * @param \Xi\Filelib\Plugin\Plugin Plugin $plugin
-     * @return \Xi\Filelib\FileLibrary
+     * @param Plugin Plugin $plugin
+     * @return FileLibrary
      */
-    public function addPlugin(Plugin\Plugin $plugin, $priority = 1000)
+    public function addPlugin(Plugin $plugin, $priority = 1000)
     {
         $plugin->setFilelib($this);
-        $this->getFileOperator()->addPlugin($plugin, $priority);
+        
+        $this->getEventDispatcher()->addSubscriber($plugin);
+        
+        $event = new PluginEvent($plugin);
+        $this->getEventDispatcher()->dispatch('plugin.add', $event);
+        
         $plugin->init();
         return $this;
     }
