@@ -13,6 +13,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Event\FileProfileEvent;
 
 /**
  * File operator
@@ -90,6 +91,9 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         
         $this->getEventDispatcher()->addSubscriber($profile);
 
+        $event = new FileProfileEvent($profile);
+        $this->getEventDispatcher()->dispatch('fileprofile.add', $event);
+        
         return $this;
     }
 

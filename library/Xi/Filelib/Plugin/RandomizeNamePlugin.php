@@ -15,6 +15,7 @@ class RandomizeNamePlugin extends AbstractPlugin
 {
 
     static protected $subscribedEvents = array(
+        'fileprofile.add' => 'onFileProfileAdd',
         'file.beforeUpload' => 'beforeUpload'
     );
     
