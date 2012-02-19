@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Folder;
 
+use \Xi\Filelib\FileLibrary;
 use \Xi\Filelib\FilelibException;
 
 /**
@@ -13,78 +14,103 @@ use \Xi\Filelib\FilelibException;
 class FolderItem implements Folder
 {
     /**
-     * @var \Xi\Filelib\FileLibrary Filelib
+     * Key to method mapping for fromArray
+     * 
+     * @var array
      */
-    private $_filelib;
+    protected static $map = array(
+        'id' => 'setId',
+        'parent_id' => 'setParentId',
+        'name' => 'setName',
+        'url' => 'setUrl',
+    );
 
-    private $_id;
     
-    private $_parentId;
+    /**
+     * @var FileLibrary
+     */
+    private $filelib;
+
+    private $id;
     
-    private $_name;
+    private $parentId;
     
-    private $_url;
+    private $name;
+    
+    private $url;
             
     /**
      * Sets filelib
      *
-     * @param \Xi_Filelib $filelib
+     * @param FileLibrary $filelib
+     * @return FolderItem
      */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib)
+    public function setFilelib(FileLibrary $filelib)
     {
-        $this->_filelib = $filelib;
+        $this->filelib = $filelib;
+        return $this;
     }
 
     /**
      * Returns filelib
      *
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @return FileLibrary Filelib
      */
     public function getFilelib()
     {
-        return $this->_filelib;
+        return $this->filelib;
     }
             
+    /**
+     * Sets id
+     * 
+     * @param type $id
+     * @return FolderItem 
+     */
     public function setId($id)
     {
-        $this->_id = $id;
+        $this->id = $id;
+        return $this;
     }
     
     public function getId()
     {
-        return $this->_id;
+        return $this->id;
     }
     
     public function setParentId($parentId)
     {
-        $this->_parentId = $parentId;
+        $this->parentId = $parentId;
+        return $this;
     }
     
     public function getParentId()
     {
-        return $this->_parentId;
+        return $this->parentId;
     }
     
     public function setName($name)
     {
-        $this->_name = $name;
+        $this->name = $name;
+        return $this;
     }
     
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
     
     
     public function setUrl($url)
     {
-        $this->_url = $url;
+        $this->url = $url;
+        return $this;
     }
     
     
     public function getUrl()
     {
-        return $this->_url;
+        return $this->url;
     }
     
     
@@ -101,20 +127,19 @@ class FolderItem implements Folder
     
     public function fromArray(array $data)
     {
-        if(isset($data['id'])) {
-            $this->setId($data['id']);  
-        } 
-        $this->setParentId($data['parent_id']);
-        $this->setName($data['name']);
-        
-        if(isset($data['url'])) {
-            $this->setUrl($data['url']);
+        foreach(static::$map as $key => $method) {
+            if(isset($data[$key])) {
+                $this->$method($data[$key]);
+            }
         }
-                
         return $this;
     }
-    
-    
+
+    /**
+     *
+     * @param array $data
+     * @return type FileItem
+     */
     public static function create(array $data)
     {
         $folder = new self();
