@@ -532,6 +532,16 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function deleteFileReturnsFalseIfFileIsNotFound()
+    {
+        $file = FileItem::create(array('id' => '49a7011a05c677b9a9166100'));
+
+        $this->assertFalse($this->backend->deleteFile($file));
+    }
+
+    /**
+     * @test
+     */
     public function fileUploadShouldUploadFile()
     {
         $fidata = array(
@@ -656,8 +666,13 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('url', $folder);
 
         $this->assertNull($folder['parent_id']);
-        
     }
-    
-    
+
+    /**
+     * @test
+     */
+    public function initCanBeCalled()
+    {
+        $this->backend->init();
+    }
 }
