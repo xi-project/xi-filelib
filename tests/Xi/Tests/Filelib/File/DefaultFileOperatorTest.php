@@ -108,9 +108,11 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $profile2->expects($this->any())->method('getIdentifier')->will($this->returnValue('lusser'));
         $profile2->expects($this->any())->method('getLinker')->will($this->returnValue($linker2));
 
-        $eventDispatcher->expects($this->at(0))->method('addSubscriber')->with($this->equalTo($profile));
-        $eventDispatcher->expects($this->at(1))->method('addSubscriber')->with($this->equalTo($profile2));
-        
+        $eventDispatcher->expects($this->exactly(2))->method('addSubscriber')->with($this->isInstanceOf('Xi\Filelib\File\FileProfile'));
+
+        $eventDispatcher->expects($this->exactly(2))->method('dispatch')
+                        ->with($this->equalTo('fileprofile.add'), $this->isInstanceOf('Xi\Filelib\Event\FileProfileEvent'));
+
         $op->addProfile($profile);
         $this->assertCount(1, $op->getProfiles());
         

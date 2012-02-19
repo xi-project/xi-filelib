@@ -121,10 +121,8 @@ class RandomizeNamePluginTest extends TestCase
     public function getSubscribedEventsShouldReturnCorrectEvents()
     {
         $events = RandomizeNamePlugin::getSubscribedEvents();
-        
+        $this->assertArrayHasKey('fileprofile.add', $events);
         $this->assertArrayHasKey('file.beforeUpload', $events);
-        
-        
     }
     
     

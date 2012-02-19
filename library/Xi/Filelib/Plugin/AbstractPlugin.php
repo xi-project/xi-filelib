@@ -6,6 +6,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Event\FileProfileEvent;
 
 /**
  * Abstract plugin class provides empty convenience methods for all hooks.
@@ -29,7 +30,9 @@ abstract class AbstractPlugin implements Plugin
     /**
      * @var array Subscribed events
      */
-    static protected $subscribedEvents = array();
+    static protected $subscribedEvents = array(
+        'fileprofile.add' => 'onFileProfileAdd',
+    );
     
     /**
      * Returns an array of subscribed events
@@ -110,6 +113,15 @@ abstract class AbstractPlugin implements Plugin
     
     public function onUnpublish(File $file)
     { }
+    
+    
+    public function onFileProfileAdd(FileProfileEvent $event)
+    {
+        $profile = $event->getProfile();
+        if (in_array($profile->getIdentifier(), $this->getProfiles())) {
+            $profile->addPlugin($this);
+        }
+    }
     
 
 }
