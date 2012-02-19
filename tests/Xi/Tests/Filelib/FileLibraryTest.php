@@ -293,23 +293,51 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function addPluginShouldDelegateToFileOperator()
+    public function addPluginShouldFirePluginAddEvent()
     {
         $fop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $fop->expects($this->once())->method('addPlugin')->with($this->isInstanceOf('Xi\Filelib\Plugin\Plugin'));
         
         $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->once())->method('init');
                 
         $filelib = new FileLibrary();
         $filelib->setFileOperator($fop);
-                
+        
+        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $eventDispatcher->expects($this->once())->method('dispatch')
+                        ->with($this->equalTo('plugin.add'), $this->isInstanceOf('Xi\Filelib\Event\PluginEvent'));
+        
+        $filelib->setEventDispatcher($eventDispatcher);
+        
         $plugin->expects($this->once())->method('setFilelib')->with($this->equalTo($filelib));
         
         $filelib->addPlugin($plugin);
         
         
     }
+
+    
+    /**
+     * @test
+     */
+    public function addPluginShouldAddPluginAsSubscriber()
+    {
+        $fop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        
+        $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
+                
+        $filelib = new FileLibrary();
+        $filelib->setFileOperator($fop);
+        
+        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $eventDispatcher->expects($this->once())->method('addSubscriber')
+                        ->with($this->equalTo($plugin));
+        
+        $filelib->setEventDispatcher($eventDispatcher);
+                        
+        $filelib->addPlugin($plugin);
+    }
+
     
     
     /**

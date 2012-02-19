@@ -6,15 +6,73 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\File\FileItem;
 
+use Xi\Filelib\Event\PluginEvent;
+
 class FileProfileTest extends \Xi\Tests\Filelib\TestCase
 {
+    
+    
     /**
      * @test
      */
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\File\FileProfile'));
+        $this->assertContains(
+            'Symfony\Component\EventDispatcher\EventSubscriberInterface', class_implements('Xi\Filelib\File\FileProfile')
+        );
     }
+
+    /**
+     * @test
+     */
+    public function classShouldSubscribeToCorrectEvents()
+    {
+        $events = FileProfile::getSubscribedEvents();
+        $this->assertArrayHasKey('plugin.add', $events);
+    }
+    
+    /**
+     * @test
+     */
+    public function onPluginAddShouldCallAddPluginIfPluginHasProfile()
+    {
+        $profile = $this->getMockBuilder('Xi\Filelib\File\FileProfile')
+                     ->setMethods(array('addPlugin'))
+                     ->getMock();
+        $profile->setIdentifier('lussen');
+        
+        $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
+        $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussen', 'hofer')));
+
+        $profile->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
+        
+        $event = new PluginEvent($plugin);
+        
+        $profile->onPluginAdd($event);
+        
+    }
+    
+    /**
+     * @test
+     */
+    public function onPluginAddShouldNotCallAddPluginIfPluginDoesNotHaveProfile()
+    {
+        $profile = $this->getMockBuilder('Xi\Filelib\File\FileProfile')
+                     ->setMethods(array('addPlugin'))
+                     ->getMock();
+        $profile->setIdentifier('non-existing-profile');
+        
+        $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
+        $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussen', 'hofer')));
+
+        $profile->expects($this->never())->method('addPlugin');
+        
+        $event = new PluginEvent($plugin);
+        $profile->onPluginAdd($event);
+    }
+    
+    
     
     
     /**

@@ -15,6 +15,7 @@ use Xi\Filelib\File\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use InvalidArgumentException;
+use Xi\Filelib\Event\PluginEvent;
 
 /**
  * Xi filelib
@@ -351,7 +352,12 @@ class FileLibrary
     public function addPlugin(Plugin $plugin, $priority = 1000)
     {
         $plugin->setFilelib($this);
-        $this->getFileOperator()->addPlugin($plugin, $priority);
+        
+        $this->getEventDispatcher()->addSubscriber($plugin);
+        
+        $event = new PluginEvent($plugin);
+        $this->getEventDispatcher()->dispatch('plugin.add', $event);
+        
         $plugin->init();
         return $this;
     }
