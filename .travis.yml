@@ -10,5 +10,10 @@ before_script:
   - cd tests && php composer.phar install && cd ..
   - cd tests && wget http://framework.zend.com/releases/ZendFramework-1.11.11/ZendFramework-1.11.11-minimal.tar.gz && tar zxf ZendFramework-1.11.11-minimal.tar.gz && cd ..
   - pyrus install pear.phpunit.de/DbUnit
+  - phpenv rehash
+  - wget http://pecl.php.net/get/mongo-1.2.7.tgz
+  - tar -xzf mongo-1.2.7.tgz
+  - sh -c "cd mongo-1.2.7 && phpize && ./configure --enable-mongo && make && sudo make install"
+  - echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 script: cd tests && phpunit --configuration travis/$DB.travis.xml
