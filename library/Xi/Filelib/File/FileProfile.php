@@ -10,6 +10,9 @@ use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Event\PluginEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use InvalidArgumentException;
 
 /**
  * File profile
@@ -17,16 +20,24 @@ use Xi\Filelib\File\File;
  * @author pekkis
  *
  */
-class FileProfile
+class FileProfile implements EventSubscriberInterface
 {
 
     /**
-     * @var \Xi\Filelib\FileLibrary
+     * @var array Subscribed events
+     */
+    static protected $subscribedEvents = array(
+        'plugin.add' => 'onPluginAdd'
+    );
+    
+    
+    /**
+     * @var FileLibrary
      */
     private $filelib;
 
     /**
-     * @var \Xi_Filelib_Linker Linker
+     * @var Linker
      */
     private $linker;
 
@@ -65,6 +76,17 @@ class FileProfile
         Configurator::setConstructorOptions($this, $options);
     }
 
+    /**
+     * Returns array of subscribed events
+     * 
+     * @return array
+     */
+    static public function getSubscribedEvents()
+    {
+        return static::$subscribedEvents;
+    }
+    
+    
     /**
      * Sets filelib
      *
@@ -146,13 +168,13 @@ class FileProfile
      * Sets identifier
      * 
      * @param string $identifier
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @return FileProfile
      */
     public function setIdentifier($identifier)
     {
         if ($identifier === 'original') {
-            throw new \InvalidArgumentException("Invalid profile identifier '{$identifier}'");
+            throw new InvalidArgumentException("Invalid profile identifier '{$identifier}'");
         }
         $this->identifier = $identifier;
         return $this;
@@ -186,7 +208,7 @@ class FileProfile
      * @param string $fileType string File type
      * @param string $versionIdentifier Version identifier
      * @param VersionProvider $versionProvider Version provider
-     * @return \Xi\Filelib\File\FileProfile
+     * @return FileProfile
      */
     public function addFileVersion($fileType, $versionIdentifier, VersionProvider $versionProvider)
     {
@@ -199,10 +221,10 @@ class FileProfile
     /**
      * Returns all defined versions of a file
      *
-     * @param \Xi\Filelib\File\File $fileType File item
+     * @param File $fileType File item
      * @return array Array of provided versions
      */
-    public function getFileVersions(\Xi\Filelib\File\File $file)
+    public function getFileVersions(File $file)
     {
         $fileType = $this->getFilelib()->file()->getType($file);
         $this->ensureFileVersionArrayExists($fileType);
@@ -212,11 +234,11 @@ class FileProfile
     /**
      * Returns whether a file has a certain version
      *
-     * @param \Xi\Filelib\File\File $file File item
+     * @param File $file File item
      * @param string $version Version
      * @return boolean
      */
-    public function fileHasVersion(\Xi\Filelib\File\File $file, $version)
+    public function fileHasVersion(File $file, $version)
     {
         return (in_array($version, $this->getFileVersions($file)));
     }
@@ -231,7 +253,7 @@ class FileProfile
     public function getVersionProvider(File $file, $version)
     {
         if (!$this->fileHasVersion($file, $version)) {
-            throw new \InvalidArgumentException("File has no version '{$version}'");
+            throw new InvalidArgumentException("File has no version '{$version}'");
         }
         
         $filetype = $this->getFilelib()->file()->getType($file);
@@ -282,6 +304,21 @@ class FileProfile
         return $this->publishOriginal;
     }
 
+    
+    /**
+     * Fires on plugin.add event. Adds plugin if plugin has profile.
+     * 
+     * @param PluginEvent $event 
+     */
+    public function onPluginAdd(PluginEvent $event)
+    {
+        $plugin = $event->getPlugin();
+        if (in_array($this->getIdentifier(), $plugin->getProfiles())) {
+            $this->addPlugin($plugin);
+        }
+    }
+    
+    
     private function ensureFileVersionArrayExists($fileType)
     {
         if (!isset($this->fileVersions[$fileType])) {

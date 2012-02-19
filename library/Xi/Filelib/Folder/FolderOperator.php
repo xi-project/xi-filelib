@@ -4,9 +4,39 @@ namespace Xi\Filelib\Folder;
 
 use Xi\Filelib\Folder\Folder;
 use ArrayIterator;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Backend\Backend;
+use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\Acl\Acl;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 interface FolderOperator
 {
+    /**
+     * @return Publisher
+     */
+    public function getPublisher();
+    
+    /**
+     * @return Storage
+     */
+    public function getStorage();
+    
+    /**
+     * @return Backend
+     */
+    public function getBackend();
+    
+    /**
+     * @return Acl
+     */
+    public function getAcl();
+    
+    /**
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher();
+    
     /**
      * Returns an instance of the folder class
      * 

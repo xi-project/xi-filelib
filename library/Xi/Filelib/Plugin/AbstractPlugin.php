@@ -26,6 +26,22 @@ abstract class AbstractPlugin implements Plugin
      */
     protected $profiles = array();
     
+    /**
+     * @var array Subscribed events
+     */
+    static protected $subscribedEvents = array();
+    
+    /**
+     * Returns an array of subscribed events
+     * 
+     * @return array
+     */
+    static public function getSubscribedEvents()
+    {
+        return static::$subscribedEvents;
+    }
+    
+    
     public function __construct($options = array())
     {
         Configurator::setConstructorOptions($this, $options);

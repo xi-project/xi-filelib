@@ -5,6 +5,7 @@ namespace Xi\Filelib\Plugin;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\File\File;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Xi Filelib plugin interface
@@ -13,7 +14,7 @@ use Xi\Filelib\File\File;
  * @author pekkis
  *
  */
-interface Plugin
+interface Plugin extends EventSubscriberInterface
 {
 
     public function __construct($options = array());
