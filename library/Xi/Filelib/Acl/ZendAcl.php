@@ -2,16 +2,14 @@
 
 namespace Xi\Filelib\Acl;
 
-use \Zend_Acl,
-    Xi\Filelib\Folder\Folder,
-    Xi\Filelib\File\File
-    ;
+use Zend_Acl;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\File;
 
 /**
- * Zend ACL for Filelib
+ * ZendAcl delegates access control to Zend ACL
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class ZendAcl implements Acl
@@ -20,17 +18,17 @@ class ZendAcl implements Acl
     /**
      * @var \Zend_Acl
      */
-    private $_acl;
+    private $acl;
     
     /**
      * @var mixed
      */
-    private $_role;
+    private $role;
     
     /**
      * @var mixed
      */
-    private $_anonymousRole;
+    private $anonymousRole;
     
     /**
      * Sets ACL
@@ -39,7 +37,8 @@ class ZendAcl implements Acl
      */
     public function setAcl(\Zend_Acl $acl)
     {
-        $this->_acl = $acl;
+        $this->acl = $acl;
+        return $this;
     }
 
     /**
@@ -49,7 +48,7 @@ class ZendAcl implements Acl
      */
     public function getAcl()
     {
-        return $this->_acl;
+        return $this->acl;
     }
 
     /**
@@ -59,7 +58,8 @@ class ZendAcl implements Acl
      */
     public function setRole($role)
     {
-        $this->_role = $role;
+        $this->role = $role;
+        return $this;
     }
 
     /**
@@ -69,7 +69,7 @@ class ZendAcl implements Acl
      */
     public function getRole()
     {
-        return $this->_role;
+        return $this->role;
     }
 
     /**
@@ -79,7 +79,8 @@ class ZendAcl implements Acl
      */
     public function setAnonymousRole($anonymousRole)
     {
-        $this->_anonymousRole = $anonymousRole;
+        $this->anonymousRole = $anonymousRole;
+        return $this;
     }
 
     /**
@@ -89,31 +90,47 @@ class ZendAcl implements Acl
      */
     public function getAnonymousRole()
     {
-        return $this->_anonymousRole;
+        return $this->anonymousRole;
     }
 
-    public function isReadable($resource)
+
+    
+    public function isFileReadable(File $file)
     {
-        $resourceName = $this->getResourceIdentifier($resource);
-        
+        $resourceName = $this->getResourceIdentifier($file);
         return $this->getAcl()->isAllowed($this->getRole(), $resourceName, 'read');
     }
 
-    public function isWriteable($resource)
+    public function isFileWritable(File $file)
     {
-        $resourceName = $this->getResourceIdentifier($resource);
-        
+        $resourceName = $this->getResourceIdentifier($file);
         return $this->getAcl()->isAllowed($this->getRole(), $resourceName, 'write');
     }
 
-    public function isReadableByAnonymous($resource)
+    public function isFileReadableByAnonymous(File $file)
     {
-        $resourceName = $this->getResourceIdentifier($resource);
-        
+        $resourceName = $this->getResourceIdentifier($file);
         return $this->getAcl()->isAllowed($this->getAnonymousRole(), $resourceName, 'read');
     }
     
-    
+
+    public function isFolderReadable(Folder $folder)
+    {
+        $resourceName = $this->getResourceIdentifier($folder);
+        return $this->getAcl()->isAllowed($this->getRole(), $resourceName, 'read');
+    }
+
+    public function isFolderWritable(Folder $folder)
+    {
+        $resourceName = $this->getResourceIdentifier($folder);
+        return $this->getAcl()->isAllowed($this->getRole(), $resourceName, 'write');
+    }
+
+    public function isFolderReadableByAnonymous(Folder $folder)
+    {
+        $resourceName = $this->getResourceIdentifier($folder);
+        return $this->getAcl()->isAllowed($this->getAnonymousRole(), $resourceName, 'read');
+    }
     
     public function getResourceIdentifier($resource)
     {

@@ -418,29 +418,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals('lussen.tus', $file->getName());
         
     }
-
     
-    /**
-     * @test
-     */
-    public function isReadableByAnonymousShouldDelegateToAcl()
-    {
-        $filelib = new FileLibrary();
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('getAcl'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-        
-        $file = FileItem::create(array('id' => 1));
-        
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->once())->method('isReadableByAnonymous')->with($this->equalTo($file));
-        
-        $op->expects($this->once())->method('getAcl')->will($this->returnValue($acl));
-        
-        $op->isReadableByAnonymous($file);
-                
-    }
     
     /**
      * @test
@@ -751,7 +729,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
                 
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->atLeastOnce())->method('isWriteable')->with($this->equalTo($folder))->will($this->returnValue(false));
+        $acl->expects($this->atLeastOnce())->method('isFolderWritable')->with($this->equalTo($folder))->will($this->returnValue(false));
         
         $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         
@@ -822,8 +800,8 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\File'));
         
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->atLeastOnce())->method('isWriteable')->with($this->equalTo($folder))->will($this->returnValue(true));
-        $acl->expects($this->atLeastOnce())->method('isReadableByAnonymous')->with($this->isInstanceOf('Xi\Filelib\File\File'))->will($this->returnValue($readableByAnonymous));
+        $acl->expects($this->atLeastOnce())->method('isFolderWritable')->with($this->equalTo($folder))->will($this->returnValue(true));
+        $acl->expects($this->atLeastOnce())->method('isFileReadableByAnonymous')->with($this->isInstanceOf('Xi\Filelib\File\File'))->will($this->returnValue($readableByAnonymous));
         
         $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));

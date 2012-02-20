@@ -12,7 +12,7 @@ use Xi\Filelib\Acl\Acl,
     \Zend_Acl
     ;
 
-class ZendAclTest extends TestCase
+class ZendAclTest extends \Xi\Tests\Filelib\TestCase
 {
     
     /**
@@ -62,6 +62,16 @@ class ZendAclTest extends TestCase
         $this->acl->setAnonymousRole('anonymous');
         $this->acl->setAcl($zacl);
         
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function classShouldExist()
+    {
+        $this->assertTrue(class_exists('Xi\Filelib\Acl\ZendAcl'));
+        $this->assertContains('Xi\Filelib\Acl\Acl', class_implements('Xi\Filelib\Acl\ZendAcl'));
     }
     
     
@@ -157,9 +167,9 @@ class ZendAclTest extends TestCase
         $role = "tussi";
         $anonymousRole = 'loso';
         
-        $acl->setAcl($zacl);
-        $acl->setRole($role);
-        $acl->setAnonymousRole($anonymousRole);
+        $this->assertSame($acl, $acl->setAcl($zacl));
+        $this->assertSame($acl, $acl->setRole($role));
+        $this->assertSame($acl, $acl->setAnonymousRole($anonymousRole));
                 
         $this->assertEquals($zacl, $acl->getAcl());
         $this->assertEquals($role, $acl->getRole());
@@ -167,9 +177,73 @@ class ZendAclTest extends TestCase
         
     }
     
+    /**
+     * @test
+     * @dataProvider provideFiles
+     */
+    public function isReadableShouldReturnExpectedResultsForFiles($res, $readable, $writable, $readableByAnonymous)
+    {
+        $res = FileItem::create($res);        
+        $this->assertEquals($readable, $this->acl->isFileReadable($res));
+    }
+    
+    /**
+     * @test
+     * @dataProvider provideFolders
+     */
+    public function IsReadableShouldReturnExpectedResultForFolders($res, $readable, $writable, $readableByAnonymous)
+    {
+        $res = FolderItem::create($res);        
+        $this->assertEquals($readable, $this->acl->isFolderReadable($res));
+    }
+
+    
+    /**
+     * @test
+     * @dataProvider provideFiles
+     */
+    public function isWritableShouldReturnExpectedResultsForFiles($res, $readable, $writable, $readableByAnonymous)
+    {
+        $res = FileItem::create($res);        
+        $this->assertEquals($writable, $this->acl->isFileWritable($res));
+    }
     
     
     /**
+     * @test
+     * @dataProvider provideFolders
+     */
+    public function IsWritableShouldReturnExpectedResultForFolders($res, $readable, $writable, $readableByAnonymous)
+    {
+        $res = FolderItem::create($res);        
+        $this->assertEquals($writable, $this->acl->isFolderWritable($res));
+    }
+    
+    
+    /**
+     * @test
+     * @dataProvider provideFiles
+     */
+    public function isAnonymousReadableShouldReturnExpectedResultsForFiles($res, $readable, $writable, $readableByAnonymous)
+    {
+        $res = FileItem::create($res);        
+        $this->assertEquals($readableByAnonymous, $this->acl->isFileReadableByAnonymous($res));
+    }
+    
+    
+    /**
+     * @test
+     * @dataProvider provideFolders
+     */
+    public function IsAnonymousReadableShouldReturnExpectedResultForFolders($res, $readable, $writable, $readableByAnonymous)
+    {
+        $res = FolderItem::create($res);        
+        $this->assertEquals($readableByAnonymous, $this->acl->isFolderReadableByAnonymous($res));
+    }
+    
+    
+    
+        /**
      * @test
      */
     public function getResourceIdentifierShouldReturnCorrectIdentifiers()
@@ -219,76 +293,7 @@ class ZendAclTest extends TestCase
         return $this->acl->getResourceIdentifier($diterator);
         
     }
-    
-    
-    
-    
-    
-    /**
-     * @test
-     * @dataProvider provideFiles
-     */
-    public function isReadableShouldReturnExpectedResultsForFiles($res, $readable, $writeable, $readableByAnonymous)
-    {
-        $res = FileItem::create($res);        
-        $this->assertEquals($readable, $this->acl->isReadable($res));
-    }
-    
-    
-    /**
-     * @test
-     * @dataProvider provideFolders
-     */
-    public function IsReadableShouldReturnExpectedResultForFolders($res, $readable, $writeable, $readableByAnonymous)
-    {
-        $res = FolderItem::create($res);        
-        $this->assertEquals($readable, $this->acl->isReadable($res));
-    }
 
-    
-    /**
-     * @test
-     * @dataProvider provideFiles
-     */
-    public function isWriteableShouldReturnExpectedResultsForFiles($res, $readable, $writeable, $readableByAnonymous)
-    {
-        $res = FileItem::create($res);        
-        $this->assertEquals($writeable, $this->acl->isWriteable($res));
-    }
-    
-    
-    /**
-     * @test
-     * @dataProvider provideFolders
-     */
-    public function IsWriteableShouldReturnExpectedResultForFolders($res, $readable, $writeable, $readableByAnonymous)
-    {
-        $res = FolderItem::create($res);        
-        $this->assertEquals($writeable, $this->acl->isWriteable($res));
-    }
-    
-    
-    /**
-     * @test
-     * @dataProvider provideFiles
-     */
-    public function isAnonymousReadableShouldReturnExpectedResultsForFiles($res, $readable, $writeable, $readableByAnonymous)
-    {
-        $res = FileItem::create($res);        
-        $this->assertEquals($readableByAnonymous, $this->acl->isReadableByAnonymous($res));
-    }
-    
-    
-    /**
-     * @test
-     * @dataProvider provideFolders
-     */
-    public function IsAnonymousReadableShouldReturnExpectedResultForFolders($res, $readable, $writeable, $readableByAnonymous)
-    {
-        $res = FolderItem::create($res);        
-        $this->assertEquals($readableByAnonymous, $this->acl->isReadableByAnonymous($res));
-    }
-    
     
     
     
