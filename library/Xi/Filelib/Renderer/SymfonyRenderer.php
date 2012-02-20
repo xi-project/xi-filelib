@@ -62,7 +62,7 @@ class SymfonyRenderer implements Renderer
 
         $response = new Response();
 
-        if (!$this->getAcl()->isReadable($file)) {
+        if (!$this->getAcl()->isFileReadable($file)) {
             $response->setStatusCode(403);
             $response->setContent(Response::$statusTexts[$response->getStatusCode()]);
             return $response;

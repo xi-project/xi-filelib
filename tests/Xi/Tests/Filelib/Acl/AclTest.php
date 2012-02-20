@@ -2,9 +2,7 @@
 
 namespace Xi\Tests\Filelib\Acl;
 
-use Xi\Tests\Filelib\TestCase as FilelibTestCase;
-
-class AclTest extends FilelibTestCase
+class AclTest extends \Xi\Tests\Filelib\TestCase
 {
     
     /**
