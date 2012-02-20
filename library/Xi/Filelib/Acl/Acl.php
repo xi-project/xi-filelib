@@ -2,6 +2,9 @@
 
 namespace Xi\Filelib\Acl;
 
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+
 /**
  * Interface for building an ACL implementation for Filelib
  * 
@@ -13,25 +16,46 @@ interface Acl
 {
 
     /**
-     * Returns whether a folderitem or fileitem is readable
+     * Returns whether a file is readable
      * 
-     * @param mixed $resource
+     * @param File $file
      */
-    public function isReadable($resource);
+    public function isFileReadable(File $file);
 
     /**
-     * Returns whether a folderitem or fileitem is writeable
+     * Returns whether a file is writeable
      * 
-     * @param mixed $resource
+     * @param File $file
      */
-    public function isWriteable($resource);
+    public function isFileWritable(File $file);
 
     /**
-     * Returns whether a folderitem or fileitem is readable by anonymous user
+     * Returns whether a file is readable by anonymous user
      * 
-     * @param mixed $resource
+     * @param File $file
      */
-    public function isReadableByAnonymous($resource);
+    public function isFileReadableByAnonymous(File $file);
 
+    
+    /**
+     * Returns whether a folder is readable
+     * 
+     * @param Folder $folder
+     */
+    public function isFolderReadable(Folder $folder);
+
+    /**
+     * Returns whether a folder is writeable
+     * 
+     * @param Folder $folder
+     */
+    public function isFolderWritable(Folder $folder);
+
+    /**
+     * Returns whether a folder is readable by anonymous user
+     * 
+     * @param Folder $folder
+     */
+    public function isFolderReadableByAnonymous(Folder $folder);
 
 }

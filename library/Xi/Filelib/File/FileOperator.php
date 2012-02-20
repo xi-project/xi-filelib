@@ -71,22 +71,12 @@ interface FileOperator
     
     public function findByFilename(Folder $folder, $filename);
     
-
     /**
      * Finds and returns all files
      *
      * @return \ArrayIterator
      */
     public function findAll();
-
-    /**
-     * Returns whether a file is anonymous
-     *
-     * @todo This is still mock!
-     * @param \Xi\Filelib\File\File $file File
-     * @return boolean
-     */
-    public function isReadableByAnonymous(File $file);
 
     /**
      * Gets a new upload

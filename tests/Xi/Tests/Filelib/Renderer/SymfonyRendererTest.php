@@ -162,7 +162,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
                          ->getMock();
         
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isReadable')->will($this->returnValue(false));
+        $acl->expects($this->any())->method('fileIsReadable')->will($this->returnValue(false));
         
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         
@@ -198,7 +198,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         
         
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isReadable')->will($this->returnValue(true));
+        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
         
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         
@@ -237,7 +237,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         
         
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isReadable')->will($this->returnValue(true));
+        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
         
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
@@ -281,7 +281,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         
         
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isReadable')->will($this->returnValue(true));
+        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
         
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
@@ -317,7 +317,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(false));
                 
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isReadable')->will($this->returnValue(true));
+        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
         
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         
@@ -363,7 +363,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(true));
                 
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->atLeastOnce())->method('isReadable')->will($this->returnValue(true));
+        $acl->expects($this->atLeastOnce())->method('isFileReadable')->will($this->returnValue(true));
         
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));

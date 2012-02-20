@@ -2,11 +2,13 @@
 
 namespace Xi\Filelib\Acl;
 
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+
 /**
  * Simple ACL allows everything to everyone
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class SimpleAcl implements Acl
@@ -24,7 +26,7 @@ class SimpleAcl implements Acl
     /** 
      * {@inheritdoc}
      */
-    public function isReadable($resource)
+    public function isFileReadable(File $file)
     {
         return true;
     }
@@ -33,7 +35,7 @@ class SimpleAcl implements Acl
     /**
      * {@inheritdoc}
      */
-    public function isWriteable($resource)
+    public function isFileWritable(File $file)
     {
         return true;
     }
@@ -42,11 +44,37 @@ class SimpleAcl implements Acl
     /** 
      * {@inheritdoc}
      */
-    public function isReadableByAnonymous($resource)
+    public function isFileReadableByAnonymous(File $file)
     {
         return $this->isReadableByAnonymous;
     }
 
+
+    /** 
+     * {@inheritdoc}
+     */
+    public function isFolderReadable(Folder $file)
+    {
+        return true;
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isFolderWritable(Folder $file)
+    {
+        return true;
+    }
+
+
+    /** 
+     * {@inheritdoc}
+     */
+    public function isFolderReadableByAnonymous(Folder $file)
+    {
+        return $this->isReadableByAnonymous;
+    }
 
 
 

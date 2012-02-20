@@ -195,17 +195,6 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     }
 
     /**
-     * Returns whether a file is anonymous
-     *
-     * @param File $file File
-     * @return boolean
-     */
-    public function isReadableByAnonymous(File $file)
-    {
-        return $this->getAcl()->isReadableByAnonymous($file);
-    }
-
-    /**
      * Gets a new upload
      *
      * @param string $path Path to upload file
@@ -232,8 +221,8 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $upload = $this->prepareUpload($upload);
         }
 
-        if (!$this->getAcl()->isWriteable($folder)) {
-            throw new FilelibException("Folder '{$folder->getId()}'not writeable");
+        if (!$this->getAcl()->isFolderWritable($folder)) {
+            throw new FilelibException("Folder '{$folder->getId()}'not writable");
         }
 
         $profileObj = $this->getProfile($profile);
@@ -262,7 +251,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $plugin->afterUpload($file);
         }
 
-        if ($this->getAcl()->isReadableByAnonymous($file)) {
+        if ($this->getAcl()->isFileReadableByAnonymous($file)) {
             $this->publish($file);
         }
 
