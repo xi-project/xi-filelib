@@ -16,7 +16,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Renderer\SymfonyRenderer'));
-        $this->assertContains('Xi\Filelib\Renderer\Renderer', class_implements('Xi\Filelib\Renderer\SymfonyRenderer'));
+        $this->assertContains('Xi\Filelib\Renderer\AcceleratedRenderer', class_implements('Xi\Filelib\Renderer\SymfonyRenderer'));
     }
     
     /**

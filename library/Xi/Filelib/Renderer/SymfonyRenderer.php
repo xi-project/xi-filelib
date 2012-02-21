@@ -5,10 +5,16 @@ namespace Xi\Filelib\Renderer;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileOperator;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Xi\Filelib\File\FileObject;
 
 class SymfonyRenderer implements Renderer
 {
 
+    private $acceleration = false;
+        
+    private $request;
+            
     /**
      * @var FileOperator
      */
@@ -84,12 +90,7 @@ class SymfonyRenderer implements Renderer
             $response->headers->set('Content-disposition', "attachment; filename={$file->getName()}");
         }
 
-        $response->headers->set('Content-Type', $res->getMimetype());
-
-        // @todo: ACCELERATE. IMPLEMENT ZEND RENDERER. FUCKTOR.
-        $content = file_get_contents($res->getPathname());
-
-        $response->setContent($content);
+        $this->setContent($response, $res);
 
         return $response;
     }
@@ -178,5 +179,17 @@ class SymfonyRenderer implements Renderer
         return $res;
     }
 
+    /**
+     * Sets content to response
+     */
+    private function setContent(Response $response, FileObject $res)
+    {
+        // @todo: ACCELERATE. IMPLEMENT ZEND RENDERER. FUCKTOR.
+        $response->headers->set('Content-Type', $res->getMimetype());
+        $content = file_get_contents($res->getPathname());
+        $response->setContent($content);
+    }
+    
+    
 }
 
