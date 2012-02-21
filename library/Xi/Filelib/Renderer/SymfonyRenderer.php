@@ -3,22 +3,42 @@
 namespace Xi\Filelib\Renderer;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\FileLibrary;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Xi\Filelib\File\FileObject;
 
-class SymfonyRenderer implements Renderer
+class SymfonyRenderer implements AcceleratedRenderer
 {
 
-    private $acceleration = false;
-        
+    /**
+     * Server signature regexes and their methods
+     * 
+     * @var array
+     */
+    static protected $serverSignatures = array(
+        '[^nginx]' => 'accelerateNginx',
+    );
+    
+    /**
+     * @var string
+     */
+    private $accelerationMethod;
+    
+    /**
+     * @var boolean
+     */
+    private $accelerationEnabled = false;
+    
+    /**
+     * @var Request
+     */
     private $request;
             
     /**
-     * @var FileOperator
+     * @var FileLibrary
      */
-    private $fiop;
+    private $filelib;
 
     /**
      * @var Default options
@@ -28,10 +48,78 @@ class SymfonyRenderer implements Renderer
         'version' => 'original',
     );
 
-    public function __construct(FileOperator $fiop)
+    public function __construct(FileLibrary $filelib)
     {
-        $this->fiop = $fiop;
+        $this->filelib = $filelib;
     }
+    
+    /**
+     * Sets request context
+     * 
+     * @param Request $request 
+     */
+    public function setRequest(Request $request)
+    {
+       $this->request = $request;
+    }
+    
+    /**
+     * Returns request context
+     * 
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+    
+    
+    /**
+     *
+     * @return boolean Returns whether response can be accelerated
+     */
+    public function isAccelerationEnabled()
+    {
+        return $this->accelerationEnabled;
+    }
+    
+    /**
+     * Enables or disables acceleration
+     * 
+     * @param boolean $flag 
+     */
+    public function enableAcceleration($flag)
+    {
+        $this->accelerationEnabled = $flag;
+    }
+    
+    
+    public function isAccelerationPossible()
+    {
+        if (!$this->isAccelerationEnabled()) {
+            return false;
+        }
+
+        // If we have no request as context we cannot accelerate
+        if (!$request = $this->getRequest()) {
+            return false;
+        }
+
+        $serverSignature = $request->server->get('SERVER_SOFTWARE');
+        
+        foreach (self::$serverSignatures as $signature => $method) {
+            if (preg_match($signature, $serverSignature)) {
+                $this->setAccelerationMethod($method);
+                return true;
+            }
+        }
+        
+        return false;
+        
+    }
+    
+    
+    
 
     /**
      * Returns url to a file
@@ -49,7 +137,7 @@ class SymfonyRenderer implements Renderer
         }
 
         // @todo: simplify. Publisher should need the string only!
-        $provider = $this->fiop->getVersionProvider($file, $options['version']);
+        $provider = $this->filelib->getFileOperator()->getVersionProvider($file, $options['version']);
         $url = $this->getPublisher()->getUrlVersion($file, $provider);
 
         return $url;
@@ -113,7 +201,7 @@ class SymfonyRenderer implements Renderer
      */
     public function getPublisher()
     {
-        return $this->fiop->getPublisher();
+        return $this->filelib->getPublisher();
     }
 
     /**
@@ -123,7 +211,7 @@ class SymfonyRenderer implements Renderer
      */
     public function getAcl()
     {
-        return $this->fiop->getAcl();
+        return $this->filelib->getAcl();
     }
 
     /**
@@ -133,7 +221,7 @@ class SymfonyRenderer implements Renderer
      */
     public function getStorage()
     {
-        return $this->fiop->getStorage();
+        return $this->filelib->getStorage();
     }
 
     /**
@@ -146,7 +234,7 @@ class SymfonyRenderer implements Renderer
      */
     private function respondToOriginal(File $file, Response $response)
     {
-        $profile = $this->fiop->getProfile($file->getProfile());
+        $profile = $this->filelib->getFileOperator()->getProfile($file->getProfile());
         if (!$profile->getAccessToOriginal()) {
             $response->setStatusCode(403);
             return;
@@ -168,12 +256,12 @@ class SymfonyRenderer implements Renderer
      */
     private function respondToVersion(File $file, Response $response, $version)
     {
-        if (!$this->fiop->hasVersion($file, $version)) {
+        if (!$this->filelib->getFileOperator()->hasVersion($file, $version)) {
             $response->setStatusCode(404);
             return;
         }
 
-        $provider = $this->fiop->getVersionProvider($file, $version);
+        $provider = $this->filelib->getFileOperator()->getVersionProvider($file, $version);
         $res = $this->getStorage()->retrieveVersion($file, $provider);
 
         return $res;
@@ -184,10 +272,37 @@ class SymfonyRenderer implements Renderer
      */
     private function setContent(Response $response, FileObject $res)
     {
-        // @todo: ACCELERATE. IMPLEMENT ZEND RENDERER. FUCKTOR.
+        if ($this->isAccelerationPossible()) {
+            call_user_func_array(array($this, $this->getAccelerationMethod()), array($response));
+            return;
+        }
+        
         $response->headers->set('Content-Type', $res->getMimetype());
         $content = file_get_contents($res->getPathname());
         $response->setContent($content);
+    }
+    
+    /**
+     * Sets accelerationMethod
+     * 
+     * @param string $method 
+     */
+    private function setAccelerationMethod($method)
+    {
+        $this->accelerationMethod = $method;
+    }
+    
+    
+    private function getAccelerationMethod()
+    {
+        return $this->accelerationMethod;
+    }
+    
+    
+    private function accelerateNginx(Response $response)
+    {
+        
+        
     }
     
     
