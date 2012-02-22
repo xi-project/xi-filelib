@@ -48,10 +48,47 @@ class SymfonyRenderer implements AcceleratedRenderer
         'version' => 'original',
     );
 
+    /**
+     * @var string
+     */
+    private $stripPrefixFromAcceleratedPath = '';
+    
+    /**
+     * @var string
+     */
+    private $addPrefixToAcceleratedPath = '';
+    
     public function __construct(FileLibrary $filelib)
     {
         $this->filelib = $filelib;
     }
+    
+    /**
+     *
+     * @param string $stripPrefix 
+     */
+    public function setStripPrefixFromAcceleratedPath($stripPrefix)
+    {
+        $this->stripPrefixFromAcceleratedPath = $stripPrefix;
+    }
+        
+    public function getStripPrefixFromAcceleratedPath()
+    {
+        return $this->stripPrefixFromAcceleratedPath;
+    }
+        
+
+    public function setAddPrefixToAcceleratedPath($addPrefix)
+    {
+        $this->addPrefixToAcceleratedPath = $addPrefix;
+    }
+        
+    public function getAddPrefixToAcceleratedPath()
+    {
+        return $this->addPrefixToAcceleratedPath;
+    }
+
+    
     
     /**
      * Sets request context
@@ -179,7 +216,7 @@ class SymfonyRenderer implements AcceleratedRenderer
         }
 
         $this->setContent($response, $res);
-
+                
         return $response;
     }
 
@@ -272,12 +309,13 @@ class SymfonyRenderer implements AcceleratedRenderer
      */
     private function setContent(Response $response, FileObject $res)
     {
+        $response->headers->set('Content-Type', $res->getMimetype());
+        
         if ($this->isAccelerationPossible()) {
-            call_user_func_array(array($this, $this->getAccelerationMethod()), array($response));
+            call_user_func_array(array($this, $this->getAccelerationMethod()), array($response, $res));
             return;
         }
         
-        $response->headers->set('Content-Type', $res->getMimetype());
         $content = file_get_contents($res->getPathname());
         $response->setContent($content);
     }
@@ -299,10 +337,12 @@ class SymfonyRenderer implements AcceleratedRenderer
     }
     
     
-    private function accelerateNginx(Response $response)
+    private function accelerateNginx(Response $response, FileObject $res)
     {
+        $path = preg_replace("[^{$this->getStripPrefixFromAcceleratedPath()}]", '', $res->getRealPath());
+        $path = $this->getAddPrefixToAcceleratedPath() . $path;
         
-        
+        $response->headers->set('X-Accel-Redirect', $path);
     }
     
     

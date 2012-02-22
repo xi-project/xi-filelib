@@ -58,6 +58,64 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
+    public function stripPrefixFromAcceleratedPathShouldDefaultToEmptyString()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
+         
+    }
+    
+    /**
+     * @test
+     */
+    public function stripPrefixFromAcceleratedPathShouldObeySetter()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
+         
+         $renderer->setStripPrefixFromAcceleratedPath('luss');
+         
+         $this->assertEquals('luss', $renderer->getStripPrefixFromAcceleratedPath());
+    }
+    
+
+        /**
+     * @test
+     */
+    public function addPrefixToAcceleratedPathShouldDefaultToEmptyString()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertEquals('', $renderer->getAddPrefixToAcceleratedPath());
+         
+    }
+    
+    /**
+     * @test
+     */
+    public function addPrefixToAcceleratedPathShouldObeySetter()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertSame('', $renderer->getAddPrefixToAcceleratedPath());
+         
+         $renderer->setAddPrefixToAcceleratedPath('luss');
+         
+         $this->assertSame('luss', $renderer->getAddPrefixToAcceleratedPath());
+    }
+
+    
+    
+    
+    /**
+     * @test
+     */
     public function getPublisherShouldDelegateToFilelib()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
@@ -432,9 +490,11 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     {
          $filelib = $this->getMock('Xi\Filelib\FileLibrary');
          $renderer = new SymfonyRenderer($filelib);
+         $renderer->enableAcceleration(true);
          
          $this->assertNull($renderer->getRequest());
-         
+         $this->assertTrue($renderer->isAccelerationEnabled());
+                  
          $this->assertFalse($renderer->isAccelerationPossible());
          
     }
@@ -547,8 +607,9 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
         
         $retrieved = new FileObject($path);
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
         $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
         
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
                 
@@ -560,6 +621,10 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         
         $file = FileItem::create(array('id' => 1, 'name' => 'self-lusser.lus'));
                 
+        $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
+        
+        $renderer->setAddPrefixToAcceleratedPath('/protected/files');
+        
         $response = $renderer->render($file, array('download' => false));
         
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
@@ -567,7 +632,10 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEmpty($response->getContent());
         
-                 
+        $this->assertArrayHasKey('x-accel-redirect', $response->headers->all());
+        
+        $this->assertEquals('/protected/files/data/self-lussing-manatee.jpg', $response->headers->get('x-accel-redirect'));
+        
          
     }
     
