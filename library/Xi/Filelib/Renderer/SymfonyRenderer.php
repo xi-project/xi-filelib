@@ -12,18 +12,22 @@ class SymfonyRenderer implements AcceleratedRenderer
 {
 
     /**
-     * Server signature regexes and their methods
+     * Server signature regexes and their headers
      * 
      * @var array
      */
     static protected $serverSignatures = array(
-        '[^nginx]' => 'accelerateNginx',
+        '[^nginx]' => 'x-accel-redirect',
+        '[^Apache]' => 'x-sendfile',
+        '[^lighttpd/(1\.5|2)]' => 'x-sendfile',
+        '[^lighttpd/1.4]' => 'x-lighttpd-send-file',
+        '[^Cherokee]' => 'x-sendfile',
     );
     
     /**
      * @var string
      */
-    private $accelerationMethod;
+    private $accelerationHeader;
     
     /**
      * @var boolean
@@ -133,10 +137,6 @@ class SymfonyRenderer implements AcceleratedRenderer
     
     public function isAccelerationPossible()
     {
-        if (!$this->isAccelerationEnabled()) {
-            return false;
-        }
-
         // If we have no request as context we cannot accelerate
         if (!$request = $this->getRequest()) {
             return false;
@@ -144,9 +144,9 @@ class SymfonyRenderer implements AcceleratedRenderer
 
         $serverSignature = $request->server->get('SERVER_SOFTWARE');
         
-        foreach (self::$serverSignatures as $signature => $method) {
+        foreach (self::$serverSignatures as $signature => $header) {
             if (preg_match($signature, $serverSignature)) {
-                $this->setAccelerationMethod($method);
+                $this->setAccelerationHeader($header);
                 return true;
             }
         }
@@ -311,8 +311,8 @@ class SymfonyRenderer implements AcceleratedRenderer
     {
         $response->headers->set('Content-Type', $res->getMimetype());
         
-        if ($this->isAccelerationPossible()) {
-            call_user_func_array(array($this, $this->getAccelerationMethod()), array($response, $res));
+        if ($this->isAccelerationEnabled() && $this->isAccelerationPossible()) {
+            $this->accelerateResponse($response, $res);
             return;
         }
         
@@ -321,28 +321,37 @@ class SymfonyRenderer implements AcceleratedRenderer
     }
     
     /**
-     * Sets accelerationMethod
+     * Sets acceleration header name
      * 
-     * @param string $method 
+     * @param string $header
      */
-    private function setAccelerationMethod($method)
+    private function setAccelerationHeader($header)
     {
-        $this->accelerationMethod = $method;
+        $this->accelerationHeader = $header;
     }
     
-    
-    private function getAccelerationMethod()
+    /**
+     * Returns acceleration header name
+     * 
+     * @return string
+     */
+    private function getAccelerationHeader()
     {
-        return $this->accelerationMethod;
+        return $this->accelerationHeader;
     }
     
-    
-    private function accelerateNginx(Response $response, FileObject $res)
+    /**
+     * Accelerates response
+     * 
+     * @param Response $response
+     * @param FileObject $res 
+     */
+    private function accelerateResponse(Response $response, FileObject $res)
     {
         $path = preg_replace("[^{$this->getStripPrefixFromAcceleratedPath()}]", '', $res->getRealPath());
         $path = $this->getAddPrefixToAcceleratedPath() . $path;
         
-        $response->headers->set('X-Accel-Redirect', $path);
+        $response->headers->set($this->getAccelerationHeader(), $path);
     }
     
     

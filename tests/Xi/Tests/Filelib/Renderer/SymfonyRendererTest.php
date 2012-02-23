@@ -508,19 +508,16 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         return array(
             array(
                 false,
-                null,
                 array()
             ),
             array(
                 false,
-                null,
                 array(
                     'SERVER_SOFTWARE' => 'Microsoft-IIS/5.0'
                 )
             ),
             array(
                 true,
-                'accelerateNginx',
                 array(
                     'SERVER_SOFTWARE' => 'nginx/1.0.10'
                 )
@@ -535,7 +532,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
      * @test
      * @dataProvider provideBadServerSignatures
      */
-    public function possibilityOfAccelerationsShouldDependOnServerSignature($expected, $method, $server)
+    public function possibilityOfAccelerationsShouldDependOnServerSignature($expected, $server)
     {
         $request = new Request(array(), array(), array(), array(), array(), $server);
         
@@ -548,37 +545,45 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals($expected, $renderer->isAccelerationPossible());
                         
     }
-    
-    
-    
-    /**
-     * @test
-     */
-    public function accelerationShouldNotBePossibleWithDisabledAccelerationEvenIfServerIsGood()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new SymfonyRenderer($filelib);
-         $renderer->enableAcceleration(false);
-         
-         $server = array(
-             'SERVER_SOFTWARE' => 'nginx/1.0.11'
-         );
-         
-         $request = new Request(array(), array(), array(), array(), array(), $server);
-         
-         $this->assertNull($renderer->getRequest());
-         
-         $renderer->setRequest($request);
-                  
-         $this->assertFalse($renderer->isAccelerationPossible());
-         
-    }
 
     
+    public function provideServersForAccelerationTest()
+    {
+        return array(
+            array(
+                'x-accel-redirect',
+                'nginx/1.0.11'
+            ),
+            array(
+                'x-sendfile',
+                'Cherokee/1.2',
+            ),
+            array(
+                'x-sendfile',
+                'lighttpd/2.0.0',
+            ),
+            array(
+                'x-sendfile',
+                'lighttpd/1.5',
+            ),
+            array(
+                'x-lighttpd-send-file',
+                'lighttpd/1.4',
+            ),
+            array(
+                'x-sendfile',
+                'Apache',
+            ),
+        );
+    }
+    
+    
     /**
+     * @dataProvider provideServersForAccelerationTest
      * @test
+     * 
      */
-    public function nginxAcceleratedRequestShouldBeEmptyAndContainCorrectHeaders()
+    public function acceleratedRequestShouldBeEmptyAndContainCorrectHeaders($expectedHeader, $serverSignature)
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
@@ -588,7 +593,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->enableAcceleration(true);
          
         $server = array(
-            'SERVER_SOFTWARE' => 'nginx/1.0.11'
+            'SERVER_SOFTWARE' => $serverSignature,
         );
          
         $request = new Request(array(), array(), array(), array(), array(), $server);
@@ -632,9 +637,75 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEmpty($response->getContent());
         
-        $this->assertArrayHasKey('x-accel-redirect', $response->headers->all());
+        $this->assertArrayHasKey($expectedHeader, $response->headers->all());
         
-        $this->assertEquals('/protected/files/data/self-lussing-manatee.jpg', $response->headers->get('x-accel-redirect'));
+        $this->assertEquals('/protected/files/data/self-lussing-manatee.jpg', $response->headers->get($expectedHeader));
+        
+         
+    }
+    
+    /**
+     * @test
+     */
+    public function acceleratedRequestShouldNotBeEmptyAndNotContainHeadersWhenAccelerationIsDisabled()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
+                         ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
+                         ->setConstructorArgs(array($filelib))
+                         ->getMock();
+        $renderer->enableAcceleration(false);
+         
+        $server = array(
+            'SERVER_SOFTWARE' => 'nginx/1.0.10'
+        );
+         
+        $request = new Request(array(), array(), array(), array(), array(), $server);
+         
+        $this->assertNull($renderer->getRequest());
+         
+        $renderer->setRequest($request);
+        $this->assertTrue($renderer->isAccelerationPossible());
+                  
+        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+                
+        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
+        
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
+        
+        $retrieved = new FileObject($path);
+        $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
+        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
+        
+        $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
+                
+        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
+        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
+        
+        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
+        $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
+        
+        $file = FileItem::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+                
+        $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
+        
+        $renderer->setAddPrefixToAcceleratedPath('/protected/files');
+        
+        $response = $renderer->render($file, array('download' => false));
+        
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
+        
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertNotEmpty($response->getContent());
+        
+        $this->assertArrayNotHasKey('x-sendfile', $response->headers->all());
+        $this->assertArrayNotHasKey('x-lighttpd-send-file', $response->headers->all());
+        $this->assertArrayNotHasKey('x-accel-redirect', $response->headers->all());
+        
+        
         
          
     }
