@@ -4,8 +4,9 @@ namespace Xi\Filelib\Renderer;
 
 use Xi\Filelib\Renderer\SymfonyRenderer;
 use Xi\Filelib\File\FileItem;
-use Symfony\Component\HttpFoundation\Response;
 use Xi\Filelib\File\FileObject;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -16,7 +17,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Renderer\SymfonyRenderer'));
-        $this->assertContains('Xi\Filelib\Renderer\Renderer', class_implements('Xi\Filelib\Renderer\SymfonyRenderer'));
+        $this->assertContains('Xi\Filelib\Renderer\AcceleratedRenderer', class_implements('Xi\Filelib\Renderer\SymfonyRenderer'));
     }
     
     /**
@@ -25,8 +26,8 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     public function mergeOptionsShouldReturnSanitizedResult()
     {
         
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $renderer = new SymfonyRenderer($fiop);
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $renderer = new SymfonyRenderer($filelib);
         
         $expected = array(
             'version' => 'original',
@@ -57,26 +58,86 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function getPublisherShouldDelegateToFileOperator()
+    public function stripPrefixFromAcceleratedPathShouldDefaultToEmptyString()
     {
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $renderer = new SymfonyRenderer($fiop);
-        
-        $fiop->expects($this->once())->method('getPublisher');
-       
-        $renderer = $renderer->getPublisher();
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
+         
     }
+    
+    /**
+     * @test
+     */
+    public function stripPrefixFromAcceleratedPathShouldObeySetter()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
+         
+         $renderer->setStripPrefixFromAcceleratedPath('luss');
+         
+         $this->assertEquals('luss', $renderer->getStripPrefixFromAcceleratedPath());
+    }
+    
+
+        /**
+     * @test
+     */
+    public function addPrefixToAcceleratedPathShouldDefaultToEmptyString()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertEquals('', $renderer->getAddPrefixToAcceleratedPath());
+         
+    }
+    
+    /**
+     * @test
+     */
+    public function addPrefixToAcceleratedPathShouldObeySetter()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertSame('', $renderer->getAddPrefixToAcceleratedPath());
+         
+         $renderer->setAddPrefixToAcceleratedPath('luss');
+         
+         $this->assertSame('luss', $renderer->getAddPrefixToAcceleratedPath());
+    }
+
+    
     
     
     /**
      * @test
      */
-    public function getAclShouldDelegateToFileOperator()
+    public function getPublisherShouldDelegateToFilelib()
     {
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $renderer = new SymfonyRenderer($fiop);
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $renderer = new SymfonyRenderer($filelib);
         
-        $fiop->expects($this->once())->method('getAcl');
+        $filelib->expects($this->once())->method('getPublisher');
+       
+        $renderer = $renderer->getPublisher();
+    }
+    
+            
+    
+    
+    /**
+     * @test
+     */
+    public function getAclShouldDelegateToFilelib()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $renderer = new SymfonyRenderer($filelib);
+        
+        $filelib->expects($this->once())->method('getAcl');
        
         $acl = $renderer->getAcl();
     }
@@ -85,12 +146,12 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function getStorageShouldDelegateToFileOperator()
+    public function getStorageShouldDelegateToFilelib()
     {
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $renderer = new SymfonyRenderer($fiop);
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $renderer = new SymfonyRenderer($filelib);
         
-        $fiop->expects($this->once())->method('getStorage');
+        $filelib->expects($this->once())->method('getStorage');
        
         $acl = $renderer->getStorage();
     }
@@ -102,11 +163,11 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     {
         $file = FileItem::create(array('id' => 1));
         
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+                
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
                          ->setMethods(array('getPublisher'))
-                         ->setConstructorArgs(array($fiop))
+                         ->setConstructorArgs(array($filelib))
                          ->getMock();
         
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
@@ -130,7 +191,10 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         
         $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
+                
         $fiop->expects($this->once())->method('getVersionProvider')
              ->with($this->equalTo($file), $this->equalTo('lussen'))
              ->will($this->returnValue($vp));
@@ -138,7 +202,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
                          ->setMethods(array('getPublisher'))
-                         ->setConstructorArgs(array($fiop))
+                         ->setConstructorArgs(array($filelib))
                          ->getMock();
         
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
@@ -155,17 +219,16 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function responseShouldBe403WhenAclForbidsRead()
     {
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
                          ->setMethods(array('getPublisher', 'getAcl'))
-                         ->setConstructorArgs(array($fiop))
+                         ->setConstructorArgs(array($filelib))
                          ->getMock();
         
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
         $acl->expects($this->any())->method('fileIsReadable')->will($this->returnValue(false));
         
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
-        
         
         $file = FileItem::create(array('id' => 1));
                 
@@ -185,18 +248,19 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function responseShouldBe403WhenProfileForbidsReadOfOriginalFile()
     {
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
                          ->setMethods(array('getPublisher', 'getAcl'))
-                         ->setConstructorArgs(array($fiop))
+                         ->setConstructorArgs(array($filelib))
                          ->getMock();
+        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
         
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(false));
         
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
-        
-        
+                
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
         $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
         
@@ -220,11 +284,14 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     {
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
         
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
                          ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
-                         ->setConstructorArgs(array($fiop))
+                         ->setConstructorArgs(array($filelib))
                          ->getMock();
+        
+        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
         
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
@@ -264,11 +331,14 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
     {
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
         
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
                          ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
-                         ->setConstructorArgs(array($fiop))
+                         ->setConstructorArgs(array($filelib))
                          ->getMock();
+        
+        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
         
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
@@ -278,8 +348,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
         
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
-        
-        
+                
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
         $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
         
@@ -308,11 +377,14 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function responseShouldBe404WhenVersionDoesNotExist()
     {
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
                          ->setMethods(array('getPublisher', 'getAcl'))
-                         ->setConstructorArgs(array($fiop))
+                         ->setConstructorArgs(array($filelib))
                          ->getMock();
+        
+        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
         
         $fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(false));
                 
@@ -343,11 +415,14 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         
         $file = FileItem::create(array('id' => 1));
         
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
                          ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
-                         ->setConstructorArgs(array($fiop))
+                         ->setConstructorArgs(array($filelib))
                          ->getMock();
+        
+        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
         
         $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         
@@ -378,6 +453,264 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals('image/jpeg', $response->headers->get('Content-Type'));
                 
     }
+    
+    /**
+     * @test
+     */
+    public function accelerationShouldBeDisabledByDefault()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertFalse($renderer->isAccelerationEnabled());
+                           
+    }
+    
+    /**
+     * @test
+     */
+    public function enableAccelerationShouldEnableAcceleration()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         
+         $this->assertFalse($renderer->isAccelerationEnabled());
+         
+         $renderer->enableAcceleration(true);
+         
+         $this->assertTrue($renderer->isAccelerationEnabled());
+    }
+
+    
+    
+    /**
+     * @test
+     */
+    public function accelerationShouldNotBePossibleWithoutRequestAsContext()
+    {
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+         $renderer = new SymfonyRenderer($filelib);
+         $renderer->enableAcceleration(true);
+         
+         $this->assertNull($renderer->getRequest());
+         $this->assertTrue($renderer->isAccelerationEnabled());
+                  
+         $this->assertFalse($renderer->isAccelerationPossible());
+         
+    }
+    
+
+
+    
+    
+    public function provideBadServerSignatures()
+    {
+        return array(
+            array(
+                false,
+                array()
+            ),
+            array(
+                false,
+                array(
+                    'SERVER_SOFTWARE' => 'Microsoft-IIS/5.0'
+                )
+            ),
+            array(
+                true,
+                array(
+                    'SERVER_SOFTWARE' => 'nginx/1.0.10'
+                )
+            ),
+        );
+        
+    }
+    
+    
+    
+    /**
+     * @test
+     * @dataProvider provideBadServerSignatures
+     */
+    public function possibilityOfAccelerationsShouldDependOnServerSignature($expected, $server)
+    {
+        $request = new Request(array(), array(), array(), array(), array(), $server);
+        
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $renderer = new SymfonyRenderer($filelib);
+        $renderer->enableAcceleration(true);
+        
+        $renderer->setRequest($request);
+        
+        $this->assertEquals($expected, $renderer->isAccelerationPossible());
+                        
+    }
+
+    
+    public function provideServersForAccelerationTest()
+    {
+        return array(
+            array(
+                'x-accel-redirect',
+                'nginx/1.0.11'
+            ),
+            array(
+                'x-sendfile',
+                'Cherokee/1.2',
+            ),
+            array(
+                'x-sendfile',
+                'lighttpd/2.0.0',
+            ),
+            array(
+                'x-sendfile',
+                'lighttpd/1.5',
+            ),
+            array(
+                'x-lighttpd-send-file',
+                'lighttpd/1.4',
+            ),
+            array(
+                'x-sendfile',
+                'Apache',
+            ),
+        );
+    }
+    
+    
+    /**
+     * @dataProvider provideServersForAccelerationTest
+     * @test
+     * 
+     */
+    public function acceleratedRequestShouldBeEmptyAndContainCorrectHeaders($expectedHeader, $serverSignature)
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
+                         ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
+                         ->setConstructorArgs(array($filelib))
+                         ->getMock();
+        $renderer->enableAcceleration(true);
+         
+        $server = array(
+            'SERVER_SOFTWARE' => $serverSignature,
+        );
+         
+        $request = new Request(array(), array(), array(), array(), array(), $server);
+         
+        $this->assertNull($renderer->getRequest());
+         
+        $renderer->setRequest($request);
+        $this->assertTrue($renderer->isAccelerationPossible());
+                  
+        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+                
+        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
+        
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
+        
+        $retrieved = new FileObject($path);
+        $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
+        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
+        
+        $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
+                
+        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
+        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
+        
+        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
+        $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
+        
+        $file = FileItem::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+                
+        $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
+        
+        $renderer->setAddPrefixToAcceleratedPath('/protected/files');
+        
+        $response = $renderer->render($file, array('download' => false));
+        
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
+        
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEmpty($response->getContent());
+        
+        $this->assertArrayHasKey($expectedHeader, $response->headers->all());
+        
+        $this->assertEquals('/protected/files/data/self-lussing-manatee.jpg', $response->headers->get($expectedHeader));
+        
+         
+    }
+    
+    /**
+     * @test
+     */
+    public function acceleratedRequestShouldNotBeEmptyAndNotContainHeadersWhenAccelerationIsDisabled()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
+                         ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
+                         ->setConstructorArgs(array($filelib))
+                         ->getMock();
+        $renderer->enableAcceleration(false);
+         
+        $server = array(
+            'SERVER_SOFTWARE' => 'nginx/1.0.10'
+        );
+         
+        $request = new Request(array(), array(), array(), array(), array(), $server);
+         
+        $this->assertNull($renderer->getRequest());
+         
+        $renderer->setRequest($request);
+        $this->assertTrue($renderer->isAccelerationPossible());
+                  
+        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+                
+        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
+        
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
+        
+        $retrieved = new FileObject($path);
+        $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
+        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
+        
+        $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
+                
+        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
+        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
+        
+        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
+        $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
+        
+        $file = FileItem::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+                
+        $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
+        
+        $renderer->setAddPrefixToAcceleratedPath('/protected/files');
+        
+        $response = $renderer->render($file, array('download' => false));
+        
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
+        
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertNotEmpty($response->getContent());
+        
+        $this->assertArrayNotHasKey('x-sendfile', $response->headers->all());
+        $this->assertArrayNotHasKey('x-lighttpd-send-file', $response->headers->all());
+        $this->assertArrayNotHasKey('x-accel-redirect', $response->headers->all());
+        
+        
+        
+         
+    }
+    
+    
     
 }
 
