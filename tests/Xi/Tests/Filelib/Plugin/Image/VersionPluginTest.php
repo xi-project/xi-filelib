@@ -88,4 +88,18 @@ class VersionPluginTest extends TestCase
     }
     
     
+    /**
+     * @test
+     */
+    public function getSubscribedEventsShouldReturnCorrectEvents()
+    {
+        $events = VersionPlugin::getSubscribedEvents();
+        $this->assertArrayHasKey('fileprofile.add', $events);
+        $this->assertArrayHasKey('file.afterUpload', $events);
+        $this->assertArrayHasKey('file.publish', $events);
+        $this->assertArrayHasKey('file.unpublish', $events);
+        $this->assertArrayHasKey('file.delete', $events);
+    }
+
+    
 }

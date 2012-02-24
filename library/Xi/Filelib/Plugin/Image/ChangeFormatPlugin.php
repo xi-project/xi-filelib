@@ -5,6 +5,7 @@ namespace Xi\Filelib\Plugin\Image;
 use Imagick;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Configurator;
+use Xi\Filelib\Event\FileUploadEvent;
 
 /**
  * Changes images' formats before uploading them.
@@ -14,6 +15,11 @@ use Xi\Filelib\Configurator;
  */
 class ChangeFormatPlugin extends AbstractPlugin
 {
+    static protected $subscribedEvents = array(
+        'fileprofile.add' => 'onFileProfileAdd',
+        'file.beforeUpload' => 'beforeUpload'
+    );
+    
     protected $imageMagickHelper;
     
     protected $targetExtension;
@@ -59,12 +65,18 @@ class ChangeFormatPlugin extends AbstractPlugin
     }
     
     
-    public function beforeUpload(\Xi\Filelib\File\Upload\FileUpload $upload)
+    public function beforeUpload(FileUploadEvent $event)
     {
+        if (!$this->hasProfile($event->getProfile()->getIdentifier())) {
+            return;
+        }
+        
+        $upload = $event->getFileUpload();
+                        
         $mimetype = $upload->getMimeType();
         // @todo: use filebankstas type detection
         if(!preg_match("/^image/", $mimetype)) {
-            return $upload;   
+            return;
         }
                 
         $img = $this->getImageMagickHelper()->createImagick($upload->getPathname());
@@ -73,13 +85,15 @@ class ChangeFormatPlugin extends AbstractPlugin
         $tempnam = $this->getFilelib()->getTempDir() . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);
 
-        $pinfo = pathinfo($upload->getPathname());
+        $pinfo = pathinfo($upload->getUploadFilename());
 
         $nupload = $this->getFilelib()->getFileOperator()->prepareUpload($tempnam);
         $nupload->setTemporary(true);
         
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $this->getTargetExtension());
 
+        $event->setFileUpload($nupload);
+        
         return $nupload;
     }
 

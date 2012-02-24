@@ -94,26 +94,20 @@ abstract class AbstractPlugin implements Plugin
         return $this->profiles;
     }
 
+    /**
+     * Returns whether plugin belongs to a profile
+     * 
+     * @param string $profile
+     * @return boolean
+     */
+    public function hasProfile($profile)
+    {
+        return in_array($profile, $this->getProfiles());
+    }
+    
+    
     public function init()
     { }
-
-    public function beforeUpload(FileUpload $upload)
-    {
-        return $upload;
-    }
-
-    public function afterUpload(File $file)
-    { }
-
-    public function onDelete(File $file)
-    { }
-    
-    public function onPublish(File $file)
-    { }
-    
-    public function onUnpublish(File $file)
-    { }
-    
     
     public function onFileProfileAdd(FileProfileEvent $event)
     {

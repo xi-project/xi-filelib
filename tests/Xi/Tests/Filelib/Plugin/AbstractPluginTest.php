@@ -44,21 +44,32 @@ class AbstractPluginTest extends TestCase
     /**
      * @test
      */
+    public function hasProfileShouldReturnWhetherPluginBelongsToAProfile()
+    {
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')->setMethods(array())->getMockForAbstractClass();
+        
+        $plugin->setProfiles(array('lussi', 'tussi'));
+        
+        $this->assertFalse($plugin->hasProfile('xoo'));
+        $this->assertTrue($plugin->hasProfile('lussi'));
+        $this->assertTrue($plugin->hasProfile('tussi'));
+        $this->assertFalse($plugin->hasProfile('meisterhof'));
+    }
+    
+    
+    
+    /**
+     * @test
+     */
     public function emptyHooksShouldBeCallableAndReturnExpectedValues()
     {
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')->setMethods(array())->getMockForAbstractClass();
         
-        $this->assertEquals($upload, $plugin->beforeUpload($upload));
-        
         $file = $this->getMockForAbstractClass('Xi\Filelib\File\FileItem');
         
-        $this->assertNull($plugin->afterUpload($file));
         $this->assertNull($plugin->init());
-        $this->assertNull($plugin->onDelete($file));
-        $this->assertNull($plugin->onPublish($file));
-        $this->assertNull($plugin->onUnpublish($file));
     }
     
     
