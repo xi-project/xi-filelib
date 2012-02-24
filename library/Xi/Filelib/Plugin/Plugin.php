@@ -48,45 +48,19 @@ interface Plugin extends EventSubscriberInterface
      * @return Plugin
      */
     public function setProfiles(array $profiles);
+    
+    /**
+     * Returns whether plugin has a certain profile
+     * 
+     * @return boolean
+     */
+    public function hasProfile($profile);
+    
 
     /**
      * Runs when plugin is added.
      */
     public function init();
 
-    /**
-     * Runs before upload
-     *
-     * @param FileUpload $upload
-     * @return FileUpload
-     */
-    public function beforeUpload(FileUpload $upload);
 
-    /**
-     * Runs after succesful upload.
-     *
-     * @param File $file
-     */
-    public function afterUpload(File $file);
-
-    /**
-     * Runs after successful delete.
-     *
-     * @param File $file
-     */
-    public function onDelete(File $file);
-
-    /**
-     * Runs on publish
-     *
-     * @param File $file
-     */
-    public function onPublish(File $file);
-
-    /**
-     * Runs on unpublish
-     *
-     * @param File $file
-     */
-    public function onUnpublish(File $file);
 }

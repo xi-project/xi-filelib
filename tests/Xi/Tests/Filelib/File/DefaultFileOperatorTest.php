@@ -441,6 +441,13 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     public function deleteShouldDelegateCorrectly()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        
+        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
+        
+        $dispatcher->expects($this->once())->method('dispatch')
+                   ->with($this->equalTo('file.delete'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+        
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('unpublish', 'publish', 'isReadable', 'isReadableByAnonymous', 'getProfile'))
@@ -448,21 +455,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         
-        $plugin1 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        $plugin2 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        
         $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
-        
-        $plugin1->expects($this->once())->method('onDelete')->with($this->equalTo($file));
-        $plugin2->expects($this->once())->method('onDelete')->with($this->equalTo($file));
-        
-        $profile->expects($this->any())->method('getPlugins')->will($this->returnValue(array(
-            $plugin1,
-            $plugin2,
-        )));
-        
-
-        
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('deleteFile')->with($this->equalTo($file));
@@ -561,25 +554,22 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
         
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
+        
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('unpublish', 'isReadable', 'isReadableByAnonymous', 'getProfile'))
                    ->getMock();
+        
+        $dispatcher->expects($this->once())->method('dispatch')
+                   ->with($this->equalTo('file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+                
                 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->atLeastOnce())->method('getPublishOriginal')->will($this->returnValue(true));
         
-        $plugin1 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        $plugin2 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        
-        $plugin1->expects($this->once())->method('onPublish')->with($this->equalTo($file));
-        $plugin2->expects($this->once())->method('onPublish')->with($this->equalTo($file));
-        
-        $profile->expects($this->any())->method('getPlugins')->will($this->returnValue(array(
-            $plugin1,
-            $plugin2,
-        )));
-
+        $profile->expects($this->never())->method('getPlugins');
 
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
         $publisher->expects($this->once())->method('publish')->with($this->equalTo($file));
@@ -601,6 +591,12 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
         
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
+        
+        $dispatcher->expects($this->once())->method('dispatch')
+                   ->with($this->equalTo('file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+        
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('unpublish', 'isReadable', 'isReadableByAnonymous', 'getProfile'))
@@ -608,18 +604,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->atLeastOnce())->method('getPublishOriginal')->will($this->returnValue(false));
-        
-        $plugin1 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        $plugin2 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        
-        $plugin1->expects($this->once())->method('onPublish')->with($this->equalTo($file));
-        $plugin2->expects($this->once())->method('onPublish')->with($this->equalTo($file));
-        
-        $profile->expects($this->any())->method('getPlugins')->will($this->returnValue(array(
-            $plugin1,
-            $plugin2,
-        )));
-
 
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
         $publisher->expects($this->never())->method('publish');
@@ -642,30 +626,23 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
         
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
+        
+        $dispatcher->expects($this->once())->method('dispatch')
+                   ->with($this->equalTo('file.unpublish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+        
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('publish', 'isReadable', 'isReadableByAnonymous', 'getProfile'))
+                   ->setMethods(array('publish', 'isReadable', 'isReadableByAnonymous', 'getProfile', 'getPublisher'))
                    ->getMock();
                 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        
-        $plugin1 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        $plugin2 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        
-        $plugin1->expects($this->once())->method('onUnpublish')->with($this->equalTo($file));
-        $plugin2->expects($this->once())->method('onUnpublish')->with($this->equalTo($file));
-        
-        $profile->expects($this->any())->method('getPlugins')->will($this->returnValue(array(
-            $plugin1,
-            $plugin2,
-        )));
 
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
         $publisher->expects($this->once())->method('unpublish');
         
-        $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-        
-        $op->expects($this->atLeastOnce())->method('getProfile')->with($this->equalTo('lussen'))->will($this->returnValue($profile));
+        $op->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
         
         $op->unpublish($file);
         
@@ -755,42 +732,29 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     public function uploadShouldUploadAndDelegateCorrectly($expectedCallToPublish, $readableByAnonymous)
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
+                
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish'))
                    ->getMock();
+        
+        $dispatcher->expects($this->at(0))->method('dispatch')
+                   ->with($this->equalTo('file.beforeUpload'), $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
+        
+        $dispatcher->expects($this->at(1))->method('dispatch')
+                   ->with($this->equalTo('file.afterUpload'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
         
         $folder = FolderItem::create(array('id' => 1));
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
         
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         
-        $plugin1 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        $plugin2 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        
-        $plugin1->expects($this->once())->method('beforeUpload')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Upload\FileUpload'))
-                ->will($this->returnArgument(0));
-        
-        $plugin2->expects($this->once())->method('beforeUpload')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Upload\FileUpload'))
-                ->will($this->returnArgument(0));
-
-        $plugin1->expects($this->once())->method('afterUpload')
-                ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-                ->will($this->returnArgument(0));
-        
-        $plugin2->expects($this->once())->method('afterUpload')
-                ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-                ->will($this->returnArgument(0));
-        
         $linker = $this->getMock('Xi\Filelib\Linker\Linker');
         $linker->expects($this->any())->method('getLink')->will($this->returnValue('maximuslincitus'));
-        
-        $profile->expects($this->any())->method('getPlugins')->will($this->returnValue(array(
-            $plugin1,
-            $plugin2,
-        )));
+
         $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
         
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');

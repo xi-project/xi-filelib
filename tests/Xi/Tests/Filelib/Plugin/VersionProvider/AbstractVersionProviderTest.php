@@ -8,6 +8,8 @@ use Xi\Filelib\File\FileItem;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
+use Xi\Filelib\Event\FileEvent;
 
 class AbstractVersionProviderTest extends TestCase
 {
@@ -56,14 +58,10 @@ class AbstractVersionProviderTest extends TestCase
         }));
                         
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnCallback(function() use ($fileOperator) { 
-            return $fileOperator;
-        }));
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fileOperator));
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
-        $filelib->expects($this->any())->method('getStorage')->will($this->returnCallback(function() use ($storage) { 
-            return $storage;
-        }));
+        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
         
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
             ->setMethods(array('createVersion', 'deleteVersion'))
@@ -71,9 +69,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Publisher')
             ->getMockForAbstractClass();
-        $filelib->expects($this->any())->method('getPublisher')->will($this->returnCallback(function() use ($publisher) { 
-            return $publisher;
-        }));
+        $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
                 
         $this->plugin = $plugin;
         $this->filelib = $filelib;
@@ -222,7 +218,7 @@ class AbstractVersionProviderTest extends TestCase
     }
     
     
-    public function prodiveFilesForProvidesForMatching()
+    public function provideFilesForProvidesForMatching()
     {
         return array(
             array(true, array('profile' => 'tussi', 'mimetype' => 'image/png')),
@@ -237,7 +233,7 @@ class AbstractVersionProviderTest extends TestCase
     
     /**
      * @test
-     * @dataProvider prodiveFilesForProvidesForMatching
+     * @dataProvider provideFilesForProvidesForMatching
      */
     public function providesForShouldMatchAgainstFileProfileCorrectly($expected, $file)
     {
@@ -253,14 +249,6 @@ class AbstractVersionProviderTest extends TestCase
         
     }
     
-    
-    public function onDeleteShouldDelegateToPublisher()
-    {
-        
-    }
-    
-    
-    
     /**
      * @test
      */
@@ -270,13 +258,14 @@ class AbstractVersionProviderTest extends TestCase
         
         $this->plugin->setProvidesFor(array('image', 'video'));
         $this->plugin->setProfiles(array('tussi', 'lussi'));
-
         
         $this->plugin->setFileLib($this->filelib);
                
                 
         $file = FileItem::create(array('mimetype' => 'iimage/xoo', 'profile' => 'tussi'));
-        $this->plugin->afterUpload($file);
+        $event = new FileEvent($file);
+        
+        $this->plugin->afterUpload($event);
         
         
     }
@@ -287,11 +276,10 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function afterUploadShouldCreateAndStoreVersionWhenPluginProvides()
     {
-        
-        $this->plugin->expects($this->once())->method('createVersion')->will($this->returnCallback(function() {
-           return ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg';
-        }));
-        
+        $this->plugin->expects($this->once())->method('createVersion')
+             ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+             ->will($this->returnValue(ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg'));
+                
         $this->plugin->setProvidesFor(array('image', 'video'));
         $this->plugin->setProfiles(array('tussi', 'lussi'));
 
@@ -303,15 +291,13 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setFilelib($filelib);
         
         $file = FileItem::create(array('mimetype' => 'image/xoo', 'profile' => 'tussi'));
-        
+        $event = new FileEvent($file);
         
         $this->createMockedTemporaryFile();
         
-        $this->plugin->afterUpload($file);
+        $this->plugin->afterUpload($event);
         
         $this->assertFileNotExists(ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg');
-        
-        
     }
     
    
@@ -328,7 +314,9 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setFileLib($this->filelib);
                 
         $file = FileItem::create(array('mimetype' => 'iimage/xoo', 'profile' => 'tussi'));
-        $this->plugin->onPublish($file);
+        
+        $event = new FileEvent($file);
+        $this->plugin->onPublish($event);
         
     }
     
@@ -346,7 +334,9 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setFileLib($this->filelib);
                 
         $file = FileItem::create(array('mimetype' => 'image/png', 'profile' => 'tussi'));
-        $this->plugin->onPublish($file);
+        
+        $event = new FileEvent($file);
+        $this->plugin->onPublish($event);
         
     }
     
@@ -363,7 +353,9 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setFileLib($this->filelib);
                 
         $file = FileItem::create(array('mimetype' => 'iimage/xoo', 'profile' => 'tussi'));
-        $this->plugin->onUnpublish($file);
+        
+        $event = new FileEvent($file);
+        $this->plugin->onUnpublish($event);
         
     }
     
@@ -381,9 +373,74 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setFileLib($this->filelib);
                 
         $file = FileItem::create(array('mimetype' => 'image/png', 'profile' => 'tussi'));
-        $this->plugin->onUnpublish($file);
+
+        $event = new FileEvent($file);
+        $this->plugin->onUnpublish($event);
+    }
+
+    
+    
+    /**
+     * @test
+     */
+    public function onUnpublishShouldExitEarlyWhenPluginDoesntHaveProfile()
+    {
+        $this->publisher->expects($this->never())->method('unpublishVersion');
+
+        $this->plugin->setProvidesFor(array('image', 'video'));
+        $this->plugin->setProfiles(array('tussi', 'lussi'));
+        
+        $this->plugin->setFileLib($this->filelib);
+                
+        $file = FileItem::create(array('mimetype' => 'image/png', 'profile' => 'xooxer'));
+
+        $event = new FileEvent($file);
+        $this->plugin->onUnpublish($event);
+    }
+
+
+    /**
+     * @test
+     */
+    public function onPublishShouldExitEarlyWhenPluginDoesntHaveProfile()
+    {
+        $this->publisher->expects($this->never())->method('publishVersion');
+
+        $this->plugin->setProvidesFor(array('image', 'video'));
+        $this->plugin->setProfiles(array('tussi', 'lussi'));
+        
+        $this->plugin->setFileLib($this->filelib);
+                
+        $file = FileItem::create(array('mimetype' => 'image/png', 'profile' => 'xooxer'));
+
+        $event = new FileEvent($file);
+        $this->plugin->onPublish($event);
+    }
+
+    /**
+     * @test
+     */
+    public function afterUploadShouldExitEarlyWhenPluginDoesntHaveProfile()
+    {
+        $this->plugin->expects($this->never())->method('createVersion');
+                
+        $this->plugin->setProvidesFor(array('image', 'video'));
+        $this->plugin->setProfiles(array('tussi', 'lussi'));
+
+        $filelib = $this->filelib;
+        $storage = $this->storage;
+        
+        $storage->expects($this->never())->method('storeVersion');
+                
+        $this->plugin->setFilelib($filelib);
+        
+        $file = FileItem::create(array('mimetype' => 'image/xoo', 'profile' => 'xooxer'));
+        $event = new FileEvent($file);
+        
+        $this->plugin->afterUpload($event);
         
     }
+    
     
 
         /**
@@ -399,7 +456,9 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setFileLib($this->filelib);
                 
         $file = FileItem::create(array('mimetype' => 'iimage/xoo', 'profile' => 'tussi'));
-        $this->plugin->onDelete($file);
+        $event = new FileEvent($file);
+        
+        $this->plugin->onDelete($event);
         
     }
     
@@ -417,10 +476,33 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setFileLib($this->filelib);
                 
         $file = FileItem::create(array('mimetype' => 'image/png', 'profile' => 'tussi'));
-        $this->plugin->onDelete($file);
+        $event = new FileEvent($file);
+        
+        $this->plugin->onDelete($event);
         
     }
 
+    
+    /**
+     * @test
+     */
+    public function onDeleteShouldExitEarlyWhenPluginDoesntHaveProfile()
+    {
+        $this->storage->expects($this->never())->method('deleteVersion');
+
+        $this->plugin->setProvidesFor(array('image', 'video'));
+        $this->plugin->setProfiles(array('tussi', 'lussi'));
+        
+        $this->plugin->setFileLib($this->filelib);
+                
+        $file = FileItem::create(array('mimetype' => 'image/png', 'profile' => 'xooxer'));
+        $event = new FileEvent($file);
+        
+        $this->plugin->onDelete($event);
+        
+    }
+
+    
     
     private function createMockedTemporaryFile()
     {
@@ -431,6 +513,20 @@ class AbstractVersionProviderTest extends TestCase
     }
     
     
+    
+    /**
+     * @test
+     */
+    public function getSubscribedEventsShouldReturnCorrectEvents()
+    {
+        $events = AbstractVersionProvider::getSubscribedEvents();
+        $this->assertArrayHasKey('fileprofile.add', $events);
+        $this->assertArrayHasKey('file.afterUpload', $events);
+        $this->assertArrayHasKey('file.publish', $events);
+        $this->assertArrayHasKey('file.unpublish', $events);
+        $this->assertArrayHasKey('file.delete', $events);
+    }
+
     
     
 }

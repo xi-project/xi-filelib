@@ -5,6 +5,7 @@ namespace Xi\Filelib\Plugin\Image;
 use Imagick;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 
 /**
  * Versions an image
@@ -13,10 +14,10 @@ use Xi\Filelib\File\File;
  * @package Xi_Filelib
  *
  */
-class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider
+class VersionPlugin extends AbstractVersionProvider
 {
     
-    protected $_providesFor = array('image');
+    protected $providesFor = array('image');
 
     protected $imageMagickHelper;
     
@@ -44,7 +45,7 @@ class VersionPlugin extends \Xi\Filelib\Plugin\VersionProvider\AbstractVersionPr
      *
      * @param File $file
      */
-    public function createVersion(\Xi\Filelib\File\File $file)
+    public function createVersion(File $file)
     {
         // Todo: optimize
         $retrieved = $this->getFilelib()->getStorage()->retrieve($file)->getPathname();
