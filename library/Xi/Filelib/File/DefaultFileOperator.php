@@ -14,6 +14,8 @@ use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileProfileEvent;
+use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\Event\FileEvent;
 
 /**
  * File operator
@@ -212,7 +214,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      * @param mixed $upload Uploadable, path or object
      * @param Folder $folder
      * @return File
-     * @throws \Xi\Filelib\FilelibException
+     * @throws FilelibException
      * @todo Remove the upload kludgeration with prepareUpload
      */
     public function upload($upload, Folder $folder, $profile = 'default')
@@ -226,10 +228,12 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         }
 
         $profileObj = $this->getProfile($profile);
-        foreach ($profileObj->getPlugins() as $plugin) {
-            $upload = $plugin->beforeUpload($upload);
-        }
 
+        $event = new FileUploadEvent($upload, $folder, $profileObj);
+        $this->getEventDispatcher()->dispatch('file.beforeUpload', $event);
+        
+        $upload = $event->getFileUpload();
+        
         $file = $this->getInstance(array(
             'folder_id' => $folder->getId(),
             'mimetype' => $upload->getMimeType(),
@@ -246,11 +250,11 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         $this->getBackend()->updateFile($file);
 
         $this->getStorage()->store($file, $upload->getRealPath());
+        
+        $event = new FileEvent($file);
+        $this->getEventDispatcher()->dispatch('file.afterUpload', $event);
 
-        foreach ($profileObj->getPlugins() as $plugin) {
-            $plugin->afterUpload($file);
-        }
-
+        // @todo: I think autopublish must be an option or go away...
         if ($this->getAcl()->isFileReadableByAnonymous($file)) {
             $this->publish($file);
         }
@@ -263,18 +267,14 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      *
      * @param File $file
      */
-    public function delete(\Xi\Filelib\File\File $file)
+    public function delete(File $file)
     {
         $this->unpublish($file);
-
         $this->getBackend()->deleteFile($file);
-
         $this->getStorage()->delete($file);
 
-        // @todo: refactor dem goddamn plugins to Symfony events
-        foreach ($this->getProfile($file->getProfile())->getPlugins() as $plugin) {
-            $plugin->onDelete($file);
-        }
+        $event = new FileEvent($file);
+        $this->getEventDispatcher()->dispatch('file.delete', $event);
 
         return true;
     }
@@ -282,10 +282,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     /**
      * Returns file type of a file
      *
-     * @param \Xi\Filelib\File\File File $file item
+     * @param File File $file item
      * @return string File type
      */
-    public function getType(\Xi\Filelib\File\File $file)
+    public function getType(File $file)
     {
         // @todo Semi-mock until mimetype database is pooped in.
         $split = explode('/', $file->getMimetype());
@@ -318,27 +318,25 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         return $profile->getVersionProvider($file, $version);
     }
 
-    public function publish(\Xi\Filelib\File\File $file)
+    public function publish(File $file)
     {
         $profile = $this->getProfile($file->getProfile());
         if ($profile->getPublishOriginal()) {
             $this->getPublisher()->publish($file);
         }
 
-        foreach ($profile->getPlugins() as $plugin) {
-            $plugin->onPublish($file);
-        }
+        $event = new FileEvent($file);
+        $this->getEventDispatcher()->dispatch('file.publish', $event);
+        
     }
 
-    public function unpublish(\Xi\Filelib\File\File $file)
+    public function unpublish(File $file)
     {
-        $profile = $this->getProfile($file->getProfile());
+        $this->getPublisher()->unpublish($file);
 
-        $this->getFilelib()->getPublisher()->unpublish($file);
+        $event = new FileEvent($file);
+        $this->getEventDispatcher()->dispatch('file.unpublish', $event);
 
-        foreach ($profile->getPlugins() as $plugin) {
-            $plugin->onUnpublish($file);
-        }
     }
 
     public function addPlugin(Plugin $plugin, $priority = 0)

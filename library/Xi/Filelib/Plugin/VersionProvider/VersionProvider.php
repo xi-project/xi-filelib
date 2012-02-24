@@ -2,14 +2,16 @@
 
 namespace Xi\Filelib\Plugin\VersionProvider;
 
+use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\Plugin;
+
 /**
  * Interface for version providing plugins
  *
  * @author pekkis
- * @package Xi_Filelib
  *
  */
-interface VersionProvider extends \Xi\Filelib\Plugin\Plugin
+interface VersionProvider extends Plugin
 {
     /**
      * Sets file extension
@@ -42,10 +44,10 @@ interface VersionProvider extends \Xi\Filelib\Plugin\Plugin
     /**
      * Returns whether the plugin provides a version for a file.
      *
-     * @param \Xi\Filelib\File\File $file File item
+     * @param File $file File item
      * @return boolean
      */
-    public function providesFor(\Xi\Filelib\File\File $file);
+    public function providesFor(File $file);
 
     /**
      * Sets version identifier

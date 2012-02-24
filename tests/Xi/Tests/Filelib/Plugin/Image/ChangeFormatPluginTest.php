@@ -4,6 +4,7 @@ namespace Xi\Tests\Filelib\Plugin\Image;
 
 use Imagick;
 use Xi\Filelib\Plugin\Image\ChangeFormatPlugin;
+use Xi\Filelib\Event\FileUploadEvent;
 
 class ChangeFormatPluginTest extends TestCase
 {
@@ -35,6 +36,7 @@ class ChangeFormatPluginTest extends TestCase
     public function getImageMagickHelperShouldReturnImageMagickHelper()
     {
         $plugin = new ChangeFormatPlugin();
+        $plugin->setProfiles(array('tussi'));
         $helper = $plugin->getImageMagickHelper();
         
         $this->assertInstanceOf('Xi\Filelib\Plugin\Image\ImageMagickHelper', $helper);
@@ -42,6 +44,31 @@ class ChangeFormatPluginTest extends TestCase
         $this->assertSame($helper, $plugin->getImageMagickHelper());
         
     }
+    
+    
+    /**
+     * @test
+     */
+    public function beforeUploadShouldExitEarlyIfPluginDoesntHaveProfile()
+    {
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        
+        $event = $this->getMockBuilder('Xi\Filelib\Event\FileUploadEvent')
+                      ->disableOriginalConstructor()
+                      ->getMock();
+        
+        $event->expects($this->once())->method('getProfile')->will($this->returnValue($profile));
+        
+        $event->expects($this->never())->method('getFileUpload');
+                        
+        $plugin = new ChangeFormatPlugin();
+                
+        $plugin->beforeUpload($event);
+                        
+
+    }
+
+    
     
     /**
      * @test
@@ -53,10 +80,18 @@ class ChangeFormatPluginTest extends TestCase
                        ->getMock();
                 
         $plugin = new ChangeFormatPlugin();
+        $plugin->setProfiles(array('tussi'));
 
         $upload->expects($this->once())->method('getMimeType')->will($this->returnValue('video/lus'));
         
-        $nupload = $plugin->beforeUpload($upload);
+        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
+        $event = new FileUploadEvent($upload, $folder, $profile);
+        
+        $plugin->beforeUpload($event);
+        
+        $nupload = $event->getFileUpload();
         
         $this->assertSame($upload, $nupload);
         
@@ -91,7 +126,7 @@ class ChangeFormatPluginTest extends TestCase
                        ->getMock();
         
         $upload->expects($this->any())->method('getMimeType')->will($this->returnValue('image/jpeg'));
-        $upload->expects($this->any())->method('getPathname')->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
+        $upload->expects($this->atLeastOnce())->method('getUploadFilename')->will($this->returnValue('self-lussing-manatee.jpg'));
                 
         $nupload = $this->getMockBuilder('Xi\Filelib\File\Upload\FileUpload')
                        ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
@@ -105,17 +140,37 @@ class ChangeFormatPluginTest extends TestCase
                        ->setMethods(array('getImageMagickHelper'))
                        ->disableOriginalConstructor()
                        ->getMock();
+        $plugin->setProfiles(array('tussi'));
         
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
                 
         $plugin->setTargetExtension('lus');
         $plugin->setFilelib($filelib);
-        $xupload = $plugin->beforeUpload($upload);
+        
+        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
+        $event = new FileUploadEvent($upload, $folder, $profile);
+        
+        $plugin->beforeUpload($event);
+        
+        $xupload = $event->getFileUpload();
         
         $this->assertInstanceOf('Xi\Filelib\File\Upload\FileUpload', $xupload);
         $this->assertNotSame($upload, $xupload);
         
     }
     
+    
+    /**
+     * @test
+     */
+    public function getSubscribedEventsShouldReturnCorrectEvents()
+    {
+        $events = ChangeFormatPlugin::getSubscribedEvents();
+        $this->assertArrayHasKey('fileprofile.add', $events);
+        $this->assertArrayHasKey('file.beforeUpload', $events);
+    }
+
     
 }

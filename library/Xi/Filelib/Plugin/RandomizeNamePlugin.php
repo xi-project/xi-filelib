@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Plugin;
 
 use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\Event\FileUploadEvent;
 
 /**
  * Randomizes all uploads' file names before uploading. Ensures that same file may be uploaded
@@ -45,8 +46,14 @@ class RandomizeNamePlugin extends AbstractPlugin
         return $this->prefix;
     }
 
-    public function beforeUpload(FileUpload $upload)
+    public function beforeUpload(FileUploadEvent $event)
     {
+        if (!$this->hasProfile($event->getProfile()->getIdentifier())) {
+            return;
+        }
+        
+        $upload = $event->getFileUpload();
+        
         $pinfo = pathinfo($upload->getUploadFilename());
         $newname = uniqid($this->getPrefix(), true);
 
