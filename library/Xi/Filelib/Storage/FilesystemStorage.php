@@ -2,17 +2,14 @@
 
 namespace Xi\Filelib\Storage;
 
-use \Xi\Filelib\FileLibrary,
-    \Xi\Filelib\Storage\Storage,
-    \Xi\Filelib\Storage\AbstractStorage,
-    \Xi\Filelib\File\File,
-    \Xi\Filelib\Configurator,
-    \Xi\Filelib\File\FileObject,
-    \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator,
-    \Xi\Filelib\Plugin\VersionProvider\VersionProvider,
-    \Xi\Filelib\FilelibException
-    ;
-    
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Storage\AbstractStorage;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Configurator;
+use Xi\Filelib\File\FileObject;
+use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
+use Xi\Filelib\FilelibException;
 
 /**
  * Stores files in a filesystem
@@ -202,11 +199,11 @@ class FilesystemStorage extends AbstractStorage implements Storage
             
     }
     
-    public function storeVersion(File $file, VersionProvider $version, $tempFile)
+    public function storeVersion(File $file, $version, $tempFile)
     {
         $this->assertRootExistsAndIsWritable();
         
-        $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version->getIdentifier();
+        $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version;
         
         if(!is_dir($path)) {
             mkdir($path, $this->getDirectoryPermission(), true);
@@ -226,9 +223,9 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return new FileObject($path);
     }
     
-    public function retrieveVersion(File $file, VersionProvider $version)
+    public function retrieveVersion(File $file, $version)
     {
-        $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version->getIdentifier() . '/' . $file->getId();
+        $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version . '/' . $file->getId();
         
         if(!is_file($path)) {
             throw new FilelibException('Could not retrieve file');
@@ -248,9 +245,9 @@ class FilesystemStorage extends AbstractStorage implements Storage
     }
     
     
-    public function deleteVersion(File $file, VersionProvider $version)
+    public function deleteVersion(File $file, $version)
     {
-        $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version->getIdentifier() . '/' . $file->getId();
+        $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version . '/' . $file->getId();
         
         if (is_file($path) && is_writable($path)) {
             unlink($path);

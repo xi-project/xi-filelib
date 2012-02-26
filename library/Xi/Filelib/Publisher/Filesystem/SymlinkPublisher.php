@@ -3,12 +3,14 @@
 namespace Xi\Filelib\Publisher\Filesystem;
 
 use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\File\File;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
@@ -23,12 +25,11 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
      * Sets path from public to private root
      *
      * @param string $relativePathToRoot
-     * @return \Xi\Filelib\FileLibrary
+     * @return SymlinkPublisher
      */
     public function setRelativePathToRoot($relativePathToRoot)
     {
         $this->relativePathToRoot = $relativePathToRoot;
-        return $this;
     }
 
     /**
@@ -44,16 +45,16 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
     /**
      * Returns relative path to file in storage
      *
-     * @param \Xi_Filelib_File $file File item
+     * @param File $file
      * @param $levelsDown How many levels down from root we are
      * @return string
      */
-    public function getRelativePathTo(\Xi\Filelib\File\File $file, $levelsDown = 0)
+    public function getRelativePathTo(File $file, $levelsDown = 0)
     {
         $relativePath = $this->getRelativePathToRoot();
         
         if(!$relativePath) {
-            throw new \Xi\Filelib\FilelibException('Relative path must be set!');
+            throw new FilelibException('Relative path must be set!');
         }
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
         
@@ -68,21 +69,22 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
     /**
      * Returns relative path to file version in storage
      *
-     * @param \Xi_Filelib_File $file File item
+     * @param File $file
+     * @param VersionProvider $version
      * @param $levelsDown How many levels down from root we are
      * @return string
      */
-    public function getRelativePathToVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version, $levelsDown = 0)
+    public function getRelativePathToVersion(File $file, VersionProvider $version, $levelsDown = 0)
     {
         $relativePath = $this->getRelativePathToRoot();
         
         if(!$relativePath) {
-            throw new \Xi\Filelib\FilelibException('Relative path must be set!');
+            throw new FilelibException('Relative path must be set!');
         }
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
         
         $storage = $this->getFilelib()->getStorage();
-        $retrieved = $storage->retrieveVersion($file, $version);
+        $retrieved = $storage->retrieveVersion($file, $version->getIdentifier());
         
         $path = preg_replace("[^{$storage->getRoot()}]", $relativePath, $retrieved);
         
@@ -90,7 +92,7 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
     }
     
     
-    public function publish(\Xi\Filelib\File\File $file)
+    public function publish(File $file)
     {
         
         $fl = $this->getFilelib();
@@ -128,7 +130,7 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
         
     }
     
-    public function publishVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function publishVersion(File $file, VersionProvider $version)
     {
         $fl = $this->getFilelib();
             
@@ -162,7 +164,7 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
                 symlink($fp, $link);
                 chdir($oldCwd);
             } else {
-                symlink($this->getFilelib()->getStorage()->retrieveVersion($file, $version), $link);                
+                symlink($this->getFilelib()->getStorage()->retrieveVersion($file, $version->getIdentifier()), $link);                
             }
 
         }
@@ -170,7 +172,7 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
         
     }
     
-    public function unpublish(\Xi\Filelib\File\File $file)
+    public function unpublish(File $file)
     {
         $link = $this->getPublicRoot() . '/' . $file->getProfileObject()->getLinker()->getLink($file);
         
@@ -179,7 +181,7 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
         }
     }
     
-    public function unpublishVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function unpublishVersion(File $file, VersionProvider $version)
     {
         $link = $this->getPublicRoot() . '/' . $file->getProfileObject()->getLinker()->getLinkVersion($file, $version);
         if(is_link($link)) {

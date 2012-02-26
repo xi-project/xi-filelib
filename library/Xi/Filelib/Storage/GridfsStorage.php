@@ -2,19 +2,17 @@
 
 namespace Xi\Filelib\Storage;
 
-use MongoDB,
-    MongoGridFS,
-    MongoGridFSFile,
-    Xi\Filelib\FileLibrary,
-    Xi\Filelib\Storage\Storage,
-    Xi\Filelib\Storage\AbstractStorage,
-    Xi\Filelib\File\File,
-    Xi\Filelib\Configurator,
-    Xi\Filelib\File\FileObject,
-    Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator,
-    Xi\Filelib\Plugin\VersionProvider\VersionProvider,
-    Xi\Filelib\FilelibException
-    ;
+use MongoDB;
+use MongoGridFS;
+use MongoGridFSFile;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Storage\AbstractStorage;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Configurator;
+use Xi\Filelib\File\FileObject;
+use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
+use Xi\Filelib\FilelibException;
 
 
 /**
@@ -150,11 +148,11 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $file->getId(), 'version' => 'original', 'mimetype' => $file->getMimetype()) ));
     }
     
-    public function storeVersion(File $file, VersionProvider $version, $tempFile)
+    public function storeVersion(File $file, $version, $tempFile)
     {
         $filename = $this->getFilenameVersion($file, $version);
         
-        $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $file->getId(), 'version' => $version->getIdentifier(), 'mimetype' => $file->getMimetype()) ));
+        $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $file->getId(), 'version' => $version, 'mimetype' => $file->getMimetype()) ));
     }
     
     public function retrieve(File $file)
@@ -171,7 +169,7 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $this->toTemp($file);
     }
     
-    public function retrieveVersion(File $file, VersionProvider $version)
+    public function retrieveVersion(File $file, $version)
     {
         $filename = $this->getFilenameVersion($file, $version);
         
@@ -192,7 +190,7 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->getGridFS()->remove(array('filename' => $filename));
     }
     
-    public function deleteVersion(File $file, VersionProvider $version)
+    public function deleteVersion(File $file, $version)
     {
         $filename = $this->getFilenameVersion($file, $version);
         
@@ -205,9 +203,9 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $file->getFolderId() . '/' . $file->getId();
     }
     
-    public function getFilenameVersion(File $file, VersionProvider $version)
+    public function getFilenameVersion(File $file, $version)
     {
-        return $file->getFolderId() . '/' . $file->getId() . '/' . $version->getIdentifier();
+        return $file->getFolderId() . '/' . $file->getId() . '/' . $version;
     }
     
     

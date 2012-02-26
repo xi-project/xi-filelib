@@ -63,17 +63,12 @@ class GridFsStorageTest extends TestCase
         
         $this->storage = $storage;
         
-        $vp = $this->getMock('\Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        $vp->expects($this->any())
-             ->method('getIdentifier')
-             ->will($this->returnValue('xoo'));
-        
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->any())
             ->method('calculateDirectoryId')
             ->will($this->returnValue('1'));
         
-        $this->versionProvider = $vp;
+        $this->version = 'xoo';
         
         $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1, 'folder_id' => 1, 'name' => 'self-lussing-manatee.jpg'));
         
@@ -175,23 +170,23 @@ class GridFsStorageTest extends TestCase
         
         $this->storage->setFilelib($this->getFilelib()); 
         
-        $this->storage->storeVersion($this->file, $this->versionProvider, $this->fileResource);
+        $this->storage->storeVersion($this->file, $this->version, $this->fileResource);
          
          $file = $this->storage->getGridFs()->findOne(array(
-            'filename' => $this->storage->getFilenameVersion($this->file, $this->versionProvider)       
+            'filename' => $this->storage->getFilenameVersion($this->file, $this->version)       
          ));
          
          $this->assertInstanceOf('\\MongoGridFSFile', $file);         
          
-         $retrieved = $this->storage->retrieveVersion($this->file, $this->versionProvider);
+         $retrieved = $this->storage->retrieveVersion($this->file, $this->version);
          $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
          
          $this->assertFileExists($retrieved->getRealPath());
          
-         $this->storage->deleteVersion($this->file, $this->versionProvider);
+         $this->storage->deleteVersion($this->file, $this->version);
          
          $file = $this->storage->getGridFs()->findOne(array(
-            'filename' => $this->storage->getFilenameVersion($this->file, $this->versionProvider)       
+            'filename' => $this->storage->getFilenameVersion($this->file, $this->version)       
          ));
 
          $this->assertNull($file);
@@ -217,7 +212,7 @@ class GridFsStorageTest extends TestCase
     public function retrievingUnexistingFileVersionShouldThrowException()
     {
         $file = FileItem::create(array('id' => 'lussenhofer.lus'));
-        $this->storage->retrieveVersion($file, $this->versionProvider);
+        $this->storage->retrieveVersion($file, $this->version);
     }
     
     
