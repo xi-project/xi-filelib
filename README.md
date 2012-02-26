@@ -111,4 +111,22 @@ the interface and you're good to go.
 
     ?>
 
+### Storage
+
+Storage is responsible for storing the physical files. Filebanksta supplies
+filesystem, GridFS and Amazon S3 implementations, and a composite storage
+you can utilize to store your files within multiple storage instances.
+
+    <?php
+
+    use Xi\Filelib\Storage\FilesystemStorage;
+
+    $storage = new FilesystemStorage();
+    $storage->setRoot('/some/root');
+    $storage->setDirectoryPermission("700");
+    $storage->setFilePermission("600");
+
+    $filelib->setStorage($storage);
+
+
 
