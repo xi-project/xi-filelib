@@ -171,8 +171,12 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'isReadable', 'isReadableByAnonymous', 'getProfile'))
+                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl'))
                    ->getMock();
+        
+        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
+        
+        $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         
         
         $linker = $this->getMock('Xi\Filelib\Linker\Linker');
@@ -196,7 +200,12 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         
         $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
         $op->expects($this->never())->method('publish');
-        $op->expects($this->any())->method('isReadableByAnonymous')->will($this->returnValue(false));
+        
+        $acl->expects($this->atLeastOnce())->method('isFileReadableByAnonymous')
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+            ->will($this->returnValue(false));
+        
+        
         $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussenhofer'))->will($this->returnValue($profile));
 
                
@@ -214,9 +223,12 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'isReadable', 'isReadableByAnonymous', 'getProfile'))
+                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl'))
                    ->getMock();
         
+        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
+        
+        $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         
         $linker = $this->getMock('Xi\Filelib\Linker\Linker');
         $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
@@ -240,7 +252,10 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
         $op->expects($this->once())->method('publish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
         $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussenhofer'))->will($this->returnValue($profile));
-        $op->expects($this->any())->method('isReadableByAnonymous')->will($this->returnValue(true));
+        
+        $acl->expects($this->atLeastOnce())->method('isFileReadableByAnonymous')
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+            ->will($this->returnValue(true));
 
                
         $op->update($file);
@@ -450,7 +465,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'isReadable', 'isReadableByAnonymous', 'getProfile'))
+                   ->setMethods(array('unpublish', 'publish', 'getProfile'))
                    ->getMock();
                 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
@@ -559,7 +574,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'isReadable', 'isReadableByAnonymous', 'getProfile'))
+                   ->setMethods(array('unpublish', 'getProfile'))
                    ->getMock();
         
         $dispatcher->expects($this->once())->method('dispatch')
@@ -599,7 +614,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'isReadable', 'isReadableByAnonymous', 'getProfile'))
+                   ->setMethods(array('unpublish', 'getProfile'))
                    ->getMock();
                 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
@@ -634,7 +649,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('publish', 'isReadable', 'isReadableByAnonymous', 'getProfile', 'getPublisher'))
+                   ->setMethods(array('publish', 'getProfile', 'getPublisher'))
                    ->getMock();
                 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
