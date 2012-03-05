@@ -1,41 +1,39 @@
 {
-    "hash": "f1f80a256db7fedc88c6b16ca665561c",
+    "hash": "22c0951a1de1b1f6217f086e4be4b4d9",
     "packages": [
         {
-            "package": "symfony\/http-foundation",
-            "version": "v2.0.10"
-        },
-        {
-            "package": "symfony\/event-dispatcher",
-            "version": "v2.0.10"
-        },
-        {
-            "package": "doctrine\/common",
-            "version": "2.2.0"
-        },
-        {
-            "package": "doctrine\/dbal",
+            "package": "doctrine/common",
             "version": "2.2.1"
         },
         {
-            "package": "doctrine\/orm",
-            "version": "2.2.0"
+            "package": "doctrine/dbal",
+            "version": "2.2.1"
         },
         {
-            "package": "zendframework\/registry",
-            "version": "2.0.0beta2"
+            "package": "doctrine/orm",
+            "version": "2.2.1"
         },
         {
-            "package": "zendframework\/locale",
-            "version": "2.0.0beta2"
+            "package": "ecolinet/zf2",
+            "version": "dev-master",
+            "source-reference": "2483733caccbaf2534aa0076aa53e1a382b1ef1a"
         },
         {
-            "package": "zendframework\/stdlib",
-            "version": "2.0.0beta2"
+            "package": "symfony/event-dispatcher",
+            "version": "v2.0.10"
         },
         {
-            "package": "zendframework\/filter",
-            "version": "2.0.0beta2"
+            "package": "symfony/http-foundation",
+            "version": "v2.0.10"
+        },
+        {
+            "package": "symfony/http-kernel",
+            "version": "v2.0.10"
+        },
+        {
+            "package": "symfony/security",
+            "version": "v2.0.10"
         }
-    ]
+    ],
+    "aliases": []
 }
