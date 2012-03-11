@@ -16,11 +16,6 @@ use Xi\Filelib\FileLibrary,
 interface Backend
 {
     /**
-     * @param mixed $options
-     */
-    public function __construct($options = array());
-
-    /**
      * Initialization. Is run when backend is set to filelib.
      */
     public function init();
