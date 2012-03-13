@@ -37,6 +37,15 @@ class ZendDbBackend extends AbstractBackend implements Backend
     private $folderTable;
 
     /**
+     * @param  Zend_Db_Adapter_Abstract $db
+     * @return ZendDbBackend
+     */
+    public function __construct(Zend_Db_Adapter_Abstract $db)
+    {
+        $this->setDb($db);
+    }
+
+    /**
      * Sets db adapter
      *
      * @param Zend_Db_Adapter_Abstract $db

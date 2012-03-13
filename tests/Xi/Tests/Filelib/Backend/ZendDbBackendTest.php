@@ -20,10 +20,8 @@ class ZendDbBackendTest extends RelationalDbTestCase
         }
         
         parent::setUp();
-
     }
 
-    
     public function tearDown()
     {
         if (!class_exists('\Zend_Db')) {
@@ -31,11 +29,8 @@ class ZendDbBackendTest extends RelationalDbTestCase
         }
         
         parent::tearDown();
-
     }
 
-    
-    
     /**
      * @return ZendDbBackend
      */
@@ -48,10 +43,7 @@ class ZendDbBackendTest extends RelationalDbTestCase
             'password' => PDO_PASSWORD,
         ));
 
-        $backend = new ZendDbBackend();
-        $backend->setDb($db);
-
-        return $backend;
+        return new ZendDbBackend($db);
     }
 
     /**

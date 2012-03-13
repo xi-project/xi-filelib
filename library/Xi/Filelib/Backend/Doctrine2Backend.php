@@ -40,6 +40,15 @@ class Doctrine2Backend extends AbstractBackend
     private $em;
 
     /**
+     * @param  EntityManager    $em
+     * @return Doctrine2Backend
+     */
+    public function __construct(EntityManager $em)
+    {
+        $this->setEntityManager($em);
+    }
+
+    /**
      * Sets the fully qualified file entity classname
      *
      * @param string $fileEntityName
