@@ -119,14 +119,6 @@ abstract class AbstractBackend implements Backend
     protected abstract function fileToArray($file);
 
     /**
-     * @param mixed $options
-     */
-    public function __construct($options = array())
-    {
-        Configurator::setConstructorOptions($this, $options);
-    }
-
-    /**
      * @param  FileLibrary     $filelib
      * @return AbstractBackend
      */

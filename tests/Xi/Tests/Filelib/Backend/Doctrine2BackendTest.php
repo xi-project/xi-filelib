@@ -46,10 +46,7 @@ class Doctrine2BackendTest extends RelationalDbTestCase
 
         $em = EntityManager::create($connectionOptions, $config);
 
-        $backend = new Doctrine2Backend();
-        $backend->setEntityManager($em);
-
-        return $backend;
+        return new Doctrine2Backend($em);
     }
 
     /**
