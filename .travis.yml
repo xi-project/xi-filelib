@@ -17,3 +17,6 @@ before_script:
   - echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 script: cd tests && phpunit --configuration travis/$DB.travis.xml
+
+notifications:
+  irc: "irc.freenode.net#xi-project"
