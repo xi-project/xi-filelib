@@ -34,7 +34,7 @@ class MultiStorageTest extends \Xi\Tests\TestCase
                 
         $this->file = FileItem::create(array('id' => 1));
         
-        $this->versionProvider = $this->getMockForAbstractClass('\\Xi\\Filelib\\Plugin\\VersionProvider\\AbstractVersionProvider');
+        $this->version = 'xoo';
         
     }
     
@@ -67,7 +67,7 @@ class MultiStorageTest extends \Xi\Tests\TestCase
              ->will($this->returnValue('1'));
         }        
         
-        $this->storage->deleteVersion($this->file, $this->versionProvider);
+        $this->storage->deleteVersion($this->file, $this->version);
         
     }
 
@@ -100,7 +100,7 @@ class MultiStorageTest extends \Xi\Tests\TestCase
              ->will($this->returnValue('1'));
         }        
         
-        $this->storage->storeVersion($this->file, $this->versionProvider, 'puuppapath');
+        $this->storage->storeVersion($this->file, $this->version, 'puuppapath');
         
     }
 
@@ -170,7 +170,7 @@ class MultiStorageTest extends \Xi\Tests\TestCase
              ->will($this->returnValue('1'));
      
         
-        $this->storage->retrieveVersion($this->file, $this->versionProvider);
+        $this->storage->retrieveVersion($this->file, $this->version);
         
     }
     
