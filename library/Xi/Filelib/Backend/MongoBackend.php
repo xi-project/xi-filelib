@@ -27,6 +27,15 @@ class MongoBackend extends AbstractBackend implements Backend
     private $mongo;
 
     /**
+     * @param  MongoDB      $mongo
+     * @return MongoBackend
+     */
+    public function __construct(MongoDB $mongo)
+    {
+        $this->setMongo($mongo);
+    }
+
+    /**
      * Sets MongoDB
      *
      * @param MongoDB $mongo

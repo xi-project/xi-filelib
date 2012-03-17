@@ -141,7 +141,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
         $this->getBackend()->updateFile($file);
 
-        if ($this->isReadableByAnonymous($file)) {
+        if ($this->getAcl()->isFileReadableByAnonymous($file)) {
             $this->publish($file);
         }
 

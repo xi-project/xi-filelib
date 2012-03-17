@@ -127,7 +127,6 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
         return $data;
     }
 
-
     public function setUp()
     {
         if (!extension_loaded('mongo')) {
@@ -152,8 +151,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
             array('unique' => true)
         );
 
-        $this->backend = new MongoBackend();
-        $this->backend->setMongo($this->mongo);
+        $this->backend = new MongoBackend($this->mongo);
 
         foreach ($this->getData() as $coll => $objects) {
             foreach ($objects as $obj) {
