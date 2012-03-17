@@ -11,6 +11,15 @@ use Zend_Controller_Response_Http as Response;
 class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 {
     
+    
+    public function setUp()
+    {
+        if (!class_exists('Zend_Controller_Response_Http')) {
+            $this->markTestSkipped('Zend_Controller classes not found');
+        }
+    }
+    
+    
     /**
      * @test
      */
