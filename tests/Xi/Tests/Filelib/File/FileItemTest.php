@@ -27,9 +27,6 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $file = new FileItem();
         
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $this->assertEquals(null, $file->getFilelib());
-        $this->assertSame($file, $file->setFilelib($filelib));
-        $this->assertSame($filelib, $file->getFilelib());
         
         $val = 666;
         $this->assertEquals(null, $file->getId());
@@ -70,27 +67,6 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(null, $file->getDateUploaded());
         $this->assertSame($file, $file->setDateUploaded($val));
         $this->assertSame($val, $file->getDateUploaded());
-        
-    }
-
-    /**
-     * @test
-     */
-    public function getProfileObjectShouldDelegateToFileOperator()
-    {
-                
-        $filelib = new FileLibrary();
-        
-        $fiop = $this->getMock('Xi\Filelib\File\FileOperator');
-        $fiop->expects($this->once())->method('getProfile')->with($this->equalTo('lussmeister'));
-        
-        $filelib->setFileOperator($fiop);
-                
-        $file = new FileItem();
-        $file->setFilelib($filelib);
-        $file->setProfile('lussmeister');
-        
-        $file->getProfileObject();
         
     }
     

@@ -67,7 +67,6 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         $className = $this->getClass();
         $file = new $className();
-        $file->setFilelib($this->getFilelib());
         if ($data) {
             $file->fromArray($data);
         }

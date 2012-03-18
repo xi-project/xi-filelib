@@ -78,26 +78,12 @@ class AbstractFilesystemPublisherTest extends TestCase
     /**
      * @test
      */
-    public function getUrlShouldReturnCorrectUrl()
+    public function getLinkerForFileShouldDelegateToFilelib()
     {
-
-        $linker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
-        $linker->expects($this->once())->method('getLink')
-                ->will($this->returnCallback(function($file) { return 'tussin/lussun/tussi.jpg'; }));
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $fileop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         
-        $profileObject = $this->getMockBuilder('Xi\Filelib\File\FileProfile')
-                                ->getMock();
-        $profileObject->expects($this->once())->method('getLinker')
-                      ->will($this->returnCallback(function() use ($linker) { return $linker; }));
-                  
-        
-        $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
-        
-        $file->expects($this->once())->method('getProfileObject')
-                ->will($this->returnCallback(function() use ($profileObject) { return $profileObject; }));
-        
-        $file->expects($this->any())->method('getId')->will($this->returnValue(1));
-
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher')
         ->setMethods(array(
             'publish',
@@ -108,9 +94,50 @@ class AbstractFilesystemPublisherTest extends TestCase
             'setFilelib'
         ))
         ->getMock();
+
+        $publisher->expects($this->once())->method('getFilelib')->will($this->returnValue($filelib));
+        $filelib->expects($this->once())->method('getFileOperator')->will($this->returnValue($fileop));
+        $fileop->expects($this->once())->method('getProfile')->with($this->equalTo('lusmeister'))->will($this->returnValue($profile));
+        $profile->expects($this->once())->method('getLinker');
+
+        $file = FileItem::create(array('profile' => 'lusmeister'));
+        
+        $linker = $publisher->getLinkerForFile($file);
+        
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function getUrlShouldReturnCorrectUrl()
+    {
+
+        $linker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
+        $linker->expects($this->once())->method('getLink')
+                ->will($this->returnCallback(function($file) { return 'tussin/lussun/tussi.jpg'; }));
+        
+        $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
+        $file->expects($this->any())->method('getId')->will($this->returnValue(1));
+
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher')
+        ->setMethods(array(
+            'publish',
+            'unpublish',
+            'publishVersion',
+            'unpublishVersion',
+            'getFilelib',
+            'setFilelib',
+            'getLinkerForFile',
+        ))
+        ->getMock();
+        
+        $publisher->expects($this->atLeastOnce())
+                  ->method('getLinkerForFile')
+                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                  ->will($this->returnValue($linker));
         
         $publisher->setBaseUrl('http://diktaattoriporssi.com');
-        
         $this->assertEquals('http://diktaattoriporssi.com/tussin/lussun/tussi.jpg', $publisher->getUrl($file));
         
                       
@@ -126,17 +153,8 @@ class AbstractFilesystemPublisherTest extends TestCase
         $linker->expects($this->once())->method('getLinkVersion')
                 ->will($this->returnCallback(function($file, $version) { return 'tussin/lussun/tussi-' . $version->getIdentifier() . '.jpg'; }));
         
-        $profileObject = $this->getMockBuilder('Xi\Filelib\File\FileProfile')
-                                ->getMock();
-        $profileObject->expects($this->once())->method('getLinker')
-                      ->will($this->returnCallback(function() use ($linker) { return $linker; }));
-                  
         
         $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
-        
-        $file->expects($this->once())->method('getProfileObject')
-                ->will($this->returnCallback(function() use ($profileObject) { return $profileObject; }));
-        
         $file->expects($this->any())->method('getId')->will($this->returnValue(1));
 
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher')
@@ -146,9 +164,15 @@ class AbstractFilesystemPublisherTest extends TestCase
             'publishVersion',
             'unpublishVersion',
             'getFilelib',
-            'setFilelib'
+            'setFilelib',
+            'getLinkerForFile'
         ))
         ->getMock();
+        
+        $publisher->expects($this->atLeastOnce())
+                  ->method('getLinkerForFile')
+                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                  ->will($this->returnValue($linker));
         
         $versionProvider = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')->getMock();
         $versionProvider->expects($this->once())->method('getIdentifier')
