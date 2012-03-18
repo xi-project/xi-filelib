@@ -224,6 +224,77 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
          
     }
     
+    /**
+     * @test
+     */
+    public function slugifierClassShouldDefaultToZf2Slugifier()
+    {
+        $linker = new BeautifurlLinker();
+        $this->assertEquals('Xi\Filelib\Tool\Slugifier\Zend2Slugifier', $linker->getSlugifierClass());
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function slugifierClassSetterAndGetterShouldWorkAsExpected()
+    {
+        $linker = new BeautifurlLinker();
+        $this->assertEquals('Xi\Filelib\Tool\Slugifier\Zend2Slugifier', $linker->getSlugifierClass());
+        
+        $newSlugifierClass = 'Lussen\Tussen\Hofenslussifier';
+        
+        $this->assertSame($linker, $linker->setSlugifierClass($newSlugifierClass));
+        
+        $this->assertEquals($newSlugifierClass, $linker->getSlugifierClass());
+        
+    }
+    
+    /**
+     * @test
+     */
+    public function excludeRootSetterAndGetterShouldWorkAsExpected()
+    {
+         $linker = new BeautifurlLinker();
+         $this->assertFalse($linker->getExcludeRoot());
+         $this->assertSame($linker, $linker->setExcludeRoot(true));
+         $this->assertTrue($linker->getExcludeRoot());
+    }
+    
+    /**
+     * @test
+     */
+    public function slugifyRootSetterAndGetterShouldWorkAsExpected()
+    {
+         $linker = new BeautifurlLinker();
+         $this->assertTrue($linker->getSlugify());
+         $this->assertSame($linker, $linker->setSlugify(false));
+         $this->assertFalse($linker->getSlugify());
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function getSlugifierShouldInstantiateAndCacheSlugifierObject()
+    {
+        $linker = new BeautifurlLinker();
+        
+        $mockSlugifierClass = $this->getMockClass('Xi\Filelib\Tool\Slugifier\Slugifier');
+        
+        $linker->setSlugifierClass($mockSlugifierClass);
+        
+        $slugifier = $linker->getSlugifier();
+        
+        $this->assertSame($mockSlugifierClass, get_class($slugifier));
+        
+        $slugifier2 = $linker->getSlugifier();
+        
+        $this->assertSame($slugifier, $slugifier2);
+        
+    }
+    
+    
     
     
 }

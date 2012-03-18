@@ -25,12 +25,6 @@ class FolderItem implements Folder
         'url' => 'setUrl',
     );
 
-    
-    /**
-     * @var FileLibrary
-     */
-    private $filelib;
-
     private $id;
     
     private $parentId;
@@ -38,28 +32,6 @@ class FolderItem implements Folder
     private $name;
     
     private $url;
-            
-    /**
-     * Sets filelib
-     *
-     * @param FileLibrary $filelib
-     * @return FolderItem
-     */
-    public function setFilelib(FileLibrary $filelib)
-    {
-        $this->filelib = $filelib;
-        return $this;
-    }
-
-    /**
-     * Returns filelib
-     *
-     * @return FileLibrary Filelib
-     */
-    public function getFilelib()
-    {
-        return $this->filelib;
-    }
             
     /**
      * Sets id

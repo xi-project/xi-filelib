@@ -12,20 +12,6 @@ interface Folder
 {
 
     /**
-     * Sets filelib
-     *
-     * @param \Xi_Filelib $filelib
-     */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib);
-
-    /**
-     * Returns filelib
-     *
-     * @return \Xi\Filelib\FileLibrary Filelib
-     */
-    public function getFilelib();
-
-    /**
      * Returns the standardized array representation of folder
      * 
      * @return array
