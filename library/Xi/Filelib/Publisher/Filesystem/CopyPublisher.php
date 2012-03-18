@@ -18,7 +18,7 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
     public function publish(File $file)
     {
         $fl = $this->getFilelib();
-        $linker = $file->getProfileObject()->getLinker();
+        $linker = $this->getLinkerForFile($file);
         
         $link = $this->getPublicRoot() . '/' . $linker->getLink($file, true);
         
@@ -40,10 +40,10 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
     public function publishVersion(File $file, VersionProvider $version)
     {
         $fl = $this->getFilelib();
+        $linker = $this->getLinkerForFile($file);
             
-        $link = $this->getPublicRoot() . '/' . $file->getProfileObject()->getLinker()->getLinkVersion($file, $version);
-        
-                
+        $link = $this->getPublicRoot() . '/' . $linker->getLinkVersion($file, $version);
+                        
         if(!is_file($link)) {
 
             $path = dirname($link);
@@ -60,7 +60,8 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
     
     public function unpublish(File $file)
     {
-        $link = $this->getPublicRoot() . '/' . $file->getProfileObject()->getLinker()->getLink($file);
+        $linker = $this->getLinkerForFile($file);
+        $link = $this->getPublicRoot() . '/' . $linker->getLink($file);
                         
         if(is_file($link)) {
             unlink($link);
@@ -69,7 +70,8 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
     
     public function unpublishVersion(File $file, VersionProvider $version)
     {
-        $link = $this->getPublicRoot() . '/' . $file->getProfileObject()->getLinker()->getLinkVersion($file, $version);
+        $linker = $this->getLinkerForFile($file);
+        $link = $this->getPublicRoot() . '/' . $linker->getLinkVersion($file, $version);
         
         if(is_file($link)) {
             unlink($link);

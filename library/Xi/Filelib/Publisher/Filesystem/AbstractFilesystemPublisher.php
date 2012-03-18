@@ -2,11 +2,13 @@
 
 namespace Xi\Filelib\Publisher\Filesystem;
 
-use \Xi\Filelib\Publisher\AbstractPublisher;
+use Xi\Filelib\Publisher\AbstractPublisher;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Linker\Linker;
+use LogicException;
+use SplFileInfo;
 
-use \LogicException;
-
-use \SplFileInfo;
 
 /**
  * Abstract filesystem publisher base class
@@ -143,16 +145,27 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
         return $this->_filePermission;
     }
     
-    
-    public function getUrl(\Xi\Filelib\File\File $file)
+    /**
+     * Returns file's linker
+     * 
+     * @param File $file
+     * @return Linker
+     */
+    public function getLinkerForFile(File $file)
     {
-        $url = $this->getBaseUrl() . '/' . $file->getProfileObject()->getLinker()->getLink($file);
+        return $this->getFilelib()->getFileOperator()->getProfile($file->getProfile())->getLinker();
+    }
+        
+    
+    public function getUrl(File $file)
+    {
+        $url = $this->getBaseUrl() . '/' . $this->getLinkerForFile($file)->getLink($file);
         return $url;
     }
     
-    public function getUrlVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function getUrlVersion(File $file, VersionProvider $version)
     {
-        $url = $this->getBaseUrl() . '/' . $file->getProfileObject()->getLinker()->getLinkVersion($file, $version);
+        $url = $this->getBaseUrl() . '/' . $this->getLinkerForFile($file)->getLinkVersion($file, $version);
         return $url;
     }
     
