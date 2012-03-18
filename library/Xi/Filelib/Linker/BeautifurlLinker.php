@@ -2,14 +2,12 @@
 
 namespace Xi\Filelib\Linker;
 
-use \Xi\Filelib\Linker\AbstractLinker,
-    \Xi\Filelib\Linker\Linker,
-    \Xi\Filelib\File\File,
-    \Xi\Filelib\Folder\Folder,
-    \Xi\Filelib\Plugin\VersionProvider\VersionProvider,
-    \Xi\Filelib\Tool\Slugifier
-    ;
-
+use Xi\Filelib\Linker\AbstractLinker;
+use Xi\Filelib\Linker\Linker;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Tool\Slugifier\Slugifier;
 
 /**
  * Creates beautifurls(tm) from the virtual directory structure and file names.
@@ -25,6 +23,8 @@ class BeautifurlLinker extends AbstractLinker implements Linker
      */
     private $excludeRoot = false;
 
+    private $slugifierClass = 'Xi\Filelib\Tool\Slugifier\Zend2Slugifier';
+    
     private $slugifier;
     
     private $slugify = true;
@@ -33,10 +33,12 @@ class BeautifurlLinker extends AbstractLinker implements Linker
      * Sets whether the root folder is excluded from beautifurls.
      *
      * @param boolean $excludeRoot
+     * @return BeautifurlLinker
      */
     public function setExcludeRoot($excludeRoot)
     {
         $this->excludeRoot = $excludeRoot;
+        return $this;
     }
 
 
@@ -50,28 +52,65 @@ class BeautifurlLinker extends AbstractLinker implements Linker
         return $this->excludeRoot;
     }
     
+    /**
+     * Returns slugifier class
+     * 
+     * @return string
+     */
+    public function getSlugifierClass()
+    {
+        return $this->slugifierClass;
+    }
+    
+    /**
+     * Sets slugifier class
+     * 
+     * @param type $slugifierClass
+     * @return BeautifurlLinker 
+     */
+    public function setSlugifierClass($slugifierClass)
+    {
+        $this->slugifierClass = $slugifierClass;
+        return $this;
+    }
+        
+    /**
+     * Returns slugifier
+     * 
+     * @return Slugifier
+     */
     public function getSlugifier()
     {
         if (!$this->slugifier) {
-            $this->slugifier = new Slugifier();
+            $className = $this->slugifierClass;
+            $this->slugifier = new $className();
         }
         return $this->slugifier;
     }
 
-    
+    /**
+     * Enables or disables slugifying
+     * 
+     * @param boolean $slugify
+     * @return BeautifurlLinker
+     */
     public function setSlugify($slugify)
     {
         $this->slugify = $slugify;
+        return $this;
     }
     
-    
+    /**
+     * Returns whether slugifying is enabled
+     * 
+     * @return boolean
+     */
     public function getSlugify()
     {
         return $this->slugify;
     }
+
     
-
-
     public function getLinkVersion(File $file, VersionProvider $version)
     {
         $link = $this->getLink($file);
@@ -120,9 +159,5 @@ class BeautifurlLinker extends AbstractLinker implements Linker
         return $beautifurl;
 
     }
-
-    
-    
-
 
 }

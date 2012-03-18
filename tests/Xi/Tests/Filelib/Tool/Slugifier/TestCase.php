@@ -1,27 +1,16 @@
 <?php
 
-namespace Xi\Tests\Filelib\Tool;
+namespace Xi\Tests\Filelib\Tool\Slugifier;
 
 use \Xi\Filelib\Tool\Slugifier;
 
-class SlugifierTest extends \Xi\Tests\Filelib\TestCase {
+class TestCase extends \Xi\Tests\Filelib\TestCase {
     
     /**
      *
      * @var Slugifier
      */
     protected $slugifier;
-    
-    public function setUp()
-    {
-        if (!class_exists('\\Zend\\Filter\\FilterChain')) {
-            $this->markTestSkipped('Zend Framework 2 filters not loadable');
-        }
-
-        
-        $this->slugifier = new Slugifier();
-    }
-    
     
     
     /**

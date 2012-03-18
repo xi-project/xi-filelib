@@ -223,9 +223,6 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $folder = $op->getInstance();
         $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
-        
-        $this->assertSame($filelib, $folder->getFilelib());
-        
 
         $op->setClass($mockClass);
 
@@ -248,7 +245,6 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $folder = $op->getInstance($data);
         $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
 
-        $this->assertSame($filelib, $folder->getFilelib());
         $this->assertEquals('manatee', $folder->getName());
     }
     
@@ -426,7 +422,6 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $folder2 = $op->create($folder);
         
         $this->assertEquals('route', $folder2->getUrl());
-        $this->assertSame($filelib, $folder2->getFilelib());
     }
     
     /**

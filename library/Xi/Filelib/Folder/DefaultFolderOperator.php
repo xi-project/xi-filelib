@@ -80,7 +80,6 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         if ($data) {
             $folder->fromArray($data);
         }
-        $folder->setFilelib($this->getFilelib());
         return $folder;
     }
 
@@ -96,7 +95,6 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         $folder->setUrl($route);
 
         $folder = $this->getBackend()->createFolder($folder);
-        $folder->setFilelib($this->getFilelib());
         
         return $folder;
     }
