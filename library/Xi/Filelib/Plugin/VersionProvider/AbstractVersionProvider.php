@@ -162,7 +162,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
 
         $tmp = $this->createVersion($file);
-        $this->getFilelib()->getStorage()->storeVersion($file, $this, $tmp);
+        $this->getFilelib()->getStorage()->storeVersion($file, $this->getIdentifier(), $tmp);
         unlink($tmp);
     }
 

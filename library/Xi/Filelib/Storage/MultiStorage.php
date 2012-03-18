@@ -2,13 +2,11 @@
 
 namespace Xi\Filelib\Storage;
 
-use \Xi\Filelib\FileLibrary,
-    \Xi\Filelib\FilelibException,
-    \Xi\Filelib\Storage\Storage,
-    \Xi\Filelib\Storage\AbstractStorage,
-    \Xi\Filelib\File\File,
-    \Xi\Filelib\Plugin\VersionProvider\VersionProvider
-    ;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Storage\AbstractStorage;
+use Xi\Filelib\File\File;
 
 class MultiStorage extends AbstractStorage implements Storage
 {
@@ -84,7 +82,7 @@ class MultiStorage extends AbstractStorage implements Storage
         }        
     }
     
-    public function storeVersion(File $file, VersionProvider $version, $tempFile)
+    public function storeVersion(File $file, $version, $tempFile)
     {
         foreach ($this->getStorages() as $storage) {
             $storage->storeVersion($file, $version, $tempFile);
@@ -96,7 +94,7 @@ class MultiStorage extends AbstractStorage implements Storage
         return $this->getSessionStorage()->retrieve($file);
     }
     
-    public function retrieveVersion(File $file, VersionProvider $version)
+    public function retrieveVersion(File $file, $version)
     {
         return $this->getSessionStorage()->retrieveVersion($file, $version);
     }
@@ -108,7 +106,7 @@ class MultiStorage extends AbstractStorage implements Storage
         }        
     }
     
-    public function deleteVersion(File $file, VersionProvider $version)
+    public function deleteVersion(File $file, $version)
     {
         foreach ($this->getStorages() as $storage) {
             $storage->deleteVersion($file, $version);

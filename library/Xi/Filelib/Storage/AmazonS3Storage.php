@@ -2,18 +2,14 @@
 
 namespace Xi\Filelib\Storage;
 
-use \Xi\Filelib\FileLibrary,
-    \Xi\Filelib\Storage\Storage,
-    \Xi\Filelib\Storage\AbstractStorage,
-    \Xi\Filelib\File\File,
-    \Xi\Filelib\Configurator,
-    \Xi\Filelib\File\FileObject,
-    \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator,
-    \Xi\Filelib\Plugin\VersionProvider\VersionProvider,
-        
-    \Zend_Service_Amazon_S3 as AmazonService
-    ;
-
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Storage\AbstractStorage;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Configurator;
+use Xi\Filelib\File\FileObject;
+use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
+use Zend_Service_Amazon_S3 as AmazonService;
 
 class AmazonS3Storage extends AbstractStorage implements Storage
 {
@@ -116,12 +112,12 @@ class AmazonS3Storage extends AbstractStorage implements Storage
      * Stores a version of a file
      * 
      * @param File $file
-     * @param VersionProvider $version
+     * @param string $version
      * @param unknown_type $tempFile File to be stored
      */
-    public function storeVersion(File $file, VersionProvider $version, $tempFile)
+    public function storeVersion(File $file, $version, $tempFile)
     {
-        $object = $this->getPath($file) . '_' . $version->getIdentifier();
+        $object = $this->getPath($file) . '_' . $version;
         $this->getAmazonService()->putFile($tempFile, $object);
     }
     
@@ -142,12 +138,12 @@ class AmazonS3Storage extends AbstractStorage implements Storage
      * Retrieves a version of a file and temporarily stores it somewhere so it can be read.
      * 
      * @param File $file
-     * @param VersionProvider $version
+     * @param string $version
      * @return FileObject
      */
-    public function retrieveVersion(File $file, VersionProvider $version)
+    public function retrieveVersion(File $file, $version)
     {
-        $object = $this->getPath($file) . '_' . $version->getIdentifier();
+        $object = $this->getPath($file) . '_' . $version;
         $ret = $this->getAmazonService()->getObject($object);
         return $this->toTemp($ret);        
     }
@@ -167,11 +163,11 @@ class AmazonS3Storage extends AbstractStorage implements Storage
      * Deletes a version of a file
      * 
      * @param File $file
-     * @param VersionProvider $version
+     * @param string $version
      */
-    public function deleteVersion(File $file, VersionProvider $version)
+    public function deleteVersion(File $file, $version)
     {
-        $object = $this->getPath($file) . '_' . $version->getIdentifier();
+        $object = $this->getPath($file) . '_' . $version;
         $this->getAmazonService()->removeObject($object);
     }
     

@@ -2,19 +2,20 @@
 
 namespace Xi\Filelib\Publisher\Filesystem;
 
+use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
 /**
  * Publishes files in a filesystem by retrieving them from storage and creating a copy
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
 {
     
-    public function publish(\Xi\Filelib\File\File $file)
+    public function publish(File $file)
     {
         $fl = $this->getFilelib();
         $linker = $file->getProfileObject()->getLinker();
@@ -36,7 +37,7 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
         }
     }
     
-    public function publishVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function publishVersion(File $file, VersionProvider $version)
     {
         $fl = $this->getFilelib();
             
@@ -51,13 +52,13 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
             
-            $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file, $version);
+            $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file, $version->getIdentifier());
             copy($tmp, $link);
             chmod($link, $this->getFilePermission());            
         }
     }
     
-    public function unpublish(\Xi\Filelib\File\File $file)
+    public function unpublish(File $file)
     {
         $link = $this->getPublicRoot() . '/' . $file->getProfileObject()->getLinker()->getLink($file);
                         
@@ -66,7 +67,7 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
         }
     }
     
-    public function unpublishVersion(\Xi\Filelib\File\File $file, \Xi\Filelib\Plugin\VersionProvider\VersionProvider $version)
+    public function unpublishVersion(File $file, VersionProvider $version)
     {
         $link = $this->getPublicRoot() . '/' . $file->getProfileObject()->getLinker()->getLinkVersion($file, $version);
         

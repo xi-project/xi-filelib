@@ -2,46 +2,46 @@
 
 namespace Xi\Filelib\Publisher;
 
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Configurator;
 
 /**
  * Abstract convenience publisher base class implementing common methods
  * 
  * @author pekkis
- * @package Xi_Filelib
  *
  */
 abstract class AbstractPublisher implements Publisher
 {
     public function __construct($options = array())
     {
-        \Xi\Filelib\Configurator::setConstructorOptions($this, $options);
+        Configurator::setConstructorOptions($this, $options);
     }
     
     
     /**
-     * @var \Xi\Filelib\FileLibrary Filelib
+     * @var FileLibrary Filelib
      */
-    private $_filelib;
+    private $filelib;
     
     /**
      * Sets filelib
      *
-     * @param \Xi_Filelib $filelib
+     * @param FileLibrary $filelib
      */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib)
+    public function setFilelib(FileLibrary $filelib)
     {
-        $this->_filelib = $filelib;
+        $this->filelib = $filelib;
     }
 
     /**
      * Returns filelib
      *
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @return FileLibrary
      */
     public function getFilelib()
     {
-        return $this->_filelib;
+        return $this->filelib;
     }
     
     

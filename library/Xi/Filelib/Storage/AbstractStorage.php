@@ -2,10 +2,10 @@
 
 namespace Xi\Filelib\Storage;
 
-use \Xi\Filelib\Configurator,
-    \Xi\Filelib\Storage\Storage,
-    \Xi\Filelib\FileLibrary
-    ;
+use Xi\Filelib\Configurator;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\FileLibrary;
+    
         
 
 /**

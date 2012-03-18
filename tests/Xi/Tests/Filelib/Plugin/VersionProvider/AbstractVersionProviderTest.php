@@ -66,6 +66,7 @@ class AbstractVersionProviderTest extends TestCase
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
             ->setMethods(array('createVersion', 'deleteVersion'))
             ->getMockForAbstractClass();
+        
 
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Publisher')
             ->getMockForAbstractClass();
@@ -276,6 +277,8 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function afterUploadShouldCreateAndStoreVersionWhenPluginProvides()
     {
+        $this->plugin->setIdentifier('xooxer');
+        
         $this->plugin->expects($this->once())->method('createVersion')
              ->with($this->isInstanceOf('Xi\Filelib\File\File'))
              ->will($this->returnValue(ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg'));
@@ -286,7 +289,11 @@ class AbstractVersionProviderTest extends TestCase
         $filelib = $this->filelib;
         $storage = $this->storage;
         
-        $storage->expects($this->once())->method('storeVersion');
+        $storage->expects($this->once())->method('storeVersion')
+                ->with(
+                    $this->isInstanceOf('Xi\Filelib\File\File'),
+                    $this->isType('string')
+                );
                 
         $this->plugin->setFilelib($filelib);
         
@@ -422,6 +429,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function afterUploadShouldExitEarlyWhenPluginDoesntHaveProfile()
     {
+       
         $this->plugin->expects($this->never())->method('createVersion');
                 
         $this->plugin->setProvidesFor(array('image', 'video'));

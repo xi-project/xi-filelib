@@ -299,7 +299,7 @@ class SymfonyRenderer implements AcceleratedRenderer
         }
 
         $provider = $this->filelib->getFileOperator()->getVersionProvider($file, $version);
-        $res = $this->getStorage()->retrieveVersion($file, $provider);
+        $res = $this->getStorage()->retrieveVersion($file, $provider->getIdentifier());
 
         return $res;
     }

@@ -39,14 +39,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
         
         $this->storage = $storage;
         
-        
-        
-        $vp = $this->getMock('\Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        $vp->expects($this->any())
-             ->method('getIdentifier')
-             ->will($this->returnValue('xoo'));
-        
-        $this->versionProvider = $vp;
+        $this->version = 'xoo';
              
         
     }
@@ -221,7 +214,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     public function storeVersionShouldFailIfRootIsNotDefined()
     {
         $storage = new FilesystemStorage();
-        $storage->storeVersion($this->file, $this->versionProvider, $this->fileResource);
+        $storage->storeVersion($this->file, $this->version, $this->fileResource);
     }
 
     
@@ -233,7 +226,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     {
         $storage = new FilesystemStorage();
         $storage->setRoot(ROOT_TESTS . '/data/illusive_directory');
-        $storage->storeVersion($this->file, $this->versionProvider, $this->fileResource);
+        $storage->storeVersion($this->file, $this->version, $this->fileResource);
     }
 
     
@@ -243,16 +236,16 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
      */
     public function versionStoreAndRetrieveAndDeleteShouldWorkInHarmony()
     {
-         $this->storage->storeVersion($this->file, $this->versionProvider, $this->fileResource);
+         $this->storage->storeVersion($this->file, $this->version, $this->fileResource);
          
          $this->assertFileExists($this->storage->getRoot() . '/1/xoo/1');
          $this->assertFileEquals($this->fileResource, $this->storage->getRoot() . '/1/xoo/1');
                   
-         $retrieved = $this->storage->retrieveVersion($this->file, $this->versionProvider);
+         $retrieved = $this->storage->retrieveVersion($this->file, $this->version);
          $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
          $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
                   
-         $this->storage->deleteVersion($this->file, $this->versionProvider);
+         $this->storage->deleteVersion($this->file, $this->version);
          $this->assertFalse(file_exists($this->storage->getRoot() . '/1/xoo/1'));
     }
     
@@ -271,7 +264,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
      */
     public function retrieveVersionShouldFailWithNonExistingFile()
     {
-         $retrieved = $this->storage->retrieveVersion($this->file, $this->versionProvider);
+         $retrieved = $this->storage->retrieveVersion($this->file, $this->version);
     }
     
     
