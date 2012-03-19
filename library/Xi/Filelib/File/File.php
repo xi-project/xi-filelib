@@ -2,6 +2,8 @@
 
 namespace Xi\Filelib\File;
 
+use DateTime;
+
 /**
  * File interface
  * 
@@ -113,30 +115,16 @@ interface File
     /**
      * Sets upload datetime
      * 
-     * @param \DateTime $uploadDate
+     * @param DateTime $uploadDate
      */
-    public function setDateUploaded(\DateTime $uploadDate);
+    public function setDateUploaded(DateTime $uploadDate);
 
     /**
      * Returns upload datetime
      * 
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateUploaded();
-    
-    /**
-     * Sets filelib
-     *
-     * @param \Xi_Filelib $filelib
-     */
-    public function setFilelib(\Xi\Filelib\FileLibrary $filelib);
-
-    /**
-     * Returns filelib
-     *
-     * @return \Xi\Filelib\FileLibrary
-     */
-    public function getFilelib();
 
     /**
      * Returns the standardized array representation of a file
@@ -149,11 +137,6 @@ interface File
      * @param array $data Standardized array representation of file
      */
     public function fromArray(array $data);
-
-    /**
-     * @return \Xi\Filelib\File\FileProfile
-     */
-    public function getProfileObject();
         
     /**
      * Creates a new file item and populates it with data

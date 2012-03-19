@@ -10,9 +10,11 @@ use Xi\Filelib\Publisher\Filesystem\CopyPublisher;
 class CopyFilesystemPublisherTest extends TestCase
 {
     
-        public function provideDataForPublishingTests()
+    protected $plinker;
+    
+    public function setUp()
     {
-        $files = array();
+        parent::setUp();
         
         $linker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
         
@@ -69,16 +71,19 @@ class CopyFilesystemPublisherTest extends TestCase
                     return $prefix . '/' . $file->getId() . '.lus';
                  }));
         
+
+        $this->plinker = $linker;
         
-        $profileObject = $this->getMockBuilder('Xi\Filelib\File\FileProfile')
-                                ->getMock();
-        $profileObject->expects($this->any())->method('getLinker')
-                      ->will($this->returnCallback(function() use ($linker) { return $linker; }));
+    }
+    
+    
+    
+    public function provideDataForPublishingTests()
+    {
+        $files = array();
                                 
         for ($x = 1; $x <= 5; $x++) {
             $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
-            $file->expects($this->any())->method('getProfileObject')
-                    ->will($this->returnCallback(function() use ($profileObject) { return $profileObject; }));
             $file->expects($this->any())->method('getId')->will($this->returnValue($x));
             
             $files[$x-1] = $file;
@@ -138,13 +143,18 @@ class CopyFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
         
-        $publisher = new CopyPublisher();
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyPublisher')
+                          ->setMethods(array('getLinkerForFile'))
+                          ->getMock();
+                                            
+        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
+                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                  ->will($this->returnValue($this->plinker));
+
         $publisher->setFilelib($this->filelib);
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         // $publisher->setRelativePathToRoot('../private');
-        
-        $file->setFilelib($this->filelib);
-                
+                                
         $publisher->publish($file);
         
         $sfi = new \SplFileInfo($expectedPath);
@@ -166,13 +176,18 @@ class CopyFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
         
-        $publisher = new CopyPublisher();
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyPublisher')
+                          ->setMethods(array('getLinkerForFile'))
+                          ->getMock();
+                                            
+        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
+                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                  ->will($this->returnValue($this->plinker));
+
         $publisher->setFilelib($this->filelib);
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         // $publisher->setRelativePathToRoot('../private');
-        
-        $file->setFilelib($this->filelib);
-                
+                                
         $publisher->publishVersion($file, $this->versionProvider);
         
         $sfi = new \SplFileInfo($expectedVersionPath);
@@ -207,8 +222,16 @@ class CopyFilesystemPublisherTest extends TestCase
         
         $this->assertFileExists($expectedPath);
         
-        $publisher = new CopyPublisher();
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyPublisher')
+                          ->setMethods(array('getLinkerForFile'))
+                          ->getMock();
+                                            
+        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
+                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                  ->will($this->returnValue($this->plinker));
+
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
+        $publisher->setFilelib($this->filelib);
         
         $publisher->unpublish($file);
         
@@ -227,8 +250,16 @@ class CopyFilesystemPublisherTest extends TestCase
         
         $this->assertFileExists($expectedVersionPath);
         
-        $publisher = new CopyPublisher();
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyPublisher')
+                          ->setMethods(array('getLinkerForFile'))
+                          ->getMock();
+                                            
+        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
+                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                  ->will($this->returnValue($this->plinker));
+
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
+        $publisher->setFilelib($this->filelib);
         
         $publisher->unpublishVersion($file, $this->versionProvider);
         

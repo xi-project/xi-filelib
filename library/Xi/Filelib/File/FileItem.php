@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\File;
 
-use Xi\Filelib\FileLibrary;
+use DateTime;
 
 /**
  * Default file implementation
@@ -48,28 +48,6 @@ class FileItem implements File
     private $link;
     
     private $dateUploaded;
-    
-    /**
-     * Sets filelib
-     *
-     * @param FileLibrary $filelib
-     * @return FileItem
-     */
-    public function setFilelib(FileLibrary $filelib)
-    {
-        $this->filelib = $filelib;
-        return $this;
-    }
-
-    /**
-     * Returns filelib
-     *
-     * @return FileLibrary
-     */
-    public function getFilelib()
-    {
-        return $this->filelib;
-    }
     
     /**
      * @param type $id
@@ -152,17 +130,23 @@ class FileItem implements File
         return $this->link;
     }
     
-    public function getProfileObject()
-    {
-        return $this->getFilelib()->getFileOperator()->getProfile($this->getProfile());
-    }
-    
+    /**
+     * Returns upload date
+     * 
+     * @return DateTime
+     */
     public function getDateUploaded()
     {
         return $this->dateUploaded;
     }
     
-    public function setDateUploaded(\DateTime $dateUploaded)
+    /**
+     * Sets upload date
+     * 
+     * @param DateTime $dateUploaded
+     * @return FileItem 
+     */
+    public function setDateUploaded(DateTime $dateUploaded)
     {
         $this->dateUploaded = $dateUploaded;
         return $this;
@@ -193,7 +177,6 @@ class FileItem implements File
         return $this;
     }
 
-    
     
     /**
      *

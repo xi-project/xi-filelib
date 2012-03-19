@@ -117,6 +117,8 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
         $this->storage = $storage;
         
         $filelib = new FileLibrary();
+        // $fileop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        // $filelib->setFileOperator($fileop);
         
         $this->filelib = $filelib;
         

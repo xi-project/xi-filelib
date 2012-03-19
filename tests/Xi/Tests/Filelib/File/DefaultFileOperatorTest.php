@@ -76,7 +76,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $file = $op->getInstance($data);
         $this->assertInstanceOf('Xi\Filelib\File\FileItem', $file);
     
-        $this->assertSame($filelib, $file->getFilelib());
         $this->assertEquals('luss/xoo', $file->getMimetype());
         
     }
