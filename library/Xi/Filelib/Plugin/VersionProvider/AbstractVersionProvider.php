@@ -220,7 +220,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function deleteVersion(File $file)
     {
-        $this->getFilelib()->getStorage()->deleteVersion($file, $this);
+        $this->getFilelib()->getStorage()->deleteVersion($file, $this->getIdentifier());
     }
 
 }
