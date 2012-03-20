@@ -535,6 +535,27 @@ class AbstractVersionProviderTest extends TestCase
         $this->assertArrayHasKey('file.delete', $events);
     }
 
+    /**
+     * @test
+     */
+    public function deleteVersionShouldDelegateToStorage()
+    {
+
+        $file = FileItem::create(array('id' => 666));
+        
+        $this->storage->expects($this->once())->method('deleteVersion')
+                ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->equalTo('xooxersson'));
+                
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
+            ->setMethods(array('createVersion'))
+            ->getMockForAbstractClass();
+        $plugin->setFilelib($this->filelib);
+        $plugin->setIdentifier('xooxersson');
+        
+        $plugin->deleteVersion($file);
+        
+    }
+    
     
     
 }
