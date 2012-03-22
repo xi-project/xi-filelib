@@ -30,6 +30,11 @@ class ZendSlugifierTest extends TestCase
      */
     public function getFilterShouldReturnAnInstanceOfZendFilterAndCacheItsResult()
     {
+        // Fucking kludgings to prevent autoloading collision with ZF1 and ZF2.
+        require_once "Zend/Filter/Word/UnderscoreToSeparator.php";
+        require_once "Zend/Filter/Alnum.php";
+        require_once "Zend/Filter/StringToLower.php";
+        require_once "Zend/Filter/Word/SeparatorToDash.php";
         
         $slugifier = new ZendSlugifier();
         $filter = $slugifier->getFilter();
