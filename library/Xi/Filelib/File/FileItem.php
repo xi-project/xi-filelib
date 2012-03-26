@@ -49,6 +49,9 @@ class FileItem implements File
     
     private $dateUploaded;
     
+    private $status;
+    
+    
     /**
      * @param type $id
      * @return FileItem 
@@ -151,6 +154,29 @@ class FileItem implements File
         $this->dateUploaded = $dateUploaded;
         return $this;
     }
+    
+    /**
+     * Sets status
+     * 
+     * @param type integer
+     * @return FileItem
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        return $this;
+    }
+    
+    /**
+     * Returns status
+     * 
+     * @return integer
+     */
+    public function getStatus()
+    {
+       return $this->status; 
+    }
+    
     
     
     public function toArray()

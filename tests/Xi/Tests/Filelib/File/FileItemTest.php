@@ -68,6 +68,14 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($file, $file->setDateUploaded($val));
         $this->assertSame($val, $file->getDateUploaded());
         
+        
+        $val = 1;
+        $this->assertEquals(null, $file->getStatus());
+        $this->assertSame($file, $file->setStatus($val));
+        $this->assertEquals($val, $file->getStatus());
+
+        
+        
     }
     
     public function fromArrayProvider()

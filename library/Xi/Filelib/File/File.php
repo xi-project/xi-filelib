@@ -125,6 +125,21 @@ interface File
      * @return DateTime
      */
     public function getDateUploaded();
+    
+    
+    /**
+     * Sets status
+     * 
+     * @return File
+     */
+    public function setStatus($status);
+    
+    /**
+     * Returns status
+     * 
+     * @return integer
+     */
+    public function getStatus();
 
     /**
      * Returns the standardized array representation of a file
