@@ -2,9 +2,7 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\FileLibrary,
-    Xi\Filelib\Configurator,
-    Xi\Filelib\FilelibException,
+use Xi\Filelib\FilelibException,
     Xi\Filelib\File\File,
     Xi\Filelib\Folder\Folder,
     Exception;
@@ -17,11 +15,6 @@ use Xi\Filelib\FileLibrary,
  */
 abstract class AbstractBackend implements Backend
 {
-    /**
-     * @var FileLibrary
-     */
-    private $filelib;
-
     /**
      * @param  mixed      $id
      * @return array|null
@@ -117,28 +110,6 @@ abstract class AbstractBackend implements Backend
      * @return array
      */
     protected abstract function fileToArray($file);
-
-    /**
-     * @param  FileLibrary     $filelib
-     * @return AbstractBackend
-     */
-    public function setFilelib(FileLibrary $filelib)
-    {
-        $this->filelib = $filelib;
-
-        return $this;
-    }
-
-    /**
-     * @return FileLibrary
-     */
-    public function getFilelib()
-    {
-        return $this->filelib;
-    }
-
-    public function init()
-    {}
 
     /**
      * Finds folder

@@ -991,34 +991,6 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
     }
 
     /**
-     * @test
-     */
-    public function getsAndSetsFilelib()
-    {
-        $this->setUpEmptyDataSet();
-
-        $filelib = $this->getMockAndDisableOriginalConstructor(
-            'Xi\Filelib\FileLibrary'
-        );
-
-        $this->assertNotSame($filelib, $this->backend->getFilelib());
-
-        $this->backend->setFilelib($filelib);
-
-        $this->assertSame($filelib, $this->backend->getFilelib());
-    }
-
-    /**
-     * @test
-     */
-    public function initCanBeCalled()
-    {
-        $this->setUpEmptyDataSet();
-
-        $this->backend->init();
-    }
-
-    /**
      * @return PHPUnit_Framework_MockObject_MockObject
      */
     protected function getMockAndDisableOriginalConstructor($className)
