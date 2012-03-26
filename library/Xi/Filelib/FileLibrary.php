@@ -285,8 +285,6 @@ class FileLibrary
      */
     public function setBackend(Backend $backend)
     {
-        $backend->setFilelib($this);
-        $backend->init();
         $this->backend = $backend;
         return $this;
     }

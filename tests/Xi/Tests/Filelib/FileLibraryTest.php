@@ -78,22 +78,7 @@ class FileLibraryTest extends TestCase
         $this->assertSame($filelib, $filelib->setAcl($obj));
         $this->assertSame($obj, $filelib->getAcl());
     }
-    
-    
-    /**
-     * @test
-     */
-    public function backendSetterAndGetterShouldWorkAsExpected()
-    {
-        $filelib = new FileLibrary();
-        $obj = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $obj->expects($this->once())->method('setFilelib')->with($this->isInstanceOf('Xi\Filelib\FileLibrary'));
-        $this->assertEquals(null, $filelib->getBackend());
-        $this->assertSame($filelib, $filelib->setBackend($obj));
-        $this->assertSame($obj, $filelib->getBackend());
-        
-    }
-    
+
     /**
      * @test
      */

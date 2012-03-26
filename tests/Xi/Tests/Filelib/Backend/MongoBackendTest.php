@@ -665,12 +665,4 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
 
         $this->assertNull($folder['parent_id']);
     }
-
-    /**
-     * @test
-     */
-    public function initCanBeCalled()
-    {
-        $this->backend->init();
-    }
 }
