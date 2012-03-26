@@ -64,10 +64,13 @@ class AbstractVersionProviderTest extends TestCase
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
         
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
-            ->setMethods(array('createVersion', 'deleteVersion'))
+            ->setMethods(array('createVersion', 'deleteVersion', 'getStorage'))
             ->getMockForAbstractClass();
         
+        $plugin->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
+        $plugin->setFilelib($filelib);
+        
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Publisher')
             ->getMockForAbstractClass();
         $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
@@ -287,16 +290,13 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setProfiles(array('tussi', 'lussi'));
 
         $filelib = $this->filelib;
-        $storage = $this->storage;
-        
-        $storage->expects($this->once())->method('storeVersion')
+                
+        $this->storage->expects($this->once())->method('storeVersion')
                 ->with(
                     $this->isInstanceOf('Xi\Filelib\File\File'),
                     $this->isType('string')
                 );
                 
-        $this->plugin->setFilelib($filelib);
-        
         $file = FileItem::create(array('mimetype' => 'image/xoo', 'profile' => 'tussi'));
         $event = new FileEvent($file);
         
@@ -451,7 +451,7 @@ class AbstractVersionProviderTest extends TestCase
     
     
 
-        /**
+    /**
      * @test
      */
     public function onDeleteShouldDoNothingWhenPluginDoesNotProvide()
@@ -547,15 +547,51 @@ class AbstractVersionProviderTest extends TestCase
                 ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->equalTo('xooxersson'));
                 
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
-            ->setMethods(array('createVersion'))
-            ->getMockForAbstractClass();
-        $plugin->setFilelib($this->filelib);
+            ->setMethods(array('createVersion', 'getStorage'))
+            ->getMock();
+        
+        $plugin->expects($this->once())->method('getStorage')
+               ->will($this->returnValue($this->storage));
+        
         $plugin->setIdentifier('xooxersson');
         
         $plugin->deleteVersion($file);
         
     }
     
+    
+    /**
+     * @test
+     */
+    public function getStorageShouldDelegateToFilelib()
+    {
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
+            ->setMethods(array('createVersion'))
+            ->getMockForAbstractClass();
+        $plugin->setFilelib($this->filelib);
+
+        $this->filelib->expects($this->once())->method('getStorage');
+        
+        $storage = $plugin->getStorage();
+
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function getPublisherShouldDelegateToFilelib()
+    {
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
+            ->setMethods(array('createVersion'))
+            ->getMockForAbstractClass();
+        $plugin->setFilelib($this->filelib);
+
+        $this->filelib->expects($this->once())->method('getPublisher');
+        
+        $storage = $plugin->getPublisher();
+
+    }
     
     
 }
