@@ -1,64 +1,65 @@
 <?php
 
-namespace Xi\Filelib\Backend\Doctrine2\Entity;
+namespace Xi\Bundle\FilelibBundle\Entity;
 
-use Doctrine\ORM\Mapping;
+use Xi\Bundle\FilelibBundle\Entity;
+use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
- * @Entity
- * @Table(name="xi_filelib_file",
- *     uniqueConstraints={@UniqueConstraint(name="folderid_filename_unique",columns={"folder_id","filename"})}
+ * @ORM\Entity
+ * @ORM\Table(name="xi_filelib_file",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="folderid_filename_unique",columns={"folder_id","filename"})}
  * )
  */
 class File
 {
     /**
-     * Xi filelib
-     *
-     * @var \Xi_Filelib
-     */
-    private $_filelib;
-
-    /**
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(name="mimetype", type="string", length=255)
+     * @ORM\Column(name="mimetype", type="string", length=255)
      */
     protected $mimetype;
 
     /**
-     * @Column(name="fileprofile", type="string", length=255)
+     * @ORM\Column(name="fileprofile", type="string", length=255)
      */
     protected $profile;
 
     /**
-     * @Column(name="filesize", type="integer", nullable=true)
+     * @ORM\Column(name="filesize", type="integer", nullable=true)
      */
     protected $size;
 
     /**
-     * @Column(name="filename", type="string", length=255)
+     * @ORM\Column(name="filename", type="string", length=255)
      */
     protected $name;
 
     /**
-     * @Column(name="filelink", type="string", length=1000, nullable=true, unique=true)
+     * @ORM\Column(name="filelink", type="string", length=255, nullable=true, unique=true)
      */
     protected $link;
     
     /**
-     * @Column(name="date_uploaded", type="datetime")
+     * @ORM\Column(name="date_uploaded", type="datetime")
      */
     protected $date_uploaded;
     
     /**
-     * @ManyToOne(targetEntity="Folder")
-     * @JoinColumn(name="folder_id", referencedColumnName="id")
+     *
+     * @ORM\Column(name="status", type="integer", nullable=false)
+     */
+    protected $status;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Folder")
+     * @ORM\JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
      */
     protected $folder;
    
@@ -75,7 +76,7 @@ class File
      * Set mimetype
      *
      * @param  string             $value
-     * @return XiFilelibFile
+     * @return File
      */
     public function setMimetype($value)
     {
@@ -98,7 +99,7 @@ class File
      * Set profile
      *
      * @param  string             $value
-     * @return XiFilelibFile
+     * @return File
      */
     public function setProfile($value)
     {
@@ -121,7 +122,7 @@ class File
      * Set size
      *
      * @param  integer            $value
-     * @return XiFilelibFile
+     * @return File
      */
     public function setSize($value)
     {
@@ -144,7 +145,7 @@ class File
      * Set name
      *
      * @param  string             $value
-     * @return XiFilelibFile
+     * @return File
      */
     public function setName($value)
     {
@@ -167,7 +168,7 @@ class File
      * Set link
      *
      * @param  string             $value
-     * @return XiFilelibFile
+     * @return File
      */
     public function setLink($value)
     {
@@ -203,26 +204,34 @@ class File
     /**
      * Get emerald filelib folder
      *
-     * @return XiFilelibFolder
+     * @return Folder
      */
     public function getFolder()
     {
         return $this->folder;
     }
 
-    
-    
-    
-    
+    /**
+     * Returns date uploaded
+     * 
+     * @return DateTime
+     */
     public function getDateUploaded()
     {
         return $this->date_uploaded;
     }
     
     
-    public function setDateUploaded(\DateTime $dateUploaded)
+    /**
+     * Sets date uploaded
+     * 
+     * @param DateTime $dateUploaded
+     * @return File 
+     */
+    public function setDateUploaded(DateTime $dateUploaded)
     {
         $this->date_uploaded = $dateUploaded;
+        return $this;
     }
     
     
