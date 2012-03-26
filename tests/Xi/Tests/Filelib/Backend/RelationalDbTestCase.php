@@ -136,6 +136,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'tohtori-vesala.png',
                     'filelink'      => 'tohtori-vesala.png',
                     'date_uploaded' => '2011-01-01 16:16:16',
+                    'status'        => 1,
                 ),
                 array(
                     'id'            => 2,
@@ -146,6 +147,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'akuankka.png',
                     'filelink'      => 'lussuttaja/akuankka.png',
                     'date_uploaded' => '2011-01-01 15:15:15',
+                    'status'        => 2,
                 ),
                 array(
                     'id'            => 3,
@@ -156,6 +158,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'repesorsa.png',
                     'filelink'      => 'lussuttaja/tussin/repesorsa.png',
                     'date_uploaded' => '2011-01-01 15:15:15',
+                    'status'        => 8,
                 ),
                 array(
                     'id'            => 4,
@@ -166,6 +169,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'megatussi.png',
                     'filelink'      => 'lussuttaja/banskun/megatussi.png',
                     'date_uploaded' => '2011-01-02 15:15:15',
+                    'status'        => 1,
                 ),
                 array(
                     'id'            => 5,
@@ -176,6 +180,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'megatussi2.png',
                     'filelink'      => 'lussuttaja/banskun/megatussi2.png',
                     'date_uploaded' => '2011-01-03 15:15:15',
+                    'status'        => 4,
                 ),
             ),
         ));
