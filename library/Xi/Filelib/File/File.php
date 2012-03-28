@@ -12,7 +12,11 @@ use DateTime;
  */
 interface File
 {
-        
+    
+    const STATUS_RAW = 1;
+    const STATUS_UPLOADED = 2;
+    
+    
     /**
      * Sets id
      * 

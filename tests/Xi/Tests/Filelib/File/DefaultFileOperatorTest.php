@@ -4,6 +4,7 @@ namespace Xi\Tests\Filelib\File;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
+use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileItem;
 use Xi\Filelib\Folder\FolderItem;
 
@@ -233,7 +234,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
         
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
+        $profile->expects($this->atLeastOnce())->method('getLinker')->will($this->returnValue($linker));
 
         $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')
                      ->setMethods(array('setLink'))
@@ -242,7 +243,8 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $file->setProfile('lussenhofer');
         
         $file->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
-
+        
+                
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('updateFile')->with($this->equalTo($file));
 

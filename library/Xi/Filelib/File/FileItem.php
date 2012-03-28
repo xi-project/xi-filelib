@@ -25,7 +25,8 @@ class FileItem implements File
         'size' => 'setSize',
         'name' => 'setName',
         'link' => 'setLink',
-        'date_uploaded' => 'setDateUploaded'
+        'date_uploaded' => 'setDateUploaded',
+        'status' => 'setStatus',
     );
         
     /**
@@ -190,6 +191,7 @@ class FileItem implements File
             'name' => $this->getName(),
             'link' => $this->getLink(),
             'date_uploaded' => $this->getDateUploaded(),
+            'status' => $this->getStatus(),
         );
     }
     

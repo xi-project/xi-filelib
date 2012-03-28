@@ -91,6 +91,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
                     'name' => 'puuppa.jpg',
                     'link' => 'lussenhoff',
                     'date_uploaded' => new \DateTime('2010-01-01 01:01:01'),
+                    'status' => 8,
                 ),         
             ),
             array(
@@ -121,7 +122,8 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
             'size' => 'getSize',
             'name' => 'getName',
             'link' => 'getLink',
-            'date_uploaded' => 'getDateUploaded'
+            'date_uploaded' => 'getDateUploaded',
+            'status' => 'getStatus',
         );
         
         foreach($map as $key => $method) {
@@ -148,6 +150,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $file->setName('kukkuu.png');
         $file->setLink('linksor');
         $file->setDateUploaded(new \DateTime('1978-03-21'));
+        $file->setStatus(54);
                 
         $this->assertEquals($file->toArray(), array(
             'id' => 1,
@@ -157,7 +160,8 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
             'size' => 123456,
             'name' => 'kukkuu.png',
             'link' => 'linksor',
-            'date_uploaded' => new \DateTime('1978-03-21')
+            'date_uploaded' => new \DateTime('1978-03-21'),
+            'status' => 54,
         ));
 
         
@@ -171,6 +175,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
             'name' => null,
             'link' => null,
             'date_uploaded' => null,
+            'status' => null,
         ));
         
         
