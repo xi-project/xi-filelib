@@ -168,6 +168,7 @@ class Doctrine2Backend extends AbstractBackend
         $entity->setName($file->getName());
         $entity->setLink($file->getLink());
         $entity->setDateUploaded($file->getDateUploaded());
+        $entity->setStatus($file->getStatus());
 
         $this->em->flush();
 
@@ -344,6 +345,7 @@ class Doctrine2Backend extends AbstractBackend
             $entity->setName($file->getName());
             $entity->setProfile($file->getProfile());
             $entity->setDateUploaded($file->getDateUploaded());
+            $entity->setStatus($file->getStatus());
 
             $em->persist($entity);
             $em->flush();
@@ -374,6 +376,7 @@ class Doctrine2Backend extends AbstractBackend
             'name'          => $file->getName(),
             'link'          => $file->getLink(),
             'date_uploaded' => $file->getDateUploaded(),
+            'status'        => $file->getStatus(),
         );
     }
 

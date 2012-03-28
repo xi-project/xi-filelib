@@ -9,7 +9,7 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Backend\Doctrine2\Entity\File'));
+        $this->assertTrue(class_exists('Xi\Filelib\Backend\Doctrine2\Entity\Folder'));
     }
     
     

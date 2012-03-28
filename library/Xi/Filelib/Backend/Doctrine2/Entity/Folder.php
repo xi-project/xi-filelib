@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Bundle\FilelibBundle\Entity;
+namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
-use Doctrine\Mapping as ORM;
+use Doctrine\Mapping;
 
 /**
  * @Entity

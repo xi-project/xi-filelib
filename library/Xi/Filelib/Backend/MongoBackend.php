@@ -120,6 +120,7 @@ class MongoBackend extends AbstractBackend implements Backend
             'size'          => $file->getSize(),
             'name'          => $file->getName(),
             'profile'       => $file->getProfile(),
+            'status'        => $file->getStatus(),
             'date_uploaded' => new MongoDate($file->getDateUploaded()
                                                   ->getTimestamp()),
         );
@@ -282,6 +283,7 @@ class MongoBackend extends AbstractBackend implements Backend
             'size'          => (int) $file['size'],
             'name'          => $file['name'],
             'link'          => $file['link'],
+            'status'        => $file['status'],
             'date_uploaded' => DateTime::createFromFormat(
                                    'U',
                                    $file['date_uploaded']->sec

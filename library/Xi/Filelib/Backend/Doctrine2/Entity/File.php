@@ -1,9 +1,9 @@
 <?php
 
-namespace Xi\Bundle\FilelibBundle\Entity;
+namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
 use Xi\Bundle\FilelibBundle\Entity;
-use Doctrine\Mapping as ORM;
+use Doctrine\Mapping;
 use DateTime;
 
 /**
@@ -62,7 +62,6 @@ class File
      * @JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
      */
     protected $folder;
-   
 
     /**
      * Get id
@@ -234,6 +233,25 @@ class File
         return $this;
     }
     
+    /**
+     * Returns status
+     * 
+     * @return integer
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
     
+    
+    /**
+     * Sets status
+     * 
+     * @param integer $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
     
 }
