@@ -46,14 +46,4 @@ interface Linker
      * @return string Link
      */
     public function getLink(File $file);
-
-    
-    /**
-     * Initialization is run when a linker is set to filelib.
-     * 
-     * @return Linker
-     */
-    public function init();
-    
-
 }

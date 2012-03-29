@@ -47,15 +47,4 @@ abstract class AbstractLinker implements Linker
     {
         return $this->filelib;
     }
-
-    /**
-     * Initialization is run once when linker is set to filelib
-     */
-    public function init()
-    {
-        return $this;
-    }
-    
-
-
 }

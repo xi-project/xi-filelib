@@ -2,7 +2,6 @@
 
 namespace Xi\Tests\Filelib\Linker;
 
-use Xi\Filelib\Linker\AbstractLinker;
 use Xi\Tests\Filelib\TestCase;
 
 class AbstractLinkerTest extends TestCase
@@ -25,21 +24,4 @@ class AbstractLinkerTest extends TestCase
         
         $this->assertSame($filelib, $linker->getFilelib());
     }
-    
-    /**
-     * @test
-     */
-    public function initShouldReturnSelf()
-    {
-
-        $linker = $this->getMockBuilder('Xi\Filelib\Linker\AbstractLinker')
-                    ->setMethods(array('getLink', 'getLinkVersion'))
-                    ->getMockForAbstractClass();
-        
-        $this->assertSame($linker, $linker->init());
-        
-    }
-    
-    
-    
 }

@@ -88,7 +88,6 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $this->assertSame($filelib, $profile->getFilelib());
 
         $linker = $this->getMockForAbstractClass('Xi\Filelib\Linker\Linker');
-        $linker->expects($this->once())->method('init');
         $this->assertEquals(null, $profile->getLinker());
         $this->assertSame($profile, $profile->setLinker($linker));
         $this->assertSame($linker, $profile->getLinker());
