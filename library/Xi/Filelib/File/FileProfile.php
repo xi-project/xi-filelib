@@ -128,7 +128,7 @@ class FileProfile implements EventSubscriberInterface
     public function setLinker($linker)
     {
         $this->linker = $linker;
-        $linker->init();
+
         return $this;
     }
 
