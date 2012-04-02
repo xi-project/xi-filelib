@@ -754,8 +754,17 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish'))
+                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance'))
                    ->getMock();
+        
+        $fileitem = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+        
+        $op->expects($this->atLeastOnce())->method('getInstance')->will($this->returnValue($fileitem));
+        
+        $fileitem->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
+        
+        $fileitem->expects($this->at(0))->method('setStatus')->with($this->equalTo(File::STATUS_RAW));
+        $fileitem->expects($this->at(1))->method('setStatus')->with($this->equalTo(File::STATUS_UPLOADED));
         
         $dispatcher->expects($this->at(0))->method('dispatch')
                    ->with($this->equalTo('file.beforeUpload'), $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
