@@ -55,7 +55,7 @@ abstract class AbstractPlugin implements Plugin
      * Sets filelib
      *
      * @param FileLibrary $filelib
-     * @returns Plugin
+     * @return Plugin
      */
     public function setFilelib(FileLibrary $filelib)
     {
