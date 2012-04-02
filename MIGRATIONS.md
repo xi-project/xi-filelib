@@ -20,13 +20,13 @@ correspondingly.
 
 ### PostgreSQL
 
-ALTER TABLE xi_filelib_file ADD COLUMN status integer NOT NULL default 2;
-ALTER TABLE xi_filelib_file ALTER COLUMN status SET DEFAULT null;
+    ALTER TABLE xi_filelib_file ADD COLUMN status integer NOT NULL default 2;
+    ALTER TABLE xi_filelib_file ALTER COLUMN status SET DEFAULT null;
 
 ### MySQL
 
-ALTER TABLE xi_filelib_file ADD COLUMN status integer NOT NULL default 2;
-ALTER TABLE xi_filelib_file ALTER COLUMN status DROP DEFAULT;
+    ALTER TABLE xi_filelib_file ADD COLUMN status integer NOT NULL default 2;
+    ALTER TABLE xi_filelib_file ALTER COLUMN status DROP DEFAULT;
 
 ### Other SQL
 
