@@ -196,7 +196,6 @@ class File
     public function setFolder(Folder $folder)
     {
         $this->folder = $folder;
-
         return $this;
     }
 
@@ -252,6 +251,7 @@ class File
     public function setStatus($status)
     {
         $this->status = $status;
+        return $this;
     }
     
 }
