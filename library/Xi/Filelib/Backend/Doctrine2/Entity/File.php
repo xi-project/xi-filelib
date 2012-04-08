@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
 use Xi\Bundle\FilelibBundle\Entity;
-use Doctrine\Mapping;
+use Doctrine\ORM\Mapping;
 use DateTime;
 
 /**

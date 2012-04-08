@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
-use Doctrine\Mapping;
+use Doctrine\ORM\Mapping;
 
 /**
  * @Entity
