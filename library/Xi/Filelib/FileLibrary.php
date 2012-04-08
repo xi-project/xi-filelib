@@ -139,7 +139,7 @@ class FileLibrary
     /**
      * Sets file operator
      * 
-     * @param \Xi\Filelib\File\FileOperator $fileOperator 
+     * @param FileOperator $fileOperator 
      * @return FileLibrary
      */
     public function setFileOperator(FileOperator $fileOperator)
@@ -151,7 +151,7 @@ class FileLibrary
     /**
      * Sets folder operator
      * 
-     * @param \Xi\Filelib\Folder\FolderOperator $fileOperator 
+     * @param FolderOperator $fileOperator 
      * @return FileLibrary
      */
     public function setFolderOperator(FolderOperator $folderOperator)
@@ -203,7 +203,7 @@ class FileLibrary
      * Sets fully qualified folderitem classname
      *
      * @param string $folderItemClass Class name
-     * @return \Xi\Filelib\FileLibrary
+     * @return FileLibrary
      */
     public function setFolderItemClass($folderItemClass)
     {

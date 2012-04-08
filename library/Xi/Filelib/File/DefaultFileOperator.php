@@ -233,6 +233,9 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         
         $upload = $event->getFileUpload();
         
+        
+        
+        
         $file = $this->getInstance(array(
             'folder_id' => $folder->getId(),
             'mimetype' => $upload->getMimeType(),
@@ -242,17 +245,21 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             'date_uploaded' => $upload->getDateUploaded(),
         ));
 
+        // @todo: actual statuses
+        $file->setStatus(File::STATUS_RAW);
+                
         $this->getBackend()->upload($file, $folder);
-
-        $file->setLink($profileObj->getLinker()->getLink($file, true));
-
-        $this->getBackend()->updateFile($file);
-
+        
         $this->getStorage()->store($file, $upload->getRealPath());
         
         $event = new FileEvent($file);
         $this->getEventDispatcher()->dispatch('file.afterUpload', $event);
 
+        // @todo: actual statuses
+        $file->setStatus(File::STATUS_UPLOADED);
+        $file->setLink($profileObj->getLinker()->getLink($file, true));
+        $this->getBackend()->updateFile($file);
+               
         // @todo: I think autopublish must be an option or go away...
         if ($this->getAcl()->isFileReadableByAnonymous($file)) {
             $this->publish($file);

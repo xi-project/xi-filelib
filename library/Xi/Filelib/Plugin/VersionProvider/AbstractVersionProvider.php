@@ -7,11 +7,12 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Publisher\Publisher;
 
 /**
  * Abstract convenience class for version provider plugins
  *
- * @package Xi_Filelib
  * @author pekkis
  *
  */
@@ -24,7 +25,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         'file.publish' => 'onPublish',
         'file.unpublish' => 'onUnpublish',
         'file.delete' => 'onDelete',
-        
     );
 
     /**
@@ -149,6 +149,29 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         return $this->extension;
     }
 
+    
+    /**
+     * Returns storage
+     * 
+     * @return Storage
+     */
+    public function getStorage()
+    {
+        return $this->getFilelib()->getStorage();
+    }
+    
+    /**
+     * Returns publisher
+     * 
+     * @return Publisher
+     */
+    public function getPublisher()
+    {
+        return $this->getFilelib()->getPublisher();
+    }
+    
+    
+    
     public function afterUpload(FileEvent $event)
     {
         $file = $event->getFile();
@@ -162,7 +185,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
 
         $tmp = $this->createVersion($file);
-        $this->getFilelib()->getStorage()->storeVersion($file, $this->getIdentifier(), $tmp);
+        $this->getStorage()->storeVersion($file, $this->getIdentifier(), $tmp);
         unlink($tmp);
     }
 
@@ -178,7 +201,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             return;
         }
         
-        $this->getFilelib()->getPublisher()->publishVersion($file, $this);
+        $this->getPublisher()->publishVersion($file, $this);
     }
 
     public function onUnpublish(FileEvent $event)
@@ -193,7 +216,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             return;
         }
 
-        $this->getFilelib()->getPublisher()->unpublishVersion($file, $this);
+        $this->getPublisher()->unpublishVersion($file, $this);
     }
 
     public function onDelete(FileEvent $event)
@@ -203,7 +226,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         if (!$this->hasProfile($file->getProfile())) {
             return;
         }
-
         
         if (!$this->providesFor($file)) {
             return;
@@ -220,7 +242,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function deleteVersion(File $file)
     {
-        $this->getFilelib()->getStorage()->deleteVersion($file, $this->getIdentifier());
+        $this->getStorage()->deleteVersion($file, $this->getIdentifier());
     }
 
 }

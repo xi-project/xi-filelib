@@ -57,6 +57,7 @@ class Folder
     public function setName($value)
     {
         $this->name = $value;
+        return $this;
     }
 
     /**
@@ -78,6 +79,7 @@ class Folder
     public function setUrl($value)
     {
         $this->url = $value;
+        return $this;
     }
 
     /**
@@ -99,7 +101,6 @@ class Folder
     public function setParent(Folder $filelibFolder)
     {
         $this->parent = $filelibFolder;
-
         return $this;
     }
 
@@ -111,7 +112,6 @@ class Folder
     public function removeParent()
     {
         $this->parent = null;
-
         return $this;
     }
 
