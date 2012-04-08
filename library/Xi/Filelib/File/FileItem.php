@@ -54,7 +54,9 @@ class FileItem implements File
     
     
     /**
-     * @param type $id
+     * Sets id
+     * 
+     * @param mixed $id
      * @return FileItem 
      */
     public function setId($id)
@@ -63,72 +65,143 @@ class FileItem implements File
         return $this;
     }
     
+    /**
+     * Returns id
+     * 
+     * @return mixed
+     */
     public function getId()
     {
         return $this->id;
     }
     
+    /**
+     * Sets folder id
+     * 
+     * @param mixed $folderId
+     * @return FileItem 
+     */
     public function setFolderId($folderId)
     {
         $this->folderId = $folderId;
         return $this;
     }
     
+    /**
+     * Returns folder id
+     * 
+     * @return mixed
+     */
     public function getFolderId()
     {
         return $this->folderId;
     }
 
+    /**
+     * Sets mimetype
+     * 
+     * @param string $mimetype
+     * @return FileItem 
+     */
     public function setMimetype($mimetype)
     {
         $this->mimetype = $mimetype;
         return $this;
     }
     
+    /**
+     * Returns mimetype
+     * 
+     * @return string
+     */
     public function getMimetype()
     {
         return $this->mimetype;
     }
-    
+        
+    /**
+     * Sets profile name
+     * 
+     * @param string $profile
+     * @return FileItem 
+     */
     public function setProfile($profile)
     {
         $this->profile = $profile;
         return $this;
     }
     
+    /**
+     * Returns profile name
+     * 
+     * @return string
+     */
     public function getProfile()
     {
         return $this->profile;
     }
     
+    /**
+     * Sets file size
+     * 
+     * @param int $size
+     * @return FileItem 
+     */
     public function setSize($size)
     {
         $this->size = $size;
         return $this;
     }
     
+    /**
+     * Returns file size
+     * 
+     * @return int
+     */
     public function getSize()
     {
         return $this->size;
     }
     
+    /**
+     * Sets name
+     * 
+     * @param string $name
+     * @return FileItem 
+     */
     public function setName($name)
     {
         $this->name = $name;
         return $this;
     }
     
+    /**
+     * Returns name
+     * 
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
     
+    /**
+     * Sets link
+     * 
+     * @param string $link
+     * @return FileItem 
+     */
     public function setLink($link)
     {
         $this->link = $link;
         return $this;
     }
     
+    /**
+     * Returns link
+     * 
+     * @return string 
+     */
     public function getLink()
     {
         return $this->link;
@@ -159,7 +232,7 @@ class FileItem implements File
     /**
      * Sets status
      * 
-     * @param type integer
+     * @param integer $status
      * @return FileItem
      */
     public function setStatus($status)
@@ -178,8 +251,11 @@ class FileItem implements File
        return $this->status; 
     }
     
-    
-    
+    /**
+     * Returns the file as standardized file array
+     * 
+     * @return array
+     */
     public function toArray()
     {
         return array(
@@ -195,6 +271,12 @@ class FileItem implements File
         );
     }
     
+    /**
+     * Sets data from array
+     * 
+     * @param array $data
+     * @return FileItem 
+     */
     public function fromArray(array $data)
     {
         foreach(static::$map as $key => $method) {
@@ -204,10 +286,10 @@ class FileItem implements File
         }
         return $this;
     }
-
     
     /**
-     *
+     * Creates an instance with data
+     * 
      * @param array $data
      * @return type FileItem
      */

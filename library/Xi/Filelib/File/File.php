@@ -134,6 +134,7 @@ interface File
     /**
      * Sets status
      * 
+     * @param integer $status
      * @return File
      */
     public function setStatus($status);
