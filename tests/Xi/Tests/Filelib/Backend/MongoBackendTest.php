@@ -76,6 +76,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'tohtori-vesala.png',
                     'link'          => 'tohtori-vesala.png',
                     'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+                    'status'    => 1,
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166107'),
@@ -86,6 +87,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'akuankka.png',
                     'link'          => 'lussuttaja/akuankka.png',
                     'date_uploaded' => new DateTime('2011-01-01 15:15:15'),
+                    'status'    => 2,
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166108'),
@@ -96,6 +98,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'repesorsa.png',
                     'link'          => 'lussuttaja/tussin/repesorsa.png',
                     'date_uploaded' => new DateTime('2011-01-01 15:15:15'),
+                    'status'    => 4,
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166109'),
@@ -106,6 +109,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'megatussi.png',
                     'link'          => 'lussuttaja/banskun/megatussi.png',
                     'date_uploaded' => new DateTime('2011-01-02 15:15:15'),
+                    'status'    => 8,
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166110'),
@@ -116,6 +120,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'megatussi2.png',
                     'link'          => 'lussuttaja/banskun/megatussi2.png',
                     'date_uploaded' => new DateTime('2011-01-03 15:15:15'),
+                    'status'    => 16,
                 ),
             ),
         );
@@ -442,6 +447,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('name', $ret);
         $this->assertArrayHasKey('link', $ret);
         $this->assertArrayHasKey('date_uploaded', $ret);
+        $this->assertArrayHasKey('status', $ret);
 
         $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
     }
@@ -487,6 +493,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('name', $ret);
             $this->assertArrayHasKey('link', $ret);
             $this->assertArrayHasKey('date_uploaded', $ret);
+            $this->assertArrayHasKey('status', $ret);
 
             $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
         }
@@ -506,6 +513,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
             'name'          => 'tohtori-sykero.png',
             'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
+            'status' => 60,
         );
 
         $file = FileItem::create($data);
@@ -549,6 +557,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
             'name'          => 'tohtori-tussi.png',
             'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+            'status'        => 1,
         );
 
         $fodata = array(
@@ -571,6 +580,8 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($fidata['profile'], $file->getProfile());
         $this->assertEquals($fidata['link'], $file->getLink());
         $this->assertEquals($fidata['date_uploaded'], $file->getDateUploaded());
+        
+        $this->assertEquals($fidata['status'], $file->getStatus());
     }
 
     /**
@@ -586,6 +597,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
             'name'          => 'tohtori-vesala.png',
             'link'          => 'tohtori-vesala.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+            'status' => '2',
         );
 
         $fodata = array(
@@ -615,6 +627,8 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'id'            => '49a7011a05c677b9a9166106',
             'folder_id'     => '49a7011a05c677b9a9166101',
+            'status'        => 1,
+            
         );
 
         $fodata = array(

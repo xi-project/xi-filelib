@@ -29,44 +29,52 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         
         $val = 666;
-        $this->assertEquals(null, $file->getId());
+        $this->assertNull($file->getId());
         $this->assertSame($file, $file->setId($val));
         $this->assertEquals($val, $file->getId());
 
         $val = 'image/lus';
-        $this->assertEquals(null, $file->getFolderId());
+        $this->assertNull($file->getFolderId());
         $this->assertSame($file, $file->setFolderId($val));
         $this->assertEquals($val, $file->getFolderId());
 
         $val = 'image/lus';
-        $this->assertEquals(null, $file->getMimetype());
+        $this->assertNull($file->getMimetype());
         $this->assertSame($file, $file->setMimetype($val));
         $this->assertEquals($val, $file->getMimetype());
 
         $val = 'lamanmeister';
-        $this->assertEquals(null, $file->getProfile());
+        $this->assertNull($file->getProfile());
         $this->assertSame($file, $file->setProfile($val));
         $this->assertEquals($val, $file->getProfile());
 
         $val = 64643;
-        $this->assertEquals(null, $file->getSize());
+        $this->assertNull($file->getSize());
         $this->assertSame($file, $file->setSize($val));
         $this->assertEquals($val, $file->getSize());
 
         $val = 'lamanmeister.xoo';
-        $this->assertEquals(null, $file->getName());
+        $this->assertNull($file->getName());
         $this->assertSame($file, $file->setName($val));
         $this->assertEquals($val, $file->getName());
 
         $val = 'linkster';
-        $this->assertEquals(null, $file->getLink());
+        $this->assertNull($file->getLink());
         $this->assertSame($file, $file->setLink($val));
         $this->assertEquals($val, $file->getLink());
 
         $val = new DateTime('1978-01-02');
-        $this->assertEquals(null, $file->getDateUploaded());
+        $this->assertNull($file->getDateUploaded());
         $this->assertSame($file, $file->setDateUploaded($val));
         $this->assertSame($val, $file->getDateUploaded());
+        
+        
+        $val = 1;
+        $this->assertNull($file->getStatus());
+        $this->assertSame($file, $file->setStatus($val));
+        $this->assertEquals($val, $file->getStatus());
+
+        
         
     }
     
@@ -83,6 +91,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
                     'name' => 'puuppa.jpg',
                     'link' => 'lussenhoff',
                     'date_uploaded' => new \DateTime('2010-01-01 01:01:01'),
+                    'status' => 8,
                 ),         
             ),
             array(
@@ -113,7 +122,8 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
             'size' => 'getSize',
             'name' => 'getName',
             'link' => 'getLink',
-            'date_uploaded' => 'getDateUploaded'
+            'date_uploaded' => 'getDateUploaded',
+            'status' => 'getStatus',
         );
         
         foreach($map as $key => $method) {
@@ -140,6 +150,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $file->setName('kukkuu.png');
         $file->setLink('linksor');
         $file->setDateUploaded(new \DateTime('1978-03-21'));
+        $file->setStatus(54);
                 
         $this->assertEquals($file->toArray(), array(
             'id' => 1,
@@ -149,7 +160,8 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
             'size' => 123456,
             'name' => 'kukkuu.png',
             'link' => 'linksor',
-            'date_uploaded' => new \DateTime('1978-03-21')
+            'date_uploaded' => new \DateTime('1978-03-21'),
+            'status' => 54,
         ));
 
         
@@ -163,6 +175,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
             'name' => null,
             'link' => null,
             'date_uploaded' => null,
+            'status' => null,
         ));
         
         

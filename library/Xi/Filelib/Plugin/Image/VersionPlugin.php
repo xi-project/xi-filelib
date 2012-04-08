@@ -48,7 +48,7 @@ class VersionPlugin extends AbstractVersionProvider
     public function createVersion(File $file)
     {
         // Todo: optimize
-        $retrieved = $this->getFilelib()->getStorage()->retrieve($file)->getPathname();
+        $retrieved = $this->getStorage()->retrieve($file)->getPathname();
         $img = $this->getImageMagickHelper()->createImagick($retrieved);
 
         $this->getImageMagickHelper()->execute($img);

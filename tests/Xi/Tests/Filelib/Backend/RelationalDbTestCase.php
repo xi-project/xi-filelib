@@ -136,6 +136,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'tohtori-vesala.png',
                     'filelink'      => 'tohtori-vesala.png',
                     'date_uploaded' => '2011-01-01 16:16:16',
+                    'status'        => 1,
                 ),
                 array(
                     'id'            => 2,
@@ -146,6 +147,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'akuankka.png',
                     'filelink'      => 'lussuttaja/akuankka.png',
                     'date_uploaded' => '2011-01-01 15:15:15',
+                    'status'        => 2,
                 ),
                 array(
                     'id'            => 3,
@@ -156,6 +158,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'repesorsa.png',
                     'filelink'      => 'lussuttaja/tussin/repesorsa.png',
                     'date_uploaded' => '2011-01-01 15:15:15',
+                    'status'        => 3,
                 ),
                 array(
                     'id'            => 4,
@@ -166,6 +169,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'megatussi.png',
                     'filelink'      => 'lussuttaja/banskun/megatussi.png',
                     'date_uploaded' => '2011-01-02 15:15:15',
+                    'status'        => 4,
                 ),
                 array(
                     'id'            => 5,
@@ -176,6 +180,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
                     'filename'      => 'megatussi2.png',
                     'filelink'      => 'lussuttaja/banskun/megatussi2.png',
                     'date_uploaded' => '2011-01-03 15:15:15',
+                    'status'        => 5,
                 ),
             ),
         ));
@@ -229,6 +234,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
+        
 
         $this->assertNull($folder['parent_id']);
     }
@@ -681,6 +687,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
         $this->assertArrayHasKey('name', $ret);
         $this->assertArrayHasKey('link', $ret);
         $this->assertArrayHasKey('date_uploaded', $ret);
+        $this->assertArrayHasKey('status', $ret);
 
         $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
     }
@@ -729,6 +736,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
             $this->assertArrayHasKey('name', $ret);
             $this->assertArrayHasKey('link', $ret);
             $this->assertArrayHasKey('date_uploaded', $ret);
+            $this->assertArrayHasKey('status', $ret);
 
             $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
         }
@@ -750,6 +758,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
             'name'          => 'tohtori-sykero.png',
             'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
+            'status' => 666,
         );
 
         $file = FileItem::create($data);
@@ -775,6 +784,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
             'name'          => 'tohtori-sykero.png',
             'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
+            'status' => 4,
         );
 
         $file = FileItem::create($updated);
@@ -834,6 +844,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
             'name'          => 'tohtori-tussi.png',
             'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+            'status' => 5
         );
 
         $fodata = array(
@@ -856,7 +867,9 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
         $this->assertEquals($fidata['profile'], $file->getProfile());
         $this->assertEquals($fidata['link'], $file->getLink());
         $this->assertEquals($fidata['date_uploaded'], $file->getDateUploaded());
+        $this->assertEquals($fidata['status'], $file->getStatus());
     }
+    
 
     /**
      * @test
@@ -873,6 +886,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
             'name'          => 'tohtori-tussi.png',
             'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+            'status' => 3,
         );
 
         $fodata = array(
@@ -903,6 +917,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
             'name'          => 'tohtori-vesala.png',
             'link'          => 'tohtori-vesala.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+            'status' => 4,
         );
 
         $fodata = array(
@@ -934,6 +949,7 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'id'            => 1,
             'folder_id'     => 1,
+            'status' => 1,
         );
 
         $fodata = array(

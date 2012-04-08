@@ -250,6 +250,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
                 'fileprofile'   => $data['profile'],
                 'date_uploaded' => $data['date_uploaded']->format('Y-m-d H:i:s'),
                 'filelink'      => $data['link'],
+                'status'        => $data['status'],
             ),
             $this->getFileTable()
                  ->getAdapter()
@@ -289,7 +290,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
         $row->filename      = $file->getName();
         $row->fileprofile   = $file->getProfile();
         $row->date_uploaded = $file->getDateUploaded()->format('Y-m-d H:i:s');
-
+        $row->status = $file->getStatus();
+        
         $row->save();
 
         $file->setId((int) $row->id);
@@ -326,6 +328,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'profile'       => $fileRow['fileprofile'],
             'link'          => $fileRow['filelink'],
             'date_uploaded' => new DateTime($fileRow['date_uploaded']),
+            'status'        => $fileRow['status'],
         );
     }
 
