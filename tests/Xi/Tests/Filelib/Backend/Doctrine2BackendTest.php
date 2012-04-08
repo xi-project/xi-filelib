@@ -2,15 +2,19 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use Xi\Filelib\Backend\Doctrine2Backend,
-    Xi\Filelib\Folder\FolderItem,
-    Xi\Filelib\File\FileItem,
-    Exception,
-    Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Configuration,
-    Doctrine\ORM\EntityNotFoundException,
-    Doctrine\Common\Cache\ArrayCache,
-    PHPUnit_Framework_MockObject_MockObject;
+use Xi\Filelib\Backend\Doctrine2Backend;
+use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\File\FileItem;
+use Exception;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * @group doctrine
@@ -24,13 +28,20 @@ class Doctrine2BackendTest extends RelationalDbTestCase
     {
         $cache = new ArrayCache();
 
-        $config = new Configuration();
-        $config->setMetadataCacheImpl($cache);
-        $config->setMetadataDriverImpl(
-            $config->newDefaultAnnotationDriver(
-                ROOT_TESTS . '/../library/Xi/Filelib/Backend/Doctrine2/Entity'
+        AnnotationRegistry::registerFile(
+            ROOT_TESTS . '/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php'
+        );
+
+        $driver = new AnnotationDriver(
+            new CachedReader(new AnnotationReader(), $cache),
+            array(
+                ROOT_TESTS . '/../library/Xi/Filelib/Backend/Doctrine2/Entity',
             )
         );
+
+        $config = new Configuration();
+        $config->setMetadataCacheImpl($cache);
+        $config->setMetadataDriverImpl($driver);
         $config->setQueryCacheImpl($cache);
         $config->setProxyDir(ROOT_TESTS . '/data/temp');
         $config->setProxyNamespace('FilelibTest\Proxies');
