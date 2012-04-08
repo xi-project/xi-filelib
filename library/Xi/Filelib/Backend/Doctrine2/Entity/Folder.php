@@ -2,42 +2,42 @@
 
 namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
-use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @Entity
- * @Table(name="xi_filelib_folder")
+ * @ORM\Entity
+ * @ORM\Table(name="xi_filelib_folder")
  */
 class Folder
 {
     /**
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(name="foldername", type="string", length=255)
+     * @ORM\Column(name="foldername", type="string", length=255)
      */
     protected $name;
     
     /**
-     * @Column(name="folderurl", type="string", length=5000)
+     * @ORM\Column(name="folderurl", type="string", length=5000)
      */
     protected $url;
     
     /**
-     * @OneToMany(targetEntity="Folder", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent")
      */
     private $children;
 
     /**
-     * @ManyToOne(targetEntity="Folder", inversedBy="children")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;
-    // ...
+
     /**
      * Get id
      *

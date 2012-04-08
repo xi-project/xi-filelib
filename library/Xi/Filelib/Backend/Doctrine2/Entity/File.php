@@ -2,64 +2,62 @@
 
 namespace Xi\Filelib\Backend\Doctrine2\Entity;
 
-use Xi\Bundle\FilelibBundle\Entity;
-use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 
 /**
- * @Entity
- * @Table(name="xi_filelib_file",
- *     uniqueConstraints={@UniqueConstraint(name="folderid_filename_unique",columns={"folder_id","filename"})}
+ * @ORM\Entity
+ * @ORM\Table(name="xi_filelib_file",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="folderid_filename_unique",columns={"folder_id","filename"})}
  * )
  */
 class File
 {
     /**
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(name="mimetype", type="string", length=255)
+     * @ORM\Column(name="mimetype", type="string", length=255)
      */
     protected $mimetype;
 
     /**
-     * @Column(name="fileprofile", type="string", length=255)
+     * @ORM\Column(name="fileprofile", type="string", length=255)
      */
     protected $profile;
 
     /**
-     * @Column(name="filesize", type="integer", nullable=true)
+     * @ORM\Column(name="filesize", type="integer", nullable=true)
      */
     protected $size;
 
     /**
-     * @Column(name="filename", type="string", length=255)
+     * @ORM\Column(name="filename", type="string", length=255)
      */
     protected $name;
 
     /**
-     * @Column(name="filelink", type="string", length=255, nullable=true, unique=true)
+     * @ORM\Column(name="filelink", type="string", length=255, nullable=true, unique=true)
      */
     protected $link;
     
     /**
-     * @Column(name="date_uploaded", type="datetime")
+     * @ORM\Column(name="date_uploaded", type="datetime")
      */
     protected $date_uploaded;
     
     /**
-     *
-     * @Column(name="status", type="integer", nullable=false)
+     * @ORM\Column(name="status", type="integer", nullable=false)
      */
     protected $status;
     
     /**
-     * @ManyToOne(targetEntity="Folder")
-     * @JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Folder")
+     * @ORM\JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
      */
     protected $folder;
 
