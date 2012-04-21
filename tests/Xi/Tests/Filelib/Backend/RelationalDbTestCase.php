@@ -1021,10 +1021,14 @@ abstract class RelationalDbTestCase extends PHPUnit_Extensions_Database_TestCase
      */
     public function getConnection()
     {
-        $dsn = sprintf('%s:host=%s;dbname=%s', PDO_DRIVER, PDO_HOST, PDO_DBNAME);
-
         try {
-            $pdo = new PDO($dsn, PDO_USERNAME, PDO_PASSWORD);
+            if (PDO_DRIVER === 'sqlite') {
+                $pdo = new PDO(sprintf('sqlite:%s', PDO_DBNAME));
+            } else {
+                $dsn = sprintf('%s:host=%s;dbname=%s', PDO_DRIVER, PDO_HOST, PDO_DBNAME);
+
+                $pdo = new PDO($dsn, PDO_USERNAME, PDO_PASSWORD);
+            }
         } catch (PDOException $e) {
             $this->markTestSkipped('Could not connect to database.');
         }

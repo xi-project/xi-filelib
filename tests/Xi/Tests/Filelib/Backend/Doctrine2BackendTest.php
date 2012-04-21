@@ -47,13 +47,18 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         $config->setProxyNamespace('FilelibTest\Proxies');
         $config->setAutoGenerateProxyClasses(true);
 
-        $connectionOptions = array(
-            'driver'   => 'pdo_' . PDO_DRIVER,
-            'dbname'   => PDO_DBNAME,
-            'user'     => PDO_USERNAME,
-            'password' => PDO_PASSWORD,
-            'host'     => PDO_HOST,
-        );
+        $connectionOptions = PDO_DRIVER === 'sqlite'
+            ? array(
+                'driver' => 'pdo_' . PDO_DRIVER,
+                'path'   => PDO_DBNAME,
+            )
+            : array(
+                'driver'   => 'pdo_' . PDO_DRIVER,
+                'dbname'   => PDO_DBNAME,
+                'user'     => PDO_USERNAME,
+                'password' => PDO_PASSWORD,
+                'host'     => PDO_HOST,
+            );
 
         $em = EntityManager::create($connectionOptions, $config);
 
