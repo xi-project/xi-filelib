@@ -219,7 +219,14 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     public function upload($upload, Folder $folder, $profile = 'default')
     {
         $command = new \Xi\Filelib\File\Command\UploadFileCommand($this, $upload, $folder, $profile);
-                
+        
+        $queue = $this->getQueue();
+        
+        $queue->enqueue($command);
+        
+        return null;
+        
+        
         $afterUploadCommand = $command->execute();
         return $afterUploadCommand->execute();
     }
@@ -309,5 +316,19 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $profile->addPlugin($plugin, $priority);
         }
     }
+    
+    
+    
+    public function getQueue()
+    {
+        static $queue;
+        
+        if (!$queue) {
+            $queue = new \Xi\Filelib\Queue\SQSQueue("AKIAJW3R7LUAT4CEJNGQ", "xheSBW6f0GYXCgQXn/OykH6FnbEOXIQK5vZmvkWi");
+        }
+        
+        return $queue;
+    }
+    
 
 }
