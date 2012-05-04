@@ -218,54 +218,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function upload($upload, Folder $folder, $profile = 'default')
     {
-        if (!$upload instanceof FileUpload) {
-            $upload = $this->prepareUpload($upload);
-        }
-
-        if (!$this->getAcl()->isFolderWritable($folder)) {
-            throw new FilelibException("Folder '{$folder->getId()}'not writable");
-        }
-
-        $profileObj = $this->getProfile($profile);
-
-        $event = new FileUploadEvent($upload, $folder, $profileObj);
-        $this->getEventDispatcher()->dispatch('file.beforeUpload', $event);
-        
-        $upload = $event->getFileUpload();
-        
-        
-        
-        
-        $file = $this->getInstance(array(
-            'folder_id' => $folder->getId(),
-            'mimetype' => $upload->getMimeType(),
-            'size' => $upload->getSize(),
-            'name' => $upload->getUploadFilename(),
-            'profile' => $profile,
-            'date_uploaded' => $upload->getDateUploaded(),
-        ));
-
-        // @todo: actual statuses
-        $file->setStatus(File::STATUS_RAW);
+        $command = new \Xi\Filelib\File\Command\UploadFileCommand($this, $upload, $folder, $profile);
                 
-        $this->getBackend()->upload($file, $folder);
-        
-        $this->getStorage()->store($file, $upload->getRealPath());
-        
-        $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.afterUpload', $event);
-
-        // @todo: actual statuses
-        $file->setStatus(File::STATUS_UPLOADED);
-        $file->setLink($profileObj->getLinker()->getLink($file, true));
-        $this->getBackend()->updateFile($file);
-               
-        // @todo: I think autopublish must be an option or go away...
-        if ($this->getAcl()->isFileReadableByAnonymous($file)) {
-            $this->publish($file);
-        }
-
-        return $file;
+        $afterUploadCommand = $command->execute();
+        return $afterUploadCommand->execute();
     }
 
     /**
@@ -275,6 +231,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function delete(File $file)
     {
+               
         $this->unpublish($file);
         $this->getBackend()->deleteFile($file);
         $this->getStorage()->delete($file);
