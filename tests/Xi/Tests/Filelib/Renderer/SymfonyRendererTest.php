@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Renderer;
+namespace Xi\Tests\Filelib\Renderer;
 
 use Xi\Filelib\Renderer\SymfonyRenderer;
 use Xi\Filelib\File\FileItem;
