@@ -10,7 +10,7 @@ class PeclAMQPQueueTest extends \Xi\Tests\Filelib\Queue\TestCase
     public function setUp()
     {
         if (!class_exists("\AMQPConnection")) {
-            $this->markTestAsSkipped("AMQP PECL extension required");
+            $this->markTestSkipped("AMQP PECL extension required");
         }
         
         if (!RABBITMQ_HOST) {
