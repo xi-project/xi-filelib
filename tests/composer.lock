@@ -1,5 +1,5 @@
 {
-    "hash": "22c0951a1de1b1f6217f086e4be4b4d9",
+    "hash": "5354a90eb8a1d65f1d0cec56fc8b13f9",
     "packages": [
         {
             "package": "doctrine/common",
@@ -12,11 +12,6 @@
         {
             "package": "doctrine/orm",
             "version": "2.2.1"
-        },
-        {
-            "package": "ecolinet/zf2",
-            "version": "dev-master",
-            "source-reference": "2483733caccbaf2534aa0076aa53e1a382b1ef1a"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -33,7 +28,18 @@
         {
             "package": "symfony/security",
             "version": "v2.0.10"
+        },
+        {
+            "package": "videlalvaro/php-amqplib",
+            "version": "dev-master",
+            "source-reference": "b74879109f8f79aed336b95e723e41674bafdebc"
+        },
+        {
+            "package": "zendframework/zendframework",
+            "version": "dev-master",
+            "source-reference": "350de78abd52643791f45b9ceebba4a288ec7161"
         }
     ],
+    "packages-dev": null,
     "aliases": []
 }

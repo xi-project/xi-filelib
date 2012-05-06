@@ -15,6 +15,7 @@
         "symfony/event-dispatcher": "=2.0.10",
         "symfony/http-kernel": "=2.0.10",
         "symfony/security": "=2.0.10",
-	"ecolinet/zf2": ">=dev-master"
+	"zendframework/zendframework": ">=2.0.x-dev",
+	"videlalvaro/php-amqplib": ">=dev-master"
     }
 }
