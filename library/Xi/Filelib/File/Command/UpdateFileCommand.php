@@ -11,7 +11,7 @@ use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FilelibException;
 use Serializable;
 
-class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
+class UpdateFileCommand extends AbstractFileCommand implements Serializable
 {
 
     /**
@@ -31,27 +31,24 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
     
     public function execute()
     {
-        $file = $this->file;
-        
-        $profileObj = $this->fileOperator->getProfile($file->getProfile());
-        
-        $event = new FileEvent($file);
-        $this->fileOperator->getEventDispatcher()->dispatch('file.afterUpload', $event);
+        $command = new UnpublishFileCommand($this->fileOperator, $this->file);
+        $command->execute();
+                
+        $linker = $this->fileOperator->getProfile($this->file->getProfile())->getLinker();
 
-        // @todo: actual statuses
-        $file->setStatus(File::STATUS_UPLOADED);
-        $file->setLink($profileObj->getLinker()->getLink($file, true));
-        $this->fileOperator->getBackend()->updateFile($file);
-               
-        if ($this->fileOperator->getAcl()->isFileReadableByAnonymous($file)) {
+        $this->file->setLink($linker->getLink($this->file, true));
+
+        $this->fileOperator->getBackend()->updateFile($this->file);
+
+        if ($this->fileOperator->getAcl()->isFileReadableByAnonymous($this->file)) {
+            
             $command = new PublishFileCommand($this->fileOperator, $this->file);
             $command->execute();
+                        
         }
-        
 
-        return $file;
-        
-        
+        return $this->file;
+
     }
     
     

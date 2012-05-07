@@ -18,6 +18,12 @@ use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Queue\Queue;
 
+use Xi\Filelib\File\Command\UploadFileCommand;
+use Xi\Filelib\File\Command\UpdateFileCommand;
+use Xi\Filelib\File\Command\DeleteFileCommand;
+use Xi\Filelib\File\Command\PublishFileCommand;
+use Xi\Filelib\File\Command\UnpublishFileCommand;
+
 /**
  * File operator
  * 
@@ -27,6 +33,26 @@ use Xi\Filelib\Queue\Queue;
 class DefaultFileOperator extends AbstractOperator implements FileOperator
 {
 
+    const STRATEGY_SYNCHRONOUS = 'sync';
+    const STRATEGY_ASYNCHRONOUS = 'async';
+
+    const COMMAND_UPLOAD = 'download';
+    const COMMAND_AFTERUPLOAD = 'after_upload';
+    const COMMAND_UPDATE = 'update';
+    const COMMAND_DELETE = 'delete';
+    const COMMAND_PUBLISH = 'publish';
+    const COMMAND_UNPUBLISH = 'publish';
+
+    private $commandStrategies = array(
+        self::COMMAND_UPLOAD => self::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_AFTERUPLOAD => self::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UPDATE => self::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_DELETE => self::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_PUBLISH => self::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UNPUBLISH => self::STRATEGY_SYNCHRONOUS,
+    );
+        
+    
     /**
      * @var array Profiles
      */
@@ -36,7 +62,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      * @var string Fileitem class
      */
     private $className = 'Xi\Filelib\File\FileItem';
-
+    
     /**
      * Sets fileitem class
      *
@@ -133,19 +159,8 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function update(File $file)
     {
-        $this->unpublish($file);
-
-        $linker = $this->getProfile($file->getProfile())->getLinker();
-
-        $file->setLink($linker->getLink($file, true));
-
-        $this->getBackend()->updateFile($file);
-
-        if ($this->getAcl()->isFileReadableByAnonymous($file)) {
-            $this->publish($file);
-        }
-
-        return $this;
+        $command = new UpdateFileCommand($this, $file);
+        return $command->execute();
     }
 
     /**
@@ -219,16 +234,19 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function upload($upload, Folder $folder, $profile = 'default')
     {
-        $command = new \Xi\Filelib\File\Command\UploadFileCommand($this, $upload, $folder, $profile);
-        
-        $queue = $this->getQueue();
-        
-        $queue->enqueue($command);
-        
-        return null;
-        
-        
+        $command = $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile));
+                        
+        if ($this->getCommandStrategy(self::COMMAND_UPLOAD) == self::STRATEGY_ASYNCHRONOUS) {
+            $this->getQueue()->enqueue($command);
+            return;
+        }
+             
         $afterUploadCommand = $command->execute();
+        if ($this->getCommandStrategy(self::COMMAND_AFTERUPLOAD) == self::STRATEGY_ASYNCHRONOUS) {
+            $this->getQueue()->enqueue($afterUploadCommand);
+            return;
+        }
+        
         return $afterUploadCommand->execute();
     }
 
@@ -239,15 +257,8 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function delete(File $file)
     {
-               
-        $this->unpublish($file);
-        $this->getBackend()->deleteFile($file);
-        $this->getStorage()->delete($file);
-
-        $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.delete', $event);
-
-        return true;
+        $command = new DeleteFileCommand($this, $file);       
+        return $command->execute();
     }
 
     /**
@@ -291,23 +302,15 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     public function publish(File $file)
     {
-        $profile = $this->getProfile($file->getProfile());
-        if ($profile->getPublishOriginal()) {
-            $this->getPublisher()->publish($file);
-        }
-
-        $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.publish', $event);
+        $command = new PublishFileCommand($this, $file);       
+        return $command->execute();
         
     }
 
     public function unpublish(File $file)
     {
-        $this->getPublisher()->unpublish($file);
-
-        $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.unpublish', $event);
-
+        $command = new UnpublishFileCommand($this, $file);       
+        return $command->execute();
     }
 
     public function addPlugin(Plugin $plugin, $priority = 0)
@@ -317,6 +320,47 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $profile->addPlugin($plugin, $priority);
         }
     }
+    
+    
+    private function assertCommandExists($command)
+    {
+        if (!isset($this->commandStrategies[$command])) {
+            throw new \InvalidArgumentException("Command '{$command}' is not supported");
+        } 
+    }
+    
+    
+    private function assertStrategyExists($strategy)
+    {
+        if (!in_array($strategy, array(self::STRATEGY_ASYNCHRONOUS, self::STRATEGY_SYNCHRONOUS))) {
+            throw new \InvalidArgumentException("Invalid command strategy '{$strategy}'");
+        }
+    }
+    
+    
+    
+    public function getCommandStrategy($command)
+    {
+        $this->assertCommandExists($command);
+        return $this->commandStrategies[$command];
+    }
+    
+    
+    public function setCommandStrategy($command, $strategy)
+    {
+        $this->assertCommandExists($command);
+        $this->assertStrategyExists($strategy);
+        $this->commandStrategies[$command] = $strategy;
+        return $this;
+    }
+    
+    
+    public function createCommand($commandClass, array $args = array())
+    {
+        $reflClass = new \ReflectionClass($commandClass);
+        return $reflClass->newInstanceArgs($args);
+    }
+    
     
 
 }

@@ -7,6 +7,7 @@ use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileItem;
 use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\File\Upload\FileUpload;
 
 class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -17,6 +18,209 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     {
         $this->assertTrue(class_exists('Xi\Filelib\File\DefaultFileOperator'));
     }
+    
+    
+    /**
+     * @test
+     */
+    public function strategiesShouldDefaultToSynchronous()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = new DefaultFileOperator($filelib);
+        
+        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_AFTERUPLOAD));
+        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPDATE));
+        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_DELETE));
+        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_PUBLISH));
+        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UNPUBLISH));
+        
+    }
+    
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     */
+    public function gettingInvalidCommandShouldThrowException()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = new DefaultFileOperator($filelib);
+
+        $op->getCommandStrategy('lussenhof');
+        
+    }
+    
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     */
+    public function settingInvalidCommandShouldThrowException()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = new DefaultFileOperator($filelib);
+
+        $op->setCommandStrategy('lussenhof', DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
+        
+    }
+    
+    
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     */
+    public function settingInvalidstrategyShouldThrowException()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = new DefaultFileOperator($filelib);
+
+        $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD, 'tussenhof');
+        
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function settingAndGettingCommandStrategiesShouldWork()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = new DefaultFileOperator($filelib);
+        
+        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
+        
+        $this->assertSame($op, $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD, DefaultFileOperator::STRATEGY_ASYNCHRONOUS));
+        
+        $this->assertEquals(DefaultFileOperator::STRATEGY_ASYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
+        
+    }
+    
+    
+    /**
+     * @test
+     */
+    public function uploadShouldExecuteCommandsWhenSynchronousStrategyIsUsed()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        
+        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
+        $profile = 'versioned';
+        
+        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+                   ->setMethods(array('createCommand', 'getQueue'))
+                   ->setConstructorArgs(array($filelib))
+                   ->getMock();
+        
+        $op->expects($this->never())->method('getQueue');
+        
+        $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
+                               ->setConstructorArgs(array($op, $upload, $folder, $profile))
+                               ->setMethods(array('execute'))
+                               ->getMock();
+        
+        $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
+                               ->disableOriginalConstructor()
+                               ->setMethods(array('execute'))
+                               ->getMock();
+        
+        // $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')->disableOriginalConstructor()->getMock();
+        
+        $uploadCommand->expects($this->once())->method('execute')->will($this->returnValue($afterUploadCommand));
+        $afterUploadCommand->expects($this->once())->method('execute')->will($this->returnValue('luss'));
+        
+        $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
+        // $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))->will($this->returnValue($afterUploadCommand));
+                       
+        
+        $op->upload($upload, $folder, $profile);
+                
+    }
+
+    
+        /**
+     * @test
+     */
+    public function uploadShouldExecuteUploadAndQueueAfterUploadWhenSynchronousAndAsynchronousStrategiesAreUsed()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        
+        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
+        $profile = 'versioned';
+        
+        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+                   ->setMethods(array('createCommand', 'getQueue'))
+                   ->setConstructorArgs(array($filelib))
+                   ->getMock();
+        
+        $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
+        $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand'));
+        
+        $op->expects($this->atLeastOnce())->method('getQueue')->will($this->returnValue($queue));
+        
+        $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
+                               ->setConstructorArgs(array($op, $upload, $folder, $profile))
+                               ->setMethods(array('execute'))
+                               ->getMock();
+        
+        $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
+                               ->disableOriginalConstructor()
+                               ->setMethods(array('execute'))
+                               ->getMock();
+        
+        // $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')->disableOriginalConstructor()->getMock();
+        
+        $uploadCommand->expects($this->once())->method('execute')->will($this->returnValue($afterUploadCommand));
+        $afterUploadCommand->expects($this->never())->method('execute');
+        
+        $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
+        // $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))->will($this->returnValue($afterUploadCommand));
+        
+        $op->setCommandStrategy(DefaultFileOperator::COMMAND_AFTERUPLOAD, DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
+        $op->upload($upload, $folder, $profile);
+                
+    }
+
+    
+    
+    
+    /**
+     * @test
+     */
+    public function uploadShouldQueueUploadCommandWhenAynchronousStrategyIsUsed()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        
+        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
+        $profile = 'versioned';
+        
+        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+                   ->setMethods(array('createCommand', 'getQueue'))
+                   ->setConstructorArgs(array($filelib))
+                   ->getMock();
+        
+        $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
+        $op->expects($this->atLeastOnce())->method('getQueue')->will($this->returnValue($queue));
+        
+        $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
+                               ->setConstructorArgs(array($op, $upload, $folder, $profile))
+                               ->setMethods(array('execute'))
+                               ->getMock();
+
+        $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\File\Command\UploadFileCommand'));
+        
+        $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
+        
+        $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD, DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
+        
+        $op->upload($upload, $folder, $profile);
+                
+    }
+    
+
+    
+    
     
     
     /**
@@ -163,105 +367,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
        $prof = $op->getProfile('xooxer');
     }
     
-    /**
-     * @test
-     */
-    public function updateShouldDelegateCorrectlyWhenFileCanNotBePublished()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl'))
-                   ->getMock();
-        
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        
-        $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
-        
-        
-        $linker = $this->getMock('Xi\Filelib\Linker\Linker');
-        $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
-        
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
-
-        $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')
-                     ->setMethods(array('setLink'))
-                     ->getMock();
-        
-        $file->setProfile('lussenhofer');
-        
-        $file->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
-
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('updateFile')->with($this->equalTo($file));
-
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-        
-        $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
-        $op->expects($this->never())->method('publish');
-        
-        $acl->expects($this->atLeastOnce())->method('isFileReadableByAnonymous')
-            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-            ->will($this->returnValue(false));
-        
-        
-        $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussenhofer'))->will($this->returnValue($profile));
-
-               
-        $op2 = $op->update($file);
-        
-        $this->assertSame($op, $op2);
-        
-    }
-    
-    /**
-     * @test
-     */
-    public function updateShouldDelegateCorrectlyWhenFileCanBePublished()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl'))
-                   ->getMock();
-        
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        
-        $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
-        
-        $linker = $this->getMock('Xi\Filelib\Linker\Linker');
-        $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
-        
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->atLeastOnce())->method('getLinker')->will($this->returnValue($linker));
-
-        $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')
-                     ->setMethods(array('setLink'))
-                     ->getMock();
-        
-        $file->setProfile('lussenhofer');
-        
-        $file->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
-        
-                
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('updateFile')->with($this->equalTo($file));
-
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-        
-        $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
-        $op->expects($this->once())->method('publish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
-        $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussenhofer'))->will($this->returnValue($profile));
-        
-        $acl->expects($this->atLeastOnce())->method('isFileReadableByAnonymous')
-            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-            ->will($this->returnValue(true));
-
-               
-        $op->update($file);
-        
-    }
     
     
     /**
@@ -451,44 +556,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     }
     
     
-    /**
-     * @test
-     */
-    public function deleteShouldDelegateCorrectly()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        
-        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-        
-        $dispatcher->expects($this->once())->method('dispatch')
-                   ->with($this->equalTo('file.delete'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
-        
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'getProfile'))
-                   ->getMock();
-                
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        
-        $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
-
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('deleteFile')->with($this->equalTo($file));
-
-        $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('delete')->with($this->equalTo($file));
-        
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
-        
-        $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
-        
-        $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussen'))->will($this->returnValue($profile));
-                               
-        $op->delete($file);
-        
-    }
     
     
     public function provideMimetypes()
@@ -562,107 +629,8 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
     
     
-    /**
-     * @test
-     */
-    public function publishShouldDelegateCorrectlyWhenProfileAllowsPublicationOfOriginalFile()
-    {
-        $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
-        
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-        
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'getProfile'))
-                   ->getMock();
-        
-        $dispatcher->expects($this->once())->method('dispatch')
-                   ->with($this->equalTo('file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
-                
-                
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->atLeastOnce())->method('getPublishOriginal')->will($this->returnValue(true));
-        
-        $profile->expects($this->never())->method('getPlugins');
-
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $publisher->expects($this->once())->method('publish')->with($this->equalTo($file));
-        
-        $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-        
-        $op->expects($this->atLeastOnce())->method('getProfile')->with($this->equalTo('lussen'))->will($this->returnValue($profile));
-        
-        $op->publish($file);
-        
-    }
-
-    
-    /**
-     * @test
-     */
-    public function publishShouldDelegateCorrectlyWhenProfileDisallowsPublicationOfOriginalFile()
-    {
-        $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
-        
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-        
-        $dispatcher->expects($this->once())->method('dispatch')
-                   ->with($this->equalTo('file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
-        
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'getProfile'))
-                   ->getMock();
-                
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->atLeastOnce())->method('getPublishOriginal')->will($this->returnValue(false));
-
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $publisher->expects($this->never())->method('publish');
-        
-        $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-        
-        $op->expects($this->atLeastOnce())->method('getProfile')->with($this->equalTo('lussen'))->will($this->returnValue($profile));
-        
-        $op->publish($file);
-        
-    }
-
     
     
-    /**
-     * @test
-     */
-    public function unpublishShouldDelegateCorrectly()
-    {
-        $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
-        
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-        
-        $dispatcher->expects($this->once())->method('dispatch')
-                   ->with($this->equalTo('file.unpublish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
-        
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('publish', 'getProfile', 'getPublisher'))
-                   ->getMock();
-                
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $publisher->expects($this->once())->method('unpublish');
-        
-        $op->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-        
-        $op->unpublish($file);
-        
-    }
     
     /**
      * @test
