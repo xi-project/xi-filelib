@@ -100,6 +100,24 @@ class AbstractOperatorTest extends TestCase
                 
         $operator->getEventDispatcher();
     }
+
+    
+    /**
+     * @test
+     */
+    public function getQueueShouldDelegateToFilelib()
+    {
+        $filelib = $this->getMockedFilelib();
+        $filelib->expects($this->once())->method('getQueue');
+        
+        $operator = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+                         ->setMethods(array())
+                         ->setConstructorArgs(array($filelib))
+                         ->getMockForAbstractClass();
+                
+        $operator->getQueue();
+    }
+
     
     
     /**
@@ -117,6 +135,9 @@ class AbstractOperatorTest extends TestCase
         $this->assertSame($filelib, $operator->getFilelib());
         
     }
+    
+    
+    
 
     /**
      * @test

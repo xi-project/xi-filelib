@@ -12,7 +12,9 @@ use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\Queue\Queue;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 
 /**
  *
@@ -173,6 +175,11 @@ interface FileOperator
      * @return EventDispatcherInterface
      */
     public function getEventDispatcher();
+    
+    /**
+     * @return Queue
+     */
+    public function getQueue();
     
     
 }

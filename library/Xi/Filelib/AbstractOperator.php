@@ -95,6 +95,18 @@ abstract class AbstractOperator
         return $this->getFilelib()->getEventDispatcher();
     }
     
+    /**
+     * Returns queue
+     * 
+     * @return Queue
+     */
+    public function getQueue()
+    {
+        return $this->getFilelib()->getQueue();
+    }
+    
+    
+    
      /**
      * Transforms raw array to folder item
      * @param array $data
