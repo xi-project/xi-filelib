@@ -14,6 +14,11 @@
             "version": "2.2.1"
         },
         {
+            "package": "ecolinet/zf2",
+            "version": "dev-master",
+            "source-reference": "2483733caccbaf2534aa0076aa53e1a382b1ef1a"
+        },
+        {
             "package": "symfony/event-dispatcher",
             "version": "v2.0.10"
         },
@@ -41,5 +46,7 @@
         }
     ],
     "packages-dev": null,
-    "aliases": []
+    "aliases": [
+
+    ]
 }
