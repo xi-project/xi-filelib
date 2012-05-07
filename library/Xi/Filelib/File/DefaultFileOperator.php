@@ -159,7 +159,13 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function update(File $file)
     {
-        $command = new UpdateFileCommand($this, $file);
+        $command = $this->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array($this, $file));
+        
+        if ($this->getCommandStrategy(DefaultFileOperator::COMMAND_UPDATE) == DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
+            $this->getQueue()->enqueue($command);
+            return;
+        }
+        
         return $command->execute();
     }
 
@@ -257,7 +263,13 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function delete(File $file)
     {
-        $command = new DeleteFileCommand($this, $file);       
+        $command = $this->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array($this, $file));
+        
+        if ($this->getCommandStrategy(DefaultFileOperator::COMMAND_DELETE) == DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
+            $this->getQueue()->enqueue($command);
+            return;
+        }
+        
         return $command->execute();
     }
 
@@ -302,14 +314,26 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     public function publish(File $file)
     {
-        $command = new PublishFileCommand($this, $file);       
+        $command = $this->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this, $file));
+        
+        if ($this->getCommandStrategy(DefaultFileOperator::COMMAND_PUBLISH) == DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
+            $this->getQueue()->enqueue($command);
+            return;
+        }
+        
         return $command->execute();
         
     }
 
     public function unpublish(File $file)
     {
-        $command = new UnpublishFileCommand($this, $file);       
+        $command = $this->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this, $file));
+        
+        if ($this->getCommandStrategy(DefaultFileOperator::COMMAND_UNPUBLISH) == DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
+            $this->getQueue()->enqueue($command);
+            return;
+        }
+        
         return $command->execute();
     }
 
