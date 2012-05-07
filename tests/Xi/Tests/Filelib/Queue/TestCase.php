@@ -43,6 +43,7 @@ class TestCase extends \Xi\Tests\TestCase
         $message = $queue->dequeue();
         
         $this->assertEquals($this->message, $message);
+        return $queue;
     }
     
     /**
@@ -52,6 +53,26 @@ class TestCase extends \Xi\Tests\TestCase
     {
         $message = $this->queue->dequeue();
         $this->assertNull($message);
+    }
+    
+    
+    /**
+     * @test
+     * @depends dequeueShouldDequeueMessage
+     */
+    public function purgeShouldResultInAnEmptyQueue($queue)
+    {
+        for ($x = 10; $x <= 10; $x++) {
+            $queue->enqueue("Pitikö olla hoppu, nyt se on leikin loppu");
+        }
+        
+        $this->assertNotNull($queue->dequeue());
+        
+        $queue->purge();
+        
+        $this->assertNull($queue->dequeue());
+        
+        
     }
     
     

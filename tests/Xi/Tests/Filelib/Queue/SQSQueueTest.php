@@ -13,7 +13,7 @@ class SQSQueueTest extends \Xi\Tests\Filelib\Queue\TestCase
             $this->markTestSkipped('S3 not configured');
         }
         
-        $this->queue = new SQSQueue(S3_KEY, S3_SECRETKEY);
+        $this->queue = new SQSQueue(S3_KEY, S3_SECRETKEY, 'eu-west-1');
      
         parent::setUp();
     }

@@ -15,13 +15,16 @@ class SQSQueue implements Queue
     
     private $queueUrl;
     
-    public function __construct($key, $secretKey)
+    private $queueName;
+    
+    public function __construct($key, $secretKey, $endPoint, $queueName = 'filelib')
     {
-        $this->sqs = new Zend_Service_Amazon_Sqs($key, $secretKey);
-        $this->queueUrl = $this->sqs->create('test');
+        $this->queueName = $queueName;
+        $this->sqs = new Zend_Service_Amazon_Sqs($key, $secretKey, $endPoint);
+        $this->queueUrl = $this->sqs->create($this->queueName);
     }
     
-    
+            
     
     public function enqueue($object)
     {
@@ -33,18 +36,23 @@ class SQSQueue implements Queue
     public function dequeue()
     {
         $msg = $this->sqs->receive($this->queueUrl, 1);
-        
-        $msg = array_shift($msg);
-        
-        if ($msg) {
-            $this->sqs->deleteMessage($this->queueUrl, $msg['handle']) ;
+
+        if (!$msg) {
+            return null;
         }
-        
-        return $msg;
+
+        $msg = array_shift($msg);
+        $this->sqs->deleteMessage($this->queueUrl, $msg['handle']) ;
+        return unserialize($msg['body']);
                 
     }
     
     
+    public function purge()
+    {
+        $this->sqs->delete($this->queueUrl);
+        $this->queueUrl = $this->sqs->create($this->queueName);
+    }
     
     
     

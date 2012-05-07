@@ -79,6 +79,13 @@ class PeclAMQPQueue implements Queue
         
     }
     
+    
+    public function purge()
+    {
+        return $this->queue->purge();
+    }
+    
+    
     public function __destruct()
     {
         
