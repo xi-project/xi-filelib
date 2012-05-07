@@ -1,5 +1,5 @@
 {
-    "hash": "22c0951a1de1b1f6217f086e4be4b4d9",
+    "hash": "2c790b4cbf8e54b86057a553044c3222",
     "packages": [
         {
             "package": "doctrine/common",
@@ -33,7 +33,20 @@
         {
             "package": "symfony/security",
             "version": "v2.0.10"
+        },
+        {
+            "package": "videlalvaro/php-amqplib",
+            "version": "dev-master",
+            "source-reference": "b74879109f8f79aed336b95e723e41674bafdebc"
+        },
+        {
+            "package": "zendframework/zendframework",
+            "version": "dev-master",
+            "source-reference": "350de78abd52643791f45b9ceebba4a288ec7161"
         }
     ],
-    "aliases": []
+    "packages-dev": null,
+    "aliases": [
+
+    ]
 }
