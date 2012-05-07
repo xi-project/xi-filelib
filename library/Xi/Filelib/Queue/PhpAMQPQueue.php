@@ -6,7 +6,7 @@ use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Channel\AMQPMChannel;
 
-class RabbitMQQueue implements Queue
+class PhpAMQPQueue implements Queue
 {
     /**
      *
@@ -82,6 +82,10 @@ class RabbitMQQueue implements Queue
     }
     
     
+    public function purge()
+    {
+        return $this->channel->queue_purge($this->queue);
+    }
     
     
     
