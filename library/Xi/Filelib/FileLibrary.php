@@ -16,6 +16,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use InvalidArgumentException;
 use Xi\Filelib\Event\PluginEvent;
+use Xi\Filelib\Queue\Queue;
 
 /**
  * Xi filelib
@@ -67,6 +68,13 @@ class FileLibrary
      * @var string
      */
     private $tempDir;
+    
+    /**
+     *
+     * @var Queue
+     */
+    private $queue;
+    
 
     
     /**
@@ -74,6 +82,8 @@ class FileLibrary
      */
     public function getEventDispatcher()
     {
+                
+        
         if (!$this->eventDispatcher) {
             $this->eventDispatcher = new EventDispatcher();
         }
@@ -359,5 +369,27 @@ class FileLibrary
         $plugin->init();
         return $this;
     }
+    
+    /**
+     * Sets queue
+     * 
+     * @param Queue $queue 
+     */
+    public function setQueue(Queue $queue)
+    {
+        $this->queue = $queue;
+        return $this;
+    }
+    
+    /**
+     * Returns queue
+     * 
+     * @return Queue
+     */
+    public function getQueue()
+    {
+        return $this->queue;
+    }
+    
 
 }
