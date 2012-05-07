@@ -16,6 +16,7 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Queue\Queue;
 
 /**
  * File operator
@@ -315,19 +316,6 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $profile = $this->getProfile($profileIdentifier);
             $profile->addPlugin($plugin, $priority);
         }
-    }
-    
-    
-    
-    public function getQueue()
-    {
-        static $queue;
-        
-        if (!$queue) {
-            $queue = new \Xi\Filelib\Queue\SQSQueue("AKIAJW3R7LUAT4CEJNGQ", "xheSBW6f0GYXCgQXn/OykH6FnbEOXIQK5vZmvkWi");
-        }
-        
-        return $queue;
     }
     
 
