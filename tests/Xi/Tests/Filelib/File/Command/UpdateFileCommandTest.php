@@ -59,9 +59,17 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl'))
+                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl', 'createCommand'))
                    ->getMock();
-        
+
+       $unpublishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UnpublishFileCommand')
+                                ->disableOriginalConstructor()
+                                ->getMock();
+       $unpublishCommand->expects($this->once())->method('execute');
+    
+       $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UnpublishFileCommand'))
+          ->will($this->returnValue($unpublishCommand));
+                
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
@@ -118,10 +126,25 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl'))
+                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl', 'createCommand'))
                    ->getMock();
         
-        
+       $unpublishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UnpublishFileCommand')
+                                ->disableOriginalConstructor()
+                                ->getMock();
+       $unpublishCommand->expects($this->once())->method('execute');
+
+       $publishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\PublishFileCommand')
+                                ->disableOriginalConstructor()
+                                ->getMock();
+       $publishCommand->expects($this->once())->method('execute');
+
+       $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UnpublishFileCommand'))
+          ->will($this->returnValue($unpublishCommand));
+       
+       $op->expects($this->at(3))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\PublishFileCommand'))
+          ->will($this->returnValue($publishCommand));
+
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
         

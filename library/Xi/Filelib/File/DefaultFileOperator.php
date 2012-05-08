@@ -371,18 +371,13 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     public function executeOrQueue(FileCommand $commandObj, $commandName, array $callbacks = array())
     {
         $strategy = $this->getCommandStrategy($commandName);
-        
-        if ($strategy === DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
-        
-            $queue = $this->getQueue();
-            $ret = $queue->enqueue($commandObj);            
-            if (isset($callbacks[$strategy])) {
-                return $callbacks[$strategy]($this, $ret);
-            }
-            return $ret;
-        }
-
-        $ret = $commandObj->execute();
+        $ret = ($strategy === DefaultFileOperator::STRATEGY_ASYNCHRONOUS) ? $this->getQueue()->enqueue($commandObj) : $commandObj->execute();
+        return $this->executeOrQueueHandleCallbacks($strategy, $callbacks, $ret);
+    }
+    
+    
+    private function executeOrQueueHandleCallbacks($strategy, $callbacks, $ret)
+    {
         if (isset($callbacks[$strategy])) {
             return $callbacks[$strategy]($this, $ret);
         }

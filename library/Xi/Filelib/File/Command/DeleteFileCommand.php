@@ -33,7 +33,7 @@ class DeleteFileCommand extends AbstractFileCommand implements Serializable
     
     public function execute()
     {
-        $command = new UnpublishFileCommand($this->fileOperator, $this->file);
+        $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this->fileOperator, $this->file));
         $command->execute();
                                         
         $this->fileOperator->getBackend()->deleteFile($this->file);

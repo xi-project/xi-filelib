@@ -31,7 +31,7 @@ class UpdateFileCommand extends AbstractFileCommand implements Serializable
     
     public function execute()
     {
-        $command = new UnpublishFileCommand($this->fileOperator, $this->file);
+        $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this->fileOperator, $this->file));
         $command->execute();
                 
         $linker = $this->fileOperator->getProfile($this->file->getProfile())->getLinker();
@@ -42,9 +42,9 @@ class UpdateFileCommand extends AbstractFileCommand implements Serializable
 
         if ($this->fileOperator->getAcl()->isFileReadableByAnonymous($this->file)) {
             
-            $command = new PublishFileCommand($this->fileOperator, $this->file);
+            $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this->fileOperator, $this->file));
             $command->execute();
-                        
+            
         }
 
         return $this->file;

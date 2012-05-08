@@ -44,7 +44,8 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
         $this->fileOperator->getBackend()->updateFile($file);
                
         if ($this->fileOperator->getAcl()->isFileReadableByAnonymous($file)) {
-            $command = new PublishFileCommand($this->fileOperator, $this->file);
+            
+            $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this->fileOperator, $this->file));
             $command->execute();
         }
         

@@ -7,7 +7,9 @@ use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileItem;
 use Xi\Filelib\Folder\FolderItem;
+
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
+use Xi\Filelib\File\Command\PublishFileCommand;
 
 class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -45,8 +47,19 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance'))
+                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'createCommand'))
                    ->getMock();
+        
+        if ($expectedCallToPublish) {
+            
+            $publishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\PublishFileCommand')
+                                   ->disableOriginalConstructor()
+                                   ->getMock();
+            $publishCommand->expects($this->once())->method('execute');
+            
+            $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\PublishFileCommand'))
+               ->will($this->returnValue($publishCommand));
+        }
         
         $fileitem = $this->getMockForAbstractClass('Xi\Filelib\File\File');
                         
@@ -80,12 +93,6 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
            ->method('getProfile')
            ->with($this->equalTo('versioned'))
            ->will($this->returnValue($profile));
-        
-        if ($expectedCallToPublish) {
-            // $op->expects($this->once())->method('publish')->with($this->isInstanceOf('Xi\Filelib\File\File'));
-        } else {
-            $op->expects($this->never())->method('publish');
-        }
         
         $command = new AfterUploadFileCommand($op, $fileitem);
         $command->execute();

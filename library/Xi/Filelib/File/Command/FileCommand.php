@@ -2,9 +2,9 @@
 
 namespace Xi\Filelib\File\Command;
 
-interface FileCommand
-{
+use Xi\Filelib\Command;
 
-    public function execute();
+interface FileCommand extends Command
+{
     
 }

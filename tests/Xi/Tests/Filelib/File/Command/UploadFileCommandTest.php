@@ -118,8 +118,9 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
            ->will($this->returnValue($profile));
         
         $command = new UploadFileCommand($op, $path, $folder, 'versioned');
-        $command->execute();
+        $ret = $command->execute();
         
+        $this->assertInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand', $ret);
         
     }
 

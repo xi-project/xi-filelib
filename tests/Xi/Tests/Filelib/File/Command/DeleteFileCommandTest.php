@@ -61,13 +61,23 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
         
-        $dispatcher->expects($this->at(1))->method('dispatch')
+        $dispatcher->expects($this->at(0))->method('dispatch')
                    ->with($this->equalTo('file.delete'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
         
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'getProfile'))
+                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'createCommand'))
                    ->getMock();
+        
+       $unpublishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UnpublishFileCommand')
+                                ->disableOriginalConstructor()
+                                ->getMock();
+       $unpublishCommand->expects($this->once())->method('execute');
+            
+       $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UnpublishFileCommand'))
+          ->will($this->returnValue($unpublishCommand));
+
+        
                 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         
@@ -85,9 +95,7 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
         
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
         $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-        
-        // $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
-        
+                       
         $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussen'))->will($this->returnValue($profile));
                              
         

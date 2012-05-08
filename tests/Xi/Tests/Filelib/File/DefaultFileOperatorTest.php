@@ -103,6 +103,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         
         $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $profile = 'versioned';
         
@@ -145,6 +146,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         
         $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $profile = 'versioned';
         
