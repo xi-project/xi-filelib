@@ -15,11 +15,7 @@
         "symfony/event-dispatcher": "=2.0.10",
         "symfony/http-kernel": "=2.0.10",
         "symfony/security": "=2.0.10",
-<<<<<<< HEAD
-	"zendframework/zendframework": ">=dev-master"
-=======
 	"zendframework/zendframework": ">=2.0.x-dev",
 	"videlalvaro/php-amqplib": ">=dev-master"
->>>>>>> 08b1795eb6241c0457311ac356b116911744a410
     }
 }

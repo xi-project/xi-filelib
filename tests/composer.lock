@@ -1,5 +1,5 @@
 {
-    "hash": "2c790b4cbf8e54b86057a553044c3222",
+    "hash": "5354a90eb8a1d65f1d0cec56fc8b13f9",
     "packages": [
         {
             "package": "doctrine/common",
@@ -12,11 +12,6 @@
         {
             "package": "doctrine/orm",
             "version": "2.2.1"
-        },
-        {
-            "package": "ecolinet/zf2",
-            "version": "dev-master",
-            "source-reference": "2483733caccbaf2534aa0076aa53e1a382b1ef1a"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -42,11 +37,9 @@
         {
             "package": "zendframework/zendframework",
             "version": "dev-master",
-            "source-reference": "350de78abd52643791f45b9ceebba4a288ec7161"
+            "source-reference": "d2f080ef1d636154335d35bef88ad568e79548e1"
         }
     ],
     "packages-dev": null,
-    "aliases": [
-
-    ]
+    "aliases": []
 }
