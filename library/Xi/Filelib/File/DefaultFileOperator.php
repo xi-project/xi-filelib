@@ -18,11 +18,14 @@ use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Queue\Queue;
 
+use Xi\Filelib\File\Command\FileCommand;
 use Xi\Filelib\File\Command\UploadFileCommand;
+use Xi\Filelib\File\Command\AfterUploadFileCommand;
 use Xi\Filelib\File\Command\UpdateFileCommand;
 use Xi\Filelib\File\Command\DeleteFileCommand;
 use Xi\Filelib\File\Command\PublishFileCommand;
 use Xi\Filelib\File\Command\UnpublishFileCommand;
+
 
 /**
  * File operator
@@ -159,14 +162,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function update(File $file)
     {
-        $command = $this->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array($this, $file));
-        
-        if ($this->getCommandStrategy(DefaultFileOperator::COMMAND_UPDATE) == DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
-            $this->getQueue()->enqueue($command);
-            return;
-        }
-        
-        return $command->execute();
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array($this, $file)),
+            DefaultFileOperator::COMMAND_UPDATE
+        );
     }
 
     /**
@@ -240,20 +239,15 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function upload($upload, Folder $folder, $profile = 'default')
     {
-        $command = $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile));
-                        
-        if ($this->getCommandStrategy(self::COMMAND_UPLOAD) == self::STRATEGY_ASYNCHRONOUS) {
-            $this->getQueue()->enqueue($command);
-            return;
-        }
-             
-        $afterUploadCommand = $command->execute();
-        if ($this->getCommandStrategy(self::COMMAND_AFTERUPLOAD) == self::STRATEGY_ASYNCHRONOUS) {
-            $this->getQueue()->enqueue($afterUploadCommand);
-            return;
-        }
-        
-        return $afterUploadCommand->execute();
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile)),
+            DefaultFileOperator::COMMAND_UPLOAD,
+            array(
+                DefaultFileOperator::STRATEGY_SYNCHRONOUS => function(DefaultFileOperator $op, AfterUploadFileCommand $command) {
+                    return $op->executeOrQueue($command, DefaultFileOperator::COMMAND_AFTERUPLOAD);
+                }
+            )
+        );
     }
 
     /**
@@ -263,14 +257,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function delete(File $file)
     {
-        $command = $this->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array($this, $file));
-        
-        if ($this->getCommandStrategy(DefaultFileOperator::COMMAND_DELETE) == DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
-            $this->getQueue()->enqueue($command);
-            return;
-        }
-        
-        return $command->execute();
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array($this, $file)),
+            DefaultFileOperator::COMMAND_DELETE
+        );
     }
 
     /**
@@ -314,27 +304,19 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     public function publish(File $file)
     {
-        $command = $this->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this, $file));
-        
-        if ($this->getCommandStrategy(DefaultFileOperator::COMMAND_PUBLISH) == DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
-            $this->getQueue()->enqueue($command);
-            return;
-        }
-        
-        return $command->execute();
-        
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this, $file)),
+            DefaultFileOperator::COMMAND_PUBLISH
+        );
     }
 
     public function unpublish(File $file)
     {
-        $command = $this->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this, $file));
-        
-        if ($this->getCommandStrategy(DefaultFileOperator::COMMAND_UNPUBLISH) == DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
-            $this->getQueue()->enqueue($command);
-            return;
-        }
-        
-        return $command->execute();
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this, $file)),
+            DefaultFileOperator::COMMAND_UNPUBLISH
+        );
+       
     }
 
     public function addPlugin(Plugin $plugin, $priority = 0)
@@ -385,6 +367,27 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         return $reflClass->newInstanceArgs($args);
     }
     
+    
+    public function executeOrQueue(FileCommand $commandObj, $commandName, array $callbacks = array())
+    {
+        $strategy = $this->getCommandStrategy($commandName);
+        
+        if ($strategy === DefaultFileOperator::STRATEGY_ASYNCHRONOUS) {
+        
+            $queue = $this->getQueue();
+            $ret = $queue->enqueue($commandObj);            
+            if (isset($callbacks[$strategy])) {
+                return $callbacks[$strategy]($this, $ret);
+            }
+            return $ret;
+        }
+
+        $ret = $commandObj->execute();
+        if (isset($callbacks[$strategy])) {
+            return $callbacks[$strategy]($this, $ret);
+        }
+        return $ret;
+    }
     
 
 }
