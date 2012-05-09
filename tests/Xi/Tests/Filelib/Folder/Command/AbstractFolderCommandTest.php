@@ -23,7 +23,7 @@ class AbstractFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         
         $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\AbstractFolderCommand')
                         ->setMethods(array('execute'))
-                        ->setConstructorArgs(array($FolderOperator))
+                        ->setConstructorArgs(array($folderOperator))
                         ->getMockForAbstractClass();
         
         $this->assertSame($folderOperator, $command->getFolderOperator());
