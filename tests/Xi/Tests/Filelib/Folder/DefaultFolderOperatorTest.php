@@ -425,7 +425,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                    ->setMethods(array('buildRoute'))
                    ->setConstructorArgs(array($filelib))
                    ->getMock();
-        
+                        
         $folder = FolderItem::create(array('id' => 5, 'parent_id' => 1));
         
         $op->expects($this->once())->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue('route'));
@@ -441,58 +441,6 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals('route', $folder2->getUrl());
     }
     
-    /**
-     * @test
-     */
-    public function deleteShouldDeleteFoldersAndFilesRecursively()
-    {
-        $filelib = new FileLibrary();
-        $op = new DefaultFolderOperator($filelib);
-
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->exactly(4))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
-                    
-                    if($folder->getId() == 1) {
-                        return array(
-                            array('id' => 2, 'parent_id' => 1),
-                            array('id' => 3, 'parent_id' => 1),
-                            array('id' => 4, 'parent_id' => 1),
-                        );
-                    }
-                    return array();
-                 }));
-        $backend->expects($this->exactly(4))->method('findFilesIn')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
-                    
-                    if($folder->getId() == 4) {
-                        return array(
-                            array('id' => 1, 'name' => 'tohtori-vesala.avi'),
-                            array('id' => 2, 'name' => 'tohtori-vesala.png'),
-                            array('id' => 3, 'name' => 'tohtori-vesala.jpg'),
-                            array('id' => 4, 'name' => 'tohtori-vesala.bmp'),
-                        );
-                    }
-                    return array();
-                 }));
-                 
-        $backend->expects($this->exactly(4))->method('deleteFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
-
-        $fiop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                      ->setMethods(array('delete'))
-                      ->setConstructorArgs(array($filelib))
-                      ->getMock();
-        
-        $fiop->expects($this->exactly(4))->method('delete')->with($this->isInstanceOf('Xi\Filelib\File\File'));
-                
-        $filelib->setBackend($backend); 
-        $filelib->setFileOperator($fiop);
-        
-        $folder = FolderItem::create(array('id' => 1));
-        
-        $op->delete($folder);
-        
-    }
     
     /**
      * @test

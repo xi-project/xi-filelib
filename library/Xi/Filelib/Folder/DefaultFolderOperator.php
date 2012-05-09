@@ -23,14 +23,18 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 {
 
     const COMMAND_CREATE = 'create';
+    const COMMAND_DELETE = 'create';
         
     /**
      * @var string Folderitem class
      */
     private $className = 'Xi\Filelib\Folder\FolderItem';
     
+    
+    
     protected $commandStrategies = array(
         self::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
     );
     
 
@@ -116,15 +120,11 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function delete(Folder $folder)
     {
-        foreach ($this->findSubFolders($folder) as $childFolder) {
-            $this->delete($childFolder);
-        }
-
-        foreach ($this->findFiles($folder) as $file) {
-            $this->getFileOperator()->delete($file);
-        }
-
-        $this->getBackend()->deleteFolder($folder);
+        $command = $this->createCommand('Xi\Filelib\Folder\Command\DeleteFolderCommand', array(
+            $this, $this->getFileOperator(), $folder
+        ));
+        return $this->executeOrQueue($command, self::COMMAND_DELETE);
+        
     }
 
     /**
