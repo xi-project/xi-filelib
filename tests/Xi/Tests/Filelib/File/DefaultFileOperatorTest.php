@@ -8,6 +8,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileItem;
 use Xi\Filelib\Folder\FolderItem;
 use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\Command;
 
 class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -28,54 +29,15 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFileOperator($filelib);
         
-        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
-        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_AFTERUPLOAD));
-        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPDATE));
-        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_DELETE));
-        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_PUBLISH));
-        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UNPUBLISH));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_AFTERUPLOAD));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPDATE));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_DELETE));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_PUBLISH));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UNPUBLISH));
         
     }
     
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function gettingInvalidCommandShouldThrowException()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $op = new DefaultFileOperator($filelib);
-
-        $op->getCommandStrategy('lussenhof');
-        
-    }
-    
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function settingInvalidCommandShouldThrowException()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $op = new DefaultFileOperator($filelib);
-
-        $op->setCommandStrategy('lussenhof', DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
-        
-    }
-    
-    
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function settingInvalidstrategyShouldThrowException()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $op = new DefaultFileOperator($filelib);
-
-        $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD, 'tussenhof');
-        
-    }
     
     
     /**
@@ -86,11 +48,11 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFileOperator($filelib);
         
-        $this->assertEquals(DefaultFileOperator::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
         
-        $this->assertSame($op, $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD, DefaultFileOperator::STRATEGY_ASYNCHRONOUS));
+        $this->assertSame($op, $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD, Command::STRATEGY_ASYNCHRONOUS));
         
-        $this->assertEquals(DefaultFileOperator::STRATEGY_ASYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(Command::STRATEGY_ASYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
         
     }
     
@@ -178,7 +140,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
         // $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))->will($this->returnValue($afterUploadCommand));
         
-        $op->setCommandStrategy(DefaultFileOperator::COMMAND_AFTERUPLOAD, DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
+        $op->setCommandStrategy(DefaultFileOperator::COMMAND_AFTERUPLOAD, Command::STRATEGY_ASYNCHRONOUS);
         $op->upload($upload, $folder, $profile);
                 
     }
@@ -214,7 +176,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         
         $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
         
-        $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD, DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
+        $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD, Command::STRATEGY_ASYNCHRONOUS);
         
         $op->upload($upload, $folder, $profile);
                 
@@ -278,7 +240,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
           
           $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))->will($this->returnValue($updateCommand));
 
-          $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPDATE, DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
+          $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPDATE, Command::STRATEGY_ASYNCHRONOUS);
           $op->update($file);
           
     }
@@ -342,7 +304,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
           
           $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\PublishFileCommand'))->will($this->returnValue($command));
 
-          $op->setCommandStrategy(DefaultFileOperator::COMMAND_PUBLISH, DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
+          $op->setCommandStrategy(DefaultFileOperator::COMMAND_PUBLISH, Command::STRATEGY_ASYNCHRONOUS);
           $op->publish($file);
           
     }
@@ -408,7 +370,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
           
           $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UnpublishFileCommand'))->will($this->returnValue($command));
 
-          $op->setCommandStrategy(DefaultFileOperator::COMMAND_UNPUBLISH, DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
+          $op->setCommandStrategy(DefaultFileOperator::COMMAND_UNPUBLISH, Command::STRATEGY_ASYNCHRONOUS);
           $op->unpublish($file);
           
     }
@@ -474,7 +436,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
           
           $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))->will($this->returnValue($command));
 
-          $op->setCommandStrategy(DefaultFileOperator::COMMAND_DELETE, DefaultFileOperator::STRATEGY_ASYNCHRONOUS);
+          $op->setCommandStrategy(DefaultFileOperator::COMMAND_DELETE, Command::STRATEGY_ASYNCHRONOUS);
           $op->delete($file);
           
     }
@@ -931,6 +893,37 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     }
 
     
+        /**
+     * @test
+     * @expectedException InvalidArgumentException
+     */
+    public function settingInvalidstrategyShouldThrowException()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        
+        $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+                         ->setMethods(array())
+                         ->setConstructorArgs(array($filelib))
+                         ->getMockForAbstractClass();        
+
+        $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD, 'tussenhof');
+        
+    }
+
+    /**
+    * @test 
+    */
+    public function getFolderOperatorShouldDelegateToFilelib()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        
+        $filelib->expects($this->once())->method('getFolderOperator');
+
+        $op = new DefaultFileOperator($filelib);
+        
+        $op->getFolderOperator();
+                
+    }
     
     
     

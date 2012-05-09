@@ -5,6 +5,7 @@ namespace Xi\Tests\Filelib\Folder;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\DefaultFolderOperator;
 use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\Command;
 
 class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -16,6 +17,22 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
     {
         $this->assertTrue(class_exists('Xi\Filelib\Folder\DefaultFolderOperator'));
     }
+    
+    
+    /**
+     * @test
+     */
+    public function strategiesShouldDefaultToSynchronous()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = new DefaultFolderOperator($filelib);
+        
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFolderOperator::COMMAND_CREATE));
+        
+    }
+
+    
+    
 
     /**
      * @test
@@ -695,4 +712,22 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals('2012', $folder->getName());
         
     }
+    
+    
+   /**
+    * @test 
+    */
+    public function getFileOperatorShouldDelegateToFilelib()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        
+        $filelib->expects($this->once())->method('getFileOperator');
+
+        $op = new DefaultFolderOperator($filelib);
+        
+        $op->getFileOperator();
+                
+    }
+
+    
 }

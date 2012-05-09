@@ -4,6 +4,7 @@ namespace Xi\Filelib\File;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\AbstractOperator;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\Plugin;
@@ -18,6 +19,7 @@ use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Queue\Queue;
 
+use Xi\Filelib\Command;
 use Xi\Filelib\File\Command\FileCommand;
 use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
@@ -36,9 +38,6 @@ use Xi\Filelib\File\Command\UnpublishFileCommand;
 class DefaultFileOperator extends AbstractOperator implements FileOperator
 {
 
-    const STRATEGY_SYNCHRONOUS = 'sync';
-    const STRATEGY_ASYNCHRONOUS = 'async';
-
     const COMMAND_UPLOAD = 'download';
     const COMMAND_AFTERUPLOAD = 'after_upload';
     const COMMAND_UPDATE = 'update';
@@ -46,13 +45,13 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     const COMMAND_PUBLISH = 'publish';
     const COMMAND_UNPUBLISH = 'publish';
 
-    private $commandStrategies = array(
-        self::COMMAND_UPLOAD => self::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_AFTERUPLOAD => self::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UPDATE => self::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_DELETE => self::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_PUBLISH => self::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UNPUBLISH => self::STRATEGY_SYNCHRONOUS,
+    protected $commandStrategies = array(
+        self::COMMAND_UPLOAD => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_AFTERUPLOAD => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_PUBLISH => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UNPUBLISH => Command::STRATEGY_SYNCHRONOUS,
     );
         
     
@@ -243,7 +242,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile)),
             DefaultFileOperator::COMMAND_UPLOAD,
             array(
-                DefaultFileOperator::STRATEGY_SYNCHRONOUS => function(DefaultFileOperator $op, AfterUploadFileCommand $command) {
+                Command::STRATEGY_SYNCHRONOUS => function(DefaultFileOperator $op, AfterUploadFileCommand $command) {
                     return $op->executeOrQueue($command, DefaultFileOperator::COMMAND_AFTERUPLOAD);
                 }
             )
@@ -327,62 +326,14 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         }
     }
     
-    
-    private function assertCommandExists($command)
-    {
-        if (!isset($this->commandStrategies[$command])) {
-            throw new \InvalidArgumentException("Command '{$command}' is not supported");
-        } 
-    }
-    
-    
-    private function assertStrategyExists($strategy)
-    {
-        if (!in_array($strategy, array(self::STRATEGY_ASYNCHRONOUS, self::STRATEGY_SYNCHRONOUS))) {
-            throw new \InvalidArgumentException("Invalid command strategy '{$strategy}'");
-        }
-    }
-    
-    
-    
-    public function getCommandStrategy($command)
-    {
-        $this->assertCommandExists($command);
-        return $this->commandStrategies[$command];
-    }
-    
-    
-    public function setCommandStrategy($command, $strategy)
-    {
-        $this->assertCommandExists($command);
-        $this->assertStrategyExists($strategy);
-        $this->commandStrategies[$command] = $strategy;
-        return $this;
-    }
-    
-    
-    public function createCommand($commandClass, array $args = array())
-    {
-        $reflClass = new \ReflectionClass($commandClass);
-        return $reflClass->newInstanceArgs($args);
-    }
-    
-    
-    public function executeOrQueue(FileCommand $commandObj, $commandName, array $callbacks = array())
-    {
-        $strategy = $this->getCommandStrategy($commandName);
-        $ret = ($strategy === DefaultFileOperator::STRATEGY_ASYNCHRONOUS) ? $this->getQueue()->enqueue($commandObj) : $commandObj->execute();
-        return $this->executeOrQueueHandleCallbacks($strategy, $callbacks, $ret);
-    }
-    
-    
-    private function executeOrQueueHandleCallbacks($strategy, $callbacks, $ret)
-    {
-        if (isset($callbacks[$strategy])) {
-            return $callbacks[$strategy]($this, $ret);
-        }
-        return $ret;
-    }
-    
 
+    /**
+     *
+     * @return FolderOperator
+     */
+    public function getFolderOperator()
+    {
+        return $this->getFilelib()->getFolderOperator();
+    }
+    
 }

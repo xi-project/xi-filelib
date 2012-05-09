@@ -10,6 +10,7 @@ use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Acl\Acl;
+use Xi\Filelib\Command;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -26,6 +27,14 @@ abstract class AbstractOperator
      * @var FileLibrary
      */
     protected $filelib;
+    
+    /**
+     * Commands and their default strategies
+     * 
+     * @var array
+     */
+    protected $commandStrategies = array();
+    
     
     public function __construct(FileLibrary $filelib)
     {
@@ -106,26 +115,62 @@ abstract class AbstractOperator
     }
     
     
+    private function assertCommandExists($command)
+    {
+        if (!isset($this->commandStrategies[$command])) {
+            throw new \InvalidArgumentException("Command '{$command}' is not supported");
+        } 
+    }
     
-     /**
-     * Transforms raw array to folder item
-     * @param array $data
-     * @return Folder
-     */
-    protected function _folderItemFromArray(array $data)
+    
+    private function assertStrategyExists($strategy)
     {
-        return $this->getFilelib()->getFolderOperator()->getInstance($data);
+        if (!in_array($strategy, array(Command::STRATEGY_ASYNCHRONOUS, Command::STRATEGY_SYNCHRONOUS))) {
+            throw new \InvalidArgumentException("Invalid command strategy '{$strategy}'");
+        }
     }
-        
-    /**
-     * Transforms raw array to file item
-     * @param array $data
-     * @return File
-     */
-    protected function _fileItemFromArray(array $data)
+    
+    
+    
+    public function getCommandStrategy($command)
     {
-        return $this->getFilelib()->getFileOperator()->getInstance($data);
+        $this->assertCommandExists($command);
+        return $this->commandStrategies[$command];
     }
+    
+    
+    public function setCommandStrategy($command, $strategy)
+    {
+        $this->assertCommandExists($command);
+        $this->assertStrategyExists($strategy);
+        $this->commandStrategies[$command] = $strategy;
+        return $this;
+    }
+
+    
+    public function createCommand($commandClass, array $args = array())
+    {
+        $reflClass = new \ReflectionClass($commandClass);
+        return $reflClass->newInstanceArgs($args);
+    }
+    
+    
+    public function executeOrQueue(Command $commandObj, $commandName, array $callbacks = array())
+    {
+        $strategy = $this->getCommandStrategy($commandName);
+        $ret = ($strategy === Command::STRATEGY_ASYNCHRONOUS) ? $this->getQueue()->enqueue($commandObj) : $commandObj->execute();
+        return $this->executeOrQueueHandleCallbacks($strategy, $callbacks, $ret);
+    }
+    
+    
+    private function executeOrQueueHandleCallbacks($strategy, $callbacks, $ret)
+    {
+        if (isset($callbacks[$strategy])) {
+            return $callbacks[$strategy]($this, $ret);
+        }
+        return $ret;
+    }
+
     
     
 

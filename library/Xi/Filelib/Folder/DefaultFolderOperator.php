@@ -7,6 +7,9 @@ use Xi\Filelib\AbstractOperator;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Command;
+use Xi\Filelib\Folder\Command\FolderCommand;
 use ArrayIterator;
 
 /**
@@ -19,10 +22,17 @@ use ArrayIterator;
 class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 {
 
+    const COMMAND_CREATE = 'create';
+        
     /**
      * @var string Folderitem class
      */
-    private $_className = 'Xi\Filelib\Folder\FolderItem';
+    private $className = 'Xi\Filelib\Folder\FolderItem';
+    
+    protected $commandStrategies = array(
+        self::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
+    );
+    
 
     /**
      * Returns directory route for folder
@@ -50,11 +60,11 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      * Sets folderitem class
      *
      * @param string $className Class name
-     * @return \Xi\Filelib\FileLibrary\Folder\FolderOperator
+     * @return FolderOperator
      */
     public function setClass($className)
     {
-        $this->_className = $className;
+        $this->className = $className;
         return $this;
     }
 
@@ -65,7 +75,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function getClass()
     {
-        return $this->_className;
+        return $this->className;
     }
 
     /**
@@ -111,7 +121,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         }
 
         foreach ($this->findFiles($folder) as $file) {
-            $this->getFilelib()->getFileOperator()->delete($file);
+            $this->getFileOperator()->delete($file);
         }
 
         $this->getBackend()->deleteFolder($folder);
@@ -130,7 +140,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         $this->getBackend()->updateFolder($folder);
 
         foreach ($this->findFiles($folder) as $file) {
-            $this->getFilelib()->getFileOperator()->update($file);
+            $this->getFileOperator()->update($file);
         }
 
         foreach ($this->findSubFolders($folder) as $subFolder) {
@@ -151,7 +161,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
             throw new FilelibException('Could not locate root folder', 500);
         }
 
-        $folder = $this->_folderItemFromArray($folder);
+        $folder = $this->getInstance($folder);
 
         return $folder;
     }
@@ -230,7 +240,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      * @param Folder $folder
      * @return ArrayIterator
      */
-    public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
+    public function findSubFolders(Folder $folder)
     {
         $rawFolders = $this->getBackend()->findSubFolders($folder);
 
@@ -273,11 +283,23 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
                 
         $items = array();
         foreach ($ritems as $ritem) {
-            $item = $this->getFilelib()->getFileOperator()->getInstance($ritem);
+            $item = $this->getFileOperator()->getInstance($ritem);
             $items[] = $item;
         }
 
         return new ArrayIterator($items);
     }
+    
+    
+    
+    /**
+     *
+     * @return FileOperator
+     */
+    public function getFileOperator()
+    {
+        return $this->getFilelib()->getFileOperator();
+    }
+
 
 }
