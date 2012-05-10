@@ -8,7 +8,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\Command\AbstractFolderCommand;
 use Serializable;
 
-class DeleteFolderCommand extends AbstractFolderCommand implements Serializable
+class UpdateFolderCommand extends AbstractFolderCommand implements Serializable
 {
  
     /**
@@ -34,21 +34,27 @@ class DeleteFolderCommand extends AbstractFolderCommand implements Serializable
     
     public function execute()
     {
-        foreach ($this->folderOperator->findSubFolders($this->folder) as $childFolder) {
-            $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\DeleteFolderCommand', array(
-                $this->folderOperator, $this->fileOperator, $childFolder
-            ));
-            $command->execute();
-        }
+        $route = $this->folderOperator->buildRoute($this->folder);
+        $this->folder->setUrl($route);
+
+        $this->folderOperator->getBackend()->updateFolder($this->folder);
 
         foreach ($this->folderOperator->findFiles($this->folder) as $file) {
-            $command = $this->folderOperator->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array(
-                $this->fileOperator, $file
+            $command = $this->folderOperator->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array(
+                $this->fileOperator,
+                $file
             ));
             $command->execute();
         }
 
-        $this->folderOperator->getBackend()->deleteFolder($this->folder);
+        foreach ($this->folderOperator->findSubFolders($this->folder) as $subFolder) {
+            $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\UpdateFolderCommand', array(
+                $this->folderOperator,
+                $subFolder
+            ));
+            $command->execute();
+        }
+
     }
     
     
@@ -65,7 +71,11 @@ class DeleteFolderCommand extends AbstractFolderCommand implements Serializable
         return serialize(array(
            'folder' => $this->folder,
         ));
+                
     }
 
+        
+    
+    
     
 }

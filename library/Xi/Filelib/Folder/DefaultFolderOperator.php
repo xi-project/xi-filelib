@@ -23,18 +23,21 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 {
 
     const COMMAND_CREATE = 'create';
-    const COMMAND_DELETE = 'create';
+    const COMMAND_DELETE = 'delete';
+    const COMMAND_UPDATE = 'update';
+    const COMMAND_CREATE_BY_URL = 'create_by_url';
         
     /**
      * @var string Folderitem class
      */
     private $className = 'Xi\Filelib\Folder\FolderItem';
-    
-    
+        
     
     protected $commandStrategies = array(
         self::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_CREATE_BY_URL => Command::STRATEGY_SYNCHRONOUS,
     );
     
 
@@ -104,13 +107,10 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function create(Folder $folder)
     {
-        $route = $this->buildRoute($folder);
-                
-        $folder->setUrl($route);
-
-        $folder = $this->getBackend()->createFolder($folder);
-        
-        return $folder;
+        $command = $this->createCommand('Xi\Filelib\Folder\Command\CreateFolderCommand', array(
+            $this, $folder
+        ));
+        return $this->executeOrQueue($command, self::COMMAND_CREATE);
     }
 
     /**
@@ -134,18 +134,10 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function update(Folder $folder)
     {
-        $route = $this->buildRoute($folder);
-        $folder->setUrl($route);
-
-        $this->getBackend()->updateFolder($folder);
-
-        foreach ($this->findFiles($folder) as $file) {
-            $this->getFileOperator()->update($file);
-        }
-
-        foreach ($this->findSubFolders($folder) as $subFolder) {
-            $this->update($subFolder);
-        }
+        $command = $this->createCommand('Xi\Filelib\Folder\Command\UpdateFolderCommand', array(
+            $this, $this->getFileOperator(), $folder
+        ));
+        return $this->executeOrQueue($command, self::COMMAND_UPDATE);
     }
 
     /**
@@ -197,41 +189,10 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 
     public function createByUrl($url)
     {
-        $folder = $this->findByUrl($url);
-        if ($folder) {
-            return $folder;
-        }
-
-        $rootFolder = $this->findRoot();
-
-        $exploded = explode('/', $url);
-
-        $folderNames = array();
-
-        $created = null;
-        $previous = null;
-
-        $count = 0;
-
-        while (sizeof($exploded) || !$created) {
-
-            $folderNames[] = $folderCurrent = array_shift($exploded);
-
-            $folderName = implode('/', $folderNames);
-
-            $created = $this->findByUrl($folderName);
-
-            if (!$created) {
-                $created = $this->getInstance(array(
-                    'parent_id' => $previous ? $previous->getId() : $rootFolder->getId(),
-                    'name' => $folderCurrent,
-                        ));
-                $this->create($created);
-            }
-            $previous = $created;
-        }
-
-        return $created;
+        $command = $this->createCommand('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', array(
+            $this, $url
+        ));
+        return $this->executeOrQueue($command, self::COMMAND_CREATE_BY_URL);
     }
 
     /**

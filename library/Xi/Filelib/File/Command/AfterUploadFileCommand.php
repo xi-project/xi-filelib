@@ -27,8 +27,6 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
         $this->file = $file;
     }
     
-    
-    
     public function execute()
     {
         $file = $this->file;
@@ -49,10 +47,7 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
             $command->execute();
         }
         
-
         return $file;
-        
-        
     }
     
     
@@ -70,7 +65,5 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
         ));
                 
     }
-    
-    
     
 }

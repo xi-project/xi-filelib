@@ -3,6 +3,7 @@
 namespace Xi\Tests\Filelib;
 
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Command;
 
 class AbstractOperatorTest extends TestCase
 {
@@ -100,7 +101,7 @@ class AbstractOperatorTest extends TestCase
                 
         $operator->getEventDispatcher();
     }
-
+    
     
     /**
      * @test
@@ -117,7 +118,6 @@ class AbstractOperatorTest extends TestCase
                 
         $operator->getQueue();
     }
-
     
     
     /**
@@ -137,63 +137,6 @@ class AbstractOperatorTest extends TestCase
     }
     
     
-    
-
-    /**
-     * @test
-     * @todo NO I DO NOT LIKE TESTING DEM PROTECTED POO METHODS AND WILL RETHINK IT ONCE 100% TESTS ARE ACHIEVED :)
-     */
-    public function fileItemToArrayShouldDelegateToFileOperator()
-    {
-        $filelib = new FileLibrary();
-        
-        $data = array(
-            'luuden' => 'dorf',
-            'lussen' => 'meister',
-        );
-        
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-               
-        $fiop->expects($this->once())->method('getInstance')->with($this->equalTo($data));
-
-        $xoo = $this->getReflectedPublicMethod('_fileItemFromArray');
-        $obj = $this->getMockBuilder('Xi\Filelib\AbstractOperator')->setMethods(array())
-                    ->setConstructorArgs(array($filelib))
-                    ->getMockForAbstractClass();
-        
-        $filelib->setFileOperator($fiop);
-        
-        $xoo->invokeArgs($obj, array($data));
-    }
-
-    
-    /**
-     * @test
-     * @todo NO I DO NOT LIKE TESTING DEM PROTECTED POO METHODS AND WILL RETHINK IT ONCE 100% TESTS ARE ACHIEVED :)
-     */
-    public function folderItemToArrayShouldDelegateToFileOperator()
-    {
-        $filelib = new FileLibrary();
-        
-        $data = array(
-            'luuden' => 'dorf',
-            'lussen' => 'meister',
-        );
-                
-        $foop = $this->getMockForAbstractClass('Xi\Filelib\Folder\FolderOperator');
-        $foop->expects($this->once())->method('getInstance')->with($this->equalTo($data));
-
-        $xoo = $this->getReflectedPublicMethod('_folderItemFromArray');
-        $obj = $this->getMockBuilder('Xi\Filelib\AbstractOperator')->setMethods(array())
-                    ->setConstructorArgs(array($filelib))
-                    ->getMockForAbstractClass();
-        
-        $filelib->setFolderOperator($foop);
-        
-        $xoo->invokeArgs($obj, array($data));
-    }
-
-    
     /**
      * @return FileLibrary
      */
@@ -203,18 +146,39 @@ class AbstractOperatorTest extends TestCase
         return $mock;
     }
     
+    
     /**
-     *
-     * @param string $name Method name
-     * @return \ReflectionMethod
+     * @test
+     * @expectedException InvalidArgumentException
      */
-    private function getReflectedPublicMethod($name)
+    public function gettingInvalidCommandShouldThrowException()
     {
-        $class = new \ReflectionClass('Xi\Filelib\AbstractOperator');
-        $method = $class->getMethod($name);
-        $method->setAccessible(true);
-        return $method;
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+                         ->setMethods(array())
+                         ->setConstructorArgs(array($filelib))
+                         ->getMockForAbstractClass();
+
+        $op->getCommandStrategy('lussenhof');
+        
     }
     
+    
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     */
+    public function settingInvalidCommandShouldThrowException()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        
+        $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+                         ->setMethods(array())
+                         ->setConstructorArgs(array($filelib))
+                         ->getMockForAbstractClass();
+
+        $op->setCommandStrategy('lussenhof', Command::STRATEGY_ASYNCHRONOUS);
+        
+    }
     
 }

@@ -10,9 +10,9 @@ use Xi\Filelib\Folder\FolderItem;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
 
-use Xi\Filelib\Folder\Command\DeleteFolderCommand;
+use Xi\Filelib\Folder\Command\UpdateFolderCommand;
 
-class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
+class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 {
     
     /**
@@ -20,8 +20,8 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\DeleteFolderCommand'));
-        $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\DeleteFolderCommand'));
+        $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\UpdateFolderCommand'));
+        $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\UpdateFolderCommand'));
     }
     
 
@@ -44,7 +44,7 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         
         $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
         
-        $command = new DeleteFolderCommand($op, $fop, $folder);
+        $command = new UpdateFolderCommand($op, $fop, $folder);
          
         $serialized = serialize($command);
         $command2 = unserialize($serialized);
@@ -58,7 +58,7 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         /**
      * @test
      */
-    public function deleteShouldDeleteFoldersAndFilesRecursively()
+    public function deleteShouldUpdateFoldersAndFilesRecursively()
     {
         $filelib = new FileLibrary();
         
@@ -67,7 +67,7 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('createCommand'))
                     ->getMock();
         
-         $deleteCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\DeleteFolderCommand')
+         $deleteCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\UpdateFolderCommand')
                                ->disableOriginalConstructor()
                                ->getMock();
 
@@ -78,24 +78,27 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
          
         $deleteCommand->expects($this->exactly(3))->method('execute');
         $deleteFileCommand->expects($this->exactly(4))->method('execute');
-        
-        
-        $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\DeleteFolderCommand'))
-                                       ->will($this->returnValue($deleteCommand));
-        $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\DeleteFolderCommand'))
-                                       ->will($this->returnValue($deleteCommand));
-        $op->expects($this->at(2))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\DeleteFolderCommand'))
-                                       ->will($this->returnValue($deleteCommand));
 
-        $op->expects($this->at(3))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
+        
+        $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))
                                        ->will($this->returnValue($deleteFileCommand));
-        $op->expects($this->at(4))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
+        $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))
                                        ->will($this->returnValue($deleteFileCommand));
 
-        $op->expects($this->at(5))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
+        $op->expects($this->at(2))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))
                                        ->will($this->returnValue($deleteFileCommand));
-        $op->expects($this->at(6))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
+        $op->expects($this->at(3))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))
                                        ->will($this->returnValue($deleteFileCommand));
+
+        
+        
+        $op->expects($this->at(4))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\UpdateFolderCommand'))
+                                       ->will($this->returnValue($deleteCommand));
+        $op->expects($this->at(5))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\UpdateFolderCommand'))
+                                       ->will($this->returnValue($deleteCommand));
+        $op->expects($this->at(6))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\UpdateFolderCommand'))
+                                       ->will($this->returnValue($deleteCommand));
+
         
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->exactly(1))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
@@ -124,7 +127,7 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                     return array();
                  }));
                  
-        $backend->expects($this->exactly(1))->method('deleteFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
+        $backend->expects($this->exactly(1))->method('UpdateFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
 
         $fiop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                       ->setMethods(array('delete'))
@@ -137,7 +140,7 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         
         $folder = FolderItem::create(array('id' => 1));
         
-        $command = new DeleteFolderCommand($op, $fiop, $folder);
+        $command = new UpdateFolderCommand($op, $fiop, $folder);
         $command->execute();
         
         
