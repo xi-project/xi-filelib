@@ -10,28 +10,28 @@ use Serializable;
 
 class UpdateFolderCommand extends AbstractFolderCommand implements Serializable
 {
- 
+
     /**
      *
-     * @var FileOperator 
+     * @var FileOperator
      */
     private $fileOperator;
-    
+
     /**
      *
      * @var Folder
      */
     private $folder;
-    
-    
+
+
     public function __construct(FolderOperator $folderOperator, FileOperator $fileOperator, Folder $folder)
     {
         parent::__construct($folderOperator);
         $this->fileOperator = $fileOperator;
         $this->folder = $folder;
     }
-    
-    
+
+
     public function execute()
     {
         $route = $this->folderOperator->buildRoute($this->folder);
@@ -50,32 +50,33 @@ class UpdateFolderCommand extends AbstractFolderCommand implements Serializable
         foreach ($this->folderOperator->findSubFolders($this->folder) as $subFolder) {
             $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\UpdateFolderCommand', array(
                 $this->folderOperator,
+                $this->fileOperator,
                 $subFolder
             ));
             $command->execute();
         }
 
     }
-    
-    
-    
+
+
+
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->folder = $data['folder'];
     }
-    
-    
+
+
     public function serialize()
     {
         return serialize(array(
            'folder' => $this->folder,
         ));
-                
+
     }
 
-        
-    
-    
-    
+
+
+
+
 }

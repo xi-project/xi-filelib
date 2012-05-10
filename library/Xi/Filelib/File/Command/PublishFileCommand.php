@@ -19,16 +19,13 @@ class PublishFileCommand extends AbstractFileCommand implements Serializable
      * @var File
      */
     private $file;
-    
-    
+
     public function __construct(FileOperator $fileOperator, File $file)
     {
         parent::__construct($fileOperator);
         $this->file = $file;
     }
-    
-    
-    
+
     public function execute()
     {
         $profile = $this->fileOperator->getProfile($this->file->getProfile());
@@ -39,22 +36,20 @@ class PublishFileCommand extends AbstractFileCommand implements Serializable
         $this->fileOperator->getEventDispatcher()->dispatch('file.publish', $event);
 
     }
-        
+
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
     }
-    
-    
+
+
     public function serialize()
     {
         return serialize(array(
            'file' => $this->file,
         ));
-                
+
     }
-    
-    
-    
+
 }

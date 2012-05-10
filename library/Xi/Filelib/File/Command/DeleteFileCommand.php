@@ -21,46 +21,38 @@ class DeleteFileCommand extends AbstractFileCommand implements Serializable
      * @var File
      */
     private $file;
-    
-    
+
     public function __construct(FileOperator $fileOperator, File $file)
     {
         parent::__construct($fileOperator);
         $this->file = $file;
     }
-    
-    
-    
+
     public function execute()
     {
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this->fileOperator, $this->file));
         $command->execute();
-                                        
+
         $this->fileOperator->getBackend()->deleteFile($this->file);
         $this->fileOperator->getStorage()->delete($this->file);
 
         $event = new FileEvent($this->file);
         $this->fileOperator->getEventDispatcher()->dispatch('file.delete', $event);
-        
-        return true;
 
+        return true;
     }
-        
+
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
     }
-    
-    
+
     public function serialize()
     {
         return serialize(array(
            'file' => $this->file,
         ));
-                
     }
-    
-    
-    
+
 }
