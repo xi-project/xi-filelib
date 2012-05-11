@@ -4,25 +4,33 @@ namespace Xi\Filelib\Queue;
 
 interface Queue
 {
-    
+
     /**
-     * Enqueues stuff
-     * 
-     * @param mixed $object
+     * Enqueues message
+     *
+     * @param Message $message
      */
-    public function enqueue($object);
-    
+    public function enqueue(Message $message);
+
     /**
-     * Dequeues stuff
-     * 
-     * @return mixed
+     * Dequeues message
+     *
+     * @return Message
      */
     public function dequeue();
-    
+
     /**
      * Purges the queue
      */
     public function purge();
-    
+
+    /**
+     * Acknowledges message
+     *
+     * @param Message $message
+     */
+    public function ack(Message $message);
+
+
 }
 
