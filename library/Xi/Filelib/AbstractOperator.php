@@ -158,7 +158,8 @@ abstract class AbstractOperator
 
     public function executeOrQueue(Command $commandObj, $commandName, array $callbacks = array())
     {
-        if ($strategy = $this->getCommandStrategy($commandName) == Command::STRATEGY_ASYNCHRONOUS) {
+        $strategy = $this->getCommandStrategy($commandName);
+        if ($strategy == Command::STRATEGY_ASYNCHRONOUS) {
             $message = new Message(serialize($commandObj));
             $ret = $this->getQueue()->enqueue($message);
         } else {
