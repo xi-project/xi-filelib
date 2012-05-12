@@ -10,54 +10,8 @@ use Xi\Filelib\Queue\Message;
 use Xi\Filelib\Command;
 use ReflectionObject;
 
-class DefaultQueueProcessor implements QueueProcessor
+class DefaultQueueProcessor extends AbstractQueueProcessor
 {
-    /**
-     *
-     * @var FileLibrary
-     */
-    protected $filelib;
-
-    /**
-     *
-     * @var FileOperator
-     */
-    private $fileOperator;
-
-    /**
-     *
-     * @var FolderOperator
-     */
-    private $folderOperator;
-
-    public function __construct(FileLibrary $filelib)
-    {
-        $this->filelib = $filelib;
-        $this->fileOperator = $filelib->getFileOperator();
-        $this->folderOperator = $filelib->getFolderOperator();
-        $this->queue = $filelib->getQueue();
-    }
-
-
-    private function injectOperators(Command $command)
-    {
-        $refl = new ReflectionObject($command);
-
-        if ($refl->hasProperty('fileOperator')) {
-            $prop = $refl->getProperty('fileOperator');
-            $prop->setAccessible(true);
-            $prop->setValue($command, $this->fileOperator);
-            $prop->setAccessible(false);
-        }
-
-        if ($refl->hasProperty('folderOperator')) {
-            $prop = $refl->getProperty('folderOperator');
-            $prop->setAccessible(true);
-            $prop->setValue($command, $this->folderOperator);
-            $prop->setAccessible(false);
-        }
-
-    }
 
     public function process()
     {

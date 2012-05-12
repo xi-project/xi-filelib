@@ -59,9 +59,11 @@ class PeclAMQPQueue implements Queue
 
     public function enqueue(Message $message)
     {
-
         $msg = serialize($message);
         $this->exchange->publish($msg, 'filelib');
+
+                
+        
     }
 
 
@@ -72,7 +74,12 @@ class PeclAMQPQueue implements Queue
         if (!$msg) {
             return null;
         }
+        
+        var_dump($msg);
+                        
+        var_dump($msg->getBody());
 
+        
         $message = unserialize($msg->getBody());
         $message->setIdentifier($msg->getDeliveryTag());
 
@@ -85,6 +92,13 @@ class PeclAMQPQueue implements Queue
     {
         return $this->queue->purge();
     }
+    
+    
+    public function ack(Message $message)
+    {
+        $this->queue->ack($message->getIdentifier());
+    }
+    
 
 
     public function __destruct()
