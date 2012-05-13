@@ -55,7 +55,7 @@ class PhpAMQPQueue implements Queue
 
     public function enqueue(Message $message)
     {
-        $msg = serialize($message);
+        $msg = serialize($message->getBody());
 
         $msg = new AMQPMessage($msg, array('content_type' => 'text/plain', 'delivery-mode' => 1));
 
@@ -73,7 +73,7 @@ class PhpAMQPQueue implements Queue
             return null;
         }
 
-        $message = unserialize($msg->body);
+        $message = new Message(unserialize($msg->body));
         $message->setIdentifier($msg->delivery_info['delivery_tag']);
         return $message;
 
