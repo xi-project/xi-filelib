@@ -20,7 +20,7 @@ use \Xi\Filelib\Linker\AbstractLinker,
  */
 class SequentialLinker extends AbstractLinker implements Linker
 {
-    
+
     /**
      * @var integer Files per directory
      */
@@ -30,13 +30,13 @@ class SequentialLinker extends AbstractLinker implements Linker
      * @var integer Levels in directory structure
      */
     private $directoryLevels = 1;
-        
+
     /**
      *
      * @var LeveledDirectoryIdCalculator
      */
     private $directoryIdCalculator;
-        
+
     /**
      * Sets files per directory
      *
@@ -80,7 +80,7 @@ class SequentialLinker extends AbstractLinker implements Linker
     {
         return $this->directoryLevels;
     }
-    
+
     /**
      * Returns directory path for specified file id
      *
@@ -91,15 +91,15 @@ class SequentialLinker extends AbstractLinker implements Linker
     {
         return $this->getDirectoryIdCalculator()->calculateDirectoryId($file);
     }
-    
-    
-    public function getLinkVersion(File $file, VersionProvider $version)
+
+
+    public function getLinkVersion(File $file, $version, $extension)
     {
-            
+
         $link = $this->getLink($file);
         $pinfo = pathinfo($link);
-        $link = $pinfo['dirname'] . '/' . $pinfo['filename'] . '-' . $version->getIdentifier();
-        $link .= '.' . $version->getExtension();
+        $link = $pinfo['dirname'] . '/' . $pinfo['filename'] . '-' . $version;
+        $link .= '.' . $extension;
 
         return $link;
     }
@@ -114,12 +114,12 @@ class SequentialLinker extends AbstractLinker implements Linker
         $url = implode(DIRECTORY_SEPARATOR, $url);
         return $url;
     }
-    
+
     /**
      *
      * Returns directory id calculator
-     * 
-     * @return LeveledDirectoryIdCalculator 
+     *
+     * @return LeveledDirectoryIdCalculator
      */
     private function getDirectoryIdCalculator()
     {
@@ -128,8 +128,8 @@ class SequentialLinker extends AbstractLinker implements Linker
             $this->directoryIdCalculator->setDirectoryLevels($this->getDirectoryLevels());
             $this->directoryIdCalculator->setFilesPerDirectory($this->getFilesPerDirectory());
         }
-        
+
         return $this->directoryIdCalculator;
     }
-    
+
 }

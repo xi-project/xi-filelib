@@ -16,7 +16,7 @@ use InvalidArgumentException;
 
 /**
  * File profile
- * 
+ *
  * @author pekkis
  *
  */
@@ -29,8 +29,8 @@ class FileProfile implements EventSubscriberInterface
     static protected $subscribedEvents = array(
         'plugin.add' => 'onPluginAdd'
     );
-    
-    
+
+
     /**
      * @var FileLibrary
      */
@@ -78,20 +78,20 @@ class FileProfile implements EventSubscriberInterface
 
     /**
      * Returns array of subscribed events
-     * 
+     *
      * @return array
      */
     static public function getSubscribedEvents()
     {
         return static::$subscribedEvents;
     }
-    
-    
+
+
     /**
      * Sets filelib
      *
      * @param FileLibrary $filelib
-     * 
+     *
      */
     public function setFilelib(FileLibrary $filelib)
     {
@@ -134,7 +134,7 @@ class FileProfile implements EventSubscriberInterface
 
     /**
      * Sets human readable identifier
-     * 
+     *
      * @param string $description
      * @return FileProfile
      */
@@ -146,7 +146,7 @@ class FileProfile implements EventSubscriberInterface
 
     /**
      * Returns human readable identifier
-     * 
+     *
      * @return string
      */
     public function getDescription()
@@ -156,7 +156,7 @@ class FileProfile implements EventSubscriberInterface
 
     /**
      * Returns identifier
-     * 
+     *
      * @return string
      */
     public function getIdentifier()
@@ -166,7 +166,7 @@ class FileProfile implements EventSubscriberInterface
 
     /**
      * Sets identifier
-     * 
+     *
      * @param string $identifier
      * @throws InvalidArgumentException
      * @return FileProfile
@@ -214,7 +214,6 @@ class FileProfile implements EventSubscriberInterface
     {
         $this->ensureFileVersionArrayExists($fileType);
         $this->fileVersions[$fileType][$versionIdentifier] = $versionProvider;
-
         return $this;
     }
 
@@ -255,14 +254,14 @@ class FileProfile implements EventSubscriberInterface
         if (!$this->fileHasVersion($file, $version)) {
             throw new InvalidArgumentException("File has no version '{$version}'");
         }
-        
+
         $filetype = $this->getFilelib()->file()->getType($file);
         return $this->fileVersions[$filetype][$version];
     }
 
     /**
      * Sets whether access to the original file is allowed
-     * 
+     *
      * @param boolean $accessToOriginal
      * @return FileLibrary
      */
@@ -274,7 +273,7 @@ class FileProfile implements EventSubscriberInterface
 
     /**
      * Returns whether access to the original file is allowed
-     * 
+     *
      * @return boolean
      */
     public function getAccessToOriginal()
@@ -284,7 +283,7 @@ class FileProfile implements EventSubscriberInterface
 
     /**
      * Sets whether the original file is published
-     * 
+     *
      * @param boolean $publishOriginal
      * @return FileLibrary
      */
@@ -296,7 +295,7 @@ class FileProfile implements EventSubscriberInterface
 
     /**
      * Returns whether the original file is published
-     * 
+     *
      * @return boolean
      */
     public function getPublishOriginal()
@@ -304,11 +303,11 @@ class FileProfile implements EventSubscriberInterface
         return $this->publishOriginal;
     }
 
-    
+
     /**
      * Fires on plugin.add event. Adds plugin if plugin has profile.
-     * 
-     * @param PluginEvent $event 
+     *
+     * @param PluginEvent $event
      */
     public function onPluginAdd(PluginEvent $event)
     {
@@ -317,8 +316,8 @@ class FileProfile implements EventSubscriberInterface
             $this->addPlugin($plugin);
         }
     }
-    
-    
+
+
     private function ensureFileVersionArrayExists($fileType)
     {
         if (!isset($this->fileVersions[$fileType])) {

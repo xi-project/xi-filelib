@@ -57,11 +57,11 @@ class ZendRenderer implements AcceleratedRenderer
         505 => 'HTTP Version Not Supported',
     );
 
-    
-    
+
+
     /**
      * Server signature regexes and their headers
-     * 
+     *
      * @var array
      */
     static protected $serverSignatures = array(
@@ -71,22 +71,22 @@ class ZendRenderer implements AcceleratedRenderer
         '[^lighttpd/1.4]' => 'x-lighttpd-send-file',
         '[^Cherokee]' => 'x-sendfile',
     );
-    
+
     /**
      * @var string
      */
     private $accelerationHeader;
-    
+
     /**
      * @var boolean
      */
     private $accelerationEnabled = false;
-    
+
     /**
      * @var Request
      */
     private $request;
-            
+
     /**
      * @var FileLibrary
      */
@@ -104,65 +104,65 @@ class ZendRenderer implements AcceleratedRenderer
      * @var string
      */
     private $stripPrefixFromAcceleratedPath = '';
-    
+
     /**
      * @var string
      */
     private $addPrefixToAcceleratedPath = '';
-    
+
     public function __construct(FileLibrary $filelib)
     {
         $this->filelib = $filelib;
     }
-    
+
     /**
      *
-     * @param string $stripPrefix 
+     * @param string $stripPrefix
      */
     public function setStripPrefixFromAcceleratedPath($stripPrefix)
     {
         $this->stripPrefixFromAcceleratedPath = $stripPrefix;
     }
-        
+
     public function getStripPrefixFromAcceleratedPath()
     {
         return $this->stripPrefixFromAcceleratedPath;
     }
-        
+
 
     public function setAddPrefixToAcceleratedPath($addPrefix)
     {
         $this->addPrefixToAcceleratedPath = $addPrefix;
     }
-        
+
     public function getAddPrefixToAcceleratedPath()
     {
         return $this->addPrefixToAcceleratedPath;
     }
 
-    
-    
+
+
     /**
      * Sets request context
-     * 
-     * @param Request $request 
+     *
+     * @param Request $request
      */
     public function setRequest(Request $request)
     {
        $this->request = $request;
     }
-    
+
     /**
      * Returns request context
-     * 
+     *
      * @return Request
      */
     public function getRequest()
     {
         return $this->request;
     }
-    
-    
+
+
     /**
      *
      * @return boolean Returns whether response can be accelerated
@@ -171,18 +171,18 @@ class ZendRenderer implements AcceleratedRenderer
     {
         return $this->accelerationEnabled;
     }
-    
+
     /**
      * Enables or disables acceleration
-     * 
-     * @param boolean $flag 
+     *
+     * @param boolean $flag
      */
     public function enableAcceleration($flag)
     {
         $this->accelerationEnabled = $flag;
     }
-    
-    
+
+
     public function isAccelerationPossible()
     {
         // If we have no request as context we cannot accelerate
@@ -191,27 +191,27 @@ class ZendRenderer implements AcceleratedRenderer
         }
 
         $serverSignature = $request->getServer('SERVER_SOFTWARE');
-        
+
         foreach (self::$serverSignatures as $signature => $header) {
             if (preg_match($signature, $serverSignature)) {
                 $this->setAccelerationHeader($header);
                 return true;
             }
         }
-        
+
         return false;
-        
+
     }
-    
-    
-    
+
+
+
 
     /**
      * Returns url to a file
-     * 
+     *
      * @param File $file
      * @param type $options
-     * @return string 
+     * @return string
      */
     public function getUrl(File $file, $options = array())
     {
@@ -223,7 +223,7 @@ class ZendRenderer implements AcceleratedRenderer
 
         // @todo: simplify. Publisher should need the string only!
         $provider = $this->filelib->getFileOperator()->getVersionProvider($file, $options['version']);
-        $url = $this->getPublisher()->getUrlVersion($file, $provider);
+        $url = $this->getPublisher()->getUrlVersion($file, $options['version'], $provider);
 
         return $url;
     }
@@ -243,7 +243,7 @@ class ZendRenderer implements AcceleratedRenderer
         $response->headersSentThrowsException = false;
 
         if (!$this->getAcl()->isFileReadable($file)) {
-            
+
             $response->setHttpResponseCode(403);
             $response->setBody(self::$statusTexts[$response->getHttpResponseCode()]);
 
@@ -263,18 +263,18 @@ class ZendRenderer implements AcceleratedRenderer
         }
 
         if ($options['download'] === true) {
-            
+
             $response->setHeader('Content-disposition', "attachment; filename={$file->getName()}");
         }
 
         $this->setBody($response, $res);
-                
+
         return $response;
     }
 
     /**
      * Merges default options with supplied options
-     * 
+     *
      * @param array $options
      * @return array
      */
@@ -285,7 +285,7 @@ class ZendRenderer implements AcceleratedRenderer
 
     /**
      * Returns publisher
-     * 
+     *
      * @return Publisher
      */
     public function getPublisher()
@@ -295,7 +295,7 @@ class ZendRenderer implements AcceleratedRenderer
 
     /**
      * Returns Acl
-     * 
+     *
      * @return Acl
      */
     public function getAcl()
@@ -305,7 +305,7 @@ class ZendRenderer implements AcceleratedRenderer
 
     /**
      * Returns storage
-     * 
+     *
      * @return Storage
      */
     public function getStorage()
@@ -316,10 +316,10 @@ class ZendRenderer implements AcceleratedRenderer
     /**
      * Responds to a original file request and returns path to renderable
      * file if response is 200
-     * 
+     *
      * @param File $file
      * @param Response $response
-     * @return string 
+     * @return string
      */
     private function respondToOriginal(File $file, Response $response)
     {
@@ -337,11 +337,11 @@ class ZendRenderer implements AcceleratedRenderer
     /**
      * Responds to a version file request and returns path to renderable
      * file if response is 200
-     * 
+     *
      * @param File $file
      * @param Response $response
      * @param string Version identifier
-     * @return string 
+     * @return string
      */
     private function respondToVersion(File $file, Response $response, $version)
     {
@@ -350,8 +350,7 @@ class ZendRenderer implements AcceleratedRenderer
             return;
         }
 
-        $provider = $this->filelib->getFileOperator()->getVersionProvider($file, $version);
-        $res = $this->getStorage()->retrieveVersion($file, $provider);
+        $res = $this->getStorage()->retrieveVersion($file, $version);
 
         return $res;
     }
@@ -362,50 +361,50 @@ class ZendRenderer implements AcceleratedRenderer
     private function setBody(Response $response, FileObject $res)
     {
         $response->setHeader('Content-Type', $res->getMimetype());
-        
+
         if ($this->isAccelerationEnabled() && $this->isAccelerationPossible()) {
             $this->accelerateResponse($response, $res);
             return;
         }
-        
+
         $content = file_get_contents($res->getPathname());
         $response->setBody($content);
     }
-    
+
     /**
      * Sets acceleration header name
-     * 
+     *
      * @param string $header
      */
     private function setAccelerationHeader($header)
     {
         $this->accelerationHeader = $header;
     }
-    
+
     /**
      * Returns acceleration header name
-     * 
+     *
      * @return string
      */
     private function getAccelerationHeader()
     {
         return $this->accelerationHeader;
     }
-    
+
     /**
      * Accelerates response
-     * 
+     *
      * @param Response $response
-     * @param FileObject $res 
+     * @param FileObject $res
      */
     private function accelerateResponse(Response $response, FileObject $res)
     {
         $path = preg_replace("[^{$this->getStripPrefixFromAcceleratedPath()}]", '', $res->getRealPath());
         $path = $this->getAddPrefixToAcceleratedPath() . $path;
-        
+
         $response->setHeader($this->getAccelerationHeader(), $path);
     }
-    
-    
+
+
 }
 

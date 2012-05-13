@@ -7,7 +7,7 @@ use Xi\Tests\Filelib\TestCase;
 class AbstractPublisherTest extends TestCase
 {
 
-    
+
     /**
      * @test
      */
@@ -23,23 +23,21 @@ class AbstractPublisherTest extends TestCase
                     'getUrlVersion',
                 ))
                 ->getMock();
-        
-        $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')->getMock();
-                
-        $this->assertNull($publisher->getFilelib());
-        
-        $publisher->setFilelib($filelib);
-        
-        $this->assertEquals($filelib, $publisher->getFilelib());
-        
-        
-        
-        
-    }
-    
-    
-    
-    
-}
 
-?>
+        $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')->getMock();
+
+        $this->assertNull($publisher->getFilelib());
+
+        $publisher->setFilelib($filelib);
+
+        $this->assertEquals($filelib, $publisher->getFilelib());
+
+
+
+
+    }
+
+
+
+
+}
