@@ -10,8 +10,12 @@ use Xi\Filelib\Queue\Message;
 use Xi\Filelib\Command;
 use ReflectionObject;
 
+/**
+ * Convenience base class for queue processors
+ */
 abstract class AbstractQueueProcessor implements QueueProcessor
 {
+
     /**
      *
      * @var FileLibrary
@@ -29,7 +33,7 @@ abstract class AbstractQueueProcessor implements QueueProcessor
      * @var FolderOperator
      */
     protected $folderOperator;
-    
+
     /**
      *
      * @var Queue
@@ -52,7 +56,7 @@ abstract class AbstractQueueProcessor implements QueueProcessor
     {
         return $this->filelib;
     }
-    
+
     /**
      *
      * @return FileOperator
@@ -61,7 +65,7 @@ abstract class AbstractQueueProcessor implements QueueProcessor
     {
         return $this->fileOperator;
     }
-    
+
     /**
      *
      * @return FolderOperator
@@ -70,7 +74,7 @@ abstract class AbstractQueueProcessor implements QueueProcessor
     {
         return $this->folderOperator;
     }
-    
+
     /**
      *
      * @return Queue
@@ -79,15 +83,19 @@ abstract class AbstractQueueProcessor implements QueueProcessor
     {
         return $this->queue;
     }
-    
-    
 
+    /**
+     * Injects dependencies to commands via black reflection magic. You know,
+     * dependencies can not be transferred via network.
+     *
+     * @param Command $command
+     */
     public function injectOperators(Command $command)
     {
         $refl = new ReflectionObject($command);
-                                        
+
         if ($refl->hasProperty('fileOperator')) {
-                                    
+
             $prop = $refl->getProperty('fileOperator');
             $prop->setAccessible(true);
             $prop->setValue($command, $this->getFileOperator());
@@ -100,10 +108,7 @@ abstract class AbstractQueueProcessor implements QueueProcessor
             $prop->setValue($command, $this->getFolderOperator());
             $prop->setAccessible(false);
         }
-        
     }
-
-
 
 }
 

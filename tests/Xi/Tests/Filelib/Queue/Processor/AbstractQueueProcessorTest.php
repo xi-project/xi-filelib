@@ -36,7 +36,6 @@ class AbstractQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
         $filelib->setQueue($queue);
         $filelib->setFileOperator($fiop);
         $filelib->setFolderOperator($foop);
-
         
         $processor = $this->getMockBuilder('Xi\Filelib\Queue\Processor\AbstractQueueProcessor')
                           ->setMethods(array('process'))
@@ -44,6 +43,7 @@ class AbstractQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
                           ->getMockForAbstractClass();
         
         
+        $this->assertSame($filelib, $processor->getFilelib());
         $this->assertSame($queue, $processor->getQueue());
         $this->assertSame($foop, $processor->getFolderOperator());
         $this->assertSame($fiop, $processor->getFileOperator());

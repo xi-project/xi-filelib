@@ -11,9 +11,18 @@ class TestCommand implements Command
     
     private $folderOperator;
     
+    private $isExecuted = false;
+    
     public function execute()
     {
-        
+        $this->isExecuted = true;
+        return 'lus';
+    }
+    
+    
+    public function isExecuted()
+    {
+        return $this->isExecuted;
     }
     
 }
