@@ -38,7 +38,7 @@ use Xi\Filelib\File\Command\UnpublishFileCommand;
 class DefaultFileOperator extends AbstractOperator implements FileOperator
 {
 
-    const COMMAND_UPLOAD = 'download';
+    const COMMAND_UPLOAD = 'upload';
     const COMMAND_AFTERUPLOAD = 'after_upload';
     const COMMAND_UPDATE = 'update';
     const COMMAND_DELETE = 'delete';
