@@ -893,7 +893,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     }
 
 
-        /**
+    /**
      * @test
      * @expectedException InvalidArgumentException
      */
@@ -901,7 +901,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                          ->setMethods(array())
                          ->setConstructorArgs(array($filelib))
                          ->getMockForAbstractClass();
