@@ -10,9 +10,6 @@ use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 /**
  * Versions an image
  *
- * @author pekkis
- * @package Xi_Filelib
- *
  */
 class VersionPlugin extends AbstractVersionProvider
 {
@@ -21,11 +18,10 @@ class VersionPlugin extends AbstractVersionProvider
 
     protected $imageMagickHelper;
 
-   /**
+    /**
      * @var File extension for the version
      */
     protected $extension;
-
 
     public function __construct($options = array())
     {
@@ -65,14 +61,12 @@ class VersionPlugin extends AbstractVersionProvider
         return array($this->getIdentifier() => $tmp);
     }
 
-
     public function getVersions()
     {
         return array($this->identifier);
     }
 
-
-        /**
+    /**
      * Sets file extension
      *
      * @param string $extension File extension
@@ -95,12 +89,9 @@ class VersionPlugin extends AbstractVersionProvider
         return $this->extension;
     }
 
-
     public function getExtensionFor($version)
     {
         return $this->getExtension();
     }
-
-
 
 }

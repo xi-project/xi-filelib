@@ -249,12 +249,6 @@ class AbstractFilesystemPublisherTest extends TestCase
 
         }
 
-
     }
 
-
-
-
 }
-
-?>
