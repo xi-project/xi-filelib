@@ -8,7 +8,7 @@ use Xi\Filelib\FileLibrary,
 
 class FileItemTest extends \PHPUnit_Framework_TestCase
 {
-    
+
     /**
      * @test
      */
@@ -17,17 +17,17 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(class_exists('Xi\Filelib\File\FileItem'));
         $this->assertContains('Xi\Filelib\File\File', class_implements('Xi\Filelib\File\FileItem'));
     }
-    
-    
+
+
     /**
      * @test
      */
     public function gettersAndSettersShouldWorkAsExpected()
     {
         $file = new FileItem();
-        
+
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        
+
         $val = 666;
         $this->assertNull($file->getId());
         $this->assertSame($file, $file->setId($val));
@@ -67,17 +67,17 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($file->getDateUploaded());
         $this->assertSame($file, $file->setDateUploaded($val));
         $this->assertSame($val, $file->getDateUploaded());
-        
-        
+
+
         $val = 1;
         $this->assertNull($file->getStatus());
         $this->assertSame($file, $file->setStatus($val));
         $this->assertEquals($val, $file->getStatus());
 
-        
-        
+
+
     }
-    
+
     public function fromArrayProvider()
     {
         return array(
@@ -92,19 +92,19 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
                     'link' => 'lussenhoff',
                     'date_uploaded' => new \DateTime('2010-01-01 01:01:01'),
                     'status' => 8,
-                ),         
+                ),
             ),
             array(
                 array(
                     'link' => 'lussenhoff',
-                ),         
+                ),
             ),
-        
+
         );
-        
-        
+
+
     }
-    
+
     /**
      * @dataProvider fromArrayProvider
      * @test
@@ -125,17 +125,17 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
             'date_uploaded' => 'getDateUploaded',
             'status' => 'getStatus',
         );
-        
+
         foreach($map as $key => $method) {
             if(isset($data[$key])) {
-                $this->assertEquals($data[$key], $file->$method());    
+                $this->assertEquals($data[$key], $file->$method());
             } else {
                 $this->assertNull($file->$method());
             }
         }
-        
+
     }
-    
+
     /**
      * @test
      */
@@ -151,7 +151,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
         $file->setLink('linksor');
         $file->setDateUploaded(new \DateTime('1978-03-21'));
         $file->setStatus(54);
-                
+
         $this->assertEquals($file->toArray(), array(
             'id' => 1,
             'folder_id' => 655,
@@ -164,7 +164,7 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
             'status' => 54,
         ));
 
-        
+
         $file = new \Xi\Filelib\File\FileItem();
         $this->assertEquals($file->toArray(), array(
             'id' => null,
@@ -177,10 +177,10 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
             'date_uploaded' => null,
             'status' => null,
         ));
-        
-        
+
+
     }
-    
+
     /**
      * @test
      */
@@ -188,7 +188,25 @@ class FileItemTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf('Xi\Filelib\File\FileItem', FileItem::create(array()));
     }
-    
-    
-    
+
+
+
+    /**
+     * @test
+     */
+    public function getDataShouldReturnACachedArrayObject()
+    {
+        $file = new FileItem();
+        $data = $file->getData();
+
+        $this->assertInstanceOf('ArrayObject', $data);
+
+        $data['tussi'] = 'lussi';
+
+        $this->assertSame($data, $file->getData());
+
+    }
+
+
+
 }

@@ -9,7 +9,7 @@ use \Xi\Filelib\FileLibrary,
 
 /**
  * Linker interface
- * 
+ *
  * @author pekkis
  *
  */
@@ -18,11 +18,11 @@ interface Linker
 
     /**
      * Sets filelib
-     * 
+     *
      * @return Linker
      */
     public function setFilelib(FileLibrary $filelib);
-    
+
     /**
      * Returns filelib
      *
@@ -34,10 +34,11 @@ interface Linker
      * Returns link for a version of a file
      *
      * @param File $file
-     * @param VersionProvider $version Version plugin
+     * @param string $version Version identifier
+     * @param string $extension Extension
      * @return string Versioned link
      */
-    public function getLinkVersion(File $file, VersionProvider $version);
+    public function getLinkVersion(File $file, $version, $extension);
 
     /**
      * Returns a link for a file

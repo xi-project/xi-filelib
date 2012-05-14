@@ -24,11 +24,11 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     private $excludeRoot = false;
 
     private $slugifierClass = 'Xi\Filelib\Tool\Slugifier\Zend2Slugifier';
-    
+
     private $slugifier;
-    
+
     private $slugify = true;
-        
+
     /**
      * Sets whether the root folder is excluded from beautifurls.
      *
@@ -51,32 +51,32 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     {
         return $this->excludeRoot;
     }
-    
+
     /**
      * Returns slugifier class
-     * 
+     *
      * @return string
      */
     public function getSlugifierClass()
     {
         return $this->slugifierClass;
     }
-    
+
     /**
      * Sets slugifier class
-     * 
+     *
      * @param type $slugifierClass
-     * @return BeautifurlLinker 
+     * @return BeautifurlLinker
      */
     public function setSlugifierClass($slugifierClass)
     {
         $this->slugifierClass = $slugifierClass;
         return $this;
     }
-        
+
     /**
      * Returns slugifier
-     * 
+     *
      * @return Slugifier
      */
     public function getSlugifier()
@@ -90,7 +90,7 @@ class BeautifurlLinker extends AbstractLinker implements Linker
 
     /**
      * Enables or disables slugifying
-     * 
+     *
      * @param boolean $slugify
      * @return BeautifurlLinker
      */
@@ -99,10 +99,10 @@ class BeautifurlLinker extends AbstractLinker implements Linker
         $this->slugify = $slugify;
         return $this;
     }
-    
+
     /**
      * Returns whether slugifying is enabled
-     * 
+     *
      * @return boolean
      */
     public function getSlugify()
@@ -110,15 +110,15 @@ class BeautifurlLinker extends AbstractLinker implements Linker
         return $this->slugify;
     }
 
-    
-    public function getLinkVersion(File $file, VersionProvider $version)
+
+    public function getLinkVersion(File $file, $version, $extension)
     {
         $link = $this->getLink($file);
         $pinfo = pathinfo($link);
-        $link = ($pinfo['dirname'] === '.' ? '' : $pinfo['dirname'] . '/') . $pinfo['filename'] . '-' . $version->getIdentifier();
-        
-        $link .= '.' . $version->getExtension();
-        
+        $link = ($pinfo['dirname'] === '.' ? '' : $pinfo['dirname'] . '/') . $pinfo['filename'] . '-' . $version;
+
+        $link .= '.' . $extension;
+
         return $link;
     }
 
