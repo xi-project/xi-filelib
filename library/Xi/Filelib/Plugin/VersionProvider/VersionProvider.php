@@ -14,19 +14,12 @@ use Xi\Filelib\Plugin\Plugin;
 interface VersionProvider extends Plugin
 {
     /**
-     * Sets file extension
+     * Returns file extension for a version
      *
-     * @param string $extension File extension
+     * @param string $version
      */
-    public function setExtension($extension);
+    public function getExtensionFor($version);
 
-    /**
-     * Returns the plugins file extension
-     *
-     * @return string
-     */
-    public function getExtension();
-    
     /**
      * Sets file types for this version plugin.
      *
@@ -63,5 +56,11 @@ interface VersionProvider extends Plugin
      */
     public function getIdentifier();
 
-    
+    /**
+     * Returns an array of (potentially) provided versions
+     *
+     * @return array
+     */
+    public function getVersions();
+
 }

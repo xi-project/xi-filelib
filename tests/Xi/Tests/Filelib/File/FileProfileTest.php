@@ -10,8 +10,8 @@ use Xi\Filelib\Event\PluginEvent;
 
 class FileProfileTest extends \Xi\Tests\Filelib\TestCase
 {
-    
-    
+
+
     /**
      * @test
      */
@@ -31,7 +31,7 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $events = FileProfile::getSubscribedEvents();
         $this->assertArrayHasKey('plugin.add', $events);
     }
-    
+
     /**
      * @test
      */
@@ -41,18 +41,18 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
                      ->setMethods(array('addPlugin'))
                      ->getMock();
         $profile->setIdentifier('lussen');
-        
+
         $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussen', 'hofer')));
 
         $profile->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
-        
+
         $event = new PluginEvent($plugin);
-        
+
         $profile->onPluginAdd($event);
-        
+
     }
-    
+
     /**
      * @test
      */
@@ -62,26 +62,26 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
                      ->setMethods(array('addPlugin'))
                      ->getMock();
         $profile->setIdentifier('non-existing-profile');
-        
+
         $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussen', 'hofer')));
 
         $profile->expects($this->never())->method('addPlugin');
-        
+
         $event = new PluginEvent($plugin);
         $profile->onPluginAdd($event);
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * @test
      */
     public function gettersAndSettersShouldWorkAsExpected()
     {
         $profile = new FileProfile();
-        
+
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $this->assertEquals(null, $profile->getFilelib());
         $this->assertSame($profile, $profile->setFilelib($filelib));
@@ -96,13 +96,13 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals(null, $profile->getDescription());
         $this->assertSame($profile, $profile->setDescription($val));
         $this->assertEquals($val, $profile->getDescription());
-        
+
         $val = 'Identifiere';
         $this->assertEquals(null, $profile->getIdentifier());
         $this->assertSame($profile, $profile->setIdentifier($val));
         $this->assertEquals($val, $profile->getIdentifier());
 
-        
+
         $val = true;
         $this->assertEquals(true, $profile->getAccessToOriginal());
         $this->assertSame($profile, $profile->setAccessToOriginal($val));
@@ -113,7 +113,7 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $this->assertSame($profile, $profile->setPublishOriginal($val));
         $this->assertEquals($val, $profile->getPublishOriginal());
 
-        
+
         /*
         $val = 666;
         $this->assertEquals(null, $profile->getId());
@@ -155,11 +155,11 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $this->assertSame($profile, $profile->setDateUploaded($val));
         $this->assertSame($val, $profile->getDateUploaded());
         */
-        
+
     }
 
-    
-    
+
+
     /**
      * @test
      * @expectedException InvalidArgumentException
@@ -169,39 +169,39 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
          $profile = new FileProfile();
          $profile->setIdentifier('original');
     }
-    
+
     /**
      * @test
      */
     public function addPluginShouldAddPlugin()
     {
         $profile = new FileProfile();
-        
+
         $mock1 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
         $mock2 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        
+
         $this->assertEquals(array(), $profile->getPlugins());
-        
+
         $profile->addPlugin($mock1);
-        
+
         $plugins = $profile->getPlugins();
-        
+
         $this->assertCount(1, $plugins);
-        
+
         $this->assertContains($mock1, $plugins);
-        
+
         $this->assertSame($profile, $profile->addPlugin($mock2));
-        
+
         $plugins = $profile->getPlugins();
-        
+
         $this->assertCount(2, $plugins);
-        
+
         $this->assertContains($mock1, $plugins);
         $this->assertContains($mock2, $plugins);
     }
-    
-           
-    
+
+
+
     /**
      * @test
      */
@@ -210,12 +210,12 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $profile = new FileProfile();
 
         $versionProvider = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        
+
         $this->assertSame($profile, $profile->addFileVersion('image', 'xooxer', $versionProvider));
-        
+
     }
-    
-    
+
+
     /**
      * @test
      */
@@ -225,26 +225,26 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
 
         $filelib = $this->createMockedFilelib();
         $profile->setFilelib($filelib);
-                
+
         $file = FileItem::create(array('mimetype' => 'image/lus'));
         $versionProviders = $profile->getFileVersions($file);
         $this->assertCount(2, $versionProviders);
         $this->assertContains('globalizer', $versionProviders);
         $this->assertContains('imagenizer', $versionProviders);
-        
+
         $file = FileItem::create(array('mimetype' => 'video/lus'));
         $versionProviders = $profile->getFileVersions($file);
         $this->assertCount(2, $versionProviders);
         $this->assertContains('globalizer', $versionProviders);
         $this->assertContains('videonizer', $versionProviders);
-        
-        
+
+
         $file = FileItem::create(array('mimetype' => 'soo/soo'));
         $versionProviders = $profile->getFileVersions($file);
         $this->assertCount(0, $versionProviders);
-      
+
     }
-    
+
     public function provideFilesForHasVersionTest()
     {
         return array(
@@ -257,7 +257,7 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
             array(true, 'globalizer', 'video/avi'),
         );
     }
-    
+
     /**
      * @test
      * @dataProvider provideFilesForHasVersionTest
@@ -266,12 +266,12 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
     {
         $profile = $this->createProfileWithMockedVersions();
         $profile->setFilelib($this->createMockedFilelib());
-        
+
         $file = FileItem::create(array('mimetype' => $mimetype));
         $this->assertEquals($expected, $profile->fileHasVersion($file, $versionId));
-        
+
     }
-    
+
     /**
      * @test
      * @expectedException \InvalidArgumentException
@@ -280,12 +280,12 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
     {
         $profile = $this->createProfileWithMockedVersions();
         $profile->setFilelib($this->createMockedFilelib());
-        
+
         $file = FileItem::create(array('mimetype' => 'xoo/lus'));
-        
+
         $vp = $profile->getVersionProvider($file, 'globalizer');
     }
-    
+
     /**
      * @test
      */
@@ -293,16 +293,16 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
     {
         $profile = $this->createProfileWithMockedVersions();
         $profile->setFilelib($this->createMockedFilelib());
-        
+
         $file = FileItem::create(array('mimetype' => 'video/lus'));
-        
+
         $vp = $profile->getVersionProvider($file, 'globalizer');
-        
+
         $this->assertEquals('globalizer', $vp->getIdentifier());
-        
+
     }
-    
-    
+
+
 
     /**
      * @return FileLibrary
@@ -311,32 +311,34 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = new FileLibrary();
         $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        
+
         $fiop->expects($this->any())->method('getType')->will($this->returnCallBack(function ($file) {
             $split = explode('/', $file->getMimetype());
             return $split[0];
         }));
-        
+
         $filelib->setFileOperator($fiop);
 
         return $filelib;
     }
-    
-    
+
+
     private function createProfileWithMockedVersions()
     {
         $profile = new FileProfile();
 
         $imageProvider = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $imageProvider->expects($this->any())->method('getIdentifier')->will($this->returnValue('imagenizer'));
-        
+        $imageProvider->expects($this->any())->method('getVersions')->will($this->returnValue(array('imagenizer')));
+
         $videoProvider = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $videoProvider->expects($this->any())->method('getIdentifier')->will($this->returnValue('videonizer'));
+        $videoProvider->expects($this->any())->method('getVersions')->will($this->returnValue(array('videonizer')));
 
         $globalProvider = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $globalProvider->expects($this->any())->method('getIdentifier')->will($this->returnValue('globalizer'));
+        $globalProvider->expects($this->any())->method('getVersions')->will($this->returnValue(array('globalizer')));
 
-        
         $profile->addFileVersion('image', 'imagenizer', $imageProvider);
         $profile->addFileVersion('video', 'videonizer', $videoProvider);
 
@@ -345,7 +347,7 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
 
         return $profile;
     }
-    
-    
-    
+
+
+
 }
