@@ -157,7 +157,11 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
     public function findFilesShouldReturnEmptyArrayIteratorWhenNoFilesAreFound()
     {
         $filelib = new FileLibrary();
-        $op = new DefaultFolderOperator($filelib);
+        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
+                   ->setConstructorArgs(array($filelib))
+                   ->setMethods(array('getFileOperator'))
+                   ->getMock();
+
 
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
@@ -182,7 +186,21 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
     public function findFilesShouldReturnNonEmptyArrayIteratorWhenFilesAreFound()
     {
         $filelib = new FileLibrary();
-        $op = new DefaultFolderOperator($filelib);
+
+        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
+                   ->setConstructorArgs(array($filelib))
+                   ->setMethods(array('getFileOperator'))
+                   ->getMock();
+
+
+        $fiop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+                     ->disableOriginalConstructor()
+                     ->getMock();
+
+
+        $fiop->expects($this->exactly(3))->method('getInstanceAndTriggerEvent')->will($this->returnValue($this->getMockForAbstractClass('Xi\Filelib\File\File')));
+
+        $op->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
 
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
@@ -205,9 +223,8 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $file = $files->current();
 
-        $this->assertEquals(1, $file->getId());
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-        $this->assertEquals('lus/xoo', $file->getMimetype());
+        
     }
 
     /**

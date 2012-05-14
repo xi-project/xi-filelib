@@ -8,7 +8,6 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\FilelibException;
 use Serializable;
 
 class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
@@ -19,20 +18,20 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
      * @var File
      */
     private $file;
-    
-    
+
+
     public function __construct(FileOperator $fileOperator, File $file)
     {
         parent::__construct($fileOperator);
         $this->file = $file;
     }
-    
+
     public function execute()
     {
         $file = $this->file;
-        
+
         $profileObj = $this->fileOperator->getProfile($file->getProfile());
-        
+
         $event = new FileEvent($file);
         $this->fileOperator->getEventDispatcher()->dispatch('file.afterUpload', $event);
 
@@ -40,30 +39,30 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
         $file->setStatus(File::STATUS_UPLOADED);
         $file->setLink($profileObj->getLinker()->getLink($file, true));
         $this->fileOperator->getBackend()->updateFile($file);
-               
+
         if ($this->fileOperator->getAcl()->isFileReadableByAnonymous($file)) {
-            
+
             $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this->fileOperator, $this->file));
             $command->execute();
         }
-        
+
         return $file;
     }
-    
-    
+
+
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
     }
-    
-    
+
+
     public function serialize()
     {
         return serialize(array(
            'file' => $this->file,
         ));
-                
+
     }
-    
+
 }

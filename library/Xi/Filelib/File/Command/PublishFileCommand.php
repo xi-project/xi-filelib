@@ -3,12 +3,8 @@
 namespace Xi\Filelib\File\Command;
 
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
-use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\FilelibException;
 use Serializable;
 
 class PublishFileCommand extends AbstractFileCommand implements Serializable

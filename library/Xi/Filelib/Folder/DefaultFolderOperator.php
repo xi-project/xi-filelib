@@ -14,10 +14,10 @@ use ArrayIterator;
 
 /**
  * Operates on folders
- * 
+ *
  * @package Xi_Filelib
  * @author pekkis
- * 
+ *
  */
 class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 {
@@ -26,25 +26,25 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
     const COMMAND_DELETE = 'delete';
     const COMMAND_UPDATE = 'update';
     const COMMAND_CREATE_BY_URL = 'create_by_url';
-        
+
     /**
      * @var string Folderitem class
      */
     private $className = 'Xi\Filelib\Folder\FolderItem';
-        
-    
+
+
     protected $commandStrategies = array(
         self::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_CREATE_BY_URL => Command::STRATEGY_SYNCHRONOUS,
     );
-    
+
 
     /**
      * Returns directory route for folder
-     * 
-     * @param Folder $folder 
+     *
+     * @param Folder $folder
      * @return string
      */
     public function buildRoute(Folder $folder)
@@ -87,7 +87,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 
     /**
      * Returns an instance of the currently set folder class
-     * 
+     *
      * @param array $data Data
      */
     public function getInstance(array $data = array())
@@ -124,7 +124,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
             $this, $this->getFileOperator(), $folder
         ));
         return $this->executeOrQueue($command, self::COMMAND_DELETE);
-        
+
     }
 
     /**
@@ -215,7 +215,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 
     /**
      * Finds parent folder
-     * 
+     *
      * @param Folder $folder
      * @return Folder|false
      */
@@ -241,18 +241,18 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
     public function findFiles(Folder $folder)
     {
         $ritems = $this->getBackend()->findFilesIn($folder);
-                
+
         $items = array();
         foreach ($ritems as $ritem) {
-            $item = $this->getFileOperator()->getInstance($ritem);
+            $item = $this->getFileOperator()->getInstanceAndTriggerEvent($ritem);
             $items[] = $item;
         }
 
         return new ArrayIterator($items);
     }
-    
-    
-    
+
+
+
     /**
      *
      * @return FileOperator

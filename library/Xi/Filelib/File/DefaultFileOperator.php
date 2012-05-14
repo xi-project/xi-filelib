@@ -31,7 +31,7 @@ use Xi\Filelib\File\Command\UnpublishFileCommand;
 
 /**
  * File operator
- * 
+ *
  * @author pekkis
  *
  */
@@ -53,8 +53,8 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         self::COMMAND_PUBLISH => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_UNPUBLISH => Command::STRATEGY_SYNCHRONOUS,
     );
-        
-    
+
+
     /**
      * @var array Profiles
      */
@@ -64,7 +64,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      * @var string Fileitem class
      */
     private $className = 'Xi\Filelib\File\FileItem';
-    
+
     /**
      * Sets fileitem class
      *
@@ -89,7 +89,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     /**
      * Returns an instance of the currently set fileitem class
-     * 
+     *
      * @param mixed $data Data as array or a file instance
      */
     public function getInstance($data = array())
@@ -104,7 +104,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     /**
      * Adds a file profile
-     * 
+     *
      * @param FileProfile $profile
      * @return FileLibrary
      * @throws InvalidArgumentException
@@ -118,18 +118,18 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         $this->profiles[$identifier] = $profile;
         $profile->setFilelib($this->getFilelib());
         $profile->getLinker()->setFilelib($this->getFilelib());
-        
+
         $this->getEventDispatcher()->addSubscriber($profile);
 
         $event = new FileProfileEvent($profile);
         $this->getEventDispatcher()->dispatch('fileprofile.add', $event);
-        
+
         return $this;
     }
 
     /**
      * Returns a file profile
-     * 
+     *
      * @param string $identifier File profile identifier
      * @throws InvalidArgumentException
      * @return FileProfile
@@ -145,7 +145,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     /**
      * Returns all file profiles
-     * 
+     *
      * @return array Array of file profiles
      */
     public function getProfiles()
@@ -181,7 +181,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             return false;
         }
 
-        $file = $this->getInstance($file);
+        $file = $this->getInstanceAndTriggerEvent($file);
         return $file;
     }
 
@@ -193,7 +193,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             return false;
         }
 
-        $file = $this->getInstance($file);
+        $file = $this->getInstanceAndTriggerEvent($file);
 
         return $file;
     }
@@ -201,7 +201,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     /**
      * Finds and returns all files
      *
-     * @return \ArrayIterator
+     * @return array
      */
     public function findAll()
     {
@@ -209,7 +209,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
         $items = array();
         foreach ($ritems as $ritem) {
-            $item = $this->getInstance($ritem);
+            $item = $this->getInstanceAndTriggerEvent($ritem);
             $items[] = $item;
         }
         return $items;
@@ -315,7 +315,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $this->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this, $file)),
             DefaultFileOperator::COMMAND_UNPUBLISH
         );
-       
+
     }
 
     public function addPlugin(Plugin $plugin, $priority = 0)
@@ -325,7 +325,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $profile->addPlugin($plugin, $priority);
         }
     }
-    
+
 
     /**
      *
@@ -335,5 +335,19 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->getFilelib()->getFolderOperator();
     }
-    
+
+
+    /**
+     * Gets instance and triggers instantiate event
+     *
+     * @param array $file
+     */
+    public function getInstanceAndTriggerEvent(array $file)
+    {
+        $file = $this->getInstance($file);
+        $event = new FileEvent($file);
+        $this->getEventDispatcher()->dispatch('file.instantiate', $event);
+        return $file;
+    }
+
 }

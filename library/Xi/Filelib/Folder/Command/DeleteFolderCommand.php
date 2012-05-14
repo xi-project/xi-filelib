@@ -5,33 +5,32 @@ namespace Xi\Filelib\Folder\Command;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Folder\Command\AbstractFolderCommand;
 use Serializable;
 
 class DeleteFolderCommand extends AbstractFolderCommand implements Serializable
 {
- 
+
     /**
      *
-     * @var FileOperator 
+     * @var FileOperator
      */
     private $fileOperator;
-    
+
     /**
      *
      * @var Folder
      */
     private $folder;
-    
-    
+
+
     public function __construct(FolderOperator $folderOperator, FileOperator $fileOperator, Folder $folder)
     {
         parent::__construct($folderOperator);
         $this->fileOperator = $fileOperator;
         $this->folder = $folder;
     }
-    
-    
+
+
     public function execute()
     {
         foreach ($this->folderOperator->findSubFolders($this->folder) as $childFolder) {
@@ -50,16 +49,16 @@ class DeleteFolderCommand extends AbstractFolderCommand implements Serializable
 
         $this->folderOperator->getBackend()->deleteFolder($this->folder);
     }
-    
-    
-    
+
+
+
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->folder = $data['folder'];
     }
-    
-    
+
+
     public function serialize()
     {
         return serialize(array(
@@ -67,5 +66,5 @@ class DeleteFolderCommand extends AbstractFolderCommand implements Serializable
         ));
     }
 
-    
+
 }

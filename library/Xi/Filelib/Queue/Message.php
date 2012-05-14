@@ -11,6 +11,8 @@ class Message
 {
     private $identifier;
 
+    private $body;
+
     public function __construct($body)
     {
         if (!is_string($body)) {
