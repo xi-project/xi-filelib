@@ -7,27 +7,44 @@ use Xi\Filelib\AbstractOperator;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Command;
+use Xi\Filelib\Folder\Command\FolderCommand;
 use ArrayIterator;
 
 /**
  * Operates on folders
- * 
+ *
  * @package Xi_Filelib
  * @author pekkis
- * 
+ *
  */
 class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 {
 
+    const COMMAND_CREATE = 'create';
+    const COMMAND_DELETE = 'delete';
+    const COMMAND_UPDATE = 'update';
+    const COMMAND_CREATE_BY_URL = 'create_by_url';
+
     /**
      * @var string Folderitem class
      */
-    private $_className = 'Xi\Filelib\Folder\FolderItem';
+    private $className = 'Xi\Filelib\Folder\FolderItem';
+
+
+    protected $commandStrategies = array(
+        self::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_CREATE_BY_URL => Command::STRATEGY_SYNCHRONOUS,
+    );
+
 
     /**
      * Returns directory route for folder
-     * 
-     * @param Folder $folder 
+     *
+     * @param Folder $folder
      * @return string
      */
     public function buildRoute(Folder $folder)
@@ -50,11 +67,11 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      * Sets folderitem class
      *
      * @param string $className Class name
-     * @return \Xi\Filelib\FileLibrary\Folder\FolderOperator
+     * @return FolderOperator
      */
     public function setClass($className)
     {
-        $this->_className = $className;
+        $this->className = $className;
         return $this;
     }
 
@@ -65,12 +82,12 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function getClass()
     {
-        return $this->_className;
+        return $this->className;
     }
 
     /**
      * Returns an instance of the currently set folder class
-     * 
+     *
      * @param array $data Data
      */
     public function getInstance(array $data = array())
@@ -90,13 +107,10 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function create(Folder $folder)
     {
-        $route = $this->buildRoute($folder);
-                
-        $folder->setUrl($route);
-
-        $folder = $this->getBackend()->createFolder($folder);
-        
-        return $folder;
+        $command = $this->createCommand('Xi\Filelib\Folder\Command\CreateFolderCommand', array(
+            $this, $folder
+        ));
+        return $this->executeOrQueue($command, self::COMMAND_CREATE);
     }
 
     /**
@@ -106,15 +120,11 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function delete(Folder $folder)
     {
-        foreach ($this->findSubFolders($folder) as $childFolder) {
-            $this->delete($childFolder);
-        }
+        $command = $this->createCommand('Xi\Filelib\Folder\Command\DeleteFolderCommand', array(
+            $this, $this->getFileOperator(), $folder
+        ));
+        return $this->executeOrQueue($command, self::COMMAND_DELETE);
 
-        foreach ($this->findFiles($folder) as $file) {
-            $this->getFilelib()->getFileOperator()->delete($file);
-        }
-
-        $this->getBackend()->deleteFolder($folder);
     }
 
     /**
@@ -124,18 +134,10 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function update(Folder $folder)
     {
-        $route = $this->buildRoute($folder);
-        $folder->setUrl($route);
-
-        $this->getBackend()->updateFolder($folder);
-
-        foreach ($this->findFiles($folder) as $file) {
-            $this->getFilelib()->getFileOperator()->update($file);
-        }
-
-        foreach ($this->findSubFolders($folder) as $subFolder) {
-            $this->update($subFolder);
-        }
+        $command = $this->createCommand('Xi\Filelib\Folder\Command\UpdateFolderCommand', array(
+            $this, $this->getFileOperator(), $folder
+        ));
+        return $this->executeOrQueue($command, self::COMMAND_UPDATE);
     }
 
     /**
@@ -151,7 +153,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
             throw new FilelibException('Could not locate root folder', 500);
         }
 
-        $folder = $this->_folderItemFromArray($folder);
+        $folder = $this->getInstance($folder);
 
         return $folder;
     }
@@ -187,41 +189,10 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 
     public function createByUrl($url)
     {
-        $folder = $this->findByUrl($url);
-        if ($folder) {
-            return $folder;
-        }
-
-        $rootFolder = $this->findRoot();
-
-        $exploded = explode('/', $url);
-
-        $folderNames = array();
-
-        $created = null;
-        $previous = null;
-
-        $count = 0;
-
-        while (sizeof($exploded) || !$created) {
-
-            $folderNames[] = $folderCurrent = array_shift($exploded);
-
-            $folderName = implode('/', $folderNames);
-
-            $created = $this->findByUrl($folderName);
-
-            if (!$created) {
-                $created = $this->getInstance(array(
-                    'parent_id' => $previous ? $previous->getId() : $rootFolder->getId(),
-                    'name' => $folderCurrent,
-                        ));
-                $this->create($created);
-            }
-            $previous = $created;
-        }
-
-        return $created;
+        $command = $this->createCommand('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', array(
+            $this, $url
+        ));
+        return $this->executeOrQueue($command, self::COMMAND_CREATE_BY_URL);
     }
 
     /**
@@ -230,7 +201,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      * @param Folder $folder
      * @return ArrayIterator
      */
-    public function findSubFolders(\Xi\Filelib\Folder\Folder $folder)
+    public function findSubFolders(Folder $folder)
     {
         $rawFolders = $this->getBackend()->findSubFolders($folder);
 
@@ -244,7 +215,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 
     /**
      * Finds parent folder
-     * 
+     *
      * @param Folder $folder
      * @return Folder|false
      */
@@ -270,14 +241,26 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
     public function findFiles(Folder $folder)
     {
         $ritems = $this->getBackend()->findFilesIn($folder);
-                
+
         $items = array();
         foreach ($ritems as $ritem) {
-            $item = $this->getFilelib()->getFileOperator()->getInstance($ritem);
+            $item = $this->getFileOperator()->getInstanceAndTriggerEvent($ritem);
             $items[] = $item;
         }
 
         return new ArrayIterator($items);
     }
+
+
+
+    /**
+     *
+     * @return FileOperator
+     */
+    public function getFileOperator()
+    {
+        return $this->getFilelib()->getFileOperator();
+    }
+
 
 }

@@ -37,12 +37,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     protected $providesFor = array();
 
-    /**
-     * @var File extension for the version
-     */
-    protected $extension;
-
-    abstract public function createVersion(File $file);
+    abstract public function createVersions(File $file);
 
     /**
      * Registers a version to all profiles
@@ -53,14 +48,14 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             throw new FilelibException('Version plugin must have an identifier');
         }
 
-        if (!$this->getExtension()) {
-            throw new FilelibException('Version plugin must have a file extension');
-        }
-
         foreach ($this->getProvidesFor() as $fileType) {
             foreach ($this->getProfiles() as $profile) {
                 $profile = $this->getFilelib()->getFileOperator()->getProfile($profile);
-                $profile->addFileVersion($fileType, $this->getIdentifier(), $this);
+
+                foreach ($this->getVersions() as $version) {
+                    $profile->addFileVersion($fileType, $version, $this);
+                }
+
             }
         }
     }
@@ -127,51 +122,27 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     }
 
     /**
-     * Sets file extension
-     *
-     * @param string $extension File extension
-     * @return VersionProvider
-     */
-    public function setExtension($extension)
-    {
-        $extension = str_replace('.', '', $extension);
-        $this->extension = $extension;
-        return $this;
-    }
-
-    /**
-     * Returns the plugins file extension
-     *
-     * @return string
-     */
-    public function getExtension()
-    {
-        return $this->extension;
-    }
-
-    
-    /**
      * Returns storage
-     * 
+     *
      * @return Storage
      */
     public function getStorage()
     {
         return $this->getFilelib()->getStorage();
     }
-    
+
     /**
      * Returns publisher
-     * 
+     *
      * @return Publisher
      */
     public function getPublisher()
     {
         return $this->getFilelib()->getPublisher();
     }
-    
-    
-    
+
+
+
     public function afterUpload(FileEvent $event)
     {
         $file = $event->getFile();
@@ -179,70 +150,80 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         if (!$this->hasProfile($file->getProfile())) {
             return;
         }
-        
+
         if (!$this->providesFor($file)) {
             return;
         }
 
-        $tmp = $this->createVersion($file);
-        $this->getStorage()->storeVersion($file, $this->getIdentifier(), $tmp);
-        unlink($tmp);
+        $tmps = $this->createVersions($file);
+        foreach ($tmps as $version => $tmp) {
+            $this->getStorage()->storeVersion($file, $version, $tmp);
+            unlink($tmp);
+        }
     }
 
     public function onPublish(FileEvent $event)
     {
         $file = $event->getFile();
-        
+
         if (!$this->hasProfile($file->getProfile())) {
             return;
         }
-        
+
         if (!$this->providesFor($file)) {
             return;
         }
-        
-        $this->getPublisher()->publishVersion($file, $this);
+
+        foreach ($this->getVersions() as $version) {
+            $this->getPublisher()->publishVersion($file, $version, $this);
+        }
+
     }
 
     public function onUnpublish(FileEvent $event)
     {
         $file = $event->getFile();
-        
+
         if (!$this->hasProfile($file->getProfile())) {
             return;
         }
-        
+
         if (!$this->providesFor($file)) {
             return;
         }
 
-        $this->getPublisher()->unpublishVersion($file, $this);
+        foreach ($this->getVersions() as $version) {
+            $this->getPublisher()->unpublishVersion($file, $version, $this);
+        }
     }
 
     public function onDelete(FileEvent $event)
     {
         $file = $event->getFile();
-        
+
         if (!$this->hasProfile($file->getProfile())) {
             return;
         }
-        
+
         if (!$this->providesFor($file)) {
             return;
         }
 
-        $this->deleteVersion($file);
+        $this->deleteVersions($file);
     }
 
     /**
      * Deletes a version
-     * 
+     *
      * @param $file File
-     * 
+     *
      */
-    public function deleteVersion(File $file)
+    public function deleteVersions(File $file)
     {
-        $this->getStorage()->deleteVersion($file, $this->getIdentifier());
+        foreach ($this->getVersions() as $version) {
+            $this->getStorage()->deleteVersion($file, $version);
+        }
+
     }
 
 }

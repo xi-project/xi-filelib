@@ -65,6 +65,20 @@ class FileLibraryTest extends TestCase
         $this->assertSame($obj, $filelib->getPublisher());
     }
 
+
+    /**
+     * @test
+     */
+    public function queueSetterAndGetterShouldWorkAsExpected()
+    {
+        $filelib = new FileLibrary();
+        $obj = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
+        $this->assertEquals(null, $filelib->getQueue());
+        $this->assertSame($filelib, $filelib->setQueue($obj));
+        $this->assertSame($obj, $filelib->getQueue());
+    }
+
+    
     
     /**
      * @test

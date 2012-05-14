@@ -5,6 +5,7 @@ namespace Xi\Tests\Filelib\Folder;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\DefaultFolderOperator;
 use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\Command;
 
 class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -16,6 +17,80 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
     {
         $this->assertTrue(class_exists('Xi\Filelib\Folder\DefaultFolderOperator'));
     }
+
+
+    /**
+     * @test
+     */
+    public function strategiesShouldDefaultToSynchronous()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = new DefaultFolderOperator($filelib);
+
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFolderOperator::COMMAND_CREATE));
+
+    }
+
+
+    public function provideCommandMethods()
+    {
+        return array(
+            array('Xi\Filelib\Folder\Command\DeleteFolderCommand', 'delete', DefaultFolderOperator::COMMAND_DELETE, Command::STRATEGY_ASYNCHRONOUS, true),
+            array('Xi\Filelib\Folder\Command\DeleteFolderCommand', 'delete', DefaultFolderOperator::COMMAND_DELETE, Command::STRATEGY_SYNCHRONOUS, false),
+            array('Xi\Filelib\Folder\Command\CreateFolderCommand', 'create', DefaultFolderOperator::COMMAND_CREATE, Command::STRATEGY_ASYNCHRONOUS, true),
+            array('Xi\Filelib\Folder\Command\CreateFolderCommand', 'create', DefaultFolderOperator::COMMAND_CREATE, Command::STRATEGY_SYNCHRONOUS, false),
+            array('Xi\Filelib\Folder\Command\UpdateFolderCommand', 'update', DefaultFolderOperator::COMMAND_UPDATE, Command::STRATEGY_ASYNCHRONOUS, true),
+            array('Xi\Filelib\Folder\Command\UpdateFolderCommand', 'update', DefaultFolderOperator::COMMAND_UPDATE, Command::STRATEGY_SYNCHRONOUS, false),
+            array('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', 'createByUrl', DefaultFolderOperator::COMMAND_CREATE_BY_URL, Command::STRATEGY_ASYNCHRONOUS, true),
+            array('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', 'createByUrl', DefaultFolderOperator::COMMAND_CREATE_BY_URL, Command::STRATEGY_SYNCHRONOUS, false),
+
+
+        );
+
+
+    }
+
+
+    /**
+     * @test
+     * @dataProvider provideCommandMethods
+     */
+    public function commandMethodsShouldExecuteOrEnqeueDependingOnStrategy($commandClass, $operatorMethod, $commandName, $strategy, $queueExpected)
+    {
+
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
+          $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
+                   ->setMethods(array('createCommand', 'getQueue'))
+                   ->setConstructorArgs(array($filelib))
+                   ->getMock();
+
+          $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
+          $op->expects($this->any())->method('getQueue')->will($this->returnValue($queue));
+
+          $command = $this->getMockBuilder($commandClass)
+                          ->disableOriginalConstructor()
+                          ->setMethods(array('execute'))
+                          ->getMock();
+
+          if ($queueExpected) {
+              $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
+              $command->expects($this->never())->method('execute');
+          } else {
+              $queue->expects($this->never())->method('enqueue');
+              $command->expects($this->once())->method('execute');
+          }
+
+          $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+
+          $op->expects($this->once())->method('createCommand')->with($this->equalTo($commandClass))->will($this->returnValue($command));
+
+          $op->setCommandStrategy($commandName, $strategy);
+          $op->$operatorMethod($folder);
+
+    }
+
+
 
     /**
      * @test
@@ -82,7 +157,11 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
     public function findFilesShouldReturnEmptyArrayIteratorWhenNoFilesAreFound()
     {
         $filelib = new FileLibrary();
-        $op = new DefaultFolderOperator($filelib);
+        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
+                   ->setConstructorArgs(array($filelib))
+                   ->setMethods(array('getFileOperator'))
+                   ->getMock();
+
 
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
@@ -107,7 +186,21 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
     public function findFilesShouldReturnNonEmptyArrayIteratorWhenFilesAreFound()
     {
         $filelib = new FileLibrary();
-        $op = new DefaultFolderOperator($filelib);
+
+        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
+                   ->setConstructorArgs(array($filelib))
+                   ->setMethods(array('getFileOperator'))
+                   ->getMock();
+
+
+        $fiop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+                     ->disableOriginalConstructor()
+                     ->getMock();
+
+
+        $fiop->expects($this->exactly(3))->method('getInstanceAndTriggerEvent')->will($this->returnValue($this->getMockForAbstractClass('Xi\Filelib\File\File')));
+
+        $op->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
 
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
@@ -130,9 +223,8 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $file = $files->current();
 
-        $this->assertEquals(1, $file->getId());
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-        $this->assertEquals('lus/xoo', $file->getMimetype());
+        
     }
 
     /**
@@ -247,8 +339,8 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertEquals('manatee', $folder->getName());
     }
-    
-    
+
+
     /**
      * @test
      */
@@ -308,7 +400,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
     }
 
-    
+
     /**
      * @test
      */
@@ -325,7 +417,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                 ));
 
         $filelib->setBackend($backend);
-        
+
         $folder = $op->findByUrl($id);
 
         $this->assertFalse($folder);
@@ -347,14 +439,14 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                 ));
 
         $filelib->setBackend($backend);
-        
+
         $folder = $op->findByUrl($id);
 
         $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
-        
+
     }
-    
-    
+
+
     /**
      * @test
      * @expectedException Xi\Filelib\FilelibException
@@ -371,7 +463,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                 ));
 
         $filelib->setBackend($backend);
-        
+
         $folder = $op->findRoot();
 
         $this->assertFalse($folder);
@@ -392,150 +484,15 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                 ));
 
         $filelib->setBackend($backend);
-        
+
         $folder = $op->findRoot();
 
         $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
     }
 
-    /**
-     * @test
-     */
-    public function createShouldCreateFolder()
-    {
-        $filelib = new FileLibrary();
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
-                   ->setMethods(array('buildRoute'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-        
-        $folder = FolderItem::create(array('id' => 5, 'parent_id' => 1));
-        
-        $op->expects($this->once())->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue('route'));
-        
-                
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('createFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnArgument(0));
 
-        $filelib->setBackend($backend);
-        
-        $folder2 = $op->create($folder);
-        
-        $this->assertEquals('route', $folder2->getUrl());
-    }
-    
-    /**
-     * @test
-     */
-    public function deleteShouldDeleteFoldersAndFilesRecursively()
-    {
-        $filelib = new FileLibrary();
-        $op = new DefaultFolderOperator($filelib);
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->exactly(4))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
-                    
-                    if($folder->getId() == 1) {
-                        return array(
-                            array('id' => 2, 'parent_id' => 1),
-                            array('id' => 3, 'parent_id' => 1),
-                            array('id' => 4, 'parent_id' => 1),
-                        );
-                    }
-                    return array();
-                 }));
-        $backend->expects($this->exactly(4))->method('findFilesIn')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
-                    
-                    if($folder->getId() == 4) {
-                        return array(
-                            array('id' => 1, 'name' => 'tohtori-vesala.avi'),
-                            array('id' => 2, 'name' => 'tohtori-vesala.png'),
-                            array('id' => 3, 'name' => 'tohtori-vesala.jpg'),
-                            array('id' => 4, 'name' => 'tohtori-vesala.bmp'),
-                        );
-                    }
-                    return array();
-                 }));
-                 
-        $backend->expects($this->exactly(4))->method('deleteFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
 
-        $fiop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                      ->setMethods(array('delete'))
-                      ->setConstructorArgs(array($filelib))
-                      ->getMock();
-        
-        $fiop->expects($this->exactly(4))->method('delete')->with($this->isInstanceOf('Xi\Filelib\File\File'));
-                
-        $filelib->setBackend($backend); 
-        $filelib->setFileOperator($fiop);
-        
-        $folder = FolderItem::create(array('id' => 1));
-        
-        $op->delete($folder);
-        
-    }
-    
-    /**
-     * @test
-     */
-    public function updateShouldUpdateFoldersAndFilesRecursively()
-    {
-        $filelib = new FileLibrary();
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
-                   ->setMethods(array('buildRoute'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-        
-        $op->expects($this->exactly(4))->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
-        
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->exactly(4))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
-                    
-                    if($folder->getId() == 1) {
-                        return array(
-                            array('id' => 2, 'parent_id' => 1),
-                            array('id' => 3, 'parent_id' => 1),
-                            array('id' => 4, 'parent_id' => 1),
-                        );
-                    }
-                    return array();
-                 }));
-        $backend->expects($this->exactly(4))->method('findFilesIn')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
-                    
-                    if($folder->getId() == 4) {
-                        return array(
-                            array('id' => 1, 'name' => 'tohtori-vesala.avi'),
-                            array('id' => 2, 'name' => 'tohtori-vesala.png'),
-                            array('id' => 3, 'name' => 'tohtori-vesala.jpg'),
-                            array('id' => 4, 'name' => 'tohtori-vesala.bmp'),
-                        );
-                    }
-                    return array();
-                 }));
-
-        $backend->expects($this->exactly(4))->method('updateFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
-                 
-        $fiop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                      ->setMethods(array('update'))
-                      ->setConstructorArgs(array($filelib))
-                      ->getMock();
-        
-        $fiop->expects($this->exactly(4))->method('update')->with($this->isInstanceOf('Xi\Filelib\File\File'));
-                
-        $filelib->setBackend($backend); 
-        $filelib->setFileOperator($fiop);
-        
-        $folder = FolderItem::create(array('id' => 1));
-        
-        $op->update($folder);
-        
-    }
-    
-    
     public function provideDataForBuildRouteTest()
     {
         return array(
@@ -546,9 +503,9 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
             array('lussutus/bansku/tohtori vesala/lamantiini/puppe', 6),
         );
     }
-    
-    
-    
+
+
+
     /**
      * @test
      * @dataProvider provideDataForBuildRouteTest
@@ -557,9 +514,9 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = new FileLibrary();
         $op = new DefaultFolderOperator($filelib);
-        
+
         // $op->expects($this->exactly(4))->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
-        
+
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->any())->method('findFolder')
                 ->will($this->returnCallback(function($folderId) {
@@ -576,123 +533,43 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                         9 => array('parent_id' => 5, 'name' => 'kaskas'),
                         10 => array('parent_id' => 9, 'name' => 'losoboesk')
                     );
-                    
+
                     if (isset($farr[$folderId])) {
                         return $farr[$folderId];
                     }
 
                     return false;
-                    
+
                  }));
-        
+
         $filelib->setBackend($backend);
-                 
+
         $folder = $op->find($folderId);
-        
+
         $route = $op->buildRoute($folder);
-        
+
         $this->assertEquals($expected, $route);
-        
-        
-    }
-    
-    
-    /**
-     * @test
-     */
-    public function createByUrlShouldExitEarlyIfFolderExists()
-    {
-        $filelib = new FileLibrary();
-        $op = new DefaultFolderOperator($filelib);
-        
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        
-        $backend->expects($this->never())->method('findRoot');
-        
-        $backend->expects($this->once())->method('findFolderByUrl')->with($this->equalTo('tussin/lussutus/festivaali/2010'))
-                ->will($this->returnValue(array('id' => 666, 'parent_id' => 555)));
-        
-        
-        $filelib->setBackend($backend);
-                 
-        $folder = $op->createByUrl('tussin/lussutus/festivaali/2010');
-        
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-        $this->assertEquals(666, $folder->getId());
-        
-    }
-    
 
-    
-    /**
-     * @test
-     */
-    public function createByUrlShouldCreateRecursivelyIfFolderDoesNotExist()
-    {
-        $filelib = new FileLibrary();
-        $op = new DefaultFolderOperator($filelib);
-        
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findRootFolder')->will($this->returnValue(array('id' => 1, 'name' => 'root')));
-        
-        
-        $backend->expects($this->exactly(4))->method('createFolder')->will($this->returnCallback(function($folder) {
-            static $count = 1;
-            $folder->setId($count++);
-            return $folder;
-        }));
-        
-        
-        $backend->expects($this->exactly(5))->method('findFolderByUrl')->will($this->returnValue(false));
-                
-        $filelib->setBackend($backend);
-                 
-        $folder = $op->createByUrl('tussin/lussutus/festivaali/2012');
-        
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-        $this->assertEquals('2012', $folder->getName());
-        
+
     }
 
-    
-    /**
-     * @test
-     */
-    public function createByUrlShouldCreateRecursivelyFromTheMiddleIfSomeFoldersExist()
-    {
-        $filelib = new FileLibrary();
-        $op = new DefaultFolderOperator($filelib);
-        
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findRootFolder')->will($this->returnValue(array('id' => 1, 'name' => 'root')));
-        
-        
-        $backend->expects($this->exactly(2))->method('createFolder')->will($this->returnCallback(function($folder) {
-            static $count = 1;
-            $folder->setId($count++);
-            return $folder;
-        }));
-                
-        $backend->expects($this->exactly(5))->method('findFolderByUrl')->will($this->returnCallback(function($url) {
-        
-            if ($url === 'tussin') {
-                return array('id' => 536, 'parent_id' => 545, 'url' => 'tussin');
-            }
 
-            if ($url === 'tussin/lussutus') {
-                return array('id' => 537, 'parent_id' => 5476, 'url' => 'tussin/lussutus');
-            }
-            
-            return false;
-            
-        }));
-                
-        $filelib->setBackend($backend);
-                 
-        $folder = $op->createByUrl('tussin/lussutus/festivaali/2012');
-        
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-        $this->assertEquals('2012', $folder->getName());
-        
+
+
+   /**
+    * @test
+    */
+    public function getFileOperatorShouldDelegateToFilelib()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
+        $filelib->expects($this->once())->method('getFileOperator');
+
+        $op = new DefaultFolderOperator($filelib);
+
+        $op->getFileOperator();
+
     }
+
+
 }

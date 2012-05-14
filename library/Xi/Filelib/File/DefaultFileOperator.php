@@ -4,6 +4,7 @@ namespace Xi\Filelib\File;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\AbstractOperator;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\Plugin;
@@ -16,15 +17,43 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Queue\Queue;
+
+use Xi\Filelib\Command;
+use Xi\Filelib\File\Command\FileCommand;
+use Xi\Filelib\File\Command\UploadFileCommand;
+use Xi\Filelib\File\Command\AfterUploadFileCommand;
+use Xi\Filelib\File\Command\UpdateFileCommand;
+use Xi\Filelib\File\Command\DeleteFileCommand;
+use Xi\Filelib\File\Command\PublishFileCommand;
+use Xi\Filelib\File\Command\UnpublishFileCommand;
+
 
 /**
  * File operator
- * 
+ *
  * @author pekkis
  *
  */
 class DefaultFileOperator extends AbstractOperator implements FileOperator
 {
+
+    const COMMAND_UPLOAD = 'upload';
+    const COMMAND_AFTERUPLOAD = 'after_upload';
+    const COMMAND_UPDATE = 'update';
+    const COMMAND_DELETE = 'delete';
+    const COMMAND_PUBLISH = 'publish';
+    const COMMAND_UNPUBLISH = 'publish';
+
+    protected $commandStrategies = array(
+        self::COMMAND_UPLOAD => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_AFTERUPLOAD => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_PUBLISH => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UNPUBLISH => Command::STRATEGY_SYNCHRONOUS,
+    );
+
 
     /**
      * @var array Profiles
@@ -60,7 +89,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     /**
      * Returns an instance of the currently set fileitem class
-     * 
+     *
      * @param mixed $data Data as array or a file instance
      */
     public function getInstance($data = array())
@@ -75,7 +104,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     /**
      * Adds a file profile
-     * 
+     *
      * @param FileProfile $profile
      * @return FileLibrary
      * @throws InvalidArgumentException
@@ -89,18 +118,18 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         $this->profiles[$identifier] = $profile;
         $profile->setFilelib($this->getFilelib());
         $profile->getLinker()->setFilelib($this->getFilelib());
-        
+
         $this->getEventDispatcher()->addSubscriber($profile);
 
         $event = new FileProfileEvent($profile);
         $this->getEventDispatcher()->dispatch('fileprofile.add', $event);
-        
+
         return $this;
     }
 
     /**
      * Returns a file profile
-     * 
+     *
      * @param string $identifier File profile identifier
      * @throws InvalidArgumentException
      * @return FileProfile
@@ -116,7 +145,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     /**
      * Returns all file profiles
-     * 
+     *
      * @return array Array of file profiles
      */
     public function getProfiles()
@@ -132,19 +161,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function update(File $file)
     {
-        $this->unpublish($file);
-
-        $linker = $this->getProfile($file->getProfile())->getLinker();
-
-        $file->setLink($linker->getLink($file, true));
-
-        $this->getBackend()->updateFile($file);
-
-        if ($this->getAcl()->isFileReadableByAnonymous($file)) {
-            $this->publish($file);
-        }
-
-        return $this;
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array($this, $file)),
+            DefaultFileOperator::COMMAND_UPDATE
+        );
     }
 
     /**
@@ -161,7 +181,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             return false;
         }
 
-        $file = $this->getInstance($file);
+        $file = $this->getInstanceAndTriggerEvent($file);
         return $file;
     }
 
@@ -173,7 +193,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             return false;
         }
 
-        $file = $this->getInstance($file);
+        $file = $this->getInstanceAndTriggerEvent($file);
 
         return $file;
     }
@@ -181,7 +201,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     /**
      * Finds and returns all files
      *
-     * @return \ArrayIterator
+     * @return array
      */
     public function findAll()
     {
@@ -189,7 +209,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
         $items = array();
         foreach ($ritems as $ritem) {
-            $item = $this->getInstance($ritem);
+            $item = $this->getInstanceAndTriggerEvent($ritem);
             $items[] = $item;
         }
         return $items;
@@ -218,54 +238,15 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function upload($upload, Folder $folder, $profile = 'default')
     {
-        if (!$upload instanceof FileUpload) {
-            $upload = $this->prepareUpload($upload);
-        }
-
-        if (!$this->getAcl()->isFolderWritable($folder)) {
-            throw new FilelibException("Folder '{$folder->getId()}'not writable");
-        }
-
-        $profileObj = $this->getProfile($profile);
-
-        $event = new FileUploadEvent($upload, $folder, $profileObj);
-        $this->getEventDispatcher()->dispatch('file.beforeUpload', $event);
-        
-        $upload = $event->getFileUpload();
-        
-        
-        
-        
-        $file = $this->getInstance(array(
-            'folder_id' => $folder->getId(),
-            'mimetype' => $upload->getMimeType(),
-            'size' => $upload->getSize(),
-            'name' => $upload->getUploadFilename(),
-            'profile' => $profile,
-            'date_uploaded' => $upload->getDateUploaded(),
-        ));
-
-        // @todo: actual statuses
-        $file->setStatus(File::STATUS_RAW);
-                
-        $this->getBackend()->upload($file, $folder);
-        
-        $this->getStorage()->store($file, $upload->getRealPath());
-        
-        $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.afterUpload', $event);
-
-        // @todo: actual statuses
-        $file->setStatus(File::STATUS_UPLOADED);
-        $file->setLink($profileObj->getLinker()->getLink($file, true));
-        $this->getBackend()->updateFile($file);
-               
-        // @todo: I think autopublish must be an option or go away...
-        if ($this->getAcl()->isFileReadableByAnonymous($file)) {
-            $this->publish($file);
-        }
-
-        return $file;
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile)),
+            DefaultFileOperator::COMMAND_UPLOAD,
+            array(
+                Command::STRATEGY_SYNCHRONOUS => function(DefaultFileOperator $op, AfterUploadFileCommand $command) {
+                    return $op->executeOrQueue($command, DefaultFileOperator::COMMAND_AFTERUPLOAD);
+                }
+            )
+        );
     }
 
     /**
@@ -275,14 +256,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function delete(File $file)
     {
-        $this->unpublish($file);
-        $this->getBackend()->deleteFile($file);
-        $this->getStorage()->delete($file);
-
-        $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.delete', $event);
-
-        return true;
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array($this, $file)),
+            DefaultFileOperator::COMMAND_DELETE
+        );
     }
 
     /**
@@ -326,22 +303,18 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
 
     public function publish(File $file)
     {
-        $profile = $this->getProfile($file->getProfile());
-        if ($profile->getPublishOriginal()) {
-            $this->getPublisher()->publish($file);
-        }
-
-        $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.publish', $event);
-        
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this, $file)),
+            DefaultFileOperator::COMMAND_PUBLISH
+        );
     }
 
     public function unpublish(File $file)
     {
-        $this->getPublisher()->unpublish($file);
-
-        $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.unpublish', $event);
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this, $file)),
+            DefaultFileOperator::COMMAND_UNPUBLISH
+        );
 
     }
 
@@ -351,6 +324,30 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             $profile = $this->getProfile($profileIdentifier);
             $profile->addPlugin($plugin, $priority);
         }
+    }
+
+
+    /**
+     *
+     * @return FolderOperator
+     */
+    public function getFolderOperator()
+    {
+        return $this->getFilelib()->getFolderOperator();
+    }
+
+
+    /**
+     * Gets instance and triggers instantiate event
+     *
+     * @param array $file
+     */
+    public function getInstanceAndTriggerEvent(array $file)
+    {
+        $file = $this->getInstance($file);
+        $event = new FileEvent($file);
+        $this->getEventDispatcher()->dispatch('file.instantiate', $event);
+        return $file;
     }
 
 }
