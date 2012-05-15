@@ -35,9 +35,6 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
         $command = $this->extractCommandFromMessage($message);
 
         return $this->tryToProcess($message, function(DefaultQueueProcessor $processor) use ($command) {
-
-            var_dump($command);
-
             $processor->injectOperators($command);
             return $command->execute();
         });
@@ -63,9 +60,6 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
             return true;
 
         } catch (FilelibException $e) {
-
-            echo $e;
-
             return false;
         }
     }
