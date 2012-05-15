@@ -19,54 +19,54 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
 {
     /**
      * Processes a single message from the queue
-     * 
+     *
      * @return mixed
      */
     public function process()
     {
         $queue = $this->getQueue();
-                
+
         $message = $queue->dequeue();
-        
+
         if (!$message) {
             return null;
         }
-        
+
         $command = $this->extractCommandFromMessage($message);
-            
+
         return $this->tryToProcess($message, function(DefaultQueueProcessor $processor) use ($command) {
             $processor->injectOperators($command);
             return $command->execute();
         });
     }
-  
+
     /**
      * Tries to process a message with a processor function
-     * 
+     *
      * @param Message $message
      * @param callable $processorFunction
-     * @return boolean Success or not 
+     * @return boolean Success or not
      */
     public function tryToProcess(Message $message, $processorFunction)
     {
         try {
             $ret = $processorFunction($this);
             $this->getQueue()->ack($message);
-            
+
             if ($ret instanceof Command) {
                 $this->getQueue()->enqueue(new Message(serialize($ret)));
             }
-            
+
             return true;
-            
+
         } catch (FilelibException $e) {
             return false;
         }
     }
-    
+
     /**
      * Extracts a command from a message
-     * 
+     *
      * @param Message $message
      * @return Command
      * @throws InvalidArgumentException
@@ -77,8 +77,9 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
         if (!$command instanceof Command) {
             throw new InvalidArgumentException("Queue processor expects commands wrapped in a message");
         }
+        return $command;
     }
-    
+
 
 }
 
