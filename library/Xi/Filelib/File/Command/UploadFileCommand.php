@@ -18,23 +18,23 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
      * @var FileUpload
      */
     private $upload;
-    
+
     /**
      *
      * @var Folder
      */
     private $folder;
-    
+
     /**
      *
      * @var string
      */
-    private $profile;    
-    
+    private $profile;
+
     public function __construct(FileOperator $fileOperator, $upload, Folder $folder, $profile = 'default')
     {
         parent::__construct($fileOperator);
-                       
+
         if (!$upload instanceof FileUpload) {
             $upload = $fileOperator->prepareUpload($upload);
         }
@@ -43,9 +43,9 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         $this->folder = $folder;
         $this->profile = $profile;
     }
-    
-    
-    
+
+
+
     public function execute()
     {
         $upload = $this->upload;
@@ -60,9 +60,9 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
 
         $event = new FileUploadEvent($upload, $folder, $profileObj);
         $this->fileOperator->getEventDispatcher()->dispatch('file.beforeUpload', $event);
-        
+
         $upload = $event->getFileUpload();
-        
+
         $file = $this->fileOperator->getInstance(array(
             'folder_id' => $folder->getId(),
             'mimetype' => $upload->getMimeType(),
@@ -74,37 +74,40 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
 
         // @todo: actual statuses
         $file->setStatus(File::STATUS_RAW);
-        
+
         $this->fileOperator->getBackend()->upload($file, $folder);
         $this->fileOperator->getStorage()->store($file, $upload->getRealPath());
-        
+
+        $event = new FileEvent($file);
+        $this->fileOperator->getEventDispatcher()->dispatch('file.instantiate', $event);
+
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $file));
         return $command;
-        
+
     }
-    
-    
+
+
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
-        
+
         $this->folder = $data['folder'];
         $this->profile = $data['profile'];
-        
+
         $upload = new FileUpload($data['upload']['realPath']);
         $upload->setOverrideBasename($data['upload']['overrideBasename']);
         $upload->setOverrideFilename($data['upload']['overrideFilename']);
         $upload->setTemporary($data['upload']['temporary']);
-        
+
         $this->upload = $upload;
-        
+
     }
-    
-    
+
+
     public function serialize()
     {
         $upload = $this->upload;
-        
+
         $uploadArr = array(
             'overrideBasename' => $upload->getOverrideBasename(),
             'overrideFilename' => $upload->getOverrideFilename(),
@@ -112,16 +115,16 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
             // 'dateUploaded' => $upload->getDateUploaded(),
             'realPath' => $upload->getRealPath(),
         );
-        
-        
+
+
         return serialize(array(
            'folder' => $this->folder,
            'profile' => $this->profile,
            'upload' => $uploadArr,
         ));
-                
+
     }
-    
-    
-    
+
+
+
 }
