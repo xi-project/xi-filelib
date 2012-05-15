@@ -971,11 +971,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
 
-
     }
-
-
-
-
 
 }
