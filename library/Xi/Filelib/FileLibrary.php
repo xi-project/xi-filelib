@@ -16,6 +16,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use InvalidArgumentException;
 use Xi\Filelib\Event\PluginEvent;
+use Xi\Filelib\Event\FilelibEvent;
 use Xi\Filelib\Queue\Queue;
 
 /**
@@ -31,7 +32,7 @@ class FileLibrary
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
-    
+
     /**
      * @var Backend Backend
      */
@@ -64,44 +65,44 @@ class FileLibrary
 
     /**
      * Temporary directory
-     * 
+     *
      * @var string
      */
     private $tempDir;
-    
+
     /**
      *
      * @var Queue
      */
     private $queue;
-    
 
-    
+
+
     /**
      * @return EventDispatcherInterface
      */
     public function getEventDispatcher()
     {
-                
-        
+
+
         if (!$this->eventDispatcher) {
             $this->eventDispatcher = new EventDispatcher();
         }
         return $this->eventDispatcher;
     }
 
-    
+
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
         return $this;
     }
-    
-    
-    
+
+
+
     /**
      * Sets temporary directory
-     * 
+     *
      * @param string $tempDir
      */
     public function setTempDir($tempDir)
@@ -114,7 +115,7 @@ class FileLibrary
 
     /**
      * Returns temporary directory
-     * 
+     *
      * @return string
      */
     public function getTempDir()
@@ -128,7 +129,7 @@ class FileLibrary
 
     /**
      * Shortcut to getFileOperator
-     * 
+     *
      * @return FileOperator
      */
     public function file()
@@ -138,7 +139,7 @@ class FileLibrary
 
     /**
      * Shortcut to getFolderOperator
-     * 
+     *
      * @return FolderOperator
      */
     public function folder()
@@ -148,8 +149,8 @@ class FileLibrary
 
     /**
      * Sets file operator
-     * 
-     * @param FileOperator $fileOperator 
+     *
+     * @param FileOperator $fileOperator
      * @return FileLibrary
      */
     public function setFileOperator(FileOperator $fileOperator)
@@ -160,8 +161,8 @@ class FileLibrary
 
     /**
      * Sets folder operator
-     * 
-     * @param FolderOperator $fileOperator 
+     *
+     * @param FolderOperator $fileOperator
      * @return FileLibrary
      */
     public function setFolderOperator(FolderOperator $folderOperator)
@@ -172,7 +173,7 @@ class FileLibrary
 
     /**
      * Returns file operator
-     * 
+     *
      * @return FileOperator
      */
     public function getFileOperator()
@@ -185,8 +186,8 @@ class FileLibrary
 
     /**
      * Returns folder operator
-     * 
-     * @return FolderOperator 
+     *
+     * @return FolderOperator
      */
     public function getFolderOperator()
     {
@@ -223,7 +224,7 @@ class FileLibrary
 
     /**
      * Returns fully qualified folderitem classname
-     * 
+     *
      * @return string
      */
     public function getFolderItemClass()
@@ -233,7 +234,7 @@ class FileLibrary
 
     /**
      * Returns fully qualified fileitem classname
-     * 
+     *
      * @return string
      */
     public function getFileItemClass()
@@ -333,7 +334,7 @@ class FileLibrary
 
     /**
      * Adds a file profile
-     * 
+     *
      * @param FileProfile $profile
      */
     public function addProfile(FileProfile $profile)
@@ -343,7 +344,7 @@ class FileLibrary
 
     /**
      * Returns all file profiles
-     * 
+     *
      * @return array
      */
     public function getProfiles()
@@ -360,36 +361,47 @@ class FileLibrary
     public function addPlugin(Plugin $plugin, $priority = 1000)
     {
         $plugin->setFilelib($this);
-        
+
         $this->getEventDispatcher()->addSubscriber($plugin);
-        
+
         $event = new PluginEvent($plugin);
         $this->getEventDispatcher()->dispatch('plugin.add', $event);
-        
+
         $plugin->init();
         return $this;
     }
-    
+
     /**
      * Sets queue
-     * 
-     * @param Queue $queue 
+     *
+     * @param Queue $queue
      */
     public function setQueue(Queue $queue)
     {
         $this->queue = $queue;
         return $this;
     }
-    
+
     /**
      * Returns queue
-     * 
+     *
      * @return Queue
      */
     public function getQueue()
     {
         return $this->queue;
     }
-    
+
+
+    /**
+     * Triggers init event. Kind of a kludge until better rethought.
+     *
+     */
+    public function dispatchInitEvent()
+    {
+        $event = new FilelibEvent($this);
+        $this->getEventDispatcher()->dispatch('filelib.init', $event);
+    }
+
 
 }
