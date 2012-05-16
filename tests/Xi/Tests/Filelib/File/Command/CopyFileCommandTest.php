@@ -37,9 +37,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $this->op->expects($this->any())->method('getAcl')->will($this->returnValue($this->acl));
 
         $this->folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
-
     }
-
 
     /**
      * @test
@@ -62,8 +60,6 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
             array('## copy', '##'),
         );
     }
-
-
 
     /**
      * @test
@@ -106,11 +102,9 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala.jpg'))
              ->will($this->returnValue(false));
 
-
         $impostor = $command->getImpostor($file);
 
         $this->assertEquals($file, $impostor);
-
     }
 
 
@@ -143,9 +137,6 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
-
-
-
     /**
      * @test
      * @expectedException Xi\Filelib\FilelibException
@@ -160,8 +151,6 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $command->execute();
 
     }
-
-
 
     /**
      * @test
@@ -204,8 +193,6 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
-
-
     /**
      * @test
      */
@@ -228,12 +215,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
          $this->assertAttributeEquals($file, 'file', $command2);
          $this->assertAttributeEquals($folder, 'folder', $command2);
-
     }
-
-
-
-
 
 }
 

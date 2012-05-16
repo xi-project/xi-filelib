@@ -38,9 +38,8 @@ class CopyFileCommand extends AbstractFileCommand implements Serializable
         $this->folder = $folder;
     }
 
-
     /**
-     * Generates name for a copy
+     * Generates name for a file copy
      *
      * @param type $oldName
      * @return string
@@ -73,6 +72,9 @@ class CopyFileCommand extends AbstractFileCommand implements Serializable
     }
 
     /**
+     * Clones the original file and iterates the impostor's names until
+     * a free one is found.
+     *
      * @return File
      */
     public function getImpostor()
@@ -85,17 +87,12 @@ class CopyFileCommand extends AbstractFileCommand implements Serializable
         }
 
         do {
-
             $impostor->setName($this->getCopyName($impostor->getName()));
             $found = $this->fileOperator->findByFilename($this->folder, $impostor->getName());
-
         } while ($found);
 
         $impostor->setFolderId($this->folder->getId());
-
         return $impostor;
-
-
     }
 
 
@@ -115,8 +112,6 @@ class CopyFileCommand extends AbstractFileCommand implements Serializable
 
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $impostor));
         return $command->execute();
-
-
     }
 
 
