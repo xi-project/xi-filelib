@@ -30,13 +30,13 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array())
                     ->getMock();
 
-        $this->acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
+        $this->acl = $this->getMock('Xi\Filelib\Acl\Acl');
 
         $this->op->expects($this->any())->method('getFolderOperator')->will($this->returnValue($this->fop));
 
         $this->op->expects($this->any())->method('getAcl')->will($this->returnValue($this->acl));
 
-        $this->folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $this->folder = $this->getMock('Xi\Filelib\Folder\Folder');
     }
 
     /**
@@ -159,9 +159,9 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $this->acl->expects($this->once())->method('isFolderWritable')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue(true));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
-        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $backend = $this->getMock('Xi\Filelib\Backend\Backend');
+        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $this->op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
         $this->op->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
         $this->op->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($eventDispatcher));
@@ -205,8 +205,8 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('getAcl'))
                     ->getMock();
 
-         $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
-         $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+         $file = $this->getMock('Xi\Filelib\File\File');
 
          $command = new CopyFileCommand($op, $file, $folder);
 

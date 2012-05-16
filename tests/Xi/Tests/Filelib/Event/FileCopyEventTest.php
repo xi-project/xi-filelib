@@ -22,8 +22,8 @@ class FileCopyEventTest extends \Xi\Tests\Filelib\TestCase
      */
     public function eventShouldInitializeCorrectly()
     {
-        $source = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-        $target = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+        $source = $this->getMock('Xi\Filelib\File\File');
+        $target = $this->getMock('Xi\Filelib\File\File');
 
         $event = new FileCopyEvent($source, $target);
 
