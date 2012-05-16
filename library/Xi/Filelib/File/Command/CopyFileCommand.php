@@ -41,7 +41,7 @@ class CopyFileCommand extends AbstractFileCommand implements Serializable
     /**
      * Generates name for a file copy
      *
-     * @param type $oldName
+     * @param string $oldName
      * @return string
      * @throws InvalidArgumentException
      */
