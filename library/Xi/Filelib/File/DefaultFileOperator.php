@@ -43,7 +43,8 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     const COMMAND_UPDATE = 'update';
     const COMMAND_DELETE = 'delete';
     const COMMAND_PUBLISH = 'publish';
-    const COMMAND_UNPUBLISH = 'publish';
+    const COMMAND_UNPUBLISH = 'unpublish';
+    const COMMAND_COPY = 'copy';
 
     protected $commandStrategies = array(
         self::COMMAND_UPLOAD => Command::STRATEGY_SYNCHRONOUS,
@@ -52,6 +53,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_PUBLISH => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_UNPUBLISH => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_COPY => Command::STRATEGY_SYNCHRONOUS,
     );
 
 
@@ -261,6 +263,23 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
             DefaultFileOperator::COMMAND_DELETE
         );
     }
+
+
+    /**
+     * Copies a file to folder
+     *
+     * @param File $file
+     * @param Folder $folder
+     */
+    public function copy(File $file, Folder $folder)
+    {
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\CopyFileCommand', array($this, $file, $folder)),
+            DefaultFileOperator::COMMAND_COPY
+        );
+
+    }
+
 
     /**
      * Returns file type of a file

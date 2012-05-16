@@ -20,7 +20,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertTrue(class_exists('Xi\Filelib\File\DefaultFileOperator'));
     }
 
-
     /**
      * @test
      */
@@ -35,10 +34,8 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_DELETE));
         $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_PUBLISH));
         $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UNPUBLISH));
-
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_COPY));
     }
-
-
 
     /**
      * @test
@@ -55,7 +52,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals(Command::STRATEGY_ASYNCHRONOUS, $op->getCommandStrategy(DefaultFileOperator::COMMAND_UPLOAD));
 
     }
-
 
     /**
      * @test
@@ -99,8 +95,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
-
-        /**
+    /**
      * @test
      */
     public function uploadShouldExecuteUploadAndQueueAfterUploadWhenSynchronousAndAsynchronousStrategiesAreUsed()
@@ -145,9 +140,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
-
-
-
     /**
      * @test
      */
@@ -182,266 +174,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
-    /**
-     * @test
-     */
-    public function updateShouldExecuteActionWhenSynchronousStrategyIsUsed()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-          $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-
-          $op->expects($this->never())->method('getQueue');
-
-          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-
-          $updateCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UpdateFileCommand')
-                               ->setConstructorArgs(array($op, $file))
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-          $updateCommand->expects($this->once())->method('execute');
-
-          $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))->will($this->returnValue($updateCommand));
-
-          $op->update($file);
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function updateShouldEnqueueActionWhenAsynchronousStrategyIsUsed()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-          $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-
-          $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-          $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
-
-          $op->expects($this->once())->method('getQueue')->will($this->returnValue($queue));
-
-          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-
-          $updateCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UpdateFileCommand')
-                               ->setConstructorArgs(array($op, $file))
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-          $updateCommand->expects($this->never())->method('execute');
-
-          $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))->will($this->returnValue($updateCommand));
-
-          $op->setCommandStrategy(DefaultFileOperator::COMMAND_UPDATE, Command::STRATEGY_ASYNCHRONOUS);
-          $op->update($file);
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function publishShouldExecuteActionWhenSynchronousStrategyIsUsed()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-          $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-
-          $op->expects($this->never())->method('getQueue');
-
-          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-
-          $command = $this->getMockBuilder('Xi\Filelib\File\Command\PublishFileCommand')
-                               ->setConstructorArgs(array($op, $file))
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-          $command->expects($this->once())->method('execute');
-
-          $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\PublishFileCommand'))->will($this->returnValue($command));
-
-          $op->publish($file);
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function publishShouldEnqueueActionWhenAsynchronousStrategyIsUsed()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-          $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-
-          $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-          $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
-
-          $op->expects($this->once())->method('getQueue')->will($this->returnValue($queue));
-
-          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-
-          $command = $this->getMockBuilder('Xi\Filelib\File\Command\PublishFileCommand')
-                               ->setConstructorArgs(array($op, $file))
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-          $command->expects($this->never())->method('execute');
-
-          $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\PublishFileCommand'))->will($this->returnValue($command));
-
-          $op->setCommandStrategy(DefaultFileOperator::COMMAND_PUBLISH, Command::STRATEGY_ASYNCHRONOUS);
-          $op->publish($file);
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function unpublishShouldExecuteActionWhenSynchronousStrategyIsUsed()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-          $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-
-          $op->expects($this->never())->method('getQueue');
-
-          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-
-          $command = $this->getMockBuilder('Xi\Filelib\File\Command\UnpublishFileCommand')
-                               ->setConstructorArgs(array($op, $file))
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-          $command->expects($this->once())->method('execute');
-
-          $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UnpublishFileCommand'))->will($this->returnValue($command));
-
-          $op->unpublish($file);
-
-    }
-
-
-
-
-    /**
-     * @test
-     */
-    public function unpublishShouldEnqueueActionWhenAsynchronousStrategyIsUsed()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-          $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-
-          $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-          $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
-
-          $op->expects($this->once())->method('getQueue')->will($this->returnValue($queue));
-
-          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-
-          $command = $this->getMockBuilder('Xi\Filelib\File\Command\UnpublishFileCommand')
-                               ->setConstructorArgs(array($op, $file))
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-          $command->expects($this->never())->method('execute');
-
-          $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UnpublishFileCommand'))->will($this->returnValue($command));
-
-          $op->setCommandStrategy(DefaultFileOperator::COMMAND_UNPUBLISH, Command::STRATEGY_ASYNCHRONOUS);
-          $op->unpublish($file);
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function deleteShouldExecuteActionWhenSynchronousStrategyIsUsed()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-          $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-
-          $op->expects($this->never())->method('getQueue');
-
-          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-
-          $command = $this->getMockBuilder('Xi\Filelib\File\Command\DeleteFileCommand')
-                               ->setConstructorArgs(array($op, $file))
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-          $command->expects($this->once())->method('execute');
-
-          $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))->will($this->returnValue($command));
-
-          $op->delete($file);
-
-    }
-
-
-
-
-    /**
-     * @test
-     */
-    public function deleteShouldEnqueueActionWhenAsynchronousStrategyIsUsed()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-          $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-
-          $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-          $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
-
-          $op->expects($this->once())->method('getQueue')->will($this->returnValue($queue));
-
-          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-
-          $command = $this->getMockBuilder('Xi\Filelib\File\Command\DeleteFileCommand')
-                               ->setConstructorArgs(array($op, $file))
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-          $command->expects($this->never())->method('execute');
-
-          $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))->will($this->returnValue($command));
-
-          $op->setCommandStrategy(DefaultFileOperator::COMMAND_DELETE, Command::STRATEGY_ASYNCHRONOUS);
-          $op->delete($file);
-
-    }
-
-
 
     /**
      * @test
@@ -456,12 +188,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertSame($op, $op->setClass($val));
         $this->assertEquals($val, $op->getClass());
 
-        /*
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $this->assertEquals(null, $profile->getFilelib());
-        $this->assertSame($profile, $profile->setFilelib($filelib));
-        $this->assertSame($filelib, $profile->getFilelib());
-        */
     }
 
     /**
@@ -639,8 +365,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals($id, $file->getId());
 
     }
-
-
 
     /**
      * @test
@@ -972,5 +696,72 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
 
     }
+
+    public function provideCommandMethods()
+    {
+        return array(
+            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', DefaultFileOperator::COMMAND_COPY, Command::STRATEGY_ASYNCHRONOUS, true, true),
+            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', DefaultFileOperator::COMMAND_COPY, Command::STRATEGY_SYNCHRONOUS, false, true),
+            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', DefaultFileOperator::COMMAND_DELETE, Command::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', DefaultFileOperator::COMMAND_DELETE, Command::STRATEGY_SYNCHRONOUS, false, false),
+            array('Xi\Filelib\File\Command\PublishFileCommand', 'publish', DefaultFileOperator::COMMAND_PUBLISH, Command::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\PublishFileCommand', 'publish', DefaultFileOperator::COMMAND_PUBLISH, Command::STRATEGY_SYNCHRONOUS, false, false),
+            array('Xi\Filelib\File\Command\UnpublishFileCommand', 'unpublish', DefaultFileOperator::COMMAND_UNPUBLISH, Command::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\UnpublishFileCommand', 'unpublish', DefaultFileOperator::COMMAND_UNPUBLISH, Command::STRATEGY_SYNCHRONOUS, false, false),
+            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', DefaultFileOperator::COMMAND_UPDATE, Command::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', DefaultFileOperator::COMMAND_UPDATE, Command::STRATEGY_SYNCHRONOUS, false, false),
+        );
+
+
+    }
+
+    /**
+     * @test
+     * @dataProvider provideCommandMethods
+     */
+    public function commandMethodsShouldExecuteOrEnqeueDependingOnStrategy($commandClass, $operatorMethod, $commandName, $strategy, $queueExpected, $fileAndFolder)
+    {
+
+         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
+          $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+                   ->setMethods(array('createCommand', 'getQueue'))
+                   ->setConstructorArgs(array($filelib))
+                   ->getMock();
+
+          $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
+          $op->expects($this->any())->method('getQueue')->will($this->returnValue($queue));
+
+          $command = $this->getMockBuilder($commandClass)
+                          ->disableOriginalConstructor()
+                          ->setMethods(array('execute'))
+                          ->getMock();
+
+          if ($queueExpected) {
+              $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
+              $command->expects($this->never())->method('execute');
+          } else {
+              $queue->expects($this->never())->method('enqueue');
+              $command->expects($this->once())->method('execute');
+          }
+
+          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+          $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+
+          $op->expects($this->once())->method('createCommand')->with($this->equalTo($commandClass))->will($this->returnValue($command));
+
+          $op->setCommandStrategy($commandName, $strategy);
+
+          if ($fileAndFolder) {
+              $op->$operatorMethod($file, $folder);
+          } else {
+              $op->$operatorMethod($file);
+          }
+
+
+
+    }
+
+
 
 }

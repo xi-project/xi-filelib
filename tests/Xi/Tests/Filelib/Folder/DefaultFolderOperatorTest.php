@@ -18,7 +18,6 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertTrue(class_exists('Xi\Filelib\Folder\DefaultFolderOperator'));
     }
 
-
     /**
      * @test
      */
@@ -28,7 +27,6 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op = new DefaultFolderOperator($filelib);
 
         $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(DefaultFolderOperator::COMMAND_CREATE));
-
     }
 
 
@@ -43,11 +41,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
             array('Xi\Filelib\Folder\Command\UpdateFolderCommand', 'update', DefaultFolderOperator::COMMAND_UPDATE, Command::STRATEGY_SYNCHRONOUS, false),
             array('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', 'createByUrl', DefaultFolderOperator::COMMAND_CREATE_BY_URL, Command::STRATEGY_ASYNCHRONOUS, true),
             array('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', 'createByUrl', DefaultFolderOperator::COMMAND_CREATE_BY_URL, Command::STRATEGY_SYNCHRONOUS, false),
-
-
         );
-
-
     }
 
 
@@ -60,34 +54,33 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
          $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-          $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
+        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
+               ->setMethods(array('createCommand', 'getQueue'))
+               ->setConstructorArgs(array($filelib))
+               ->getMock();
 
-          $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-          $op->expects($this->any())->method('getQueue')->will($this->returnValue($queue));
+        $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
+        $op->expects($this->any())->method('getQueue')->will($this->returnValue($queue));
 
-          $command = $this->getMockBuilder($commandClass)
-                          ->disableOriginalConstructor()
-                          ->setMethods(array('execute'))
-                          ->getMock();
+        $command = $this->getMockBuilder($commandClass)
+                        ->disableOriginalConstructor()
+                        ->setMethods(array('execute'))
+                        ->getMock();
 
-          if ($queueExpected) {
-              $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
-              $command->expects($this->never())->method('execute');
-          } else {
-              $queue->expects($this->never())->method('enqueue');
-              $command->expects($this->once())->method('execute');
-          }
+        if ($queueExpected) {
+            $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
+            $command->expects($this->never())->method('execute');
+        } else {
+            $queue->expects($this->never())->method('enqueue');
+            $command->expects($this->once())->method('execute');
+        }
 
-          $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
 
-          $op->expects($this->once())->method('createCommand')->with($this->equalTo($commandClass))->will($this->returnValue($command));
+        $op->expects($this->once())->method('createCommand')->with($this->equalTo($commandClass))->will($this->returnValue($command));
 
-          $op->setCommandStrategy($commandName, $strategy);
-          $op->$operatorMethod($folder);
-
+        $op->setCommandStrategy($commandName, $strategy);
+        $op->$operatorMethod($folder);
     }
 
 
@@ -136,11 +129,13 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op = new DefaultFolderOperator($filelib);
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findFolder')->with($this->equalTo($id))->will($this->returnValue(
-                        array(
-                            'id' => $id,
-                            'parent_id' => null,
-                        )
+        $backend->expects($this->once())
+                ->method('findFolder')
+                ->with($this->equalTo($id))->will($this->returnValue(
+                    array(
+                        'id' => $id,
+                        'parent_id' => null,
+                    )
                 ));
 
         $filelib->setBackend($backend);
@@ -166,10 +161,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findFilesIn')->with($this->equalTo($folder))->will($this->returnValue(
-                        array(
-                        )
-                ));
+        $backend->expects($this->once())->method('findFilesIn')->with($this->equalTo($folder))->will($this->returnValue(array()));
 
         $filelib->setBackend($backend);
 
@@ -198,19 +190,23 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                      ->getMock();
 
 
-        $fiop->expects($this->exactly(3))->method('getInstanceAndTriggerEvent')->will($this->returnValue($this->getMockForAbstractClass('Xi\Filelib\File\File')));
+        $fiop->expects($this->exactly(3))->method('getInstanceAndTriggerEvent')
+              ->will($this->returnValue($this->getMockForAbstractClass('Xi\Filelib\File\File')));
 
         $op->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
 
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findFilesIn')->with($this->equalTo($folder))->will($this->returnValue(
-                        array(
-                            array('id' => 1, 'mimetype' => 'lus/xoo'),
-                            array('id' => 2, 'mimetype' => 'lus/xoo'),
-                            array('id' => 3, 'mimetype' => 'lus/tus'),
-                        )
+        $backend->expects($this->once())
+                ->method('findFilesIn')
+                ->with($this->equalTo($folder))
+                ->will($this->returnValue(
+                    array(
+                        array('id' => 1, 'mimetype' => 'lus/xoo'),
+                        array('id' => 2, 'mimetype' => 'lus/xoo'),
+                        array('id' => 3, 'mimetype' => 'lus/tus'),
+                    )
                 ));
 
         $filelib->setBackend($backend);
@@ -224,7 +220,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $file = $files->current();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-        
+
     }
 
     /**
@@ -264,9 +260,8 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findFolder')->with($this->equalTo($id))->will($this->returnValue(
-                        false
-                ));
+        $backend->expects($this->once())->method('findFolder')
+                ->with($this->equalTo($id))->will($this->returnValue(false));
 
         $filelib->setBackend($backend);
 
@@ -290,9 +285,9 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findFolder')->with($this->equalTo($id))->will($this->returnValue(
-                        array('id' => 5, 'parent_id' => 6)
-                ));
+        $backend->expects($this->once())->method('findFolder')
+                ->with($this->equalTo($id))
+                ->will($this->returnValue(array('id' => 5, 'parent_id' => 6)));
 
         $filelib->setBackend($backend);
 
@@ -352,10 +347,9 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findSubFolders')->with($this->equalTo($folder))->will($this->returnValue(
-                        array(
-                        )
-                ));
+        $backend->expects($this->once())->method('findSubFolders')
+                ->with($this->equalTo($folder))
+                ->will($this->returnValue(array()));
 
         $filelib->setBackend($backend);
 
@@ -377,12 +371,14 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findSubFolders')->with($this->equalTo($folder))->will($this->returnValue(
-                        array(
-                            array('id' => 433, 'parent_id' => null),
-                            array('id' => 24, 'parent_id' => 1),
-                            array('id' => 3, 'parent_id' => 2),
-                        )
+        $backend->expects($this->once())->method('findSubFolders')
+                ->with($this->equalTo($folder))
+                ->will($this->returnValue(
+                    array(
+                        array('id' => 433, 'parent_id' => null),
+                        array('id' => 24, 'parent_id' => 1),
+                        array('id' => 3, 'parent_id' => 2),
+                    )
                 ));
 
         $filelib->setBackend($backend);
@@ -412,9 +408,8 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op = new DefaultFolderOperator($filelib);
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findFolderByUrl')->with($this->equalTo($id))->will($this->returnValue(
-                        false
-                ));
+        $backend->expects($this->once())->method('findFolderByUrl')
+                ->with($this->equalTo($id))->will($this->returnValue(false));
 
         $filelib->setBackend($backend);
 
@@ -434,8 +429,10 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op = new DefaultFolderOperator($filelib);
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findFolderByUrl')->with($this->equalTo($id))->will($this->returnValue(
-                        array('url' => 'ussen/tussi', 'id' => 644)
+        $backend->expects($this->once())->method('findFolderByUrl')
+                ->with($this->equalTo($id))
+                ->will($this->returnValue(
+                    array('url' => 'ussen/tussi', 'id' => 644)
                 ));
 
         $filelib->setBackend($backend);
@@ -458,9 +455,8 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op = new DefaultFolderOperator($filelib);
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findRootFolder')->will($this->returnValue(
-                        false
-                ));
+        $backend->expects($this->once())->method('findRootFolder')
+                ->will($this->returnValue(false));
 
         $filelib->setBackend($backend);
 
@@ -479,8 +475,10 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op = new DefaultFolderOperator($filelib);
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('findRootFolder')->will($this->returnValue(
-                        array('id' => 1, 'parent_id' => null)
+        $backend->expects($this->once())
+                ->method('findRootFolder')
+                ->will($this->returnValue(
+                    array('id' => 1, 'parent_id' => null)
                 ));
 
         $filelib->setBackend($backend);
@@ -518,7 +516,8 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         // $op->expects($this->exactly(4))->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->any())->method('findFolder')
+        $backend->expects($this->any())
+                ->method('findFolder')
                 ->will($this->returnCallback(function($folderId) {
 
                     $farr = array(
@@ -539,8 +538,9 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                     }
 
                     return false;
-
-                 }));
+                }
+            )
+        );
 
         $filelib->setBackend($backend);
 
@@ -550,10 +550,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertEquals($expected, $route);
 
-
     }
-
-
 
 
    /**
