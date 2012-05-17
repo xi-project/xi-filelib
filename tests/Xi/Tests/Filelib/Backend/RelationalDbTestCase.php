@@ -136,6 +136,16 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     /**
      * @return array
      */
+    public function folderIdWithFilesProvider()
+    {
+        return array(
+            array(1),
+        );
+    }
+
+    /**
+     * @return array
+     */
     public function findFileProvider()
     {
         return array(
