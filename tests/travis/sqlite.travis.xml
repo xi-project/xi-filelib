@@ -10,7 +10,7 @@
         <includePath>.:./ZendFramework-1.11.11-minimal/library</includePath>
         <const name="PDO_DRIVER" value="sqlite" />
         <const name="PDO_HOST" value="" />
-        <const name="PDO_DBNAME" value="./../../xi_filelib_test" />
+        <const name="PDO_DBNAME" value="./../xi_filelib_test" />
         <const name="PDO_USERNAME" value="" />
         <const name="PDO_PASSWORD" value="" />
         <const name="MONGO_DNS" value="mongodb://localhost:27017/" />
