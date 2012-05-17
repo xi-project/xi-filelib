@@ -199,21 +199,29 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
+     * @dataProvider folderIdWithFilesProvider
+     * @param mixed $folderId
+     *
+     * TODO: Is this actually what we want? How should one actually delete a
+     *       folder with all files?
      */
-    public function deleteFolderShouldThrowExceptionWhenDeletingFolderWithFiles()
-    {
+    public function deleteFolderThrowsExceptionWhenDeletingFolderWithFiles(
+        $folderId
+    ) {
         $this->setUpSimpleDataSet();
 
-        $data = array(
-            'id'        => 4,
+        $folder = FolderItem::create(array(
+            'id'        => $folderId,
             'parent_id' => null,
             'name'      => 'klus',
+        ));
+
+        $this->assertInternalType('array', $this->backend->findFolder($folderId));
+
+        $this->setExpectedException(
+            'Xi\Filelib\FilelibException',
+            'Can not delete folder with files'
         );
-
-        $folder = FolderItem::create($data);
-
-        $this->assertInternalType('array', $this->backend->findFolder(5));
 
         $this->backend->deleteFolder($folder);
     }

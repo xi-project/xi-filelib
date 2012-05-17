@@ -296,6 +296,16 @@ class MongoBackendTest extends AbstractBackendTest
     /**
      * @return array
      */
+    public function folderIdWithFilesProvider()
+    {
+        return array(
+            array('49a7011a05c677b9a9166101'),
+        );
+    }
+
+    /**
+     * @return array
+     */
     public function findFileProvider()
     {
         return array(
