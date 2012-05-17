@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit bootstrap="./../bootstrap.php" colors="true">
+    <testsuites>
+        <testsuite name="xi-filelib tests">
+            <directory>./../Xi</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <includePath>.:./ZendFramework-1.11.11-minimal/library</includePath>
+        <const name="PDO_DRIVER" value="sqlite" />
+        <const name="PDO_HOST" value="" />
+        <const name="PDO_DBNAME" value="xi_filelib_test" />
+        <const name="PDO_USERNAME" value="" />
+        <const name="PDO_PASSWORD" value="" />
+        <const name="MONGO_DNS" value="mongodb://localhost:27017/" />
+        <const name="S3_KEY" value="s3_key" />
+        <const name="S3_SECRETKEY" value="s3_secret_key" />
+        <const name="S3_SECRETKEY" value="puuppafilelib" />
+        <const name="S3_BUCKET" value="s3_bucket_name" />
+        <const name="RABBITMQ_HOST" value="" />
+        <const name="RABBITMQ_PORT" value="5672" />
+        <const name="RABBITMQ_VHOST" value="/" />
+        <const name="RABBITMQ_USERNAME" value="" />
+        <const name="RABBITMQ_PASSWORD" value="" />
+    </php>
+</phpunit>
