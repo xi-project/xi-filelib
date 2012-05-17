@@ -247,6 +247,16 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     }
 
     /**
+     * @return array
+     */
+    public function nonExistingFolderIdProvider()
+    {
+        return array(
+            array(900),
+        );
+    }
+
+    /**
      * @return ArrayDataSet
      */
     private function getSimpleDataSet()

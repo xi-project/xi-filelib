@@ -102,12 +102,15 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
+     * @dataProvider nonExistingFolderIdProvider
+     * @param mixed $folderId
      */
-    public function findFolderShouldReturnNullWhenTryingToFindNonExistingFolder()
-    {
+    public function findFolderShouldReturnNullWhenTryingToFindNonExistingFolder(
+        $folderId
+    ) {
         $this->setUpEmptyDataSet();
 
-        $this->assertFalse($this->backend->findFolder(900));
+        $this->assertFalse($this->backend->findFolder($folderId));
     }
 
     /**
@@ -217,18 +220,18 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
+     * @dataProvider nonExistingFolderIdProvider
+     * @param mixed $folderId
      */
-    public function deleteFolderShouldNotDeleteNonExistingFolder()
+    public function deleteFolderShouldNotDeleteNonExistingFolder($folderId)
     {
         $this->setUpEmptyDataSet();
 
-        $data = array(
-            'id'        => 423789,
+        $folder = FolderItem::create(array(
+            'id'        => $folderId,
             'parent_id' => null,
             'name'      => 'klus',
-        );
-
-        $folder = FolderItem::create($data);
+        ));
 
         $this->assertFalse($this->backend->deleteFolder($folder));
     }
@@ -291,16 +294,15 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
+     * @dataProvider nonExistingFolderIdProvider
+     * @param mixed $folderId
      */
-    public function updateFolderShouldNotUpdateNonExistingFolder()
+    public function updateFolderShouldNotUpdateNonExistingFolder($folderId)
     {
         $this->setUpEmptyDataSet();
 
         $folder = FolderItem::create(array(
-            'id'        => 333,
-            'parent_id' => 1,
-            'url'       => 'lussuttaja/lussander',
-            'name'      => 'lussander',
+            'id' => $folderId,
         ));
 
         $this->assertFalse($this->backend->updateFolder($folder));
@@ -497,12 +499,14 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
+     * @dataProvider findFileProvider
+     * @param mixed $fileId
      */
-    public function findFileReturnsFalseIfFileIsNotFound()
+    public function findFileReturnsFalseIfFileIsNotFound($fileId)
     {
         $this->setUpEmptyDataSet();
 
-        $this->assertFalse($this->backend->findFile(1));
+        $this->assertFalse($this->backend->findFile($fileId));
     }
 
     /**
@@ -800,13 +804,15 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
+     * @dataProvider folderIdProvider
+     * @param mixed $folderId
      */
-    public function findFileByFilenameShouldNotFindNonExistingFile()
+    public function findFileByFilenameShouldNotFindNonExistingFile($folderId)
     {
         $this->setUpSimpleDataSet();
 
         $folder = FolderItem::create(array(
-            'id'        => 1,
+            'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
             'name'      => '',

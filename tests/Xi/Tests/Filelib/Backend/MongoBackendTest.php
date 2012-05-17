@@ -230,11 +230,13 @@ class MongoBackendTest extends AbstractBackendTest
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function findFolderShouldReturnNullWhenTryingToFindNonExistingFolder()
+    public function nonExistingFolderIdProvider()
     {
-        $this->assertFalse($this->backend->findFolder('49a7011a05c677b9a9166188'));
+        return array(
+            array('49a7011a05c677b9a9166188'),
+        );
     }
 
     /**
@@ -248,22 +250,6 @@ class MongoBackendTest extends AbstractBackendTest
     }
 
     /**
-     * @test
-     */
-    public function deleteFolderShouldNotDeleteNonExistingFolder()
-    {
-        $data = array(
-            'id'        => '49a7011a05c677b9a9166100',
-            'parent_id' => null,
-            'name'      => 'klus',
-        );
-
-        $folder = FolderItem::create($data);
-
-        $this->assertFalse($this->backend->deleteFolder($folder));
-    }
-
-    /**
      * @return array
      */
     public function updateFolderProvider()
@@ -271,21 +257,6 @@ class MongoBackendTest extends AbstractBackendTest
         return array(
             array('49a7011a05c677b9a9166103', '49a7011a05c677b9a9166102', '49a7011a05c677b9a9166101')
         );
-    }
-
-    /**
-     * @test
-     */
-    public function updateFolderShouldNotUpdateNonExistingFolder()
-    {
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166166',
-            'parent_id' => 1,
-            'url'       => 'lussuttaja/lussander',
-            'name'      => 'lussander',
-        ));
-
-        $this->assertFalse($this->backend->updateFolder($folder));
     }
 
     /**
@@ -311,16 +282,6 @@ class MongoBackendTest extends AbstractBackendTest
     }
 
     /**
-     * @test
-     */
-    public function findFolderByUrlShouldNotReturnNonExistingFolder()
-    {
-        $this->assertFalse(
-            $this->backend->findFolderByUrl('lussuttaja/tussinnnnn')
-        );
-    }
-
-    /**
      * @return array
      */
     public function findFilesInProvider()
@@ -339,25 +300,6 @@ class MongoBackendTest extends AbstractBackendTest
     {
         return array(
             array('49a7011a05c677b9a9166106'),
-        );
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function findFileShouldFailWhenIdentifierIsInvalid()
-    {
-        $ret = $this->backend->findFile(155);
-    }
-
-    /**
-     * @test
-     */
-    public function findFileReturnsFalseIfFileIsNotFound()
-    {
-        $this->assertFalse(
-            $this->backend->findFile('49a7011a05c677b9a9166156')
         );
     }
 
@@ -429,39 +371,5 @@ class MongoBackendTest extends AbstractBackendTest
         return array(
             array('49a7011a05c677b9a9166666'),
         );
-    }
-
-    /**
-     * @test
-     */
-    public function findFileByFilenameShouldNotFindNonExistingFile()
-    {
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166101',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $this->assertFalse(
-            $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
-        );
-    }
-    
-    /**
-     * @test
-     */
-    public function findRootFolderShouldCreateRootFolderIfItDoesNotExist()
-    {
-        $this->mongo->folders->remove(array(), array('safe' => true));
-        
-        $folder = $this->backend->findRootFolder();
-
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-
-        $this->assertNull($folder['parent_id']);
     }
 }
