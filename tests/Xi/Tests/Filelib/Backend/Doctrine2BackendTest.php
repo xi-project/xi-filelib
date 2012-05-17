@@ -88,8 +88,10 @@ class Doctrine2BackendTest extends RelationalDbTestCase
 
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
-            ->method('find')
-            ->will($this->throwException(new EntityNotFoundException()));
+           ->method('find')
+           ->will($this->throwException(new EntityNotFoundException()));
+
+        $this->returnEmptyArrayForFindFilesInFolder($em);
 
         $this->backend->setEntityManager($em);
 
@@ -100,6 +102,23 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         ));
 
         $this->assertFalse($this->backend->deleteFolder($folder));
+    }
+
+    /**
+     * @param EntityManager $em
+     */
+    private function returnEmptyArrayForFindFilesInFolder(EntityManager $em)
+    {
+        $repository = $this->getMockAndDisableOriginalConstructor(
+            'Doctrine\ORM\EntityRepository'
+        );
+        $repository->expects($this->once())
+                   ->method('findBy')
+                   ->will($this->returnValue(array()));
+
+        $em->expects($this->once())
+           ->method('getRepository')
+           ->will($this->returnValue($repository));
     }
 
     /**

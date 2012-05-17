@@ -230,10 +230,15 @@ abstract class AbstractBackend implements Backend
      *
      * @param  Folder           $folder
      * @return boolean          True if deleted successfully.
-     * @throws FilelibException If folder could not be deleted.
+     * @throws FilelibException If folder could not be deleted or if folder
+     *                          contains files.
      */
     public function deleteFolder(Folder $folder)
     {
+        if (count($this->findFilesIn($folder))) {
+            throw new FilelibException('Can not delete folder with files');
+        }
+
         try {
             return (bool) $this->doDeleteFolder($folder);
         } catch (Exception $e) {
