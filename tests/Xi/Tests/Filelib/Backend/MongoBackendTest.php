@@ -2,31 +2,95 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use PHPUnit_Framework_TestCase,
-    Xi\Filelib\Backend\MongoBackend,
-    Xi\Filelib\Folder\FolderItem,
-    Xi\Filelib\File\FileItem,
-    DateTime,
-    Mongo,
-    MongoDB,
-    MongoId,
-    MongoDate,
-    MongoConnectionException;
+use PHPUnit_Framework_TestCase;
+use Xi\Filelib\Backend\MongoBackend;
+use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\File\FileItem;
+use DateTime;
+use Mongo;
+use MongoDB;
+use MongoId;
+use MongoDate;
+use MongoConnectionException;
 
 /**
  * @group mongo
  */
-class MongoBackendTest extends PHPUnit_Framework_TestCase
+class MongoBackendTest extends AbstractBackendTest
 {
-    /**
-     * @var MongoBackend
-     */
-    protected $backend;
-
     /**
      * @var @MongoDB
      */
     protected $mongo;
+
+    /**
+     * Implements AbstractBackendTest::setUpBackend
+     *
+     * @return MongoBackend
+     */
+    protected function setUpBackend()
+    {
+        if (!extension_loaded('mongo')) {
+            $this->markTestSkipped('MongoDB extension is not loaded.');
+        }
+
+        try {
+            $mongo = new Mongo(MONGO_DNS, array('connect' => true));
+        } catch (MongoConnectionException $e) {
+            $this->markTestSkipped('Can not connect to MongoDB.');
+        }
+
+        // TODO: Fix hard coded db name.
+        $this->mongo = $mongo->filelib_tests;
+
+        return new MongoBackend($this->mongo);
+    }
+
+    protected function tearDown()
+    {
+        if (extension_loaded('mongo') && $this->mongo) {
+            foreach ($this->mongo->listCollections() as $collection) {
+                $collection->drop();
+            }
+        }
+
+        $this->mongo = null;
+    }
+
+    /**
+     * Implements AbstractBackendTest::setUpEmptyDataSet
+     */
+    protected function setUpEmptyDataSet()
+    {
+        $this->setUpIndexes();
+    }
+
+    /**
+     * Implements AbstractBackendTest::setUpSimpleDataSet
+     */
+    protected function setUpSimpleDataSet()
+    {
+        $this->setUpIndexes();
+
+        foreach ($this->getData() as $coll => $objects) {
+            foreach ($objects as $obj) {
+                $this->mongo->$coll->insert($obj);
+            }
+        }
+    }
+
+    private function setUpIndexes()
+    {
+        $this->mongo->files->ensureIndex(array(
+            'folder_id' => 1,
+            'name'      => 1
+        ), array('unique' => true));
+
+        $this->mongo->folders->ensureIndex(
+            array('name' => 1),
+            array('unique' => true)
+        );
+    }
 
     /**
      * @return array
@@ -76,7 +140,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'tohtori-vesala.png',
                     'link'          => 'tohtori-vesala.png',
                     'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
-                    'status'    => 1,
+                    'status'        => 1,
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166107'),
@@ -87,7 +151,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'akuankka.png',
                     'link'          => 'lussuttaja/akuankka.png',
                     'date_uploaded' => new DateTime('2011-01-01 15:15:15'),
-                    'status'    => 2,
+                    'status'        => 2,
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166108'),
@@ -98,7 +162,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'repesorsa.png',
                     'link'          => 'lussuttaja/tussin/repesorsa.png',
                     'date_uploaded' => new DateTime('2011-01-01 15:15:15'),
-                    'status'    => 4,
+                    'status'        => 4,
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166109'),
@@ -109,7 +173,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'megatussi.png',
                     'link'          => 'lussuttaja/banskun/megatussi.png',
                     'date_uploaded' => new DateTime('2011-01-02 15:15:15'),
-                    'status'    => 8,
+                    'status'        => 8,
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166110'),
@@ -120,7 +184,7 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
                     'name'          => 'megatussi2.png',
                     'link'          => 'lussuttaja/banskun/megatussi2.png',
                     'date_uploaded' => new DateTime('2011-01-03 15:15:15'),
-                    'status'    => 16,
+                    'status'        => 16,
                 ),
             ),
         );
@@ -132,67 +196,20 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
         return $data;
     }
 
-    public function setUp()
-    {
-        if (!extension_loaded('mongo')) {
-            $this->markTestSkipped('MongoDB extension is not loaded.');
-        }
-
-        try {
-            $mongo = new Mongo(MONGO_DNS, array('connect' => true));
-        } catch (MongoConnectionException $e) {
-            $this->markTestSkipped('Can not connect to MongoDB.');
-        }
-
-        $this->mongo = $mongo->filelib_tests;
-
-        $this->mongo->files->ensureIndex(array(
-            'folder_id' => 1,
-            'name'      => 1
-        ), array('unique' => true));
-
-        $this->mongo->folders->ensureIndex(
-            array('name' => 1),
-            array('unique' => true)
-        );
-
-        $this->backend = new MongoBackend($this->mongo);
-
-        foreach ($this->getData() as $coll => $objects) {
-            foreach ($objects as $obj) {
-                $this->mongo->$coll->insert($obj);
-            }
-        }
-    }
-
-    protected function tearDown()
-    {
-        if (extension_loaded('mongo') && $this->mongo) {
-            foreach ($this->mongo->listCollections() as $collection) {
-                $collection->drop();
-            }
-        }
-    }
-
     /**
-     * @test
+     * @return array
      */
-    public function findRootFolderShouldReturnRootFolder()
+    public function rootFolderIdProvider()
     {
-        $folder = $this->backend->findRootFolder();
-
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-
-        $this->assertNull($folder['parent_id']);
+        return array(
+            array('49a7011a05c677b9a9166101'),
+        );
     }
 
     /**
      * @return array
      */
-    public function provideForFindFolder()
+    public function findFolderProvider()
     {
         return array(
             array('49a7011a05c677b9a9166101', array('name' => 'root')),
@@ -203,480 +220,156 @@ class MongoBackendTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     * @dataProvider provideForFindFolder
+     * @return array
      */
-    public function findFolderShouldReturnCorrectFolder($folderId, $data)
+    public function filelessFolderIdProvider()
     {
-        $folder = $this->backend->findFolder($folderId);
-
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-
-        $this->assertEquals($folderId, $folder['id']);
-        $this->assertEquals($data['name'], $folder['name']);
-    }
-
-    /**
-     * @test
-     */
-    public function findFolderShouldReturnNullWhenTryingToFindNonExistingFolder()
-    {
-        $this->assertFalse($this->backend->findFolder('49a7011a05c677b9a9166188'));
-    }
-
-    /**
-     * @test
-     */
-    public function createFolderShouldCreateFolder()
-    {
-        $data = array(
-            'parent_id' => '49a7011a05c677b9a9166103',
-            'name'      => 'lusander',
-            'url'       => 'lussuttaja/tussin/lusander',
-        );
-
-        $folder = FolderItem::create($data);
-
-        $this->assertNull($folder->getId());
-
-        $ret = $this->backend->createFolder($folder);
-
-        $this->assertInternalType('string', $ret->getId());
-    }
-
-    /**
-     * @test
-     */
-    public function deleteFolderShouldDeleteFolder()
-    {
-        $data = array(
-            'id'        => '49a7011a05c677b9a9166105',
-            'parent_id' => null,
-            'name'      => 'klus',
-        );
-
-        $folder = FolderItem::create($data);
-
-        $this->assertInternalType('array', $this->backend->findFolder('49a7011a05c677b9a9166105'));
-
-        $this->assertTrue($this->backend->deleteFolder($folder));
-
-        $this->assertFalse($this->backend->findFolder('49a7011a05c677b9a9166105'));
-    }
-
-    /**
-     * @test
-     */
-    public function deleteFolderShouldNotDeleteNonExistingFolder()
-    {
-        $data = array(
-            'id'        => '49a7011a05c677b9a9166100',
-            'parent_id' => null,
-            'name'      => 'klus',
-        );
-
-        $folder = FolderItem::create($data);
-
-        $this->assertFalse($this->backend->deleteFolder($folder));
-    }
-
-    /**
-     * @test
-     */
-    public function updateFolderShouldUpdateFolder()
-    {
-        $data = array(
-            'id'        => '49a7011a05c677b9a9166103',
-            'parent_id' => '49a7011a05c677b9a9166102',
-            'url'       => 'lussuttaja/tussin',
-            'name'      => 'tussin',
-        );
-
-        $this->assertEquals($data, $this->backend->findFolder('49a7011a05c677b9a9166103'));
-
-        $updateData = array(
-            'id'        => '49a7011a05c677b9a9166103',
-            'parent_id' => '49a7011a05c677b9a9166101',
-            'url'       => 'lussuttaja/lussander',
-            'name'      => 'lussander',
-        );
-
-        $folder = FolderItem::create($updateData);
-
-        $this->assertTrue($this->backend->updateFolder($folder));
-        $this->assertEquals($updateData, $this->backend->findFolder('49a7011a05c677b9a9166103'));
-    }
-
-    /**
-     * @test
-     */
-    public function updateFolderShouldNotUpdateNonExistingFolder()
-    {
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166166',
-            'parent_id' => 1,
-            'url'       => 'lussuttaja/lussander',
-            'name'      => 'lussander',
-        ));
-
-        $this->assertFalse($this->backend->updateFolder($folder));
-    }
-
-    /**
-     * @test
-     */
-    public function findSubFoldersShouldReturnArrayOfSubFolders()
-    {
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166101',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $ret = $this->backend->findSubFolders($folder);
-
-        $this->assertInternalType('array', $ret);
-        $this->assertCount(1, $ret);
-
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166102',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $ret = $this->backend->findSubFolders($folder);
-
-        $this->assertInternalType('array', $ret);
-        $this->assertCount(3, $ret);
-
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166104',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $ret = $this->backend->findSubFolders($folder);
-
-        $this->assertInternalType('array', $ret);
-        $this->assertCount(0, $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function findFolderByUrlShouldReturnFolder()
-    {
-        $ret = $this->backend->findFolderByUrl('lussuttaja/tussin');
-
-        $this->assertInternalType('array', $ret);
-        $this->assertEquals('49a7011a05c677b9a9166103', $ret['id']);
-    }
-
-    /**
-     * @test
-     */
-    public function findFolderByUrlShouldNotReturnNonExistingFolder()
-    {
-        $this->assertFalse(
-            $this->backend->findFolderByUrl('lussuttaja/tussinnnnn')
+        return array(
+            array('49a7011a05c677b9a9166105'),
         );
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function findFilesInShouldReturnArrayOfFiles()
+    public function nonExistingFolderIdProvider()
     {
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166101',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $ret = $this->backend->findFilesIn($folder);
-
-        $this->assertInternalType('array', $ret);
-        $this->assertCount(1, $ret);
-
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166104',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $ret = $this->backend->findFilesIn($folder);
-
-        $this->assertInternalType('array', $ret);
-        $this->assertCount(2, $ret);
-
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166105',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $ret = $this->backend->findFilesIn($folder);
-
-        $this->assertInternalType('array', $ret);
-        $this->assertCount(0, $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function findFileShouldReturnFile()
-    {
-        $ret = $this->backend->findFile('49a7011a05c677b9a9166106');
-
-        $this->assertInternalType('array', $ret);
-
-        $this->assertArrayHasKey('id', $ret);
-        $this->assertArrayHasKey('folder_id', $ret);
-        $this->assertArrayHasKey('mimetype', $ret);
-        $this->assertArrayHasKey('profile', $ret);
-        $this->assertArrayHasKey('size', $ret);
-        $this->assertArrayHasKey('name', $ret);
-        $this->assertArrayHasKey('link', $ret);
-        $this->assertArrayHasKey('date_uploaded', $ret);
-        $this->assertArrayHasKey('status', $ret);
-
-        $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function findFileShouldFailWhenIdentifierIsInvalid()
-    {
-        $ret = $this->backend->findFile(155);
-    }
-        
-    
-    /**
-     * @test
-     */
-    public function findFileReturnsFalseIfFileIsNotFound()
-    {
-        $this->assertFalse(
-            $this->backend->findFile('49a7011a05c677b9a9166156')
+        return array(
+            array('49a7011a05c677b9a9166188'),
         );
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function findAllFilesShouldReturnAllFiles()
+    public function parentFolderIdProvider()
     {
-        $rets = $this->backend->findAllFiles();
-
-        $this->assertInternalType('array', $rets);
-        $this->assertCount(5, $rets);
-
-        foreach ($rets as $ret) {
-            $this->assertInternalType('array', $ret);
-
-            $this->assertArrayHasKey('id', $ret);
-            $this->assertArrayHasKey('folder_id', $ret);
-            $this->assertArrayHasKey('mimetype', $ret);
-            $this->assertArrayHasKey('profile', $ret);
-            $this->assertArrayHasKey('size', $ret);
-            $this->assertArrayHasKey('name', $ret);
-            $this->assertArrayHasKey('link', $ret);
-            $this->assertArrayHasKey('date_uploaded', $ret);
-            $this->assertArrayHasKey('status', $ret);
-
-            $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
-        }
-    }
-
-    /**
-     * @test
-     */
-    public function updateFileShouldUpdateFile()
-    {
-        $data = array(
-            'id'            => '49a7011a05c677b9a9166106',
-            'folder_id'     => '49a7011a05c677b9a9166102',
-            'mimetype'      => 'image/jpg',
-            'profile'       => 'lussed',
-            'size'          => 1006,
-            'name'          => 'tohtori-sykero.png',
-            'link'          => 'tohtori-sykero.png',
-            'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
-            'status' => 60,
-        );
-
-        $file = FileItem::create($data);
-
-        $this->assertTrue($this->backend->updateFile($file));
-        $this->assertEquals($data, $this->backend->findFile('49a7011a05c677b9a9166106'));
-    }
-
-    /**
-     * @test
-     */
-    public function deleteFileShouldDeleteFile()
-    {
-        $file = FileItem::create(array('id' => '49a7011a05c677b9a9166110'));
-
-        $this->assertTrue($this->backend->deleteFile($file));
-        $this->assertFalse(
-            $this->backend->findFile('49a7011a05c677b9a9166110')
+        return array(
+            array('49a7011a05c677b9a9166103'),
         );
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function deleteFileReturnsFalseIfFileIsNotFound()
+    public function updateFolderProvider()
     {
-        $file = FileItem::create(array('id' => '49a7011a05c677b9a9166100'));
-
-        $this->assertFalse($this->backend->deleteFile($file));
+        return array(
+            array('49a7011a05c677b9a9166103', '49a7011a05c677b9a9166102', '49a7011a05c677b9a9166101')
+        );
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function fileUploadShouldUploadFile()
+    public function subFolderProvider()
     {
-        $fidata = array(
-            'mimetype'      => 'image/png',
-            'profile'       => 'versioned',
-            'size'          => '1000',
-            'name'          => 'tohtori-tussi.png',
-            'link'          => 'tohtori-tussi.png',
-            'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
-            'status'        => 1,
+        return array(
+            array('49a7011a05c677b9a9166101', 1),
+            array('49a7011a05c677b9a9166102', 3),
+            array('49a7011a05c677b9a9166104', 0),
         );
-
-        $fodata = array(
-            'id'        => '49a7011a05c677b9a9166101',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        );
-
-        $file = FileItem::create($fidata);
-        $folder = FolderItem::create($fodata);
-
-        $file = $this->backend->upload($file, $folder);
-
-        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-        $this->assertInternalType('string', $file->getId());
-
-        $this->assertEquals($fodata['id'], $file->getFolderId());
-        $this->assertEquals($fidata['mimetype'], $file->getMimeType());
-        $this->assertEquals($fidata['profile'], $file->getProfile());
-        $this->assertEquals($fidata['link'], $file->getLink());
-        $this->assertEquals($fidata['date_uploaded'], $file->getDateUploaded());
-        
-        $this->assertEquals($fidata['status'], $file->getStatus());
     }
 
     /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
+     * @return array
      */
-    public function fileUploadShouldThrowExceptionWithAlreadyExistingFile()
+    public function folderByUrlProvider()
     {
-        $fidata = array(
-            'mimetype'      => 'image/png',
-            'profile'       => 'versioned',
-            'size'          => '1000',
-            'name'          => 'tohtori-vesala.png',
-            'link'          => 'tohtori-vesala.png',
-            'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
-            'status' => '2',
+        return array(
+            array('lussuttaja/tussin', '49a7011a05c677b9a9166103'),
         );
-
-        $fodata = array(
-            'id'        => '49a7011a05c677b9a9166101',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        );
-
-        $file = FileItem::create($fidata);
-        $folder = FolderItem::create($fodata);
-
-        $this->backend->upload($file, $folder);
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function findFileByFilenameShouldReturnCorrectFile()
+    public function findFilesInProvider()
     {
-        $fidata = array(
-            'mimetype'      => 'image/png',
-            'profile'       => 'versioned',
-            'size'          => 1000,
-            'name'          => 'tohtori-vesala.png',
-            'link'          => 'tohtori-vesala.png',
-            'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
-            'id'            => '49a7011a05c677b9a9166106',
-            'folder_id'     => '49a7011a05c677b9a9166101',
-            'status'        => 1,
-            
+        return array(
+            array('49a7011a05c677b9a9166101', 1),
+            array('49a7011a05c677b9a9166104', 2),
+            array('49a7011a05c677b9a9166105', 0),
         );
-
-        $fodata = array(
-            'id'        => '49a7011a05c677b9a9166101',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        );
-
-        $folder = FolderItem::create($fodata);
-
-        $file = $this->backend->findFileByFileName($folder, 'tohtori-vesala.png');
-
-        $this->assertInternalType('array', $file);
-        $this->assertEquals($fidata, $file);
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function findFileByFilenameShouldNotFindNonExistingFile()
+    public function findFileProvider()
     {
-        $folder = FolderItem::create(array(
-            'id'        => '49a7011a05c677b9a9166101',
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $this->assertFalse(
-            $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
+        return array(
+            array('49a7011a05c677b9a9166106'),
         );
     }
-    
+
     /**
-     * @test
+     * @return array
      */
-    public function findRootFolderShouldCreateRootFolderIfItDoesNotExist()
+    public function updateFileProvider()
     {
-        $this->mongo->folders->remove(array(), array('safe' => true));
-        
-        $folder = $this->backend->findRootFolder();
+        return array(
+            array('49a7011a05c677b9a9166106', '49a7011a05c677b9a9166102'),
+        );
+    }
 
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
+    /**
+     * @return array
+     */
+    public function deleteFileProvider()
+    {
+        return array(
+            array('49a7011a05c677b9a9166110'),
+        );
+    }
 
-        $this->assertNull($folder['parent_id']);
+    /**
+     * @return array
+     */
+    public function folderIdProvider()
+    {
+        return array(
+            array('49a7011a05c677b9a9166101'),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function findFileByFilenameProvider()
+    {
+        return array(
+            array('49a7011a05c677b9a9166106', '49a7011a05c677b9a9166101'),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidFolderIdProvider()
+    {
+        return array(
+            array(1),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidFileIdProvider()
+    {
+        return array(
+            array(1),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function notFoundFolderIdProvider()
+    {
+        return array(
+            array('49a7011a05c677b9a9166666'),
+        );
     }
 }

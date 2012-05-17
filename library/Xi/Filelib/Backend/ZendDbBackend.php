@@ -133,15 +133,25 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder $folder
+     * @param  Folder           $folder
      * @return Folder
+     * @throws FilelibException
      */
     protected function doCreateFolder(Folder $folder)
     {
+        $parentId = $folder->getParentId();
+
+        if (!$this->findFolder($parentId)) {
+            throw new FilelibException(sprintf(
+                'Parent folder was not found with id "%s"',
+                $parentId
+            ));
+        }
+
         $folderRow = $this->getFolderTable()->createRow();
 
         $folderRow->foldername = $folder->getName();
-        $folderRow->parent_id  = $folder->getParentId();
+        $folderRow->parent_id  = $parentId;
         $folderRow->folderurl  = $folder->getUrl();
 
         $folderRow->save();
@@ -234,11 +244,19 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File    $file
+     * @param  File             $file
      * @return boolean
+     * @throws FilelibException
      */
     protected function doUpdateFile(File $file)
     {
+        if (!$this->findFolder($file->getFolderId())) {
+            throw new FilelibException(sprintf(
+                'Folder was not found with id "%s"',
+                $file->getFolderId()
+            ));
+        }
+
         $data = $file->toArray();
 
         return (bool) $this->getFileTable()->update(
@@ -276,12 +294,20 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File   $file
-     * @param  Folder $folder
+     * @param  File             $file
+     * @param  Folder           $folder
      * @return File
+     * @throws FilelibException
      */
     protected function doUpload(File $file, Folder $folder)
     {
+        if (!$this->findFolder($folder->getId())) {
+            throw new FilelibException(sprintf(
+                'Folder was not found with id "%s"',
+                $folder->getId()
+            ));
+        }
+
         $row = $this->getFileTable()->createRow();
 
         $row->folder_id     = $folder->getId();
