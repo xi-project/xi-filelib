@@ -516,30 +516,50 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
-
-
-
-    public function provideMimetypes()
-    {
-        return array(
-            array('image', 'image/jpeg'),
-            array('video', 'video/lus'),
-            array('document', 'document/pdf'),
-        );
-    }
-
     /**
      * @test
-     * @dataProvider provideMimetypes
      */
-    public function getTypeShouldReturnCorrectType($expected, $mimetype)
+    public function typeResolverShouldDefaultToStupid()
     {
-        $file = FileItem::create(array('mimetype' => $mimetype));
-
         $filelib = new FileLibrary();
         $op = new DefaultFileOperator($filelib);
 
-        $this->assertEquals($expected, $op->getType($file));
+        $this->assertInstanceOf('Xi\Filelib\Tool\TypeResolver\StupidTypeResolver', $op->getTypeResolver());
+
+    }
+
+    /**
+     *  @test
+     */
+    public function typeResolverShouldRespectSetter()
+    {
+        $filelib = new FileLibrary();
+        $op = new DefaultFileOperator($filelib);
+
+        $typeResolver = $this->getMock('Xi\Filelib\Tool\TypeResolver\TypeResolver');
+
+        $op->setTypeResolver($typeResolver);
+        $this->assertSame($typeResolver, $op->getTypeResolver());
+    }
+
+
+
+    /**
+     * @test
+     */
+    public function getTypeShouldDelegateToTypeResolver()
+    {
+        $filelib = new FileLibrary();
+        $op = new DefaultFileOperator($filelib);
+
+        $typeResolver = $this->getMock('Xi\Filelib\Tool\TypeResolver\TypeResolver');
+        $typeResolver->expects($this->once())->method('resolveType')
+                     ->with($this->equalTo('application/lus'));
+
+        $file = FileItem::create(array('mimetype' => 'application/lus'));
+
+        $op->setTypeResolver($typeResolver);
+        $op->getType($file);
 
     }
 

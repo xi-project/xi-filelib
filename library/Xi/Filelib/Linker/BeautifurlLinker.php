@@ -126,10 +126,10 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     public function getLink(File $file)
     {
         $folders = array();
-        $folders[] = $folder = $this->getFilelib()->folder()->find($file->getFolderId());
+        $folders[] = $folder = $this->getFilelib()->getFolderOperator()->find($file->getFolderId());
 
         while($folder->getParentId()) {
-            $folder = $this->getFilelib()->folder()->find($folder->getParentId());
+            $folder = $this->getFilelib()->getFolderOperator()->find($folder->getParentId());
             array_unshift($folders, $folder);
         }
 

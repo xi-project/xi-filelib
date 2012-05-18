@@ -131,19 +131,23 @@ class FileLibrary
      * Shortcut to getFileOperator
      *
      * @return FileOperator
+     * @deprecated
      */
     public function file()
     {
+        trigger_error( "Method is deprecated. use getFileOperator() instead.", E_USER_DEPRECATED);
         return $this->getFileOperator();
     }
 
     /**
      * Shortcut to getFolderOperator
      *
+     * @deprecated
      * @return FolderOperator
      */
     public function folder()
     {
+        trigger_error( "Method is deprecated. use getFolderOperator() instead.", E_USER_DEPRECATED);
         return $this->getFolderOperator();
     }
 

@@ -90,7 +90,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                    ->with($this->equalTo('file.beforeUpload'), $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
 
         $dispatcher->expects($this->at(1))->method('dispatch')
-                   ->with($this->equalTo('file.instantiate'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+                   ->with($this->equalTo('file.upload'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
 
         $folder = FolderItem::create(array('id' => 1));

@@ -79,7 +79,7 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         $this->fileOperator->getStorage()->store($file, $upload->getRealPath());
 
         $event = new FileEvent($file);
-        $this->fileOperator->getEventDispatcher()->dispatch('file.instantiate', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch('file.upload', $event);
 
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $file));
         return $command;
