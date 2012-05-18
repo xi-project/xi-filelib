@@ -16,8 +16,6 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 interface Publisher
 {
 
-    public function __construct($options = array());
-
     /**
      * Publishes a file
      *

@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Tests\Filelib\File\TypeResolver;
+namespace Xi\Tests\Filelib\Tool\MimeTypeResolver;
 
-use Xi\Filelib\File\TypeResolver\SymfonyTypeResolver;
+use Xi\Filelib\Tool\MimeTypeResolver\SymfonyMimeTypeResolver;
 
 class SymfonyTypeResolverTest extends TestCase
 {
@@ -11,9 +11,9 @@ class SymfonyTypeResolverTest extends TestCase
         if (!class_exists('Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser')) {
             $this->markTestSkipped('Symfony MimeTypeGuesser not loadable');
         }
-        
+
         parent::setUp();
-        $this->resolver = new SymfonyTypeResolver();
+        $this->resolver = new SymfonyMimeTypeResolver();
     }
-    
+
 }

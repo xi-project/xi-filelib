@@ -129,22 +129,24 @@ class FileLibraryTest extends TestCase
 
     /**
      * @test
+     * 
      */
     public function fileShouldDelegateToGetFileOperator()
     {
         $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')->setMethods(array('getFileOperator'))->getMock();
         $filelib->expects($this->once())->method('getFileOperator');
-        $filelib->file();
+        @$filelib->file();
     }
 
     /**
      * @test
+     *
      */
     public function folderShouldDelegateToGetFolderOperator()
     {
         $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')->setMethods(array('getFolderOperator'))->getMock();
         $filelib->expects($this->once())->method('getFolderOperator');
-        $filelib->folder();
+        @$filelib->folder();
     }
 
     /**

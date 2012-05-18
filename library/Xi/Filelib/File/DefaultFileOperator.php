@@ -18,7 +18,6 @@ use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Queue\Queue;
-
 use Xi\Filelib\Command;
 use Xi\Filelib\File\Command\FileCommand;
 use Xi\Filelib\File\Command\UploadFileCommand;
@@ -27,7 +26,8 @@ use Xi\Filelib\File\Command\UpdateFileCommand;
 use Xi\Filelib\File\Command\DeleteFileCommand;
 use Xi\Filelib\File\Command\PublishFileCommand;
 use Xi\Filelib\File\Command\UnpublishFileCommand;
-
+use Xi\Filelib\Tool\TypeResolver\TypeResolver;
+use Xi\Filelib\Tool\TypeResolver\StupidTypeResolver;
 
 /**
  * File operator
@@ -66,6 +66,12 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      * @var string Fileitem class
      */
     private $className = 'Xi\Filelib\File\FileItem';
+
+    /**
+     *
+     * @var type TypeResolver
+     */
+    private $typeResolver;
 
     /**
      * Sets fileitem class
@@ -289,9 +295,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function getType(File $file)
     {
-        // @todo Semi-mock until mimetype database is pooped in.
-        $split = explode('/', $file->getMimetype());
-        return $split[0];
+        return $this->getTypeResolver()->resolveType($file->getMimeType());
     }
 
     /**
@@ -368,5 +372,28 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         $this->getEventDispatcher()->dispatch('file.instantiate', $event);
         return $file;
     }
+
+    /**
+     * @return TypeResolver
+     */
+    public function getTypeResolver()
+    {
+        if (!$this->typeResolver) {
+            $this->typeResolver = new StupidTypeResolver();
+        }
+        return $this->typeResolver;
+    }
+
+    /**
+     *
+     * @param TypeResolver $typeResolver
+     * @return DefaultFileOperator
+     */
+    public function setTypeResolver(TypeResolver $typeResolver)
+    {
+        $this->typeResolver = $typeResolver;
+        return $this;
+    }
+
 
 }

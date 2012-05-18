@@ -1,10 +1,8 @@
 <?php
 
 namespace Xi\Tests\Filelib\File;
-
-use Xi\Filelib\File\FileObject;
-
 use Xi\Tests\Filelib\TestCase;
+use Xi\Filelib\File\FileObject;
 
 class FileObjectTest extends TestCase
 {
@@ -12,59 +10,59 @@ class FileObjectTest extends TestCase
     /**
      * @test
      */
-    public function typeResolverShouldReturnFinfoResolverByDefault()
+    public function mimeTypeResolverShouldReturnFinfoResolverByDefault()
     {
-        $this->assertEquals('Xi\Filelib\File\TypeResolver\FinfoTypeResolver', get_class(FileObject::getTypeResolver()));
+        $resolver = FileObject::getMimeTypeResolver();
+        $this->assertEquals('Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver', get_class($resolver));
     }
-    
-    
+
+
     /**
      * @test
      */
-    public function typeResolverShouldObeyStaticSetterAndGetter()
+    public function mimeTypeResolverShouldObeyStaticSetterAndGetter()
     {
-        
-        $mockResolver = $this->getMockBuilder('Xi\Filelib\File\TypeResolver\FinfoTypeResolver')->setMockClassName('MockResolver')->getMock();
-        
-        FileObject::setTypeResolver($mockResolver);
-        
-        $this->assertEquals('MockResolver', get_class(FileObject::getTypeResolver()));
-                
-        FileObject::setTypeResolver(new \Xi\Filelib\File\TypeResolver\FinfoTypeResolver());
-        
-        $this->assertEquals('Xi\Filelib\File\TypeResolver\FinfoTypeResolver', get_class(FileObject::getTypeResolver()));
-        
-        
+
+        $mockResolver = $this->getMockBuilder('Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver')->setMockClassName('MockResolver')->getMock();
+
+        FileObject::setMimeTypeResolver($mockResolver);
+
+        $this->assertEquals('MockResolver', get_class(FileObject::getMimeTypeResolver()));
+
+        FileObject::setMimeTypeResolver(new \Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver());
+
+        $this->assertEquals('Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver', get_class(FileObject::getMimeTypeResolver()));
+
+
     }
-    
+
     /**
      * @test
      */
     public function getMimeTypeShouldDelegateToTypeResolverAndThenCacheTheResult()
     {
-        $mockResolver = $this->getMockBuilder('Xi\Filelib\File\TypeResolver\FinfoTypeResolver')->getMock();
-        $mockResolver->expects($this->exactly(1))->method('resolveType')->will($this->returnValue('lussen/lus'));
+        $mockResolver = $this->getMockBuilder('Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver')->getMock();
+        $mockResolver->expects($this->exactly(1))->method('resolveMimeType')->will($this->returnValue('lussen/lus'));
 
-        FileObject::setTypeResolver($mockResolver);
-        
+        FileObject::setMimeTypeResolver($mockResolver);
+
         $file = new FileObject(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        
-        $mimetype = $file->getMimeType();
-        
-        $this->assertEquals('lussen/lus', $mimetype);
-        
+
         $mimetype = $file->getMimeType();
 
         $this->assertEquals('lussen/lus', $mimetype);
-        
-        
-        FileObject::setTypeResolver(new \Xi\Filelib\File\TypeResolver\FinfoTypeResolver());
-        
+
+        $mimetype = $file->getMimeType();
+
+        $this->assertEquals('lussen/lus', $mimetype);
+
+        FileObject::setMimeTypeResolver(new \Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver());
+
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
 }

@@ -1,15 +1,14 @@
 <?php
 
-namespace Xi\Filelib\File\TypeResolver;
+namespace Xi\Filelib\Tool\MimeTypeResolver;
 
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
-use Xi\Filelib\File\FileObject;
 
-class SymfonyTypeResolver implements TypeResolver
+class SymfonyMimeTypeResolver implements MimeTypeResolver
 {
-    
+
     private $mimeTypeGuesser;
-    
+
     /**
      *
      * @return MimeTypeGuesser
@@ -19,18 +18,18 @@ class SymfonyTypeResolver implements TypeResolver
         if (!$this->mimeTypeGuesser) {
             $this->mimeTypeGuesser = MimeTypeGuesser::getInstance();
         }
-        
+
         return $this->mimeTypeGuesser;
     }
-    
-    
-    public function resolveType(FileObject $file)
+
+
+    public function resolveMimeType($path)
     {
-        $mimeType = $this->getMimeTypeGuesser()->guess($file->getRealPath());
+        $mimeType = $this->getMimeTypeGuesser()->guess($path);
         return $mimeType;
     }
-    
-    
-    
+
+
+
 }
 
