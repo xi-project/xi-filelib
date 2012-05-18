@@ -2,10 +2,11 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\FilelibException,
-    Xi\Filelib\File\File,
-    Xi\Filelib\Folder\Folder,
-    Exception;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Exception\InvalidArgumentException;
+use Exception;
 
 /**
  * Abstract backend implementing common methods
@@ -114,12 +115,13 @@ abstract class AbstractBackend implements Backend
     /**
      * Finds folder
      *
-     * @param  mixed       $id
+     * @param  mixed                    $id
      * @return array|false
+     * @throws InvalidArgumentException With invalid folder id
      */
     public function findFolder($id)
     {
-        $this->assertValidIdentifier($id);
+        $this->assertValidFolderIdentifier($id);
 
         $folder = $this->doFindFolder($id);
 
@@ -133,12 +135,13 @@ abstract class AbstractBackend implements Backend
     /**
      * Finds subfolders of a folder
      *
-     * @param  Folder $folder
+     * @param  Folder                   $folder
      * @return array
+     * @throws InvalidArgumentException With invalid folder id
      */
     public function findSubFolders(Folder $folder)
     {
-        $this->assertValidIdentifier($folder->getId());
+        $this->assertValidFolderIdentifier($folder->getId());
 
         return array_map(
             array($this, 'folderToArray'),
@@ -162,12 +165,13 @@ abstract class AbstractBackend implements Backend
     /**
      * Finds a file
      *
-     * @param  mixed       $id
+     * @param  mixed                    $id
      * @return array|false
+     * @throws InvalidArgumentException With invalid file id
      */
     public function findFile($id)
     {
-        $this->assertValidIdentifier($id);
+        $this->assertValidFileIdentifier($id);
 
         $file = $this->doFindFile($id);
 
@@ -181,12 +185,13 @@ abstract class AbstractBackend implements Backend
     /**
      * Finds files in folder
      *
-     * @param  Folder $folder
+     * @param  Folder                   $folder
      * @return array
+     * @throws InvalidArgumentException With invalid folder id
      */
     public function findFilesIn(Folder $folder)
     {
-        $this->assertValidIdentifier($folder->getId());
+        $this->assertValidFolderIdentifier($folder->getId());
 
         return array_map(
             array($this, 'fileToArray'),
@@ -249,12 +254,13 @@ abstract class AbstractBackend implements Backend
     /**
      * Deletes a file
      *
-     * @param  File    $file
+     * @param  File                     $file
      * @return boolean
+     * @throws InvalidArgumentException With invalid file id
      */
     public function deleteFile(File $file)
     {
-        $this->assertValidIdentifier($file->getId());
+        $this->assertValidFileIdentifier($file->getId());
 
         return (bool) $this->doDeleteFile($file);
     }
@@ -262,13 +268,14 @@ abstract class AbstractBackend implements Backend
     /**
      * Updates a folder
      *
-     * @param  Folder           $folder
+     * @param  Folder                   $folder
      * @return boolean
-     * @throws FilelibException When fails
+     * @throws FilelibException
+     * @throws InvalidArgumentException With invalid folder id
      */
     public function updateFolder(Folder $folder)
     {
-        $this->assertValidIdentifier($folder->getId());
+        $this->assertValidFolderIdentifier($folder->getId());
 
         try {
             return (bool) $this->doUpdateFolder($folder);
@@ -306,12 +313,13 @@ abstract class AbstractBackend implements Backend
     /**
      * Finds folder by url
      *
-     * @param  string      $url
+     * @param  string                   $url
      * @return array|false
+     * @throws InvalidArgumentException With invalid folder URL
      */
     public function findFolderByUrl($url)
     {
-        $this->assertValidUrl($url);
+        $this->assertValidFolderUrl($url);
 
         $folder = $this->doFindFolderByUrl($url);
 
@@ -323,13 +331,14 @@ abstract class AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder $folder
-     * @param  string $filename
+     * @param  Folder                   $folder
+     * @param  string                   $filename
      * @return array
+     * @throws InvalidArgumentException With invalid folder id
      */
     public function findFileByFilename(Folder $folder, $filename)
     {
-        $this->assertValidIdentifier($folder->getId());
+        $this->assertValidFolderIdentifier($folder->getId());
 
         $file = $this->doFindFileByFilename($folder, $filename);
 
@@ -341,27 +350,58 @@ abstract class AbstractBackend implements Backend
     }
 
     /**
-     * @param  string           $url
-     * @throws FilelibException
+     * @param  string                   $url
+     * @throws InvalidArgumentException
      */
-    protected function assertValidUrl($url)
+    protected function assertValidFolderUrl($url)
     {
-        if (is_array($url) || is_object($url)) {
-            throw new FilelibException('URL must be a string.');
+        if (!is_string($url)) {
+            throw new InvalidArgumentException(sprintf(
+                'Folder URL must be a string, %s given',
+                gettype($url)
+            ));
         }
     }
 
     /**
-     * @param  mixed            $id
-     * @throws FilelibException
+     * @param  mixed                    $id
+     * @throws InvalidArgumentException
      */
-    protected function assertValidIdentifier($id)
+    protected function assertValidFolderIdentifier($id)
     {
-        if (!is_numeric($id)) {
-            throw new FilelibException(sprintf(
-                'Id must be numeric; %s given.',
-                $id
-            ));
+        if (!is_int($id)) {
+            $this->throwInvalidArgumentException(
+                $id,
+                'Folder id must be an integer, %s (%s) given'
+            );
         }
+    }
+
+    /**
+     * @param  mixed                    $id
+     * @throws InvalidArgumentException
+     */
+    protected function assertValidFileIdentifier($id)
+    {
+        if (!is_int($id)) {
+            $this->throwInvalidArgumentException(
+                $id,
+                'File id must be an integer, %s (%s) given'
+            );
+        }
+    }
+
+    /**
+     * @param  mixed                    $id
+     * @param  string                   $message
+     * @throws InvalidArgumentException
+     */
+    protected function throwInvalidArgumentException($id, $message)
+    {
+        throw new InvalidArgumentException(sprintf(
+            $message,
+            gettype($id),
+            $id
+        ));
     }
 }

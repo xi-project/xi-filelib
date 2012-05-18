@@ -199,7 +199,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     public function invalidFolderIdProvider()
     {
         return array(
-            array('xoo'),
+            array('xoo', 'an integer'),
         );
     }
 
@@ -209,7 +209,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     public function invalidFileIdProvider()
     {
         return array(
-            array('xoo'),
+            array('xoo', 'an integer'),
         );
     }
 

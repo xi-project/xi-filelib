@@ -115,14 +115,16 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function findFolderThrowsExceptionWhenTryingToFindFolderWithInvalidIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
+
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
 
         $this->backend->findFolder($folderId);
     }
@@ -318,12 +320,12 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function updateFolderThrowsExceptionWhenUpdatingFolderWithInvalidIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
 
@@ -334,7 +336,9 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => '',
         ));
 
-        $this->assertFalse($this->backend->updateFolder($folder));
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
+
+        $this->backend->updateFolder($folder);
     }
 
     /**
@@ -363,12 +367,12 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function findSubFoldersThrowsExceptionForFolderWithInvalidIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
 
@@ -378,6 +382,8 @@ use Xi\Filelib\Folder\FolderItem;
             'url'       => '',
             'name'      => '',
         ));
+
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
 
         $this->backend->findSubFolders($folder);
     }
@@ -412,13 +418,17 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderUrlProvider
      * @param mixed $url
      */
     public function findFolderByUrlShouldThrowExceptionIfUrlIsNotAString($url)
     {
         $this->setUpEmptyDataSet();
+
+        $this->setExpectedException(
+            'Xi\Filelib\Exception\InvalidArgumentException',
+            sprintf('Folder URL must be a string, %s given', gettype($url))
+        );
 
         $this->backend->findFolderByUrl($url);
     }
@@ -460,12 +470,12 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function findFilesInThrowsExceptionWithInvalidFolderIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
 
@@ -475,6 +485,8 @@ use Xi\Filelib\Folder\FolderItem;
             'url'       => '',
             'name'      => '',
         ));
+
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
 
         $this->backend->findFilesIn($folder);
     }
@@ -519,13 +531,16 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFileIdProvider
-     * @param mixed $fileId
+     * @param mixed  $fileId
+     * @param string $validType
      */
-    public function findFileThrowsExceptionWithInvalidIdentifier($fileId)
-    {
+    public function findFileThrowsExceptionWithInvalidIdentifier($fileId,
+        $validType
+    ) {
         $this->setUpEmptyDataSet();
+
+        $this->expectInvalidArgumentExceptionForInvalidFileId($fileId, $validType);
 
         $this->backend->findFile($fileId);
     }
@@ -635,15 +650,18 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFileIdProvider
-     * @param mixed $fileId
+     * @param mixed  $fileId
+     * @param string $validType
      */
-    public function deleteFileThrowsExceptionWithInvalidIdentifier($fileId)
-    {
+    public function deleteFileThrowsExceptionWithInvalidIdentifier($fileId,
+        $validType
+    ) {
         $this->setUpEmptyDataSet();
 
         $file = FileItem::create(array('id' => $fileId));
+
+        $this->expectInvalidArgumentExceptionForInvalidFileId($fileId, $validType);
 
         $this->backend->deleteFile($file);
     }
@@ -833,12 +851,12 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function findFileByFileNameThrowsExceptionWithInvalidFolderIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
 
@@ -849,8 +867,44 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => '',
         ));
 
-        $this->assertFalse(
-            $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
+
+        $this->backend->findFileByFileName($folder, 'tohtori-tussi.png');
+    }
+
+    /**
+     * @param mixed  $fileId
+     * @param string $validType
+     */
+    private function expectInvalidArgumentExceptionForInvalidFileId($fileId,
+        $validType
+    ) {
+        $this->setExpectedException(
+            'Xi\Filelib\Exception\InvalidArgumentException',
+            sprintf(
+                'File id must be %s, %s (%s) given',
+                $validType,
+                gettype($fileId),
+                $fileId
+            )
+        );
+    }
+
+    /**
+     * @param mixed  $folderId
+     * @param string $validType
+     */
+    private function expectInvalidArgumentExceptionForInvalidFolderId($folderId,
+        $validType
+    ) {
+        $this->setExpectedException(
+            'Xi\Filelib\Exception\InvalidArgumentException',
+            sprintf(
+                'Folder id must be %s, %s (%s) given',
+                $validType,
+                gettype($folderId),
+                $folderId
+            )
         );
     }
 

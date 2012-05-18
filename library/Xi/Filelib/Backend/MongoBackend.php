@@ -333,13 +333,30 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string           $id
-     * @throws FilelibException
+     * @param  mixed                    $id
+     * @throws InvalidArgumentException
      */
-    protected function assertValidIdentifier($id)
+    protected function assertValidFolderIdentifier($id)
     {
         if (!is_string($id)) {
-            throw new FilelibException('Id must be a string.');
+            $this->throwInvalidArgumentException(
+                $id,
+                'Folder id must be a string, %s (%s) given'
+            );
+        }
+    }
+
+    /**
+     * @param  mixed                    $id
+     * @throws InvalidArgumentException
+     */
+    protected function assertValidFileIdentifier($id)
+    {
+        if (!is_string($id)) {
+            $this->throwInvalidArgumentException(
+                $id,
+                'File id must be a string, %s (%s) given'
+            );
         }
     }
 }
