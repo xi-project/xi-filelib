@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Tests\Filelib\File\TypeResolver;
+namespace Xi\Tests\Filelib\Tool\MimeTypeResolver;
 
 use Xi\Tests\Filelib\TestCase as FilelibTestCase;
 
@@ -11,8 +11,8 @@ class FileTest extends FilelibTestCase
      */
     public function interfaceShouldExist()
     {
-        $this->assertTrue(interface_exists('Xi\Filelib\File\TypeResolver\TypeResolver'));
+        $this->assertTrue(interface_exists('Xi\Filelib\Tool\MimeTypeResolver\MimeTypeResolver'));
     }
-    
-    
+
+
 }
