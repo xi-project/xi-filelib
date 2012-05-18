@@ -13,9 +13,4 @@ class FinfoMimeTypeResolverTest extends TestCase
         $this->resolver = new FinfoMimeTypeResolver();
     }
 
-
-
-
-
-
 }

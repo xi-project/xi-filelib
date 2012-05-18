@@ -14,5 +14,4 @@ class FileTest extends FilelibTestCase
         $this->assertTrue(interface_exists('Xi\Filelib\Tool\MimeTypeResolver\MimeTypeResolver'));
     }
 
-
 }

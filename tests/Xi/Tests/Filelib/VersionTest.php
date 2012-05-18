@@ -14,7 +14,6 @@ class VersionTest extends TestCase
         $this->assertTrue(class_exists('Xi\Filelib\Version'));
     }
 
-
     public function provideVersions()
     {
         return array(
@@ -24,7 +23,6 @@ class VersionTest extends TestCase
         );
     }
 
-
     /**
      * @test
      * @dataProvider provideVersions
@@ -33,6 +31,5 @@ class VersionTest extends TestCase
     {
         $this->assertEquals($expected, Version::compare($version));
     }
-
 
 }
