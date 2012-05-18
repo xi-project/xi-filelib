@@ -21,13 +21,6 @@ interface VersionProvider extends Plugin
     public function getExtensionFor($version);
 
     /**
-     * Sets file types for this version plugin.
-     *
-     * @param array $providesFor Array of file types
-     */
-    public function setProvidesFor(array $providesFor);
-
-    /**
      * Returns file types which the version plugin provides version for.
      *
      * @return array
@@ -41,13 +34,6 @@ interface VersionProvider extends Plugin
      * @return boolean
      */
     public function providesFor(File $file);
-
-    /**
-     * Sets version identifier
-     *
-     * @param string $identifier Unique identifier for this version
-     */
-    public function setIdentifier($identifier);
 
     /**
      * Returns version identifier
