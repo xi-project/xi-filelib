@@ -1,6 +1,6 @@
 <?php
 
-require '../tests/bootstrap.php';
+require __DIR__ . '/../tests/bootstrap.php';
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Configuration;
