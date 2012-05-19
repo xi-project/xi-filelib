@@ -2,9 +2,10 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\File\File,
-    Xi\Filelib\Folder\Folder,
-    Xi\Filelib\FilelibException;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\FilelibException;
 
 /**
  * Filelib backend interface
@@ -131,4 +132,14 @@ interface Backend
      * @return array
      */
     public function findFileByFilename(Folder $folder, $filename);
+
+    public function findResource($id);
+
+    public function findResourcesByHash($hash);
+
+    public function createResource(Resource $resource);
+
+    public function deleteResource(Resource $resource);
+
+
 }

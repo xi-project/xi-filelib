@@ -2,10 +2,11 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\FilelibException,
-    Xi\Filelib\File\File,
-    Xi\Filelib\Folder\Folder,
-    Exception;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
+use Xi\Filelib\Folder\Folder;
+use Exception;
 
 /**
  * Abstract backend implementing common methods
@@ -99,6 +100,14 @@ abstract class AbstractBackend implements Backend
      */
     protected abstract function doFindFileByFilename(Folder $folder, $filename);
 
+    protected abstract function doFindResource($id);
+
+    protected abstract function doFindResourcesByHash($hash);
+
+    protected abstract function doCreateResource(Resource $resource);
+
+    protected abstract function doDeleteResource(Resource $resource);
+
     /**
      * @param  mixed $folder
      * @return array
@@ -110,6 +119,12 @@ abstract class AbstractBackend implements Backend
      * @return array
      */
     protected abstract function fileToArray($file);
+
+    /**
+     * @param mixed $resource
+     * @return array
+     */
+    protected abstract function resourceToArray($resource);
 
     /**
      * Finds folder
@@ -128,6 +143,63 @@ abstract class AbstractBackend implements Backend
         }
 
         return $this->folderToArray($folder);
+    }
+
+
+    public function findResource($id)
+    {
+        $this->assertValidIdentifier($id);
+
+        $resource = $this->doFindResource($id);
+
+        if (!$resource) {
+            return false;
+        }
+
+        return $this->resourceToArray($folder);
+
+    }
+
+    public function findResourcesByHash($hash)
+    {
+        return array_map(
+            array($this, 'resourceToArray'),
+            $this->doFindResourcesByHash($hash)
+        );
+    }
+
+
+    /**
+     * Creates a resource
+     *
+     * @param  Resource         $resource
+     * @return Resource         Created folder
+     * @throws FilelibException When fails
+     */
+    public function createResource(Resource $resource)
+    {
+        try {
+            return $this->doCreateResource($resource);
+        } catch (Exception $e) {
+            throw new FilelibException($e->getMessage());
+        }
+    }
+
+    /**
+     * Deletes a resource
+     *
+     * @param  Resource         $resource
+     * @return boolean          True if deleted successfully.
+     * @throws FilelibException If folder could not be deleted or if folder
+     *                          contains files.
+     */
+    public function deleteResource(Resource $resource)
+    {
+        try {
+            return (bool) $this->doDeleteResource($resource);
+        } catch (Exception $e) {
+            throw new FilelibException($e->getMessage());
+        }
     }
 
     /**

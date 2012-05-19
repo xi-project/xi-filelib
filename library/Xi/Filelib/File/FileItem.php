@@ -27,6 +27,8 @@ class FileItem implements File
         'link' => 'setLink',
         'date_uploaded' => 'setDateUploaded',
         'status' => 'setStatus',
+        'uuid' => 'setUuid',
+        'resource' => 'setResource'
     );
 
     /**
@@ -51,6 +53,18 @@ class FileItem implements File
     private $dateUploaded;
 
     private $status;
+
+    /**
+     *
+     * @var Resource
+     */
+    private $resource;
+
+    /**
+     *
+     * @var string
+     */
+    private $uuid;
 
     /**
      *
@@ -258,6 +272,41 @@ class FileItem implements File
     }
 
     /**
+     * @return FileItem
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+        return $this;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     *
+     * @param Resource $resource
+     * @return FileItem
+     */
+    public function setResource(Resource $resource)
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+
+    /**
      * Returns the file as standardized file array
      *
      * @return array
@@ -274,6 +323,8 @@ class FileItem implements File
             'link' => $this->getLink(),
             'date_uploaded' => $this->getDateUploaded(),
             'status' => $this->getStatus(),
+            'resource' => $this->getResource(),
+            'uuid' => $this->getUuid()
         );
     }
 
@@ -297,7 +348,7 @@ class FileItem implements File
      * Creates an instance with data
      *
      * @param array $data
-     * @return type FileItem
+     * @return FileItem
      */
     public static function create(array $data)
     {

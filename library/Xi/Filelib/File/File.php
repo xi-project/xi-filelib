@@ -170,6 +170,20 @@ interface File
      */
     public function getData();
 
+    public function getUuid();
+
+    /**
+     * @return string
+     */
+    public function setUuid($uuid);
+
+    /**
+     * @return Resource
+     */
+    public function getResource();
+
+    public function setResource(Resource $resource);
+
 
 
 }

@@ -44,22 +44,28 @@ class File
      * @ORM\Column(name="filelink", type="string", length=255, nullable=true, unique=true)
      */
     protected $link;
-    
+
     /**
      * @ORM\Column(name="date_uploaded", type="datetime")
      */
     protected $date_uploaded;
-    
+
     /**
      * @ORM\Column(name="status", type="integer", nullable=false)
      */
     protected $status;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="Folder")
      * @ORM\JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
      */
     protected $folder;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Resource", inversedBy="files")
+     * @ORM\JoinColumn(name="resource_id", referencedColumnName="id", nullable=true)
+     **/
+    private $resource;
 
     /**
      * Get id
@@ -184,7 +190,7 @@ class File
         return $this->link;
     }
 
-    
+
     /**
      * Set filelib folder
      *
@@ -209,41 +215,41 @@ class File
 
     /**
      * Returns date uploaded
-     * 
+     *
      * @return DateTime
      */
     public function getDateUploaded()
     {
         return $this->date_uploaded;
     }
-    
-    
+
+
     /**
      * Sets date uploaded
-     * 
+     *
      * @param DateTime $dateUploaded
-     * @return File 
+     * @return File
      */
     public function setDateUploaded(DateTime $dateUploaded)
     {
         $this->date_uploaded = $dateUploaded;
         return $this;
     }
-    
+
     /**
      * Returns status
-     * 
+     *
      * @return integer
      */
     public function getStatus()
     {
         return $this->status;
     }
-    
-    
+
+
     /**
      * Sets status
-     * 
+     *
      * @param integer $status
      */
     public function setStatus($status)
@@ -251,5 +257,5 @@ class File
         $this->status = $status;
         return $this;
     }
-    
+
 }

@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Backend;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\FilelibException;
 use Doctrine\ORM\EntityManager;
@@ -32,6 +33,14 @@ class Doctrine2Backend extends AbstractBackend
      * @var string
      */
     private $folderEntityName = 'Xi\Filelib\Backend\Doctrine2\Entity\Folder';
+
+    /**
+     * Resource entity name
+     *
+     * @var string
+     */
+    private $resourceEntityName = 'Xi\Filelib\Backend\Doctrine2\Entity\Resource';
+
 
     /**
      * Entity manager
@@ -107,6 +116,26 @@ class Doctrine2Backend extends AbstractBackend
     public function getFolderEntityName()
     {
         return $this->folderEntityName;
+    }
+
+    /**
+     * Sets the fully qualified resource entity classname
+     *
+     * @param string $resourceEntityName
+     */
+    public function setResourceEntityName($resourceEntityName)
+    {
+        $this->resourceEntityName = $resourceEntityName;
+    }
+
+    /**
+     * Returns the fully qualified resource entity classname
+     *
+     * @return string
+     */
+    public function getResourceEntityName()
+    {
+        return $this->resourceEntityName;
     }
 
     /**
@@ -343,6 +372,70 @@ class Doctrine2Backend extends AbstractBackend
         }
     }
 
+
+    /**
+     * @param  Resource  $resource
+     * @return boolean
+     */
+    protected function doDeleteResource(Resource $resource)
+    {
+        try {
+            $entity = $this->em->find($this->resourceEntityName, $resource->getId());
+
+            if (!$entity) {
+                return false;
+            }
+
+            $this->em->remove($entity);
+            $this->em->flush();
+
+            return true;
+        } catch (EntityNotFoundException $e) {
+            return false;
+        }
+    }
+
+
+    /**
+     * @param  Resource           $resource
+     * @return Resource
+     * @throws FilelibException
+     */
+    protected function doCreateResource(Resource $resource)
+    {
+        $resourceRow = new $this->resourceEntityName();
+        $resourceRow->setHash($resource->getHash());
+        $this->em->persist($resourceRow);
+        $this->em->flush();
+        $resource->setId($resourceRow->getId());
+        return $resource;
+    }
+
+
+    /**
+     * @param  string     $hash
+     * @return array|null
+     */
+    public function doFindResourcesByHash($hash)
+    {
+        return $this->em->getRepository($this->fileEntityName)->findBy(array(
+            'hash'   => $hash,
+        ));
+    }
+
+
+    /**
+     * @param  integer     $id
+     * @return Resource|null
+     */
+    protected function dofindResource($id)
+    {
+        return $this->em->find($this->resourceEntityName, $id);
+    }
+
+
+
+
     /**
      * @param  File             $file
      * @param  Folder           $folder
@@ -422,6 +515,18 @@ class Doctrine2Backend extends AbstractBackend
             'url'       => $folder->getUrl(),
         );
     }
+
+
+    protected function resourceToArray($resource)
+    {
+        return array(
+            'id' => $resource->getId(),
+            'hash' => $resource->getHash(),
+            'date_created' => $resource->getDateCreated()
+        );
+    }
+
+
 
     /**
      * @param  File        $file
