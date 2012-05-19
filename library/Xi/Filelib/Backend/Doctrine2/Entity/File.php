@@ -258,4 +258,21 @@ class File
         return $this;
     }
 
+    /**
+     *
+     * @return Resource
+     */
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+
+    public function setResource(Resource $resource)
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+
 }

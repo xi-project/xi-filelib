@@ -34,12 +34,6 @@ class Resource
     private $files;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Folder")
-     * @ORM\JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
-     */
-    protected $folder;
-
-    /**
      * Get id
      */
     public function getId()
@@ -53,7 +47,7 @@ class Resource
      * @param  string             $hash
      * @return Resource
      */
-    public function setMimetype($hash)
+    public function setHash($hash)
     {
         $this->hash = $hash;
         return $this;
@@ -86,10 +80,11 @@ class Resource
      * @param DateTime $dateUploaded
      * @return Resource
      */
-    public function setDateCreated(DateTime $dateUploaded)
+    public function setDateCreated(DateTime $dateCreated)
     {
         $this->date_created = $dateCreated;
         return $this;
     }
+
 
 }

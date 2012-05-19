@@ -405,6 +405,7 @@ class Doctrine2Backend extends AbstractBackend
     {
         $resourceRow = new $this->resourceEntityName();
         $resourceRow->setHash($resource->getHash());
+        $resourceRow->setDateCreated($resource->getDateCreated());
         $this->em->persist($resourceRow);
         $this->em->flush();
         $resource->setId($resourceRow->getId());
@@ -418,7 +419,7 @@ class Doctrine2Backend extends AbstractBackend
      */
     public function doFindResourcesByHash($hash)
     {
-        return $this->em->getRepository($this->fileEntityName)->findBy(array(
+        return $this->em->getRepository($this->resourceEntityName)->findBy(array(
             'hash'   => $hash,
         ));
     }
@@ -495,6 +496,7 @@ class Doctrine2Backend extends AbstractBackend
             'link'          => $file->getLink(),
             'date_uploaded' => $file->getDateUploaded(),
             'status'        => $file->getStatus(),
+            'resource' => ($file->getResource()) ? $file->getResource()->toArray() : null
         );
     }
 
