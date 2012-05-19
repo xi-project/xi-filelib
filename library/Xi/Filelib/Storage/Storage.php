@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Storage;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\FilelibException;
 
 /**
@@ -21,7 +21,7 @@ interface Storage
      *
      * @return FileLibrary
      */
-    public function setFilelib(FileLibrary $filelib);
+    public function setFilelib(FileLibrary $resourcelib);
 
     /**
      * Returns filelib
@@ -33,52 +33,52 @@ interface Storage
     /**
      * Stores an uploaded file
      *
-     * @param File $file
-     * @param string $tempFile
+     * @param Resource $resource
+     * @param string $tempResource
      * @throws FilelibException
      */
-    public function store(File $file, $tempFile);
+    public function store(Resource $resource, $tempResource);
 
     /**
      * Stores a version of a file
      *
-     * @param File $file
+     * @param Resource $resource
      * @param string $version
-     * @param string $tempFile File to be stored
+     * @param string $tempResource Resource to be stored
      * @throws FilelibException
      */
-    public function storeVersion(File $file, $version, $tempFile);
+    public function storeVersion(Resource $resource, $version, $tempResource);
 
     /**
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
-     * @param File $file
-     * @return FileObject
+     * @param Resource $resource
+     * @return ResourceObject
      */
-    public function retrieve(File $file);
+    public function retrieve(Resource $resource);
 
     /**
      * Retrieves a version of a file and temporarily stores it somewhere so it can be read.
      *
-     * @param File $file
+     * @param Resource $resource
      * @param string $version
-     * @return FileObject
+     * @return ResourceObject
      */
-    public function retrieveVersion(File $file, $version);
+    public function retrieveVersion(Resource $resource, $version);
 
     /**
      * Deletes a file
      *
-     * @param File $file
+     * @param Resource $resource
      */
-    public function delete(File $file);
+    public function delete(Resource $resource);
 
     /**
      * Deletes a version of a file
      *
-     * @param File $file
+     * @param Resource $resource
      * @param $version
      */
-    public function deleteVersion(File $file, $version);
+    public function deleteVersion(Resource $resource, $version);
 
 }

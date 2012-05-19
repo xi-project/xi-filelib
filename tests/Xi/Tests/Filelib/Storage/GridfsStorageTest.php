@@ -2,16 +2,15 @@
 
 namespace Xi\Tests\Filelib\Storage;
 
-use Mongo,
-    MongoDB,
-    MongoGridFS,
-    MongoCollection,
-    MongoConnectionException,
-    Xi\Tests\Filelib\TestCase,
-    Xi\Filelib\Storage\GridfsStorage,
-    Xi\Filelib\File\FileItem,
-    Xi\Filelib\FilelibException
-    ;
+use Mongo;
+use MongoDB;
+use MongoGridFS;
+use MongoCollection;
+use MongoConnectionException;
+use Xi\Tests\Filelib\TestCase;
+use Xi\Filelib\Storage\GridfsStorage;
+use Xi\Filelib\File\Resource;
+use Xi\Filelib\FilelibException;
 
 class GridFsStorageTest extends TestCase
 {
@@ -21,22 +20,22 @@ class GridFsStorageTest extends TestCase
      * @var MondoDB
      */
     protected $mongo;
-    
+
     /**
      *
      * @var GridfsStorage
      */
     protected $storage;
-        
-    protected $file;
-    
+
+    protected $resource;
+
     protected $versionProvider;
-    
+
     protected $fileResource;
-    
+
     protected $filelib;
-        
-    
+
+
     protected function setUp()
     {
         if (!extension_loaded('mongo')) {
@@ -49,36 +48,35 @@ class GridFsStorageTest extends TestCase
             $this->markTestSkipped('Can not connect to MongoDB.');
         }
 
-        $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1));
-        
+        $this->resource = Resource::create(array('id' => 1));
+
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
-        
-                
+
+
         $this->filelib = $this->getFilelib();
-        
-        $this->mongo = $mongo->filelib_tests;    
-               
-        $storage = new \Xi\Filelib\Storage\GridfsStorage();
+
+        $this->mongo = $mongo->filelib_tests;
+
+        $storage = new GridfsStorage();
         $storage->setMongo($this->mongo);
-        
+
         $this->storage = $storage;
-        
+
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->any())
             ->method('calculateDirectoryId')
             ->will($this->returnValue('1'));
-        
-        $this->version = 'xoo';
-        
-        $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1, 'folder_id' => 1, 'name' => 'self-lussing-manatee.jpg'));
-        
-                
-        $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
 
-        
+        $this->version = 'xoo';
+
+
+
+
+
+
     }
-    
-    
+
+
     protected function tearDown()
     {
         if (extension_loaded('mongo') && $this->mongo) {
@@ -86,10 +84,10 @@ class GridFsStorageTest extends TestCase
                 $collection->drop();
             }
         }
-        
+
     }
-    
-    
+
+
     /**
      * @test
      */
@@ -102,119 +100,118 @@ class GridFsStorageTest extends TestCase
     }
 
 
-    
+
     /**
      * @test
      */
     public function storeAndRetrieveAndDeleteShouldWorkInHarmony()
     {
-        $this->storage->setFilelib($this->getFilelib()); 
-        
-        $this->storage->store($this->file, $this->fileResource);
-         
+        $this->storage->setFilelib($this->getFilelib());
+
+        $this->storage->store($this->resource, $this->fileResource);
+
          $file = $this->storage->getGridFs()->findOne(array(
-            'filename' => $this->storage->getFilename($this->file)       
+            'filename' => $this->storage->getFilename($this->resource)
          ));
-         
-         $this->assertInstanceOf('\\MongoGridFSFile', $file);         
-         
-         $retrieved = $this->storage->retrieve($this->file);
+
+         $this->assertInstanceOf('\\MongoGridFSFile', $file);
+
+         $retrieved = $this->storage->retrieve($this->resource);
          $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
          $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
-         
-         $this->storage->delete($this->file);
-         
+
+         $this->storage->delete($this->resource);
+
          $file = $this->storage->getGridFs()->findOne(array(
-            'filename' => $this->storage->getFilename($this->file)       
+            'filename' => $this->storage->getFilename($this->resource)
          ));
 
          $this->assertNull($file);
-         
+
     }
-    
+
     /**
      * @test
      */
     public function destructorShouldDeleteRetrievedFile()
     {
-        $this->storage->setFilelib($this->getFilelib()); 
-        
-        $this->storage->store($this->file, $this->fileResource);
-         
+        $this->storage->setFilelib($this->getFilelib());
+
+        $this->storage->store($this->resource, $this->fileResource);
+
         $file = $this->storage->getGridFs()->findOne(array(
-            'filename' => $this->storage->getFilename($this->file)       
+            'filename' => $this->storage->getFilename($this->resource)
         ));
-         
-        $this->assertInstanceOf('\\MongoGridFSFile', $file);         
-         
-        $retrieved = $this->storage->retrieve($this->file);
-                        
+
+        $this->assertInstanceOf('\\MongoGridFSFile', $file);
+
+        $retrieved = $this->storage->retrieve($this->resource);
+
         $realPath = $retrieved->getPathname();
-        
+
         $this->assertFileExists($realPath);
-        
-        unset($this->storage);       
-        
+
+        unset($this->storage);
+
         $this->assertFileNotExists($realPath);
-        
+
     }
-    
-    
+
+
 
     /**
      * @test
      */
     public function storeAndRetrieveAndDeleteVersionShouldWorkInHarmony()
     {
-        
-        
-        $this->storage->setFilelib($this->getFilelib()); 
-        
-        $this->storage->storeVersion($this->file, $this->version, $this->fileResource);
-         
+
+
+        $this->storage->setFilelib($this->getFilelib());
+
+        $this->storage->storeVersion($this->resource, $this->version, $this->fileResource);
+
          $file = $this->storage->getGridFs()->findOne(array(
-            'filename' => $this->storage->getFilenameVersion($this->file, $this->version)       
+            'filename' => $this->storage->getFilenameVersion($this->resource, $this->version)
          ));
-         
-         $this->assertInstanceOf('\\MongoGridFSFile', $file);         
-         
-         $retrieved = $this->storage->retrieveVersion($this->file, $this->version);
+
+         $this->assertInstanceOf('\\MongoGridFSFile', $file);
+
+         $retrieved = $this->storage->retrieveVersion($this->resource, $this->version);
          $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
-         
+
          $this->assertFileExists($retrieved->getRealPath());
-         
-         $this->storage->deleteVersion($this->file, $this->version);
-         
+
+         $this->storage->deleteVersion($this->resource, $this->version);
+
          $file = $this->storage->getGridFs()->findOne(array(
-            'filename' => $this->storage->getFilenameVersion($this->file, $this->version)       
+            'filename' => $this->storage->getFilenameVersion($this->resource, $this->version)
          ));
 
          $this->assertNull($file);
-         
+
     }
-    
+
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException 
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function retrievingUnexistingFileShouldThrowException()
     {
-        $file = FileItem::create(array('id' => 'lussenhofer.lus'));
-        
+        $file = Resource::create(array('id' => 'lussenhofer.lus'));
+
         $this->storage->retrieve($file);
-                
+
     }
-    
+
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException 
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function retrievingUnexistingFileVersionShouldThrowException()
     {
-        $file = FileItem::create(array('id' => 'lussenhofer.lus'));
+        $file = Resource::create(array('id' => 'lussenhofer.lus'));
         $this->storage->retrieveVersion($file, $this->version);
     }
-    
-    
+
+
 }
- 

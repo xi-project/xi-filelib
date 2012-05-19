@@ -2,16 +2,16 @@
 
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
-use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 
 interface DirectoryIdCalculator
 {
-    
+
     /**
      * Calculates directory id (path) for a file
-     * 
-     * @param File $file
+     *
+     * @param Resource $resource
      * @return string
      */
-    public function calculateDirectoryId(File $file);
+    public function calculateDirectoryId(Resource $resource);
 }

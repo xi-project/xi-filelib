@@ -2,15 +2,13 @@
 
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
-use Xi\Filelib\FileLibrary,
-    Xi\Filelib\File\File,
-    Xi\Filelib\FilelibException
-    ;
-
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\Resource;
+use Xi\Filelib\FilelibException;
 
 /**
  * Creates directories in a leveled hierarchy based on a numeric file id
- * 
+ *
  * @author pekkis
  *
  */
@@ -70,15 +68,15 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     {
         return $this->directoryLevels;
     }
-    
-    public function calculateDirectoryId(File $file)
+
+    public function calculateDirectoryId(Resource $resource)
     {
-        if(!is_numeric($file->getId())) {
-            throw new FilelibException("Leveled directory id calculator requires numeric file ids ('{$file->getId()}' was provided)");
+        if(!is_numeric($resource->getId())) {
+            throw new FilelibException("Leveled directory id calculator requires numeric file ids ('{$resource->getId()}' was provided)");
         }
-        
-        $fileId = $file->getId();
-        
+
+        $resourceId = $resource->getId();
+
         $directoryLevels = $this->getDirectoryLevels() + 1;
         $filesPerDirectory = $this->getFilesPerDirectory();
 
@@ -87,7 +85,7 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
         }
 
         $arr = array();
-        $tmpfileid = $fileId - 1;
+        $tmpfileid = $resourceId - 1;
 
         for($count = 1; $count <= $directoryLevels; ++$count) {
             $lus = $tmpfileid / pow($filesPerDirectory, $directoryLevels - $count);
@@ -97,10 +95,10 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
 
         $puuppa = array_pop($arr);
         return implode(DIRECTORY_SEPARATOR, $arr);
-        
+
     }
-    
-    
-    
-    
+
+
+
+
 }
