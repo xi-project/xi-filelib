@@ -48,6 +48,8 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
         }
 
         $this->dataSet = null;
+
+        parent::tearDown();
     }
 
     /**

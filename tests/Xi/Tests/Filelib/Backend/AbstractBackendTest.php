@@ -40,6 +40,12 @@ use Xi\Filelib\Folder\Folder;
         $this->backend = $this->setUpBackend();
     }
 
+    protected function tearDown()
+    {
+        // Unset to keep database connections from piling up.
+        $this->backend = null;
+    }
+
     /**
      * @test
      * @dataProvider rootFolderIdProvider

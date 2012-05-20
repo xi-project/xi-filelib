@@ -56,6 +56,8 @@ class MongoBackendTest extends AbstractBackendTest
         }
 
         $this->mongo = null;
+
+        parent::tearDown();
     }
 
     /**
