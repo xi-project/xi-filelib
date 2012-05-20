@@ -133,13 +133,39 @@ interface Backend
      */
     public function findFileByFilename(Folder $folder, $filename);
 
+    /**
+     * Finds resource by id
+     *
+     * @param mixed $id
+     */
     public function findResource($id);
 
+    /**
+     * Finds resources by hash
+     *
+     * @param string $hash
+     */
     public function findResourcesByHash($hash);
 
+    /**
+     * Creates a resource
+     *
+     * @param Resource $resource
+     */
     public function createResource(Resource $resource);
 
+    /**
+     * Deletes a resource
+     *
+     * @param Resource $resource
+     */
     public function deleteResource(Resource $resource);
 
+    /**
+     * Returns how many times a resource is referenced by files
+     *
+     * @oaram Resource $resource
+     */
+    public function getNumberOfReferences(Resource $resource);
 
 }

@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Backend;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\NonUniqueFileException;
 use MongoDb;
@@ -339,5 +340,34 @@ class MongoBackend extends AbstractBackend implements Backend
                 'File id must be a string, %s (%s) given'
             );
         }
+    }
+
+    protected function doFindResource($id)
+    {
+        throw new \LogicException('I am not implementeed');
+    }
+
+    protected function doFindResourcesByHash($hash)
+    {
+        throw new \LogicException('I am not implementeed');
+    }
+
+    protected function doCreateResource(Resource $resource)
+    {
+        throw new \LogicException('I am not implementeed');
+    }
+
+    protected function doDeleteResource(Resource $resource)
+    {
+        throw new \LogicException('I am not implementeed');
+    }
+
+    /**
+     * @param mixed $resource
+     * @return array
+     */
+    protected function resourceToArray($resource)
+    {
+        throw new \LogicException('I am not implementeed');
     }
 }

@@ -111,6 +111,13 @@ abstract class AbstractBackend implements Backend
     protected abstract function doDeleteResource(Resource $resource);
 
     /**
+     * @param mixed $resource
+     * @return array
+     */
+    protected abstract function resourceToArray($resource);
+
+
+    /**
      * @param  mixed $folder
      * @return array
      */
@@ -122,11 +129,6 @@ abstract class AbstractBackend implements Backend
      */
     protected abstract function fileToArray($file);
 
-    /**
-     * @param mixed $resource
-     * @return array
-     */
-    protected abstract function resourceToArray($resource);
 
     /**
      * Finds folder
@@ -203,6 +205,16 @@ abstract class AbstractBackend implements Backend
         } catch (Exception $e) {
             throw new FilelibException($e->getMessage());
         }
+    }
+
+    /**
+     * Returns the number of references to a resource
+     *
+     * @param Resource $resource
+     */
+    public function getNumberOfReferences(Resource $resource)
+    {
+        throw new \LogicException('Not implemented yet');
     }
 
     /**
