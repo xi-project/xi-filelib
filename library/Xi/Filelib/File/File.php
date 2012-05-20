@@ -6,9 +6,7 @@ use DateTime;
 use ArrayObject;
 
 /**
- * Default file implementation
- *
- *
+ * File
  */
 class File
 {

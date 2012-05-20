@@ -2,11 +2,11 @@
 
 namespace Xi\Filelib\Folder;
 
-use \Xi\Filelib\FileLibrary;
-use \Xi\Filelib\FilelibException;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\FilelibException;
 
 /**
- * Default folder implementation
+ * Folder
  *
  * @author pekkis
  *
