@@ -410,8 +410,10 @@ abstract class AbstractBackend implements Backend
      * @param  File                   $file
      * @param  Folder                 $folder
      * @throws NonUniqueFileException
+     *
+     * @internal Should be protected but can't because of PHP 5.3 closure scope
      */
-    protected function throwNonUniqueFileException(File $file, Folder $folder)
+    public function throwNonUniqueFileException(File $file, Folder $folder)
     {
         throw new NonUniqueFileException(sprintf(
             'A file with the name "%s" already exists in folder "%s"',

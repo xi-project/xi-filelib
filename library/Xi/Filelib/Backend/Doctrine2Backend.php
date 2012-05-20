@@ -349,7 +349,7 @@ class Doctrine2Backend extends AbstractBackend
             try {
                 $em->flush();
             } catch (PDOException $e) {
-                $this->throwNonUniqueFileException($file, $folder);
+                $self->throwNonUniqueFileException($file, $folder);
             }
 
             $file->setId($entity->getId());
