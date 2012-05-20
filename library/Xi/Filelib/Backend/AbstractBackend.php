@@ -206,6 +206,7 @@ abstract class AbstractBackend implements Backend
      * @param  Folder                  $folder
      * @return File
      * @throws FolderNotFoundException If folder was not found
+     * @throws FilelibException
      */
     public function upload(File $file, Folder $folder)
     {
@@ -279,6 +280,7 @@ abstract class AbstractBackend implements Backend
      * @return boolean
      * @throws FilelibException
      * @throws InvalidArgumentException With invalid folder id
+     * @throws FilelibException
      */
     public function updateFolder(Folder $folder)
     {
