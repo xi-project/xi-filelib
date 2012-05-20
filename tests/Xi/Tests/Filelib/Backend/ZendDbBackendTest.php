@@ -3,7 +3,7 @@
 namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Filelib\Backend\ZendDbBackend,
-    Xi\Filelib\Folder\FolderItem,
+    Xi\Filelib\Folder\Folder,
     Zend_Db,
     Exception;
 
@@ -93,7 +93,7 @@ class ZendDbBackendTest extends RelationalDbTestCase
                     ->method('getAdapter')
                     ->will($this->throwException(new Exception()));
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => 1,
             'parent_id' => null,
             'name'      => '',

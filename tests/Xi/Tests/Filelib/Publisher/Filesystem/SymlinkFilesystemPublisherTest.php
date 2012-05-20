@@ -2,7 +2,7 @@
 
 namespace Xi\Tests\Filelib\Publisher\Filesystem;
 
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
 
@@ -97,7 +97,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     public function getRelativePathToShouldFailWhenRelativePathToRootIsMissing()
     {
         $publisher = new SymlinkPublisher();
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
         $relativePath = $publisher->getRelativePathTo($file);
     }
 
@@ -109,7 +109,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     public function getRelativePathToVersionShouldFailWhenRelativePathToRootIsMissing()
     {
         $publisher = new SymlinkPublisher();
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
         $relativePath = $publisher->getRelativePathToVersion($file, $this->versionProvider);
     }
 
@@ -120,22 +120,22 @@ class SymlinkFilesystemPublisherTest extends TestCase
         return array(
 
             array(
-                FileItem::create(array('id' => 1)),
+                File::create(array('id' => 1)),
                 0,
                 '../private/1/1',
             ),
             array(
-                FileItem::create(array('id' => 2)),
+                File::create(array('id' => 2)),
                 3,
                 '../../../../private/2/2/2',
             ),
             array(
-                FileItem::create(array('id' => 3)),
+                File::create(array('id' => 3)),
                 2,
                 '../../../private/3/3/3/3',
             ),
             array(
-                FileItem::create(array('id' => 4)),
+                File::create(array('id' => 4)),
                 1,
                 '../../private/666/4',
             ),
@@ -185,7 +185,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
         $files = array();
 
         for ($x = 1; $x <= 5; $x++) {
-            $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
+            $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
 
             $file->expects($this->any())->method('getProfile')
                     ->will($this->returnValue('profile'));

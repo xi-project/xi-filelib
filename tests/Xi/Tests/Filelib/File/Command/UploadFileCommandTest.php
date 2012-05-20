@@ -5,8 +5,7 @@ namespace Xi\Tests\Filelib\File\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileItem;
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Upload\FileUpload;
 
@@ -35,7 +34,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                    ->setMethods(array('getAcl'))
                    ->getMock();
 
-        $folder = FolderItem::create(array('id' => 1));
+        $folder = Folder::create(array('id' => 1));
 
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
@@ -80,7 +79,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                    ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance'))
                    ->getMock();
 
-        $fileitem = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+        $fileitem = $this->getMock('Xi\Filelib\File\File');
 
         $op->expects($this->atLeastOnce())->method('getInstance')->will($this->returnValue($fileitem));
 
@@ -93,7 +92,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                    ->with($this->equalTo('file.upload'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
 
-        $folder = FolderItem::create(array('id' => 1));
+        $folder = Folder::create(array('id' => 1));
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
@@ -141,7 +140,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('getAcl'))
                     ->getMock();
 
-         $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
          $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
          $profile = 'lussenhof';
 

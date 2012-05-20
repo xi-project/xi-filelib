@@ -84,7 +84,7 @@ class ChangeFormatPluginTest extends TestCase
 
         $upload->expects($this->once())->method('getMimeType')->will($this->returnValue('video/lus'));
         
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
@@ -147,7 +147,7 @@ class ChangeFormatPluginTest extends TestCase
         $plugin->setTargetExtension('lus');
         $plugin->setFilelib($filelib);
         
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);

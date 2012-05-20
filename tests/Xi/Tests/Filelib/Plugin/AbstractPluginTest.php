@@ -67,7 +67,7 @@ class AbstractPluginTest extends TestCase
         
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')->setMethods(array())->getMockForAbstractClass();
         
-        $file = $this->getMockForAbstractClass('Xi\Filelib\File\FileItem');
+        $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
         
         $this->assertNull($plugin->init());
     }

@@ -2,7 +2,7 @@
 
 namespace Xi\Tests\Filelib\Linker;
 
-use \Xi\Filelib\File\FileItem;
+use \Xi\Filelib\File\File;
 
 use \Xi\Filelib\Linker\SequentialLinker;
 
@@ -21,7 +21,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 
                  if ($id == 1) {
 
-                     return FolderItem::create(array(
+                     return Folder::create(array(
                          'id' => 1,
                          'name' => 'root',
                          'parent_id' => null,
@@ -32,7 +32,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 
                  } elseif($id == 2) {
 
-                     return FolderItem::create(array(
+                     return Folder::create(array(
                          'id' => 2,
                          'name' => 'lussuttaja',
                          'parent_id' => 1,
@@ -41,7 +41,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 
                  } elseif($id == 3) {
 
-                     return FolderItem::create(array(
+                     return Folder::create(array(
                          'id' => 2,
                          'name' => 'tussin',
                          'parent_id' => 2,
@@ -51,7 +51,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 
                  } elseif($id == 4) {
 
-                     return FolderItem::create(array(
+                     return Folder::create(array(
                          'id' => 2,
                          'name' => 'banaanin',
                          'parent_id' => 2,
@@ -97,7 +97,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
     {
         return array(
             array(
-                FileItem::create(array(
+                File::create(array(
                     'id' => 888,
                     'name' => 'loso.png',
                     'folder_id' => 3
@@ -106,7 +106,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 
             ),
             array(
-                FileItem::create(array(
+                File::create(array(
                     'id' => 500346,
                     'name' => 'kim-jong-il',
                     'folder_id' => 4
@@ -115,7 +115,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 
             ),
             array(
-                FileItem::create(array(
+                File::create(array(
                     'id' => 1523291,
                     'name' => 'juurekas.nom',
                     'folder_id' => 1

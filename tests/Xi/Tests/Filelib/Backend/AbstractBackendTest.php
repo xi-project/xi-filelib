@@ -5,8 +5,8 @@ namespace Xi\Tests\Filelib\Backend;
 use PHPUnit_Framework_TestCase;
 use DateTime;
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\File\FileItem;
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
 
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
@@ -142,7 +142,7 @@ use Xi\Filelib\Folder\FolderItem;
             'url'       => 'lussuttaja/tussin/lusander',
         );
 
-        $folder = FolderItem::create($data);
+        $folder = Folder::create($data);
 
         $this->assertNull($folder->getId());
 
@@ -170,7 +170,7 @@ use Xi\Filelib\Folder\FolderItem;
             sprintf('Parent folder was not found with id "%s"', $folderId)
         );
 
-        $this->backend->createFolder(FolderItem::create($data));
+        $this->backend->createFolder(Folder::create($data));
     }
 
     /**
@@ -188,7 +188,7 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => 'klus',
         );
 
-        $folder = FolderItem::create($data);
+        $folder = Folder::create($data);
 
         $this->assertInternalType('array', $this->backend->findFolder($folderId));
 
@@ -210,7 +210,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpSimpleDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'name'      => 'klus',
@@ -235,7 +235,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'name'      => 'klus',
@@ -272,7 +272,7 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => 'lussander',
         );
 
-        $folder = FolderItem::create($updateData);
+        $folder = Folder::create($updateData);
 
         $this->assertTrue($this->backend->updateFolder($folder));
         $this->assertEquals($updateData, $this->backend->findFolder($folderId));
@@ -294,7 +294,7 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => 'xoo',
         );
 
-        $folder = FolderItem::create($data);
+        $folder = Folder::create($data);
 
         $this->assertTrue($this->backend->updateFolder($folder));
         $this->assertEquals($data, $this->backend->findFolder($folderId));
@@ -309,7 +309,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id' => $folderId,
         ));
 
@@ -327,7 +327,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => 'xoo',
             'url'       => '',
@@ -348,7 +348,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpSimpleDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -372,7 +372,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -445,7 +445,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpSimpleDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -469,7 +469,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -581,7 +581,7 @@ use Xi\Filelib\Folder\FolderItem;
             'status'        => 666,
         );
 
-        $file = FileItem::create($data);
+        $file = File::create($data);
 
         $this->assertTrue($this->backend->updateFile($file));
         $this->assertEquals($data, $this->backend->findFile($fileId));
@@ -608,7 +608,7 @@ use Xi\Filelib\Folder\FolderItem;
             'status'        => 4,
         );
 
-        $file = FileItem::create($updated);
+        $file = File::create($updated);
 
         $this->setExpectedException(
             'Xi\Filelib\FilelibException',
@@ -627,7 +627,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpSimpleDataSet();
 
-        $file = FileItem::create(array('id' => $fileId));
+        $file = File::create(array('id' => $fileId));
 
         $this->assertTrue($this->backend->deleteFile($file));
         $this->assertFalse($this->backend->findFile($fileId));
@@ -643,7 +643,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpEmptyDataSet();
 
-        $file = FileItem::create(array('id' => $fileId));
+        $file = File::create(array('id' => $fileId));
 
         $this->backend->deleteFile($file);
     }
@@ -657,7 +657,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpEmptyDataSet();
 
-        $file = FileItem::create(array('id' => $fileId));
+        $file = File::create(array('id' => $fileId));
 
         $this->assertFalse($this->backend->deleteFile($file));
     }
@@ -688,8 +688,8 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => '',
         );
 
-        $file = FileItem::create($fidata);
-        $folder = FolderItem::create($fodata);
+        $file = File::create($fidata);
+        $folder = Folder::create($fodata);
 
         $file = $this->backend->upload($file, $folder);
 
@@ -713,7 +713,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpEmptyDataSet();
 
-        $file = FileItem::create(array(
+        $file = File::create(array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
             'size'          => '1000',
@@ -723,7 +723,7 @@ use Xi\Filelib\Folder\FolderItem;
             'status'        => 3,
         ));
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -766,8 +766,8 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => '',
         );
 
-        $file = FileItem::create($fidata);
-        $folder = FolderItem::create($fodata);
+        $file = File::create($fidata);
+        $folder = Folder::create($fodata);
 
         $this->backend->upload($file, $folder);
     }
@@ -802,7 +802,7 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => '',
         );
 
-        $folder = FolderItem::create($fodata);
+        $folder = Folder::create($fodata);
 
         $file = $this->backend->findFileByFileName($folder, 'tohtori-vesala.png');
 
@@ -819,7 +819,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpSimpleDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -842,7 +842,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
