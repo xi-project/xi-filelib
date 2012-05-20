@@ -2,7 +2,7 @@
 
 namespace Xi\Tests\Filelib\Publisher\Filesystem;
 
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
 

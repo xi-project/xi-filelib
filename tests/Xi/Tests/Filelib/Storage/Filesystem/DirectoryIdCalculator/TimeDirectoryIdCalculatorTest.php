@@ -14,7 +14,7 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->calc = new \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator();
-        $this->file = new \Xi\Filelib\File\FileItem();
+        $this->file = new \Xi\Filelib\File\File();
     }
     
     /**

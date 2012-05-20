@@ -4,7 +4,7 @@ namespace Xi\Tests\Filelib\Storage;
 
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\Storage\MultiStorage;
-use \Xi\Filelib\File\FileItem;
+use \Xi\Filelib\File\File;
 
 class MultiStorageTest extends \Xi\Tests\TestCase
 {
@@ -32,7 +32,7 @@ class MultiStorageTest extends \Xi\Tests\TestCase
         
         $this->storage = $multiStorage;
                 
-        $this->file = FileItem::create(array('id' => 1));
+        $this->file = File::create(array('id' => 1));
         
         $this->version = 'xoo';
         

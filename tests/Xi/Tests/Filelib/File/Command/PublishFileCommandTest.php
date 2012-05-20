@@ -5,8 +5,7 @@ namespace Xi\Tests\Filelib\File\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileItem;
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 
 use Xi\Filelib\File\Command\PublishFileCommand;
@@ -36,7 +35,7 @@ class PublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('getAcl'))
                     ->getMock();
 
-        $file = FileItem::create(array('id' => 1, 'profile' => 'versioned'));
+        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
         $command = new PublishFileCommand($op, $file);
 
@@ -56,7 +55,7 @@ class PublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function publishShouldDelegateCorrectlyWhenProfileAllowsPublicationOfOriginalFile()
     {
-        $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
+        $file = File::create(array('id' => 1, 'profile' => 'lussen'));
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
@@ -94,7 +93,7 @@ class PublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function publishShouldDelegateCorrectlyWhenProfileDisallowsPublicationOfOriginalFile()
     {
-        $file = FileItem::create(array('id' => 1, 'profile' => 'lussen'));
+        $file = File::create(array('id' => 1, 'profile' => 'lussen'));
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
