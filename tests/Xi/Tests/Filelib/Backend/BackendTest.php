@@ -4,6 +4,9 @@ namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Tests\Filelib\TestCase as FilelibTestCase;
 
+/**
+ * @group backend
+ */
 class BackendTest extends FilelibTestCase
 {
     /**
@@ -13,6 +16,4 @@ class BackendTest extends FilelibTestCase
     {
         $this->assertTrue(interface_exists('Xi\Filelib\Backend\Backend'));
     }
-    
-    
 }

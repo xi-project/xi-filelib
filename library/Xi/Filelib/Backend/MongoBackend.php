@@ -2,13 +2,14 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\File\File,
-    Xi\Filelib\Folder\Folder,
-    Xi\Filelib\FilelibException,
-    MongoDb,
-    MongoId,
-    MongoDate,
-    DateTime;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Exception\NonUniqueFileException;
+use MongoDb;
+use MongoId;
+use MongoDate;
+use MongoCursorException;
+use DateTime;
 
 /**
  * MongoDB backend for Filelib
@@ -108,20 +109,13 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File   $file
-     * @param  Folder $folder
+     * @param  File                   $file
+     * @param  Folder                 $folder
      * @return File
-     * @throws FilelibException
+     * @throws NonUniqueFileException If file already exists folder
      */
     protected function doUpload(File $file, Folder $folder)
     {
-        if (!$this->findFolder($folder->getId())) {
-            throw new FilelibException(sprintf(
-                'Folder was not found with id "%s"',
-                $folder->getId()
-            ));
-        }
-
         $document = array(
             'folder_id'     => $folder->getId(),
             'mimetype'      => $file->getMimeType(),
@@ -140,7 +134,11 @@ class MongoBackend extends AbstractBackend implements Backend
             'unique' => true,
         ));
 
-        $this->getMongo()->files->insert($document, array('safe' => true));
+        try {
+            $this->getMongo()->files->insert($document, array('safe' => true));
+        } catch (MongoCursorException $e) {
+            $this->throwNonUniqueFileException($file, $folder);
+        }
 
         $file->setId((string) $document['_id']);
         $file->setFolderId($folder->getId());
@@ -149,21 +147,12 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder           $folder
+     * @param  Folder $folder
      * @return Folder
-     * @throws FilelibException
      */
     protected function doCreateFolder(Folder $folder)
     {
         $document = $folder->toArray();
-        $parentId = $document['parent_id'];
-
-        if (isset($parentId) && !$this->findFolder($parentId)) {
-            throw new FilelibException(sprintf(
-                'Parent folder was not found with id "%s"',
-                $parentId
-            ));
-        }
 
         $this->getMongo()->folders->insert($document);
         $this->getMongo()->folders->ensureIndex(array('name' => 1),
@@ -218,22 +207,14 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File             $file
+     * @param  File    $file
      * @return boolean
-     * @throws FilelibException
      */
     protected function doUpdateFile(File $file)
     {
         $document = $file->toArray();
 
         unset($document['id']);
-
-        if (!$this->findFolder($document['folder_id'])) {
-            throw new FilelibException(sprintf(
-                'Folder was not found with id "%s"',
-                $document['folder_id']
-            ));
-        }
 
         $document['date_uploaded'] = new MongoDate(
             $document['date_uploaded']->getTimestamp()
@@ -333,13 +314,30 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string           $id
-     * @throws FilelibException
+     * @param  mixed                    $id
+     * @throws InvalidArgumentException
      */
-    protected function assertValidIdentifier($id)
+    protected function assertValidFolderIdentifier($id)
     {
         if (!is_string($id)) {
-            throw new FilelibException('Id must be a string.');
+            $this->throwInvalidArgumentException(
+                $id,
+                'Folder id must be a string, %s (%s) given'
+            );
+        }
+    }
+
+    /**
+     * @param  mixed                    $id
+     * @throws InvalidArgumentException
+     */
+    protected function assertValidFileIdentifier($id)
+    {
+        if (!is_string($id)) {
+            $this->throwInvalidArgumentException(
+                $id,
+                'File id must be a string, %s (%s) given'
+            );
         }
     }
 }

@@ -4,8 +4,6 @@ namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Filelib\Backend\Doctrine2Backend;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\File;
-use Exception;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityNotFoundException;
@@ -17,6 +15,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use PHPUnit_Framework_MockObject_MockObject;
 
 /**
+ * @group backend
  * @group doctrine
  */
 class Doctrine2BackendTest extends RelationalDbTestCase
@@ -119,29 +118,6 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         $em->expects($this->once())
            ->method('getRepository')
            ->will($this->returnValue($repository));
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function updateFolderRethrowsException()
-    {
-        $this->setUpEmptyDataSet();
-
-        $em = $this->createEntityManagerMock();
-        $em->expects($this->once())
-           ->method('getReference')
-           ->will($this->throwException(new Exception()));
-
-        $folder = Folder::create(array(
-            'id'        => 1,
-            'parent_id' => null,
-            'name'      => '',
-        ));
-
-        $this->backend->setEntityManager($em);
-        $this->backend->updateFolder($folder);
     }
 
     /**
