@@ -2,13 +2,13 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use Xi\Filelib\Backend\ZendDbBackend,
-    Xi\Filelib\Folder\Folder,
-    Zend_Db,
-    Exception;
+use Xi\Filelib\Backend\ZendDbBackend;
+use Zend_Db;
 
 /**
  * @author pekkis
+ *
+ * @group  backend
  * @group  zenddb
  */
 class ZendDbBackendTest extends RelationalDbTestCase
@@ -78,29 +78,6 @@ class ZendDbBackendTest extends RelationalDbTestCase
         $this->backend->setFolderTable($folderTable);
 
         $this->assertSame($folderTable, $this->backend->getFolderTable());
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function updateFolderRethrowsException()
-    {
-        $this->setUpEmptyDataSet();
-
-        $folderTable = $this->createFolderTableMock();
-        $folderTable->expects($this->once())
-                    ->method('getAdapter')
-                    ->will($this->throwException(new Exception()));
-
-        $folder = Folder::create(array(
-            'id'        => 1,
-            'parent_id' => null,
-            'name'      => '',
-        ));
-
-        $this->backend->setFolderTable($folderTable);
-        $this->backend->updateFolder($folder);
     }
 
     /**
