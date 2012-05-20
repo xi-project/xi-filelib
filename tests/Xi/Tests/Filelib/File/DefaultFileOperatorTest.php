@@ -60,8 +60,8 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
-        $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $file = $this->getMock('Xi\Filelib\File\File');
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $profile = 'versioned';
 
@@ -102,8 +102,8 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
-        $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $file = $this->getMock('Xi\Filelib\File\File');
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $profile = 'versioned';
 
@@ -147,7 +147,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $profile = 'versioned';
 
@@ -353,7 +353,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new DefaultFileOperator($filelib);
 
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('findFileByFilename')->with(
@@ -381,7 +381,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib->setEventDispatcher($eventDispatcher);
         $op = new DefaultFileOperator($filelib);
 
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('findFileByFilename')->with(
@@ -675,7 +675,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                          ->disableOriginalConstructor()
                          ->getMock();
 
-        $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+        $file = $this->getMock('Xi\Filelib\File\File');
         $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
         $data = array(
@@ -742,8 +742,8 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
               $command->expects($this->once())->method('execute');
           }
 
-          $file = $this->getMockForAbstractClass('Xi\Filelib\File\File');
-          $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+          $file = $this->getMock('Xi\Filelib\File\File');
+          $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
           $op->expects($this->once())->method('createCommand')->with($this->equalTo($commandClass))->will($this->returnValue($command));
 

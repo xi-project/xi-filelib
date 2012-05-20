@@ -37,7 +37,7 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('createCommand'))
                     ->getMock();
         
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         
         $url = 'tussen/hofen/meister';
         

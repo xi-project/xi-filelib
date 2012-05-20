@@ -61,7 +61,7 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                ->will($this->returnValue($publishCommand));
         }
         
-        $fileitem = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+        $fileitem = $this->getMock('Xi\Filelib\File\File');
                         
         
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');

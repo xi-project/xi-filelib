@@ -37,7 +37,7 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('createCommand'))
                     ->getMock();
         
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         
         $command = new CreateFolderCommand($op, $folder);
          
@@ -62,7 +62,7 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                    ->setConstructorArgs(array($filelib))
                    ->getMock();
                         
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $folder->expects($this->once())->method('setUrl')->with($this->equalTo('route'));
         
         $op->expects($this->once())->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue('route'));

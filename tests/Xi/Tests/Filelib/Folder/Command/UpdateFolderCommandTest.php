@@ -42,7 +42,7 @@ class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array())
                     ->getMock();
         
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         
         $command = new UpdateFolderCommand($op, $fop, $folder);
          

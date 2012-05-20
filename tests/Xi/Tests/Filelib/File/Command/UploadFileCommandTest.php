@@ -80,7 +80,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                    ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance'))
                    ->getMock();
 
-        $fileitem = $this->getMockForAbstractClass('Xi\Filelib\File\File');
+        $fileitem = $this->getMock('Xi\Filelib\File\File');
 
         $op->expects($this->atLeastOnce())->method('getInstance')->will($this->returnValue($fileitem));
 
@@ -141,7 +141,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('getAcl'))
                     ->getMock();
 
-         $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
          $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
          $profile = 'lussenhof';
 

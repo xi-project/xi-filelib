@@ -75,7 +75,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
             $command->expects($this->once())->method('execute');
         }
 
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
         $op->expects($this->once())->method('createCommand')->with($this->equalTo($commandClass))->will($this->returnValue($command));
 
@@ -175,7 +175,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
 
         $fiop->expects($this->exactly(3))->method('getInstanceAndTriggerEvent')
-              ->will($this->returnValue($this->getMockForAbstractClass('Xi\Filelib\File\File')));
+              ->will($this->returnValue($this->getMock('Xi\Filelib\File\File')));
 
         $op->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
 
