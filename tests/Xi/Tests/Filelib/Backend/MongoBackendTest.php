@@ -14,6 +14,7 @@ use MongoDate;
 use MongoConnectionException;
 
 /**
+ * @group backend
  * @group mongo
  */
 class MongoBackendTest extends AbstractBackendTest
@@ -359,7 +360,7 @@ class MongoBackendTest extends AbstractBackendTest
     public function invalidFolderIdProvider()
     {
         return array(
-            array(1),
+            array(1, 'a string'),
         );
     }
 
@@ -369,7 +370,7 @@ class MongoBackendTest extends AbstractBackendTest
     public function invalidFileIdProvider()
     {
         return array(
-            array(1),
+            array(1, 'a string'),
         );
     }
 
