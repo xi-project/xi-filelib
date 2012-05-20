@@ -2,10 +2,10 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use Xi\Filelib\Backend\ZendDbBackend,
-    Xi\Filelib\Folder\FolderItem,
-    Zend_Db,
-    Exception;
+use Xi\Filelib\Backend\ZendDbBackend;
+use Xi\Filelib\Folder\FolderItem;
+use Zend_Db;
+use Exception;
 
 /**
  * @author pekkis

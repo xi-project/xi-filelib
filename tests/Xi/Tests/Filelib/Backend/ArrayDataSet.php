@@ -2,15 +2,11 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use \PHPUnit_Util_Filter,
-    \PHPUnit_Extensions_Database_DataSet_AbstractDataSet,
-    \PHPUnit_Extensions_Database_DataSet_DefaultTableIterator,
-    \PHPUnit_Extensions_Database_DataSet_DefaultTable,
-    \PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData
-    ;
-    
-// PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
-
+use PHPUnit_Util_Filter;
+use PHPUnit_Extensions_Database_DataSet_AbstractDataSet;
+use PHPUnit_Extensions_Database_DataSet_DefaultTableIterator;
+use PHPUnit_Extensions_Database_DataSet_DefaultTable;
+use PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData;
 
 class ArrayDataSet extends PHPUnit_Extensions_Database_DataSet_AbstractDataSet
 {
@@ -24,7 +20,7 @@ class ArrayDataSet extends PHPUnit_Extensions_Database_DataSet_AbstractDataSet
      */
     public function __construct(array $data)
     {
-        foreach ($data AS $tableName => $rows) {
+        foreach ($data as $tableName => $rows) {
             $columns = array();
             if (isset($rows[0])) {
                 $columns = array_keys($rows[0]);
@@ -33,17 +29,15 @@ class ArrayDataSet extends PHPUnit_Extensions_Database_DataSet_AbstractDataSet
             $metaData = new PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData($tableName, $columns);
             $table = new PHPUnit_Extensions_Database_DataSet_DefaultTable($metaData);
 
-            foreach ($rows AS $row) {
+            foreach ($rows as $row) {
                 $table->addRow($row);
             }
             $this->tables[$tableName] = $table;
         }
     }
 
-    protected function createIterator($reverse = FALSE)
+    protected function createIterator($reverse = false)
     {
-        
-        
         return new PHPUnit_Extensions_Database_DataSet_DefaultTableIterator($this->tables, $reverse);
     }
 

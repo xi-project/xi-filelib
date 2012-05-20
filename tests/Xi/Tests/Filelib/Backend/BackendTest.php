@@ -16,6 +16,4 @@ class BackendTest extends FilelibTestCase
     {
         $this->assertTrue(interface_exists('Xi\Filelib\Backend\Backend'));
     }
-    
-    
 }
