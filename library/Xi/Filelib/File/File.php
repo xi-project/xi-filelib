@@ -28,6 +28,8 @@ class File
         'link' => 'setLink',
         'date_uploaded' => 'setDateUploaded',
         'status' => 'setStatus',
+        'uuid' => 'setUuid',
+        'resource' => 'setResource'
     );
 
     /**
@@ -52,6 +54,18 @@ class File
     private $dateUploaded;
 
     private $status;
+
+    /**
+     *
+     * @var Resource
+     */
+    private $resource;
+
+    /**
+     *
+     * @var string
+     */
+    private $uuid;
 
     /**
      *
@@ -259,6 +273,41 @@ class File
     }
 
     /**
+     * @return FileItem
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+        return $this;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     *
+     * @param Resource $resource
+     * @return FileItem
+     */
+    public function setResource(Resource $resource)
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+
+    /**
      * Returns the file as standardized file array
      *
      * @return array
@@ -275,6 +324,8 @@ class File
             'link' => $this->getLink(),
             'date_uploaded' => $this->getDateUploaded(),
             'status' => $this->getStatus(),
+            'resource' => $this->getResource(),
+            'uuid' => $this->getUuid()
         );
     }
 
@@ -282,7 +333,7 @@ class File
      * Sets data from array
      *
      * @param array $data
-     * @return File
+     * @return FileItem
      */
     public function fromArray(array $data)
     {

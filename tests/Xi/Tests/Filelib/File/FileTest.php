@@ -2,9 +2,10 @@
 
 namespace Xi\Tests\Filelib\File;
 
-use Xi\Filelib\FileLibrary,
-    DateTime,
-    Xi\Filelib\File\File;
+use Xi\Filelib\FileLibrary;
+use DateTime;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
@@ -67,12 +68,20 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($file, $file->setDateUploaded($val));
         $this->assertSame($val, $file->getDateUploaded());
 
-
         $val = 1;
         $this->assertNull($file->getStatus());
         $this->assertSame($file, $file->setStatus($val));
         $this->assertEquals($val, $file->getStatus());
 
+        $val = new Resource();
+        $this->assertNull($file->getResource());
+        $this->assertSame($file, $file->setResource($val));
+        $this->assertSame($val, $file->getResource());
+
+        $val = 'uuid-uuid-uuid';
+        $this->assertNull($file->getUuid());
+        $this->assertSame($file, $file->setUuid($val));
+        $this->assertEquals($val, $file->getUuid());
 
 
     }
@@ -91,6 +100,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
                     'link' => 'lussenhoff',
                     'date_uploaded' => new \DateTime('2010-01-01 01:01:01'),
                     'status' => 8,
+                    'uuid' => 'uuid-uuid',
+                    'resource' => new Resource()
                 ),
             ),
             array(
@@ -104,13 +115,13 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    /**
+ /**
      * @dataProvider fromArrayProvider
      * @test
      */
     public function fromArrayShouldWorkAsExpected($data)
     {
-        $file = new \Xi\Filelib\File\File();
+        $file = new File();
         $file->fromArray($data);
 
         $map = array(
@@ -123,6 +134,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'link' => 'getLink',
             'date_uploaded' => 'getDateUploaded',
             'status' => 'getStatus',
+            'resource' => 'getResource',
+            'uuid' => 'getUuid',
         );
 
         foreach($map as $key => $method) {
@@ -140,7 +153,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function toArrayShouldWorkAsExpected()
     {
-        $file = new \Xi\Filelib\File\File();
+        $file = new File();
         $file->setId(1);
         $file->setFolderId(655);
         $file->setMimeType('tussi/lussutus');
@@ -150,6 +163,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $file->setLink('linksor');
         $file->setDateUploaded(new \DateTime('1978-03-21'));
         $file->setStatus(54);
+        $file->setUuid('tussi-poski');
+        $file->setResource(new Resource());
 
         $this->assertEquals($file->toArray(), array(
             'id' => 1,
@@ -161,10 +176,12 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'link' => 'linksor',
             'date_uploaded' => new \DateTime('1978-03-21'),
             'status' => 54,
+            'uuid' => 'tussi-poski',
+            'resource' => new Resource()
         ));
 
 
-        $file = new \Xi\Filelib\File\File();
+        $file = new File();
         $this->assertEquals($file->toArray(), array(
             'id' => null,
             'folder_id' => null,
@@ -175,6 +192,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'link' => null,
             'date_uploaded' => null,
             'status' => null,
+            'uuid' => null,
+            'resource' => null,
         ));
 
 

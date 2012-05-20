@@ -5,6 +5,7 @@ namespace Xi\Tests\Filelib\File\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -104,9 +105,10 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('upload')->with($this->isInstanceOf('Xi\Filelib\File\File'));
+        $backend->expects($this->once())->method('createResource')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\File'));
+        $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
 
         $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
         $acl->expects($this->atLeastOnce())->method('isFolderWritable')->with($this->equalTo($folder))->will($this->returnValue(true));

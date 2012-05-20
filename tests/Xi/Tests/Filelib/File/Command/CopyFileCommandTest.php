@@ -5,6 +5,7 @@ namespace Xi\Tests\Filelib\File\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\CopyFileCommand;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -166,12 +167,12 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $this->op->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($eventDispatcher));
 
 
-        $file = File::create(array('name' => 'tohtori-vesala.jpg'));
+        $file = File::create(array('name' => 'tohtori-vesala.jpg', 'resource' => new Resource()));
 
         $backend->expects($this->once())->method('upload')->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
-        $storage->expects($this->once())->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\File'))->will($this->returnValue('xooxoo'));
-        $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->equalTo('xooxoo'));
+        $storage->expects($this->once())->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\Resource'))->will($this->returnValue('xooxoo'));
+        $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->equalTo('xooxoo'));
 
         $eventDispatcher->expects($this->once())->method('dispatch')
                         ->with($this->equalTo('file.copy'), $this->isInstanceOf('Xi\Filelib\Event\FileCopyEvent'));

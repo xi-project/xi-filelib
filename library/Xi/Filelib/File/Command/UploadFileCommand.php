@@ -5,11 +5,13 @@ namespace Xi\Filelib\File\Command;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FilelibException;
 use Serializable;
+use DateTime;
 
 class UploadFileCommand extends AbstractFileCommand implements Serializable
 {
@@ -75,8 +77,14 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         // @todo: actual statuses
         $file->setStatus(File::STATUS_RAW);
 
+        $hash = sha1_file($upload->getRealPath());
+        $resource = new Resource();
+        $resource->setDateCreated(new DateTime());
+        $resource->setHash($hash);
+        $this->fileOperator->getBackend()->createResource($resource);
+
         $this->fileOperator->getBackend()->upload($file, $folder);
-        $this->fileOperator->getStorage()->store($file, $upload->getRealPath());
+        $this->fileOperator->getStorage()->store($resource, $upload->getRealPath());
 
         $event = new FileEvent($file);
         $this->fileOperator->getEventDispatcher()->dispatch('file.upload', $event);
