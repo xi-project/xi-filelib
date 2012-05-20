@@ -438,6 +438,11 @@ class Doctrine2Backend extends AbstractBackend
             $entity->setDateUploaded($file->getDateUploaded());
             $entity->setStatus($file->getStatus());
 
+            $resource = $file->getResource();
+            if ($resource) {
+                $entity->setResource($em->getReference($self->getResourceEntityName(), $resource->getId()));
+            }
+
             $em->persist($entity);
 
             try {
@@ -473,7 +478,7 @@ class Doctrine2Backend extends AbstractBackend
             'link'          => $file->getLink(),
             'date_uploaded' => $file->getDateUploaded(),
             'status'        => $file->getStatus(),
-            'resource' => ($file->getResource()) ? $file->getResource()->toArray() : null
+            'resource' => ($file->getResource()) ? $this->resourceToArray($file->getResource()) : null
         );
     }
 

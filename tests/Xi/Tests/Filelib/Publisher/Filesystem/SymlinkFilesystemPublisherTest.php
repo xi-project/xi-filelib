@@ -3,6 +3,7 @@
 namespace Xi\Tests\Filelib\Publisher\Filesystem;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
 
@@ -120,22 +121,22 @@ class SymlinkFilesystemPublisherTest extends TestCase
         return array(
 
             array(
-                File::create(array('id' => 1)),
+                File::create(array('id' => 1, 'resource' => Resource::create(array('id' => 1)))),
                 0,
                 '../private/1/1',
             ),
             array(
-                File::create(array('id' => 2)),
+                File::create(array('id' => 2, 'resource' => Resource::create(array('id' => 2)))),
                 3,
                 '../../../../private/2/2/2',
             ),
             array(
-                File::create(array('id' => 3)),
+                File::create(array('id' => 3, 'resource' => Resource::create(array('id' => 3)))),
                 2,
                 '../../../private/3/3/3/3',
             ),
             array(
-                File::create(array('id' => 4)),
+                File::create(array('id' => 4, 'resource' => Resource::create(array('id' => 4)))),
                 1,
                 '../../private/666/4',
             ),
@@ -189,6 +190,8 @@ class SymlinkFilesystemPublisherTest extends TestCase
 
             $file->expects($this->any())->method('getProfile')
                     ->will($this->returnValue('profile'));
+
+            $file->expects($this->any())->method('getResource')->will($this->returnValue(Resource::create(array('id' => $x))));
 
             $file->expects($this->any())->method('getId')->will($this->returnValue($x));
 

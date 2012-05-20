@@ -4,6 +4,7 @@ namespace Xi\Tests\Filelib\Publisher\Filesystem;
 
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Filesystem\CopyPublisher;
 
@@ -85,7 +86,7 @@ class CopyFilesystemPublisherTest extends TestCase
         for ($x = 1; $x <= 5; $x++) {
             $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
             $file->expects($this->any())->method('getId')->will($this->returnValue($x));
-
+            $file->expects($this->any())->method('getResource')->will($this->returnValue(Resource::create(array('id' => $x))));
             $files[$x-1] = $file;
         }
 

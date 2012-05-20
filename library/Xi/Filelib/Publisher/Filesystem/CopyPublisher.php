@@ -29,7 +29,7 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            $tmp = $this->getFilelib()->getStorage()->retrieve($file);
+            $tmp = $this->getFilelib()->getStorage()->retrieve($file->getResource());
 
             copy($tmp, $link);
             chmod($link, $this->getFilePermission());
@@ -52,7 +52,7 @@ class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file, $version);
+            $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version);
             copy($tmp, $link);
             chmod($link, $this->getFilePermission());
         }

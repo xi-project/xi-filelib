@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Backend;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Exception\FolderNotFoundException;

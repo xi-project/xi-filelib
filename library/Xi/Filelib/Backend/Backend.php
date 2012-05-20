@@ -19,7 +19,7 @@ interface Backend
      * Finds folder
      *
      * @param  mixed       $id
-     * @return array|false False if folder is not found.
+     * @return Folder|false False if folder is not found.
      */
     public function findFolder($id);
 
@@ -27,14 +27,14 @@ interface Backend
      * Finds subfolders of a folder
      *
      * @param  Folder $folder
-     * @return array
+     * @return array Array of folders
      */
     public function findSubFolders(Folder $folder);
 
     /**
      * Finds all files
      *
-     * @return array
+     * @return array Array of files
      */
     public function findAllFiles();
 
@@ -42,7 +42,7 @@ interface Backend
      * Finds a file
      *
      * @param  mixed       $id
-     * @return array|false False if file is not found.
+     * @return File|false False if file is not found.
      */
     public function findFile($id);
 
@@ -50,7 +50,7 @@ interface Backend
      * Finds files in a folder
      *
      * @param  Folder $folder
-     * @return array
+     * @return array Array of files
      */
     public function findFilesIn(Folder $folder);
 
@@ -112,7 +112,7 @@ interface Backend
     /**
      * Returns the root folder. Creates it if it does not exist.
      *
-     * @return array
+     * @return Folder
      */
     public function findRootFolder();
 
@@ -120,7 +120,7 @@ interface Backend
      * Finds folder by url
      *
      * @param  string      $url
-     * @return array|false False if folder was not found.
+     * @return Folder|false False if folder was not found.
      */
     public function findFolderByUrl($url);
 
@@ -129,7 +129,7 @@ interface Backend
      *
      * @param  Folder $folder
      * @param  string $filename
-     * @return array
+     * @return File
      */
     public function findFileByFilename(Folder $folder, $filename);
 

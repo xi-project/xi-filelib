@@ -157,7 +157,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
         $tmps = $this->createVersions($file);
         foreach ($tmps as $version => $tmp) {
-            $this->getStorage()->storeVersion($file, $version, $tmp);
+            $this->getStorage()->storeVersion($file->getResource(), $version, $tmp);
             unlink($tmp);
         }
     }
@@ -221,7 +221,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function deleteVersions(File $file)
     {
         foreach ($this->getVersions() as $version) {
-            $this->getStorage()->deleteVersion($file, $version);
+            $this->getStorage()->deleteVersion($file->getResource(), $version);
         }
 
     }

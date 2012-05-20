@@ -123,7 +123,7 @@ class Resource
      * @param array $data
      * @return Resource
      */
-    public static function create(array $data)
+    public static function create(array $data = array())
     {
         $file = new self();
         return $file->fromArray($data);

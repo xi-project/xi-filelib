@@ -59,7 +59,7 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
         $storage = $this->getFilelib()->getStorage();
-        $retrieved = $storage->retrieve($file);
+        $retrieved = $storage->retrieve($file->getResource());
 
         $path = preg_replace("[^{$storage->getRoot()}]", $relativePath, $retrieved);
 
@@ -84,7 +84,7 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
         $storage = $this->getFilelib()->getStorage();
-        $retrieved = $storage->retrieveVersion($file, $version->getIdentifier());
+        $retrieved = $storage->retrieveVersion($file->getResource(), $version->getIdentifier());
 
         $path = preg_replace("[^{$storage->getRoot()}]", $relativePath, $retrieved);
 
@@ -123,7 +123,7 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
                 symlink($this->getRelativePathTo($file, $depth), $link);
                 chdir($oldCwd);
             } else {
-                symlink($this->getFilelib()->getStorage()->retrieve($file), $link);
+                symlink($this->getFilelib()->getStorage()->retrieve($file->getResource()), $link);
             }
         }
 
@@ -164,7 +164,7 @@ class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
                 symlink($fp, $link);
                 chdir($oldCwd);
             } else {
-                symlink($this->getFilelib()->getStorage()->retrieveVersion($file, $version), $link);
+                symlink($this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version), $link);
             }
 
         }

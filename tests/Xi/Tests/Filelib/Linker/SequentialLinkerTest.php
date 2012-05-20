@@ -2,10 +2,9 @@
 
 namespace Xi\Tests\Filelib\Linker;
 
-use \Xi\Filelib\File\File;
-
-use \Xi\Filelib\Linker\SequentialLinker;
-
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
+use Xi\Filelib\Linker\SequentialLinker;
 
 class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -100,8 +99,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
                 File::create(array(
                     'id' => 888,
                     'name' => 'loso.png',
-                    'folder_id' => 3
-
+                    'folder_id' => 3,
                 )), 3, 48, array('1/1/19/loso.png', '1/1/19/loso-xoo.xoo'),
 
             ),
@@ -138,11 +136,9 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
         $linker->setDirectoryLevels($levels);
         $linker->setFilesPerDirectory($fpd);
 
-
         $linker->setFilelib($this->filelib);
 
         $this->assertEquals($beautifurl[0], $linker->getLink($file, true));
-
     }
 
     /**
@@ -160,6 +156,18 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
         $linker->setFilelib($this->filelib);
 
         $this->assertEquals($beautifurl[1], $linker->getLinkVersion($file, $this->versionProvider->getIdentifier(), $this->versionProvider->getExtensionFor($this->versionProvider->getIdentifier())));
+    }
+
+    /**
+     * @test
+     * @expectedException Xi\Filelib\Exception\InvalidArgumentException
+     */
+    public function getDirectoryIdShouldThrowExceptionWithNonNumericFileIds()
+    {
+        $linker = new SequentialLinker();
+        $file = File::create(array('id' => 'xoo-xoo'));
+
+        $linker->getDirectoryId($file);
 
     }
 

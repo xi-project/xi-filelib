@@ -5,6 +5,7 @@ namespace Xi\Tests\Filelib\Plugin\VersionProvider;
 use Xi\Tests\Filelib\TestCase;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\File\FileOperator;
@@ -264,12 +265,12 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->storage->expects($this->once())->method('storeVersion')
                 ->with(
-                    $this->isInstanceOf('Xi\Filelib\File\File'),
+                    $this->isInstanceOf('Xi\Filelib\File\Resource'),
                     $this->equalTo('xooxer'),
                     ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg'
                 );
 
-        $file = File::create(array('mimetype' => 'image/xoo', 'profile' => 'tussi'));
+        $file = File::create(array('mimetype' => 'image/xoo', 'profile' => 'tussi', 'resource' => Resource::create()));
         $event = new FileEvent($file);
 
         $this->createMockedTemporaryFile();
@@ -460,7 +461,7 @@ class AbstractVersionProviderTest extends TestCase
     {
         $this->storage->expects($this->once())->method('deleteVersion')
              ->with(
-                     $this->isInstanceOf('Xi\Filelib\File\File'),
+                     $this->isInstanceOf('Xi\Filelib\File\Resource'),
                      $this->equalTo('xooxer')
               );
 
@@ -472,7 +473,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'tussi'));
+        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'tussi', 'resource' => Resource::create()));
         $event = new FileEvent($file);
 
         $this->plugin->onDelete($event);
@@ -492,7 +493,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'xooxer'));
+        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'xooxer', 'resource' => Resource::create()));
         $event = new FileEvent($file);
 
         $this->plugin->onDelete($event);
@@ -530,10 +531,10 @@ class AbstractVersionProviderTest extends TestCase
     public function deleteVersionShouldDelegateToStorage()
     {
 
-        $file = File::create(array('id' => 666));
+        $file = File::create(array('id' => 666, 'resource' => Resource::create()));
 
         $this->storage->expects($this->once())->method('deleteVersion')
-                ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->equalTo('xooxersson'));
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->equalTo('xooxersson'));
 
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
             ->setMethods(array('createVersions', 'getStorage', 'getVersions', 'getExtensionFor'))

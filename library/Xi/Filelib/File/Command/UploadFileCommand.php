@@ -78,13 +78,27 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         $file->setStatus(File::STATUS_RAW);
 
         $hash = sha1_file($upload->getRealPath());
+
         $resource = new Resource();
         $resource->setDateCreated(new DateTime());
         $resource->setHash($hash);
         $this->fileOperator->getBackend()->createResource($resource);
 
+        $file->setResource($resource);
+
         $this->fileOperator->getBackend()->upload($file, $folder);
         $this->fileOperator->getStorage()->store($resource, $upload->getRealPath());
+
+        /*
+        $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
+        if ($resources) {
+            $resource = Resource::create(array_shift($resources));
+        } else {
+            $resource = Resource::create(array('hash' => $hash, 'date_created' => new DateTime()));
+            $this->fileOperator->getBackend()->createResource($resource);
+            $this->fileOperator->getStorage()->store($resource, $upload->getRealPath());
+        }
+        */
 
         $event = new FileEvent($file);
         $this->fileOperator->getEventDispatcher()->dispatch('file.upload', $event);

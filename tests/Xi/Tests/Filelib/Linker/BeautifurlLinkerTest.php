@@ -1,10 +1,16 @@
 <?php
 
-use \Xi\Filelib\Folder\Folder;
+/*
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use \Xi\Filelib\File\File;
-
-use \Xi\Filelib\Linker\BeautifurlLinker;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
+use Xi\Filelib\Linker\BeautifurlLinker;
 
 class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -110,32 +116,32 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
             array(
                 File::create(array(
                     'name' => 'loso.png',
-                    'folder_id' => 3
-
+                    'folder_id' => 3,
+                    'resource' => Resource::create(array('id' => 1)),
                 )), array('lussuttaja/tussin/loso.png', 'lussuttaja/tussin/loso-xoo.xoo'),
 
             ),
             array(
                 File::create(array(
                     'name' => 'kim-jong-il',
-                    'folder_id' => 4
-
+                    'folder_id' => 4,
+                    'resource' => Resource::create(array('id' => 1)),
                 )), array('lussuttaja/banaanin/kim-jong-il', 'lussuttaja/banaanin/kim-jong-il-xoo.xoo'),
 
             ),
             array(
                 File::create(array(
                     'name' => 'juurekas.nom',
-                    'folder_id' => 1
-
+                    'folder_id' => 1,
+                    'resource' => Resource::create(array('id' => 1)),
                 )), array('juurekas.nom', 'juurekas-xoo.xoo'),
 
             ),
             array(
                 File::create(array(
                     'name' => 'salainen-suunnitelma.pdf',
-                    'folder_id' => 5
-
+                    'folder_id' => 5,
+                    'resource' => Resource::create(array('id' => 1)),
                 )), array('lussuttaja/banaanin/suuren-ugrilaisen-kansan-sielu/salainen-suunnitelma.pdf', 'lussuttaja/banaanin/suuren-ugrilaisen-kansan-sielu/salainen-suunnitelma-xoo.xoo'),
 
             ),
@@ -194,6 +200,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
         $file = File::create(array(
             'name' => 'lamantiini.lus',
             'folder_id' => 2,
+            'resource' => Resource::create(array('id' => 1)),
         ));
 
         $linker->setExcludeRoot(false);
@@ -217,12 +224,10 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
          $file = File::create(array(
             'name' => 'lamantiini.lus',
             'folder_id' => 5,
+            'resource' => Resource::create(array('id' => 1)),
         ));
 
-
         $this->assertEquals('root/lussuttaja/banaanin/sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú/lamantiini.lus', $linker->getLink($file));
-
-
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Xi\Tests\Filelib\Renderer;
 
 use Xi\Filelib\Renderer\ZendRenderer;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
 use Zend_Controller_Request_Http as Request;
 use Zend_Controller_Response_Http as Response;
@@ -170,7 +171,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getUrlShouldDelegateToPublisherWhenUsingOriginalVersion()
     {
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
@@ -196,7 +197,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getUrlShouldDelegateToPublisherWhenUsingNonOriginalVersion()
     {
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
 
@@ -239,7 +240,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file);
 
@@ -275,7 +276,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file);
 
@@ -307,7 +308,9 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->once())->method('retrieve')
+                 ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                ->will($this->returnValue($retrieved));
 
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
 
@@ -318,7 +321,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file);
 
@@ -353,7 +356,9 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->once())->method('retrieve')
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                ->will($this->returnValue($retrieved));
 
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
 
@@ -363,7 +368,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $response = $renderer->render($file, array('download' => true));
 
@@ -401,7 +406,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file, array('version' => 'lussenhofer'));
 
@@ -421,7 +426,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
@@ -436,7 +441,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('retrieveVersion')
-                ->with($this->equalTo($file), $this->equalTo('lussenhofer'))
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->equalTo('lussenhofer'))
                 ->will($this->returnValue($retrieved));
 
         $fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(true));
@@ -624,7 +629,9 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
         $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
-        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->once())->method('retrieve')
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                ->will($this->returnValue($retrieved));
         $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
 
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
@@ -635,7 +642,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
 
@@ -683,7 +690,10 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
         $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
-        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->once())->method('retrieve')
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                ->will($this->returnValue($retrieved));
+
         $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
 
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
@@ -694,7 +704,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
 
@@ -710,9 +720,6 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->assertArrayNotHasKey('X-Sendfile', $response->getHeaders());
         $this->assertArrayNotHasKey('X-Lighttpd-Send-File', $response->getHeaders());
         $this->assertArrayNotHasKey('X-Accel-Redirect', $response->getHeaders());
-
-
-
 
     }
 

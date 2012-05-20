@@ -4,6 +4,7 @@ namespace Xi\Tests\Filelib\Renderer;
 
 use Xi\Filelib\Renderer\SymfonyRenderer;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -161,7 +162,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getUrlShouldDelegateToPublisherWhenUsingOriginalVersion()
     {
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
@@ -187,7 +188,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getUrlShouldDelegateToPublisherWhenUsingNonOriginalVersion()
     {
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
 
@@ -230,7 +231,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file);
 
@@ -266,7 +267,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file);
 
@@ -298,7 +299,9 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->once())->method('retrieve')
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                ->will($this->returnValue($retrieved));
 
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
 
@@ -309,7 +312,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file);
 
@@ -345,7 +348,9 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->once())->method('retrieve')
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                ->will($this->returnValue($retrieved));
 
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
 
@@ -355,7 +360,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $response = $renderer->render($file, array('download' => true));
 
@@ -393,7 +398,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file, array('version' => 'lussenhofer'));
 
@@ -413,7 +418,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
@@ -429,7 +434,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('retrieveVersion')
-                ->with($this->equalTo($file), $this->equalTo('xooxer'))
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->equalTo('xooxer'))
                 ->will($this->returnValue($retrieved));
 
         $fiop->expects($this->atLeastOnce())->method('getVersionProvider')
@@ -614,7 +619,10 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
         $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
-        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->once())->method('retrieve')
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                ->will($this->returnValue($retrieved));
+
         $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
 
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
@@ -625,7 +633,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
 
@@ -678,7 +686,9 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
         $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
-        $storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $storage->expects($this->once())->method('retrieve')
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                ->will($this->returnValue($retrieved));
         $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
 
         $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
@@ -689,7 +699,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
 
