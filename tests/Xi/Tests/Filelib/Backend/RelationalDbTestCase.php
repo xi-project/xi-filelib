@@ -15,8 +15,8 @@ use PHPUnit_Extensions_Database_DataSet_DefaultDataSet;
 use Exception;
 use DateTime;
 use Xi\Tests\PHPUnit\Extensions\Database\Operation\MySQL55Truncate;
-use Xi\Filelib\File\FileItem;
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
 
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>

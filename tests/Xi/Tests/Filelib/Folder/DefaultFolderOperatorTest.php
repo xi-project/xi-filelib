@@ -4,7 +4,7 @@ namespace Xi\Tests\Filelib\Folder;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\DefaultFolderOperator;
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Command;
 
 class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
@@ -75,28 +75,12 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
             $command->expects($this->once())->method('execute');
         }
 
-        $folder = $this->getMockForAbstractClass('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
         $op->expects($this->once())->method('createCommand')->with($this->equalTo($commandClass))->will($this->returnValue($command));
 
         $op->setCommandStrategy($commandName, $strategy);
         $op->$operatorMethod($folder);
-    }
-
-
-
-    /**
-     * @test
-     */
-    public function gettersAndSettersShouldWorkAsExpected()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $op = new DefaultFolderOperator($filelib);
-
-        $val = 'Lussen\Hofer';
-        $this->assertEquals('Xi\Filelib\Folder\FolderItem', $op->getClass());
-        $this->assertSame($op, $op->setClass($val));
-        $this->assertEquals($val, $op->getClass());
     }
 
     /**
@@ -141,7 +125,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib->setBackend($backend);
 
         $folder = $op->find($id);
-        $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
         $this->assertEquals($id, $folder->getId());
         $this->assertEquals(null, $folder->getParentId());
     }
@@ -158,7 +142,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                    ->getMock();
 
 
-        $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
+        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('findFilesIn')->with($this->equalTo($folder))->will($this->returnValue(array()));
@@ -191,11 +175,11 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
 
         $fiop->expects($this->exactly(3))->method('getInstanceAndTriggerEvent')
-              ->will($this->returnValue($this->getMockForAbstractClass('Xi\Filelib\File\File')));
+              ->will($this->returnValue($this->getMock('Xi\Filelib\File\File')));
 
         $op->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
 
-        $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
+        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())
@@ -233,14 +217,14 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new DefaultFolderOperator($filelib);
 
-        $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
+        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->never())->method('findFolder');
 
         $filelib->setBackend($backend);
 
-        $folder = FolderItem::create(array('parent_id' => $id));
+        $folder = Folder::create(array('parent_id' => $id));
 
         $parent = $op->findParentFolder($folder);
 
@@ -257,7 +241,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new DefaultFolderOperator($filelib);
 
-        $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
+        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('findFolder')
@@ -265,7 +249,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $filelib->setBackend($backend);
 
-        $folder = FolderItem::create(array('parent_id' => $id));
+        $folder = Folder::create(array('parent_id' => $id));
 
         $parent = $op->findParentFolder($folder);
 
@@ -282,7 +266,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new DefaultFolderOperator($filelib);
 
-        $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
+        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('findFolder')
@@ -291,36 +275,29 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $filelib->setBackend($backend);
 
-        $folder = FolderItem::create(array('parent_id' => $id));
+        $folder = Folder::create(array('parent_id' => $id));
 
         $parent = $op->findParentFolder($folder);
 
-        $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
     }
 
     /**
      * @test
      */
-    public function getInstanceShouldReturnAnInstanceOfConfiguredClassWithNoData()
+    public function getInstanceShouldReturnAnInstanceOfFolderWithNoData()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFolderOperator($filelib);
 
-        $mockClass = $this->getMockClass('Xi\Filelib\Folder\FolderItem');
-
         $folder = $op->getInstance();
-        $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
-
-        $op->setClass($mockClass);
-
-        $folder = $op->getInstance();
-        $this->assertInstanceOf($mockClass, $folder);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
     }
 
     /**
      * @test
      */
-    public function getInstanceShouldReturnAnInstanceOfConfiguredClassWithData()
+    public function getInstanceShouldReturnAnInstanceOfFolderWithData()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFolderOperator($filelib);
@@ -330,7 +307,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         );
 
         $folder = $op->getInstance($data);
-        $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
 
         $this->assertEquals('manatee', $folder->getName());
     }
@@ -344,7 +321,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new DefaultFolderOperator($filelib);
 
-        $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
+        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('findSubFolders')
@@ -368,7 +345,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new DefaultFolderOperator($filelib);
 
-        $folder = FolderItem::create(array('id' => 500, 'parent_id' => 499));
+        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('findSubFolders')
@@ -439,7 +416,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $folder = $op->findByUrl($id);
 
-        $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
 
     }
 
@@ -485,7 +462,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $folder = $op->findRoot();
 
-        $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
     }
 
 

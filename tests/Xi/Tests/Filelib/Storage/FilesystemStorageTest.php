@@ -21,7 +21,7 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
     {
         
                 
-        $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1));
+        $this->file = \Xi\Filelib\File\File::create(array('id' => 1));
         
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
                         

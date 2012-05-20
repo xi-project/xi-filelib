@@ -5,8 +5,8 @@ namespace Xi\Tests\Filelib\Acl;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\Folder\FolderItem;
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\File;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Acl\Model\AclInterface;
 use Symfony\Component\Security\Acl\Model\AclProviderInterface;
@@ -114,7 +114,7 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFileReadableShouldDelegateFileToSecurityContextWhenFolderBasedIsFalse()
     {
-        $file = FileItem::create(array('id' => 1));        
+        $file = File::create(array('id' => 1));        
         
         $this->context->expects($this->once())->method('isGranted')
                       ->with($this->equalTo('VIEW'), $this->equalTo($file));
@@ -130,8 +130,8 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFileReadableShouldDelegateFolderToSecurityContextWhenFolderBasedIsTrue()
     {
-        $file = FileItem::create(array('id' => 1, 'folder_id' => 1));        
-        $folder = FolderItem::create(array('id' => 1));        
+        $file = File::create(array('id' => 1, 'folder_id' => 1));        
+        $folder = Folder::create(array('id' => 1));        
         
         $this->foop->expects($this->once())->method('find')->with($this->equalTo(1))
                    ->will($this->returnValue($folder));
@@ -151,7 +151,7 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFileWritableShouldDelegateFileToSecurityContextWhenFolderBasedIsFalse()
     {
-        $file = FileItem::create(array('id' => 1));        
+        $file = File::create(array('id' => 1));        
         
         $this->context->expects($this->once())->method('isGranted')
                       ->with($this->equalTo('EDIT'), $this->equalTo($file));
@@ -167,8 +167,8 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFileWritableShouldDelegateFolderToSecurityContextWhenFolderBasedIsTrue()
     {
-        $file = FileItem::create(array('id' => 1, 'folder_id' => 1));        
-        $folder = FolderItem::create(array('id' => 1));        
+        $file = File::create(array('id' => 1, 'folder_id' => 1));        
+        $folder = Folder::create(array('id' => 1));        
         
         $this->foop->expects($this->once())->method('find')->with($this->equalTo(1))
                    ->will($this->returnValue($folder));
@@ -187,7 +187,7 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFolderReadableShouldDelegateFolderToSecurityContext()
     {
-        $folder = FolderItem::create(array('id' => 1));        
+        $folder = Folder::create(array('id' => 1));        
         
         $this->context->expects($this->once())->method('isGranted')
                       ->with($this->equalTo('VIEW'), $this->equalTo($folder));
@@ -204,7 +204,7 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFolderWritableShouldDelegateFolderToSecurityContext()
     {
-        $folder = FolderItem::create(array('id' => 1));        
+        $folder = Folder::create(array('id' => 1));        
         
         $this->context->expects($this->once())->method('isGranted')
                       ->with($this->equalTo('EDIT'), $this->equalTo($folder));
@@ -220,9 +220,9 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFileReadableByAnonymousShouldDelegateToFolderWhenAclIsFolderBased()
     {
-        $file = FileItem::create(array('id' => 1, 'folder_id' => 1));        
+        $file = File::create(array('id' => 1, 'folder_id' => 1));        
         
-        $folder = FolderItem::create(array('id' => 1));        
+        $folder = Folder::create(array('id' => 1));        
         
         $this->foop->expects($this->once())->method('find')->with($this->equalTo(1))
                    ->will($this->returnValue($folder));
@@ -246,7 +246,7 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFileReadableByAnonymousShouldDelegateToAclWhenAclIsNotFolderBased()
     {
-        $file = FileItem::create(array('id' => 1, 'folder_id' => 1));        
+        $file = File::create(array('id' => 1, 'folder_id' => 1));        
         
         $acl = $this->getMockBuilder('Xi\Filelib\Acl\SymfonyAcl')
                     ->setConstructorArgs(array($this->filelib, $this->context, $this->aclProvider, false))
@@ -265,7 +265,7 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFolderReadableByAnonymousShouldDelegateToAcl()
     {
-        $folder = FolderItem::create(array('id' => 1));        
+        $folder = Folder::create(array('id' => 1));        
         
         $acl = $this->getMockBuilder('Xi\Filelib\Acl\SymfonyAcl')
                     ->setConstructorArgs(array($this->filelib, $this->context, $this->aclProvider, false))
@@ -283,7 +283,7 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function anonymousAclQueryShouldReturnFalseWhenAclIsNotFoundForObject()
     {
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
         
         $this->aclProvider->expects($this->once())->method('findAcl')
                           ->with($this->isInstanceOf('Symfony\Component\Security\Acl\Domain\ObjectIdentity'))
@@ -302,7 +302,7 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function anonymousAclQueryShouldDelegateToIsGrantedWhenAclIsFound()
     {
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
         
         $acl = $this->getMockForAbstractClass('Symfony\Component\Security\Acl\Model\AclInterface');
         
@@ -328,7 +328,7 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     public function isFolderReadableByAnonymousShouldReturnFalse()
     {
-        $folder = FolderItem::create(array('id' => 1));        
+        $folder = Folder::create(array('id' => 1));        
         
         $acl = new SymfonyAcl($this->filelib, $this->context, $this->aclProvider, false);
 

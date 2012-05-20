@@ -4,8 +4,8 @@ namespace Xi\Tests\Filelib\Acl;
 
 use \PHPUnit_Framework_TestCase as TestCase;
 
-use Xi\Filelib\Folder\FolderItem;
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\File;
 
 use Xi\Filelib\Acl\Acl,
     Xi\Filelib\Acl\SimpleAcl;
@@ -121,7 +121,7 @@ class SimpleAclTest extends \Xi\Tests\Filelib\TestCase
      */
     public function isReadableShouldReturnExpectedResultsForFiles($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = FileItem::create($res);        
+        $res = File::create($res);        
         $this->assertEquals($readable, $this->acl->isFileReadable($res));
     }
     
@@ -132,7 +132,7 @@ class SimpleAclTest extends \Xi\Tests\Filelib\TestCase
      */
     public function IsReadableShouldReturnExpectedResultForFolders($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = FolderItem::create($res);        
+        $res = Folder::create($res);        
         $this->assertEquals($readable, $this->acl->isFolderReadable($res));
     }
 
@@ -143,7 +143,7 @@ class SimpleAclTest extends \Xi\Tests\Filelib\TestCase
      */
     public function isWritableShouldReturnExpectedResultsForFiles($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = FileItem::create($res);        
+        $res = File::create($res);        
         $this->assertEquals($writable, $this->acl->isFileWritable($res));
     }
     
@@ -154,7 +154,7 @@ class SimpleAclTest extends \Xi\Tests\Filelib\TestCase
      */
     public function IsWritableShouldReturnExpectedResultForFolders($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = FolderItem::create($res);        
+        $res = Folder::create($res);        
         $this->assertEquals($writable, $this->acl->isFolderWritable($res));
     }
     
@@ -165,7 +165,7 @@ class SimpleAclTest extends \Xi\Tests\Filelib\TestCase
      */
     public function isAnonymousReadableShouldReturnExpectedResultsForFiles($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = FileItem::create($res);        
+        $res = File::create($res);        
         $this->assertEquals($readableByAnonymous, $this->acl->isFileReadableByAnonymous($res));
     }
     
@@ -176,7 +176,7 @@ class SimpleAclTest extends \Xi\Tests\Filelib\TestCase
      */
     public function IsAnonymousReadableShouldReturnExpectedResultForFolders($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = FolderItem::create($res);        
+        $res = Folder::create($res);        
         $this->assertEquals($readableByAnonymous, $this->acl->isFolderReadableByAnonymous($res));
     }
 
@@ -186,7 +186,7 @@ class SimpleAclTest extends \Xi\Tests\Filelib\TestCase
      */
     public function setReadableByAnonymousShouldReverseReadableByAnonymousResultsForFiles($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = FileItem::create($res);        
+        $res = File::create($res);        
         
         $acl = new SimpleAcl(false);
                 
@@ -202,7 +202,7 @@ class SimpleAclTest extends \Xi\Tests\Filelib\TestCase
      */
     public function setReadableByAnonymousShouldReverseReadableByAnonymousResultsForFolders($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = FolderItem::create($res);        
+        $res = Folder::create($res);        
         
         $acl = new SimpleAcl(false);
                 

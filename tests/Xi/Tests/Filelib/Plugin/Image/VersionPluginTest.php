@@ -4,7 +4,7 @@ namespace Xi\Tests\Filelib\Plugin\Image;
 
 use Imagick;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\File\File;
 
 class VersionPluginTest extends TestCase
 {
@@ -46,7 +46,7 @@ class VersionPluginTest extends TestCase
     {
         $retrievedPath = ROOT_TESTS . '/data/illusive-manatee.jpg';
 
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
 
         $fobject = $this->getMockBuilder('Xi\Filelib\File\FileObject')
                         ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
