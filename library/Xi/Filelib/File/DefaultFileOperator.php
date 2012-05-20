@@ -10,6 +10,7 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\Plugin;
 use InvalidArgumentException;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\FileItem;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -63,37 +64,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     private $profiles = array();
 
     /**
-     * @var string Fileitem class
-     */
-    private $className = 'Xi\Filelib\File\FileItem';
-
-    /**
      *
      * @var type TypeResolver
      */
     private $typeResolver;
-
-    /**
-     * Sets fileitem class
-     *
-     * @param string $className Class name
-     * @return DefaultFileOperator
-     */
-    public function setClass($className)
-    {
-        $this->className = $className;
-        return $this;
-    }
-
-    /**
-     * Returns fileitem class
-     *
-     * @return string
-     */
-    public function getClass()
-    {
-        return $this->className;
-    }
 
     /**
      * Returns an instance of the currently set fileitem class
@@ -102,8 +76,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function getInstance($data = array())
     {
-        $className = $this->getClass();
-        $file = new $className();
+        $file = new FileItem();
         if ($data) {
             $file->fromArray($data);
         }

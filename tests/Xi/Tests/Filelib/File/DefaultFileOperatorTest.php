@@ -174,40 +174,17 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
-
     /**
      * @test
      */
-    public function gettersAndSettersShouldWorkAsExpected()
+    public function getInstanceShouldReturnAnInstanceOfFileWithNoData()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFileOperator($filelib);
-
-        $val = 'Lussen\Hofer';
-        $this->assertEquals('Xi\Filelib\File\FileItem', $op->getClass());
-        $this->assertSame($op, $op->setClass($val));
-        $this->assertEquals($val, $op->getClass());
-
-    }
-
-    /**
-     * @test
-     */
-    public function getInstanceShouldReturnAnInstanceOfConfiguredClassWithNoData()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $op = new DefaultFileOperator($filelib);
-
-        $mockClass = $this->getMockClass('Xi\Filelib\File\FileItem');
 
         $file = $op->getInstance();
         $this->assertInstanceOf('Xi\Filelib\File\FileItem', $file);
 
-        $op->setClass($mockClass);
-
-        $file = $op->getInstance();
-        $this->assertInstanceOf($mockClass, $file);
-
     }
 
 
@@ -215,7 +192,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function getInstanceShouldReturnAnInstanceOfConfiguredClassWithData()
+    public function getInstanceShouldReturnAnInstanceOfFileWithData()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFileOperator($filelib);

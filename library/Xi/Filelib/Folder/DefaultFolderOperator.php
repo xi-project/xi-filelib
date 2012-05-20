@@ -7,6 +7,7 @@ use Xi\Filelib\AbstractOperator;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Folder\FolderItem;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Command;
 use Xi\Filelib\Folder\Command\FolderCommand;
@@ -27,19 +28,12 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
     const COMMAND_UPDATE = 'update';
     const COMMAND_CREATE_BY_URL = 'create_by_url';
 
-    /**
-     * @var string Folderitem class
-     */
-    private $className = 'Xi\Filelib\Folder\FolderItem';
-
-
     protected $commandStrategies = array(
         self::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
         self::COMMAND_CREATE_BY_URL => Command::STRATEGY_SYNCHRONOUS,
     );
-
 
     /**
      * Returns directory route for folder
@@ -64,36 +58,13 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
     }
 
     /**
-     * Sets folderitem class
-     *
-     * @param string $className Class name
-     * @return FolderOperator
-     */
-    public function setClass($className)
-    {
-        $this->className = $className;
-        return $this;
-    }
-
-    /**
-     * Returns folderitem class
-     *
-     * @return string
-     */
-    public function getClass()
-    {
-        return $this->className;
-    }
-
-    /**
      * Returns an instance of the currently set folder class
      *
      * @param array $data Data
      */
     public function getInstance(array $data = array())
     {
-        $className = $this->getClass();
-        $folder = new $className();
+        $folder = new FolderItem();
         if ($data) {
             $folder->fromArray($data);
         }

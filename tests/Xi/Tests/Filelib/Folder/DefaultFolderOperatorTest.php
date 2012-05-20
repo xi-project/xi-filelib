@@ -83,22 +83,6 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op->$operatorMethod($folder);
     }
 
-
-
-    /**
-     * @test
-     */
-    public function gettersAndSettersShouldWorkAsExpected()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $op = new DefaultFolderOperator($filelib);
-
-        $val = 'Lussen\Hofer';
-        $this->assertEquals('Xi\Filelib\Folder\FolderItem', $op->getClass());
-        $this->assertSame($op, $op->setClass($val));
-        $this->assertEquals($val, $op->getClass());
-    }
-
     /**
      * @test
      */
@@ -301,26 +285,19 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function getInstanceShouldReturnAnInstanceOfConfiguredClassWithNoData()
+    public function getInstanceShouldReturnAnInstanceOfFolderWithNoData()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFolderOperator($filelib);
 
-        $mockClass = $this->getMockClass('Xi\Filelib\Folder\FolderItem');
-
         $folder = $op->getInstance();
         $this->assertInstanceOf('Xi\Filelib\Folder\FolderItem', $folder);
-
-        $op->setClass($mockClass);
-
-        $folder = $op->getInstance();
-        $this->assertInstanceOf($mockClass, $folder);
     }
 
     /**
      * @test
      */
-    public function getInstanceShouldReturnAnInstanceOfConfiguredClassWithData()
+    public function getInstanceShouldReturnAnInstanceOfFolderWithData()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFolderOperator($filelib);

@@ -138,17 +138,6 @@ interface FileOperator
 
     public function unpublish(File $file);
 
-    /**
-     * Sets file item class name
-     */
-    public function setClass($className);
-
-    /**
-     * Sets file item class name
-     */
-    public function getClass();
-
-
     public function addPlugin(Plugin $plugin, $priority = 0);
 
     /**
