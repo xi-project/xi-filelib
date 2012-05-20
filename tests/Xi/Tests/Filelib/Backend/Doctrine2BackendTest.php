@@ -3,8 +3,8 @@
 namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Filelib\Backend\Doctrine2Backend;
-use Xi\Filelib\Folder\FolderItem;
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\File;
 use Exception;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Configuration;
@@ -95,7 +95,7 @@ class Doctrine2BackendTest extends RelationalDbTestCase
 
         $this->backend->setEntityManager($em);
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => 1,
             'parent_id' => null,
             'name'      => 'foo',
@@ -134,7 +134,7 @@ class Doctrine2BackendTest extends RelationalDbTestCase
            ->method('getReference')
            ->will($this->throwException(new Exception()));
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => 1,
             'parent_id' => null,
             'name'      => '',

@@ -5,8 +5,7 @@ namespace Xi\Tests\Filelib\File\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileItem;
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\UpdateFileCommand;
 use Xi\Filelib\File\Upload\FileUpload;
 
@@ -35,7 +34,7 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('getAcl'))
                     ->getMock();
 
-        $file = FileItem::create(array('id' => 1, 'profile' => 'versioned'));
+        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
         $command = new UpdateFileCommand($op, $file);
 
@@ -85,7 +84,7 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
-        $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')
+        $file = $this->getMockBuilder('Xi\Filelib\File\File')
                      ->setMethods(array('setLink'))
                      ->getMock();
 
@@ -102,7 +101,7 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
 
 
-        // $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
+        // $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\File'));
         // $op->expects($this->never())->method('publish');
 
         $acl->expects($this->atLeastOnce())->method('isFileReadableByAnonymous')
@@ -158,7 +157,7 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->atLeastOnce())->method('getLinker')->will($this->returnValue($linker));
 
-        $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')
+        $file = $this->getMockBuilder('Xi\Filelib\File\File')
                      ->setMethods(array('setLink'))
                      ->getMock();
 
@@ -172,8 +171,8 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
-        // $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
-        // $op->expects($this->once())->method('publish')->with($this->isInstanceOf('Xi\Filelib\File\FileItem'));
+        // $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\File'));
+        // $op->expects($this->once())->method('publish')->with($this->isInstanceOf('Xi\Filelib\File\File'));
         $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussenhofer'))->will($this->returnValue($profile));
 
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');

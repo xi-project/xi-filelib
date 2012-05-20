@@ -13,7 +13,7 @@ class ConfiguratorTest extends \Xi\Tests\TestCase
     public function setOptionsShouldSetOptions()
     {
         
-        $mock = $this->getMock('\Xi\Filelib\File\FileItem');
+        $mock = $this->getMock('\Xi\Filelib\File\File');
         $mock->expects($this->once())
              ->method('setName')
              ->with('looooso')
@@ -71,7 +71,7 @@ class ConfiguratorTest extends \Xi\Tests\TestCase
      */ 
     public function setOptionsShouldThrowExceptioWithNonArrayOptions()
     {
-        $mock = $this->getMock('Xi\Filelib\File\FileItem');
+        $mock = $this->getMock('Xi\Filelib\File\File');
         Configurator::setOptions($mock, 'lussutilukset');
     }
 
@@ -92,7 +92,7 @@ class ConfiguratorTest extends \Xi\Tests\TestCase
      */ 
     public function setConstructorOptionsShouldThrowExceptioWithNonArrayOptions()
     {
-        $mock = $this->getMock('Xi\Filelib\File\FileItem');
+        $mock = $this->getMock('Xi\Filelib\File\File');
         Configurator::setConstructorOptions($mock, 'xoo-xer');
     }
     
@@ -103,18 +103,18 @@ class ConfiguratorTest extends \Xi\Tests\TestCase
     public function constructorOptionsShouldRecurseToInnerClasses()
     {
                 
-        $mock = $this->getMockBuilder('Xi\Tests\Filelib\File\FileItem')->setMethods(array('setName'))->getMock();
+        $mock = $this->getMockBuilder('Xi\Tests\Filelib\File\File')->setMethods(array('setName'))->getMock();
         
                 
         $mock->expects($this->exactly(1))
              ->method('setName')
-             ->with($this->isInstanceOf('Xi\Tests\Filelib\File\FileItem'))
+             ->with($this->isInstanceOf('Xi\Tests\Filelib\File\File'))
              ->will($this->returnValue('1'))
              ;
 
         $arr = array(
             'name' => array(
-                'class' => 'Xi\Tests\Filelib\File\FileItem',
+                'class' => 'Xi\Tests\Filelib\File\File',
                 'options' => array(
                     'mimetype' => 'tussi',
                 ),

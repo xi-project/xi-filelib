@@ -6,7 +6,6 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\DefaultFolderOperator;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Folder\FolderItem;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
 
@@ -14,7 +13,7 @@ use Xi\Filelib\Folder\Command\DeleteFolderCommand;
 
 class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 {
-    
+
     /**
      * @test
      */
@@ -23,36 +22,36 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\DeleteFolderCommand'));
         $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\DeleteFolderCommand'));
     }
-    
+
 
     /**
      * @test
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary'); 
-        
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
         $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array('createCommand'))
                     ->getMock();
-                        
+
         $fop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array())
                     ->getMock();
-        
+
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        
+
         $command = new DeleteFolderCommand($op, $fop, $folder);
-         
+
         $serialized = serialize($command);
         $command2 = unserialize($serialized);
-                           
+
         $this->assertAttributeEquals(null, 'fileOperator', $command2);
         $this->assertAttributeEquals(null, 'folderOperator', $command2);
         $this->assertAttributeEquals($folder, 'folder', $command2);
-                 
+
     }
 
         /**
@@ -61,12 +60,12 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
     public function deleteShouldDeleteFoldersAndFilesRecursively()
     {
         $filelib = new FileLibrary();
-        
+
          $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array('createCommand'))
                     ->getMock();
-        
+
          $deleteCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\DeleteFolderCommand')
                                ->disableOriginalConstructor()
                                ->getMock();
@@ -75,11 +74,11 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                                ->disableOriginalConstructor()
                                ->getMock();
 
-         
+
         $deleteCommand->expects($this->exactly(3))->method('execute');
         $deleteFileCommand->expects($this->exactly(4))->method('execute');
-        
-        
+
+
         $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\DeleteFolderCommand'))
                                        ->will($this->returnValue($deleteCommand));
         $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\DeleteFolderCommand'))
@@ -96,11 +95,11 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                                        ->will($this->returnValue($deleteFileCommand));
         $op->expects($this->at(6))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
                                        ->will($this->returnValue($deleteFileCommand));
-        
+
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->exactly(1))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
                 ->will($this->returnCallback(function($folder) {
-                    
+
                     if($folder->getId() == 1) {
                         return array(
                             array('id' => 2, 'parent_id' => 1),
@@ -112,7 +111,7 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                  }));
         $backend->expects($this->exactly(1))->method('findFilesIn')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
                 ->will($this->returnCallback(function($folder) {
-                    
+
                     if($folder->getId() == 1) {
                         return array(
                             array('id' => 1, 'name' => 'tohtori-vesala.avi'),
@@ -123,28 +122,28 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                     }
                     return array();
                  }));
-                 
+
         $backend->expects($this->exactly(1))->method('deleteFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
 
         $fiop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                       ->setMethods(array('delete'))
                       ->setConstructorArgs(array($filelib))
                       ->getMock();
-        
-                        
-        $filelib->setBackend($backend); 
+
+
+        $filelib->setBackend($backend);
         $filelib->setFileOperator($fiop);
-        
-        $folder = FolderItem::create(array('id' => 1));
-        
+
+        $folder = Folder::create(array('id' => 1));
+
         $command = new DeleteFolderCommand($op, $fiop, $folder);
         $command->execute();
-        
-        
+
+
     }
 
-    
-    
-    
+
+
+
 }
 

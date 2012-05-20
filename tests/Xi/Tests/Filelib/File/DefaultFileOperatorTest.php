@@ -5,8 +5,7 @@ namespace Xi\Tests\Filelib\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileItem;
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Command;
 
@@ -183,7 +182,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op = new DefaultFileOperator($filelib);
 
         $file = $op->getInstance();
-        $this->assertInstanceOf('Xi\Filelib\File\FileItem', $file);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
 
     }
 
@@ -202,7 +201,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         );
 
         $file = $op->getInstance($data);
-        $this->assertInstanceOf('Xi\Filelib\File\FileItem', $file);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
 
         $this->assertEquals('luss/xoo', $file->getMimetype());
 
@@ -338,7 +337,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $eventDispatcher->expects($this->once())->method('dispatch')->with($this->equalTo('file.instantiate'));
 
         $file = $op->find($id);
-        $this->assertInstanceOf('Xi\Filelib\File\FileItem', $file);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
         $this->assertEquals($id, $file->getId());
 
     }
@@ -399,7 +398,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $eventDispatcher->expects($this->once())->method('dispatch')->with($this->equalTo('file.instantiate'));
 
         $file = $op->findByFilename($folder, $id);
-        $this->assertInstanceOf('Xi\Filelib\File\FileItem', $file);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
         $this->assertEquals($id, $file->getId());
 
     }
@@ -472,7 +471,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $file = $files[1];
 
-        $this->assertInstanceOf('Xi\Filelib\File\FileItem', $file);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
 
         $this->assertEquals('lussen.tus', $file->getName());
 
@@ -533,7 +532,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $typeResolver->expects($this->once())->method('resolveType')
                      ->with($this->equalTo('application/lus'));
 
-        $file = FileItem::create(array('mimetype' => 'application/lus'));
+        $file = File::create(array('mimetype' => 'application/lus'));
 
         $op->setTypeResolver($typeResolver);
         $op->getType($file);
@@ -551,7 +550,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                    ->setMethods(array('getProfile'))
                    ->getMock();
 
-         $file = FileItem::create(array('profile' => 'meisterlus'));
+         $file = File::create(array('profile' => 'meisterlus'));
 
          $profile = $this->getMock('Xi\Filelib\File\FileProfile');
          $profile->expects($this->once())->method('fileHasVersion')->with($this->equalTo($file), $this->equalTo('kloo'));
@@ -574,7 +573,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                    ->setMethods(array('getProfile'))
                    ->getMock();
 
-         $file = FileItem::create(array('profile' => 'meisterlus'));
+         $file = File::create(array('profile' => 'meisterlus'));
 
          $profile = $this->getMock('Xi\Filelib\File\FileProfile');
          $profile->expects($this->once())->method('getVersionProvider')->with($this->equalTo($file), $this->equalTo('kloo'));

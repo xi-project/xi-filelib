@@ -5,8 +5,7 @@ namespace Xi\Tests\Filelib\File\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileItem;
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\CopyFileCommand;
 use Xi\Filelib\File\Upload\FileUpload;
 
@@ -67,7 +66,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getCopyNameShouldGenerateCorrectCopyName($expected, $originalName)
     {
-        $file = FileItem::create(array('name' => 'tohtori-vesala.jpg'));
+        $file = File::create(array('name' => 'tohtori-vesala.jpg'));
 
         $command = new CopyFileCommand($this->op, $file, $this->folder);
 
@@ -82,7 +81,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getCopyNameShouldThrowExceptionWhenItCannotResolveCopyName()
     {
-        $file = FileItem::create(array('name' => 'tohtori-vesala.jpg'));
+        $file = File::create(array('name' => 'tohtori-vesala.jpg'));
 
         $command = new CopyFileCommand($this->op, $file, $this->folder);
 
@@ -95,7 +94,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getImpostorShouldReturnEqualFileIfOriginalFileIsNotFoundInFolder()
     {
-        $file = FileItem::create(array('name' => 'tohtori-vesala.jpg'));
+        $file = File::create(array('name' => 'tohtori-vesala.jpg'));
         $command = new CopyFileCommand($this->op, $file, $this->folder);
 
         $this->op->expects($this->once())->method('findByFilename')
@@ -113,7 +112,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getImpostorShouldIterateUntilFileIsNotFoundInFolder()
     {
-        $file = FileItem::create(array('name' => 'tohtori-vesala.jpg'));
+        $file = File::create(array('name' => 'tohtori-vesala.jpg'));
         $command = new CopyFileCommand($this->op, $file, $this->folder);
 
         $this->folder->expects($this->any())->method('getId')->will($this->returnValue(666));
@@ -145,7 +144,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $this->acl->expects($this->once())->method('isFolderWritable')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue(false));
 
-        $file = FileItem::create(array('name' => 'tohtori-vesala.jpg'));
+        $file = File::create(array('name' => 'tohtori-vesala.jpg'));
 
         $command = new CopyFileCommand($this->op, $file, $this->folder);
         $command->execute();
@@ -167,7 +166,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $this->op->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($eventDispatcher));
 
 
-        $file = FileItem::create(array('name' => 'tohtori-vesala.jpg'));
+        $file = File::create(array('name' => 'tohtori-vesala.jpg'));
 
         $backend->expects($this->once())->method('upload')->with($this->isInstanceOf('Xi\Filelib\File\File'));
 

@@ -7,7 +7,6 @@ use Xi\Filelib\AbstractOperator;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Folder\FolderItem;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Command;
 use Xi\Filelib\Folder\Command\FolderCommand;
@@ -64,7 +63,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
      */
     public function getInstance(array $data = array())
     {
-        $folder = new FolderItem();
+        $folder = new Folder();
         if ($data) {
             $folder->fromArray($data);
         }

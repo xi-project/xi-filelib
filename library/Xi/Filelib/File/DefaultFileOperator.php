@@ -10,7 +10,6 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\Plugin;
 use InvalidArgumentException;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileItem;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -76,7 +75,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function getInstance($data = array())
     {
-        $file = new FileItem();
+        $file = new File();
         if ($data) {
             $file->fromArray($data);
         }
