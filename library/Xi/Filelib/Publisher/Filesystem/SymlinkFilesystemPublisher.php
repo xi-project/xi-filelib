@@ -13,7 +13,7 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
  * @author pekkis
  *
  */
-class SymlinkPublisher extends AbstractFilesystemPublisher implements Publisher
+class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements Publisher
 {
 
     /**

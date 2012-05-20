@@ -12,7 +12,7 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
  * @author pekkis
  *
  */
-class CopyPublisher extends AbstractFilesystemPublisher implements Publisher
+class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Publisher
 {
 
     public function publish(File $file)
