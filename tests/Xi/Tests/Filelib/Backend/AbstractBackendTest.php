@@ -760,7 +760,6 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider folderIdProvider
      * @param mixed $folderId
      */
@@ -769,7 +768,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpSimpleDataSet();
 
-        $fidata = array(
+        $file = FileItem::create(array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
             'size'          => '1000',
@@ -777,17 +776,23 @@ use Xi\Filelib\Folder\FolderItem;
             'link'          => 'tohtori-vesala.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 4,
-        );
+        ));
 
-        $fodata = array(
+        $folder = FolderItem::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
-            'name'      => '',
-        );
+            'name'      => 'root',
+        ));
 
-        $file = FileItem::create($fidata);
-        $folder = FolderItem::create($fodata);
+        $this->setExpectedException(
+            'Xi\Filelib\Exception\NonUniqueFileException',
+            sprintf(
+                'A file with the name "%s" already exists in folder "%s"',
+                'tohtori-vesala.png',
+                'root'
+            )
+        );
 
         $this->backend->upload($file, $folder);
     }

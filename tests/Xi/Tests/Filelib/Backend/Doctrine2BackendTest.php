@@ -124,29 +124,6 @@ class Doctrine2BackendTest extends RelationalDbTestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function updateFolderRethrowsException()
-    {
-        $this->setUpEmptyDataSet();
-
-        $em = $this->createEntityManagerMock();
-        $em->expects($this->once())
-           ->method('getReference')
-           ->will($this->throwException(new Exception()));
-
-        $folder = FolderItem::create(array(
-            'id'        => 1,
-            'parent_id' => null,
-            'name'      => '',
-        ));
-
-        $this->backend->setEntityManager($em);
-        $this->backend->updateFolder($folder);
-    }
-
-    /**
-     * @test
      */
     public function getsAndSetsFileEntityName()
     {

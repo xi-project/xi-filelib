@@ -83,29 +83,6 @@ class ZendDbBackendTest extends RelationalDbTestCase
     }
 
     /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function updateFolderRethrowsException()
-    {
-        $this->setUpEmptyDataSet();
-
-        $folderTable = $this->createFolderTableMock();
-        $folderTable->expects($this->once())
-                    ->method('getAdapter')
-                    ->will($this->throwException(new Exception()));
-
-        $folder = FolderItem::create(array(
-            'id'        => 1,
-            'parent_id' => null,
-            'name'      => '',
-        ));
-
-        $this->backend->setFolderTable($folderTable);
-        $this->backend->updateFolder($folder);
-    }
-
-    /**
      * @return PHPUnit_Framework_MockObject_MockObject
      */
     private function createFolderTableMock()

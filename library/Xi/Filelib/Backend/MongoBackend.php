@@ -2,13 +2,14 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\File\File,
-    Xi\Filelib\Folder\Folder,
-    Xi\Filelib\FilelibException,
-    MongoDb,
-    MongoId,
-    MongoDate,
-    DateTime;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Exception\NonUniqueFileException;
+use MongoDb;
+use MongoId;
+use MongoDate;
+use MongoCursorException;
+use DateTime;
 
 /**
  * MongoDB backend for Filelib
@@ -108,9 +109,10 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File   $file
-     * @param  Folder $folder
+     * @param  File                   $file
+     * @param  Folder                 $folder
      * @return File
+     * @throws NonUniqueFileException If file already exists folder
      */
     protected function doUpload(File $file, Folder $folder)
     {
@@ -132,7 +134,11 @@ class MongoBackend extends AbstractBackend implements Backend
             'unique' => true,
         ));
 
-        $this->getMongo()->files->insert($document, array('safe' => true));
+        try {
+            $this->getMongo()->files->insert($document, array('safe' => true));
+        } catch (MongoCursorException $e) {
+            $this->throwNonUniqueFileException($file, $folder);
+        }
 
         $file->setId((string) $document['_id']);
         $file->setFolderId($folder->getId());

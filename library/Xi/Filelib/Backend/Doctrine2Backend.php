@@ -4,10 +4,11 @@ namespace Xi\Filelib\Backend;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\FilelibException;
+use Xi\Filelib\Exception\NonUniqueFileException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\EntityNotFoundException;
+use PDOException;
 
 /**
  * Doctrine 2 backend for filelib
@@ -322,9 +323,10 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  File   $file
-     * @param  Folder $folder
+     * @param  File                   $file
+     * @param  Folder                 $folder
      * @return File
+     * @throws NonUniqueFileException If file already exists folder
      */
     protected function doUpload(File $file, Folder $folder)
     {
@@ -343,7 +345,12 @@ class Doctrine2Backend extends AbstractBackend
             $entity->setStatus($file->getStatus());
 
             $em->persist($entity);
-            $em->flush();
+
+            try {
+                $em->flush();
+            } catch (PDOException $e) {
+                $this->throwNonUniqueFileException($file, $folder);
+            }
 
             $file->setId($entity->getId());
             $file->setFolderId($entity->getFolder()->getId());

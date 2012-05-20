@@ -2,19 +2,18 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Exception\FolderNotFoundException;
 use Xi\Filelib\Exception\FolderNotEmptyException;
-use Exception;
+use Xi\Filelib\Exception\NonUniqueFileException;
 
 /**
  * Abstract backend implementing common methods
  *
- * @author  pekkis
- * @package Xi_Filelib
+ * @author pekkis
+ * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  */
 abstract class AbstractBackend implements Backend
 {
@@ -206,7 +205,7 @@ abstract class AbstractBackend implements Backend
      * @param  Folder                  $folder
      * @return File
      * @throws FolderNotFoundException If folder was not found
-     * @throws FilelibException
+     * @throws NonUniqueFileException  If file already exists folder
      */
     public function upload(File $file, Folder $folder)
     {
@@ -217,11 +216,7 @@ abstract class AbstractBackend implements Backend
             ));
         }
 
-        try {
-            return $this->doUpload($file, $folder);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        return $this->doUpload($file, $folder);
     }
 
     /**
@@ -278,19 +273,13 @@ abstract class AbstractBackend implements Backend
      *
      * @param  Folder                   $folder
      * @return boolean
-     * @throws FilelibException
      * @throws InvalidArgumentException With invalid folder id
-     * @throws FilelibException
      */
     public function updateFolder(Folder $folder)
     {
         $this->assertValidFolderIdentifier($folder->getId());
 
-        try {
-            return (bool) $this->doUpdateFolder($folder);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        return (bool) $this->doUpdateFolder($folder);
     }
 
     /**
@@ -414,6 +403,20 @@ abstract class AbstractBackend implements Backend
             $message,
             gettype($id),
             $id
+        ));
+    }
+
+    /**
+     * @param  File                   $file
+     * @param  Folder                 $folder
+     * @throws NonUniqueFileException
+     */
+    protected function throwNonUniqueFileException(File $file, Folder $folder)
+    {
+        throw new NonUniqueFileException(sprintf(
+            'A file with the name "%s" already exists in folder "%s"',
+            $file->getName(),
+            $folder->getName()
         ));
     }
 }

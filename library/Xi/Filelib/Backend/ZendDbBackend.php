@@ -2,15 +2,16 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\FilelibException,
-    Xi\Filelib\File\File,
-    Xi\Filelib\Folder\Folder,
-    Xi\Filelib\Backend\ZendDb\FolderRow,
-    Xi\Filelib\Backend\ZendDb\FileTable,
-    Xi\Filelib\Backend\ZendDb\FolderTable,
-    Zend_Db_Adapter_Abstract,
-    Zend_Db_Table_Abstract,
-    DateTime;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Exception\NonUniqueFileException;
+use Xi\Filelib\Backend\ZendDb\FolderRow;
+use Xi\Filelib\Backend\ZendDb\FileTable;
+use Xi\Filelib\Backend\ZendDb\FolderTable;
+use Zend_Db_Adapter_Abstract;
+use Zend_Db_Table_Abstract;
+use Zend_Db_Statement_Exception;
+use DateTime;
 
 /**
  * ZendDb backend for filelib
@@ -275,9 +276,10 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File   $file
-     * @param  Folder $folder
+     * @param  File                   $file
+     * @param  Folder                 $folder
      * @return File
+     * @throws NonUniqueFileException If file already exists folder
      */
     protected function doUpload(File $file, Folder $folder)
     {
@@ -291,7 +293,11 @@ class ZendDbBackend extends AbstractBackend implements Backend
         $row->date_uploaded = $file->getDateUploaded()->format('Y-m-d H:i:s');
         $row->status        = $file->getStatus();
 
-        $row->save();
+        try {
+            $row->save();
+        } catch (Zend_Db_Statement_Exception $e) {
+            $this->throwNonUniqueFileException($file, $folder);
+        }
 
         $file->setId((int) $row->id);
         $file->setFolderId($row->folder_id);
