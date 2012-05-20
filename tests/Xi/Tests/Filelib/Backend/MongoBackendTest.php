@@ -14,6 +14,7 @@ use MongoDate;
 use MongoConnectionException;
 
 /**
+ * @group backend
  * @group mongo
  */
 class MongoBackendTest extends AbstractBackendTest

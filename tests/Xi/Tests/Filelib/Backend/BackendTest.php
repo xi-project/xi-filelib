@@ -4,6 +4,9 @@ namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Tests\Filelib\TestCase as FilelibTestCase;
 
+/**
+ * @group backend
+ */
 class BackendTest extends FilelibTestCase
 {
     /**

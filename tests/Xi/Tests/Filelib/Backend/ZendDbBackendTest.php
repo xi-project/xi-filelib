@@ -9,6 +9,8 @@ use Xi\Filelib\Backend\ZendDbBackend,
 
 /**
  * @author pekkis
+ *
+ * @group  backend
  * @group  zenddb
  */
 class ZendDbBackendTest extends RelationalDbTestCase

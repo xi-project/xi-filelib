@@ -10,6 +10,8 @@ use Xi\Filelib\Folder\FolderItem;
 
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
+ *
+ * @group backend
  */
  abstract class AbstractBackendTest extends PHPUnit_Framework_TestCase
 {

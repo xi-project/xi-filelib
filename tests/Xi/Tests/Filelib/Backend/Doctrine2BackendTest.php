@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use PHPUnit_Framework_MockObject_MockObject;
 
 /**
+ * @group backend
  * @group doctrine
  */
 class Doctrine2BackendTest extends RelationalDbTestCase
