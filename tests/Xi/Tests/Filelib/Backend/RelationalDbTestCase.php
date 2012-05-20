@@ -453,7 +453,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
             ));
         }
 
-        return PHPUnit_Extensions_Database_Operation_Factory::DELETE_ALL();
+        return PHPUnit_Extensions_Database_Operation_Factory::TRUNCATE(true);
     }
 
     /**
