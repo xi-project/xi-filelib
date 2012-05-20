@@ -6,6 +6,8 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\InvalidArgumentException;
+use Xi\Filelib\Exception\FolderNotFoundException;
+use Xi\Filelib\Exception\FolderNotEmptyException;
 use Exception;
 
 /**
@@ -200,13 +202,20 @@ abstract class AbstractBackend implements Backend
     }
 
     /**
-     * @param  File             $file
-     * @param  Folder           $folder
+     * @param  File                    $file
+     * @param  Folder                  $folder
      * @return File
-     * @throws FilelibException
+     * @throws FolderNotFoundException If folder was not found
      */
     public function upload(File $file, Folder $folder)
     {
+        if (!$this->findFolder($folder->getId())) {
+            throw new FolderNotFoundException(sprintf(
+                'Folder was not found with id "%s"',
+                $folder->getId()
+            ));
+        }
+
         try {
             return $this->doUpload($file, $folder);
         } catch (Exception $e) {
@@ -217,38 +226,36 @@ abstract class AbstractBackend implements Backend
     /**
      * Creates a folder
      *
-     * @param  Folder           $folder
-     * @return Folder           Created folder
-     * @throws FilelibException When fails
+     * @param  Folder                  $folder
+     * @return Folder                  Created folder
+     * @throws FolderNotFoundException If parent folder was not found
      */
     public function createFolder(Folder $folder)
     {
-        try {
-            return $this->doCreateFolder($folder);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
+        if (!$this->findFolder($folder->getParentId())) {
+            throw new FolderNotFoundException(sprintf(
+                'Parent folder was not found with id "%s"',
+                $folder->getParentId()
+            ));
         }
+
+        return $this->doCreateFolder($folder);
     }
 
     /**
      * Deletes a folder
      *
-     * @param  Folder           $folder
-     * @return boolean          True if deleted successfully.
-     * @throws FilelibException If folder could not be deleted or if folder
-     *                          contains files.
+     * @param  Folder                  $folder
+     * @return boolean                 True if deleted successfully
+     * @throws FolderNotEmptyException If folder contains files
      */
     public function deleteFolder(Folder $folder)
     {
         if (count($this->findFilesIn($folder))) {
-            throw new FilelibException('Can not delete folder with files');
+            throw new FolderNotEmptyException('Can not delete folder with files');
         }
 
-        try {
-            return (bool) $this->doDeleteFolder($folder);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        return (bool) $this->doDeleteFolder($folder);
     }
 
     /**
@@ -287,17 +294,20 @@ abstract class AbstractBackend implements Backend
     /**
      * Updates a file
      *
-     * @param  File             $file
+     * @param  File                    $file
      * @return boolean
-     * @throws FilelibException When fails
+     * @throws FolderNotFoundException If folder was not found
      */
     public function updateFile(File $file)
     {
-        try {
-            return (bool) $this->doUpdateFile($file);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
+        if (!$this->findFolder($file->getFolderId())) {
+            throw new FolderNotFoundException(sprintf(
+                'Folder was not found with id "%s"',
+                $file->getFolderId()
+            ));
         }
+
+        return (bool) $this->doUpdateFile($file);
     }
 
     /**

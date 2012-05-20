@@ -111,17 +111,9 @@ class MongoBackend extends AbstractBackend implements Backend
      * @param  File   $file
      * @param  Folder $folder
      * @return File
-     * @throws FilelibException
      */
     protected function doUpload(File $file, Folder $folder)
     {
-        if (!$this->findFolder($folder->getId())) {
-            throw new FilelibException(sprintf(
-                'Folder was not found with id "%s"',
-                $folder->getId()
-            ));
-        }
-
         $document = array(
             'folder_id'     => $folder->getId(),
             'mimetype'      => $file->getMimeType(),
@@ -149,21 +141,12 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder           $folder
+     * @param  Folder $folder
      * @return Folder
-     * @throws FilelibException
      */
     protected function doCreateFolder(Folder $folder)
     {
         $document = $folder->toArray();
-        $parentId = $document['parent_id'];
-
-        if (isset($parentId) && !$this->findFolder($parentId)) {
-            throw new FilelibException(sprintf(
-                'Parent folder was not found with id "%s"',
-                $parentId
-            ));
-        }
 
         $this->getMongo()->folders->insert($document);
         $this->getMongo()->folders->ensureIndex(array('name' => 1),
@@ -218,22 +201,14 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File             $file
+     * @param  File    $file
      * @return boolean
-     * @throws FilelibException
      */
     protected function doUpdateFile(File $file)
     {
         $document = $file->toArray();
 
         unset($document['id']);
-
-        if (!$this->findFolder($document['folder_id'])) {
-            throw new FilelibException(sprintf(
-                'Folder was not found with id "%s"',
-                $document['folder_id']
-            ));
-        }
 
         $document['date_uploaded'] = new MongoDate(
             $document['date_uploaded']->getTimestamp()

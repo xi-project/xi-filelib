@@ -168,7 +168,7 @@ use Xi\Filelib\Folder\FolderItem;
         );
 
         $this->setExpectedException(
-            'Xi\Filelib\FilelibException',
+            'Xi\Filelib\Exception\FolderNotFoundException',
             sprintf('Parent folder was not found with id "%s"', $folderId)
         );
 
@@ -221,7 +221,7 @@ use Xi\Filelib\Folder\FolderItem;
         $this->assertInternalType('array', $this->backend->findFolder($folderId));
 
         $this->setExpectedException(
-            'Xi\Filelib\FilelibException',
+            'Xi\Filelib\Exception\FolderNotEmptyException',
             'Can not delete folder with files'
         );
 
@@ -626,7 +626,7 @@ use Xi\Filelib\Folder\FolderItem;
         $file = FileItem::create($updated);
 
         $this->setExpectedException(
-            'Xi\Filelib\FilelibException',
+            'Xi\Filelib\Exception\FolderNotFoundException',
             sprintf('Folder was not found with id "%s"', $folderId)
         );
 
@@ -749,7 +749,7 @@ use Xi\Filelib\Folder\FolderItem;
         ));
 
         $this->setExpectedException(
-            'Xi\Filelib\FilelibException',
+            'Xi\Filelib\Exception\FolderNotFoundException',
             sprintf('Folder was not found with id "%s"', $folderId)
         );
 
