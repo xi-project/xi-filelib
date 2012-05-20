@@ -1,8 +1,8 @@
 <?php
 
-use \Xi\Filelib\Folder\FolderItem;
+use \Xi\Filelib\Folder\Folder;
 
-use \Xi\Filelib\File\FileItem;
+use \Xi\Filelib\File\File;
 
 use \Xi\Filelib\Linker\BeautifurlLinker;
 
@@ -24,7 +24,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
                  if ($id == 1) {
 
-                     return FolderItem::create(array(
+                     return Folder::create(array(
                          'id' => 1,
                          'name' => 'root',
                          'parent_id' => null,
@@ -35,7 +35,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
                  } elseif($id == 2) {
 
-                     return FolderItem::create(array(
+                     return Folder::create(array(
                          'id' => 2,
                          'name' => 'lussuttaja',
                          'parent_id' => 1,
@@ -44,7 +44,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
                  } elseif($id == 3) {
 
-                     return FolderItem::create(array(
+                     return Folder::create(array(
                          'id' => 2,
                          'name' => 'tussin',
                          'parent_id' => 2,
@@ -54,7 +54,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
                  } elseif($id == 4) {
 
-                     return FolderItem::create(array(
+                     return Folder::create(array(
                          'id' => 2,
                          'name' => 'banaanin',
                          'parent_id' => 2,
@@ -63,7 +63,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
                  } elseif($id == 5) {
 
-                     return FolderItem::create(array(
+                     return Folder::create(array(
                          'id' => 5,
                          'name' => 'sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú',
                          'parent_id' => 4,
@@ -108,7 +108,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
     {
         return array(
             array(
-                FileItem::create(array(
+                File::create(array(
                     'name' => 'loso.png',
                     'folder_id' => 3
 
@@ -116,7 +116,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
             ),
             array(
-                FileItem::create(array(
+                File::create(array(
                     'name' => 'kim-jong-il',
                     'folder_id' => 4
 
@@ -124,7 +124,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
             ),
             array(
-                FileItem::create(array(
+                File::create(array(
                     'name' => 'juurekas.nom',
                     'folder_id' => 1
 
@@ -132,7 +132,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
             ),
             array(
-                FileItem::create(array(
+                File::create(array(
                     'name' => 'salainen-suunnitelma.pdf',
                     'folder_id' => 5
 
@@ -191,7 +191,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
         $linker->setFilelib($this->filelib);
 
 
-        $file = FileItem::create(array(
+        $file = File::create(array(
             'name' => 'lamantiini.lus',
             'folder_id' => 2,
         ));
@@ -214,7 +214,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
         $linker->setSlugify(false);
         $linker->setFilelib($this->filelib);
 
-         $file = FileItem::create(array(
+         $file = File::create(array(
             'name' => 'lamantiini.lus',
             'folder_id' => 5,
         ));

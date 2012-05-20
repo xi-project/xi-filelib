@@ -5,11 +5,13 @@ namespace Xi\Tests\Filelib\Backend;
 use PHPUnit_Framework_TestCase;
 use DateTime;
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\File\FileItem;
-use Xi\Filelib\Folder\FolderItem;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
 
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
+ *
+ * @group backend
  */
  abstract class AbstractBackendTest extends PHPUnit_Framework_TestCase
 {
@@ -115,14 +117,16 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function findFolderThrowsExceptionWhenTryingToFindFolderWithInvalidIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
+
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
 
         $this->backend->findFolder($folderId);
     }
@@ -142,7 +146,7 @@ use Xi\Filelib\Folder\FolderItem;
             'url'       => 'lussuttaja/tussin/lusander',
         );
 
-        $folder = FolderItem::create($data);
+        $folder = Folder::create($data);
 
         $this->assertNull($folder->getId());
 
@@ -166,11 +170,11 @@ use Xi\Filelib\Folder\FolderItem;
         );
 
         $this->setExpectedException(
-            'Xi\Filelib\FilelibException',
+            'Xi\Filelib\Exception\FolderNotFoundException',
             sprintf('Parent folder was not found with id "%s"', $folderId)
         );
 
-        $this->backend->createFolder(FolderItem::create($data));
+        $this->backend->createFolder(Folder::create($data));
     }
 
     /**
@@ -188,7 +192,7 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => 'klus',
         );
 
-        $folder = FolderItem::create($data);
+        $folder = Folder::create($data);
 
         $this->assertInternalType('array', $this->backend->findFolder($folderId));
 
@@ -210,7 +214,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpSimpleDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'name'      => 'klus',
@@ -219,7 +223,7 @@ use Xi\Filelib\Folder\FolderItem;
         $this->assertInternalType('array', $this->backend->findFolder($folderId));
 
         $this->setExpectedException(
-            'Xi\Filelib\FilelibException',
+            'Xi\Filelib\Exception\FolderNotEmptyException',
             'Can not delete folder with files'
         );
 
@@ -235,7 +239,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'name'      => 'klus',
@@ -272,7 +276,7 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => 'lussander',
         );
 
-        $folder = FolderItem::create($updateData);
+        $folder = Folder::create($updateData);
 
         $this->assertTrue($this->backend->updateFolder($folder));
         $this->assertEquals($updateData, $this->backend->findFolder($folderId));
@@ -294,7 +298,7 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => 'xoo',
         );
 
-        $folder = FolderItem::create($data);
+        $folder = Folder::create($data);
 
         $this->assertTrue($this->backend->updateFolder($folder));
         $this->assertEquals($data, $this->backend->findFolder($folderId));
@@ -309,7 +313,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id' => $folderId,
         ));
 
@@ -318,23 +322,25 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function updateFolderThrowsExceptionWhenUpdatingFolderWithInvalidIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => 'xoo',
             'url'       => '',
             'name'      => '',
         ));
 
-        $this->assertFalse($this->backend->updateFolder($folder));
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
+
+        $this->backend->updateFolder($folder);
     }
 
     /**
@@ -348,7 +354,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpSimpleDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -363,21 +369,23 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function findSubFoldersThrowsExceptionForFolderWithInvalidIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
             'name'      => '',
         ));
+
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
 
         $this->backend->findSubFolders($folder);
     }
@@ -412,13 +420,17 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderUrlProvider
      * @param mixed $url
      */
     public function findFolderByUrlShouldThrowExceptionIfUrlIsNotAString($url)
     {
         $this->setUpEmptyDataSet();
+
+        $this->setExpectedException(
+            'Xi\Filelib\Exception\InvalidArgumentException',
+            sprintf('Folder URL must be a string, %s given', gettype($url))
+        );
 
         $this->backend->findFolderByUrl($url);
     }
@@ -445,7 +457,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpSimpleDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -460,21 +472,23 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function findFilesInThrowsExceptionWithInvalidFolderIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
             'name'      => '',
         ));
+
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
 
         $this->backend->findFilesIn($folder);
     }
@@ -519,13 +533,16 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFileIdProvider
-     * @param mixed $fileId
+     * @param mixed  $fileId
+     * @param string $validType
      */
-    public function findFileThrowsExceptionWithInvalidIdentifier($fileId)
-    {
+    public function findFileThrowsExceptionWithInvalidIdentifier($fileId,
+        $validType
+    ) {
         $this->setUpEmptyDataSet();
+
+        $this->expectInvalidArgumentExceptionForInvalidFileId($fileId, $validType);
 
         $this->backend->findFile($fileId);
     }
@@ -581,7 +598,7 @@ use Xi\Filelib\Folder\FolderItem;
             'status'        => 666,
         );
 
-        $file = FileItem::create($data);
+        $file = File::create($data);
 
         $this->assertTrue($this->backend->updateFile($file));
         $this->assertEquals($data, $this->backend->findFile($fileId));
@@ -608,10 +625,10 @@ use Xi\Filelib\Folder\FolderItem;
             'status'        => 4,
         );
 
-        $file = FileItem::create($updated);
+        $file = File::create($updated);
 
         $this->setExpectedException(
-            'Xi\Filelib\FilelibException',
+            'Xi\Filelib\Exception\FolderNotFoundException',
             sprintf('Folder was not found with id "%s"', $folderId)
         );
 
@@ -627,7 +644,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpSimpleDataSet();
 
-        $file = FileItem::create(array('id' => $fileId));
+        $file = File::create(array('id' => $fileId));
 
         $this->assertTrue($this->backend->deleteFile($file));
         $this->assertFalse($this->backend->findFile($fileId));
@@ -635,15 +652,18 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFileIdProvider
-     * @param mixed $fileId
+     * @param mixed  $fileId
+     * @param string $validType
      */
-    public function deleteFileThrowsExceptionWithInvalidIdentifier($fileId)
-    {
+    public function deleteFileThrowsExceptionWithInvalidIdentifier($fileId,
+        $validType
+    ) {
         $this->setUpEmptyDataSet();
 
-        $file = FileItem::create(array('id' => $fileId));
+        $file = File::create(array('id' => $fileId));
+
+        $this->expectInvalidArgumentExceptionForInvalidFileId($fileId, $validType);
 
         $this->backend->deleteFile($file);
     }
@@ -657,7 +677,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpEmptyDataSet();
 
-        $file = FileItem::create(array('id' => $fileId));
+        $file = File::create(array('id' => $fileId));
 
         $this->assertFalse($this->backend->deleteFile($file));
     }
@@ -688,8 +708,8 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => '',
         );
 
-        $file = FileItem::create($fidata);
-        $folder = FolderItem::create($fodata);
+        $file = File::create($fidata);
+        $folder = Folder::create($fodata);
 
         $file = $this->backend->upload($file, $folder);
 
@@ -713,7 +733,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpEmptyDataSet();
 
-        $file = FileItem::create(array(
+        $file = File::create(array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
             'size'          => '1000',
@@ -723,7 +743,7 @@ use Xi\Filelib\Folder\FolderItem;
             'status'        => 3,
         ));
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -731,7 +751,7 @@ use Xi\Filelib\Folder\FolderItem;
         ));
 
         $this->setExpectedException(
-            'Xi\Filelib\FilelibException',
+            'Xi\Filelib\Exception\FolderNotFoundException',
             sprintf('Folder was not found with id "%s"', $folderId)
         );
 
@@ -740,7 +760,6 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider folderIdProvider
      * @param mixed $folderId
      */
@@ -749,7 +768,7 @@ use Xi\Filelib\Folder\FolderItem;
     ) {
         $this->setUpSimpleDataSet();
 
-        $fidata = array(
+        $file = File::create(array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
             'size'          => '1000',
@@ -757,17 +776,23 @@ use Xi\Filelib\Folder\FolderItem;
             'link'          => 'tohtori-vesala.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 4,
-        );
+        ));
 
-        $fodata = array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
-            'name'      => '',
-        );
+            'name'      => 'root',
+        ));
 
-        $file = FileItem::create($fidata);
-        $folder = FolderItem::create($fodata);
+        $this->setExpectedException(
+            'Xi\Filelib\Exception\NonUniqueFileException',
+            sprintf(
+                'A file with the name "%s" already exists in folder "%s"',
+                'tohtori-vesala.png',
+                'root'
+            )
+        );
 
         $this->backend->upload($file, $folder);
     }
@@ -802,7 +827,7 @@ use Xi\Filelib\Folder\FolderItem;
             'name'      => '',
         );
 
-        $folder = FolderItem::create($fodata);
+        $folder = Folder::create($fodata);
 
         $file = $this->backend->findFileByFileName($folder, 'tohtori-vesala.png');
 
@@ -819,7 +844,7 @@ use Xi\Filelib\Folder\FolderItem;
     {
         $this->setUpSimpleDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
@@ -833,24 +858,60 @@ use Xi\Filelib\Folder\FolderItem;
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      * @dataProvider invalidFolderIdProvider
-     * @param mixed $folderId
+     * @param mixed  $folderId
+     * @param string $validType
      */
     public function findFileByFileNameThrowsExceptionWithInvalidFolderIdentifier(
-        $folderId
+        $folderId, $validType
     ) {
         $this->setUpEmptyDataSet();
 
-        $folder = FolderItem::create(array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => '',
             'name'      => '',
         ));
 
-        $this->assertFalse(
-            $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
+        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
+
+        $this->backend->findFileByFileName($folder, 'tohtori-tussi.png');
+    }
+
+    /**
+     * @param mixed  $fileId
+     * @param string $validType
+     */
+    private function expectInvalidArgumentExceptionForInvalidFileId($fileId,
+        $validType
+    ) {
+        $this->setExpectedException(
+            'Xi\Filelib\Exception\InvalidArgumentException',
+            sprintf(
+                'File id must be %s, %s (%s) given',
+                $validType,
+                gettype($fileId),
+                $fileId
+            )
+        );
+    }
+
+    /**
+     * @param mixed  $folderId
+     * @param string $validType
+     */
+    private function expectInvalidArgumentExceptionForInvalidFolderId($folderId,
+        $validType
+    ) {
+        $this->setExpectedException(
+            'Xi\Filelib\Exception\InvalidArgumentException',
+            sprintf(
+                'Folder id must be %s, %s (%s) given',
+                $validType,
+                gettype($folderId),
+                $folderId
+            )
         );
     }
 

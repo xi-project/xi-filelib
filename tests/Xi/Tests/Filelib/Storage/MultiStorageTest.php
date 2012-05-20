@@ -31,9 +31,7 @@ class MultiStorageTest extends \Xi\Tests\TestCase
         $multiStorage->addStorage($mockStorage2);
 
         $this->storage = $multiStorage;
-
         $this->resource = Resource::create(array('id' => 1));
-
         $this->version = 'xoo';
 
     }
@@ -203,9 +201,4 @@ class MultiStorageTest extends \Xi\Tests\TestCase
         $this->storage->addStorage(new MultiStorage());
     }
 
-
-
-
 }
-
-?>

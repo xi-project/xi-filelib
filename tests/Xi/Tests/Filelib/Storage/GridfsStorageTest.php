@@ -69,11 +69,6 @@ class GridFsStorageTest extends TestCase
 
         $this->version = 'xoo';
 
-
-
-
-
-
     }
 
 
@@ -197,8 +192,13 @@ class GridFsStorageTest extends TestCase
      */
     public function retrievingUnexistingFileShouldThrowException()
     {
+<<<<<<< HEAD
         $file = Resource::create(array('id' => 'lussenhofer.lus'));
 
+=======
+        $file = File::create(array('id' => 'lussenhofer.lus'));
+        
+>>>>>>> 8e3a526bd3e4e265febae1cf65ef9d416e48f76a
         $this->storage->retrieve($file);
 
     }

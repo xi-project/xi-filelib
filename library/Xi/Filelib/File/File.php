@@ -3,133 +3,238 @@
 namespace Xi\Filelib\File;
 
 use DateTime;
+use ArrayObject;
 
 /**
- * File interface
- *
- * @author pekkis
- *
+ * File
  */
-interface File
+class File
 {
-
     const STATUS_RAW = 1;
     const STATUS_UPLOADED = 2;
+
+    /**
+     * Key to method mapping for fromArray
+     *
+     * @var array
+     */
+    protected static $map = array(
+        'id' => 'setId',
+        'folder_id' => 'setFolderId',
+        'mimetype' => 'setMimeType',
+        'profile' => 'setProfile',
+        'size' => 'setSize',
+        'name' => 'setName',
+        'link' => 'setLink',
+        'date_uploaded' => 'setDateUploaded',
+        'status' => 'setStatus',
+    );
+
+    /**
+     * @var FileLibrary Filelib
+     */
+    private $filelib;
+
+    private $id;
+
+    private $folderId;
+
+    private $mimetype;
+
+    private $profile;
+
+    private $size;
+
+    private $name;
+
+    private $link;
+
+    private $dateUploaded;
+
+    private $status;
+
+    /**
+     *
+     * @var ArrayObject
+     */
+    private $data;
 
 
     /**
      * Sets id
      *
      * @param mixed $id
+     * @return File
      */
-    public function setId($id);
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
 
     /**
      * Returns id
      *
      * @return mixed
-     *
      */
-    public function getId();
+    public function getId()
+    {
+        return $this->id;
+    }
 
     /**
      * Sets folder id
      *
      * @param mixed $folderId
+     * @return File
      */
-    public function setFolderId($folderId);
+    public function setFolderId($folderId)
+    {
+        $this->folderId = $folderId;
+        return $this;
+    }
 
     /**
      * Returns folder id
      *
      * @return mixed
      */
-    public function getFolderId();
+    public function getFolderId()
+    {
+        return $this->folderId;
+    }
 
     /**
-     * Sets mime type
+     * Sets mimetype
      *
      * @param string $mimetype
+     * @return File
      */
-    public function setMimetype($mimetype);
+    public function setMimetype($mimetype)
+    {
+        $this->mimetype = $mimetype;
+        return $this;
+    }
 
     /**
-     * Returns mime type
+     * Returns mimetype
      *
      * @return string
      */
-    public function getMimetype();
+    public function getMimetype()
+    {
+        return $this->mimetype;
+    }
 
     /**
      * Sets profile name
      *
      * @param string $profile
+     * @return File
      */
-    public function setProfile($profile);
+    public function setProfile($profile)
+    {
+        $this->profile = $profile;
+        return $this;
+    }
 
     /**
      * Returns profile name
      *
      * @return string
      */
-    public function getProfile();
+    public function getProfile()
+    {
+        return $this->profile;
+    }
 
     /**
-     * Sets size
+     * Sets file size
      *
-     * @param number $size
+     * @param int $size
+     * @return File
      */
-    public function setSize($size);
+    public function setSize($size)
+    {
+        $this->size = $size;
+        return $this;
+    }
 
     /**
-     * Returns size
+     * Returns file size
      *
-     * @return number
+     * @return int
      */
-    public function getSize();
+    public function getSize()
+    {
+        return $this->size;
+    }
 
     /**
      * Sets name
      *
      * @param string $name
+     * @return File
      */
-    public function setName($name);
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
     /**
      * Returns name
      *
      * @return string
      */
-    public function getName();
+    public function getName()
+    {
+        return $this->name;
+    }
 
     /**
-     * Sets base link
+     * Sets link
      *
      * @param string $link
+     * @return File
      */
-    public function setLink($link);
+    public function setLink($link)
+    {
+        $this->link = $link;
+        return $this;
+    }
 
     /**
-     * Returns base link
+     * Returns link
      *
      * @return string
      */
-    public function getLink();
+    public function getLink()
+    {
+        return $this->link;
+    }
 
     /**
-     * Sets upload datetime
-     *
-     * @param DateTime $uploadDate
-     */
-    public function setDateUploaded(DateTime $uploadDate);
-
-    /**
-     * Returns upload datetime
+     * Returns upload date
      *
      * @return DateTime
      */
-    public function getDateUploaded();
+    public function getDateUploaded()
+    {
+        return $this->dateUploaded;
+    }
 
+    /**
+     * Sets upload date
+     *
+     * @param DateTime $dateUploaded
+     * @return File
+     */
+    public function setDateUploaded(DateTime $dateUploaded)
+    {
+        $this->dateUploaded = $dateUploaded;
+        return $this;
+    }
 
     /**
      * Sets status
@@ -137,53 +242,79 @@ interface File
      * @param integer $status
      * @return File
      */
-    public function setStatus($status);
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        return $this;
+    }
 
     /**
      * Returns status
      *
      * @return integer
      */
-    public function getStatus();
+    public function getStatus()
+    {
+       return $this->status;
+    }
 
     /**
-     * Returns the standardized array representation of a file
-     */
-    public function toArray();
-
-    /**
-     * Populates object data from the standard array representation
+     * Returns the file as standardized file array
      *
-     * @param array $data Standardized array representation of file
+     * @return array
      */
-    public function fromArray(array $data);
+    public function toArray()
+    {
+        return array(
+            'id' => $this->getId(),
+            'folder_id' => $this->getFolderId(),
+            'mimetype' => $this->getMimetype(),
+            'profile' => $this->getProfile(),
+            'size' => $this->getSize(),
+            'name' => $this->getName(),
+            'link' => $this->getLink(),
+            'date_uploaded' => $this->getDateUploaded(),
+            'status' => $this->getStatus(),
+        );
+    }
 
     /**
-     * Creates a new file item and populates it with data
+     * Sets data from array
      *
      * @param array $data
+     * @return File
      */
-    public static function create(array $data);
+    public function fromArray(array $data)
+    {
+        foreach(static::$map as $key => $method) {
+            if(isset($data[$key])) {
+                $this->$method($data[$key]);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Creates an instance with data
+     *
+     * @param array $data
+     * @return type File
+     */
+    public static function create(array $data)
+    {
+        $file = new self();
+        return $file->fromArray($data);
+    }
 
     /**
      * @return ArrayObject
      */
-    public function getData();
 
-    public function getUuid();
-
-    /**
-     * @return string
-     */
-    public function setUuid($uuid);
-
-    /**
-     * @return Resource
-     */
-    public function getResource();
-
-    public function setResource(Resource $resource);
-
-
-
+    public function getData()
+    {
+        if (!$this->data) {
+            $this->data = new ArrayObject();
+        }
+        return $this->data;
+    }
 }

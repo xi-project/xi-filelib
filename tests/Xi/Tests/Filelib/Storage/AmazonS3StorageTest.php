@@ -55,11 +55,6 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         $this->version = 'xoo';
 
         $this->resource = Resource::create(array('id' => 1));
-
-
-
-
-
     }
 
     public function tearDown()

@@ -4,8 +4,8 @@ namespace Xi\Tests\Filelib\Backend;
 
 use PHPUnit_Framework_TestCase;
 use Xi\Filelib\Backend\MongoBackend;
-use Xi\Filelib\Folder\FolderItem;
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\File;
 use DateTime;
 use Mongo;
 use MongoDB;
@@ -14,6 +14,7 @@ use MongoDate;
 use MongoConnectionException;
 
 /**
+ * @group backend
  * @group mongo
  */
 class MongoBackendTest extends AbstractBackendTest
@@ -359,7 +360,7 @@ class MongoBackendTest extends AbstractBackendTest
     public function invalidFolderIdProvider()
     {
         return array(
-            array(1),
+            array(1, 'a string'),
         );
     }
 
@@ -369,7 +370,7 @@ class MongoBackendTest extends AbstractBackendTest
     public function invalidFileIdProvider()
     {
         return array(
-            array(1),
+            array(1, 'a string'),
         );
     }
 

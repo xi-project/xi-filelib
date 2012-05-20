@@ -22,18 +22,13 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
 
     protected function setUp()
     {
-
-
         $this->resource = Resource::create(array('id' => 1));
-
         $this->resourceResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
 
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->any())
              ->method('calculateDirectoryId')
              ->will($this->returnValue('1'));
-
-
 
         $storage = new FilesystemStorage();
         $storage->setDirectoryIdCalculator($dc);

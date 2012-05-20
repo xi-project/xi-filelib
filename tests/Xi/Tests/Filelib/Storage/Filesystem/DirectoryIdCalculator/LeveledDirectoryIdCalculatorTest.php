@@ -1,7 +1,5 @@
 <?php
 
-namespace Xi\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
-
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
 use Xi\Filelib\File\Resource;
 

@@ -48,9 +48,4 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
         $this->calc->calculateDirectoryId($this->resource);
     }
 
-
-
-
-
-
 }

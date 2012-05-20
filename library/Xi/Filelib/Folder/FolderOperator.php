@@ -110,22 +110,10 @@ interface FolderOperator
     public function findFiles(Folder $folder);
 
     /**
-     * Sets file item class name
-     */
-    public function setClass($className);
-
-    /**
-     * Sets file item class name
-     */
-    public function getClass();
-
-    /**
      * Returns folder by url, creating it if necessary
      *
      * @return Folder
      */
     public function createByUrl($url);
-
-
 
 }
