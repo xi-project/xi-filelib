@@ -145,6 +145,67 @@ use Xi\Filelib\Folder\Folder;
     }
 
 
+    /**
+     * @test
+     * @dataProvider orphanResourceIdProvider
+     * @param mixed $resourceId
+     */
+    public function deleteResourceShouldDeleteResource($resourceId)
+    {
+        $this->setUpSimpleDataSet();
+
+        $data = array(
+            'id'        => $resourceId,
+        );
+
+        $resource = Resource::create($data);
+
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $this->backend->findResource($resourceId));
+
+        $this->assertTrue($this->backend->deleteResource($resource));
+
+        $this->assertFalse($this->backend->findResource($resourceId));
+    }
+
+    /**
+     * @test
+     * @dataProvider resourceIdWithReferencesProvider
+     * @param mixed $resourceId
+     *
+     */
+    public function deleteResourceThrowsExceptionWhenDeletingResourceWithReferences($resourceId)
+    {
+        $this->setUpSimpleDataSet();
+
+        $resource = Resource::create(array(
+            'id'        => $resourceId,
+        ));
+
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $this->backend->findResource($resourceId));
+
+        $this->setExpectedException('Xi\Filelib\Exception\ResourceReferencedException');
+
+        $this->backend->deleteResource($resource);
+    }
+
+    /**
+     * @test
+     * @dataProvider nonExistingResourceIdProvider
+     * @param mixed $resourceId
+     */
+    public function deleteResourceShouldNotDeleteNonExistingResource($resourceId)
+    {
+        $this->setUpEmptyDataSet();
+
+        $resource = Resource::create(array(
+            'id'        => $resourceId,
+        ));
+
+        $this->assertFalse($this->backend->deleteResource($resource));
+    }
+
+
+
 
     /**
      * @test

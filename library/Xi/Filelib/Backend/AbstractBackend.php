@@ -9,6 +9,8 @@ use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Exception\FolderNotFoundException;
 use Xi\Filelib\Exception\FolderNotEmptyException;
 use Xi\Filelib\Exception\NonUniqueFileException;
+use Xi\Filelib\Exception\ResourceReferencedException;
+use Exception;
 
 /**
  * Abstract backend implementing common methods
@@ -185,11 +187,7 @@ abstract class AbstractBackend implements Backend
      */
     public function createResource(Resource $resource)
     {
-        try {
-            return $this->doCreateResource($resource);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
-        }
+        return $this->doCreateResource($resource);
     }
 
     /**
@@ -197,16 +195,15 @@ abstract class AbstractBackend implements Backend
      *
      * @param  Resource         $resource
      * @return boolean          True if deleted successfully.
-     * @throws FilelibException If folder could not be deleted or if folder
-     *                          contains files.
+     * @throws ResourceReferencedException If resource has references
      */
     public function deleteResource(Resource $resource)
     {
-        try {
-            return (bool) $this->doDeleteResource($resource);
-        } catch (Exception $e) {
-            throw new FilelibException($e->getMessage());
+        if ($rno = $this->getNumberOfReferences($resource)) {
+            throw new ResourceReferencedException("Resource #{$resource->getId()} is referenced {$rno} times and can't be deleted.");
         }
+
+        return (bool) $this->doDeleteResource($resource);
     }
 
     /**

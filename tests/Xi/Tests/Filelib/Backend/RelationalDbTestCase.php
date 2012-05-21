@@ -20,6 +20,7 @@ use Xi\Filelib\Folder\Folder;
 
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
+ * @author Mikko Forsström <pekkisx@gmail.com>
  *
  * @group backend
  */
@@ -100,9 +101,9 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     public function nonExistingResourceIdProvider()
     {
         return array(
-            array(5),
-            array(55),
-            array(555),
+            array(6),
+            array(66),
+            array(666),
             array(6666)
         );
     }
@@ -121,6 +122,25 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
         );
     }
 
+    /**
+     * @return array
+     */
+    public function orphanResourceIdProvider()
+    {
+        return array(
+            array(5),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function resourceIdWithReferencesProvider()
+    {
+        return array(
+            array(3),
+        );
+    }
 
 
     /**
@@ -350,6 +370,11 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'id' => 4,
                     'hash' => 'hash-3',
                     'date_created' => '2008-03-21 06:06:06',
+                ),
+                array(
+                    'id' => 5,
+                    'hash' => 'hash-5',
+                    'date_created' => '2009-03-21 06:06:06',
                 ),
             ),
 
