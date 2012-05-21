@@ -129,22 +129,24 @@ class FileLibraryTest extends TestCase
 
     /**
      * @test
+     *
      */
     public function fileShouldDelegateToGetFileOperator()
     {
         $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')->setMethods(array('getFileOperator'))->getMock();
         $filelib->expects($this->once())->method('getFileOperator');
-        $filelib->file();
+        @$filelib->file();
     }
 
     /**
      * @test
+     *
      */
     public function folderShouldDelegateToGetFolderOperator()
     {
         $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')->setMethods(array('getFolderOperator'))->getMock();
         $filelib->expects($this->once())->method('getFolderOperator');
-        $filelib->folder();
+        @$filelib->folder();
     }
 
     /**
@@ -188,69 +190,6 @@ class FileLibraryTest extends TestCase
         $filelib = new FileLibrary();
         $this->assertSame($filelib, $filelib->setFolderOperator($mock));
         $this->assertSame($mock, $filelib->getFolderOperator());
-    }
-
-    /**
-     * @test
-     */
-    public function setFileItemClassShouldDelegateToFileOperator()
-    {
-        $fop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $fop->expects($this->once())->method('setClass')->with($this->equalTo('lussenhofer'));
-
-        $filelib = new FileLibrary();
-        $filelib->setFileOperator($fop);
-
-        $filelib->setFileItemClass('lussenhofer');
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function getFileItemClassShouldDelegateToFileOperator()
-    {
-        $fop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $fop->expects($this->once())->method('getClass');
-
-        $filelib = new FileLibrary();
-        $filelib->setFileOperator($fop);
-
-        $filelib->getFileItemClass('lussenhofer');
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function setFolderItemClassShouldDelegateToFolderOperator()
-    {
-        $fop = $this->getMockForAbstractClass('Xi\Filelib\Folder\FolderOperator');
-        $fop->expects($this->once())->method('setClass')->with($this->equalTo('lussenhofer'));
-
-        $filelib = new FileLibrary();
-        $filelib->setFolderOperator($fop);
-
-        $filelib->setFolderItemClass('lussenhofer');
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function getFolderItemClassShouldDelegateToFolderOperator()
-    {
-        $fop = $this->getMockForAbstractClass('Xi\Filelib\Folder\FolderOperator');
-        $fop->expects($this->once())->method('getClass');
-
-        $filelib = new FileLibrary();
-        $filelib->setFolderOperator($fop);
-
-        $filelib->getFolderItemClass('lussenhofer');
-
     }
 
     /**

@@ -9,7 +9,7 @@ use Mongo,
     MongoConnectionException,
     Xi\Tests\Filelib\TestCase,
     Xi\Filelib\Storage\GridfsStorage,
-    Xi\Filelib\File\FileItem,
+    Xi\Filelib\File\File,
     Xi\Filelib\FilelibException
     ;
 
@@ -49,7 +49,7 @@ class GridFsStorageTest extends TestCase
             $this->markTestSkipped('Can not connect to MongoDB.');
         }
 
-        $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1));
+        $this->file = \Xi\Filelib\File\File::create(array('id' => 1));
         
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
         
@@ -70,7 +70,7 @@ class GridFsStorageTest extends TestCase
         
         $this->version = 'xoo';
         
-        $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1, 'folder_id' => 1, 'name' => 'self-lussing-manatee.jpg'));
+        $this->file = \Xi\Filelib\File\File::create(array('id' => 1, 'folder_id' => 1, 'name' => 'self-lussing-manatee.jpg'));
         
                 
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
@@ -199,7 +199,7 @@ class GridFsStorageTest extends TestCase
      */
     public function retrievingUnexistingFileShouldThrowException()
     {
-        $file = FileItem::create(array('id' => 'lussenhofer.lus'));
+        $file = File::create(array('id' => 'lussenhofer.lus'));
         
         $this->storage->retrieve($file);
                 
@@ -211,7 +211,7 @@ class GridFsStorageTest extends TestCase
      */
     public function retrievingUnexistingFileVersionShouldThrowException()
     {
-        $file = FileItem::create(array('id' => 'lussenhofer.lus'));
+        $file = File::create(array('id' => 'lussenhofer.lus'));
         $this->storage->retrieveVersion($file, $this->version);
     }
     

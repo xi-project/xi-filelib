@@ -3,9 +3,9 @@
 namespace Xi\Tests\Filelib\Publisher\Filesystem;
 
 
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Publisher\Filesystem\CopyPublisher;
+use Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher;
 
 class CopyFilesystemPublisherTest extends TestCase
 {
@@ -83,7 +83,7 @@ class CopyFilesystemPublisherTest extends TestCase
         $files = array();
 
         for ($x = 1; $x <= 5; $x++) {
-            $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
+            $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
             $file->expects($this->any())->method('getId')->will($this->returnValue($x));
 
             $files[$x-1] = $file;
@@ -143,7 +143,7 @@ class CopyFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 
@@ -176,7 +176,7 @@ class CopyFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 
@@ -222,7 +222,7 @@ class CopyFilesystemPublisherTest extends TestCase
 
         $this->assertFileExists($expectedPath);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 
@@ -250,7 +250,7 @@ class CopyFilesystemPublisherTest extends TestCase
 
         $this->assertFileExists($expectedVersionPath);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 

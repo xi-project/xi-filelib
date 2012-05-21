@@ -3,7 +3,7 @@
 namespace Xi\Tests\Filelib\Renderer;
 
 use Xi\Filelib\Renderer\SymfonyRenderer;
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -161,7 +161,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getUrlShouldDelegateToPublisherWhenUsingOriginalVersion()
     {
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
@@ -187,7 +187,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getUrlShouldDelegateToPublisherWhenUsingNonOriginalVersion()
     {
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
 
         $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
 
@@ -230,7 +230,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
 
         $response = $renderer->render($file);
 
@@ -266,7 +266,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
 
         $response = $renderer->render($file);
 
@@ -309,7 +309,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
 
         $response = $renderer->render($file);
 
@@ -355,7 +355,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = FileItem::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
 
         $response = $renderer->render($file, array('download' => true));
 
@@ -393,7 +393,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
 
         $response = $renderer->render($file, array('version' => 'lussenhofer'));
 
@@ -413,7 +413,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
 
-        $file = FileItem::create(array('id' => 1));
+        $file = File::create(array('id' => 1));
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
@@ -625,7 +625,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = FileItem::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
 
@@ -689,7 +689,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $file = FileItem::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
 

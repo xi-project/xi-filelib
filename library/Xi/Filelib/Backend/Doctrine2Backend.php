@@ -4,10 +4,11 @@ namespace Xi\Filelib\Backend;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\FilelibException;
+use Xi\Filelib\Exception\NonUniqueFileException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\EntityNotFoundException;
+use PDOException;
 
 /**
  * Doctrine 2 backend for filelib
@@ -156,21 +157,12 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  File             $file
+     * @param  File    $file
      * @return boolean
-     * @throws FilelibException
      */
     protected function doUpdateFile(File $file)
     {
-        if (!$this->findFolder($file->getFolderId())) {
-            throw new FilelibException(sprintf(
-                'Folder was not found with id "%s"',
-                $file->getFolderId()
-            ));
-        }
-
         $entity = $this->getFileReference($file);
-
         $entity->setFolder($this->getFolderReference($file->getFolderId()));
         $entity->setMimetype($file->getMimetype());
         $entity->setProfile($file->getProfile());
@@ -261,33 +253,20 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  Folder           $folder
+     * @param  Folder $folder
      * @return Folder
-     * @throws FilelibException
      */
     protected function doCreateFolder(Folder $folder)
     {
-        $folderRow = new $this->folderEntityName();
-        $parentId  = $folder->getParentId();
+        $folderEntity = new $this->folderEntityName();
+        $folderEntity->setParent($this->getFolderReference($folder->getParentId()));
+        $folderEntity->setName($folder->getName());
+        $folderEntity->setUrl($folder->getUrl());
 
-        if ($parentId) {
-            if (!$this->findFolder($parentId)) {
-                throw new FilelibException(sprintf(
-                    'Parent folder was not found with id "%s"',
-                    $parentId
-                ));
-            }
-
-            $folderRow->setParent($this->getFolderReference($parentId));
-        }
-
-        $folderRow->setName($folder->getName());
-        $folderRow->setUrl($folder->getUrl());
-
-        $this->em->persist($folderRow);
+        $this->em->persist($folderEntity);
         $this->em->flush();
 
-        $folder->setId($folderRow->getId());
+        $folder->setId($folderEntity->getId());
 
         return $folder;
     }
@@ -344,23 +323,16 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  File             $file
-     * @param  Folder           $folder
+     * @param  File                   $file
+     * @param  Folder                 $folder
      * @return File
-     * @throws FilelibException
+     * @throws NonUniqueFileException If file already exists folder
      */
     protected function doUpload(File $file, Folder $folder)
     {
         $self = $this;
 
         return $this->em->transactional(function(EntityManager $em) use ($self, $file, $folder) {
-            if (!$self->findFolder($folder->getId())) {
-                throw new FilelibException(sprintf(
-                    'Folder was not found with id "%s"',
-                    $folder->getId()
-                ));
-            }
-
             $fileEntityName = $self->getFileEntityName();
 
             $entity = new $fileEntityName;
@@ -373,7 +345,12 @@ class Doctrine2Backend extends AbstractBackend
             $entity->setStatus($file->getStatus());
 
             $em->persist($entity);
-            $em->flush();
+
+            try {
+                $em->flush();
+            } catch (PDOException $e) {
+                $self->throwNonUniqueFileException($file, $folder);
+            }
 
             $file->setId($entity->getId());
             $file->setFolderId($entity->getFolder()->getId());

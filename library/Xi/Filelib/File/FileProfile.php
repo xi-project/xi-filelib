@@ -225,7 +225,7 @@ class FileProfile implements EventSubscriberInterface
      */
     public function getFileVersions(File $file)
     {
-        $fileType = $this->getFilelib()->file()->getType($file);
+        $fileType = $this->getFilelib()->getFileOperator()->getType($file);
         $this->ensureFileVersionArrayExists($fileType);
         return array_keys($this->fileVersions[$fileType]);
     }
@@ -255,7 +255,7 @@ class FileProfile implements EventSubscriberInterface
             throw new InvalidArgumentException("File has no version '{$version}'");
         }
 
-        $filetype = $this->getFilelib()->file()->getType($file);
+        $filetype = $this->getFilelib()->getFileOperator()->getType($file);
         return $this->fileVersions[$filetype][$version];
     }
 

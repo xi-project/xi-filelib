@@ -4,7 +4,7 @@ namespace Xi\Tests\Filelib\File;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileProfile;
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\File\File;
 
 use Xi\Filelib\Event\PluginEvent;
 
@@ -226,20 +226,20 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->createMockedFilelib();
         $profile->setFilelib($filelib);
 
-        $file = FileItem::create(array('mimetype' => 'image/lus'));
+        $file = File::create(array('mimetype' => 'image/lus'));
         $versionProviders = $profile->getFileVersions($file);
         $this->assertCount(2, $versionProviders);
         $this->assertContains('globalizer', $versionProviders);
         $this->assertContains('imagenizer', $versionProviders);
 
-        $file = FileItem::create(array('mimetype' => 'video/lus'));
+        $file = File::create(array('mimetype' => 'video/lus'));
         $versionProviders = $profile->getFileVersions($file);
         $this->assertCount(2, $versionProviders);
         $this->assertContains('globalizer', $versionProviders);
         $this->assertContains('videonizer', $versionProviders);
 
 
-        $file = FileItem::create(array('mimetype' => 'soo/soo'));
+        $file = File::create(array('mimetype' => 'soo/soo'));
         $versionProviders = $profile->getFileVersions($file);
         $this->assertCount(0, $versionProviders);
 
@@ -267,7 +267,7 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $profile = $this->createProfileWithMockedVersions();
         $profile->setFilelib($this->createMockedFilelib());
 
-        $file = FileItem::create(array('mimetype' => $mimetype));
+        $file = File::create(array('mimetype' => $mimetype));
         $this->assertEquals($expected, $profile->fileHasVersion($file, $versionId));
 
     }
@@ -281,7 +281,7 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $profile = $this->createProfileWithMockedVersions();
         $profile->setFilelib($this->createMockedFilelib());
 
-        $file = FileItem::create(array('mimetype' => 'xoo/lus'));
+        $file = File::create(array('mimetype' => 'xoo/lus'));
 
         $vp = $profile->getVersionProvider($file, 'globalizer');
     }
@@ -294,7 +294,7 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $profile = $this->createProfileWithMockedVersions();
         $profile->setFilelib($this->createMockedFilelib());
 
-        $file = FileItem::create(array('mimetype' => 'video/lus'));
+        $file = File::create(array('mimetype' => 'video/lus'));
 
         $vp = $profile->getVersionProvider($file, 'globalizer');
 

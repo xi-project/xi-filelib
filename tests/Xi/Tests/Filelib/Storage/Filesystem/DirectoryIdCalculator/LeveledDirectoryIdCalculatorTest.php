@@ -3,12 +3,12 @@
 namespace Xi\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator,
-    Xi\Filelib\File\FileItem;
+    Xi\Filelib\File\File;
 
 class LeveledDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var FileItem
+     * @var File
      */
     protected $file;
 
@@ -20,7 +20,7 @@ class LeveledDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->calc = new LeveledDirectoryIdCalculator();
-        $this->file = new FileItem();
+        $this->file = new File();
     }
 
     /**

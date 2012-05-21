@@ -17,8 +17,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 interface Plugin extends EventSubscriberInterface
 {
 
-    public function __construct($options = array());
-
     /**
      * Sets filelib
      *
@@ -36,26 +34,19 @@ interface Plugin extends EventSubscriberInterface
 
     /**
      * Returns an array of profiles
-     * 
+     *
      * @return array
      */
     public function getProfiles();
 
-    /**
-     * Sets profiles
-     * 
-     * @param array $profiles Array of profiles
-     * @return Plugin
-     */
-    public function setProfiles(array $profiles);
-    
+
     /**
      * Returns whether plugin has a certain profile
-     * 
+     *
      * @return boolean
      */
     public function hasProfile($profile);
-    
+
 
     /**
      * Runs when plugin is added.

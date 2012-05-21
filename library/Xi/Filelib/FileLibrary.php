@@ -131,19 +131,23 @@ class FileLibrary
      * Shortcut to getFileOperator
      *
      * @return FileOperator
+     * @deprecated
      */
     public function file()
     {
+        trigger_error( "Method is deprecated. use getFileOperator() instead.", E_USER_DEPRECATED);
         return $this->getFileOperator();
     }
 
     /**
      * Shortcut to getFolderOperator
      *
+     * @deprecated
      * @return FolderOperator
      */
     public function folder()
     {
+        trigger_error( "Method is deprecated. use getFolderOperator() instead.", E_USER_DEPRECATED);
         return $this->getFolderOperator();
     }
 
@@ -196,50 +200,6 @@ class FileLibrary
         }
 
         return $this->folderOperator;
-    }
-
-    /**
-     * Sets fully qualified fileitem classname
-     *
-     * @param string $fileItemClass Class name
-     * @return FileLibrary
-     */
-    public function setFileItemClass($fileItemClass)
-    {
-        $this->getFileOperator()->setClass($fileItemClass);
-        return $this;
-    }
-
-    /**
-     * Sets fully qualified folderitem classname
-     *
-     * @param string $folderItemClass Class name
-     * @return FileLibrary
-     */
-    public function setFolderItemClass($folderItemClass)
-    {
-        $this->getFolderOperator()->setClass($folderItemClass);
-        return $this;
-    }
-
-    /**
-     * Returns fully qualified folderitem classname
-     *
-     * @return string
-     */
-    public function getFolderItemClass()
-    {
-        return $this->getFolderOperator()->getClass();
-    }
-
-    /**
-     * Returns fully qualified fileitem classname
-     *
-     * @return string
-     */
-    public function getFileItemClass()
-    {
-        return $this->getFileOperator()->getClass();
     }
 
     /**

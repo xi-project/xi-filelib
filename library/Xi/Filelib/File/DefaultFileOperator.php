@@ -18,7 +18,6 @@ use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Queue\Queue;
-
 use Xi\Filelib\Command;
 use Xi\Filelib\File\Command\FileCommand;
 use Xi\Filelib\File\Command\UploadFileCommand;
@@ -27,7 +26,8 @@ use Xi\Filelib\File\Command\UpdateFileCommand;
 use Xi\Filelib\File\Command\DeleteFileCommand;
 use Xi\Filelib\File\Command\PublishFileCommand;
 use Xi\Filelib\File\Command\UnpublishFileCommand;
-
+use Xi\Filelib\Tool\TypeResolver\TypeResolver;
+use Xi\Filelib\Tool\TypeResolver\StupidTypeResolver;
 
 /**
  * File operator
@@ -63,31 +63,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     private $profiles = array();
 
     /**
-     * @var string Fileitem class
-     */
-    private $className = 'Xi\Filelib\File\FileItem';
-
-    /**
-     * Sets fileitem class
      *
-     * @param string $className Class name
-     * @return DefaultFileOperator
+     * @var type TypeResolver
      */
-    public function setClass($className)
-    {
-        $this->className = $className;
-        return $this;
-    }
-
-    /**
-     * Returns fileitem class
-     *
-     * @return string
-     */
-    public function getClass()
-    {
-        return $this->className;
-    }
+    private $typeResolver;
 
     /**
      * Returns an instance of the currently set fileitem class
@@ -96,8 +75,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function getInstance($data = array())
     {
-        $className = $this->getClass();
-        $file = new $className();
+        $file = new File();
         if ($data) {
             $file->fromArray($data);
         }
@@ -289,9 +267,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
      */
     public function getType(File $file)
     {
-        // @todo Semi-mock until mimetype database is pooped in.
-        $split = explode('/', $file->getMimetype());
-        return $split[0];
+        return $this->getTypeResolver()->resolveType($file->getMimeType());
     }
 
     /**
@@ -368,5 +344,28 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         $this->getEventDispatcher()->dispatch('file.instantiate', $event);
         return $file;
     }
+
+    /**
+     * @return TypeResolver
+     */
+    public function getTypeResolver()
+    {
+        if (!$this->typeResolver) {
+            $this->typeResolver = new StupidTypeResolver();
+        }
+        return $this->typeResolver;
+    }
+
+    /**
+     *
+     * @param TypeResolver $typeResolver
+     * @return DefaultFileOperator
+     */
+    public function setTypeResolver(TypeResolver $typeResolver)
+    {
+        $this->typeResolver = $typeResolver;
+        return $this;
+    }
+
 
 }

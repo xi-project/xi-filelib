@@ -3,7 +3,7 @@
 namespace Xi\Tests\Filelib\Publisher\Filesystem;
 
 
-use Xi\Filelib\File\FileItem;
+use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher;
 
@@ -100,7 +100,7 @@ class AbstractFilesystemPublisherTest extends TestCase
         $fileop->expects($this->once())->method('getProfile')->with($this->equalTo('lusmeister'))->will($this->returnValue($profile));
         $profile->expects($this->once())->method('getLinker');
 
-        $file = FileItem::create(array('profile' => 'lusmeister'));
+        $file = File::create(array('profile' => 'lusmeister'));
 
         $linker = $publisher->getLinkerForFile($file);
 
@@ -117,7 +117,7 @@ class AbstractFilesystemPublisherTest extends TestCase
         $linker->expects($this->once())->method('getLink')
                 ->will($this->returnCallback(function($file) { return 'tussin/lussun/tussi.jpg'; }));
 
-        $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
+        $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
         $file->expects($this->any())->method('getId')->will($this->returnValue(1));
 
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher')
@@ -154,7 +154,7 @@ class AbstractFilesystemPublisherTest extends TestCase
                 ->will($this->returnCallback(function($file, $version, $extension) { return 'tussin/lussun/tussi-' . $version . '.jpg'; }));
 
 
-        $file = $this->getMockBuilder('Xi\Filelib\File\FileItem')->getMock();
+        $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
         $file->expects($this->any())->method('getId')->will($this->returnValue(1));
 
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher')

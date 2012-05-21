@@ -1,7 +1,7 @@
 <?php
 
 use \Xi\Filelib\Storage\AmazonS3Storage,
-    \Xi\Filelib\File\FileItem
+    \Xi\Filelib\File\File
     ;
 
 class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
@@ -53,7 +53,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         
         $this->version = 'xoo';
         
-        $this->file = \Xi\Filelib\File\FileItem::create(array('id' => 1, 'folder_id' => 1, 'name' => 'self-lussing-manatee.jpg'));
+        $this->file = \Xi\Filelib\File\File::create(array('id' => 1, 'folder_id' => 1, 'name' => 'self-lussing-manatee.jpg'));
         
                 
         

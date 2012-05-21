@@ -21,19 +21,19 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author pekkis
  */
 interface FileOperator
-{    
-    
+{
+
     /**
      * Returns an instance of the currently set fileitem class
-     * 
+     *
      * @param mixed $data Data as array or a file instance
      * @return File
      */
     public function getInstance($data = null);
-    
+
     /**
      * Adds a file profile
-     * 
+     *
      * @param FileProfile $profile
      * @return FileLibrary
      */
@@ -41,7 +41,7 @@ interface FileOperator
 
     /**
      * Returns a file profile
-     * 
+     *
      * @param string $identifier File profile identifier
      * @throws FilelibException
      * @return FileProfile
@@ -50,7 +50,7 @@ interface FileOperator
 
     /**
      * Returns all file profiles
-     * 
+     *
      * @return array Array of file profiles
      */
     public function getProfiles();
@@ -70,9 +70,9 @@ interface FileOperator
      * @return File
      */
     public function find($id);
-    
+
     public function findByFilename(Folder $folder, $filename);
-    
+
     /**
      * Finds and returns all files
      *
@@ -87,7 +87,7 @@ interface FileOperator
      * @return FileUpload
      */
     public function prepareUpload($path);
-    
+
 
     /**
      * Uploads file to filelib.
@@ -133,53 +133,52 @@ interface FileOperator
      * @return object Provider
      */
     public function getVersionProvider(File $file, $version);
-    
-    public function publish(File $file);
-    
-    public function unpublish(File $file);
-    
-    /**
-     * Sets file item class name
-     */
-    public function setClass($className);
-    
-    /**
-     * Sets file item class name
-     */
-    public function getClass();
 
-    
+    public function publish(File $file);
+
+    public function unpublish(File $file);
+
     public function addPlugin(Plugin $plugin, $priority = 0);
-    
+
     /**
      * @return Publisher
      */
     public function getPublisher();
-    
+
     /**
      * @return Storage
      */
     public function getStorage();
-    
+
     /**
      * @return Backend
      */
     public function getBackend();
-    
+
     /**
      * @return Acl
      */
     public function getAcl();
-    
+
     /**
      * @return EventDispatcherInterface
      */
     public function getEventDispatcher();
-    
+
     /**
      * @return Queue
      */
     public function getQueue();
-    
-    
+
+
+    /**
+     * Copies a file to a folder
+     *
+     * @param File $file Source file
+     * @param Folder $folder Target folder
+     */
+    public function copy(File $file, Folder $folder);
+
+
+
 }

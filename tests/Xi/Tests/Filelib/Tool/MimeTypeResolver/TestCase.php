@@ -1,17 +1,15 @@
 <?php
 
-namespace Xi\Tests\Filelib\File\TypeResolver;
+namespace Xi\Tests\Filelib\Tool\MimeTypeResolver;
 
 use Xi\Tests\Filelib\TestCase as FilelibTestCase;
 
-use Xi\Filelib\File\FileObject;
 
-
-class TestCase extends FilelibTestCase 
+class TestCase extends FilelibTestCase
 {
 
     protected $resolver;
-    
+
     public function provideFiles()
     {
         return array(
@@ -29,23 +27,15 @@ class TestCase extends FilelibTestCase
             ),
         );
     }
-    
+
     /**
      * @test
      * @dataProvider provideFiles
      */
     public function resolverShouldResolveCorrectType($path, $expectedType)
     {
-        
         $path = ROOT_TESTS . '/data/' . $path;
-        $fobj = new FileObject($path);
-        
-        $this->assertEquals($expectedType, $this->resolver->resolveType($fobj));
-        
-        
+        $this->assertEquals($expectedType, $this->resolver->resolveMimeType($path));
     }
-    
 
-    
-    
 }
