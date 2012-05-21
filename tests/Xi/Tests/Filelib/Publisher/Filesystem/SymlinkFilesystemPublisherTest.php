@@ -5,7 +5,7 @@ namespace Xi\Tests\Filelib\Publisher\Filesystem;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
+use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
 
 class SymlinkFilesystemPublisherTest extends TestCase
 {
@@ -81,7 +81,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
      */
     public function gettersAndSettersShouldWorkAsExpected()
     {
-        $publisher = new SymlinkPublisher();
+        $publisher = new SymlinkFilesystemPublisher();
 
         $this->assertNull($publisher->getRelativePathToRoot());
         $relativePath = '../private';
@@ -97,7 +97,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
      */
     public function getRelativePathToShouldFailWhenRelativePathToRootIsMissing()
     {
-        $publisher = new SymlinkPublisher();
+        $publisher = new SymlinkFilesystemPublisher();
         $file = File::create(array('id' => 1));
         $relativePath = $publisher->getRelativePathTo($file);
     }
@@ -109,7 +109,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
      */
     public function getRelativePathToVersionShouldFailWhenRelativePathToRootIsMissing()
     {
-        $publisher = new SymlinkPublisher();
+        $publisher = new SymlinkFilesystemPublisher();
         $file = File::create(array('id' => 1));
         $relativePath = $publisher->getRelativePathToVersion($file, $this->versionProvider);
     }
@@ -152,7 +152,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
 
-        $publisher = new SymlinkPublisher();
+        $publisher = new SymlinkFilesystemPublisher();
         $publisher->setFilelib($this->filelib);
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->setRelativePathToRoot('../private');
@@ -170,7 +170,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
 
-        $publisher = new SymlinkPublisher();
+        $publisher = new SymlinkFilesystemPublisher();
         $publisher->setFilelib($this->filelib);
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->setRelativePathToRoot('../private');
@@ -249,7 +249,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 
@@ -282,7 +282,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 
@@ -315,7 +315,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 
@@ -352,7 +352,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     {
         $this->filelib->setStorage($this->storage);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 
@@ -399,7 +399,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
         $this->createLink($expectedRealPath, $expectedPath);
         $this->assertFileExists($expectedPath);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 
@@ -426,7 +426,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
         $this->createLink($expectedRealPath, $expectedVersionPath);
         $this->assertFileExists($expectedVersionPath);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkPublisher')
+        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
                           ->setMethods(array('getLinkerForFile'))
                           ->getMock();
 
