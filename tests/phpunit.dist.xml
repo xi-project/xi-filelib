@@ -22,5 +22,8 @@
         <const name="RABBITMQ_VHOST" value="/" />
         <const name="RABBITMQ_USERNAME" value="" />
         <const name="RABBITMQ_PASSWORD" value="" />
+        <const name="ZENCODER_KEY" value="" />
+        <const name="ZENCODER_HOST" value="https://app.zencoder.com" />
+        <const name="ZENCODER_VERSION" value="v2" />
     </php>
 </phpunit>
