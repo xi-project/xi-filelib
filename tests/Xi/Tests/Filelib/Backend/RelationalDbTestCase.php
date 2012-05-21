@@ -71,6 +71,61 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     /**
      * @return array
      */
+    public function referenceCountProvider()
+    {
+        return array(
+            array(1, 1),
+            array(1, 2),
+            array(1, 3),
+            array(2, 4),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function findResourceProvider()
+    {
+        return array(
+            array(1, array('hash' => 'hash-1')),
+            array(2, array('hash' => 'hash-2')),
+            array(3, array('hash' => 'hash-2')),
+            array(4, array('hash' => 'hash-3')),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function nonExistingResourceIdProvider()
+    {
+        return array(
+            array(5),
+            array(55),
+            array(555),
+            array(6666)
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function resourceHashProvider()
+    {
+        return array(
+            array('hash-1', 1),
+            array('hash-2', 2),
+            array('hash-3', 1),
+            array('hash-4', 0),
+            array('hash-666', 0),
+        );
+    }
+
+
+
+    /**
+     * @return array
+     */
     public function provideForFindFolder()
     {
         return array(
@@ -274,6 +329,30 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     private function getSimpleDataSet()
     {
         return new ArrayDataSet(array(
+
+            'xi_filelib_resource' => array(
+                array(
+                    'id' => 1,
+                    'hash' => 'hash-1',
+                    'date_created' => '1978-03-21 06:06:06',
+                ),
+                array(
+                    'id' => 2,
+                    'hash' => 'hash-2',
+                    'date_created' => '1988-03-21 06:06:06',
+                ),
+                array(
+                    'id' => 3,
+                    'hash' => 'hash-2',
+                    'date_created' => '1998-03-21 06:06:06',
+                ),
+                array(
+                    'id' => 4,
+                    'hash' => 'hash-3',
+                    'date_created' => '2008-03-21 06:06:06',
+                ),
+            ),
+
             'xi_filelib_folder' => array(
                 array(
                     'id'         => 1,
@@ -317,6 +396,8 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'filelink'      => 'tohtori-vesala.png',
                     'date_uploaded' => '2011-01-01 16:16:16',
                     'status'        => 1,
+                    'uuid'          => 'uuid-1',
+                    'resource_id'   => 1,
                 ),
                 array(
                     'id'            => 2,
@@ -328,6 +409,8 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'filelink'      => 'lussuttaja/akuankka.png',
                     'date_uploaded' => '2011-01-01 15:15:15',
                     'status'        => 2,
+                    'uuid'          => 'uuid-2',
+                    'resource_id'   => 2,
                 ),
                 array(
                     'id'            => 3,
@@ -339,6 +422,8 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'filelink'      => 'lussuttaja/tussin/repesorsa.png',
                     'date_uploaded' => '2011-01-01 15:15:15',
                     'status'        => 3,
+                    'uuid'          => 'uuid-3',
+                    'resource_id'   => 3,
                 ),
                 array(
                     'id'            => 4,
@@ -350,6 +435,8 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'filelink'      => 'lussuttaja/banskun/megatussi.png',
                     'date_uploaded' => '2011-01-02 15:15:15',
                     'status'        => 4,
+                    'uuid'          => 'uuid-4',
+                    'resource_id'   => 4,
                 ),
                 array(
                     'id'            => 5,
@@ -361,6 +448,8 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'filelink'      => 'lussuttaja/banskun/megatussi2.png',
                     'date_uploaded' => '2011-01-03 15:15:15',
                     'status'        => 5,
+                    'uuid'          => 'uuid-5',
+                    'resource_id'   => 4,
                 ),
             ),
         ));

@@ -6,6 +6,7 @@ use PHPUnit_Framework_TestCase;
 use DateTime;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 
 /**
@@ -60,9 +61,90 @@ use Xi\Filelib\Folder\Folder;
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
-
         $this->assertNull($folder['parent_id']);
     }
+
+
+    /**
+     * @test
+     * @dataProvider referenceCountProvider
+     * @param integer $numberOfReferences
+     */
+    public function getNumberOfReferencesShouldReturnCorrectCount($numberOfReferences, $resourceId)
+    {
+        $resource = Resource::create(array('id' => $resourceId));
+
+        $this->setUpSimpleDataSet();
+        $this->assertEquals($numberOfReferences, $this->backend->getNumberOfReferences($resource));
+    }
+
+
+    /**
+     * @test
+     */
+    public function createResourceShouldCreateResource()
+    {
+        $this->setUpSimpleDataSet();
+
+        $data = array(
+            'hash'         => 'hashendaal',
+            'date_created' => new DateTime('2010-10-10 10:10:10'),
+        );
+
+        $resource = Resource::create($data);
+        $this->assertNull($resource->getId());
+        $this->assertNotNull($this->backend->createResource($resource)->getId());
+    }
+
+
+    /**
+     * @test
+     * @dataProvider findResourceProvider
+     * @param integer $resourceId
+     * @param array   $data
+     */
+    public function findResourceShouldReturnCorrectResource($resourceId, array $data)
+    {
+        $this->setUpSimpleDataSet();
+
+        $resource = $this->backend->findResource($resourceId);
+
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $resource);
+
+        $this->assertEquals($resourceId, $resource->getId());
+        $this->assertEquals($data['hash'], $resource->getHash());
+    }
+
+
+    /**
+     * @test
+     * @dataProvider nonExistingResourceIdProvider
+     * @param mixed $resourceId
+     */
+    public function findResourceShouldReturnFalseWhenTryingToFindNonExistingResource($resourceId)
+    {
+        $this->setUpEmptyDataSet();
+        $this->assertFalse($this->backend->findResource($resourceId));
+    }
+
+
+    /**
+     * @test
+     * @dataProvider resourceHashProvider
+     * @param mixed   $hash
+     * @param integer $expectedCount
+     */
+    public function findResourcesByHashShouldReturnArrayOfResources($hash, $expectedCount)
+    {
+        $this->setUpSimpleDataSet();
+
+        $ret = $this->backend->findResourcesByHash($hash);
+
+        $this->assertInternalType('array', $ret);
+        $this->assertCount($expectedCount, $ret);
+    }
+
+
 
     /**
      * @test
@@ -107,7 +189,7 @@ use Xi\Filelib\Folder\Folder;
      * @dataProvider nonExistingFolderIdProvider
      * @param mixed $folderId
      */
-    public function findFolderShouldReturnNullWhenTryingToFindNonExistingFolder(
+    public function findFolderShouldReturnFalseWhenTryingToFindNonExistingFolder(
         $folderId
     ) {
         $this->setUpEmptyDataSet();
@@ -515,7 +597,10 @@ use Xi\Filelib\Folder\Folder;
         $this->assertArrayHasKey('link', $ret);
         $this->assertArrayHasKey('date_uploaded', $ret);
         $this->assertArrayHasKey('status', $ret);
+        $this->assertArrayHasKey('resource', $ret);
+        $this->assertArrayHasKey('uuid', $ret);
 
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret['resource']);
         $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
     }
 
@@ -571,7 +656,10 @@ use Xi\Filelib\Folder\Folder;
             $this->assertArrayHasKey('link', $ret);
             $this->assertArrayHasKey('date_uploaded', $ret);
             $this->assertArrayHasKey('status', $ret);
+            $this->assertArrayHasKey('resource', $ret);
+            $this->assertArrayHasKey('uuid', $ret);
 
+            $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret['resource']);
             $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
         }
     }
@@ -596,6 +684,8 @@ use Xi\Filelib\Folder\Folder;
             'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 666,
+            'uuid'          => 'uuid-1',
+            'resource'      => Resource::create(array('id' => 1, 'hash' => 'hash-1', 'date_created' => new DateTime('1978-03-21 06:06:06')))
         );
 
         $file = File::create($data);
@@ -623,6 +713,8 @@ use Xi\Filelib\Folder\Folder;
             'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 4,
+            'uuid'          => 'uuid-1',
+            'resource'      => Resource::create(array('id' => 1, 'hash' => 'hash-1', 'date_created' => new DateTime('1978-03-21 06:06:06')))
         );
 
         $file = File::create($updated);
@@ -699,6 +791,8 @@ use Xi\Filelib\Folder\Folder;
             'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 5,
+            'uuid'          => 'uuid-lussid',
+            'resource'      => Resource::create(array('id' => 1))
         );
 
         $fodata = array(
@@ -722,6 +816,8 @@ use Xi\Filelib\Folder\Folder;
         $this->assertEquals($fidata['link'], $file->getLink());
         $this->assertEquals($fidata['date_uploaded'], $file->getDateUploaded());
         $this->assertEquals($fidata['status'], $file->getStatus());
+        $this->assertEquals($fidata['uuid'], $file->getUuid());
+        $this->assertEquals($fidata['resource'], $file->getResource());
     }
 
     /**
@@ -741,6 +837,8 @@ use Xi\Filelib\Folder\Folder;
             'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 3,
+            'uuid'          => 'uuid-lussid',
+            'resource'      => Resource::create(array('id' => 1))
         ));
 
         $folder = Folder::create(array(
@@ -776,6 +874,8 @@ use Xi\Filelib\Folder\Folder;
             'link'          => 'tohtori-vesala.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 4,
+            'uuid'          => 'uuid-lussid',
+            'resource'      => Resource::create(array('id' => 1))
         ));
 
         $folder = Folder::create(array(
@@ -818,7 +918,9 @@ use Xi\Filelib\Folder\Folder;
             'id'            => $fileId,
             'folder_id'     => $folderId,
             'status'        => 1,
-        );
+            'uuid'          => 'uuid-1',
+            'resource'   => Resource::create(array('id' =>1, 'hash' => 'hash-1', 'date_created' => new DateTime('1978-03-21 06:06:06'))),
+       );
 
         $fodata = array(
             'id'        => $folderId,

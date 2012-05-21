@@ -478,6 +478,7 @@ class Doctrine2Backend extends AbstractBackend
             'link'          => $file->getLink(),
             'date_uploaded' => $file->getDateUploaded(),
             'status'        => $file->getStatus(),
+            'uuid'          => $file->getUuid(),
             'resource' => ($file->getResource()) ? $this->resourceToArray($file->getResource()) : null
         );
     }
@@ -503,14 +504,18 @@ class Doctrine2Backend extends AbstractBackend
 
     protected function resourceToArray($resource)
     {
-        return array(
+        return Resource::create(array(
             'id' => $resource->getId(),
             'hash' => $resource->getHash(),
             'date_created' => $resource->getDateCreated()
-        );
+        ));
     }
 
 
+    public function doGetNumberOfReferences(Resource $resource)
+    {
+        return $this->em->getConnection()->fetchColumn("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
+    }
 
     /**
      * @param  File        $file

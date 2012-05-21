@@ -370,4 +370,11 @@ class MongoBackend extends AbstractBackend implements Backend
     {
         throw new \LogicException('I am not implementeed');
     }
+
+
+    protected function doGetNumberOfReferences(Resource $resource)
+    {
+        throw new \LogicException('I am not implementeed');
+    }
+
 }

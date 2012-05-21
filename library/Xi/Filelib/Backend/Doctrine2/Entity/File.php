@@ -56,6 +56,11 @@ class File
     protected $status;
 
     /**
+     * @ORM\Column(name="uuid", type="string", length=36, nullable=false)
+     */
+    protected $uuid;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Folder")
      * @ORM\JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
      */
@@ -246,7 +251,6 @@ class File
         return $this->status;
     }
 
-
     /**
      * Sets status
      *
@@ -256,6 +260,26 @@ class File
     {
         $this->status = $status;
         return $this;
+    }
+
+    /**
+     * Sets uuid
+     *
+     * @param string $uuid
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * Returns uuid
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
     }
 
     /**

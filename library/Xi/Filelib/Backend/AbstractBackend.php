@@ -110,6 +110,8 @@ abstract class AbstractBackend implements Backend
 
     protected abstract function doDeleteResource(Resource $resource);
 
+    protected abstract function doGetNumberOfReferences(Resource $resource);
+
     /**
      * @param mixed $resource
      * @return array
@@ -153,7 +155,7 @@ abstract class AbstractBackend implements Backend
 
     public function findResource($id)
     {
-        $this->assertValidIdentifier($id);
+        $this->assertValidResourceIdentifier($id);
 
         $resource = $this->doFindResource($id);
 
@@ -161,7 +163,7 @@ abstract class AbstractBackend implements Backend
             return false;
         }
 
-        return $this->resourceToArray($folder);
+        return $this->resourceToArray($resource);
 
     }
 
@@ -214,7 +216,7 @@ abstract class AbstractBackend implements Backend
      */
     public function getNumberOfReferences(Resource $resource)
     {
-        throw new \LogicException('Not implemented yet');
+        return $this->doGetNumberOfReferences($resource);
     }
 
     /**
@@ -475,6 +477,22 @@ abstract class AbstractBackend implements Backend
             );
         }
     }
+
+
+    /**
+     * @param  mixed                    $id
+     * @throws InvalidArgumentException
+     */
+    protected function assertValidResourceIdentifier($id)
+    {
+        if (!is_int($id)) {
+            $this->throwInvalidArgumentException(
+                $id,
+                'Resource id must be an integer, %s (%s) given'
+            );
+        }
+    }
+
 
     /**
      * @param  mixed                    $id
