@@ -25,10 +25,14 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('Zend_Service_Amazon_S3 class could not be loaded');
         }
 
-
-        if (!defined('ZENCODER_KEY')) {
+        if (!ZENCODER_KEY) {
             $this->markTestSkipped('Zencoder service not configured');
         }
+
+        if (!S3_KEY) {
+            $this->markTestSkipped('S3 not configured');
+        }
+
 
         $this->config = array(
             'apiKey' => ZENCODER_KEY,
@@ -66,6 +70,10 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         if (!S3_KEY) {
             $this->markTestSkipped('S3 not configured');
+        }
+        
+        if (!ZENCODER_KEY) {
+            $this->markTestSkipped('Zencoder service not configured');
         }
 
         $this->plugin->getAwsService()->cleanBucket($this->plugin->getAwsBucket());
