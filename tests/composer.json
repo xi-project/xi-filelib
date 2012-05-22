@@ -11,11 +11,11 @@
         "doctrine/orm": "=2.2.1",
         "doctrine/dbal": "=2.2.1",
         "doctrine/common": "=2.2.1",
-	"symfony/http-foundation": "=2.0.10",
+	    "symfony/http-foundation": "=2.0.10",
         "symfony/event-dispatcher": "=2.0.10",
         "symfony/http-kernel": "=2.0.10",
         "symfony/security": "=2.0.10",
-	"zendframework/zendframework": ">=2.0.x-dev",
-	"videlalvaro/php-amqplib": ">=dev-master"
+	    "zendframework/zendframework": ">=2.0.x-dev",
+	    "videlalvaro/php-amqplib": ">=dev-master"
     }
 }

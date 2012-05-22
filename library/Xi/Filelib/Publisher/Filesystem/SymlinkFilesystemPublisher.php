@@ -75,7 +75,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
      * @param $levelsDown How many levels down from root we are
      * @return string
      */
-    public function getRelativePathToVersion(File $file, VersionProvider $version, $levelsDown = 0)
+    public function getRelativePathToVersion(File $file, $version, $levelsDown = 0)
     {
         $relativePath = $this->getRelativePathToRoot();
 
@@ -85,7 +85,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
         $storage = $this->getFilelib()->getStorage();
-        $retrieved = $storage->retrieveVersion($file, $version->getIdentifier());
+        $retrieved = $storage->retrieveVersion($file, $version);
 
         $path = preg_replace("[^{$storage->getRoot()}]", $relativePath, $retrieved);
 
@@ -156,7 +156,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
                     $depth = sizeof(explode(DIRECTORY_SEPARATOR, $path2));
                 }
 
-                $fp = $this->getRelativePathToVersion($file, $versionProvider, $depth);
+                $fp = $this->getRelativePathToVersion($file, $version, $depth);
 
 
                 // Relative linking requires some movin'n groovin.
