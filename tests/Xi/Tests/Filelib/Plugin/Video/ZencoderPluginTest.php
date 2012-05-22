@@ -1,19 +1,15 @@
 <?php
 
-// FIXME and REMOVEME: Use composer (phar, json etc.) to do autoloading...
-// Investigate how it's done for PHP 5.2 classes, which use undercored names as a namespace hack.
-require_once('/Users/peterhil/code/xi/xi-filelib-symfony-sandbox/vendor/zencoder-php/Services/Zencoder.php');
-
 use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Account as Account;
 use Services_Zencoder_Exception as ZencoderException;
 
-use \Xi\Filelib\File\FileItem;
-use \Xi\Filelib\File\FileObject;
-use \Xi\Filelib\FileLibrary;
-use \Xi\Filelib\Plugin\Video\ZencoderPlugin;
-use \Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
-use \Xi\Filelib\Storage\AmazonS3Storage;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\FileObject;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\Video\ZencoderPlugin;
+use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
+use Xi\Filelib\Storage\AmazonS3Storage;
 
 class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -67,7 +63,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getAmazonS3Storage()
     {
-        if (!class_exists('\\Zend_Service_Amazon_S3')) {
+        if (!class_exists('Zend_Service_Amazon_S3')) {
             $this->markTestSkipped('Zend_Service_Amazon_S3 class could not be loaded');
         }
 
@@ -86,7 +82,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
     public function setUp()
     {
-        if (!class_exists('\\Services_Zencoder')) {
+        if (!class_exists('Services_Zencoder')) {
             $this->markTestSkipped('ZencoderService class could not be loaded');
         }
 
@@ -101,7 +97,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
     public function tearDown()
     {
-        if (!class_exists('\\Zend_Service_Amazon_S3')) {
+        if (!class_exists('Zend_Service_Amazon_S3')) {
             return;
         }
 
@@ -213,7 +209,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $plugin = new ZenCoderPlugin();
 
         $this->assertObjectHasAttribute('service', $plugin);
-        $this->assertInstanceOf('\\Services_Zencoder', $plugin->getService());
+        $this->assertInstanceOf('Services_Zencoder', $plugin->getService());
     }
 
     /**
@@ -228,7 +224,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $original = realpath(ROOT_TESTS . '/data') . '/' . $name;
         $id = implode('/', array(uniqid('', true), $name));
-        $file = FileItem::create(array('id' => $id, 'name' => $name));
+        $file = File::create(array('id' => $id, 'name' => $name));
 
         $this->storage->store($file, $original);
 
