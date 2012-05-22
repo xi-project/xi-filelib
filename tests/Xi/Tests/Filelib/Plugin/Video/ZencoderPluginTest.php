@@ -9,76 +9,11 @@ use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
-use Xi\Filelib\Storage\AmazonS3Storage;
 
 class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 {
 
-    public function getDefaults()
-    {
-        return array(
-            // See https://app.zencoder.com/docs/api/encoding for possible values
-            "test" => true,
-            "mock" => true, // Do not process, job and output IDs will be null!
-            "pass_through" => "ZencoderPluginTest",
-            "region" => "europe",
-        );
-    }
-
-    public function mockMp4Output($label = null)
-    {
-        $mp4 = array(
-            "format" => "mp4",
-            "video_codec" => "h264",
-            "audio_codec" => "aac",
-        );
-        if ($label) {
-            $mp4['label'] = $label;
-        }
-        return $mp4 + $this->getDefaults();
-    }
-
-    /**
-     * @param string $url
-     * @param string $label
-     */
-    public function mockJob(
-        $label = null,
-        $url = "http://composed.nu/tmp/jesse.mov"
-    ) {
-        return array(
-            "test" => true,
-            "mock" => true,
-            "input" => $url,
-            "output" => array(
-                $this->mockMp4Output($label)
-            )
-        );
-    }
-
-    /**
-     * @todo make a @depends annotation for AmazonS3StorageTest!
-     * @todo remove dependency on Amazon S3, and enable other storage backends like sftp (must be able to give urls to zencopder API)
-     * See valid input urls at: https://app.zencoder.com/docs/api/encoding/job/input
-     */
-    public function getAmazonS3Storage()
-    {
-        if (!class_exists('Zend_Service_Amazon_S3')) {
-            $this->markTestSkipped('Zend_Service_Amazon_S3 class could not be loaded');
-        }
-
-        if (S3_KEY === 's3_key') {
-            $this->markTestSkipped('S3 not configured');
-        }
-
-        $storage = new AmazonS3Storage();
-        $storage->setFilelib($this->getFilelib());
-        $storage->setKey(S3_KEY);
-        $storage->setSecretKey(S3_SECRETKEY);
-        $storage->setBucket(S3_BUCKET);
-
-        return $storage;
-    }
+    private $config;
 
     public function setUp()
     {
@@ -86,14 +21,42 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('ZencoderService class could not be loaded');
         }
 
+        if (!class_exists('Zend_Service_Amazon_S3')) {
+            $this->markTestSkipped('Zend_Service_Amazon_S3 class could not be loaded');
+        }
+
+
         if (!defined('ZENCODER_KEY')) {
             $this->markTestSkipped('Zencoder service not configured');
         }
 
-        $this->zencoder = new ZencoderService(ZENCODER_KEY, ZENCODER_VERSION, ZENCODER_HOST);
-        $this->storage = $this->getAmazonS3Storage();
-        $this->defaults = $this->getDefaults();
+        $this->config = array(
+            'apiKey' => ZENCODER_KEY,
+            'awsKey' => S3_KEY,
+            'awsSecretKey' => S3_SECRETKEY,
+            'awsBucket' => ZENCODER_S3_BUCKET,
+            'outputs' => array(
+                'pygmi' => array(
+                    'extension' => 'mp4',
+                        'output' => array(
+                        'label' => 'pygmi',
+                        'device_profile' => 'mobile/baseline'
+                    ),
+                ),
+                'watussi' => array(
+                    'extension' => 'mp4',
+                    'output' => array(
+                        'label' => 'watussi',
+                        'device_profile' => 'mobile/advanced'
+                    ),
+                )
+            )
+        );
+
+        $this->plugin = new ZencoderPlugin($this->config);
+
     }
+
 
     public function tearDown()
     {
@@ -101,12 +64,121 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             return;
         }
 
-        if (S3_KEY === 's3_key') {
+        if (!S3_KEY) {
             $this->markTestSkipped('S3 not configured');
         }
 
-        $this->storage->getAmazonService()->cleanBucket($this->storage->getBucket());
+        $this->plugin->getAwsService()->cleanBucket($this->plugin->getAwsBucket());
+
     }
+
+
+    /**
+     * @test
+     */
+    public function settersAndGettersShouldWorkAsExpected()
+    {
+        $plugin = new ZencoderPlugin();
+
+        $val = 'xooxer';
+        $this->assertNull($plugin->getApiKey());
+        $this->assertSame($plugin, $plugin->setApiKey($val));
+        $this->assertEquals($val, $plugin->getApiKey());
+
+        $val = 'xooxer2';
+        $this->assertNull($plugin->getAwsKey());
+        $this->assertSame($plugin, $plugin->setAwsKey($val));
+        $this->assertEquals($val, $plugin->getAwsKey());
+
+        $val = 'xooxer3';
+        $this->assertNull($plugin->getAwsSecretKey());
+        $this->assertSame($plugin, $plugin->setAwsSecretKey($val));
+        $this->assertEquals($val, $plugin->getAwsSecretKey());
+
+        $val = 'xooxer4';
+        $this->assertNull($plugin->getAwsBucket());
+        $this->assertSame($plugin, $plugin->setAwsBucket($val));
+        $this->assertEquals($val, $plugin->getAwsBucket());
+
+    }
+
+    /**
+     * @test
+     */
+    public function getServiceShouldReturnAndCacheZencoderService()
+    {
+        $service = $this->plugin->getService();
+        $this->assertInstanceOf('Services_Zencoder', $service);
+        $this->assertSame($service, $this->plugin->getService());
+    }
+
+
+    /**
+     * @test
+     */
+    public function getAwsServiceShouldReturnAndCacheAwsService()
+    {
+        $service = $this->plugin->getAwsService();
+        $this->assertInstanceOf('Zend_Service_Amazon_S3', $service);
+        $this->assertSame($service, $this->plugin->getAwsService());
+    }
+
+    /**
+     * @test
+     */
+    public function getExtensionForShouldDigOutputsForTheCorrectExtension()
+    {
+        $outputs = array(
+            'pygmi' => array(
+                'extension' => 'lussen',
+                    'output' => array(
+                    'label' => 'pygmi',
+                    'device_profile' => 'mobile/baseline'
+                ),
+            ),
+            'watussi' => array(
+                'extension' => 'dorfer',
+                'output' => array(
+                    'label' => 'watussi',
+                    'device_profile' => 'mobile/advanced'
+                ),
+            )
+        );
+
+        $this->plugin->setOutputs($outputs);
+
+        $this->assertEquals('lussen', $this->plugin->getExtensionFor('pygmi'));
+        $this->assertEquals('dorfer', $this->plugin->getExtensionFor('watussi'));
+
+    }
+
+    /**
+     * @test
+     */
+    public function getVersionsShouldReturnCorrectVersions()
+    {
+        $this->assertEquals(array('pygmi', 'watussi'), $this->plugin->getVersions());
+    }
+
+    /**
+     * @test
+     */
+    public function getOutputsToZencoderShouldReturnCorrectData()
+    {
+        $ret = $this->plugin->getOutputsToZencoder();
+        $this->assertInternalType('array', $ret);
+        $this->assertCount(sizeof($this->config['outputs']), $ret);
+
+        foreach ($ret as $rut) {
+            $this->assertArrayHasKey('label', $rut);
+        }
+
+
+    }
+
+
+
+
 
     /**
      * @test
@@ -126,91 +198,6 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals(array('video'), $plugin->getProvidesFor());
     }
 
-    /**
-     * @test
-     * @group service
-     */
-    public function missingInput()
-    {
-        try {
-            $job = $this->zencoder->jobs->create(array(
-                // missing "input" key on purpose
-                "test" => true,
-                "private" => true
-            ));
-        }
-        catch (Services_Zencoder_Exception $e) {
-            $zen_errors = $e->getErrors();
-            $this->assertEquals(1, count($zen_errors));
-
-            foreach ($zen_errors as $error) {
-                $this->assertEquals($error, "Url of input file can't be blank");
-            }
-        }
-
-        if (isset($job)) {
-            $this->assertTrue($this->zencoder->jobs->cancel($job->id), "Job #". $job->id ." could not be cancelled!");
-        }
-    }
-
-    /**
-     * @test
-     * @group service
-     */
-    public function createMockJob()
-    {
-        $label = 'mp4';
-        $options = $this->mockJob($label);
-
-        try {
-            $job = $this->zencoder->jobs->create($options + $this->defaults);
-            $output = $job->outputs[$label];
-
-            $this->assertContains("zencoder", $output->url);
-            $this->assertContains($label, $output->label);
-        }
-        catch (Services_Zencoder_Exception $e) {
-            $this->failWithServiceErrors($e);
-        }
-    }
-
-    /**
-     * @test
-     * @group service
-     * @todo this is slow - do something differently?
-     */
-    public function createMinimalJob()
-    {
-        $label = 'mp4';
-        $options = array("mock" => false) + $this->mockJob($label);
-
-        try {
-            $job = $this->zencoder->jobs->create($options + $this->defaults);
-            $output = $job->outputs[$label];
-
-            $progress = $this->zencoder->outputs->progress($output->id);
-            $this->assertContains($progress->state, array("waiting", "queued", "assigning", "processing", "finished"));
-        }
-        catch (Services_Zencoder_Exception $e) {
-            $this->failWithServiceErrors($e);
-        }
-
-        if (isset($job) && $job !== null) {
-            $this->assertTrue($this->zencoder->jobs->cancel($job->id), "Job #". $job->id ." could not be cancelled!");
-        }
-    }
-
-    /**
-     * @test
-     * @plugin
-     */
-    public function constructShouldInitService()
-    {
-        $plugin = new ZencoderPlugin();
-
-        $this->assertObjectHasAttribute('service', $plugin);
-        $this->assertInstanceOf('Services_Zencoder', $plugin->getService());
-    }
 
     /**
      * @test
@@ -219,60 +206,17 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function createVersionsShouldCreateVersions()
     {
-        // Setup and upload file
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Video\ZencoderPlugin')
+                       ->setConstructorArgs(array($this->config))
+                       ->setMethods(array('getService'))
+                       ->getMock();
 
-        $name = '20th.wav';
+        $zen = $this->getMockedZencoderService();
 
-        $original = realpath(ROOT_TESTS . '/data') . '/' . $name;
-        $id = implode('/', array(uniqid('', true), $name));
-        $file = File::create(array('id' => $id, 'name' => $name));
+        $plugin->expects($this->any())->method('getService')
+               ->will($this->returnValue($zen));
 
-
-        // Mocks
-
-        /* $filelib = $this->getMock('Xi\Filelib\FileLibrary'); */
-        /* $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue('/tmp/dir')); */
-
-        /* $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage'); */
-        /* $storage->expects($this->once())->method('retrieve')->with($this->equalTo($file))->will($this->returnValue($fobject)); */
-
-        /* $publisher = new SymlinkPublisher(); */
-        /* $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Filesystem\SymlinkPublisher'); */
-        /* $publisher->expects($this->any())->method('publish')->with($this->equalTo($file))->will($this->returnValue($this)); */
-        /* $publisher->expects($this->any())->method('getUrl')->will($this->returnValue('//foo.com/movie.mp4')); */
-
-        /* $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage)); */
-
-        // Test
-
-
-
-
-
-
-        $config = array(
-            'apiKey' => ZENCODER_KEY,
-            'awsKey' => S3_KEY,
-            'awsSecretKey' => S3_SECRETKEY,
-            'awsBucket' => S3_BUCKET,
-            'outputs' => array(
-              'pygmi' => array(
-                  'extension' => 'mp4',
-                  'output' => array(
-                      'label' => 'pygmi',
-                      'device_profile' => 'mobile/baseline'
-                  ),
-              ),
-
-              'watussi' => array(
-                  'extension' => 'mp4',
-                  'output' => array(
-                      'label' => 'watussi',
-                      'device_profile' => 'mobile/advanced'
-                  ),
-              )
-          )
-        );
+        $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4'));
 
         $filelib = $this->getFilelib();
 
@@ -283,33 +227,136 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $filelib->setStorage($storage);
 
-        $plugin = new ZencoderPlugin($config);
         $plugin->setFilelib($filelib);
 
         $ret = $plugin->createVersions($file);
 
-
-        // $this->assertInternalType('array', $ret);
-
-        /* foreach ($ret as $version => $tmp) { */
-        /*     $this->assertRegExp("#/tmp/dir#", $tmp); */
-        /* } */
+        $this->assertInternalType('array', $ret);
+        $this->assertCount(2, $ret);
+        $this->assertArrayHasKey('pygmi', $ret);
+        $this->assertArrayHasKey('watussi', $ret);
 
     }
 
-    private function failWithServiceErrors($e)
+
+    /**
+     * @test
+     * @expectedException Xi\Filelib\FilelibException
+     */
+    public function createVersionsShouldThrowExecptionOnZencoderError()
     {
-        $this->fail("Zencoder service responded with errors:\n" . $this->getServiceErrors($e));
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Video\ZencoderPlugin')
+                       ->setConstructorArgs(array($this->config))
+                       ->setMethods(array('getService'))
+                       ->getMock();
+
+        $zen = $this->getMockedZencoderService(true);
+
+        $plugin->expects($this->any())->method('getService')
+               ->will($this->returnValue($zen));
+
+        $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4'));
+
+        $filelib = $this->getFilelib();
+
+        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $storage->expects($this->once())->method('retrieve')
+                ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
+
+        $filelib->setStorage($storage);
+
+
+        $plugin->setFilelib($filelib);
+
+        $ret = $plugin->createVersions($file);
+
     }
 
-    private static function getServiceErrors($e)
+
+    public function getMockedZencoderService($makeItThrowUp = false)
     {
-        $msgs = array();
-        $errors = $e->getErrors();
-        foreach ($errors as $msg) {
-            $msgs += (array)$msg;
+        $zen = $this->getMockBuilder('Services_Zencoder')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+        $zen->jobs = $this->getMockBuilder('Services_Zencoder_Jobs')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+
+        $zen->outputs = $this->getMockBuilder('Services_Zencoder_Outputs')
+                             ->disableOriginalConstructor()
+                             ->getMock();
+
+        $job = $this->getMockBuilder('Services_Zencoder_Job')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+
+        if ($makeItThrowUp) {
+            $zen->jobs->expects($this->once())->method('create')
+                ->will($this->throwException(new \Services_Zencoder_Exception('I threw up')));
+            return $zen;
         }
-        return implode("\n", $msgs);
+
+        $zen->jobs->expects($this->once())->method('create')
+                ->will($this->returnValue($job));
+
+        $job->outputs['watussi'] = $this->getMockBuilder('Services_Zencoder_Output')
+                                     ->disableOriginalConstructor()
+                                     ->getMock();
+        $job->outputs['watussi']->id = 1;
+
+        $job->outputs['pygmi'] = $this->getMockBuilder('Services_Zencoder_Output')
+                                     ->disableOriginalConstructor()
+                                     ->getMock();
+        $job->outputs['pygmi']->id = 2;
+
+        $progressFinished = $this->getMockBuilder('Services_Zencoder_Progress')
+                                     ->disableOriginalConstructor()
+                                     ->getMock();
+        $progressFinished->state = 'finished';
+
+        $progressUnfinished = $this->getMockBuilder('Services_Zencoder_Progress')
+                                     ->disableOriginalConstructor()
+                                     ->getMock();
+        $progressUnfinished->state = 'waiting';
+
+
+        $zen->outputs->expects($this->at(0))->method('progress')
+                  ->with($this->equalTo(2))
+                  ->will($this->returnValue($progressUnfinished));
+
+        $zen->outputs->expects($this->at(1))->method('progress')
+                  ->with($this->equalTo(1))
+                  ->will($this->returnValue($progressUnfinished));
+
+        $zen->outputs->expects($this->at(2))->method('progress')
+                  ->with($this->equalTo(2))
+                  ->will($this->returnValue($progressFinished));
+
+        $zen->outputs->expects($this->at(3))->method('progress')
+                  ->with($this->equalTo(1))
+                  ->will($this->returnValue($progressFinished));
+
+        $details = $this->getMockBuilder('Services_Zencoder_Output')
+                        ->disableOriginalConstructor()
+                        ->getMock();
+        $details->url = ROOT_TESTS . '/data/hauska-joonas.mp4';
+
+        $zen->outputs->expects($this->at(4))
+            ->method('details')
+            ->with($this->equalTo(2))
+            ->will($this->returnValue($details));
+
+        $zen->outputs->expects($this->at(5))
+            ->method('details')
+            ->with($this->equalTo(1))
+            ->will($this->returnValue($details));
+
+        return $zen;
     }
+
+
+
 
 }

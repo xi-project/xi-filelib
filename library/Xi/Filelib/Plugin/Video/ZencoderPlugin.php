@@ -14,77 +14,139 @@ use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
 
 class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 {
+    /**
+     *
+     * @var ZencoderService
+     */
     protected $service;
+
+    /**
+     *
+     * @var AmazonService
+     */
+    private $awsService;
 
     protected $providesFor = array('video');
 
+    /**
+     *
+     * @var array
+     */
     private $outputs = array();
 
+    /**
+     *
+     * @var string
+     */
     private $apiKey;
 
+    /**
+     *
+     * @var string
+     */
     private $awsKey;
 
+    /**
+     *
+     * @var string
+     */
     private $awsSecretKey;
 
+    /**
+     *
+     * @var string
+     */
     private $awsBucket;
-
-    private $awsService;
 
     public function __construct($options = array())
     {
         Configurator::setOptions($this, $options);
     }
 
-
+    /**
+     *
+     * @param string $awsKey
+     * @return ZencoderPlugin
+     */
     public function setAwsKey($awsKey)
     {
         $this->awsKey = $awsKey;
+        return $this;
     }
 
-
+    /**
+     *
+     * @return string
+     */
     public function getAwsKey()
     {
         return $this->awsKey;
     }
 
-
+    /**
+     *
+     * @param string $awsSecretKey
+     * @return ZencoderPlugin
+     */
     public function setAwsSecretKey($awsSecretKey)
     {
         $this->awsSecretKey = $awsSecretKey;
+        return $this;
     }
 
-
+    /**
+     *
+     * @param string $bucket
+     * @return ZencoderPlugin
+     */
     public function setAwsBucket($bucket)
     {
         $this->awsBucket = $bucket;
+        return $this;
     }
 
-
+    /**
+     *
+     * @return string
+     */
     public function getAwsBucket()
     {
         return $this->awsBucket;
     }
 
-
-
+    /**
+     *
+     * @return string
+     */
     public function getAwsSecretKey()
     {
         return $this->awsSecretKey;
     }
 
-
+    /**
+     *
+     * @param string $apiKey
+     * @return ZencoderPlugin
+     */
     public function setApiKey($apiKey)
     {
         $this->apiKey = $apiKey;
+        return $this;
     }
 
-
+    /**
+     *
+     * @return string
+     */
     public function getApiKey()
     {
         return $this->apiKey;
     }
 
-
+    /**
+     *
+     * @return AmazonService
+     */
     public function getAwsService()
     {
         if(!$this->awsService) {
@@ -105,7 +167,8 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      *
      * @return ZencoderService
      */
-    public function getService() {
+    public function getService()
+    {
         if (!$this->service) {
             $this->service = new ZencoderService($this->getApiKey());
         }
@@ -195,22 +258,12 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
             return $tmps;
 
-        } catch (Services_Zencoder_Exception $e) {
-            throw new FilelibException("Zencoder service responded with errors:\n" . $this->getServiceErrors($e));
+        } catch (\Services_Zencoder_Exception $e) {
+            throw new FilelibException("Zencoder service responded with errors", 500, $e);
         }
 
     }
 
-
-    private static function getServiceErrors($e)
-    {
-        $msgs = array();
-        $errors = $e->getErrors();
-        foreach ($errors as $msg) {
-            $msgs += (array)$msg;
-        }
-        return implode("\n", $msgs);
-    }
 
     public function setOutputs($outputs)
     {
