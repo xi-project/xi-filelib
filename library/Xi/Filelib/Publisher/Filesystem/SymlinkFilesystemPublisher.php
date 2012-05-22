@@ -25,11 +25,12 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
      * Sets path from public to private root
      *
      * @param string $relativePathToRoot
-     * @return SymlinkPublisher
+     * @return SymlinkFilesystemPublisher
      */
     public function setRelativePathToRoot($relativePathToRoot)
     {
         $this->relativePathToRoot = $relativePathToRoot;
+        return $this;
     }
 
     /**
