@@ -20,7 +20,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             // See https://app.zencoder.com/docs/api/encoding for possible values
             "test" => true,
             "mock" => true, // Do not process, job and output IDs will be null!
-            "pass_through" => "ZenCoderPluginTest",
+            "pass_through" => "ZencoderPluginTest",
             "region" => "europe",
         );
     }
@@ -206,7 +206,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function constructShouldInitService()
     {
-        $plugin = new ZenCoderPlugin();
+        $plugin = new ZencoderPlugin();
 
         $this->assertObjectHasAttribute('service', $plugin);
         $this->assertInstanceOf('Services_Zencoder', $plugin->getService());
@@ -215,6 +215,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      * @plugin
+     * @group watussi
      */
     public function createVersionsShouldCreateVersions()
     {
@@ -226,7 +227,6 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $id = implode('/', array(uniqid('', true), $name));
         $file = File::create(array('id' => $id, 'name' => $name));
 
-        $this->storage->store($file, $original);
 
         // Mocks
 
@@ -245,12 +245,51 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         // Test
 
-        $plugin = new ZenCoderPlugin();
-        $plugin->setFilelib($this->getFilelib());
+
+
+
+
+
+        $config = array(
+            'apiKey' => ZENCODER_KEY,
+            'awsKey' => S3_KEY,
+            'awsSecretKey' => S3_SECRETKEY,
+            'awsBucket' => S3_BUCKET,
+            'outputs' => array(
+              'pygmi' => array(
+                  'extension' => 'mp4',
+                  'output' => array(
+                      'label' => 'pygmi',
+                      'device_profile' => 'mobile/baseline'
+                  ),
+              ),
+
+              'watussi' => array(
+                  'extension' => 'mp4',
+                  'output' => array(
+                      'label' => 'watussi',
+                      'device_profile' => 'mobile/advanced'
+                  ),
+              )
+          )
+        );
+
+        $filelib = $this->getFilelib();
+
+        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $storage->expects($this->once())->method('retrieve')
+                ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
+
+        $filelib->setStorage($storage);
+
+        $plugin = new ZencoderPlugin($config);
+        $plugin->setFilelib($filelib);
 
         $ret = $plugin->createVersions($file);
 
-        $this->assertInternalType('array', $ret);
+
+        // $this->assertInternalType('array', $ret);
 
         /* foreach ($ret as $version => $tmp) { */
         /*     $this->assertRegExp("#/tmp/dir#", $tmp); */

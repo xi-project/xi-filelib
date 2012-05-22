@@ -3,30 +3,102 @@
 namespace Xi\Filelib\Plugin\Video;
 
 use Services_Zencoder as ZencoderService;
+use Zend_Service_Amazon_S3 as AmazonService;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
-use Xi\Filelib\Renderer\SymfonyRenderer;
-use Xi\Filelib\Storage\AmazonS3Storage;
+
 
 class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 {
     protected $service;
+
     protected $providesFor = array('video');
 
-    private $key;
-    private $host;
-    private $version;
-    private $debug;
+    private $outputs = array();
+
+    private $apiKey;
+
+    private $awsKey;
+
+    private $awsSecretKey;
+
+    private $awsBucket;
+
+    private $awsService;
 
     public function __construct($options = array())
     {
         Configurator::setOptions($this, $options);
-        $this->getService();
     }
+
+
+    public function setAwsKey($awsKey)
+    {
+        $this->awsKey = $awsKey;
+    }
+
+
+    public function getAwsKey()
+    {
+        return $this->awsKey;
+    }
+
+
+    public function setAwsSecretKey($awsSecretKey)
+    {
+        $this->awsSecretKey = $awsSecretKey;
+    }
+
+
+    public function setAwsBucket($bucket)
+    {
+        $this->awsBucket = $bucket;
+    }
+
+
+    public function getAwsBucket()
+    {
+        return $this->awsBucket;
+    }
+
+
+
+    public function getAwsSecretKey()
+    {
+        return $this->awsSecretKey;
+    }
+
+
+    public function setApiKey($apiKey)
+    {
+        $this->apiKey = $apiKey;
+    }
+
+
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+
+    public function getAwsService()
+    {
+        if(!$this->awsService) {
+            $this->awsService = new AmazonService($this->getAwsKey(), $this->getAwsSecretKey());
+        }
+
+        if(!$this->awsService->isBucketAvailable($this->getAwsBucket())) {
+            $this->awsService->createBucket($this->getAwsBucket());
+        }
+
+        return $this->awsService;
+    }
+
+
 
     /**
      * Returns Zencoder-php service instance
@@ -35,7 +107,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     public function getService() {
         if (!$this->service) {
-            $this->service = new ZencoderService($this->key, $this->version, $this->host, $this->debug);
+            $this->service = new ZencoderService($this->getApiKey());
         }
         return $this->service;
     }
@@ -45,7 +117,10 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      *
      * @param string $version
      */
-    public function getExtensionFor($version) {}
+    public function getExtensionFor($version) {
+
+        return $this->outputs[$version]['extension'];
+    }
 
     /**
      * Returns an array of (potentially) provided versions
@@ -54,10 +129,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     public function getVersions()
     {
-        return array(
-            'mp4',
-            // 'mp4-small',
-        );
+        return array_keys($this->getOutputs());
     }
 
     /**
@@ -68,105 +140,67 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     public function createVersions(File $file)
     {
         $filelib = $this->getFilelib();
+
         $zencoder = $this->getService();
-        $storage = $this->getAmazonS3Storage();
 
-        if (!($storage instanceof AmazonS3Storage)) {
-            throw new FilelibException(sprintf('Method "%s()" not implemented for storage "%s"', __FUNCTION__, $storage));
-        }
+        $retrieved = $this->getStorage()->retrieve($file);
 
-        $s3 = $storage->getAmazonService();
+        $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
-        $object = str_replace($storage->getBucket() .'/', '', $storage->getPath($file));
-        $bucket = $storage->getBucket();
+        $this->getAwsService()->putFile($retrieved->getRealPath(), $awsPath);
 
-        if ($storage->getBucket() === 'zencoder-fake') {
-            // Stupid Zend_Service_Amazon_S3 only allows alphanum characters in the bucket name,
-            // so this is necessary for using a local fake-s3 with a subdomain bucket.
-            $url = 'http://' . $bucket . '.' . $s3::S3_ENDPOINT . '/' . $object;
-        }
-        else {
-            // Use default without subdomain buckets
-            $url = implode('/', array($s3->getEndpoint(), $bucket, $object));
-        }
-
-        var_dump("S3 endpoint: ". $s3->getEndpoint());
-        var_dump("Bucket: ". $bucket);
-        var_dump("Object: ". $object);
-        var_dump("Url: ". $url);
-
-        //$stored = $s3->getObject($object); // <- Actual file
-
-        /* $path = $storage->retrieve($file)->getPathname(); */
-        /* var_dump("Path: ". $path); */
-
-
-        // * Get orignal file from the path
-
-        //$tmp = implode('/', array($filelib->getTempDir(), uniqid('', true), $path));
-        /* var_dump($tmp); */
-
-        /* $var_dump($this->getProfiles()); */
-
-
-        // * Get S3 url of the uploaded file
-
-        /* $storage->store($file, $path); */
-        //$retrieved = $storage->retrieve($file);
-
-        /* $url = $storage->getPath($file); */
-
-        /* var_dump("URL: ". $url); */
-
-
-        // * Create a Zencoder job with url
+        $url = $this->getAwsService()->getEndpoint() . '/' . $awsPath;
 
         $options = array(
-            "test" => true,
+            "test" => false,
             "mock" => false,
-            "input" => "http://composed.nu/tmp/jesse.mov", /* <- Change to S3 $url */
-            "output" => array(
-                array(
-                    "label" => "mp4",
-                    "format" => "mp4",
-                    "video_codec" => "h264",
-                    "audio_codec" => "aac",
-                )
-            )
+            "input" => $url,
+            "outputs" => $this->getOutputsToZencoder()
         );
 
         try {
             $job = $zencoder->jobs->create($options);
-            $output = $job->outputs[$label];
 
-            $progress = $zencoder->outputs->progress($output->id);
-            $this->assertContains($progress->state, array("waiting", "queued", "assigning", "processing", "finished"));
-        }
-        catch (Services_Zencoder_Exception $e) {
+            do {
+                $done = 0;
+                sleep(5);
+
+                foreach ($this->getVersions() as $label) {
+                    $output = $job->outputs[$label];
+
+                    $progress = $zencoder->outputs->progress($output->id);
+
+                    if ($progress->state === 'finished') {
+                        $done = $done + 1;
+                    }
+
+                }
+
+            } while ($done < count($this->getVersions()));
+
+            $tmps = array();
+
+            foreach ($this->getVersions() as $version) {
+
+                $tempnam = tempnam($this->getFilelib()->getTempDir(), 'zen');
+                $output = $job->outputs[$version];
+                $details = $zencoder->outputs->details($output->id);
+
+                file_put_contents($tempnam, file_get_contents($details->url));
+
+                $tmps[$version] = $tempnam;
+            }
+
+            $this->getAwsService()->removeObject($awsPath);
+
+            return $tmps;
+
+        } catch (Services_Zencoder_Exception $e) {
             throw new FilelibException("Zencoder service responded with errors:\n" . $this->getServiceErrors($e));
         }
 
-        // * Poll for progress (job and outputs)
-        // * Download and store versions
-
-        //$transcoded = $storage->store($file, $tmp);
-
-
-        // * Ready
-        return array($this->getIdentifier() => $output);
-
     }
 
-    protected function getAmazonS3Storage()
-    {
-        $storage = new AmazonS3Storage();
-        $storage->setFilelib($this->getFilelib());
-        $storage->setKey(S3_KEY);
-        $storage->setSecretKey(S3_SECRETKEY);
-        $storage->setBucket(S3_BUCKET);
-
-        return $storage;
-    }
 
     private static function getServiceErrors($e)
     {
@@ -176,6 +210,23 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             $msgs += (array)$msg;
         }
         return implode("\n", $msgs);
+    }
+
+    public function setOutputs($outputs)
+    {
+        $this->outputs = $outputs;
+    }
+
+    public function getOutputs()
+    {
+        return $this->outputs;
+    }
+
+    public function getOutputsToZencoder()
+    {
+        return array_values(array_map(function($output) {
+            return $output['output'];
+        }, $this->getOutputs()));
     }
 
 }
