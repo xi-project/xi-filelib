@@ -434,7 +434,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('retrieveVersion')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->equalTo('xooxer'))
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->equalTo('lussenhofer'))
                 ->will($this->returnValue($retrieved));
 
         $fiop->expects($this->atLeastOnce())->method('getVersionProvider')

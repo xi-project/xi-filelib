@@ -30,7 +30,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('Zend_Service_Amazon_S3 class could not be loaded');
         }
 
-        if (S3_KEY === 's3_key') {
+        if (!S3_KEY) {
             $this->markTestSkipped('S3 not configured');
         }
 
@@ -59,11 +59,11 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
 
     public function tearDown()
     {
-        if (!class_exists('\\Zend_Service_Amazon_S3')) {
+        if (!class_exists('Zend_Service_Amazon_S3')) {
             return;
         }
 
-        if (S3_KEY === 's3_key') {
+        if (!S3_KEY) {
             $this->markTestSkipped('S3 not configured');
         }
 
@@ -118,8 +118,6 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertFileNotExists($retrievedPath);
 
-
-
     }
 
     /**
@@ -128,6 +126,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
     public function storeAndRetrieveAndDeleteVersionShouldWorkSeamlessly()
     {
         $this->storage->setFilelib($this->getFilelib());
+
         $this->storage->storeVersion($this->resource, $this->version, $this->fileResource);
 
         $retrieved = $this->storage->retrieveVersion($this->resource, $this->version);
@@ -136,7 +135,6 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         $this->storage->deleteVersion($this->resource, $this->version);
 
         $ret = $this->storage->getAmazonService()->isObjectAvailable($this->storage->getPath($this->resource) . '_' . $this->version);
-
         $this->assertFalse($ret);
 
     }

@@ -4,9 +4,9 @@ namespace Xi\Filelib\Renderer;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\FileObject;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Xi\Filelib\File\FileObject;
 
 class SymfonyRenderer implements AcceleratedRenderer
 {
@@ -299,7 +299,8 @@ class SymfonyRenderer implements AcceleratedRenderer
         }
 
         $provider = $this->filelib->getFileOperator()->getVersionProvider($file, $version);
-        $res = $this->getStorage()->retrieveVersion($file->getResource(), $provider->getIdentifier());
+
+        $res = $this->getStorage()->retrieveVersion($file->getResource(), $version);
 
         return $res;
     }

@@ -85,7 +85,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
 
         $this->assertNull($publisher->getRelativePathToRoot());
         $relativePath = '../private';
-        $publisher->setRelativePathToRoot($relativePath);
+        $this->assertSame($publisher, $publisher->setRelativePathToRoot($relativePath));
         $this->assertEquals($relativePath, $publisher->getRelativePathToRoot());
     }
 

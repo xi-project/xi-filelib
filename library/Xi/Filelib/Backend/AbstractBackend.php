@@ -453,7 +453,7 @@ abstract class AbstractBackend implements Backend
      */
     protected function assertValidFolderIdentifier($id)
     {
-        if (!is_int($id)) {
+        if (!is_numeric($id)) {
             $this->throwInvalidArgumentException(
                 $id,
                 'Folder id must be an integer, %s (%s) given'
@@ -467,7 +467,7 @@ abstract class AbstractBackend implements Backend
      */
     protected function assertValidFileIdentifier($id)
     {
-        if (!is_int($id)) {
+        if (!is_numeric($id)) {
             $this->throwInvalidArgumentException(
                 $id,
                 'File id must be an integer, %s (%s) given'
