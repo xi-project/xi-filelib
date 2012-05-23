@@ -5,6 +5,7 @@ use Services_Zencoder_Account as Account;
 use Services_Zencoder_Exception as ZencoderException;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
@@ -39,6 +40,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             'awsKey' => S3_KEY,
             'awsSecretKey' => S3_SECRETKEY,
             'awsBucket' => ZENCODER_S3_BUCKET,
+            'sleepyTime' => 1,
             'outputs' => array(
                 'pygmi' => array(
                     'extension' => 'mp4',
@@ -71,7 +73,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         if (!S3_KEY) {
             $this->markTestSkipped('S3 not configured');
         }
-        
+
         if (!ZENCODER_KEY) {
             $this->markTestSkipped('Zencoder service not configured');
         }
@@ -107,6 +109,12 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $this->assertNull($plugin->getAwsBucket());
         $this->assertSame($plugin, $plugin->setAwsBucket($val));
         $this->assertEquals($val, $plugin->getAwsBucket());
+
+        $val = 1;
+        $this->assertEquals(5, $plugin->getSleepyTime());
+        $this->assertSame($plugin, $plugin->setSleepyTime($val));
+        $this->assertEquals($val, $plugin->getSleepyTime());
+
 
     }
 
@@ -216,21 +224,37 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
     {
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Video\ZencoderPlugin')
                        ->setConstructorArgs(array($this->config))
-                       ->setMethods(array('getService'))
+                       ->setMethods(array('getService', 'getAwsService'))
                        ->getMock();
 
         $zen = $this->getMockedZencoderService();
 
+        $aws = $this->getMockedAwsService();
+
+        $aws->expects($this->at(0))->method('putFile')
+            ->with($this->isType('string'), $this->isType('string'));
+
+        $aws->expects($this->at(1))->method('getEndpoint')
+            ->will($this->returnValue('http://dr-kobros.com'));
+
+        $aws->expects($this->at(2))->method('removeObject')
+            ->with($this->isType('string'));
+
         $plugin->expects($this->any())->method('getService')
                ->will($this->returnValue($zen));
 
-        $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4'));
+
+        $plugin->expects($this->any())->method('getAwsService')
+               ->will($this->returnValue($aws));
+
+
+        $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
 
         $filelib = $this->getFilelib();
 
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('retrieve')
-                ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
                 ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
 
         $filelib->setStorage($storage);
@@ -255,30 +279,36 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
     {
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Video\ZencoderPlugin')
                        ->setConstructorArgs(array($this->config))
-                       ->setMethods(array('getService'))
+                       ->setMethods(array('getService', 'getAwsService'))
                        ->getMock();
 
         $zen = $this->getMockedZencoderService(true);
 
+        $aws = $this->getMockedAwsService();
+
+        $aws->expects($this->at(0))->method('putFile')
+            ->with($this->isType('string'), $this->isType('string'));
+
+
         $plugin->expects($this->any())->method('getService')
                ->will($this->returnValue($zen));
+        
+        $plugin->expects($this->any())->method('getAwsService')
+               ->will($this->returnValue($aws));
 
-        $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4'));
+        $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
 
         $filelib = $this->getFilelib();
 
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('retrieve')
-                ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
                 ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
 
         $filelib->setStorage($storage);
-
-
         $plugin->setFilelib($filelib);
 
         $ret = $plugin->createVersions($file);
-
     }
 
 
@@ -362,6 +392,16 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             ->will($this->returnValue($details));
 
         return $zen;
+    }
+
+
+    public function getMockedAwsService()
+    {
+        $aws = $this->getMockBuilder('Zend_Service_Amazon_S3')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+        return $aws;
     }
 
 

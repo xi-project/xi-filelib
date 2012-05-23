@@ -58,6 +58,12 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     private $awsBucket;
 
+    /**
+     *
+     * @var integer
+     */
+    private $sleepyTime = 5;
+
     public function __construct($options = array())
     {
         Configurator::setOptions($this, $options);
@@ -160,6 +166,23 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         return $this->awsService;
     }
 
+    /**
+     * Sets sleepy time in seconds
+     *
+     * @param type $sleepyTime
+     * @return ZencoderPlugin
+     */
+    public function setSleepyTime($sleepyTime)
+    {
+        $this->sleepyTime = $sleepyTime;
+        return $this;
+    }
+
+
+    public function getSleepyTime()
+    {
+        return $this->sleepyTime;
+    }
 
 
     /**
@@ -206,7 +229,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
         $zencoder = $this->getService();
 
-        $retrieved = $this->getStorage()->retrieve($file);
+        $retrieved = $this->getStorage()->retrieve($file->getResource());
 
         $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
@@ -226,7 +249,8 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
             do {
                 $done = 0;
-                sleep(5);
+
+                sleep($this->getSleepyTime());
 
                 foreach ($this->getVersions() as $label) {
                     $output = $job->outputs[$label];
