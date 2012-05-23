@@ -56,7 +56,7 @@ class File
     protected $status;
 
     /**
-     * @ORM\Column(name="uuid", type="string", length=36, nullable=false)
+     * @ORM\Column(name="uuid", type="string", length=36, nullable=false, unique=true)
      */
     protected $uuid;
 
@@ -68,7 +68,7 @@ class File
 
     /**
      * @ORM\ManyToOne(targetEntity="Resource", inversedBy="files")
-     * @ORM\JoinColumn(name="resource_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="resource_id", referencedColumnName="id", nullable=false)
      **/
     private $resource;
 
