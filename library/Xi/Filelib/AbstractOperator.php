@@ -167,12 +167,10 @@ abstract class AbstractOperator
     {
         $strategy = $this->getCommandStrategy($commandName);
         if ($strategy == Command::STRATEGY_ASYNCHRONOUS) {
-            $message = new Message(serialize($commandObj));
-            $ret = $this->getQueue()->enqueue($message);
+            $ret = $this->getQueue()->enqueue($commandObj);
         } else {
             $ret = $commandObj->execute();
         }
-
         return $this->executeOrQueueHandleCallbacks($strategy, $callbacks, $ret);
     }
 
@@ -187,7 +185,7 @@ abstract class AbstractOperator
 
     /**
      * Generates UUID
-     * 
+     *
      * @return string
      */
     public function generateUuid()

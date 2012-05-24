@@ -80,6 +80,8 @@ class CopyFileCommand extends AbstractFileCommand implements Serializable
     public function getImpostor()
     {
         $impostor = clone $this->file;
+        $impostor->setUuid($this->getUuid());
+
         $found = $this->fileOperator->findByFilename($this->folder, $impostor->getName());
 
         if (!$found) {
@@ -92,6 +94,7 @@ class CopyFileCommand extends AbstractFileCommand implements Serializable
         } while ($found);
 
         $impostor->setFolderId($this->folder->getId());
+
         return $impostor;
     }
 

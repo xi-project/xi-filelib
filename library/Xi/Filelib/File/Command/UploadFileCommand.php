@@ -72,6 +72,7 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
             'name' => $upload->getUploadFilename(),
             'profile' => $profile,
             'date_uploaded' => $upload->getDateUploaded(),
+            'uuid' => $this->getUuid(),
         ));
 
         // @todo: actual statuses

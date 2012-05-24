@@ -195,4 +195,78 @@ class AbstractOperatorTest extends TestCase
         $this->assertRegExp("/^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/", $uuid);
     }
 
+    /**
+     * @test
+     */
+    public function executeOrQueueShouldEnqueueWithAsynchronousStrategy()
+    {
+        // executeOrQueue(Command $commandObj, $commandName, array $callbacks = array())
+
+        $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+                   ->disableOriginalConstructor()
+                   ->setMethods(array('getCommandStrategy', 'getQueue'))
+                   ->getMock();
+
+        $command = $this->getMockBuilder('Xi\Filelib\Command')
+                        ->disableOriginalConstructor()
+                        ->getMock();
+
+        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+
+        $op->expects($this->once())->method('getCommandStrategy')
+           ->with($this->equalTo('tussi'))
+           ->will($this->returnValue(COMMAND::STRATEGY_ASYNCHRONOUS));
+
+        $op->expects($this->any())->method('getQueue')
+           ->will($this->returnValue($queue));
+
+        $queue->expects($this->once())->method('enqueue')
+              ->with($this->isInstanceOf('Xi\Filelib\Command'))
+              ->will($this->returnValue('tussi-id'));
+
+        $ret = $op->executeOrQueue($command, 'tussi', array());
+
+        $this->assertEquals('tussi-id', $ret);
+
+    }
+
+    /**
+     * @test
+     */
+    public function executeOrQueueShouldExecuteWithSynchronousStrategy()
+    {
+
+        $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+                   ->disableOriginalConstructor()
+                   ->setMethods(array('getCommandStrategy', 'getQueue'))
+                   ->getMock();
+
+        $command = $this->getMockBuilder('Xi\Filelib\Command')
+                        ->disableOriginalConstructor()
+                        ->getMock();
+
+
+
+        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+
+        $op->expects($this->once())->method('getCommandStrategy')
+           ->with($this->equalTo('tussi'))
+           ->will($this->returnValue(COMMAND::STRATEGY_SYNCHRONOUS));
+
+        $op->expects($this->any())->method('getQueue')
+           ->will($this->returnValue($queue));
+
+        $queue->expects($this->never())->method('enqueue');
+
+        $command->expects($this->once())->method('execute')
+                ->will($this->returnValue('executed!!!'));
+
+        $ret = $op->executeOrQueue($command, 'tussi', array());
+
+        $this->assertEquals('executed!!!', $ret);
+
+    }
+
+
+
 }

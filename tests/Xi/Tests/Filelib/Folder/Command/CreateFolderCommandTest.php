@@ -57,9 +57,12 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = new FileLibrary();
         $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
-                   ->setMethods(array('buildRoute'))
+                   ->setMethods(array('buildRoute', 'generateUuid'))
                    ->setConstructorArgs(array($filelib))
                    ->getMock();
+
+        $op->expects($this->once())->method('generateUuid')
+           ->will($this->returnValue('uusi-uuid'));
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $folder->expects($this->once())->method('setUrl')->with($this->equalTo('route'));

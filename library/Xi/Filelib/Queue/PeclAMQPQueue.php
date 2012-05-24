@@ -57,7 +57,7 @@ class PeclAMQPQueue implements Queue
 
 
 
-    public function enqueue(Message $message)
+    public function enqueue(Enqueueable $enqueueable)
     {
         $msg = serialize($message->getBody());
         $this->exchange->publish($msg, 'filelib');

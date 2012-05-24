@@ -34,6 +34,7 @@ class CreateFolderCommand extends AbstractFolderCommand implements Serializable
     {
         $route = $this->folderOperator->buildRoute($this->folder);
         $this->folder->setUrl($route);
+        $this->folder->setUuid($this->getUuid());
         $folder = $this->folderOperator->getBackend()->createFolder($this->folder);
         return $folder;
     }

@@ -112,7 +112,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                    ->getMock();
 
         $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-        $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
+        $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand'));
 
         $op->expects($this->atLeastOnce())->method('getQueue')->will($this->returnValue($queue));
 
@@ -163,7 +163,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                                ->setMethods(array('execute'))
                                ->getMock();
 
-        $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
+        $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\File\Command\UploadFileCommand'));
 
         $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
 
@@ -734,7 +734,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                           ->getMock();
 
           if ($queueExpected) {
-              $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
+              $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf($commandClass));
               $command->expects($this->never())->method('execute');
           } else {
               $queue->expects($this->never())->method('enqueue');

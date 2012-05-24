@@ -68,7 +68,7 @@ class DefaultFolderOperatorTest extends \Xi\Tests\Filelib\TestCase
                         ->getMock();
 
         if ($queueExpected) {
-            $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
+            $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf($commandClass));
             $command->expects($this->never())->method('execute');
         } else {
             $queue->expects($this->never())->method('enqueue');

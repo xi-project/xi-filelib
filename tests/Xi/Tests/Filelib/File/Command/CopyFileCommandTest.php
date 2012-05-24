@@ -22,7 +22,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $this->op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                     ->disableOriginalConstructor()
-                    ->setMethods(array('getFolderOperator', 'getAcl', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand'))
+                    ->setMethods(array('getFolderOperator', 'getAcl', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
                     ->getMock();
 
         $this->fop = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
@@ -96,15 +96,20 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
     public function getImpostorShouldReturnEqualFileIfOriginalFileIsNotFoundInFolder()
     {
         $file = File::create(array('name' => 'tohtori-vesala.jpg'));
-        $command = new CopyFileCommand($this->op, $file, $this->folder);
 
         $this->op->expects($this->once())->method('findByFilename')
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala.jpg'))
              ->will($this->returnValue(false));
 
+        $this->op->expects($this->once())->method('generateUuid')
+                 ->will($this->returnValue('uusi-uuid'));
+
+        $command = new CopyFileCommand($this->op, $file, $this->folder);
+
         $impostor = $command->getImpostor($file);
 
-        $this->assertEquals($file, $impostor);
+        $this->assertEquals($file->getName(), $impostor->getName());
+        $this->assertEquals('uusi-uuid', $impostor->getUuid());
     }
 
 
@@ -114,23 +119,28 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
     public function getImpostorShouldIterateUntilFileIsNotFoundInFolder()
     {
         $file = File::create(array('name' => 'tohtori-vesala.jpg'));
-        $command = new CopyFileCommand($this->op, $file, $this->folder);
 
         $this->folder->expects($this->any())->method('getId')->will($this->returnValue(666));
 
-        $this->op->expects($this->at(0))->method('findByFilename')
+        $this->op->expects($this->at(1))->method('findByFilename')
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala.jpg'))
              ->will($this->returnValue(true));
 
-        $this->op->expects($this->at(1))->method('findByFilename')
+        $this->op->expects($this->at(2))->method('findByFilename')
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala copy.jpg'))
              ->will($this->returnValue(true));
 
-        $this->op->expects($this->at(2))->method('findByFilename')
+        $this->op->expects($this->at(3))->method('findByFilename')
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala copy 2.jpg'))
              ->will($this->returnValue(false));
 
+        $this->op->expects($this->once())->method('generateUuid')
+                 ->will($this->returnValue('uusi-uuid'));
+
+        $command = new CopyFileCommand($this->op, $file, $this->folder);
         $impostor = $command->getImpostor();
+
+        $this->assertEquals('uusi-uuid', $impostor->getUuid());
 
         $this->assertEquals('tohtori-vesala copy 2.jpg', $impostor->getName());
         $this->assertEquals(666, $impostor->getFolderId());
