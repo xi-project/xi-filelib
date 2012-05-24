@@ -4,6 +4,7 @@ namespace Xi\Tests\Filelib\Backend;
 
 use Xi\Filelib\Backend\Doctrine2Backend;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\Resource;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityNotFoundException;
@@ -76,6 +77,11 @@ class Doctrine2BackendTest extends RelationalDbTestCase
 
         $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\Folder',
                             $this->backend->getFolderEntityName());
+
+        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\Resource',
+                            $this->backend->getResourceEntityName());
+
+
     }
 
     /**
@@ -94,14 +100,48 @@ class Doctrine2BackendTest extends RelationalDbTestCase
 
         $this->backend->setEntityManager($em);
 
-        $folder = Folder::create(array(
-            'id'        => 1,
+        $resource = Folder::create(array(
+            'id'        => 666,
             'parent_id' => null,
             'name'      => 'foo',
         ));
 
-        $this->assertFalse($this->backend->deleteFolder($folder));
+        $this->assertFalse($this->backend->deleteFolder($resource));
     }
+
+
+    /**
+     * @test
+     */
+    public function deleteResourceReturnsFalseOnEntityNotFound()
+    {
+        $this->setUpEmptyDataSet();
+
+        $em = $this->createEntityManagerMock();
+        $em->expects($this->once())
+           ->method('find')
+           ->will($this->throwException(new EntityNotFoundException()));
+
+        $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
+                     ->disableOriginalConstructor()
+                     ->getMock();
+
+        $em->expects($this->once())->method('getConnection')
+           ->will($this->returnValue($conn));
+
+        $conn->expects($this->once())->method('fetchColumn')
+           ->will($this->returnValue(0));
+
+        $this->backend->setEntityManager($em);
+
+        $resource = Resource::create(array(
+            'id'        => 1
+        ));
+
+        $this->assertFalse($this->backend->deleteResource($resource));
+    }
+
+
 
     /**
      * @param EntityManager $em
@@ -137,6 +177,26 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         $this->assertEquals($fileEntityName,
                             $this->backend->getFileEntityName());
     }
+
+
+    /**
+     * @test
+     */
+    public function getsAndSetsResourceEntityName()
+    {
+        $this->setUpEmptyDataSet();
+
+        $resEntityName = 'Foo\Bar';
+
+        $this->assertNotEquals($resEntityName,
+                               $this->backend->getResourceEntityName());
+
+        $this->backend->setResourceEntityName($resEntityName);
+
+        $this->assertEquals($resEntityName,
+                            $this->backend->getResourceEntityName());
+    }
+
 
     /**
      * @test

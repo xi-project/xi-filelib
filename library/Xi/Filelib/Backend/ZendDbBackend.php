@@ -6,9 +6,9 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\NonUniqueFileException;
-use Xi\Filelib\Backend\ZendDb\FolderRow;
 use Xi\Filelib\Backend\ZendDb\FileTable;
 use Xi\Filelib\Backend\ZendDb\FolderTable;
+use Xi\Filelib\Backend\ZendDb\ResourceTable;
 use Zend_Db_Adapter_Abstract;
 use Zend_Db_Table_Abstract;
 use Zend_Db_Statement_Exception;
@@ -24,19 +24,25 @@ use DateTime;
 class ZendDbBackend extends AbstractBackend implements Backend
 {
     /**
-     * @var Zend_Db_Adapter_Abstract Zend Db adapter
+     * @var Zend_Db_Adapter_Abstract
      */
     private $db;
 
     /**
-     * @var FileTable File table
+     * @var Zend_Db_Table_Abstract
      */
     private $fileTable;
 
     /**
-     * @var FolderTable Folder table
+     * @var Zend_Db_Table_Abstract
      */
     private $folderTable;
+
+    /**
+     * @var Zend_Db_Table_Abstract
+     */
+    private $resourceTable;
+
 
     /**
      * @param  Zend_Db_Adapter_Abstract $db
@@ -94,6 +100,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return $this->folderTable;
     }
 
+
     /**
      * @param  Zend_Db_Table_Abstract $folderTable
      * @return ZendDbBackend
@@ -104,6 +111,33 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
         return $this;
     }
+
+
+    /**
+     * Returns resource table
+     *
+     * @return ResourceTable
+     */
+    public function getResourceTable()
+    {
+        if (!$this->resourceTable) {
+            $this->resourceTable = new ResourceTable($this->getDb());
+        }
+        return $this->resourceTable;
+    }
+
+
+    /**
+     * @param  Zend_Db_Table_Abstract $resourceTable
+     * @return ZendDbBackend
+     */
+    public function setResourceTable(Zend_Db_Table_Abstract $resourceTable)
+    {
+        $this->resourceTable = $resourceTable;
+        return $this;
+    }
+
+
 
     /**
      * @return object
@@ -252,6 +286,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
                 'date_uploaded' => $data['date_uploaded']->format('Y-m-d H:i:s'),
                 'filelink'      => $data['link'],
                 'status'        => $data['status'],
+                'uuid'          => $data['uuid'],
+                'resource_id'   => $data['resource']->getId(),
             ),
             $this->getFileTable()
                  ->getAdapter()
@@ -293,6 +329,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
         $row->fileprofile   = $file->getProfile();
         $row->date_uploaded = $file->getDateUploaded()->format('Y-m-d H:i:s');
         $row->status        = $file->getStatus();
+        $row->uuid          = $file->getUuid();
+        $row->resource_id   = $file->getResource()->getId();
 
         try {
             $row->save();
@@ -335,6 +373,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'link'          => $fileRow['filelink'],
             'date_uploaded' => new DateTime($fileRow['date_uploaded']),
             'status'        => $fileRow['status'],
+            'uuid'          => $fileRow['uuid'],
+            'resource'      => $this->resourceToArray($this->doFindResource($fileRow['resource_id']))
         );
     }
 
@@ -356,37 +396,62 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
     protected function doFindResource($id)
     {
-        throw new \LogicException('I am not implementeed');
+        return $this->getResourceTable()->find($id)->current();
     }
 
     protected function doFindResourcesByHash($hash)
     {
-        throw new \LogicException('I am not implementeed');
+        return $this->getResourceTable()->fetchAll(array(
+            'hash = ?' => $hash,
+        ))->toArray();
     }
 
     protected function doCreateResource(Resource $resource)
     {
-        throw new \LogicException('I am not implementeed');
+        $row = $this->getResourceTable()->createRow();
+        $row->hash = $resource->getHash();
+        $row->date_created  = $resource->getDateCreated()->format('Y-m-d H:i:s');
+
+        $row->save();
+
+        $resource->setId((int) $row->id);
+        return $resource;
     }
 
     protected function doDeleteResource(Resource $resource)
     {
-        throw new \LogicException('I am not implementeed');
+        $row = $this->getResourceTable()->find($resource->getId())->current();
+        if (!$row) {
+            return false;
+        }
+        $row->delete();
+        return true;
     }
 
     /**
      * @param mixed $resource
      * @return array
      */
-    protected function resourceToArray($resource)
+    protected function resourceToArray($row)
     {
-        throw new \LogicException('I am not implementeed');
+        return Resource::create(array(
+            'id' => (int) $row['id'],
+            'hash' => $row['hash'],
+            'date_created' => new DateTime($row['date_created'])
+        ));
     }
 
 
     protected function doGetNumberOfReferences(Resource $resource)
     {
-        throw new \LogicException('I am not implementeed');
+        return $this->db->fetchOne("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
     }
+
+
+    public function isValidIdentifier($id)
+    {
+        return (is_numeric($id));
+    }
+
 
 }

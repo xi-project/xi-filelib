@@ -42,6 +42,17 @@ use Xi\Filelib\Folder\Folder;
     }
 
     /**
+     * @dataProvider identifierValidityProvider
+     * @test
+     */
+    public function isValidIdentifierShouldReturnCorrectResult($expected, $identifier)
+    {
+        $this->setUpEmptyDataSet();
+        $this->assertEquals($expected, $this->backend->isValidIdentifier($identifier));
+    }
+
+
+    /**
      * @test
      * @dataProvider rootFolderIdProvider
      * @param mixed $rootFolderId
@@ -72,6 +83,7 @@ use Xi\Filelib\Folder\Folder;
      */
     public function getNumberOfReferencesShouldReturnCorrectCount($numberOfReferences, $resourceId)
     {
+        $this->setUpSimpleDataSet();
         $resource = Resource::create(array('id' => $resourceId));
 
         $this->setUpSimpleDataSet();
@@ -169,6 +181,26 @@ use Xi\Filelib\Folder\Folder;
 
     /**
      * @test
+     * @dataProvider nonexistingResourceIdProvider
+     * @param mixed $resourceId
+     */
+    public function deleteResourceShouldNotDeleteNonexistingResource($resourceId)
+    {
+        $this->setUpSimpleDataSet();
+
+        $data = array(
+            'id'        => $resourceId,
+        );
+
+        $resource = Resource::create($data);
+
+        $this->assertFalse($this->backend->deleteResource($resource));
+
+    }
+
+
+    /**
+     * @test
      * @dataProvider resourceIdWithReferencesProvider
      * @param mixed $resourceId
      *
@@ -187,25 +219,6 @@ use Xi\Filelib\Folder\Folder;
 
         $this->backend->deleteResource($resource);
     }
-
-    /**
-     * @test
-     * @dataProvider nonExistingResourceIdProvider
-     * @param mixed $resourceId
-     */
-    public function deleteResourceShouldNotDeleteNonExistingResource($resourceId)
-    {
-        $this->setUpEmptyDataSet();
-
-        $resource = Resource::create(array(
-            'id'        => $resourceId,
-        ));
-
-        $this->assertFalse($this->backend->deleteResource($resource));
-    }
-
-
-
 
     /**
      * @test
@@ -731,7 +744,7 @@ use Xi\Filelib\Folder\Folder;
      * @param mixed $fileId
      * @param mixed $folderId
      */
-    public function updateFileShouldUpdateFile($fileId, $folderId)
+    public function updateFileShouldUpdateFile($fileId, $folderId, $resourceId)
     {
         $this->setUpSimpleDataSet();
 
@@ -740,19 +753,27 @@ use Xi\Filelib\Folder\Folder;
             'folder_id'     => $folderId,
             'mimetype'      => 'image/jpg',
             'profile'       => 'lussed',
-            'size'          => '1006',
+            'size'          => 1006,
             'name'          => 'tohtori-sykero.png',
             'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 666,
-            'uuid'          => 'uuid-1',
-            'resource'      => Resource::create(array('id' => 1, 'hash' => 'hash-1', 'date_created' => new DateTime('1978-03-21 06:06:06')))
+            'uuid'          => 'uuid-535',
+            'resource'      => Resource::create(array('id' => $resourceId))
         );
 
         $file = File::create($data);
 
         $this->assertTrue($this->backend->updateFile($file));
-        $this->assertEquals($data, $this->backend->findFile($fileId));
+
+        $updated = $this->backend->findFile($fileId);
+
+        $this->assertEquals($data['resource']->getId(), $updated['resource']->getId());
+
+        $fields = array('id', 'folder_id', 'mimetype', 'profile', 'size', 'name', 'link', 'date_uploaded', 'status', 'uuid');
+        foreach ($fields as $field) {
+            $this->assertEquals($data[$field], $updated[$field]);
+        }
     }
 
     /**
@@ -964,9 +985,8 @@ use Xi\Filelib\Folder\Folder;
      * @param mixed $fileId
      * @param mixed $folderId
      */
-    public function findFileByFilenameShouldReturnCorrectFile($fileId,
-        $folderId
-    ) {
+    public function findFileByFilenameShouldReturnCorrectFile($fileId, $folderId, $resourceId)
+    {
         $this->setUpSimpleDataSet();
 
         $fidata = array(
@@ -980,7 +1000,7 @@ use Xi\Filelib\Folder\Folder;
             'folder_id'     => $folderId,
             'status'        => 1,
             'uuid'          => 'uuid-1',
-            'resource'   => Resource::create(array('id' =>1, 'hash' => 'hash-1', 'date_created' => new DateTime('1978-03-21 06:06:06'))),
+            'resource'   => Resource::create(array('id' => $resourceId)),
        );
 
         $fodata = array(
@@ -995,7 +1015,10 @@ use Xi\Filelib\Folder\Folder;
         $file = $this->backend->findFileByFileName($folder, 'tohtori-vesala.png');
 
         $this->assertInternalType('array', $file);
-        $this->assertEquals($fidata, $file);
+
+        $this->assertEquals($folder->getId(), $file['folder_id']);
+        $this->assertEquals($fidata['name'], $file['name']);
+
     }
 
     /**
@@ -1050,13 +1073,7 @@ use Xi\Filelib\Folder\Folder;
         $validType
     ) {
         $this->setExpectedException(
-            'Xi\Filelib\Exception\InvalidArgumentException',
-            sprintf(
-                'File id must be %s, %s (%s) given',
-                $validType,
-                gettype($fileId),
-                $fileId
-            )
+            'Xi\Filelib\Exception\InvalidArgumentException'
         );
     }
 
@@ -1068,13 +1085,7 @@ use Xi\Filelib\Folder\Folder;
         $validType
     ) {
         $this->setExpectedException(
-            'Xi\Filelib\Exception\InvalidArgumentException',
-            sprintf(
-                'Folder id must be %s, %s (%s) given',
-                $validType,
-                gettype($folderId),
-                $folderId
-            )
+            'Xi\Filelib\Exception\InvalidArgumentException'
         );
     }
 
@@ -1087,4 +1098,6 @@ use Xi\Filelib\Folder\Folder;
                     ->disableOriginalConstructor()
                     ->getMock();
     }
+
+
 }

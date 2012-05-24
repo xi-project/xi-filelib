@@ -99,6 +99,34 @@ class MongoBackendTest extends AbstractBackendTest
     private function getData()
     {
         $data = array(
+
+            'resources' => array(
+                array(
+                    '_id' => new MongoId('48a7011a05c677b9a9166101'),
+                    'hash' => 'hash-1',
+                    'date_created' => new DateTime('1978-03-21 06:06:06'),
+                ),
+                array(
+                    '_id' => new MongoId('48a7011a05c677b9a9166102'),
+                    'hash' => 'hash-2',
+                    'date_created' => new DateTime('1988-03-21 06:06:06'),
+                ),
+                array(
+                    '_id' => new MongoId('48a7011a05c677b9a9166103'),
+                    'hash' => 'hash-2',
+                    'date_created' => new DateTime('1998-03-21 06:06:06'),
+                ),
+                array(
+                    '_id' => new MongoId('48a7011a05c677b9a9166104'),
+                    'hash' => 'hash-3',
+                    'date_created' => new DateTime('2008-03-21 06:06:06'),
+                ),
+                array(
+                    '_id' => new MongoId('48a7011a05c677b9a9166105'),
+                    'hash' => 'hash-5',
+                    'date_created' => new DateTime('2009-03-21 06:06:06'),
+                ),
+            ),
             'folders' => array(
                 array(
                     '_id'       => new MongoId('49a7011a05c677b9a9166101'),
@@ -142,6 +170,8 @@ class MongoBackendTest extends AbstractBackendTest
                     'link'          => 'tohtori-vesala.png',
                     'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
                     'status'        => 1,
+                    'uuid'          => 'uuid-1',
+                    'resource_id'   => '48a7011a05c677b9a9166101',
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166107'),
@@ -153,6 +183,8 @@ class MongoBackendTest extends AbstractBackendTest
                     'link'          => 'lussuttaja/akuankka.png',
                     'date_uploaded' => new DateTime('2011-01-01 15:15:15'),
                     'status'        => 2,
+                    'uuid'          => 'uuid-2',
+                    'resource_id'   => '48a7011a05c677b9a9166102',
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166108'),
@@ -164,6 +196,8 @@ class MongoBackendTest extends AbstractBackendTest
                     'link'          => 'lussuttaja/tussin/repesorsa.png',
                     'date_uploaded' => new DateTime('2011-01-01 15:15:15'),
                     'status'        => 4,
+                    'uuid'          => 'uuid-3',
+                    'resource_id'   => '48a7011a05c677b9a9166103',
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166109'),
@@ -175,6 +209,8 @@ class MongoBackendTest extends AbstractBackendTest
                     'link'          => 'lussuttaja/banskun/megatussi.png',
                     'date_uploaded' => new DateTime('2011-01-02 15:15:15'),
                     'status'        => 8,
+                    'uuid'          => 'uuid-4',
+                    'resource_id'   => '48a7011a05c677b9a9166104',
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166110'),
@@ -186,12 +222,18 @@ class MongoBackendTest extends AbstractBackendTest
                     'link'          => 'lussuttaja/banskun/megatussi2.png',
                     'date_uploaded' => new DateTime('2011-01-03 15:15:15'),
                     'status'        => 16,
+                    'uuid'          => 'uuid-5',
+                    'resource_id'   => '48a7011a05c677b9a9166104',
                 ),
             ),
         );
 
         foreach ($data['files'] as &$file) {
             $file['date_uploaded'] = new MongoDate($file['date_uploaded']->getTimeStamp());
+        }
+
+        foreach ($data['resources'] as &$resource) {
+            $resource['date_created'] = new MongoDate($resource['date_created']->getTimeStamp());
         }
 
         return $data;
@@ -320,7 +362,7 @@ class MongoBackendTest extends AbstractBackendTest
     public function updateFileProvider()
     {
         return array(
-            array('49a7011a05c677b9a9166106', '49a7011a05c677b9a9166102'),
+            array('49a7011a05c677b9a9166106', '49a7011a05c677b9a9166102', '48a7011a05c677b9a9166102'),
         );
     }
 
@@ -350,7 +392,7 @@ class MongoBackendTest extends AbstractBackendTest
     public function findFileByFilenameProvider()
     {
         return array(
-            array('49a7011a05c677b9a9166106', '49a7011a05c677b9a9166101'),
+            array('49a7011a05c677b9a9166106', '49a7011a05c677b9a9166101', '48a7011a05c677b9a9166101'),
         );
     }
 
@@ -383,4 +425,91 @@ class MongoBackendTest extends AbstractBackendTest
             array('49a7011a05c677b9a9166666'),
         );
     }
+
+    /**
+     * @return array
+     */
+    public function identifierValidityProvider()
+    {
+        return array(
+            array(true, 'xooxer'),
+            array(false, null),
+            array(true, 'xoo xoo xoo'),
+            array(false, 666),
+        );
+    }
+
+
+    public function nonExistingResourceIdProvider()
+    {
+        return array(
+            array('48a7011a05c677b9a9166166'),
+            array('tussidentifier'),
+            array('locoposki'),
+        );
+    }
+
+
+    /**
+     * @return array
+     */
+    public function referenceCountProvider()
+    {
+        return array(
+            array(1, '48a7011a05c677b9a9166101'),
+            array(1, '48a7011a05c677b9a9166102'),
+            array(1, '48a7011a05c677b9a9166103'),
+            array(2, '48a7011a05c677b9a9166104'),
+        );
+    }
+
+
+    /**
+     * @return array
+     */
+    public function resourceHashProvider()
+    {
+        return array(
+            array('hash-1', 1),
+            array('hash-2', 2),
+            array('hash-3', 1),
+            array('hash-4', 0),
+            array('hash-666', 0),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function orphanResourceIdProvider()
+    {
+        return array(
+            array('48a7011a05c677b9a9166105'),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function resourceIdWithReferencesProvider()
+    {
+        return array(
+            array('48a7011a05c677b9a9166103'),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function findResourceProvider()
+    {
+        return array(
+            array('48a7011a05c677b9a9166101', array('hash' => 'hash-1')),
+            array('48a7011a05c677b9a9166102', array('hash' => 'hash-2')),
+            array('48a7011a05c677b9a9166103', array('hash' => 'hash-2')),
+            array('48a7011a05c677b9a9166104', array('hash' => 'hash-3')),
+        );
+    }
+
+
 }

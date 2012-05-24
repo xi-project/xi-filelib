@@ -200,6 +200,8 @@ class Doctrine2Backend extends AbstractBackend
         $entity->setLink($file->getLink());
         $entity->setDateUploaded($file->getDateUploaded());
         $entity->setStatus($file->getStatus());
+        $entity->setUuid($file->getUuid());
+        $entity->setResource($this->em->getReference($this->getResourceEntityName(), $file->getResource()->getId()));
 
         $this->em->flush();
 
@@ -437,6 +439,7 @@ class Doctrine2Backend extends AbstractBackend
             $entity->setProfile($file->getProfile());
             $entity->setDateUploaded($file->getDateUploaded());
             $entity->setStatus($file->getStatus());
+            $entity->setUuid($file->getUuid());
 
             $resource = $file->getResource();
             if ($resource) {
@@ -536,4 +539,11 @@ class Doctrine2Backend extends AbstractBackend
     {
         return $this->em->getReference($this->folderEntityName, $id);
     }
+
+
+    public function isValidIdentifier($id)
+    {
+        return (is_numeric($id));
+    }
+
 }

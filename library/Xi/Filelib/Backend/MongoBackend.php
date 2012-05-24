@@ -124,8 +124,9 @@ class MongoBackend extends AbstractBackend implements Backend
             'name'          => $file->getName(),
             'profile'       => $file->getProfile(),
             'status'        => $file->getStatus(),
-            'date_uploaded' => new MongoDate($file->getDateUploaded()
-                                                  ->getTimestamp()),
+            'date_uploaded' => new MongoDate($file->getDateUploaded()->getTimestamp()),
+            'uuid'          => $file->getUuid(),
+            'resource_id'   => $file->getResource()->getId(),
         );
 
         $this->getMongo()->files->ensureIndex(array(
@@ -215,7 +216,10 @@ class MongoBackend extends AbstractBackend implements Backend
     {
         $document = $file->toArray();
 
+        $document['resource_id'] = $file->getResource()->getId();
+
         unset($document['id']);
+        unset($document['resource']);
 
         $document['date_uploaded'] = new MongoDate(
             $document['date_uploaded']->getTimestamp()
@@ -291,10 +295,9 @@ class MongoBackend extends AbstractBackend implements Backend
             'name'          => $file['name'],
             'link'          => $file['link'],
             'status'        => $file['status'],
-            'date_uploaded' => DateTime::createFromFormat(
-                                   'U',
-                                   $file['date_uploaded']->sec
-                               )->setTimezone($date->getTimezone()),
+            'date_uploaded' => DateTime::createFromFormat('U', $file['date_uploaded']->sec)->setTimezone($date->getTimezone()),
+            'uuid'          => $file['uuid'],
+            'resource'      => $this->resourceToArray($this->doFindResource($file['resource_id'])),
         );
     }
 
@@ -314,52 +317,49 @@ class MongoBackend extends AbstractBackend implements Backend
         );
     }
 
-    /**
-     * @param  mixed                    $id
-     * @throws InvalidArgumentException
-     */
-    protected function assertValidFolderIdentifier($id)
+    public function isValidIdentifier($id)
     {
-        if (!is_string($id)) {
-            $this->throwInvalidArgumentException(
-                $id,
-                'Folder id must be a string, %s (%s) given'
-            );
-        }
+        return (is_string($id));
     }
 
-    /**
-     * @param  mixed                    $id
-     * @throws InvalidArgumentException
-     */
-    protected function assertValidFileIdentifier($id)
-    {
-        if (!is_string($id)) {
-            $this->throwInvalidArgumentException(
-                $id,
-                'File id must be a string, %s (%s) given'
-            );
-        }
-    }
 
     protected function doFindResource($id)
     {
-        throw new \LogicException('I am not implementeed');
+        return $this->getMongo()->resources->findOne(array(
+            '_id' => new MongoId($id),
+        ));
     }
 
     protected function doFindResourcesByHash($hash)
     {
-        throw new \LogicException('I am not implementeed');
+        return iterator_to_array($this->getMongo()->resources->find(array(
+            'hash' => $hash,
+        )));
     }
 
     protected function doCreateResource(Resource $resource)
     {
-        throw new \LogicException('I am not implementeed');
+        $document = array(
+            'hash' => $resource->getHash(),
+            'date_created' => new MongoDate($resource->getDateCreated()->getTimestamp()),
+        );
+
+        $this->getMongo()->resources->ensureIndex(array(
+            'hash' => 1,
+        ), array(
+            'unique' => false,
+        ));
+
+        $this->getMongo()->resources->insert($document, array('safe' => true));
+        $resource->setId((string) $document['_id']);
+
+        return $resource;
     }
 
     protected function doDeleteResource(Resource $resource)
     {
-        throw new \LogicException('I am not implementeed');
+        $ret = $this->getMongo()->resources->remove(array('_id' => new MongoId($resource->getId())), array('safe' => true));
+        return (boolean) $ret['n'];
     }
 
     /**
@@ -368,13 +368,23 @@ class MongoBackend extends AbstractBackend implements Backend
      */
     protected function resourceToArray($resource)
     {
-        throw new \LogicException('I am not implementeed');
+        $date = new DateTime();
+        return Resource::create(array(
+            'id' => (string) $resource['_id'],
+            'hash' => $resource['hash'],
+            'date_created' => DateTime::createFromFormat('U', $resource['date_created']->sec)->setTimezone($date->getTimezone()),
+        ));
     }
 
 
     protected function doGetNumberOfReferences(Resource $resource)
     {
-        throw new \LogicException('I am not implementeed');
+        $refs = $this->getMongo()->files->find(array(
+            'resource_id' => $resource->getId(),
+        ));
+
+        return $refs->count();
+
     }
 
 }

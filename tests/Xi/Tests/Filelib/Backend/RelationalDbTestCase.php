@@ -47,6 +47,9 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
         $this->databaseTester = null;
 
         $this->dataSet = null;
+
+        gc_collect_cycles();
+
     }
 
     /**
@@ -107,6 +110,18 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
             array(6666)
         );
     }
+
+
+    public function identifierValidityProvider()
+    {
+        return array(
+            array(true, 1),
+            array(false, 'xooxer'),
+            array(true, 45393),
+            array(false, ''),
+        );
+    }
+
 
     /**
      * @return array
@@ -236,7 +251,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     public function updateFileProvider()
     {
         return array(
-            array(1, 2),
+            array(1, 2, 2),
         );
     }
 
@@ -266,7 +281,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     public function findFileByFilenameProvider()
     {
         return array(
-            array(1, 1),
+            array(1, 1, 1),
         );
     }
 

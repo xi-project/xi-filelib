@@ -143,7 +143,7 @@ abstract class AbstractBackend implements Backend
      */
     public function findFolder($id)
     {
-        $this->assertValidFolderIdentifier($id);
+        $this->assertValidIdentifier($id, 'Folder');
 
         $folder = $this->doFindFolder($id);
 
@@ -157,7 +157,7 @@ abstract class AbstractBackend implements Backend
 
     public function findResource($id)
     {
-        $this->assertValidResourceIdentifier($id);
+        $this->assertValidIdentifier($id, 'Resource');
 
         $resource = $this->doFindResource($id);
 
@@ -225,7 +225,7 @@ abstract class AbstractBackend implements Backend
      */
     public function findSubFolders(Folder $folder)
     {
-        $this->assertValidFolderIdentifier($folder->getId());
+        $this->assertValidIdentifier($folder->getId(), 'Folder');
 
         return array_map(
             array($this, 'folderToArray'),
@@ -255,7 +255,7 @@ abstract class AbstractBackend implements Backend
      */
     public function findFile($id)
     {
-        $this->assertValidFileIdentifier($id);
+        $this->assertValidIdentifier($id, 'File');
 
         $file = $this->doFindFile($id);
 
@@ -275,7 +275,7 @@ abstract class AbstractBackend implements Backend
      */
     public function findFilesIn(Folder $folder)
     {
-        $this->assertValidFolderIdentifier($folder->getId());
+        $this->assertValidIdentifier($folder->getId(), 'Folder');
 
         return array_map(
             array($this, 'fileToArray'),
@@ -346,7 +346,7 @@ abstract class AbstractBackend implements Backend
      */
     public function deleteFile(File $file)
     {
-        $this->assertValidFileIdentifier($file->getId());
+        $this->assertValidIdentifier($file->getId(), 'File');
 
         return (bool) $this->doDeleteFile($file);
     }
@@ -360,7 +360,7 @@ abstract class AbstractBackend implements Backend
      */
     public function updateFolder(Folder $folder)
     {
-        $this->assertValidFolderIdentifier($folder->getId());
+        $this->assertValidIdentifier($folder->getId(), 'Folder');
 
         return (bool) $this->doUpdateFolder($folder);
     }
@@ -422,7 +422,7 @@ abstract class AbstractBackend implements Backend
      */
     public function findFileByFilename(Folder $folder, $filename)
     {
-        $this->assertValidFolderIdentifier($folder->getId());
+        $this->assertValidIdentifier($folder->getId(), 'Folder');
 
         $file = $this->doFindFileByFilename($folder, $filename);
 
@@ -432,6 +432,20 @@ abstract class AbstractBackend implements Backend
 
         return $this->fileToArray($file);
     }
+
+
+    public function assertValidIdentifier($id, $exceptionObjectName)
+    {
+        $isValid = $this->isValidIdentifier($id);
+
+        if (!$isValid) {
+            throw $this->createInvalidArgumentException(
+                $id,
+                "{$exceptionObjectName} id '%s' is invalid"
+            );
+        }
+    }
+
 
     /**
      * @param  string                   $url
@@ -449,58 +463,13 @@ abstract class AbstractBackend implements Backend
 
     /**
      * @param  mixed                    $id
-     * @throws InvalidArgumentException
-     */
-    protected function assertValidFolderIdentifier($id)
-    {
-        if (!is_numeric($id)) {
-            $this->throwInvalidArgumentException(
-                $id,
-                'Folder id must be an integer, %s (%s) given'
-            );
-        }
-    }
-
-    /**
-     * @param  mixed                    $id
-     * @throws InvalidArgumentException
-     */
-    protected function assertValidFileIdentifier($id)
-    {
-        if (!is_numeric($id)) {
-            $this->throwInvalidArgumentException(
-                $id,
-                'File id must be an integer, %s (%s) given'
-            );
-        }
-    }
-
-
-    /**
-     * @param  mixed                    $id
-     * @throws InvalidArgumentException
-     */
-    protected function assertValidResourceIdentifier($id)
-    {
-        if (!is_int($id)) {
-            $this->throwInvalidArgumentException(
-                $id,
-                'Resource id must be an integer, %s (%s) given'
-            );
-        }
-    }
-
-
-    /**
-     * @param  mixed                    $id
      * @param  string                   $message
-     * @throws InvalidArgumentException
+     * @return InvalidArgumentException
      */
-    protected function throwInvalidArgumentException($id, $message)
+    protected function createInvalidArgumentException($id, $message)
     {
-        throw new InvalidArgumentException(sprintf(
+        return new InvalidArgumentException(sprintf(
             $message,
-            gettype($id),
             $id
         ));
     }
