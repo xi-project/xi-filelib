@@ -246,6 +246,7 @@ class MongoBackend extends AbstractBackend implements Backend
                 'parent_id' => null,
                 'name'      => 'root',
                 'url'       => '',
+                'uuid'      => $this->generateUuid(),
             );
 
             $mongo->folders->save($folder);
@@ -313,7 +314,8 @@ class MongoBackend extends AbstractBackend implements Backend
                                ? $folder['parent_id']
                                : null,
             'name'      => $folder['name'],
-            'url'       => $folder['url']
+            'url'       => $folder['url'],
+            'uuid'      => $folder['uuid'],
         );
     }
 

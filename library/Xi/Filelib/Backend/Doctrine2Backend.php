@@ -264,6 +264,7 @@ class Doctrine2Backend extends AbstractBackend
             $folder->setName('root');
             $folder->setUrl('');
             $folder->removeParent();
+            $folder->setUuid($this->generateUuid());
 
             $this->em->persist($folder);
             $this->em->flush();
@@ -293,6 +294,7 @@ class Doctrine2Backend extends AbstractBackend
         $folderEntity->setParent($this->getFolderReference($folder->getParentId()));
         $folderEntity->setName($folder->getName());
         $folderEntity->setUrl($folder->getUrl());
+        $folderEntity->setUuid($folder->getUuid());
 
         $this->em->persist($folderEntity);
         $this->em->flush();
@@ -321,6 +323,7 @@ class Doctrine2Backend extends AbstractBackend
 
             $folderRow->setName($folder->getName());
             $folderRow->setUrl($folder->getUrl());
+            $folderRow->setUuid($folder->getUuid());
 
             $this->em->flush();
 
@@ -501,6 +504,7 @@ class Doctrine2Backend extends AbstractBackend
                                : null,
             'name'      => $folder->getName(),
             'url'       => $folder->getUrl(),
+            'uuid'      => $folder->getUuid(),
         );
     }
 

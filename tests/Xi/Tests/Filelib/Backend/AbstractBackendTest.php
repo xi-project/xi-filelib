@@ -51,6 +51,17 @@ use Xi\Filelib\Folder\Folder;
         $this->assertEquals($expected, $this->backend->isValidIdentifier($identifier));
     }
 
+    /**
+     *
+     * @test
+     */
+    public function generateUuidShouldGenerateUuid()
+    {
+        $this->setUpEmptyDataSet();
+        $uuid = $this->backend->generateUuid();
+        $this->assertRegExp("/^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/", $uuid);
+    }
+
 
     /**
      * @test
@@ -72,6 +83,7 @@ use Xi\Filelib\Folder\Folder;
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
+        $this->assertArrayHasKey('uuid', $folder);
         $this->assertNull($folder['parent_id']);
     }
 
@@ -233,6 +245,7 @@ use Xi\Filelib\Folder\Folder;
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
+        $this->assertArrayHasKey('uuid', $folder);
 
         $this->assertNull($folder['parent_id']);
     }
@@ -253,6 +266,7 @@ use Xi\Filelib\Folder\Folder;
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
+        $this->assertArrayHasKey('uuid', $folder);
 
         $this->assertEquals($folderId, $folder['id']);
         $this->assertEquals($data['name'], $folder['name']);
@@ -300,6 +314,7 @@ use Xi\Filelib\Folder\Folder;
             'parent_id' => $parentFolderId,
             'name'      => 'lusander',
             'url'       => 'lussuttaja/tussin/lusander',
+            'uuid'      => 'uuid-f-566',
         );
 
         $folder = Folder::create($data);
@@ -323,6 +338,7 @@ use Xi\Filelib\Folder\Folder;
             'parent_id' => $folderId,
             'name'      => 'lusander',
             'url'       => 'lussuttaja/tussin/lusander',
+            'uuid'      => 'sika-f-uuid'
         );
 
         $this->setExpectedException(
@@ -421,6 +437,7 @@ use Xi\Filelib\Folder\Folder;
             'parent_id' => $parentFolderId,
             'url'       => 'lussuttaja/tussin',
             'name'      => 'tussin',
+            'uuid'      => 'uuid-f-' . $folderId,
         );
 
         $this->assertEquals($data, $this->backend->findFolder($folderId));
@@ -430,6 +447,7 @@ use Xi\Filelib\Folder\Folder;
             'parent_id' => $updatedParentFolderId,
             'url'       => 'lussuttaja/lussander',
             'name'      => 'lussander',
+            'uuid'      => 'sika-uuid',
         );
 
         $folder = Folder::create($updateData);
@@ -452,6 +470,7 @@ use Xi\Filelib\Folder\Folder;
             'parent_id' => null,
             'url'       => 'foo/bar',
             'name'      => 'xoo',
+            'uuid'      => 'tussi-uuid',
         );
 
         $folder = Folder::create($data);
@@ -492,6 +511,7 @@ use Xi\Filelib\Folder\Folder;
             'parent_id' => 'xoo',
             'url'       => '',
             'name'      => '',
+            'uuid'      => 'sika-uuid',
         ));
 
         $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);

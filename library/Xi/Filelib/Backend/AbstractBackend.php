@@ -5,6 +5,8 @@ namespace Xi\Filelib\Backend;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
+use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
 use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Exception\FolderNotFoundException;
 use Xi\Filelib\Exception\FolderNotEmptyException;
@@ -20,6 +22,13 @@ use Exception;
  */
 abstract class AbstractBackend implements Backend
 {
+
+    /**
+     *
+     * @var UuidGenerator
+     */
+    protected $uuidGenerator;
+
     /**
      * @param  mixed      $id
      * @return array|null
@@ -489,4 +498,25 @@ abstract class AbstractBackend implements Backend
             $folder->getName()
         ));
     }
+
+    /**
+     *
+     * @return string
+     */
+    public function generateUuid()
+    {
+        return $this->getUuidGenerator()->v4();
+    }
+
+
+    protected function getUuidGenerator()
+    {
+        if (!$this->uuidGenerator) {
+            $this->uuidGenerator = new PHPUuidGenerator();
+        }
+
+        return $this->uuidGenerator;
+    }
+
+
 }

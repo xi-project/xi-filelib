@@ -176,5 +176,9 @@ interface Backend
      */
     public function isValidIdentifier($id);
 
+    /**
+     * @return string
+     */
+    public function generateUuid();
 
 }

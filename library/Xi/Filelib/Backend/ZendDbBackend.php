@@ -152,6 +152,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             $folder->foldername = 'root';
             $folder->parent_id  = null;
             $folder->folderurl  = '';
+            $folder->uuid = $this->generateUuid();
 
             $folder->save();
         }
@@ -178,6 +179,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
         $folderRow->foldername = $folder->getName();
         $folderRow->parent_id  = $folder->getParentId();
         $folderRow->folderurl  = $folder->getUrl();
+        $folderRow->uuid = $folder->getUuid();
 
         $folderRow->save();
 
@@ -211,6 +213,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
                 'parent_id'  => $folder->getParentId(),
                 'foldername' => $folder->getName(),
                 'folderurl'  => $folder->getUrl(),
+                'uuid'       => $folder->getUuid(),
             ),
             $this->getFolderTable()
                  ->getAdapter()
@@ -391,6 +394,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
                                : null,
             'name'      => $folder['foldername'],
             'url'       => $folder['folderurl'],
+            'uuid'      => $folder['uuid'],
         );
     }
 
