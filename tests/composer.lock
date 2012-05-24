@@ -1,5 +1,5 @@
 {
-    "hash": "5354a90eb8a1d65f1d0cec56fc8b13f9",
+    "hash": "d8f55405e7a30480e3c14d050f506c37",
     "packages": [
         {
             "package": "doctrine/common",
@@ -32,12 +32,12 @@
         {
             "package": "videlalvaro/php-amqplib",
             "version": "dev-master",
-            "source-reference": "b74879109f8f79aed336b95e723e41674bafdebc"
+            "source-reference": "3531dd2764d29c35a507820f7cb408550176f836"
         },
         {
             "package": "zendframework/zendframework",
             "version": "dev-master",
-            "source-reference": "d2f080ef1d636154335d35bef88ad568e79548e1"
+            "source-reference": "d0300fc3c9c207f4245e540c99ad47447ecee512"
         }
     ],
     "packages-dev": null,

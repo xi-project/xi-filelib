@@ -160,6 +160,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
          $this->assertAttributeEquals($folder, 'folder', $command2);
          $this->assertAttributeSame($profile, 'profile', $command2);
          $this->assertAttributeEquals($upload, 'upload', $command2);
+         $this->assertAttributeNotEmpty('uuid', $command2);
 
     }
 

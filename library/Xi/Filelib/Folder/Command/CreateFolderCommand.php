@@ -44,6 +44,7 @@ class CreateFolderCommand extends AbstractFolderCommand implements Serializable
     {
         $data = unserialize($serialized);
         $this->folder = $data['folder'];
+        $this->uuid = $data['uuid'];
     }
 
 
@@ -51,6 +52,7 @@ class CreateFolderCommand extends AbstractFolderCommand implements Serializable
     {
         return serialize(array(
            'folder' => $this->folder,
+           'uuid' => $this->uuid,
         ));
     }
 

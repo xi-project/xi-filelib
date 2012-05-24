@@ -225,6 +225,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
          $this->assertAttributeEquals($file, 'file', $command2);
          $this->assertAttributeEquals($folder, 'folder', $command2);
+         $this->assertAttributeNotEmpty('uuid', $command2);
     }
 
 }

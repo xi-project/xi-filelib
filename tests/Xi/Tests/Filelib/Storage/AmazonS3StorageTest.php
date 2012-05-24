@@ -26,7 +26,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
     public function setUp()
     {
 
-        if (!class_exists('Zend_Service_Amazon_S3')) {
+        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
             $this->markTestSkipped('Zend_Service_Amazon_S3 class could not be loaded');
         }
 
@@ -47,7 +47,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
 
         $this->storage = $storage;
 
-        $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+        $dc = $this->getMock('Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->any())
             ->method('calculateDirectoryId')
             ->will($this->returnValue('1'));
@@ -59,7 +59,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
 
     public function tearDown()
     {
-        if (!class_exists('Zend_Service_Amazon_S3')) {
+        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
             return;
         }
 
@@ -82,7 +82,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = $this->storage->retrieve($this->resource);
 
-        $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
+        $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
 
         $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
 
@@ -110,7 +110,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         $storage->store($this->resource, $this->fileResource);
 
         $retrieved = $storage->retrieve($this->resource);
-        $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
+        $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
 
         $retrievedPath = $retrieved->getRealPath();
 
@@ -130,7 +130,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         $this->storage->storeVersion($this->resource, $this->version, $this->fileResource);
 
         $retrieved = $this->storage->retrieveVersion($this->resource, $this->version);
-        $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
+        $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
 
         $this->storage->deleteVersion($this->resource, $this->version);
 
@@ -148,7 +148,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         $storage->setFilelib($this->getFilelib());
         $storage->setKey(S3_KEY);
         $storage->setSecretKey(S3_SECRETKEY);
-        $storage->setBucket(S3_BUCKET . '_lus');
+        $storage->setBucket(S3_BUCKET . 'lus');
 
         $storage->store($this->resource, $this->fileResource);
 

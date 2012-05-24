@@ -116,6 +116,7 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
 
         $this->folder = $data['folder'];
         $this->profile = $data['profile'];
+        $this->uuid = $data['uuid'];
 
         $upload = new FileUpload($data['upload']['realPath']);
         $upload->setOverrideBasename($data['upload']['overrideBasename']);
@@ -144,6 +145,7 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
            'folder' => $this->folder,
            'profile' => $this->profile,
            'upload' => $uploadArr,
+           'uuid' => $this->uuid,
         ));
 
     }

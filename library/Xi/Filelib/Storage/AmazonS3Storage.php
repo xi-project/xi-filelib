@@ -9,7 +9,7 @@ use Xi\Filelib\File\Resource;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Zend_Service_Amazon_S3 as AmazonService;
+use Zend\Service\Amazon\S3\S3 as AmazonService;
 
 class AmazonS3Storage extends AbstractStorage implements Storage
 {

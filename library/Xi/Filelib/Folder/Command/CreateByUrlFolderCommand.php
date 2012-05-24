@@ -69,13 +69,15 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand implements Serializ
     {
         $data = unserialize($serialized);
         $this->url = $data['url'];
+        $this->uuid = $data['uuid'];
     }
 
 
     public function serialize()
     {
         return serialize(array(
-           'url' => $this->url,
+            'url' => $this->url,
+            'uuid' => $this->uuid,
         ));
     }
 
