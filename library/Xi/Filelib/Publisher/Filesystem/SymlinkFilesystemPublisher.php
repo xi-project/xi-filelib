@@ -86,7 +86,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
 
         $storage = $this->getFilelib()->getStorage();
 
-        $retrieved = $storage->retrieveVersion($file, $version);
+        $retrieved = $storage->retrieveVersion($file->getResource(), $version);
 
         $path = preg_replace("[^{$storage->getRoot()}]", $relativePath, $retrieved);
 
