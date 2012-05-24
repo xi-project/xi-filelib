@@ -116,4 +116,12 @@ interface FolderOperator
      */
     public function createByUrl($url);
 
+    /**
+     * Generates UUID
+     *
+     * @return string
+     */
+    public function generateUuid();
+
+
 }

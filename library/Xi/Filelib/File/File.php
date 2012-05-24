@@ -273,7 +273,7 @@ class File
     }
 
     /**
-     * @return FileItem
+     * @return File
      */
     public function setUuid($uuid)
     {
@@ -293,7 +293,7 @@ class File
     /**
      *
      * @param Resource $resource
-     * @return FileItem
+     * @return File
      */
     public function setResource(Resource $resource)
     {
@@ -333,7 +333,7 @@ class File
      * Sets data from array
      *
      * @param array $data
-     * @return FileItem
+     * @return File
      */
     public function fromArray(array $data)
     {

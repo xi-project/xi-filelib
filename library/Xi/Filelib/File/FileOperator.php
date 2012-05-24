@@ -24,7 +24,7 @@ interface FileOperator
 {
 
     /**
-     * Returns an instance of the currently set fileitem class
+     * Returns an instance of file
      *
      * @param mixed $data Data as array or a file instance
      * @return File
@@ -179,6 +179,11 @@ interface FileOperator
      */
     public function copy(File $file, Folder $folder);
 
-
+    /**
+     * Generates UUID
+     *
+     * @return string
+     */
+    public function generateUuid();
 
 }
