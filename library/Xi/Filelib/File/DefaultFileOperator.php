@@ -69,9 +69,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     private $typeResolver;
 
     /**
-     * Returns an instance of the currently set fileitem class
+     * Returns a file
      *
      * @param mixed $data Data as array or a file instance
+     * @return File
      */
     public function getInstance($data = array())
     {
