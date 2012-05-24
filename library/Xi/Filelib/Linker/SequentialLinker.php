@@ -113,14 +113,15 @@ class SequentialLinker extends AbstractLinker implements Linker
             throw new InvalidArgumentException("Leveled linker requires numeric file ids ('{$file->getId()}' was provided)");
         }
 
+        if($this->getDirectoryLevels() < 1) {
+            throw new InvalidArgumentException("Invalid number of directory levels ({$this->getDirectoryLevels()})");
+        }
+
+
         $fileId = $file->getId();
 
         $directoryLevels = $this->getDirectoryLevels() + 1;
         $filesPerDirectory = $this->getFilesPerDirectory();
-
-        if($directoryLevels < 1) {
-            throw new InvalidArgumentException("Invalid number of directory levels ('{$directoryLevels}')");
-        }
 
         $arr = array();
         $tmpfileid = $fileId - 1;

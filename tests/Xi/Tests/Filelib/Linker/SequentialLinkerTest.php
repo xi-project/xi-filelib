@@ -149,6 +149,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
      */
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $levels, $fpd, $beautifurl)
     {
+
         $linker = new SequentialLinker();
         $linker->setDirectoryLevels($levels);
         $linker->setFilesPerDirectory($fpd);
@@ -169,6 +170,20 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 
         $linker->getDirectoryId($file);
 
+    }
+
+    /**
+     * @test
+     * @expectedException Xi\Filelib\Exception\InvalidArgumentException
+     */
+    public function getDirectoryIdShouldThrowExceptionWhenDirectoryLevelsIsLessThanOne()
+    {
+        $linker = new SequentialLinker();
+        $file = File::create(array('id' => 1));
+
+        $linker->setDirectoryLevels(0);
+
+        $ret = $linker->getDirectoryId($file);
     }
 
 
