@@ -129,6 +129,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand', $ret);
+        $this->assertEquals('uusi-uuid', $ret->getUuid());
 
     }
 

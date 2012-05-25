@@ -172,10 +172,13 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $backend = $this->getMock('Xi\Filelib\Backend\Backend');
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+
+        $this->op->expects($this->once())->method('generateUuid')
+                 ->will($this->returnValue('uusi-uuid'));
+
         $this->op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
         $this->op->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
         $this->op->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($eventDispatcher));
-
 
         $file = File::create(array('name' => 'tohtori-vesala.jpg', 'resource' => new Resource()));
 
@@ -194,13 +197,12 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $this->op->expects($this->any())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))
                  ->will($this->returnValue($afterUploadCommand));
 
-        $afterUploadCommand->expects($this->once())->method('execute')->will($this->returnValue($this->getMock('Xi\Filelib\File\File')));
+        $afterUploadCommand->expects($this->once())->method('execute')->will($this->returnValue($file));
 
         $command = new CopyFileCommand($this->op, $file, $this->folder);
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-
     }
 
     /**

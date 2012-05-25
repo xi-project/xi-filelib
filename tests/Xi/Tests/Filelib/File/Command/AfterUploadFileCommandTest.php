@@ -93,7 +93,9 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
            ->will($this->returnValue($profile));
 
         $command = new AfterUploadFileCommand($op, $fileitem);
-        $command->execute();
+        $ret = $command->execute();
+
+        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
 
     }
 
