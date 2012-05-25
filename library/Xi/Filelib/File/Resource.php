@@ -127,7 +127,35 @@ class Resource
         return $this->versions;
     }
 
+    /**
+     * @param string $version
+     */
+    public function addVersion($version)
+    {
+        if (!in_array($version, $this->versions)) {
+            array_push($this->versions, $version);
+        }
+    }
 
+    /**
+     *
+     * @param string $version
+     */
+    public function removeVersion($version)
+    {
+        $this->versions = array_diff($this->versions, array($version));
+    }
+
+    /**
+     * Returns whether resource has version
+     *
+     * @param string $version
+     * @return boolean
+     */
+    public function hasVersion($version)
+    {
+        return in_array($version, $this->versions);
+    }
 
 
     /**
@@ -172,6 +200,4 @@ class Resource
         $file = new self();
         return $file->fromArray($data);
     }
-
-
 }

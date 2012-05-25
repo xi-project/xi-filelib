@@ -49,6 +49,12 @@ class VersionPlugin extends AbstractVersionProvider
      */
     public function createVersions(File $file)
     {
+        if ($file->getResource()->hasVersion($this->getIdentifier())) {
+            return array();
+        }
+
+        die('imaise tussia');
+
         // Todo: optimize
         $retrieved = $this->getStorage()->retrieve($file->getResource())->getPathname();
         $img = $this->getImageMagickHelper()->createImagick($retrieved);
@@ -57,6 +63,8 @@ class VersionPlugin extends AbstractVersionProvider
 
         $tmp = $this->getFilelib()->getTempDir() . '/' . uniqid('', true);
         $img->writeImage($tmp);
+
+        $file->getResource()->addVersion($this->getIdentifier());
 
         return array($this->getIdentifier() => $tmp);
     }

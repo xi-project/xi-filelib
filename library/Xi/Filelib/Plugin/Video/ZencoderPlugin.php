@@ -221,6 +221,17 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     public function createVersions(File $file)
     {
+        $count = 0;
+        foreach ($this->getVersions() as $version) {
+            if ($file->getResource()->hasVersion($version)) {
+                $count++;
+            }
+        }
+        if ($count == count($this->getVersions())) {
+            return array();
+        }
+
+
         $filelib = $this->getFilelib();
 
         $zencoder = $this->getService();
@@ -275,6 +286,10 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             }
 
             $this->getAwsService()->removeObject($awsPath);
+
+            foreach ($this->getVersions() as $version) {
+                $file->getResource()->addVersion($version);
+            }
 
             return $tmps;
 

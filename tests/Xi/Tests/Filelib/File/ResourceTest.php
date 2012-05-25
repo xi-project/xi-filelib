@@ -136,4 +136,53 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    /**
+     * @test
+     */
+    public function addVersionShouldAddVersion()
+    {
+        $resource = Resource::create(array('versions' => array('tussi', 'watussi')));
+        $resource->addVersion('lussi');
+
+        $this->assertEquals(array('tussi', 'watussi', 'lussi'), $resource->getVersions());
+    }
+
+
+    /**
+     * @test
+     */
+    public function addVersionShouldNotAddVersionIfVersionExists()
+    {
+        $resource = Resource::create(array('versions' => array('tussi', 'watussi')));
+        $resource->addVersion('watussi');
+
+        $this->assertEquals(array('tussi', 'watussi'), $resource->getVersions());
+    }
+
+
+    /**
+     * @test
+     */
+    public function removeVersionShouldRemoveVersion()
+    {
+        $resource = Resource::create(array('versions' => array('tussi', 'watussi')));
+        $resource->removeVersion('watussi');
+
+        $this->assertEquals(array('tussi'), $resource->getVersions());
+    }
+
+
+    /**
+     * @test
+     */
+    public function hasResourceShouldReturnWhetherResourceHasVersion()
+    {
+        $resource = Resource::create(array('versions' => array('tussi', 'watussi')));
+
+        $this->assertTrue($resource->hasVersion('tussi'));
+        $this->assertTrue($resource->hasVersion('watussi'));
+        $this->assertFalse($resource->hasVersion('lussi'));
+    }
+
+
 }

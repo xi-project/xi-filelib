@@ -411,6 +411,8 @@ abstract class AbstractBackend implements Backend
             ));
         }
 
+        $this->updateResource($file->getResource());
+        
         return (bool) $this->doUpdateFile($file);
     }
 
