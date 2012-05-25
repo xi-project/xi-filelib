@@ -22,8 +22,8 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('ZencoderService class could not be loaded');
         }
 
-        if (!class_exists('Zend_Service_Amazon_S3')) {
-            $this->markTestSkipped('Zend_Service_Amazon_S3 class could not be loaded');
+        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
+            $this->markTestSkipped('Zend\Service\Amazon\S3\S3 class could not be loaded');
         }
 
         if (!ZENCODER_KEY) {
@@ -66,7 +66,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
     public function tearDown()
     {
-        if (!class_exists('Zend_Service_Amazon_S3')) {
+        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
             return;
         }
 
@@ -135,7 +135,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
     public function getAwsServiceShouldReturnAndCacheAwsService()
     {
         $service = $this->plugin->getAwsService();
-        $this->assertInstanceOf('Zend_Service_Amazon_S3', $service);
+        $this->assertInstanceOf('Zend\Service\Amazon\S3\S3', $service);
         $this->assertSame($service, $this->plugin->getAwsService());
     }
 
@@ -292,7 +292,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $plugin->expects($this->any())->method('getService')
                ->will($this->returnValue($zen));
-        
+
         $plugin->expects($this->any())->method('getAwsService')
                ->will($this->returnValue($aws));
 
