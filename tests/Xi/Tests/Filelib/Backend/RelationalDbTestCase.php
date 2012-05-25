@@ -91,10 +91,10 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     public function findResourceProvider()
     {
         return array(
-            array(1, array('hash' => 'hash-1')),
-            array(2, array('hash' => 'hash-2')),
-            array(3, array('hash' => 'hash-2')),
-            array(4, array('hash' => 'hash-3')),
+            array(1, array('hash' => 'hash-1', 'versions' => array('tussi', 'watussi', 'pygmi'))),
+            array(2, array('hash' => 'hash-2', 'versions' => array())),
+            array(3, array('hash' => 'hash-2', 'versions' => array('pygmi', 'tussi'))),
+            array(4, array('hash' => 'hash-3', 'versions' => array('watussi'))),
         );
     }
 
@@ -359,6 +359,20 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     }
 
     /**
+     *
+     * @return array
+     */
+    public function updateResourceProvider()
+    {
+        return array(
+            array(
+                1, array('imaisebba', 'tussia'),
+            )
+        );
+    }
+
+
+    /**
      * @return ArrayDataSet
      */
     private function getSimpleDataSet()
@@ -370,26 +384,31 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'id' => 1,
                     'hash' => 'hash-1',
                     'date_created' => '1978-03-21 06:06:06',
+                    'versions' => serialize(array('tussi', 'watussi', 'pygmi')),
                 ),
                 array(
                     'id' => 2,
                     'hash' => 'hash-2',
                     'date_created' => '1988-03-21 06:06:06',
+                    'versions' => serialize(array()),
                 ),
                 array(
                     'id' => 3,
                     'hash' => 'hash-2',
                     'date_created' => '1998-03-21 06:06:06',
+                    'versions' => serialize(array('pygmi', 'tussi')),
                 ),
                 array(
                     'id' => 4,
                     'hash' => 'hash-3',
                     'date_created' => '2008-03-21 06:06:06',
+                    'versions' => serialize(array('watussi')),
                 ),
                 array(
                     'id' => 5,
                     'hash' => 'hash-5',
                     'date_created' => '2009-03-21 06:06:06',
+                    'versions' => serialize(array('watussi', 'loso')),
                 ),
             ),
 

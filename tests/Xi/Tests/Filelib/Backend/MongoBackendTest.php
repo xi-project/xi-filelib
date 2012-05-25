@@ -105,26 +105,31 @@ class MongoBackendTest extends AbstractBackendTest
                     '_id' => new MongoId('48a7011a05c677b9a9166101'),
                     'hash' => 'hash-1',
                     'date_created' => new DateTime('1978-03-21 06:06:06'),
+                    'versions' => array('tussi', 'watussi', 'pygmi'),
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166102'),
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1988-03-21 06:06:06'),
+                    'versions' => array()
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166103'),
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1998-03-21 06:06:06'),
+                    'versions' => array('pygmi', 'tussi'),
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166104'),
                     'hash' => 'hash-3',
                     'date_created' => new DateTime('2008-03-21 06:06:06'),
+                    'versions' => array('watussi'),
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166105'),
                     'hash' => 'hash-5',
                     'date_created' => new DateTime('2009-03-21 06:06:06'),
+                    'versions' => array('watussi', 'loso'),
                 ),
             ),
             'folders' => array(
@@ -509,10 +514,23 @@ class MongoBackendTest extends AbstractBackendTest
     public function findResourceProvider()
     {
         return array(
-            array('48a7011a05c677b9a9166101', array('hash' => 'hash-1')),
-            array('48a7011a05c677b9a9166102', array('hash' => 'hash-2')),
-            array('48a7011a05c677b9a9166103', array('hash' => 'hash-2')),
-            array('48a7011a05c677b9a9166104', array('hash' => 'hash-3')),
+            array('48a7011a05c677b9a9166101', array('hash' => 'hash-1', 'versions' => array('tussi', 'watussi', 'pygmi'))),
+            array('48a7011a05c677b9a9166102', array('hash' => 'hash-2', 'versions' => array())),
+            array('48a7011a05c677b9a9166103', array('hash' => 'hash-2', 'versions' => array('pygmi', 'tussi'))),
+            array('48a7011a05c677b9a9166104', array('hash' => 'hash-3', 'versions' => array('watussi'))),
+        );
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function updateResourceProvider()
+    {
+        return array(
+            array(
+                '48a7011a05c677b9a9166101', array('imaisebba', 'tussia'),
+            )
         );
     }
 

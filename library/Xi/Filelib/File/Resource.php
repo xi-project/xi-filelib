@@ -18,13 +18,32 @@ class Resource
         'id' => 'setId',
         'hash' => 'setHash',
         'date_created' => 'setDateCreated',
+        'versions' => 'setVersions',
     );
 
+    /**
+     *
+     * @var mixed
+     */
     private $id;
 
+    /**
+     *
+     * @var string
+     */
     private $hash;
 
+    /**
+     *
+     * @var DateTime
+     */
     private $dateCreated;
+
+    /**
+     *
+     * @var array
+     */
+    private $versions = array();
 
     /**
      * Sets id
@@ -86,6 +105,30 @@ class Resource
         return $this->hash;
     }
 
+    /**
+     * Sets currently created versions
+     *
+     * @param array $versions
+     * @return Resource
+     */
+    public function setVersions(array $versions = array())
+    {
+        $this->versions = $versions;
+        return $this;
+    }
+
+    /**
+     * Returns currently created versions
+     *
+     * @return array
+     */
+    public function getVersions()
+    {
+        return $this->versions;
+    }
+
+
+
 
     /**
      * Returns the resource as standardized hash array
@@ -98,6 +141,7 @@ class Resource
             'id' => $this->getId(),
             'hash' => $this->getHash(),
             'date_created' => $this->getDateCreated(),
+            'versions' => $this->getVersions(),
         );
     }
 

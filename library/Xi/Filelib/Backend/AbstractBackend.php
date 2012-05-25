@@ -90,6 +90,12 @@ abstract class AbstractBackend implements Backend
     protected abstract function doUpdateFolder(Folder $folder);
 
     /**
+     * @param  Resource $resource
+     * @return boolean
+     */
+    protected abstract function doUpdateResource(Resource $resource);
+
+    /**
      * @param  File    $file
      * @return boolean
      */
@@ -198,6 +204,22 @@ abstract class AbstractBackend implements Backend
     {
         return $this->doCreateResource($resource);
     }
+
+
+    /**
+     * Updates a resource
+     *
+     * @param  Resource $resource
+     * @return boolean
+     * @throws InvalidArgumentException With invalid id
+     */
+    public function updateResource(Resource $resource)
+    {
+        $this->assertValidIdentifier($resource->getId(), 'Resource');
+        return (bool) $this->doUpdateResource($resource);
+    }
+
+
 
     /**
      * Deletes a resource
@@ -370,7 +392,6 @@ abstract class AbstractBackend implements Backend
     public function updateFolder(Folder $folder)
     {
         $this->assertValidIdentifier($folder->getId(), 'Folder');
-
         return (bool) $this->doUpdateFolder($folder);
     }
 

@@ -221,6 +221,24 @@ class ZendDbBackend extends AbstractBackend implements Backend
         );
     }
 
+
+    /**
+     * @param Resource $resource
+     * @return boolean
+     */
+    protected function doUpdateResource(Resource $resource)
+    {
+        return (bool) $this->getResourceTable()->update(
+            array(
+                'versions' => serialize($resource->getVersions()),
+            ),
+            $this->getResourceTable()
+                 ->getAdapter()
+                 ->quoteInto('id = ?', $resource->getId())
+        );
+    }
+
+
     /**
      * @param  integer $id
      * @return array
@@ -415,7 +433,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
         $row = $this->getResourceTable()->createRow();
         $row->hash = $resource->getHash();
         $row->date_created  = $resource->getDateCreated()->format('Y-m-d H:i:s');
-
+        $row->versions = serialize($resource->getVersions());
         $row->save();
 
         $resource->setId((int) $row->id);
@@ -441,7 +459,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return Resource::create(array(
             'id' => (int) $row['id'],
             'hash' => $row['hash'],
-            'date_created' => new DateTime($row['date_created'])
+            'date_created' => new DateTime($row['date_created']),
+            'versions' => unserialize($row['versions']),
         ));
     }
 

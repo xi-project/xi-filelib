@@ -333,6 +333,25 @@ class Doctrine2Backend extends AbstractBackend
         }
     }
 
+
+    /**
+     * @param Resource $resource
+     * @return boolean
+     */
+    protected function doUpdateResource(Resource $resource)
+    {
+        try {
+            $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
+            $resourceRow->setVersions($resource->getVersions());
+            $this->em->flush();
+            return true;
+        } catch (EntityNotFoundException $e) {
+            return false;
+        }
+    }
+
+
+
     /**
      * @param  Folder  $folder
      * @return boolean
@@ -514,7 +533,8 @@ class Doctrine2Backend extends AbstractBackend
         return Resource::create(array(
             'id' => $resource->getId(),
             'hash' => $resource->getHash(),
-            'date_created' => $resource->getDateCreated()
+            'date_created' => $resource->getDateCreated(),
+            'versions' => $resource->getVersions(),
         ));
     }
 

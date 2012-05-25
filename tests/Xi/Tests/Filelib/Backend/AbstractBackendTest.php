@@ -113,10 +113,12 @@ use Xi\Filelib\Folder\Folder;
         $data = array(
             'hash'         => 'hashendaal',
             'date_created' => new DateTime('2010-10-10 10:10:10'),
+            'versions' => array('loso', 'puuppa'),
         );
 
         $resource = Resource::create($data);
         $this->assertNull($resource->getId());
+
         $this->assertNotNull($this->backend->createResource($resource)->getId());
     }
 
@@ -137,6 +139,7 @@ use Xi\Filelib\Folder\Folder;
 
         $this->assertEquals($resourceId, $resource->getId());
         $this->assertEquals($data['hash'], $resource->getHash());
+        $this->assertEquals($data['versions'], $resource->getVersions());
     }
 
 
@@ -231,6 +234,52 @@ use Xi\Filelib\Folder\Folder;
 
         $this->backend->deleteResource($resource);
     }
+
+
+    /**
+     * @test
+     * @dataProvider updateResourceProvider
+     * @param mixed $resourceId
+     * @param mixed $versions
+     */
+    public function updateResourceShouldUpdateResource($resourceId, $versions)
+    {
+        $this->setUpSimpleDataSet();
+
+        $resource = $this->backend->findResource($resourceId);
+
+        $this->assertEquals($resourceId, $resource->getId());
+
+        $this->assertNotEquals($versions, $resource->getVersions());
+
+        $resource->setVersions($versions);
+
+        $this->assertTrue($this->backend->updateResource($resource));
+
+        $resource2 = $this->backend->findResource($resourceId);
+
+        $this->assertEquals($versions, $resource2->getVersions());
+    }
+
+
+
+    /**
+     * @test
+     * @dataProvider nonExistingResourceIdProvider
+     * @param mixed $resourceId
+     */
+    public function updateResourceShouldNotUpdateNonExistingResource($resourceId)
+    {
+        $this->setUpEmptyDataSet();
+
+        $resource = Resource::create(array(
+            'id' => $resourceId,
+        ));
+        $this->assertFalse($this->backend->updateResource($resource));
+    }
+
+
+
 
     /**
      * @test

@@ -34,6 +34,12 @@ class Resource
     private $files;
 
     /**
+     * @ORM\Column(name="versions", type="array")
+     */
+    private $versions;
+
+
+    /**
      * Get id
      */
     public function getId()
@@ -86,5 +92,19 @@ class Resource
         return $this;
     }
 
+    /**
+     *
+     * @param array $versions
+     */
+    public function setVersions(array $versions)
+    {
+        $this->versions = $versions;
+    }
+
+
+    public function getVersions()
+    {
+        return $this->versions;
+    }
 
 }

@@ -208,6 +208,29 @@ class MongoBackend extends AbstractBackend implements Backend
         return (bool) $ret['n'];
     }
 
+
+    /**
+     * @param Resource $resource
+     * @return boolean
+     */
+    protected function doUpdateResource(Resource $resource)
+    {
+        $document = $resource->toArray();
+
+        if ($document['date_created']) {
+            $document['date_created'] = new MongoDate($resource->getDateCreated()->getTimestamp());
+        }
+        unset($document['id']);
+
+        $ret = $this->getMongo()->resources->update(array(
+            '_id' => new MongoId($resource->getId()),
+        ), $document, array('safe' => true));
+
+        return (bool) $ret['n'];
+    }
+
+
+
     /**
      * @param  File    $file
      * @return boolean
@@ -375,6 +398,7 @@ class MongoBackend extends AbstractBackend implements Backend
             'id' => (string) $resource['_id'],
             'hash' => $resource['hash'],
             'date_created' => DateTime::createFromFormat('U', $resource['date_created']->sec)->setTimezone($date->getTimezone()),
+            'versions' => $resource['versions'],
         ));
     }
 

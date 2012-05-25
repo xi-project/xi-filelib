@@ -39,6 +39,12 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($resource, $resource->setHash($val));
         $this->assertEquals($val, $resource->getHash());
 
+        $val = array('lussen', 'le', 'tussen');
+        $this->assertEquals(array(), $resource->getVersions());
+        $this->assertSame($resource, $resource->setVersions($val));
+        $this->assertEquals($val, $resource->getVersions());
+
+
     }
 
 
@@ -50,6 +56,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
                     'id' => 1,
                     'hash' => 'lussenhofer',
                     'date_created' => new \DateTime('2010-01-01 01:01:01'),
+                    'versions' => array('tussenhof', 'luslus'),
                 ),
             ),
             array(
@@ -74,13 +81,19 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'id' => 'getId',
             'hash' => 'getHash',
             'date_created' => 'getDateCreated',
+            'versions' => 'getVersions',
         );
 
         foreach($map as $key => $method) {
             if(isset($data[$key])) {
                 $this->assertEquals($data[$key], $resource->$method());
             } else {
-                $this->assertNull($resource->$method());
+
+                if ($key !== 'versions') {
+                    $this->assertNull($resource->$method());
+                } else {
+                    $this->assertEquals(array(), $resource->$method());
+                }
             }
         }
 
@@ -95,11 +108,13 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $resource->setHash('hashisen-kone');
         $resource->setId(655);
         $resource->setDateCreated(new \DateTime('1978-03-21'));
+        $resource->setVersions(array('kraa', 'xoo'));
 
         $this->assertEquals($resource->toArray(), array(
             'id' => 655,
             'hash' => 'hashisen-kone',
             'date_created' => new \DateTime('1978-03-21'),
+            'versions' => array('kraa', 'xoo'),
         ));
 
 
@@ -108,6 +123,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'id' => null,
             'hash' => null,
             'date_created' => null,
+            'versions' => array(),
         ));
     }
 

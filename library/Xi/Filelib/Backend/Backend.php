@@ -161,6 +161,15 @@ interface Backend
      */
     public function deleteResource(Resource $resource);
 
+
+    /**
+     * Updates a resource
+     *
+     * @param Resource $resource
+     */
+    public function updateResource(Resource $resource);
+
+
     /**
      * Returns how many times a resource is referenced by files
      *

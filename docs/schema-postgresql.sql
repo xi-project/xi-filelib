@@ -7,7 +7,8 @@ CREATE UNIQUE INDEX folderid_filename_unique ON xi_filelib_file (folder_id, file
 CREATE TABLE xi_filelib_folder (id INT NOT NULL, parent_id INT DEFAULT NULL, foldername VARCHAR(255) NOT NULL, folderurl VARCHAR(5000) NOT NULL, uuid VARCHAR(36) NOT NULL, PRIMARY KEY(id));
 CREATE UNIQUE INDEX UNIQ_A5EA9E8BD17F50A6 ON xi_filelib_folder (uuid);
 CREATE INDEX IDX_A5EA9E8B727ACA70 ON xi_filelib_folder (parent_id);
-CREATE TABLE xi_filelib_resource (id INT NOT NULL, hash VARCHAR(255) NOT NULL, date_created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id));
+CREATE TABLE xi_filelib_resource (id INT NOT NULL, hash VARCHAR(255) NOT NULL, date_created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, versions TEXT NOT NULL, PRIMARY KEY(id));
+COMMENT ON COLUMN xi_filelib_resource.versions IS '(DC2Type:array)';
 CREATE SEQUENCE xi_filelib_file_id_seq INCREMENT BY 1 MINVALUE 1 START 10;
 CREATE SEQUENCE xi_filelib_folder_id_seq INCREMENT BY 1 MINVALUE 1 START 10;
 CREATE SEQUENCE xi_filelib_resource_id_seq INCREMENT BY 1 MINVALUE 1 START 10;
