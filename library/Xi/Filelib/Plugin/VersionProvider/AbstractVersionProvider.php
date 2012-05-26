@@ -117,7 +117,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
                 return true;
             }
         }
-
         return false;
     }
 
@@ -141,21 +140,20 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         return $this->getFilelib()->getPublisher();
     }
 
-
-
     public function afterUpload(FileEvent $event)
     {
         $file = $event->getFile();
 
-        if (!$this->hasProfile($file->getProfile())) {
-            return;
-        }
-
-        if (!$this->providesFor($file)) {
+        if (!$this->hasProfile($file->getProfile()) || !$this->providesFor($file) || $this->areVersionsCreated($file)) {
             return;
         }
 
         $tmps = $this->createVersions($file);
+
+        foreach (array_keys($tmps) as $version) {
+            $file->getResource()->addVersion($version);
+        }
+
         foreach ($tmps as $version => $tmp) {
             $this->getStorage()->storeVersion($file->getResource(), $version, $tmp);
             unlink($tmp);
@@ -223,7 +221,21 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         foreach ($this->getVersions() as $version) {
             $this->getStorage()->deleteVersion($file->getResource(), $version);
         }
+    }
 
+
+    public function areVersionsCreated(File $file)
+    {
+        $count = 0;
+        foreach ($this->getVersions() as $version) {
+            if ($file->getResource()->hasVersion($version)) {
+                $count++;
+            }
+        }
+        if ($count == count($this->getVersions())) {
+            return true;
+        }
+        return false;
     }
 
 }

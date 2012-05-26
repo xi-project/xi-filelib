@@ -49,4 +49,11 @@ interface VersionProvider extends Plugin
      */
     public function getVersions();
 
+    /**
+     * Returns whether versions are already created for a resource
+     *
+     * @return bool
+     */
+    public function areVersionsCreated(File $file);
+
 }
