@@ -22,8 +22,8 @@ abstract class TestCase extends \Xi\Tests\TestCase
     public function setUp()
     {
         $this->message = new TestCommand();
-
         $this->queue = $this->getQueue();
+        $this->queue->purge();
     }
 
 
@@ -34,31 +34,21 @@ abstract class TestCase extends \Xi\Tests\TestCase
      * @test
      * @return Queue
      */
-    public function enqueueShouldEnqueueMessage()
+    public function dequeueShouldDequeueEnqueuedMessage()
     {
         $this->queue->enqueue($this->message);
 
-        return $this->queue;
-    }
-
-    /**
-     * @test
-     * @depends enqueueShouldEnqueueMessage
-     * @param type $queue
-     */
-    public function dequeueShouldDequeueMessage($queue)
-    {
-        $message = $queue->dequeue();
-        $queue->ack($message);
+        $message = $this->queue->dequeue();
+        $this->assertInstanceOf('Xi\Filelib\Queue\Message', $message);
+        $this->queue->ack($message);
 
         $this->assertEquals($this->message, unserialize($message->getBody()));
         $this->assertNotNull($message->getIdentifier());
 
-        return $queue;
     }
 
     /**
-     * @xxxtest
+     * @test
      */
     public function dequeueShouldReturnNullIfQueueIsEmpty()
     {
@@ -69,22 +59,20 @@ abstract class TestCase extends \Xi\Tests\TestCase
 
     /**
      * @test
-     * @depends dequeueShouldDequeueMessage
      */
-    public function purgeShouldResultInAnEmptyQueue($queue)
+    public function purgeShouldResultInAnEmptyQueue()
     {
         for ($x = 10; $x <= 10; $x++) {
-            $queue->enqueue(new TestCommand());
+            $this->queue->enqueue(new TestCommand());
         }
 
-        $msg = $queue->dequeue();
+        $msg = $this->queue->dequeue();
         $this->assertNotNull($msg);
-        $queue->ack($msg);
+        $this->queue->ack($msg);
 
+        $this->queue->purge();
 
-        $queue->purge();
-
-        $this->assertNull($queue->dequeue());
+        $this->assertNull($this->queue->dequeue());
 
     }
 
