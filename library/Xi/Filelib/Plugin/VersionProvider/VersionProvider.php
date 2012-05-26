@@ -56,4 +56,10 @@ interface VersionProvider extends Plugin
      */
     public function areVersionsCreated(File $file);
 
+    /**
+     * Returns whether plugin allows sharing of resources
+     */
+    public function isSharedResourceAllowed();
+
+
 }

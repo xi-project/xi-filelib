@@ -828,7 +828,7 @@ use Xi\Filelib\Folder\Folder;
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 666,
             'uuid'          => 'uuid-535',
-            'resource'      => Resource::create(array('id' => $resourceId))
+            'resource'      => $this->backend->findResource($resourceId),
         );
 
         $file = File::create($data);

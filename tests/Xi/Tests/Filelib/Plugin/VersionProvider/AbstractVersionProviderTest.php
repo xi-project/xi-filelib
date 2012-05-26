@@ -90,6 +90,43 @@ class AbstractVersionProviderTest extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * @test
+     */
+    public function sharedResourcesShouldBeEnabled()
+    {
+        $this->assertTrue($this->plugin->isSharedResourceAllowed());
+    }
+
+    /**
+     * @return array
+     */
+    public function provideVersions()
+    {
+        return array(
+            array(true, array('tussi'), array('tussi')),
+        );
+    }
+
+
+    /**
+     * @dataProvider provideVersions
+     * @test
+     */
+    public function areVersionsCreatedShouldReturnExpectedResults($expected, $resourceVersions, $pluginVersions)
+    {
+        $file = File::create(array('resource' => Resource::create(array('versions' => $resourceVersions))));
+
+        $this->plugin->expects($this->atLeastOnce())
+                     ->method('getVersions')
+                     ->will($this->returnValue($pluginVersions));
+
+        $this->assertEquals($expected, $this->plugin->areVersionsCreated($file));
+
+
+    }
+
+
 
 
     /**
@@ -242,21 +279,54 @@ class AbstractVersionProviderTest extends TestCase
         $event = new FileEvent($file);
 
         $this->plugin->afterUpload($event);
-
-
     }
 
 
     /**
      * @test
      */
-    public function afterUploadShouldCreateAndStoreVersionWhenPluginProvides()
+    public function afterUploadShouldDoNothingWhenVersionAlreadyExists()
+    {
+        $this->plugin->expects($this->never())->method('createVersions');
+
+        $this->plugin->expects($this->atLeastOnce())->method('getVersions')
+                     ->will($this->returnValue(array('reiska')));
+
+        $this->plugin->setProvidesFor(array('image', 'video'));
+        $this->plugin->setProfiles(array('tussi', 'lussi'));
+
+        $this->plugin->setFileLib($this->filelib);
+
+        $file = File::create(
+                    array(
+                        'mimetype' => 'image/xoo',
+                        'profile' => 'tussi',
+                        'resource' => Resource::create(array('versions' => array('reiska'))),
+                    )
+                );
+        $event = new FileEvent($file);
+
+        $this->plugin->afterUpload($event);
+
+
+    }
+
+
+
+
+    /**
+     * @test
+     */
+    public function afterUploadShouldCreateAndStoreVersionWhenAllIsProper()
     {
         $this->plugin->setIdentifier('xooxer');
 
         $this->plugin->expects($this->once())->method('createVersions')
              ->with($this->isInstanceOf('Xi\Filelib\File\File'))
              ->will($this->returnValue(array('xooxer' => ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg')));
+
+        $this->plugin->expects($this->atLeastOnce())->method('getVersions')
+                     ->will($this->returnValue(array('reiska')));
 
         $this->plugin->setProvidesFor(array('image', 'video'));
         $this->plugin->setProfiles(array('tussi', 'lussi'));

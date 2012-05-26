@@ -410,9 +410,7 @@ abstract class AbstractBackend implements Backend
                 $file->getFolderId()
             ));
         }
-
-        $this->updateResource($file->getResource());
-        
+        $resUpdate = $this->updateResource($file->getResource());
         return (bool) $this->doUpdateFile($file);
     }
 

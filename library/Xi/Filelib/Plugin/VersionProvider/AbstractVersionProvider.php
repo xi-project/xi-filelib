@@ -37,6 +37,13 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     protected $providesFor = array();
 
+    /**
+     * Allow shared resource
+     *
+     * @var boolean
+     */
+    protected $allowSharedResource = true;
+
     abstract public function createVersions(File $file);
 
     /**
@@ -237,5 +244,12 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
         return false;
     }
+
+
+    public function isSharedResourceAllowed()
+    {
+        return $this->allowSharedResource;
+    }
+
 
 }
