@@ -94,10 +94,4 @@ class VersionPlugin extends AbstractVersionProvider
         return $this->getExtension();
     }
 
-
-    public function areVersionsCreated(File $file)
-    {
-        return $file->getResource()->hasVersion($this->getIdentifier());
-    }
-
 }

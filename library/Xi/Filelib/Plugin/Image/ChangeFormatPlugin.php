@@ -19,20 +19,20 @@ class ChangeFormatPlugin extends AbstractPlugin
         'fileprofile.add' => 'onFileProfileAdd',
         'file.beforeUpload' => 'beforeUpload'
     );
-    
+
     protected $imageMagickHelper;
-    
+
     protected $targetExtension;
-        
+
     public function __construct($options = array())
     {
         parent::__construct($options);
         Configurator::setOptions($this->getImageMagickHelper(), $options);
     }
-    
+
     /**
      * Returns ImageMagick helper
-     * 
+     *
      * @return ImageMagickHelper
      */
     public function getImageMagickHelper()
@@ -40,9 +40,9 @@ class ChangeFormatPlugin extends AbstractPlugin
         if (!$this->imageMagickHelper) {
             $this->imageMagickHelper = new ImageMagickHelper();
         }
-        return $this->imageMagickHelper;        
+        return $this->imageMagickHelper;
     }
-    
+
     /**
      * Sets target file's extension
      *
@@ -63,25 +63,25 @@ class ChangeFormatPlugin extends AbstractPlugin
     {
         return $this->targetExtension;
     }
-    
-    
+
+
     public function beforeUpload(FileUploadEvent $event)
     {
         if (!$this->hasProfile($event->getProfile()->getIdentifier())) {
             return;
         }
-        
+
         $upload = $event->getFileUpload();
-                        
+
         $mimetype = $upload->getMimeType();
         // @todo: use filebankstas type detection
         if(!preg_match("/^image/", $mimetype)) {
             return;
         }
-                
+
         $img = $this->getImageMagickHelper()->createImagick($upload->getPathname());
         $this->getImageMagickHelper()->execute($img);
-                
+
         $tempnam = $this->getFilelib()->getTempDir() . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);
 
@@ -89,11 +89,11 @@ class ChangeFormatPlugin extends AbstractPlugin
 
         $nupload = $this->getFilelib()->getFileOperator()->prepareUpload($tempnam);
         $nupload->setTemporary(true);
-        
+
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $this->getTargetExtension());
 
         $event->setFileUpload($nupload);
-        
+
         return $nupload;
     }
 
