@@ -4,6 +4,9 @@ namespace Xi\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use \DateTime;
 
+/**
+ * @group storage
+ */
 class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 {
     

@@ -6,6 +6,9 @@ use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\Storage\MultiStorage;
 use \Xi\Filelib\File\File;
 
+/**
+ * @group storage
+ */
 class MultiStorageTest extends \Xi\Tests\TestCase
 {
     

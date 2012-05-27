@@ -4,6 +4,9 @@ namespace Xi\Tests\Filelib\Storage;
 
 use Xi\Filelib\Storage\FilesystemStorage;
 
+/**
+ * @group storage
+ */
 class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
 {
        

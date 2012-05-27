@@ -4,6 +4,9 @@ namespace Xi\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use Xi\Tests\Filelib\TestCase;
 
+/**
+ * @group storage
+ */
 class DirectoryIdCalculatorTest extends TestCase
 {
     

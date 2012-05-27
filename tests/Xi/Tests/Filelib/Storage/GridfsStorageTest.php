@@ -10,6 +10,9 @@ use Xi\Filelib\Storage\GridfsStorage;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 
+/**
+ * @group storage
+ */
 class GridFsStorageTest extends TestCase
 {
     /**

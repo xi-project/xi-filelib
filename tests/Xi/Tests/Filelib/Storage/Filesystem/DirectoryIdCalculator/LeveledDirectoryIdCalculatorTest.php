@@ -5,6 +5,9 @@ namespace Xi\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator,
     Xi\Filelib\File\File;
 
+/**
+ * @group storage
+ */
 class LeveledDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 {
     /**

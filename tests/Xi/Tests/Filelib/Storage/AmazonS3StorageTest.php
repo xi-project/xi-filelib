@@ -4,6 +4,9 @@ use \Xi\Filelib\Storage\AmazonS3Storage,
     \Xi\Filelib\File\File
     ;
 
+/**
+ * @group storage
+ */
 class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
 {
 
