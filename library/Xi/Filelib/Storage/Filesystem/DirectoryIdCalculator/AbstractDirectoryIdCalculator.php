@@ -17,5 +17,4 @@ abstract class AbstractDirectoryIdCalculator implements DirectoryIdCalculator
     {
         Configurator::setConstructorOptions($this, $options);
     }
-    
 }

@@ -12,15 +12,11 @@ namespace Xi\Filelib\Storage;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\FileLibrary;
-    
-        
 
 /**
  * Abstract storage convenience base class with common methods implemented
- * 
- * @author pekkis
- * @package Xi_Filelib
  *
+ * @author pekkis
  */
 abstract class AbstractStorage implements Storage
 {
@@ -28,13 +24,12 @@ abstract class AbstractStorage implements Storage
      * @var FileLibrary Filelib
      */
     private $filelib;
-    
+
     public function __construct($options = array())
     {
         Configurator::setConstructorOptions($this, $options);
     }
-    
-    
+
     /**
      * Sets filelib
      *
@@ -54,8 +49,4 @@ abstract class AbstractStorage implements Storage
     {
         return $this->filelib;
     }
-    
-    
-    
-    
 }

@@ -18,11 +18,9 @@ use Xi\Filelib\FilelibException;
  *
  * @author pekkis
  * @todo Something is not perfect yet... Rethink and finalize
- *
  */
 interface Storage
 {
-
     /**
      * Sets filelib
      *
@@ -40,8 +38,8 @@ interface Storage
     /**
      * Stores an uploaded file
      *
-     * @param File $file
-     * @param string $tempFile
+     * @param  File             $file
+     * @param  string           $tempFile
      * @throws FilelibException
      */
     public function store(File $file, $tempFile);
@@ -49,9 +47,9 @@ interface Storage
     /**
      * Stores a version of a file
      *
-     * @param File $file
-     * @param string $version
-     * @param string $tempFile File to be stored
+     * @param  File             $file
+     * @param  string           $version
+     * @param  string           $tempFile File to be stored
      * @throws FilelibException
      */
     public function storeVersion(File $file, $version, $tempFile);
@@ -59,7 +57,7 @@ interface Storage
     /**
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
-     * @param File $file
+     * @param  File       $file
      * @return FileObject
      */
     public function retrieve(File $file);
@@ -67,8 +65,8 @@ interface Storage
     /**
      * Retrieves a version of a file and temporarily stores it somewhere so it can be read.
      *
-     * @param File $file
-     * @param string $version
+     * @param  File       $file
+     * @param  string     $version
      * @return FileObject
      */
     public function retrieveVersion(File $file, $version);
@@ -87,5 +85,4 @@ interface Storage
      * @param $version
      */
     public function deleteVersion(File $file, $version);
-
 }

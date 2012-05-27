@@ -9,21 +9,16 @@
 
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
-use Xi\Filelib\FileLibrary,
-    Xi\Filelib\File\File,
-    Xi\Filelib\FilelibException
-    ;
-
+use Xi\Filelib\File\File;
+use Xi\Filelib\FilelibException;
 
 /**
  * Creates directories in a leveled hierarchy based on a numeric file id
- * 
- * @author pekkis
  *
+ * @author pekkis
  */
 class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
 {
-
     /**
      * @var integer Files per directory
      */
@@ -37,12 +32,13 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     /**
      * Sets files per directory
      *
-     * @param integer $filesPerDirectory
+     * @param  integer                    $filesPerDirectory
      * @return LeveledDirectoryCalculator
      */
     public function setFilesPerDirectory($filesPerDirectory)
     {
         $this->filesPerDirectory = $filesPerDirectory;
+
         return $this;
     }
 
@@ -59,12 +55,13 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     /**
      * Sets levels per directory hierarchy
      *
-     * @param integer $directoryLevels
+     * @param  integer                    $directoryLevels
      * @return LeveledDirectoryCalculator
      */
     public function setDirectoryLevels($directoryLevels)
     {
         $this->directoryLevels = $directoryLevels;
+
         return $this;
     }
 
@@ -77,37 +74,33 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     {
         return $this->directoryLevels;
     }
-    
+
     public function calculateDirectoryId(File $file)
     {
-        if(!is_numeric($file->getId())) {
+        if (!is_numeric($file->getId())) {
             throw new FilelibException("Leveled directory id calculator requires numeric file ids ('{$file->getId()}' was provided)");
         }
-        
+
         $fileId = $file->getId();
-        
+
         $directoryLevels = $this->getDirectoryLevels() + 1;
         $filesPerDirectory = $this->getFilesPerDirectory();
 
-        if($directoryLevels < 1) {
+        if ($directoryLevels < 1) {
             throw new FilelibException("Invalid number of directory levels ('{$directoryLevels}')");
         }
 
         $arr = array();
         $tmpfileid = $fileId - 1;
 
-        for($count = 1; $count <= $directoryLevels; ++$count) {
+        for ($count = 1; $count <= $directoryLevels; ++$count) {
             $lus = $tmpfileid / pow($filesPerDirectory, $directoryLevels - $count);
             $tmpfileid = $tmpfileid % pow($filesPerDirectory, $directoryLevels - $count);
             $arr[] = floor($lus) + 1;
         }
 
         $puuppa = array_pop($arr);
+
         return implode(DIRECTORY_SEPARATOR, $arr);
-        
     }
-    
-    
-    
-    
 }
