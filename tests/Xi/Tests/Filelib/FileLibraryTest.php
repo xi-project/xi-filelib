@@ -44,11 +44,11 @@ class FileLibraryTest extends TestCase
     public function storageSetterAndGetterShouldWorkAsExpected()
     {
         $filelib = new FileLibrary();
-        $obj = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
-        $obj->expects($this->once())->method('setFilelib')->with($this->isInstanceOf('Xi\Filelib\FileLibrary'));
-        $this->assertEquals(null, $filelib->getStorage());
-        $this->assertSame($filelib, $filelib->setStorage($obj));
-        $this->assertSame($obj, $filelib->getStorage());
+        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
+
+        $this->assertNull($filelib->getStorage());
+        $this->assertSame($filelib, $filelib->setStorage($storage));
+        $this->assertSame($storage, $filelib->getStorage());
     }
 
 

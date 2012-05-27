@@ -26,6 +26,11 @@ use Xi\Filelib\FilelibException;
 class GridfsStorage extends AbstractStorage implements Storage
 {
     /**
+     * @var string
+     */
+    private $tempDir;
+
+    /**
      * @var MongoDB Mongo reference
      */
     private $mongo;
@@ -49,6 +54,18 @@ class GridfsStorage extends AbstractStorage implements Storage
      * @var array Registered temporary files
      */
     private $tempFiles = array();
+
+    /**
+     * @param  MongoDB       $mongo   A MongoDB instance
+     * @param  string        $tempDir Temporary directory
+     * @return GridfsStorage
+     */
+    public function __construct(MongoDB $mongo, $tempDir)
+    {
+        $this->setMongo($mongo);
+
+        $this->tempDir = $tempDir;
+    }
 
     /**
      * Deletes all temp files on destruct
@@ -122,7 +139,8 @@ class GridfsStorage extends AbstractStorage implements Storage
      */
     private function toTemp(MongoGridFSFile $file)
     {
-        $tmp = $this->getFilelib()->getTempDir() . '/' . tmpfile();
+        $tmp = $this->tempDir . '/' . tmpfile();
+
         $file->write($tmp);
 
         $fo = new FileObject($tmp);

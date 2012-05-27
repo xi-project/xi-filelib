@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Storage;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 
@@ -21,20 +20,6 @@ use Xi\Filelib\FilelibException;
  */
 interface Storage
 {
-    /**
-     * Sets filelib
-     *
-     * @return FileLibrary
-     */
-    public function setFilelib(FileLibrary $filelib);
-
-    /**
-     * Returns filelib
-     *
-     * @return FileLibrary
-     */
-    public function getFilelib();
-
     /**
      * Stores an uploaded file
      *

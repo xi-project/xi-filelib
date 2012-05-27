@@ -5,7 +5,6 @@ namespace Xi\Tests\Filelib\Storage;
 use Mongo;
 use MongoDB;
 use MongoConnectionException;
-use Xi\Tests\Filelib\TestCase;
 use Xi\Filelib\Storage\GridfsStorage;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
@@ -13,7 +12,7 @@ use Xi\Filelib\FilelibException;
 /**
  * @group storage
  */
-class GridFsStorageTest extends TestCase
+class GridFsStorageTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var MondoDB
@@ -45,18 +44,13 @@ class GridFsStorageTest extends TestCase
             $this->markTestSkipped('Can not connect to MongoDB.');
         }
 
-        $this->file = \Xi\Filelib\File\File::create(array('id' => 1));
+        $this->file = File::create(array('id' => 1));
 
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
 
-        $this->filelib = $this->getFilelib();
-
         $this->mongo = $mongo->filelib_tests;
 
-        $storage = new \Xi\Filelib\Storage\GridfsStorage();
-        $storage->setMongo($this->mongo);
-
-        $this->storage = $storage;
+        $this->storage = new GridfsStorage($this->mongo, ROOT_TESTS . '/data/temp');
 
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->any())
@@ -65,7 +59,7 @@ class GridFsStorageTest extends TestCase
 
         $this->version = 'xoo';
 
-        $this->file = \Xi\Filelib\File\File::create(array('id' => 1, 'folder_id' => 1, 'name' => 'self-lussing-manatee.jpg'));
+        $this->file = File::create(array('id' => 1, 'folder_id' => 1, 'name' => 'self-lussing-manatee.jpg'));
 
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
     }
@@ -94,8 +88,6 @@ class GridFsStorageTest extends TestCase
      */
     public function storeAndRetrieveAndDeleteShouldWorkInHarmony()
     {
-        $this->storage->setFilelib($this->getFilelib());
-
         $this->storage->store($this->file, $this->fileResource);
 
          $file = $this->storage->getGridFs()->findOne(array(
@@ -122,15 +114,13 @@ class GridFsStorageTest extends TestCase
      */
     public function destructorShouldDeleteRetrievedFile()
     {
-        $this->storage->setFilelib($this->getFilelib());
-
         $this->storage->store($this->file, $this->fileResource);
 
         $file = $this->storage->getGridFs()->findOne(array(
             'filename' => $this->storage->getFilename($this->file)
         ));
 
-        $this->assertInstanceOf('\\MongoGridFSFile', $file);
+        $this->assertInstanceOf('MongoGridFSFile', $file);
 
         $retrieved = $this->storage->retrieve($this->file);
 
@@ -148,8 +138,6 @@ class GridFsStorageTest extends TestCase
      */
     public function storeAndRetrieveAndDeleteVersionShouldWorkInHarmony()
     {
-        $this->storage->setFilelib($this->getFilelib());
-
         $this->storage->storeVersion($this->file, $this->version, $this->fileResource);
 
          $file = $this->storage->getGridFs()->findOne(array(
