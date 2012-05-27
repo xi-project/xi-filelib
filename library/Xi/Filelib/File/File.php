@@ -21,12 +21,10 @@ class File
     protected static $map = array(
         'id' => 'setId',
         'folder_id' => 'setFolderId',
-        'mimetype' => 'setMimeType',
         'profile' => 'setProfile',
-        'size' => 'setSize',
         'name' => 'setName',
         'link' => 'setLink',
-        'date_uploaded' => 'setDateUploaded',
+        'date_created' => 'setDateCreated',
         'status' => 'setStatus',
         'uuid' => 'setUuid',
         'resource' => 'setResource'
@@ -51,7 +49,7 @@ class File
 
     private $link;
 
-    private $dateUploaded;
+    private $dateCreated;
 
     private $status;
 
@@ -119,25 +117,13 @@ class File
     }
 
     /**
-     * Sets mimetype
-     *
-     * @param string $mimetype
-     * @return File
-     */
-    public function setMimetype($mimetype)
-    {
-        $this->mimetype = $mimetype;
-        return $this;
-    }
-
-    /**
      * Returns mimetype
      *
      * @return string
      */
     public function getMimetype()
     {
-        return $this->mimetype;
+        return $this->getResource()->getMimetype();
     }
 
     /**
@@ -163,25 +149,13 @@ class File
     }
 
     /**
-     * Sets file size
-     *
-     * @param int $size
-     * @return File
-     */
-    public function setSize($size)
-    {
-        $this->size = $size;
-        return $this;
-    }
-
-    /**
      * Returns file size
      *
      * @return int
      */
     public function getSize()
     {
-        return $this->size;
+        return $this->getResource()->getSize();
     }
 
     /**
@@ -229,24 +203,24 @@ class File
     }
 
     /**
-     * Returns upload date
+     * Returns create date
      *
      * @return DateTime
      */
-    public function getDateUploaded()
+    public function getDateCreated()
     {
-        return $this->dateUploaded;
+        return $this->dateCreated;
     }
 
     /**
-     * Sets upload date
+     * Sets create date
      *
-     * @param DateTime $dateUploaded
+     * @param DateTime $dateCreated
      * @return File
      */
-    public function setDateUploaded(DateTime $dateUploaded)
+    public function setDateCreated(DateTime $dateCreated)
     {
-        $this->dateUploaded = $dateUploaded;
+        $this->dateCreated = $dateCreated;
         return $this;
     }
 
@@ -317,12 +291,10 @@ class File
         return array(
             'id' => $this->getId(),
             'folder_id' => $this->getFolderId(),
-            'mimetype' => $this->getMimetype(),
             'profile' => $this->getProfile(),
-            'size' => $this->getSize(),
             'name' => $this->getName(),
             'link' => $this->getLink(),
-            'date_uploaded' => $this->getDateUploaded(),
+            'date_created' => $this->getDateCreated(),
             'status' => $this->getStatus(),
             'resource' => $this->getResource(),
             'uuid' => $this->getUuid()

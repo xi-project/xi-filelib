@@ -130,7 +130,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                         ->getMock();
 
         $command->expects($this->once())->method('getResource')
-                ->with($this->isType('string'))
+                ->with($this->isInstanceOf('Xi\Filelib\File\Upload\FileUpload'))
                 ->will($this->returnValue(Resource::create()));
 
         $ret = $command->execute();
@@ -187,20 +187,20 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
+        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $profile = 'lussenhof';
+        $upload = new FileUpload($path);
+        $hash = sha1_file($upload->getRealPath());
+
         $backend->expects($this->once())->method('findResourcesByHash')
-                ->with($this->equalTo('hashendahl'))
+                ->with($this->equalTo($hash))
                 ->will($this->returnValue(array()));
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
-        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $profile = 'lussenhof';
-        $upload = new FileUpload($path);
-
         $command = new UploadFileCommand($op, $upload, $folder, $profile);
 
-        $hash = 'hashendahl';
-        $ret = $command->getResource($hash);
+        $ret = $command->getResource($upload);
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
         $this->assertSame($hash, $ret->getHash());
@@ -222,8 +222,13 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
+        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $profile = 'lussenhof';
+        $upload = new FileUpload($path);
+        $hash = sha1_file($upload->getRealPath());
+
         $backend->expects($this->once())->method('findResourcesByHash')
-                ->with($this->equalTo('hashendahl'))
+                ->with($this->equalTo($hash))
                 ->will($this->returnValue(array(
                     Resource::create(array('id' => 'first-id')),
                     Resource::create(array('id' => 'second-id')),
@@ -231,14 +236,9 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
-        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $profile = 'lussenhof';
-        $upload = new FileUpload($path);
-
         $command = new UploadFileCommand($op, $upload, $folder, $profile);
 
-        $hash = 'hashendahl';
-        $ret = $command->getResource($hash);
+        $ret = $command->getResource($upload);
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
         $this->assertSame('first-id', $ret->getId());

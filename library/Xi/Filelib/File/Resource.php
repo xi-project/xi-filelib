@@ -19,6 +19,8 @@ class Resource
         'hash' => 'setHash',
         'date_created' => 'setDateCreated',
         'versions' => 'setVersions',
+        'mimetype' => 'setMimetype',
+        'size' => 'setSize',
     );
 
     /**
@@ -38,6 +40,18 @@ class Resource
      * @var DateTime
      */
     private $dateCreated;
+
+    /**
+     *
+     * @var string
+     */
+    private $mimetype;
+
+    /**
+     *
+     * @var integer
+     */
+    private $size;
 
     /**
      *
@@ -106,6 +120,47 @@ class Resource
     }
 
     /**
+     *
+     * @return string
+     */
+    public function getMimetype()
+    {
+        return $this->mimetype;
+    }
+
+    /**
+     *
+     * @param string $mimetype
+     * @return Resource
+     */
+    public function setMimetype($mimetype)
+    {
+        $this->mimetype = $mimetype;
+        return $this;
+    }
+
+    /**
+     *
+     * @return integer
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+    /**
+     *
+     * @param integer $size
+     * @return Resource
+     */
+    public function setSize($size)
+    {
+        $this->size = $size;
+        return $this;
+    }
+
+
+    /**
      * Sets currently created versions
      *
      * @param array $versions
@@ -170,6 +225,8 @@ class Resource
             'hash' => $this->getHash(),
             'date_created' => $this->getDateCreated(),
             'versions' => $this->getVersions(),
+            'mimetype' => $this->getMimetype(),
+            'size' => $this->getSize(),
         );
     }
 

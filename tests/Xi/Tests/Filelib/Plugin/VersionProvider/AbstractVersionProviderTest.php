@@ -250,6 +250,10 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function providesForShouldMatchAgainstFileProfileCorrectly($expected, $file)
     {
+        $file = $file + array(
+            'resource' => Resource::create($file),
+        );
+
         $file = File::create($file);
 
         $this->plugin->setProvidesFor(array('image', 'video'));
@@ -275,7 +279,10 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setFileLib($this->filelib);
 
 
-        $file = File::create(array('mimetype' => 'iimage/xoo', 'profile' => 'tussi'));
+        $file = File::create(array(
+            'profile' => 'tussi',
+            'resource' => Resource::create(array('mimetype' => 'iimage/xoo'))
+        ));
         $event = new FileEvent($file);
 
         $this->plugin->afterUpload($event);
@@ -299,9 +306,8 @@ class AbstractVersionProviderTest extends TestCase
 
         $file = File::create(
                     array(
-                        'mimetype' => 'image/xoo',
+                        'resource' => Resource::create(array('mimetype' => 'image/xoo', 'versions' => array('reiska'))),
                         'profile' => 'tussi',
-                        'resource' => Resource::create(array('versions' => array('reiska'))),
                     )
                 );
         $event = new FileEvent($file);
@@ -340,7 +346,7 @@ class AbstractVersionProviderTest extends TestCase
                     ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg'
                 );
 
-        $file = File::create(array('mimetype' => 'image/xoo', 'profile' => 'tussi', 'resource' => Resource::create()));
+        $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'image/xoo'))));
         $event = new FileEvent($file);
 
         $this->createMockedTemporaryFile();
@@ -363,7 +369,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'iimage/xoo', 'profile' => 'tussi'));
+        $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'iimage/xoo'))));
 
         $event = new FileEvent($file);
         $this->plugin->onPublish($event);
@@ -386,7 +392,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'tussi'));
+        $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'image/png'))));
 
         $event = new FileEvent($file);
         $this->plugin->onPublish($event);
@@ -405,7 +411,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'iimage/xoo', 'profile' => 'tussi'));
+        $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'iimage/xoo'))));
 
         $event = new FileEvent($file);
         $this->plugin->onUnpublish($event);
@@ -432,7 +438,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'tussi'));
+        $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'image/png'))));
 
         $event = new FileEvent($file);
         $this->plugin->onUnpublish($event);
@@ -452,7 +458,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'xooxer'));
+        $file = File::create(array('profile' => 'xooxer', 'resource' => Resource::create(array('mimetype' => 'image/png'))));
 
         $event = new FileEvent($file);
         $this->plugin->onUnpublish($event);
@@ -471,7 +477,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'xooxer'));
+        $file = File::create(array('profile' => 'xooxer', 'resource' => Resource::create(array('mimetype' => 'image/png'))));
 
         $event = new FileEvent($file);
         $this->plugin->onPublish($event);
@@ -495,7 +501,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFilelib($filelib);
 
-        $file = File::create(array('mimetype' => 'image/xoo', 'profile' => 'xooxer'));
+        $file = File::create(array('profile' => 'xooxer', 'resource' => Resource::create(array('mimetype' => 'image/xoo'))));
         $event = new FileEvent($file);
 
         $this->plugin->afterUpload($event);
@@ -516,7 +522,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'iimage/xoo', 'profile' => 'tussi'));
+        $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'iimage/xoo'))));
         $event = new FileEvent($file);
 
         $this->plugin->onDelete($event);
@@ -543,7 +549,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'tussi', 'resource' => Resource::create()));
+        $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'image/png'))));
         $event = new FileEvent($file);
 
         $this->plugin->onDelete($event);
@@ -563,7 +569,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->setFileLib($this->filelib);
 
-        $file = File::create(array('mimetype' => 'image/png', 'profile' => 'xooxer', 'resource' => Resource::create()));
+        $file = File::create(array('profile' => 'xooxer', 'resource' => Resource::create(array('mimetype' => 'image/png'))));
         $event = new FileEvent($file);
 
         $this->plugin->onDelete($event);

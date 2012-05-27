@@ -119,12 +119,10 @@ class MongoBackend extends AbstractBackend implements Backend
     {
         $document = array(
             'folder_id'     => $folder->getId(),
-            'mimetype'      => $file->getMimeType(),
-            'size'          => $file->getSize(),
             'name'          => $file->getName(),
             'profile'       => $file->getProfile(),
             'status'        => $file->getStatus(),
-            'date_uploaded' => new MongoDate($file->getDateUploaded()->getTimestamp()),
+            'date_created' => new MongoDate($file->getDateCreated()->getTimestamp()),
             'uuid'          => $file->getUuid(),
             'resource_id'   => $file->getResource()->getId(),
         );
@@ -244,8 +242,8 @@ class MongoBackend extends AbstractBackend implements Backend
         unset($document['id']);
         unset($document['resource']);
 
-        $document['date_uploaded'] = new MongoDate(
-            $document['date_uploaded']->getTimestamp()
+        $document['date_created'] = new MongoDate(
+            $document['date_created']->getTimestamp()
         );
 
         $ret = $this->getMongo()->files->update(array(
@@ -313,13 +311,11 @@ class MongoBackend extends AbstractBackend implements Backend
             'folder_id'     => isset($file['folder_id'])
                                    ? $file['folder_id']
                                    : null,
-            'mimetype'      => $file['mimetype'],
             'profile'       => $file['profile'],
-            'size'          => (int) $file['size'],
             'name'          => $file['name'],
             'link'          => $file['link'],
             'status'        => $file['status'],
-            'date_uploaded' => DateTime::createFromFormat('U', $file['date_uploaded']->sec)->setTimezone($date->getTimezone()),
+            'date_created' => DateTime::createFromFormat('U', $file['date_created']->sec)->setTimezone($date->getTimezone()),
             'uuid'          => $file['uuid'],
             'resource'      => $this->resourceToArray($this->doFindResource($file['resource_id'])),
         );
@@ -366,6 +362,8 @@ class MongoBackend extends AbstractBackend implements Backend
     {
         $document = array(
             'hash' => $resource->getHash(),
+            'mimetype' => $resource->getMimetype(),
+            'size' => $resource->getSize(),
             'date_created' => new MongoDate($resource->getDateCreated()->getTimestamp()),
         );
 
@@ -397,6 +395,8 @@ class MongoBackend extends AbstractBackend implements Backend
         return Resource::create(array(
             'id' => (string) $resource['_id'],
             'hash' => $resource['hash'],
+            'mimetype' => $resource['mimetype'],
+            'size' => $resource['size'],
             'date_created' => DateTime::createFromFormat('U', $resource['date_created']->sec)->setTimezone($date->getTimezone()),
             'versions' => $resource['versions'],
         ));

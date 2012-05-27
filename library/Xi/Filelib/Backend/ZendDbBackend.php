@@ -300,11 +300,9 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return (bool) $this->getFileTable()->update(
             array(
                 'folder_id'     => $data['folder_id'],
-                'mimetype'      => $data['mimetype'],
-                'filesize'      => $data['size'],
                 'filename'      => $data['name'],
                 'fileprofile'   => $data['profile'],
-                'date_uploaded' => $data['date_uploaded']->format('Y-m-d H:i:s'),
+                'date_created' => $data['date_created']->format('Y-m-d H:i:s'),
                 'filelink'      => $data['link'],
                 'status'        => $data['status'],
                 'uuid'          => $data['uuid'],
@@ -344,11 +342,9 @@ class ZendDbBackend extends AbstractBackend implements Backend
         $row = $this->getFileTable()->createRow();
 
         $row->folder_id     = $folder->getId();
-        $row->mimetype      = $file->getMimeType();
-        $row->filesize      = $file->getSize();
         $row->filename      = $file->getName();
         $row->fileprofile   = $file->getProfile();
-        $row->date_uploaded = $file->getDateUploaded()->format('Y-m-d H:i:s');
+        $row->date_created = $file->getDateCreated()->format('Y-m-d H:i:s');
         $row->status        = $file->getStatus();
         $row->uuid          = $file->getUuid();
         $row->resource_id   = $file->getResource()->getId();
@@ -387,12 +383,10 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return array(
             'id'            => $fileRow['id'],
             'folder_id'     => $fileRow['folder_id'],
-            'mimetype'      => $fileRow['mimetype'],
-            'size'          => $fileRow['filesize'],
             'name'          => $fileRow['filename'],
             'profile'       => $fileRow['fileprofile'],
             'link'          => $fileRow['filelink'],
-            'date_uploaded' => new DateTime($fileRow['date_uploaded']),
+            'date_created' => new DateTime($fileRow['date_created']),
             'status'        => $fileRow['status'],
             'uuid'          => $fileRow['uuid'],
             'resource'      => $this->resourceToArray($this->doFindResource($fileRow['resource_id']))
@@ -432,6 +426,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
     {
         $row = $this->getResourceTable()->createRow();
         $row->hash = $resource->getHash();
+        $row->mimetype = $resource->getMimetype();
+        $row->filesize = $resource->getSize();
         $row->date_created  = $resource->getDateCreated()->format('Y-m-d H:i:s');
         $row->versions = serialize($resource->getVersions());
         $row->save();
@@ -459,6 +455,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return Resource::create(array(
             'id' => (int) $row['id'],
             'hash' => $row['hash'],
+            'size' => $row['filesize'],
+            'mimetype' => $row['mimetype'],
             'date_created' => new DateTime($row['date_created']),
             'versions' => unserialize($row['versions']),
         ));

@@ -24,6 +24,16 @@ class Resource
     protected $hash;
 
     /**
+     * @ORM\Column(name="mimetype", type="string", length=255)
+     */
+    protected $mimetype;
+
+    /**
+     * @ORM\Column(name="filesize", type="integer", nullable=true)
+     */
+    protected $size;
+
+    /**
      * @ORM\Column(name="date_created", type="datetime")
      */
     protected $date_created;
@@ -36,7 +46,7 @@ class Resource
     /**
      * @ORM\Column(name="versions", type="array")
      */
-    private $versions;
+    private $versions = array();
 
 
     /**
@@ -70,6 +80,51 @@ class Resource
     }
 
     /**
+     * Set mimetype
+     *
+     * @param  string             $value
+     * @return File
+     */
+    public function setMimetype($value)
+    {
+        $this->mimetype = $value;
+        return $this;
+    }
+
+    /**
+     * Get mimetype
+     *
+     * @return string
+     */
+    public function getMimetype()
+    {
+        return $this->mimetype;
+    }
+
+    /**
+     * Set size
+     *
+     * @param  integer            $value
+     * @return File
+     */
+    public function setSize($value)
+    {
+        $this->size = $value;
+        return $this;
+    }
+
+    /**
+     * Get size
+     *
+     * @return integer
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+
+    /**
      * Returns date created
      *
      * @return DateTime
@@ -99,8 +154,8 @@ class Resource
     public function setVersions(array $versions)
     {
         $this->versions = $versions;
+        return $this;
     }
-
 
     public function getVersions()
     {

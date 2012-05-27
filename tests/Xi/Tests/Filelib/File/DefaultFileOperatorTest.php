@@ -5,6 +5,7 @@ namespace Xi\Tests\Filelib\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Command;
@@ -197,13 +198,13 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op = new DefaultFileOperator($filelib);
 
         $data = array(
-            'mimetype' => 'luss/xoo'
+            'name' => 'larva-consumes-newspaper.jpg',
         );
 
         $file = $op->getInstance($data);
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
 
-        $this->assertEquals('luss/xoo', $file->getMimetype());
+        $this->assertEquals('larva-consumes-newspaper.jpg', $file->getName());
 
     }
 
@@ -532,7 +533,10 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $typeResolver->expects($this->once())->method('resolveType')
                      ->with($this->equalTo('application/lus'));
 
-        $file = File::create(array('mimetype' => 'application/lus'));
+        $file = File::create(array(
+            'name' => 'larvador.lus',
+            'resource' => Resource::create(array('mimetype' => 'application/lus'))
+        ));
 
         $op->setTypeResolver($typeResolver);
         $op->getType($file);

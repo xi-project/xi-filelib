@@ -76,6 +76,8 @@ EOT;
 }
 
 $options['driver'] = 'pdo_' . $argv[1];
+$options['user'] = 'root';
+$options['password'] = 'g04753m135';
 
 $generator = new SchemaGenerator($options);
 

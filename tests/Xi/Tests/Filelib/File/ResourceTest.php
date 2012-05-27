@@ -29,6 +29,16 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($resource, $resource->setId($val));
         $this->assertEquals($val, $resource->getId());
 
+        $val = 'image/lus';
+        $this->assertNull($resource->getMimetype());
+        $this->assertSame($resource, $resource->setMimetype($val));
+        $this->assertEquals($val, $resource->getMimetype());
+
+        $val = 100000;
+        $this->assertNull($resource->getSize());
+        $this->assertSame($resource, $resource->setSize($val));
+        $this->assertEquals($val, $resource->getSize());
+
         $val = new DateTime('1978-01-02');
         $this->assertNull($resource->getDateCreated());
         $this->assertSame($resource, $resource->setDateCreated($val));
@@ -57,6 +67,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
                     'hash' => 'lussenhofer',
                     'date_created' => new \DateTime('2010-01-01 01:01:01'),
                     'versions' => array('tussenhof', 'luslus'),
+                    'size' => 1234,
+                    'mimetype' => 'image/lus',
                 ),
             ),
             array(
@@ -82,6 +94,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'hash' => 'getHash',
             'date_created' => 'getDateCreated',
             'versions' => 'getVersions',
+            'mimetype' => 'getMimetype',
+            'size' => 'getSize',
         );
 
         foreach($map as $key => $method) {
@@ -109,12 +123,16 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $resource->setId(655);
         $resource->setDateCreated(new \DateTime('1978-03-21'));
         $resource->setVersions(array('kraa', 'xoo'));
+        $resource->setMimetype('video/lus');
+        $resource->setSize(5678);
 
         $this->assertEquals($resource->toArray(), array(
             'id' => 655,
             'hash' => 'hashisen-kone',
             'date_created' => new \DateTime('1978-03-21'),
             'versions' => array('kraa', 'xoo'),
+            'size' => 5678,
+            'mimetype' => 'video/lus',
         ));
 
 
@@ -124,6 +142,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'hash' => null,
             'date_created' => null,
             'versions' => array(),
+            'size' => null,
+            'mimetype' => null,
         ));
     }
 

@@ -114,6 +114,8 @@ use Xi\Filelib\Folder\Folder;
             'hash'         => 'hashendaal',
             'date_created' => new DateTime('2010-10-10 10:10:10'),
             'versions' => array('loso', 'puuppa'),
+            'size' => 6000,
+            'mimetype' => 'lussuta/tussia',
         );
 
         $resource = Resource::create($data);
@@ -140,6 +142,10 @@ use Xi\Filelib\Folder\Folder;
         $this->assertEquals($resourceId, $resource->getId());
         $this->assertEquals($data['hash'], $resource->getHash());
         $this->assertEquals($data['versions'], $resource->getVersions());
+
+        $this->assertNotNull($resource->getMimetype());
+        $this->assertNotNull($resource->getDateCreated());
+        $this->assertNotNull($resource->getSize());
     }
 
 
@@ -733,18 +739,16 @@ use Xi\Filelib\Folder\Folder;
 
         $this->assertArrayHasKey('id', $ret);
         $this->assertArrayHasKey('folder_id', $ret);
-        $this->assertArrayHasKey('mimetype', $ret);
         $this->assertArrayHasKey('profile', $ret);
-        $this->assertArrayHasKey('size', $ret);
         $this->assertArrayHasKey('name', $ret);
         $this->assertArrayHasKey('link', $ret);
-        $this->assertArrayHasKey('date_uploaded', $ret);
+        $this->assertArrayHasKey('date_created', $ret);
         $this->assertArrayHasKey('status', $ret);
         $this->assertArrayHasKey('resource', $ret);
         $this->assertArrayHasKey('uuid', $ret);
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret['resource']);
-        $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
+        $this->assertInstanceOf('DateTime', $ret['date_created']);
     }
 
     /**
@@ -792,18 +796,16 @@ use Xi\Filelib\Folder\Folder;
 
             $this->assertArrayHasKey('id', $ret);
             $this->assertArrayHasKey('folder_id', $ret);
-            $this->assertArrayHasKey('mimetype', $ret);
             $this->assertArrayHasKey('profile', $ret);
-            $this->assertArrayHasKey('size', $ret);
             $this->assertArrayHasKey('name', $ret);
             $this->assertArrayHasKey('link', $ret);
-            $this->assertArrayHasKey('date_uploaded', $ret);
+            $this->assertArrayHasKey('date_created', $ret);
             $this->assertArrayHasKey('status', $ret);
             $this->assertArrayHasKey('resource', $ret);
             $this->assertArrayHasKey('uuid', $ret);
 
             $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret['resource']);
-            $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
+            $this->assertInstanceOf('DateTime', $ret['date_created']);
         }
     }
 
@@ -820,12 +822,10 @@ use Xi\Filelib\Folder\Folder;
         $data = array(
             'id'            => $fileId,
             'folder_id'     => $folderId,
-            'mimetype'      => 'image/jpg',
             'profile'       => 'lussed',
-            'size'          => 1006,
             'name'          => 'tohtori-sykero.png',
             'link'          => 'tohtori-sykero.png',
-            'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
+            'date_created' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 666,
             'uuid'          => 'uuid-535',
             'resource'      => $this->backend->findResource($resourceId),
@@ -839,7 +839,7 @@ use Xi\Filelib\Folder\Folder;
 
         $this->assertEquals($data['resource']->getId(), $updated['resource']->getId());
 
-        $fields = array('id', 'folder_id', 'mimetype', 'profile', 'size', 'name', 'link', 'date_uploaded', 'status', 'uuid');
+        $fields = array('id', 'folder_id', 'profile', 'name', 'link', 'date_created', 'status', 'uuid');
         foreach ($fields as $field) {
             $this->assertEquals($data[$field], $updated[$field]);
         }
@@ -857,12 +857,10 @@ use Xi\Filelib\Folder\Folder;
         $updated = array(
             'id'            => 1,
             'folder_id'     => $folderId,
-            'mimetype'      => 'image/jpg',
             'profile'       => 'lussed',
-            'size'          => '1006',
             'name'          => 'tohtori-sykero.png',
             'link'          => 'tohtori-sykero.png',
-            'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
+            'date_created' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 4,
             'uuid'          => 'uuid-1',
             'resource'      => Resource::create(array('id' => 1, 'hash' => 'hash-1', 'date_created' => new DateTime('1978-03-21 06:06:06')))
@@ -935,12 +933,10 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $fidata = array(
-            'mimetype'      => 'image/png',
             'profile'       => 'versioned',
-            'size'          => '1000',
             'name'          => 'tohtori-tussi.png',
             'link'          => 'tohtori-tussi.png',
-            'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+            'date_created' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 5,
             'uuid'          => 'uuid-lussid',
             'resource'      => Resource::create(array('id' => 1))
@@ -962,10 +958,9 @@ use Xi\Filelib\Folder\Folder;
         $this->assertNotNull($file->getId());
 
         $this->assertEquals($fodata['id'], $file->getFolderId());
-        $this->assertEquals($fidata['mimetype'], $file->getMimeType());
         $this->assertEquals($fidata['profile'], $file->getProfile());
         $this->assertEquals($fidata['link'], $file->getLink());
-        $this->assertEquals($fidata['date_uploaded'], $file->getDateUploaded());
+        $this->assertEquals($fidata['date_created'], $file->getDateCreated());
         $this->assertEquals($fidata['status'], $file->getStatus());
         $this->assertEquals($fidata['uuid'], $file->getUuid());
         $this->assertEquals($fidata['resource'], $file->getResource());
@@ -981,12 +976,10 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpEmptyDataSet();
 
         $file = File::create(array(
-            'mimetype'      => 'image/png',
             'profile'       => 'versioned',
-            'size'          => '1000',
             'name'          => 'tohtori-tussi.png',
             'link'          => 'tohtori-tussi.png',
-            'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+            'date_created' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 3,
             'uuid'          => 'uuid-lussid',
             'resource'      => Resource::create(array('id' => 1))
@@ -1018,12 +1011,10 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $file = File::create(array(
-            'mimetype'      => 'image/png',
             'profile'       => 'versioned',
-            'size'          => '1000',
             'name'          => 'tohtori-vesala.png',
             'link'          => 'tohtori-vesala.png',
-            'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+            'date_created' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 4,
             'uuid'          => 'uuid-lussid',
             'resource'      => Resource::create(array('id' => 1))
@@ -1059,12 +1050,10 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $fidata = array(
-            'mimetype'      => 'image/png',
             'profile'       => 'versioned',
-            'size'          => 1000,
             'name'          => 'tohtori-vesala.png',
             'link'          => 'tohtori-vesala.png',
-            'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+            'date_created' => new DateTime('2011-01-01 16:16:16'),
             'id'            => $fileId,
             'folder_id'     => $folderId,
             'status'        => 1,

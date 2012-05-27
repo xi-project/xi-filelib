@@ -21,19 +21,9 @@ class File
     protected $id;
 
     /**
-     * @ORM\Column(name="mimetype", type="string", length=255)
-     */
-    protected $mimetype;
-
-    /**
      * @ORM\Column(name="fileprofile", type="string", length=255)
      */
     protected $profile;
-
-    /**
-     * @ORM\Column(name="filesize", type="integer", nullable=true)
-     */
-    protected $size;
 
     /**
      * @ORM\Column(name="filename", type="string", length=255)
@@ -46,9 +36,9 @@ class File
     protected $link;
 
     /**
-     * @ORM\Column(name="date_uploaded", type="datetime")
+     * @ORM\Column(name="date_created", type="datetime")
      */
-    protected $date_uploaded;
+    protected $date_created;
 
     /**
      * @ORM\Column(name="status", type="integer", nullable=false)
@@ -81,29 +71,6 @@ class File
     }
 
     /**
-     * Set mimetype
-     *
-     * @param  string             $value
-     * @return File
-     */
-    public function setMimetype($value)
-    {
-        $this->mimetype = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get mimetype
-     *
-     * @return string
-     */
-    public function getMimetype()
-    {
-        return $this->mimetype;
-    }
-
-    /**
      * Set profile
      *
      * @param  string             $value
@@ -124,29 +91,6 @@ class File
     public function getProfile()
     {
         return $this->profile;
-    }
-
-    /**
-     * Set size
-     *
-     * @param  integer            $value
-     * @return File
-     */
-    public function setSize($value)
-    {
-        $this->size = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get size
-     *
-     * @return integer
-     */
-    public function getSize()
-    {
-        return $this->size;
     }
 
     /**
@@ -223,9 +167,9 @@ class File
      *
      * @return DateTime
      */
-    public function getDateUploaded()
+    public function getDateCreated()
     {
-        return $this->date_uploaded;
+        return $this->date_created;
     }
 
 
@@ -235,9 +179,9 @@ class File
      * @param DateTime $dateUploaded
      * @return File
      */
-    public function setDateUploaded(DateTime $dateUploaded)
+    public function setDateCreated(DateTime $dateUploaded)
     {
-        $this->date_uploaded = $dateUploaded;
+        $this->date_created = $dateUploaded;
         return $this;
     }
 

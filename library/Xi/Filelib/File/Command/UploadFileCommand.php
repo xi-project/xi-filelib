@@ -47,8 +47,10 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
     }
 
 
-    public function getResource($hash)
+    public function getResource(FileUpload $upload)
     {
+        $hash = sha1_file($upload->getRealPath());
+
         $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
         if ($resources) {
             $resource = $resources[0];
@@ -56,6 +58,8 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
             $resource = new Resource();
             $resource->setDateCreated(new DateTime());
             $resource->setHash($hash);
+            $resource->setSize($upload->getSize());
+            $resource->setMimetype($upload->getMimeType());
             $this->fileOperator->getBackend()->createResource($resource);
         }
         return $resource;
@@ -82,19 +86,16 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
 
         $file = $this->fileOperator->getInstance(array(
             'folder_id' => $folder->getId(),
-            'mimetype' => $upload->getMimeType(),
-            'size' => $upload->getSize(),
             'name' => $upload->getUploadFilename(),
             'profile' => $profile,
-            'date_uploaded' => $upload->getDateUploaded(),
+            'date_created' => $upload->getDateUploaded(),
             'uuid' => $this->getUuid(),
         ));
 
         // @todo: actual statuses
         $file->setStatus(File::STATUS_RAW);
 
-        $hash = sha1_file($upload->getRealPath());
-        $resource = $this->getResource($hash);
+        $resource = $this->getResource($upload);
 
         $file->setResource($resource);
 

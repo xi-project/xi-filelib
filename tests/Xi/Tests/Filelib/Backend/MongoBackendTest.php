@@ -106,30 +106,43 @@ class MongoBackendTest extends AbstractBackendTest
                     'hash' => 'hash-1',
                     'date_created' => new DateTime('1978-03-21 06:06:06'),
                     'versions' => array('tussi', 'watussi', 'pygmi'),
+                    'mimetype' => 'image/png',
+                    'size' => 10000
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166102'),
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1988-03-21 06:06:06'),
-                    'versions' => array()
+                    'versions' => array(),
+                    'mimetype' => 'image/png',
+                    'size' => 20000
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166103'),
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1998-03-21 06:06:06'),
                     'versions' => array('pygmi', 'tussi'),
+                    'mimetype' => 'image/png',
+                    'size' => 30000
+
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166104'),
                     'hash' => 'hash-3',
                     'date_created' => new DateTime('2008-03-21 06:06:06'),
                     'versions' => array('watussi'),
+                    'mimetype' => 'image/jpg',
+                    'size' => 40000
+
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166105'),
                     'hash' => 'hash-5',
                     'date_created' => new DateTime('2009-03-21 06:06:06'),
                     'versions' => array('watussi', 'loso'),
+                    'mimetype' => 'video/xxx',
+                    'size' => 50000
+
                 ),
             ),
             'folders' => array(
@@ -178,7 +191,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'size'          => '1000',
                     'name'          => 'tohtori-vesala.png',
                     'link'          => 'tohtori-vesala.png',
-                    'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
+                    'date_created' => new DateTime('2011-01-01 16:16:16'),
                     'status'        => 1,
                     'uuid'          => 'uuid-1',
                     'resource_id'   => '48a7011a05c677b9a9166101',
@@ -191,7 +204,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'size'          => '10001',
                     'name'          => 'akuankka.png',
                     'link'          => 'lussuttaja/akuankka.png',
-                    'date_uploaded' => new DateTime('2011-01-01 15:15:15'),
+                    'date_created' => new DateTime('2011-01-01 15:15:15'),
                     'status'        => 2,
                     'uuid'          => 'uuid-2',
                     'resource_id'   => '48a7011a05c677b9a9166102',
@@ -204,7 +217,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'size'          => '10000',
                     'name'          => 'repesorsa.png',
                     'link'          => 'lussuttaja/tussin/repesorsa.png',
-                    'date_uploaded' => new DateTime('2011-01-01 15:15:15'),
+                    'date_created' => new DateTime('2011-01-01 15:15:15'),
                     'status'        => 4,
                     'uuid'          => 'uuid-3',
                     'resource_id'   => '48a7011a05c677b9a9166103',
@@ -217,7 +230,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'size'          => '10000',
                     'name'          => 'megatussi.png',
                     'link'          => 'lussuttaja/banskun/megatussi.png',
-                    'date_uploaded' => new DateTime('2011-01-02 15:15:15'),
+                    'date_created' => new DateTime('2011-01-02 15:15:15'),
                     'status'        => 8,
                     'uuid'          => 'uuid-4',
                     'resource_id'   => '48a7011a05c677b9a9166104',
@@ -230,7 +243,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'size'          => '10000',
                     'name'          => 'megatussi2.png',
                     'link'          => 'lussuttaja/banskun/megatussi2.png',
-                    'date_uploaded' => new DateTime('2011-01-03 15:15:15'),
+                    'date_created' => new DateTime('2011-01-03 15:15:15'),
                     'status'        => 16,
                     'uuid'          => 'uuid-5',
                     'resource_id'   => '48a7011a05c677b9a9166104',
@@ -239,7 +252,7 @@ class MongoBackendTest extends AbstractBackendTest
         );
 
         foreach ($data['files'] as &$file) {
-            $file['date_uploaded'] = new MongoDate($file['date_uploaded']->getTimeStamp());
+            $file['date_created'] = new MongoDate($file['date_created']->getTimeStamp());
         }
 
         foreach ($data['resources'] as &$resource) {

@@ -193,12 +193,10 @@ class Doctrine2Backend extends AbstractBackend
     {
         $entity = $this->getFileReference($file);
         $entity->setFolder($this->getFolderReference($file->getFolderId()));
-        $entity->setMimetype($file->getMimetype());
         $entity->setProfile($file->getProfile());
-        $entity->setSize($file->getSize());
         $entity->setName($file->getName());
         $entity->setLink($file->getLink());
-        $entity->setDateUploaded($file->getDateUploaded());
+        $entity->setDateCreated($file->getDateCreated());
         $entity->setStatus($file->getStatus());
         $entity->setUuid($file->getUuid());
         $entity->setResource($this->em->getReference($this->getResourceEntityName(), $file->getResource()->getId()));
@@ -409,6 +407,8 @@ class Doctrine2Backend extends AbstractBackend
         $resourceRow = new $this->resourceEntityName();
         $resourceRow->setHash($resource->getHash());
         $resourceRow->setDateCreated($resource->getDateCreated());
+        $resourceRow->setMimetype($resource->getMimetype());
+        $resourceRow->setSize($resource->getSize());
         $this->em->persist($resourceRow);
         $this->em->flush();
         $resource->setId($resourceRow->getId());
@@ -455,11 +455,9 @@ class Doctrine2Backend extends AbstractBackend
 
             $entity = new $fileEntityName;
             $entity->setFolder($self->getFolderReference($folder->getId()));
-            $entity->setMimetype($file->getMimeType());
-            $entity->setSize($file->getSize());
             $entity->setName($file->getName());
             $entity->setProfile($file->getProfile());
-            $entity->setDateUploaded($file->getDateUploaded());
+            $entity->setDateCreated($file->getDateCreated());
             $entity->setStatus($file->getStatus());
             $entity->setUuid($file->getUuid());
 
@@ -496,12 +494,10 @@ class Doctrine2Backend extends AbstractBackend
             'folder_id'     => $file->getFolder()
                                    ? $file->getFolder()->getId()
                                    : null,
-            'mimetype'      => $file->getMimetype(),
             'profile'       => $file->getProfile(),
-            'size'          => $file->getSize(),
             'name'          => $file->getName(),
             'link'          => $file->getLink(),
-            'date_uploaded' => $file->getDateUploaded(),
+            'date_created' => $file->getDateCreated(),
             'status'        => $file->getStatus(),
             'uuid'          => $file->getUuid(),
             'resource' => ($file->getResource()) ? $this->resourceToArray($file->getResource()) : null
@@ -535,6 +531,8 @@ class Doctrine2Backend extends AbstractBackend
             'hash' => $resource->getHash(),
             'date_created' => $resource->getDateCreated(),
             'versions' => $resource->getVersions(),
+            'mimetype' => $resource->getMimetype(),
+            'size' => $resource->getSize(),
         ));
     }
 
