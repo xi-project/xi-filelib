@@ -11,24 +11,19 @@ namespace Xi\Tests\Filelib\Linker;
 
 use Xi\Tests\Filelib\TestCase;
 
+/**
+ * @group linker
+ */
 class AbstractLinkerTest extends TestCase
 {
-    
     /**
      * @test
      */
-    public function gettersAndSettersShouldWorkAsExpected()
+    public function implementsLinker()
     {
-        $linker = $this->getMockBuilder('Xi\Filelib\Linker\AbstractLinker')
-                    ->setMethods(array('getLink', 'getLinkVersion'))
-                    ->getMockForAbstractClass();
-        
-        $this->assertNull($linker->getFilelib());
-                        
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        
-        $this->assertSame($linker, $linker->setFilelib($filelib));
-        
-        $this->assertSame($filelib, $linker->getFilelib());
+        $this->assertContains(
+            'Xi\Filelib\Linker\Linker',
+            class_implements('Xi\Filelib\Linker\AbstractLinker')
+        );
     }
 }

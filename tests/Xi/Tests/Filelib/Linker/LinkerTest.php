@@ -11,9 +11,11 @@ namespace Xi\Tests\Filelib\Linker;
 
 use Xi\Tests\Filelib\TestCase;
 
+/**
+ * @group linker
+ */
 class LinkerTest extends TestCase
 {
-    
     /**
      * @test
      */
@@ -21,6 +23,4 @@ class LinkerTest extends TestCase
     {
         $this->assertTrue(interface_exists('Xi\Filelib\Linker\Linker'));
     }
-    
-    
 }

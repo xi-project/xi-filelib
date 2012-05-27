@@ -227,19 +227,11 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertEquals(array(), $op->getProfiles());
 
-        $linker = $this->getMockForAbstractClass('Xi\Filelib\Linker\Linker');
-        $linker->expects($this->once())->method('setFilelib')->with($this->equalTo($filelib));
-
-        $linker2 = $this->getMockForAbstractClass('Xi\Filelib\Linker\Linker');
-        $linker2->expects($this->once())->method('setFilelib')->with($this->equalTo($filelib));
-
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->any())->method('getIdentifier')->will($this->returnValue('xooxer'));
-        $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
         $profile2 = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile2->expects($this->any())->method('getIdentifier')->will($this->returnValue('lusser'));
-        $profile2->expects($this->any())->method('getLinker')->will($this->returnValue($linker2));
 
         $eventDispatcher->expects($this->exactly(2))->method('addSubscriber')->with($this->isInstanceOf('Xi\Filelib\File\FileProfile'));
 
@@ -254,7 +246,6 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertSame($profile, $op->getProfile('xooxer'));
         $this->assertSame($profile2, $op->getProfile('lusser'));
-
     }
 
     /**

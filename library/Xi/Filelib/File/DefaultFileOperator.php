@@ -104,7 +104,6 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         }
         $this->profiles[$identifier] = $profile;
         $profile->setFilelib($this->getFilelib());
-        $profile->getLinker()->setFilelib($this->getFilelib());
 
         $this->getEventDispatcher()->addSubscriber($profile);
 
