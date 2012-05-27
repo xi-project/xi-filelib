@@ -261,4 +261,23 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertSame($slugifier, $slugifier2);
     }
+
+    /**
+     * @test
+     */
+    public function takesOptionalOptionsInConstructor()
+    {
+        $linker = new BeautifurlLinker(
+            $this->getMock('Xi\Filelib\Folder\FolderOperator'),
+            array(
+                'slugify'        => false,
+                'slugifierClass' => 'Foo\Bar',
+                'excludeRoot'    => true,
+            )
+        );
+
+        $this->assertFalse($linker->getSlugify());
+        $this->assertEquals('Foo\Bar', $linker->getSlugifierClass());
+        $this->assertTrue($linker->getExcludeRoot());
+    }
 }
