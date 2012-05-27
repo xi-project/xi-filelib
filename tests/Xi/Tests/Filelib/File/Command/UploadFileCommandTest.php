@@ -108,7 +108,6 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('upload')->with($this->isInstanceOf('Xi\Filelib\File\File'));
-        $backend->expects($this->once())->method('createResource')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
@@ -125,7 +124,15 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
            ->with($this->equalTo('versioned'))
            ->will($this->returnValue($profile));
 
-        $command = new UploadFileCommand($op, $path, $folder, 'versioned');
+        $command = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
+                        ->setConstructorArgs(array($op, $path, $folder, 'versioned'))
+                        ->setMethods(array('getResource'))
+                        ->getMock();
+
+        $command->expects($this->once())->method('getResource')
+                ->with($this->isType('string'))
+                ->will($this->returnValue(Resource::create()));
+
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand', $ret);
@@ -146,26 +153,96 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('getAcl'))
                     ->getMock();
 
-         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-         $profile = 'lussenhof';
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $profile = 'lussenhof';
 
-         $upload = new FileUpload($path);
+        $upload = new FileUpload($path);
 
-         $command = new UploadFileCommand($op, $upload, $folder, $profile);
+        $command = new UploadFileCommand($op, $upload, $folder, $profile);
 
-         $serialized = serialize($command);
+        $serialized = serialize($command);
 
-         $command2 = unserialize($serialized);
+        $command2 = unserialize($serialized);
 
-         $this->assertAttributeEquals($folder, 'folder', $command2);
-         $this->assertAttributeSame($profile, 'profile', $command2);
-         $this->assertAttributeEquals($upload, 'upload', $command2);
-         $this->assertAttributeNotEmpty('uuid', $command2);
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+        $this->assertAttributeSame($profile, 'profile', $command2);
+        $this->assertAttributeEquals($upload, 'upload', $command2);
+        $this->assertAttributeNotEmpty('uuid', $command2);
 
     }
 
+    /**
+     * @test
+     */
+    public function getResourceShouldGenerateNewResourceIfNoResourceIsFound()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
+        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+                    ->setConstructorArgs(array($filelib))
+                    ->setMethods(array('getBackend'))
+                    ->getMock();
+
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
+
+        $backend->expects($this->once())->method('findResourcesByHash')
+                ->with($this->equalTo('hashendahl'))
+                ->will($this->returnValue(array()));
+
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+
+        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $profile = 'lussenhof';
+        $upload = new FileUpload($path);
+
+        $command = new UploadFileCommand($op, $upload, $folder, $profile);
+
+        $hash = 'hashendahl';
+        $ret = $command->getResource($hash);
+
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
+        $this->assertSame($hash, $ret->getHash());
+    }
+
+
+    /**
+     * @test
+     */
+    public function getResourceShouldReuseResourceIfResourcesAreFound()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
+        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+                    ->setConstructorArgs(array($filelib))
+                    ->setMethods(array('getBackend'))
+                    ->getMock();
+
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
+
+        $backend->expects($this->once())->method('findResourcesByHash')
+                ->with($this->equalTo('hashendahl'))
+                ->will($this->returnValue(array(
+                    Resource::create(array('id' => 'first-id')),
+                    Resource::create(array('id' => 'second-id')),
+                )));
+
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+
+        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $profile = 'lussenhof';
+        $upload = new FileUpload($path);
+
+        $command = new UploadFileCommand($op, $upload, $folder, $profile);
+
+        $hash = 'hashendahl';
+        $ret = $command->getResource($hash);
+
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
+        $this->assertSame('first-id', $ret->getId());
+    }
 
 
 
