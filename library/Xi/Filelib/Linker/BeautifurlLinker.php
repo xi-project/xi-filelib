@@ -50,10 +50,13 @@ class BeautifurlLinker extends AbstractLinker implements Linker
 
     /**
      * @param  FolderOperator   $folderOperator
+     * @param  array            $options
      * @return BeautifurlLinker
      */
-    public function __construct(FolderOperator $folderOperator)
+    public function __construct(FolderOperator $folderOperator, array $options = array())
     {
+        parent::__construct($options);
+
         $this->folderOperator = $folderOperator;
     }
 
