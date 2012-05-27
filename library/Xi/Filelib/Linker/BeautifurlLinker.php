@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Linker;
 
 use Xi\Filelib\Linker\AbstractLinker;
@@ -8,16 +15,15 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Tool\Slugifier\Slugifier;
+use Xi\Filelib\Folder\FolderOperator;
 
 /**
  * Creates beautifurls(tm) from the virtual directory structure and file names.
  *
  * @author pekkis
- *
  */
 class BeautifurlLinker extends AbstractLinker implements Linker
 {
-
     /**
      * @var boolean Exclude root folder from beautifurls or not
      */
@@ -28,6 +34,20 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     private $slugifier;
 
     private $slugify = true;
+
+    /**
+     * @var FolderOperator
+     */
+    private $folderOperator;
+
+    /**
+     * @param  FolderOperator   $folderOperator
+     * @return BeautifurlLinker
+     */
+    public function __construct(FolderOperator $folderOperator)
+    {
+        $this->folderOperator = $folderOperator;
+    }
 
     /**
      * Sets whether the root folder is excluded from beautifurls.
@@ -126,10 +146,10 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     public function getLink(File $file)
     {
         $folders = array();
-        $folders[] = $folder = $this->getFilelib()->getFolderOperator()->find($file->getFolderId());
+        $folders[] = $folder = $this->folderOperator->find($file->getFolderId());
 
         while($folder->getParentId()) {
-            $folder = $this->getFilelib()->getFolderOperator()->find($folder->getParentId());
+            $folder = $this->folderOperator->find($folder->getParentId());
             array_unshift($folders, $folder);
         }
 

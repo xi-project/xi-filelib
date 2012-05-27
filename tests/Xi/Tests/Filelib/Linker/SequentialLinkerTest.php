@@ -1,18 +1,25 @@
 <?php
 
+/*
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Tests\Filelib\Linker;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Linker\SequentialLinker;
 
+/**
+ * @group linker
+ */
 class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 {
-
-
     public function setUp()
     {
-
         $fo = $this->getMockBuilder('\Xi\Filelib\Folder\FolderOperator')->getMock();
         $fo->expects($this->any())
              ->method('find')
@@ -64,14 +71,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 
              }));
 
-
-
         $this->fo = $fo;
-
-
-        $this->filelib = $this->getFilelib();
-
-        $this->filelib->setFolderOperator($fo);
 
         $vp = $this->getMock('\Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $vp->expects($this->any())
@@ -83,14 +83,8 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
              ->with('xoo')
              ->will($this->returnValue('xoo'));
 
-
-
         $this->versionProvider = $vp;
-
-
-
     }
-
 
     public function provideFiles()
     {
@@ -124,8 +118,6 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
         );
     }
 
-
-
     /**
      * @test
      * @dataProvider provideFiles
@@ -136,14 +128,10 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
         $linker->setDirectoryLevels($levels);
         $linker->setFilesPerDirectory($fpd);
 
-        $linker->setFilelib($this->filelib);
-
         $this->assertEquals($beautifurl[0], $linker->getLink($file, true));
     }
 
     /**
-     *
-     *
      * @test
      * @dataProvider provideFiles
      */
@@ -154,9 +142,15 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
         $linker->setDirectoryLevels($levels);
         $linker->setFilesPerDirectory($fpd);
 
-        $linker->setFilelib($this->filelib);
+        $this->assertEquals(
+            $beautifurl[1],
+            $linker->getLinkVersion(
+                $file,
+                $this->versionProvider->getIdentifier(),
+                $this->versionProvider->getExtensionFor($this->versionProvider->getIdentifier())
+            )
+        );
 
-        $this->assertEquals($beautifurl[1], $linker->getLinkVersion($file, $this->versionProvider->getIdentifier(), $this->versionProvider->getExtensionFor($this->versionProvider->getIdentifier())));
     }
 
     /**
@@ -185,6 +179,4 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 
         $ret = $linker->getDirectoryId($file);
     }
-
-
 }
