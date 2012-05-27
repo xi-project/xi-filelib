@@ -1,11 +1,16 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Tests\Filelib\Linker;
 
-use \Xi\Filelib\File\File;
-
-use \Xi\Filelib\Linker\SequentialLinker;
-
+use Xi\Filelib\File\File;
+use Xi\Filelib\Linker\SequentialLinker;
 
 class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 {

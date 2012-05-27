@@ -1,10 +1,17 @@
 <?php
 
-use \Xi\Filelib\Folder\Folder;
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use \Xi\Filelib\File\File;
+namespace Xi\Tests\Filelib\Linker;
 
-use \Xi\Filelib\Linker\BeautifurlLinker;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Linker\BeautifurlLinker;
 
 class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 {
