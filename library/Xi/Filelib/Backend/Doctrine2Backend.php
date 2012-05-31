@@ -342,6 +342,7 @@ class Doctrine2Backend extends AbstractBackend
             $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
             $resourceRow->setVersions($resource->getVersions());
             $resourceRow->setExclusive($resource->isExclusive());
+            $resourceRow->setHash($resource->getHash());
             $this->em->flush();
             return true;
         } catch (EntityNotFoundException $e) {

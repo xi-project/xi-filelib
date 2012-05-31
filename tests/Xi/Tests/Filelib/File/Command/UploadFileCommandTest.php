@@ -77,12 +77,12 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'generateUuid'))
+                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'generateUuid', 'createCommand', 'executeOrQueue'))
                    ->getMock();
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
 
-        $op->expects($this->exactly(2))->method('generateUuid')
+        $op->expects($this->once())->method('generateUuid')
            ->will($this->returnValue('uusi-uuid'));
 
         $op->expects($this->atLeastOnce())->method('getInstance')->will($this->returnValue($fileitem));
@@ -124,6 +124,18 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
            ->with($this->equalTo('versioned'))
            ->will($this->returnValue($profile));
 
+        $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $op->expects($this->once())->method('createCommand')
+           ->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))
+           ->will($this->returnValue($afterUploadCommand));
+
+        $op->expects($this->once())->method('executeOrQueue')
+           ->with($this->isInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand'));
+
         $command = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
                         ->setConstructorArgs(array($op, $path, $folder, 'versioned'))
                         ->setMethods(array('getResource'))
@@ -134,10 +146,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                 ->will($this->returnValue(Resource::create()));
 
         $ret = $command->execute();
-
-        $this->assertInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand', $ret);
-        $this->assertEquals('uusi-uuid', $ret->getUuid());
-
+        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
     }
 
 
