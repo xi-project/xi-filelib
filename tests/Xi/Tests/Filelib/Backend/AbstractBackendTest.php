@@ -116,6 +116,7 @@ use Xi\Filelib\Folder\Folder;
             'versions' => array('loso', 'puuppa'),
             'size' => 6000,
             'mimetype' => 'lussuta/tussia',
+            'exclusive' => true,
         );
 
         $resource = Resource::create($data);
@@ -142,10 +143,10 @@ use Xi\Filelib\Folder\Folder;
         $this->assertEquals($resourceId, $resource->getId());
         $this->assertEquals($data['hash'], $resource->getHash());
         $this->assertEquals($data['versions'], $resource->getVersions());
-
         $this->assertNotNull($resource->getMimetype());
         $this->assertNotNull($resource->getDateCreated());
         $this->assertNotNull($resource->getSize());
+        $this->assertNotNull($resource->isExclusive());
     }
 
 
@@ -247,6 +248,7 @@ use Xi\Filelib\Folder\Folder;
      * @dataProvider updateResourceProvider
      * @param mixed $resourceId
      * @param mixed $versions
+
      */
     public function updateResourceShouldUpdateResource($resourceId, $versions)
     {
@@ -255,16 +257,16 @@ use Xi\Filelib\Folder\Folder;
         $resource = $this->backend->findResource($resourceId);
 
         $this->assertEquals($resourceId, $resource->getId());
-
         $this->assertNotEquals($versions, $resource->getVersions());
+        $this->assertTrue($resource->isExclusive());
 
         $resource->setVersions($versions);
-
+        $resource->setExclusive(false);
         $this->assertTrue($this->backend->updateResource($resource));
 
         $resource2 = $this->backend->findResource($resourceId);
-
         $this->assertEquals($versions, $resource2->getVersions());
+        $this->assertFalse($resource2->isExclusive());
     }
 
 
@@ -828,7 +830,7 @@ use Xi\Filelib\Folder\Folder;
             'date_created' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 666,
             'uuid'          => 'uuid-535',
-            'resource'      => $this->backend->findResource($resourceId),
+            'resource'      => $this->backend->findResource($resourceId)
         );
 
         $file = File::create($data);

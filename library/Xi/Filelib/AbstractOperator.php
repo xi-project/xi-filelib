@@ -59,7 +59,6 @@ abstract class AbstractOperator
         return $this->getFilelib()->getBackend();
     }
 
-
     /**
      * Returns storage
      *

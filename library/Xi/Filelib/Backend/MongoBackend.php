@@ -365,6 +365,8 @@ class MongoBackend extends AbstractBackend implements Backend
             'mimetype' => $resource->getMimetype(),
             'size' => $resource->getSize(),
             'date_created' => new MongoDate($resource->getDateCreated()->getTimestamp()),
+            'versions' => $resource->getVersions(),
+            'exclusive' => $resource->isExclusive(),
         );
 
         $this->getMongo()->resources->ensureIndex(array(
@@ -399,6 +401,7 @@ class MongoBackend extends AbstractBackend implements Backend
             'size' => $resource['size'],
             'date_created' => DateTime::createFromFormat('U', $resource['date_created']->sec)->setTimezone($date->getTimezone()),
             'versions' => $resource['versions'],
+            'exclusive' => $resource['exclusive'],
         ));
     }
 

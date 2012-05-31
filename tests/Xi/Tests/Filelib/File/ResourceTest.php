@@ -49,11 +49,15 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($resource, $resource->setHash($val));
         $this->assertEquals($val, $resource->getHash());
 
+        $val = true;
+        $this->assertFalse($resource->isExclusive());
+        $this->assertSame($resource, $resource->setExclusive($val));
+        $this->assertTrue($val, $resource->getHash());
+
         $val = array('lussen', 'le', 'tussen');
         $this->assertEquals(array(), $resource->getVersions());
         $this->assertSame($resource, $resource->setVersions($val));
         $this->assertEquals($val, $resource->getVersions());
-
 
     }
 
@@ -69,6 +73,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
                     'versions' => array('tussenhof', 'luslus'),
                     'size' => 1234,
                     'mimetype' => 'image/lus',
+                    'exclusive' => true,
                 ),
             ),
             array(
@@ -96,6 +101,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'versions' => 'getVersions',
             'mimetype' => 'getMimetype',
             'size' => 'getSize',
+            'exclusive' => 'isExclusive',
         );
 
         foreach($map as $key => $method) {
@@ -103,10 +109,13 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
                 $this->assertEquals($data[$key], $resource->$method());
             } else {
 
-                if ($key !== 'versions') {
-                    $this->assertNull($resource->$method());
-                } else {
+                if ($key == 'versions') {
                     $this->assertEquals(array(), $resource->$method());
+
+                } elseif($key == 'exclusive') {
+                    $this->assertFalse($resource->$method());
+                } else {
+                    $this->assertNull($resource->$method());
                 }
             }
         }
@@ -125,26 +134,28 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $resource->setVersions(array('kraa', 'xoo'));
         $resource->setMimetype('video/lus');
         $resource->setSize(5678);
+        $resource->setExclusive(true);
 
-        $this->assertEquals($resource->toArray(), array(
+        $this->assertEquals(array(
             'id' => 655,
             'hash' => 'hashisen-kone',
             'date_created' => new \DateTime('1978-03-21'),
             'versions' => array('kraa', 'xoo'),
             'size' => 5678,
             'mimetype' => 'video/lus',
-        ));
-
+            'exclusive' => true,
+        ), $resource->toArray());
 
         $resource = new Resource();
-        $this->assertEquals($resource->toArray(), array(
+        $this->assertEquals(array(
             'id' => null,
             'hash' => null,
             'date_created' => null,
             'versions' => array(),
             'size' => null,
             'mimetype' => null,
-        ));
+            'exclusive' => false,
+        ), $resource->toArray());
     }
 
     /**

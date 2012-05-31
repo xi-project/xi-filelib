@@ -341,6 +341,7 @@ class Doctrine2Backend extends AbstractBackend
         try {
             $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
             $resourceRow->setVersions($resource->getVersions());
+            $resourceRow->setExclusive($resource->isExclusive());
             $this->em->flush();
             return true;
         } catch (EntityNotFoundException $e) {
@@ -409,6 +410,7 @@ class Doctrine2Backend extends AbstractBackend
         $resourceRow->setDateCreated($resource->getDateCreated());
         $resourceRow->setMimetype($resource->getMimetype());
         $resourceRow->setSize($resource->getSize());
+        $resourceRow->setExclusive($resource->isExclusive());
         $this->em->persist($resourceRow);
         $this->em->flush();
         $resource->setId($resourceRow->getId());
@@ -436,9 +438,6 @@ class Doctrine2Backend extends AbstractBackend
     {
         return $this->em->find($this->resourceEntityName, $id);
     }
-
-
-
 
     /**
      * @param  File                   $file
@@ -533,6 +532,7 @@ class Doctrine2Backend extends AbstractBackend
             'versions' => $resource->getVersions(),
             'mimetype' => $resource->getMimetype(),
             'size' => $resource->getSize(),
+            'exclusive' => $resource->getExclusive(),
         ));
     }
 

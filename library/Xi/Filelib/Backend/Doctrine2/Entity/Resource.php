@@ -34,6 +34,11 @@ class Resource
     protected $size;
 
     /**
+     * @ORM\Column(name="exclusive", type="boolean", nullable=false)
+     */
+    protected $exclusive;
+
+    /**
      * @ORM\Column(name="date_created", type="datetime")
      */
     protected $date_created;
@@ -125,6 +130,27 @@ class Resource
 
 
     /**
+     * Returns exclusive
+     *
+     * @return boolean
+     */
+    public function getExclusive()
+    {
+        return $this->exclusive;
+    }
+
+    /**
+     * Sets exclusive
+     *
+     * @param boolean $exclusive
+     */
+    public function setExclusive($exclusive)
+    {
+        $this->exclusive = $exclusive;
+        return $this;
+    }
+
+    /**
      * Returns date created
      *
      * @return DateTime
@@ -133,7 +159,6 @@ class Resource
     {
         return $this->date_created;
     }
-
 
     /**
      * Sets date uploaded

@@ -7,4 +7,4 @@ CREATE UNIQUE INDEX folderid_filename_unique ON xi_filelib_file (folder_id, file
 CREATE TABLE xi_filelib_folder (id INTEGER NOT NULL, parent_id INTEGER DEFAULT NULL, foldername VARCHAR(255) NOT NULL, folderurl CLOB NOT NULL, uuid VARCHAR(36) NOT NULL, PRIMARY KEY("id"));
 CREATE UNIQUE INDEX UNIQ_A5EA9E8BD17F50A6 ON xi_filelib_folder (uuid);
 CREATE INDEX IDX_A5EA9E8B727ACA70 ON xi_filelib_folder (parent_id);
-CREATE TABLE xi_filelib_resource (id INTEGER NOT NULL, hash VARCHAR(255) NOT NULL, mimetype VARCHAR(255) NOT NULL, filesize INTEGER DEFAULT NULL, date_created DATETIME NOT NULL, versions CLOB NOT NULL, PRIMARY KEY("id"));
+CREATE TABLE xi_filelib_resource (id INTEGER NOT NULL, hash VARCHAR(255) NOT NULL, mimetype VARCHAR(255) NOT NULL, filesize INTEGER DEFAULT NULL, "exclusive" BOOLEAN NOT NULL, date_created DATETIME NOT NULL, versions CLOB NOT NULL, PRIMARY KEY("id"));

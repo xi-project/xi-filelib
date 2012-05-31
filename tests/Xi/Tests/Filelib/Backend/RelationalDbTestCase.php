@@ -387,6 +387,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'versions' => serialize(array('tussi', 'watussi', 'pygmi')),
                     'mimetype'      => 'image/png',
                     'filesize'      => '1000',
+                    'exclusive' => 1,
                 ),
                 array(
                     'id' => 2,
@@ -395,6 +396,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'versions' => serialize(array()),
                     'mimetype'      => 'image/png',
                     'filesize'      => '10001',
+                    'exclusive' => 0,
                 ),
                 array(
                     'id' => 3,
@@ -403,6 +405,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'versions' => serialize(array('pygmi', 'tussi')),
                     'mimetype'      => 'image/png',
                     'filesize'      => '20000',
+                    'exclusive' => 0,
                 ),
                 array(
                     'id' => 4,
@@ -411,6 +414,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'versions' => serialize(array('watussi')),
                     'mimetype'      => 'image/png',
                     'filesize'      => '50000',
+                    'exclusive' => 0,
                 ),
                 array(
                     'id' => 5,
@@ -419,6 +423,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'versions' => serialize(array('watussi', 'loso')),
                     'mimetype'      => 'video/xxx',
                     'filesize'      => '10000',
+                    'exclusive' => 0,
                 ),
             ),
 

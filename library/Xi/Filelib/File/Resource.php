@@ -21,6 +21,7 @@ class Resource
         'versions' => 'setVersions',
         'mimetype' => 'setMimetype',
         'size' => 'setSize',
+        'exclusive' => 'setExclusive',
     );
 
     /**
@@ -34,6 +35,11 @@ class Resource
      * @var string
      */
     private $hash;
+
+    /**
+     * @var boolean
+     */
+    private $exclusive = false;
 
     /**
      *
@@ -63,6 +69,7 @@ class Resource
      * Sets id
      *
      * @param mixed $id
+     * @return Resource
      */
     public function setId($id)
     {
@@ -85,6 +92,7 @@ class Resource
      * Sets create datetime
      *
      * @param DateTime $dateCreated
+     * @return Resource
      */
     public function setDateCreated(DateTime $dateCreated)
     {
@@ -104,6 +112,7 @@ class Resource
 
     /**
      * @param string $hash
+     * @return Resource
      */
     public function setHash($hash)
     {
@@ -159,6 +168,27 @@ class Resource
         return $this;
     }
 
+    /**
+     * Returns whether resource is marked as exclusive
+     *
+     * @return boolean
+     */
+    public function isExclusive()
+    {
+        return $this->exclusive;
+    }
+
+    /**
+     * Sets resource as exclusive or non exclusive
+     *
+     * @param boolean $exclusive
+     * @return Resource
+     */
+    public function setExclusive($exclusive)
+    {
+        $this->exclusive = $exclusive;
+        return $this;
+    }
 
     /**
      * Sets currently created versions
@@ -227,6 +257,7 @@ class Resource
             'versions' => $this->getVersions(),
             'mimetype' => $this->getMimetype(),
             'size' => $this->getSize(),
+            'exclusive' => $this->isExclusive(),
         );
     }
 

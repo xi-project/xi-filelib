@@ -107,7 +107,8 @@ class MongoBackendTest extends AbstractBackendTest
                     'date_created' => new DateTime('1978-03-21 06:06:06'),
                     'versions' => array('tussi', 'watussi', 'pygmi'),
                     'mimetype' => 'image/png',
-                    'size' => 10000
+                    'size' => 10000,
+                    'exclusive' => true,
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166102'),
@@ -115,7 +116,8 @@ class MongoBackendTest extends AbstractBackendTest
                     'date_created' => new DateTime('1988-03-21 06:06:06'),
                     'versions' => array(),
                     'mimetype' => 'image/png',
-                    'size' => 20000
+                    'size' => 20000,
+                    'exclusive' => true,
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166103'),
@@ -123,8 +125,8 @@ class MongoBackendTest extends AbstractBackendTest
                     'date_created' => new DateTime('1998-03-21 06:06:06'),
                     'versions' => array('pygmi', 'tussi'),
                     'mimetype' => 'image/png',
-                    'size' => 30000
-
+                    'size' => 30000,
+                    'exclusive' => true,
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166104'),
@@ -132,8 +134,8 @@ class MongoBackendTest extends AbstractBackendTest
                     'date_created' => new DateTime('2008-03-21 06:06:06'),
                     'versions' => array('watussi'),
                     'mimetype' => 'image/jpg',
-                    'size' => 40000
-
+                    'size' => 40000,
+                    'exclusive' => true,
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166105'),
@@ -141,8 +143,8 @@ class MongoBackendTest extends AbstractBackendTest
                     'date_created' => new DateTime('2009-03-21 06:06:06'),
                     'versions' => array('watussi', 'loso'),
                     'mimetype' => 'video/xxx',
-                    'size' => 50000
-
+                    'size' => 50000,
+                    'exclusive' => true,
                 ),
             ),
             'folders' => array(
@@ -186,9 +188,7 @@ class MongoBackendTest extends AbstractBackendTest
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166106'),
                     'folder_id'     => '49a7011a05c677b9a9166101',
-                    'mimetype'      => 'image/png',
                     'profile'       => 'versioned',
-                    'size'          => '1000',
                     'name'          => 'tohtori-vesala.png',
                     'link'          => 'tohtori-vesala.png',
                     'date_created' => new DateTime('2011-01-01 16:16:16'),
@@ -199,9 +199,7 @@ class MongoBackendTest extends AbstractBackendTest
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166107'),
                     'folder_id'     => '49a7011a05c677b9a9166102',
-                    'mimetype'      => 'image/png',
                     'profile'       => 'versioned',
-                    'size'          => '10001',
                     'name'          => 'akuankka.png',
                     'link'          => 'lussuttaja/akuankka.png',
                     'date_created' => new DateTime('2011-01-01 15:15:15'),
@@ -212,9 +210,7 @@ class MongoBackendTest extends AbstractBackendTest
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166108'),
                     'folder_id'     => '49a7011a05c677b9a9166103',
-                    'mimetype'      => 'image/png',
                     'profile'       => 'default',
-                    'size'          => '10000',
                     'name'          => 'repesorsa.png',
                     'link'          => 'lussuttaja/tussin/repesorsa.png',
                     'date_created' => new DateTime('2011-01-01 15:15:15'),
@@ -225,9 +221,7 @@ class MongoBackendTest extends AbstractBackendTest
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166109'),
                     'folder_id'     => '49a7011a05c677b9a9166104',
-                    'mimetype'      => 'image/png',
                     'profile'       => 'default',
-                    'size'          => '10000',
                     'name'          => 'megatussi.png',
                     'link'          => 'lussuttaja/banskun/megatussi.png',
                     'date_created' => new DateTime('2011-01-02 15:15:15'),
@@ -238,9 +232,7 @@ class MongoBackendTest extends AbstractBackendTest
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166110'),
                     'folder_id'     => '49a7011a05c677b9a9166104',
-                    'mimetype'      => 'image/png',
                     'profile'       => 'default',
-                    'size'          => '10000',
                     'name'          => 'megatussi2.png',
                     'link'          => 'lussuttaja/banskun/megatussi2.png',
                     'date_created' => new DateTime('2011-01-03 15:15:15'),

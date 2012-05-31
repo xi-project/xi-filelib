@@ -76,8 +76,7 @@ EOT;
 }
 
 $options['driver'] = 'pdo_' . $argv[1];
-$options['user'] = 'root';
-$options['password'] = 'g04753m135';
+$options['host'] = '127.0.0.1';
 
 $generator = new SchemaGenerator($options);
 

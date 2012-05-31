@@ -137,6 +137,7 @@ interface Backend
      * Finds resource by id
      *
      * @param mixed $id
+     * @return Resource
      */
     public function findResource($id);
 
@@ -144,6 +145,7 @@ interface Backend
      * Finds resources by hash
      *
      * @param string $hash
+     * @return array Array of Resources
      */
     public function findResourcesByHash($hash);
 
@@ -151,6 +153,7 @@ interface Backend
      * Creates a resource
      *
      * @param Resource $resource
+     * @return Resource
      */
     public function createResource(Resource $resource);
 
@@ -158,6 +161,7 @@ interface Backend
      * Deletes a resource
      *
      * @param Resource $resource
+     * @return boolean
      */
     public function deleteResource(Resource $resource);
 
@@ -166,6 +170,7 @@ interface Backend
      * Updates a resource
      *
      * @param Resource $resource
+     * @return boolean
      */
     public function updateResource(Resource $resource);
 
@@ -173,7 +178,8 @@ interface Backend
     /**
      * Returns how many times a resource is referenced by files
      *
-     * @oaram Resource $resource
+     * @param Resource $resource
+     * @return int
      */
     public function getNumberOfReferences(Resource $resource);
 

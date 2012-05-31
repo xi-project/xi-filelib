@@ -231,6 +231,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return (bool) $this->getResourceTable()->update(
             array(
                 'versions' => serialize($resource->getVersions()),
+                'exclusive' => $resource->isExclusive() ? 1 : 0,
             ),
             $this->getResourceTable()
                  ->getAdapter()
@@ -430,6 +431,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
         $row->filesize = $resource->getSize();
         $row->date_created  = $resource->getDateCreated()->format('Y-m-d H:i:s');
         $row->versions = serialize($resource->getVersions());
+        $row->exclusive = $resource->isExclusive() ? 1 : 0;
         $row->save();
 
         $resource->setId((int) $row->id);
@@ -459,6 +461,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'mimetype' => $row['mimetype'],
             'date_created' => new DateTime($row['date_created']),
             'versions' => unserialize($row['versions']),
+            'exclusive' => (bool) $row['exclusive'],
         ));
     }
 
