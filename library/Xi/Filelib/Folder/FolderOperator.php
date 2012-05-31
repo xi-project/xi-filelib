@@ -12,6 +12,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 interface FolderOperator
 {
+    const COMMAND_CREATE = 'create';
+    const COMMAND_DELETE = 'delete';
+    const COMMAND_UPDATE = 'update';
+    const COMMAND_CREATE_BY_URL = 'create_by_url';
+
     /**
      * @return Publisher
      */

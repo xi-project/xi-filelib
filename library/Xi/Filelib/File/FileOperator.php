@@ -13,6 +13,7 @@ use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Queue\Queue;
+use Xi\Filelib\Command;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
@@ -22,6 +23,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 interface FileOperator
 {
+    const COMMAND_UPLOAD = 'upload';
+    const COMMAND_AFTERUPLOAD = 'after_upload';
+    const COMMAND_UPDATE = 'update';
+    const COMMAND_DELETE = 'delete';
+    const COMMAND_PUBLISH = 'publish';
+    const COMMAND_UNPUBLISH = 'unpublish';
+    const COMMAND_COPY = 'copy';
 
     /**
      * Returns an instance of file
@@ -185,5 +193,24 @@ interface FileOperator
      * @return string
      */
     public function generateUuid();
+
+    /**
+     * Creates a command
+     *
+     * @param $commandClass Command classname
+     * @param array $args Params for constructor
+     * @return Command
+     */
+    public function createCommand($commandClass, array $args = array());
+
+    /**
+     * Executes or queues command
+     *
+     * @param Command $commandObj Command class
+     * @param $commandName Command name
+     * @param array $callbacks Callbacks
+     * @return mixed Return value from the queue or commands execute method
+     */
+    public function executeOrQueue(Command $commandObj, $commandName, array $callbacks = array());
 
 }
