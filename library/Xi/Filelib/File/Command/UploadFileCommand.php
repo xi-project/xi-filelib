@@ -51,18 +51,24 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
     public function getResource(FileUpload $upload)
     {
         $hash = sha1_file($upload->getRealPath());
-
-        $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
-        if ($resources) {
-            $resource = $resources[0];
-        } else {
-            $resource = new Resource();
-            $resource->setDateCreated(new DateTime());
-            $resource->setHash($hash);
-            $resource->setSize($upload->getSize());
-            $resource->setMimetype($upload->getMimeType());
-            $this->fileOperator->getBackend()->createResource($resource);
+        $profileObj = $this->fileOperator->getProfile($this->profile);
+        if ($profileObj->isSharedResourceAllowed()) {
+            $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
+            if ($resources) {
+                foreach ($resources as $resource) {
+                    if (!$resource->isExclusive()) {
+                        return $resource;
+                    }
+                }
+            }
         }
+
+        $resource = new Resource();
+        $resource->setDateCreated(new DateTime());
+        $resource->setHash($hash);
+        $resource->setSize($upload->getSize());
+        $resource->setMimetype($upload->getMimeType());
+        $this->fileOperator->getBackend()->createResource($resource);
         return $resource;
     }
 
@@ -79,8 +85,6 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         }
 
         $profileObj = $this->fileOperator->getProfile($profile);
-
-
         $event = new FileUploadEvent($upload, $folder, $profileObj);
         $this->fileOperator->getEventDispatcher()->dispatch('file.beforeUpload', $event);
 

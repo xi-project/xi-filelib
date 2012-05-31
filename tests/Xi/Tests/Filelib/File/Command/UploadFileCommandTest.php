@@ -44,12 +44,8 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
-
         $command = new UploadFileCommand($op, $path, $folder, 'versioned');
         $command->execute();
-
-
-        // $op->upload($path, $folder, 'versioned');
 
     }
 
@@ -184,17 +180,27 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function getResourceShouldGenerateNewResourceIfNoResourceIsFound()
+    public function getResourceShouldGenerateNewResourceIfProfileAllowsButNoResourceIsFound()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                     ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('getBackend'))
+                    ->setMethods(array('getBackend', 'getProfile'))
                     ->getMock();
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
+
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+
+        $op->expects($this->any())->method('getProfile')
+            ->with($this->equalTo('lussenhof'))
+            ->will($this->returnValue($profile));
+
+        $profile->expects($this->once())
+            ->method('isSharedResourceAllowed')
+            ->will($this->returnValue(true));
 
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
         $profile = 'lussenhof';
@@ -219,14 +225,68 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function getResourceShouldReuseResourceIfResourcesAreFound()
+    public function getResourceShouldGenerateNewResourceIfProfileRequires()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
+        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+            ->setConstructorArgs(array($filelib))
+            ->setMethods(array('getBackend', 'getProfile'))
+            ->getMock();
+
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
+
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+
+        $op->expects($this->any())->method('getProfile')
+            ->with($this->equalTo('lussenhof'))
+            ->will($this->returnValue($profile));
+
+        $profile->expects($this->once())
+            ->method('isSharedResourceAllowed')
+            ->will($this->returnValue(false));
+
+        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $profile = 'lussenhof';
+        $upload = new FileUpload($path);
+        $hash = sha1_file($upload->getRealPath());
+
+        $backend->expects($this->never())->method('findResourcesByHash');
+
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+
+        $command = new UploadFileCommand($op, $upload, $folder, $profile);
+
+        $ret = $command->getResource($upload);
+
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
+        $this->assertSame($hash, $ret->getHash());
+    }
+
+
+
+    /**
+     * @test
+     */
+    public function getResourceShouldReuseResourceIfProfileAllowsAndResourcesAreFound()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                     ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('getBackend'))
+                    ->setMethods(array('getBackend', 'getProfile'))
                     ->getMock();
+
+        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+
+        $op->expects($this->any())->method('getProfile')
+           ->with($this->equalTo('lussenhof'))
+           ->will($this->returnValue($profile));
+
+        $profile->expects($this->once())
+                ->method('isSharedResourceAllowed')
+                ->will($this->returnValue(true));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
