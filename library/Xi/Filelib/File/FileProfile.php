@@ -325,4 +325,22 @@ class FileProfile implements EventSubscriberInterface
         }
     }
 
+    /**
+     * Returns whether profile allows shared resources
+     *
+     * @return boolean
+     */
+    public function isSharedResourceAllowed()
+    {
+        foreach ($this->getPlugins() as $plugin) {
+            if ($plugin instanceof VersionProvider) {
+                if (!$plugin->isSharedResourceAllowed()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
 }

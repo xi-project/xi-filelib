@@ -19,17 +19,17 @@ class Resource
     protected $id;
 
     /**
-     * @ORM\Column(name="hash", type="string", length=255)
+     * @ORM\Column(name="hash", type="string", length=255, nullable=false)
      */
     protected $hash;
 
     /**
-     * @ORM\Column(name="mimetype", type="string", length=255)
+     * @ORM\Column(name="mimetype", type="string", length=255, nullable=false)
      */
     protected $mimetype;
 
     /**
-     * @ORM\Column(name="filesize", type="integer", nullable=true)
+     * @ORM\Column(name="filesize", type="integer", nullable=false)
      */
     protected $size;
 
@@ -39,7 +39,7 @@ class Resource
     protected $exclusive;
 
     /**
-     * @ORM\Column(name="date_created", type="datetime")
+     * @ORM\Column(name="date_created", type="datetime", nullable=false)
      */
     protected $date_created;
 

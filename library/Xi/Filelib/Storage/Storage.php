@@ -4,13 +4,13 @@ namespace Xi\Filelib\Storage;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\Resource;
+use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 
 /**
- * Filelib Storage interface
+ * Storage interface
  *
  * @author pekkis
- * @todo Something is not perfect yet... Rethink and finalize
  *
  */
 interface Storage
@@ -53,7 +53,7 @@ interface Storage
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
      * @param Resource $resource
-     * @return ResourceObject
+     * @return Resource
      */
     public function retrieve(Resource $resource);
 
@@ -62,7 +62,7 @@ interface Storage
      *
      * @param Resource $resource
      * @param string $version
-     * @return ResourceObject
+     * @return Resource
      */
     public function retrieveVersion(Resource $resource, $version);
 
@@ -70,6 +70,7 @@ interface Storage
      * Deletes a file
      *
      * @param Resource $resource
+     * @return boolean
      */
     public function delete(Resource $resource);
 
@@ -77,7 +78,7 @@ interface Storage
      * Deletes a version of a file
      *
      * @param Resource $resource
-     * @param $version
+     * @param string $version
      */
     public function deleteVersion(Resource $resource, $version);
 

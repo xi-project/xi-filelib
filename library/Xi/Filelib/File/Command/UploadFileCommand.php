@@ -3,6 +3,7 @@
 namespace Xi\Filelib\File\Command;
 
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
@@ -50,18 +51,24 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
     public function getResource(FileUpload $upload)
     {
         $hash = sha1_file($upload->getRealPath());
-
-        $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
-        if ($resources) {
-            $resource = $resources[0];
-        } else {
-            $resource = new Resource();
-            $resource->setDateCreated(new DateTime());
-            $resource->setHash($hash);
-            $resource->setSize($upload->getSize());
-            $resource->setMimetype($upload->getMimeType());
-            $this->fileOperator->getBackend()->createResource($resource);
+        $profileObj = $this->fileOperator->getProfile($this->profile);
+        if ($profileObj->isSharedResourceAllowed()) {
+            $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
+            if ($resources) {
+                foreach ($resources as $resource) {
+                    if (!$resource->isExclusive()) {
+                        return $resource;
+                    }
+                }
+            }
         }
+
+        $resource = new Resource();
+        $resource->setDateCreated(new DateTime());
+        $resource->setHash($hash);
+        $resource->setSize($upload->getSize());
+        $resource->setMimetype($upload->getMimeType());
+        $this->fileOperator->getBackend()->createResource($resource);
         return $resource;
     }
 
@@ -78,7 +85,6 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         }
 
         $profileObj = $this->fileOperator->getProfile($profile);
-
         $event = new FileUploadEvent($upload, $folder, $profileObj);
         $this->fileOperator->getEventDispatcher()->dispatch('file.beforeUpload', $event);
 
@@ -106,7 +112,9 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         $this->fileOperator->getEventDispatcher()->dispatch('file.upload', $event);
 
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $file));
-        return $command;
+        $this->fileOperator->executeOrQueue($command, FileOperator::COMMAND_AFTERUPLOAD);
+
+        return $file;
 
     }
 

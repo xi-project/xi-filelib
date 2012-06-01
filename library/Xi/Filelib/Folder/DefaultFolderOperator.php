@@ -21,17 +21,11 @@ use ArrayIterator;
  */
 class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 {
-
-    const COMMAND_CREATE = 'create';
-    const COMMAND_DELETE = 'delete';
-    const COMMAND_UPDATE = 'update';
-    const COMMAND_CREATE_BY_URL = 'create_by_url';
-
     protected $commandStrategies = array(
-        self::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_CREATE_BY_URL => Command::STRATEGY_SYNCHRONOUS,
+        FolderOperator::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
+        FolderOperator::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
+        FolderOperator::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
+        FolderOperator::COMMAND_CREATE_BY_URL => Command::STRATEGY_SYNCHRONOUS,
     );
 
     /**
@@ -80,7 +74,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         $command = $this->createCommand('Xi\Filelib\Folder\Command\CreateFolderCommand', array(
             $this, $folder
         ));
-        return $this->executeOrQueue($command, self::COMMAND_CREATE);
+        return $this->executeOrQueue($command, FolderOperator::COMMAND_CREATE);
     }
 
     /**
@@ -93,7 +87,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         $command = $this->createCommand('Xi\Filelib\Folder\Command\DeleteFolderCommand', array(
             $this, $this->getFileOperator(), $folder
         ));
-        return $this->executeOrQueue($command, self::COMMAND_DELETE);
+        return $this->executeOrQueue($command, FolderOperator::COMMAND_DELETE);
 
     }
 
@@ -107,7 +101,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         $command = $this->createCommand('Xi\Filelib\Folder\Command\UpdateFolderCommand', array(
             $this, $this->getFileOperator(), $folder
         ));
-        return $this->executeOrQueue($command, self::COMMAND_UPDATE);
+        return $this->executeOrQueue($command, FolderOperator::COMMAND_UPDATE);
     }
 
     /**
@@ -162,7 +156,7 @@ class DefaultFolderOperator extends AbstractOperator implements FolderOperator
         $command = $this->createCommand('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', array(
             $this, $url
         ));
-        return $this->executeOrQueue($command, self::COMMAND_CREATE_BY_URL);
+        return $this->executeOrQueue($command, FolderOperator::COMMAND_CREATE_BY_URL);
     }
 
     /**
