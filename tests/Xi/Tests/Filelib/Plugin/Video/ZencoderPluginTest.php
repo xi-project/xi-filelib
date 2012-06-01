@@ -405,6 +405,25 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
     }
 
 
+    /**
+     * @test
+     */
+    public function pluginShouldAllowSharedResource()
+    {
+        $plugin = new ZencoderPlugin();
+        $this->assertTrue($plugin->isSharedResourceAllowed());
+    }
+
+    /**
+     * @test
+     */
+    public function pluginShouldAllowSharedVersions()
+    {
+        $plugin = new ZencoderPlugin();
+        $this->assertTrue($plugin->areSharedVersionsAllowed());
+    }
+
+
 
 
 }

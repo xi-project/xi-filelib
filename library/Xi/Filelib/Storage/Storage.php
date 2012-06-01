@@ -47,7 +47,7 @@ interface Storage
      * @param string $tempResource Resource to be stored
      * @throws FilelibException
      */
-    public function storeVersion(Resource $resource, $version, $tempResource);
+    public function storeVersion(Resource $resource, $version, $tempResource, File $file = null);
 
     /**
      * Retrieves a file and temporarily stores it somewhere so it can be read.
@@ -64,7 +64,7 @@ interface Storage
      * @param string $version
      * @return Resource
      */
-    public function retrieveVersion(Resource $resource, $version);
+    public function retrieveVersion(Resource $resource, $version, File $file = null);
 
     /**
      * Deletes a file
@@ -80,6 +80,6 @@ interface Storage
      * @param Resource $resource
      * @param string $version
      */
-    public function deleteVersion(Resource $resource, $version);
+    public function deleteVersion(Resource $resource, $version, File $file = null);
 
 }

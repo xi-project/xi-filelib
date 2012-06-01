@@ -34,7 +34,10 @@ class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
         return $this->format;
     }
 
-    public function calculateDirectoryId(Resource $resource)
+    /**
+     * @see DirectoryIdCalculator::calculateDirectoryId
+     */
+    public function calculateDirectoryId($resource)
     {
         $dt = $resource->getDateCreated();
 

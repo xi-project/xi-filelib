@@ -6,6 +6,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\Resource;
+use Xi\Filelib\File\File;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
@@ -103,7 +104,7 @@ class FilesystemStorage extends AbstractStorage implements Storage
      * @param Resource $resource
      * @return string
      */
-    public function getDirectoryId(Resource $resource)
+    public function getDirectoryId($resource)
     {
         if(!$this->getCacheDirectoryIds()) {
             return $this->getDirectoryIdCalculator()->calculateDirectoryId($resource);
@@ -200,18 +201,21 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
     }
 
-    public function storeVersion(Resource $resource, $version, $tempFile)
+    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
         $this->assertRootExistsAndIsWritable();
 
         $path = $this->getRoot() . '/' . $this->getDirectoryId($resource) . '/' . $version;
+        if ($file) {
+            $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file);
+        }
 
         if(!is_dir($path)) {
             // Sorry for the silencer but it is needed here
             @mkdir($path, $this->getDirectoryPermission(), true);
         }
 
-        copy($tempFile, $path . '/' . $resource->getId());
+        copy($tempFile, $path . '/' . (($file) ? $file->getId() : $resource->getId()));
     }
 
     public function retrieve(Resource $resource)
@@ -225,12 +229,17 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return new FileObject($path);
     }
 
-    public function retrieveVersion(Resource $resource, $version)
+    public function retrieveVersion(Resource $resource, $version, File $file = null)
     {
-        $path = $this->getRoot() . '/' . $this->getDirectoryId($resource) . '/' . $version . '/' . $resource->getId();
+        $path = $this->getRoot() . '/' . $this->getDirectoryId($resource) . '/' . $version;
+        if ($file) {
+            $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file) . '/' . $file->getId();
+        } else {
+            $path .= '/' . $resource->getId();
+        }
 
         if(!is_file($path)) {
-            throw new FilelibException('Could not retrieve file');
+            throw new FilelibException("Could not retrieve resource version '{$version}'");
         }
 
         return new FileObject($path);
@@ -247,9 +256,14 @@ class FilesystemStorage extends AbstractStorage implements Storage
     }
 
 
-    public function deleteVersion(Resource $resource, $version)
+    public function deleteVersion(Resource $resource, $version, File $file = null)
     {
-        $path = $this->getRoot() . '/' . $this->getDirectoryId($resource) . '/' . $version . '/' . $resource->getId();
+        $path = $this->getRoot() . '/' . $this->getDirectoryId($resource) . '/' . $version;
+        if ($file) {
+            $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file) . '/' . $file->getId();
+        } else {
+            $path .= '/' . $resource->getId();
+        }
 
         if (is_file($path) && is_writable($path)) {
             unlink($path);

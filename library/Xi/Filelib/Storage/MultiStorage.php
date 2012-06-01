@@ -7,6 +7,7 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\Resource;
+use Xi\Filelib\File\File;
 
 class MultiStorage extends AbstractStorage implements Storage
 {
@@ -82,7 +83,7 @@ class MultiStorage extends AbstractStorage implements Storage
         }
     }
 
-    public function storeVersion(Resource $resource, $version, $tempFile)
+    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
         foreach ($this->getStorages() as $storage) {
             $storage->storeVersion($resource, $version, $tempFile);
@@ -94,7 +95,7 @@ class MultiStorage extends AbstractStorage implements Storage
         return $this->getSessionStorage()->retrieve($resource);
     }
 
-    public function retrieveVersion(Resource $resource, $version)
+    public function retrieveVersion(Resource $resource, $version, File $file = null)
     {
         return $this->getSessionStorage()->retrieveVersion($resource, $version);
     }
@@ -106,7 +107,7 @@ class MultiStorage extends AbstractStorage implements Storage
         }
     }
 
-    public function deleteVersion(Resource $resource, $version)
+    public function deleteVersion(Resource $resource, $version, File $file = null)
     {
         foreach ($this->getStorages() as $storage) {
             $storage->deleteVersion($resource, $version);

@@ -61,5 +61,7 @@ interface VersionProvider extends Plugin
      */
     public function isSharedResourceAllowed();
 
+    public function areSharedVersionsAllowed();
+
 
 }
