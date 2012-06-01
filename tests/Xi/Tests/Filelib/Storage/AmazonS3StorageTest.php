@@ -1,8 +1,7 @@
 <?php
 
-use \Xi\Filelib\Storage\AmazonS3Storage,
-    \Xi\Filelib\File\File
-    ;
+use Xi\Filelib\Storage\AmazonS3Storage;
+use Xi\Filelib\File\File;
 
 /**
  * @group storage
@@ -28,8 +27,8 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
     public function setUp()
     {
 
-        if (!class_exists('Zend_Service_Amazon_S3')) {
-            $this->markTestSkipped('Zend_Service_Amazon_S3 class could not be loaded');
+        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
+            $this->markTestSkipped('Zend\Service\Amazon\S3\S3 class could not be loaded');
         }
 
         if (!S3_KEY) {
@@ -67,7 +66,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
 
     public function tearDown()
     {
-        if (!class_exists('Zend_Service_Amazon_S3')) {
+        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
             return;
         }
 
@@ -158,7 +157,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
         $storage->setFilelib($this->getFilelib());
         $storage->setKey(S3_KEY);
         $storage->setSecretKey(S3_SECRETKEY);
-        $storage->setBucket(S3_BUCKET . '_lus');
+        $storage->setBucket(S3_BUCKET . 'lus');
 
         $storage->store($this->file, $this->fileResource);
 
