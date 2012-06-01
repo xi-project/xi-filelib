@@ -1,175 +1,178 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 use Xi\Filelib\Storage\AmazonS3Storage;
 use Xi\Filelib\File\File;
 
 /**
  * @group storage
  */
-class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
+class AmazonS3StorageTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
-     *
      * @var AmazonS3Storage
      */
-    protected $storage;
+    private $storage;
 
-    protected $file;
+    private $file;
 
-    protected $versionProvider;
+    /**
+     * @var string
+     */
+    private $filePath;
 
-    protected $fileResource;
-
-    protected $filelib;
-
+    private $amazonService;
 
     public function setUp()
     {
+        $this->filePath = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
 
-        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
-            $this->markTestSkipped('Zend\Service\Amazon\S3\S3 class could not be loaded');
-        }
+        $this->amazonService = $this->getMockBuilder('Zend\Service\Amazon\S3\S3')
+                                    ->disableOriginalConstructor()
+                                    ->getMock();
 
-        if (!S3_KEY) {
-            $this->markTestSkipped('S3 not configured');
-        }
+        $this->storage = new AmazonS3Storage(
+            $this->amazonService,
+            ROOT_TESTS . '/data/temp',
+            'bucket'
+        );
 
-
-        $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
-
-        $this->filelib = $this->getFilelib();
-
-        $storage = new AmazonS3Storage();
-        $storage->setKey(S3_KEY);
-        $storage->setSecretKey(S3_SECRETKEY);
-        $storage->setBucket(S3_BUCKET);
-
-
-        $this->storage = $storage;
-
-        $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
-        $dc->expects($this->any())
-            ->method('calculateDirectoryId')
-            ->will($this->returnValue('1'));
-
-        $this->version = 'xoo';
-
-        $this->file = \Xi\Filelib\File\File::create(array('id' => 1, 'folder_id' => 1, 'name' => 'self-lussing-manatee.jpg'));
-
-
-
-
-
+        $this->file = $this->getMock('Xi\Filelib\File\File');
+        $this->file->expects($this->once())
+                   ->method('getId')
+                   ->will($this->returnValue(123));
     }
-
-
-    public function tearDown()
-    {
-        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
-            return;
-        }
-
-        if (!S3_KEY) {
-            $this->markTestSkipped('S3 not configured');
-        }
-
-        $this->storage->getAmazonService()->cleanBucket($this->storage->getBucket());
-
-    }
-
 
     /**
      * @test
      */
-    public function storeAndRetrieveAndDeleteShouldWorkSeamlessly()
+    public function storesFile()
     {
-        $this->storage->setFilelib($this->getFilelib());
-        $this->storage->store($this->file, $this->fileResource);
+        $this->amazonService
+             ->expects($this->once())
+             ->method('putFile')
+             ->with($this->filePath, 'bucket/123');
+
+        $this->storage->store($this->file, $this->filePath);
+    }
+
+    /**
+     * @test
+     */
+    public function storesFileVersion()
+    {
+        $this->amazonService
+             ->expects($this->once())
+             ->method('putFile')
+             ->with($this->filePath, 'bucket/123_version');
+
+        $this->storage->storeVersion($this->file, 'version', $this->filePath);
+    }
+
+    /**
+     * @test
+     */
+    public function retrievesFile()
+    {
+        $this->amazonService
+             ->expects($this->once())
+             ->method('getObject')
+             ->with('bucket/123')
+             ->will($this->returnValue(file_get_contents($this->filePath)));
 
         $retrieved = $this->storage->retrieve($this->file);
 
-        $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
-
-        $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
-
-        $this->storage->delete($this->file);
-
-        $ret = $this->storage->getAmazonService()->isObjectAvailable($this->storage->getPath($this->file));
-
-        $this->assertFalse($ret);
-
-        $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
-
-    }
-
-    /**
-     * @test
-     */
-    public function destructorShouldCleanUpTheStoragesMess()
-    {
-        $storage = new AmazonS3Storage();
-        $storage->setFilelib($this->getFilelib());
-        $storage->setKey(S3_KEY);
-        $storage->setSecretKey(S3_SECRETKEY);
-        $storage->setBucket(S3_BUCKET);
-
-        $storage->store($this->file, $this->fileResource);
-
-        $retrieved = $storage->retrieve($this->file);
-        $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
-
-        $retrievedPath = $retrieved->getRealPath();
-
-        unset($storage);
-
-        $this->assertFileNotExists($retrievedPath);
-
-
-
-    }
-
-    /**
-     * @test
-     */
-    public function storeAndRetrieveAndDeleteVersionShouldWorkSeamlessly()
-    {
-        $this->storage->setFilelib($this->getFilelib());
-        $this->storage->storeVersion($this->file, $this->version, $this->fileResource);
-
-        $retrieved = $this->storage->retrieveVersion($this->file, $this->version);
-        $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
-
-        $this->storage->deleteVersion($this->file, $this->version);
-
-        $ret = $this->storage->getAmazonService()->isObjectAvailable($this->storage->getPath($this->file) . '_' . $this->version);
-
-        $this->assertFalse($ret);
-
-    }
-
-    /**
-     * @test
-     */
-    public function amazonServiceShouldCreateBucketIfItDoesNotExist()
-    {
-        $storage = new AmazonS3Storage();
-        $storage->setFilelib($this->getFilelib());
-        $storage->setKey(S3_KEY);
-        $storage->setSecretKey(S3_SECRETKEY);
-        $storage->setBucket(S3_BUCKET . 'lus');
-
-        $storage->store($this->file, $this->fileResource);
-
-        $retrieved = $storage->retrieve($this->file);
         $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
 
-        $storage->getAmazonService()->cleanBucket($storage->getBucket());
-        $storage->getAmazonService()->removeBucket($storage->getBucket());
+        $this->assertFileEquals($this->filePath, $retrieved->getRealPath());
     }
 
+    /**
+     * @test
+     */
+    public function retrievesFileVersion()
+    {
+        $this->amazonService
+             ->expects($this->once())
+             ->method('getObject')
+             ->with('bucket/123_version')
+             ->will($this->returnValue(file_get_contents($this->filePath)));
 
+        $retrieved = $this->storage->retrieveVersion($this->file, 'version');
 
+        $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
+
+        $this->assertFileEquals($this->filePath, $retrieved->getRealPath());
+    }
+
+    /**
+     * @test
+     */
+    public function deletesFile()
+    {
+        $this->amazonService
+             ->expects($this->once())
+             ->method('removeObject')
+             ->with('bucket/123');
+
+        $this->storage->delete($this->file);
+    }
+
+    /**
+     * @test
+     */
+    public function deletesFileVersion()
+    {
+        $this->amazonService
+             ->expects($this->once())
+             ->method('removeObject')
+             ->with('bucket/123_version');
+
+        $this->storage->deleteVersion($this->file, 'version');
+    }
+
+    /**
+     * @test
+     */
+    public function destructorCleansUpTemporaryFiles()
+    {
+        $this->amazonService
+             ->expects($this->once())
+             ->method('getObject')
+             ->with('bucket/123')
+             ->will($this->returnValue(file_get_contents($this->filePath)));
+
+        $retrievedPath = $this->storage->retrieve($this->file)->getRealPath();
+
+        $this->assertFileExists($retrievedPath);
+
+        unset($this->storage);
+
+        $this->assertFileNotExists($retrievedPath);
+    }
+
+    /**
+     * @test
+     */
+    public function amazonServiceCreatesBucketIfItDoesNotExist()
+    {
+        $this->amazonService
+             ->expects($this->once())
+             ->method('isBucketAvailable')
+             ->with('bucket')
+             ->will($this->returnValue(false));
+
+        $this->amazonService
+             ->expects($this->once())
+             ->method('createBucket')
+             ->with('bucket');
+
+        $this->storage->store($this->file, $this->filePath);
+    }
 }
-
-

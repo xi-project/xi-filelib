@@ -17,18 +17,38 @@ use Zend\Service\Amazon\S3\S3 as AmazonService;
 
 class AmazonS3Storage extends AbstractStorage implements Storage
 {
+    /**
+     * @var AmazonService
+     */
     private $amazonService;
 
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    /**
+     * @var string
+     */
     private $bucket;
-
-    private $key;
-
-    private $secretKey;
 
     /**
      * @var array Registered temporary files
      */
     private $tempFiles = array();
+
+    /**
+     * @param  AmazonService   $amazonService
+     * @param  string          $tempDir
+     * @param  string          $bucket
+     * @return AmazonS3Storage
+     */
+    public function __construct(AmazonService $amazonService, $tempDir, $bucket)
+    {
+        $this->amazonService = $amazonService;
+        $this->tempDir = $tempDir;
+        $this->bucket = $bucket;
+    }
 
     /**
      * Deletes all temp files on destruct
@@ -41,55 +61,11 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     }
 
     /**
-     * @return \Zend_Service_Amazon_S3
+     * @return string
      */
-    public function getAmazonService()
-    {
-        if (!$this->amazonService) {
-            $this->amazonService = new AmazonService($this->getKey(), $this->getSecretKey());
-        }
-
-        if (!$this->amazonService->isBucketAvailable($this->getBucket())) {
-            $this->amazonService->createBucket($this->getBucket());
-        }
-
-        return $this->amazonService;
-
-    }
-
-    public function setBucket($bucket)
-    {
-        $this->bucket = $bucket;
-    }
-
     public function getBucket()
     {
         return $this->bucket;
-    }
-
-    public function setKey($key)
-    {
-        $this->key = $key;
-    }
-
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-    public function setSecretKey($secretKey)
-    {
-        $this->secretKey = $secretKey;
-    }
-
-    public function getSecretKey()
-    {
-        return $this->secretKey;
-    }
-
-    public function getPath($file)
-    {
-        return $this->getBucket() . '/' . $file->getId();
     }
 
     /**
@@ -131,7 +107,8 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     }
 
     /**
-     * Retrieves a version of a file and temporarily stores it somewhere so it can be read.
+     * Retrieves a version of a file and temporarily stores it somewhere so it
+     * can be read.
      *
      * @param  File       $file
      * @param  string     $version
@@ -168,9 +145,13 @@ class AmazonS3Storage extends AbstractStorage implements Storage
         $this->getAmazonService()->removeObject($object);
     }
 
+    /**
+     * @param  string     $file
+     * @return FileObject
+     */
     private function toTemp($file)
     {
-        $tmp = $this->getFilelib()->getTempDir() . '/' . tmpfile();
+        $tmp = tempnam($this->tempDir, 'filelib');
 
         file_put_contents($tmp, $file);
 
@@ -189,5 +170,26 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     private function registerTempFile(FileObject $fo)
     {
         $this->tempFiles[] = $fo;
+    }
+
+    /**
+     * @param  File   $file
+     * @return string
+     */
+    private function getPath(File $file)
+    {
+        return $this->getBucket() . '/' . $file->getId();
+    }
+
+    /**
+     * @return AmazonService
+     */
+    private function getAmazonService()
+    {
+        if (!$this->amazonService->isBucketAvailable($this->getBucket())) {
+            $this->amazonService->createBucket($this->getBucket());
+        }
+
+        return $this->amazonService;
     }
 }
