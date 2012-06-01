@@ -5,7 +5,6 @@ namespace Xi\Filelib\Linker;
 use Xi\Filelib\Linker\AbstractLinker;
 use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Exception\InvalidArgumentException;
 
@@ -14,11 +13,9 @@ use Xi\Filelib\Exception\InvalidArgumentException;
  *
  * @author pekkis
  * @author Petri Mahanen
- *
  */
 class SequentialLinker extends AbstractLinker implements Linker
 {
-
     /**
      * @var integer Files per directory
      */
@@ -32,7 +29,7 @@ class SequentialLinker extends AbstractLinker implements Linker
     /**
      * Sets files per directory
      *
-     * @param integer $filesPerDirectory
+     * @param  integer          $filesPerDirectory
      * @return SequentialLinker
      */
     public function setFilesPerDirectory($filesPerDirectory)
@@ -54,7 +51,7 @@ class SequentialLinker extends AbstractLinker implements Linker
     /**
      * Sets levels per directory hierarchy
      *
-     * @param integer $directoryLevels
+     * @param  integer          $directoryLevels
      * @return SequentialLinker
      */
     public function setDirectoryLevels($directoryLevels)
@@ -76,7 +73,7 @@ class SequentialLinker extends AbstractLinker implements Linker
     /**
      * Returns directory path for specified file id
      *
-     * @param File $file
+     * @param  File   $file
      * @return string
      */
     public function getDirectoryId(File $file)
@@ -84,7 +81,14 @@ class SequentialLinker extends AbstractLinker implements Linker
         return $this->calculateDirectoryId($file);
     }
 
-
+    /**
+     * Returns link for a version of a file
+     *
+     * @param  File   $file
+     * @param  string $version   Version identifier
+     * @param  string $extension Extension
+     * @return string Versioned link
+     */
     public function getLinkVersion(File $file, $version, $extension)
     {
 
@@ -96,7 +100,12 @@ class SequentialLinker extends AbstractLinker implements Linker
         return $link;
     }
 
-
+    /**
+     * Returns a link for a file
+     *
+     * @param  File   $file
+     * @return string Link
+     */
     public function getLink(File $file)
     {
         $url = array();
@@ -104,6 +113,7 @@ class SequentialLinker extends AbstractLinker implements Linker
         $name = $file->getName();
         $url[] = $name;
         $url = implode(DIRECTORY_SEPARATOR, $url);
+
         return $url;
     }
 
@@ -136,5 +146,4 @@ class SequentialLinker extends AbstractLinker implements Linker
         return implode(DIRECTORY_SEPARATOR, $arr);
 
     }
-
 }

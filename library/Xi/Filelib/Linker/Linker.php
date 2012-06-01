@@ -23,7 +23,7 @@ interface Linker
      * Returns link for a version of a file
      *
      * @param  File   $file
-     * @param  string $version Version identifier
+     * @param  string $version   Version identifier
      * @param  string $extension Extension
      * @return string Versioned link
      */
