@@ -1,5 +1,5 @@
 {
-    "hash": "5354a90eb8a1d65f1d0cec56fc8b13f9",
+    "hash": "d8f55405e7a30480e3c14d050f506c37",
     "packages": [
         {
             "package": "doctrine/common",
@@ -32,14 +32,32 @@
         {
             "package": "videlalvaro/php-amqplib",
             "version": "dev-master",
-            "source-reference": "b74879109f8f79aed336b95e723e41674bafdebc"
+            "source-reference": "e98ca899d867633cd8aa2ef04e8e9e6147d21df8"
         },
         {
             "package": "zendframework/zendframework",
             "version": "dev-master",
-            "source-reference": "d2f080ef1d636154335d35bef88ad568e79548e1"
+            "alias-pretty-version": "2.0.x-dev",
+            "alias-version": "2.0.9999999.9999999-dev"
+        },
+        {
+            "package": "zendframework/zendframework",
+            "version": "dev-master",
+            "alias-pretty-version": "2.0.x-dev",
+            "alias-version": "2.0.9999999.9999999-dev"
+        },
+        {
+            "package": "zendframework/zendframework",
+            "version": "dev-master",
+            "source-reference": "48bf0c42bc6c406681327b16064ab3cf1a644218"
         }
     ],
     "packages-dev": null,
-    "aliases": []
+    "aliases": [
+
+    ],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "zendframework/zendframework": 20
+    }
 }
