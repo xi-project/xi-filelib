@@ -71,7 +71,8 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     /**
      * Stores an uploaded file
      *
-     * @param File $file
+     * @param File   $file
+     * @param string $tempFile File to be stored
      */
     public function store(File $file, $tempFile)
     {
@@ -82,9 +83,9 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     /**
      * Stores a version of a file
      *
-     * @param File         $file
-     * @param string       $version
-     * @param unknown_type $tempFile File to be stored
+     * @param File   $file
+     * @param string $version
+     * @param string $tempFile File to be stored
      */
     public function storeVersion(File $file, $version, $tempFile)
     {
