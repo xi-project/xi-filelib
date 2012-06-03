@@ -9,7 +9,6 @@ use Xi\Tests\Filelib\TestCase;
  */
 class DirectoryIdCalculatorTest extends TestCase
 {
-    
     /**
      * @test
      */
@@ -17,6 +16,4 @@ class DirectoryIdCalculatorTest extends TestCase
     {
         $this->assertTrue(interface_exists('Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator'));
     }
-    
-    
 }

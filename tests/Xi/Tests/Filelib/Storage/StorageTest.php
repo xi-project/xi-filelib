@@ -9,7 +9,6 @@ use Xi\Tests\Filelib\TestCase;
  */
 class StorageTest extends TestCase
 {
-    
     /**
      * @test
      */
@@ -17,6 +16,4 @@ class StorageTest extends TestCase
     {
         $this->assertTrue(interface_exists('Xi\Filelib\Storage\Storage'));
     }
-    
-    
 }

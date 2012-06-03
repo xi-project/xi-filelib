@@ -2,8 +2,8 @@
 
 namespace Xi\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator,
-    Xi\Filelib\File\File;
+use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
+use Xi\Filelib\File\File;
 
 /**
  * @group storage
