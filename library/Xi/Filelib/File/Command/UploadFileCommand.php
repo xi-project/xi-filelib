@@ -10,7 +10,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FilelibException;
 use Serializable;
-use Xi\Filelib\DefaultFileOperator;
+use Xi\Filelib\File\DefaultFileOperator;
 
 class UploadFileCommand extends AbstractFileCommand implements Serializable
 {
@@ -83,7 +83,7 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         $this->fileOperator->getEventDispatcher()->dispatch('file.upload', $event);
 
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $file));
-        $this->fileOperator->executeOrQueue($command, \Xi\Filelib\File\DefaultFileOperator::COMMAND_AFTERUPLOAD);
+        $this->fileOperator->executeOrQueue($command, DefaultFileOperator::COMMAND_AFTERUPLOAD);
 
         return $file;
 
