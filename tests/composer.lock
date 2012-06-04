@@ -1,33 +1,33 @@
 {
-    "hash": "d8f55405e7a30480e3c14d050f506c37",
+    "hash": "d82d8960dc60ed37b87599a06a4c3e5b",
     "packages": [
         {
             "package": "doctrine/common",
-            "version": "2.2.1"
+            "version": "2.2.2"
         },
         {
             "package": "doctrine/dbal",
-            "version": "2.2.1"
+            "version": "2.2.2"
         },
         {
             "package": "doctrine/orm",
-            "version": "2.2.1"
+            "version": "2.2.2"
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "v2.0.10"
+            "version": "v2.0.14"
         },
         {
             "package": "symfony/http-foundation",
-            "version": "v2.0.10"
+            "version": "v2.0.14"
         },
         {
             "package": "symfony/http-kernel",
-            "version": "v2.0.10"
+            "version": "v2.0.14"
         },
         {
             "package": "symfony/security",
-            "version": "v2.0.10"
+            "version": "v2.0.14"
         },
         {
             "package": "videlalvaro/php-amqplib",
@@ -49,7 +49,7 @@
         {
             "package": "zendframework/zendframework",
             "version": "dev-master",
-            "source-reference": "48bf0c42bc6c406681327b16064ab3cf1a644218"
+            "source-reference": "53705360c27a3301f8a85059253bacfa2072718d"
         }
     ],
     "packages-dev": null,

@@ -151,11 +151,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         if(!$this->awsService) {
             $this->awsService = new AmazonService($this->getAwsKey(), $this->getAwsSecretKey());
         }
-
-        if(!$this->awsService->isBucketAvailable($this->getAwsBucket())) {
-            $this->awsService->createBucket($this->getAwsBucket());
-        }
-
         return $this->awsService;
     }
 
