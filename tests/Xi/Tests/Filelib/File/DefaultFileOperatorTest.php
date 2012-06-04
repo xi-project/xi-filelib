@@ -83,66 +83,16 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
                                ->setMethods(array('execute'))
                                ->getMock();
 
-        $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
-                               ->disableOriginalConstructor()
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
         // $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')->disableOriginalConstructor()->getMock();
 
-        $uploadCommand->expects($this->once())->method('execute')->will($this->returnValue($afterUploadCommand));
-        $afterUploadCommand->expects($this->once())->method('execute')->will($this->returnValue('luss'));
+        $uploadCommand->expects($this->once())->method('execute')->will($this->returnValue($file));
 
         $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
         // $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))->will($this->returnValue($afterUploadCommand));
 
+        $ret = $op->upload($upload, $folder, $profile);
 
-        $op->upload($upload, $folder, $profile);
-
-    }
-
-    /**
-     * @test
-     */
-    public function uploadShouldExecuteUploadAndQueueAfterUploadWhenSynchronousAndAsynchronousStrategiesAreUsed()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $file = $this->getMock('Xi\Filelib\File\File');
-        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $profile = 'versioned';
-
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
-                   ->setMethods(array('createCommand', 'getQueue'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
-
-        $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-        $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
-
-        $op->expects($this->atLeastOnce())->method('getQueue')->will($this->returnValue($queue));
-
-        $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
-                               ->setConstructorArgs(array($op, $upload, $folder, $profile))
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-        $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
-                               ->disableOriginalConstructor()
-                               ->setMethods(array('execute'))
-                               ->getMock();
-
-        // $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')->disableOriginalConstructor()->getMock();
-
-        $uploadCommand->expects($this->once())->method('execute')->will($this->returnValue($afterUploadCommand));
-        $afterUploadCommand->expects($this->never())->method('execute');
-
-        $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
-        // $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))->will($this->returnValue($afterUploadCommand));
-
-        $op->setCommandStrategy(DefaultFileOperator::COMMAND_AFTERUPLOAD, Command::STRATEGY_ASYNCHRONOUS);
-        $op->upload($upload, $folder, $profile);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
 
     }
 
