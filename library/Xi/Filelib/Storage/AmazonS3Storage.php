@@ -12,6 +12,7 @@ namespace Xi\Filelib\Storage;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\Resource;
+use Xi\Filelib\File\File;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
@@ -90,7 +91,7 @@ class AmazonS3Storage extends AbstractStorage implements Storage
      * @param string $version
      * @param string $tempFile File to be stored
      */
-    public function storeVersion(Resource $resource, $version, $tempFile)
+    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
         $object = $this->getPath($resource) . '_' . $version;
         $this->getAmazonService()->putFile($tempFile, $object);
@@ -116,7 +117,7 @@ class AmazonS3Storage extends AbstractStorage implements Storage
      * @param string $version
      * @return FileObject
      */
-    public function retrieveVersion(Resource $resource, $version)
+    public function retrieveVersion(Resource $resource, $version, File $file = null)
     {
         $object = $this->getPath($resource) . '_' . $version;
         $ret = $this->getAmazonService()->getObject($object);
@@ -140,7 +141,7 @@ class AmazonS3Storage extends AbstractStorage implements Storage
      * @param Resource $resource
      * @param string $version
      */
-    public function deleteVersion(Resource $resource, $version)
+    public function deleteVersion(Resource $resource, $version, File $file = null)
     {
         $object = $this->getPath($resource) . '_' . $version;
         $this->getAmazonService()->removeObject($object);

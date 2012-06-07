@@ -15,6 +15,7 @@ use MongoGridFSFile;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\Resource;
+use Xi\Filelib\File\File;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FilelibException;
@@ -169,7 +170,7 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $resource->getId(), 'version' => 'original')));
     }
 
-    public function storeVersion(Resource $resource, $version, $tempFile)
+    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
         $filename = $this->getFilenameVersion($resource, $version);
 
@@ -189,7 +190,7 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $this->toTemp($file);
     }
 
-    public function retrieveVersion(Resource $resource, $version)
+    public function retrieveVersion(Resource $resource, $version, File $file = null)
     {
         $filename = $this->getFilenameVersion($resource, $version);
 
@@ -209,7 +210,7 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    public function deleteVersion(Resource $resource, $version)
+    public function deleteVersion(Resource $resource, $version, File $file = null)
     {
         $filename = $this->getFilenameVersion($resource, $version);
         $this->getGridFS()->remove(array('filename' => $filename));
@@ -220,7 +221,7 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $resource->getId();
     }
 
-    public function getFilenameVersion(Resource $resource, $version)
+    public function getFilenameVersion(Resource $resource, $version, File $file = null)
     {
         return $resource->getId() . '/' . $version;
     }

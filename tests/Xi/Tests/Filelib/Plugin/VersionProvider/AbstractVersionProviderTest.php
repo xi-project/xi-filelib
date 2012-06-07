@@ -65,7 +65,7 @@ class AbstractVersionProviderTest extends TestCase
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
-            ->setMethods(array('createVersions', 'deleteVersions', 'getStorage', 'getVersions', 'getExtensionFor'))
+            ->setMethods(array('createVersions', 'deleteVersions', 'getStorage', 'getVersions', 'getExtensionFor', 'areSharedVersionsAllowed', 'isSharedResourceAllowed'))
             ->getMockForAbstractClass();
 
         $plugin->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
@@ -91,20 +91,13 @@ class AbstractVersionProviderTest extends TestCase
     }
 
     /**
-     * @test
-     */
-    public function sharedResourcesShouldBeEnabled()
-    {
-        $this->assertTrue($this->plugin->isSharedResourceAllowed());
-    }
-
-    /**
      * @return array
      */
     public function provideVersions()
     {
         return array(
-            array(true, array('tussi'), array('tussi')),
+            array(true, array('tussi'), array('tussi'), true, true),
+            array(false, array('tussi'), array('tussi'), false, false),
         );
     }
 
@@ -113,16 +106,26 @@ class AbstractVersionProviderTest extends TestCase
      * @dataProvider provideVersions
      * @test
      */
-    public function areVersionsCreatedShouldReturnExpectedResults($expected, $resourceVersions, $pluginVersions)
+    public function areVersionsCreatedShouldReturnExpectedResults($expected, $resourceVersions, $pluginVersions, $sharedVersionsAllowed, $expectGetVersions)
     {
+        $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
+             ->will($this->returnValue($sharedVersionsAllowed));
+
         $file = File::create(array('resource' => Resource::create(array('versions' => $resourceVersions))));
 
-        $this->plugin->expects($this->atLeastOnce())
-                     ->method('getVersions')
-                     ->will($this->returnValue($pluginVersions));
+        $this->plugin->expects($this->atLeastOnce())->method('areSharedVersionsAllowed')
+            ->will($this->returnValue(false));
+
+        if ($expectGetVersions) {
+            $this->plugin->expects($this->atLeastOnce())
+                ->method('getVersions')
+                ->will($this->returnValue($pluginVersions));
+        } else {
+            $this->plugin->expects($this->never())
+                ->method('getVersions');
+        }
 
         $this->assertEquals($expected, $this->plugin->areVersionsCreated($file));
-
 
     }
 
@@ -294,6 +297,9 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function afterUploadShouldDoNothingWhenVersionAlreadyExists()
     {
+        $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
+            ->will($this->returnValue(true));
+
         $this->plugin->expects($this->never())->method('createVersions');
 
         $this->plugin->expects($this->atLeastOnce())->method('getVersions')
@@ -318,21 +324,34 @@ class AbstractVersionProviderTest extends TestCase
     }
 
 
+    public function provideSharedVersionsAllowed()
+    {
+        return array(
+            array(true),
+            array(false),
+        );
+    }
 
 
     /**
      * @test
+     * @dataProvider provideSharedVersionsAllowed
      */
-    public function afterUploadShouldCreateAndStoreVersionWhenAllIsProper()
+    public function afterUploadShouldCreateAndStoreVersionWhenAllIsProper($sharedVersionsAllowed)
     {
+        $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
+            ->will($this->returnValue($sharedVersionsAllowed));
+
         $this->plugin->setIdentifier('xooxer');
 
         $this->plugin->expects($this->once())->method('createVersions')
              ->with($this->isInstanceOf('Xi\Filelib\File\File'))
              ->will($this->returnValue(array('xooxer' => ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg')));
 
-        $this->plugin->expects($this->atLeastOnce())->method('getVersions')
-                     ->will($this->returnValue(array('reiska')));
+        if ($sharedVersionsAllowed) {
+            $this->plugin->expects($this->atLeastOnce())->method('getVersions')
+                ->will($this->returnValue(array('reiska')));
+        }
 
         $this->plugin->setProvidesFor(array('image', 'video'));
         $this->plugin->setProfiles(array('tussi', 'lussi'));
@@ -343,7 +362,8 @@ class AbstractVersionProviderTest extends TestCase
                 ->with(
                     $this->isInstanceOf('Xi\Filelib\File\Resource'),
                     $this->equalTo('xooxer'),
-                    ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg'
+                    $this->equalTo(ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg'),
+                    $sharedVersionsAllowed ? $this->isNull() : $this->isInstanceOf('Xi\Filelib\File\File')
                 );
 
         $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'image/xoo'))));
@@ -602,7 +622,7 @@ class AbstractVersionProviderTest extends TestCase
     }
 
     /**
-     * @test
+     * @xxxtest
      */
     public function deleteVersionShouldDelegateToStorage()
     {

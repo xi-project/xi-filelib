@@ -30,6 +30,24 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
+    public function pluginShouldAllowSharedResource()
+    {
+        $plugin = new VersionPlugin();
+        $this->assertTrue($plugin->isSharedResourceAllowed());
+    }
+
+    /**
+     * @test
+     */
+    public function pluginShouldAllowSharedVersions()
+    {
+        $plugin = new VersionPlugin();
+        $this->assertTrue($plugin->areSharedVersionsAllowed());
+    }
+
+    /**
+     * @test
+     */
     public function getImageMagickHelperShouldReturnImageMagickHelper()
     {
         $plugin = new VersionPlugin();

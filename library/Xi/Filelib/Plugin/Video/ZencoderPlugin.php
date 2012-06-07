@@ -299,4 +299,15 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         }, $this->getOutputs()));
     }
 
+    public function isSharedResourceAllowed()
+    {
+        return true;
+    }
+
+    public function areSharedVersionsAllowed()
+    {
+        return true;
+    }
+
+
 }
