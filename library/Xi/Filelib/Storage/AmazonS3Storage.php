@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Storage;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\Resource;
@@ -14,15 +20,20 @@ use Zend\Service\Amazon\S3\S3 as AmazonService;
 
 class AmazonS3Storage extends AbstractStorage implements Storage
 {
-
-
+    /**
+     * @var AmazonService
+     */
     private $amazonService;
 
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    /**
+     * @var string
+     */
     private $bucket;
-
-    private $key;
-
-    private $secretKey;
 
     /**
      * @var array Registered temporary files
@@ -30,78 +41,42 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     private $tempFiles = array();
 
     /**
+     * @param  AmazonService   $amazonService
+     * @param  string          $tempDir
+     * @param  string          $bucket
+     * @return AmazonS3Storage
+     */
+    public function __construct(AmazonService $amazonService, $tempDir, $bucket)
+    {
+        $this->amazonService = $amazonService;
+        $this->tempDir = $tempDir;
+        $this->bucket = $bucket;
+    }
+
+    /**
      * Deletes all temp files on destruct
      */
     public function __destruct()
     {
-        foreach($this->tempFiles as $tempFile) {
+        foreach ($this->tempFiles as $tempFile) {
             unlink($tempFile->getPathname());
         }
     }
 
     /**
-     * @return \Zend_Service_Amazon_S3
+     * @return string
      */
-    public function getAmazonService()
-    {
-        if(!$this->amazonService) {
-            $this->amazonService = new AmazonService($this->getKey(), $this->getSecretKey());
-        }
-
-        if(!$this->amazonService->isBucketAvailable($this->getBucket())) {
-            $this->amazonService->createBucket($this->getBucket());
-        }
-
-        return $this->amazonService;
-
-    }
-
-
-    public function setBucket($bucket)
-    {
-        $this->bucket = $bucket;
-    }
-
 
     public function getBucket()
     {
         return $this->bucket;
     }
 
-
-
-    public function setKey($key)
-    {
-        $this->key = $key;
-    }
-
-
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-
-    public function setSecretKey($secretKey)
-    {
-        $this->secretKey = $secretKey;
-    }
-
-    public function getSecretKey()
-    {
-        return $this->secretKey;
-    }
-
-
-    public function getPath($resource)
-    {
-        return $this->getBucket() . '/' . $resource->getId();
-    }
-
     /**
      * Stores an uploaded file
      *
      * @param Resource $resource
+     * @param string $tempFile File to be stored
      */
     public function store(Resource $resource, $tempFile)
     {
@@ -114,7 +89,7 @@ class AmazonS3Storage extends AbstractStorage implements Storage
      *
      * @param Resource $resource
      * @param string $version
-     * @param unknown_type $tempFile File to be stored
+     * @param string $tempFile File to be stored
      */
     public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
@@ -172,19 +147,17 @@ class AmazonS3Storage extends AbstractStorage implements Storage
         $this->getAmazonService()->removeObject($object);
     }
 
-
+    /**
+     * @param  string     $file
+     * @return FileObject
+     */
     private function toTemp($file)
     {
-        $tmp = $this->getFilelib()->getTempDir() . '/' . tmpfile();
-
+        $tmp = tempnam($this->tempDir, 'filelib');
         file_put_contents($tmp, $file);
-
         $fo = new FileObject($tmp);
-
         $this->registerTempFile($fo);
-
         return $fo;
-
     }
 
     /**
@@ -197,7 +170,24 @@ class AmazonS3Storage extends AbstractStorage implements Storage
         $this->tempFiles[] = $fo;
     }
 
+    /**
+     * @param  Resource $resource
+     * @return string
+     */
+    private function getPath(Resource $resource)
+    {
+        return $this->getBucket() . '/' . $resource->getId();
+    }
 
+    /**
+     * @return AmazonService
+     */
+    private function getAmazonService()
+    {
+        if (!$this->amazonService->isBucketAvailable($this->getBucket())) {
+            $this->amazonService->createBucket($this->getBucket());
+        }
 
-
+        return $this->amazonService;
+    }
 }

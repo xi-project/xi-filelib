@@ -1,14 +1,23 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Tests\Filelib\Storage;
 
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\Storage\MultiStorage;
 use \Xi\Filelib\File\Resource;
 
+/**
+ * @group storage
+ */
 class MultiStorageTest extends \Xi\Tests\TestCase
 {
-
     protected $storage;
 
     protected $mockStorages = array();
@@ -17,7 +26,6 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
     public function setUp()
     {
-
         $mockStorage = $this->getMockForAbstractClass('\\Xi\\Filelib\\Storage\\AbstractStorage');
 
         $mockStorage = $this->getMockBuilder('\\Xi\\Filelib\\Storage\\AbstractStorage')->getMock();
@@ -36,7 +44,6 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
     }
 
-
     /**
      * @test
      */
@@ -50,7 +57,6 @@ class MultiStorageTest extends \Xi\Tests\TestCase
         }
 
         $this->storage->delete($this->resource);
-
     }
 
     /**
@@ -58,7 +64,6 @@ class MultiStorageTest extends \Xi\Tests\TestCase
      */
     public function deleteVersionShouldIterateAllInnerStorages()
     {
-
         foreach ($this->mockStorages as $storage) {
             $storage->expects($this->exactly(1))
              ->method('deleteVersion')
@@ -74,7 +79,6 @@ class MultiStorageTest extends \Xi\Tests\TestCase
      */
     public function storeShouldIterateAllInnerStorages()
     {
-
         foreach ($this->mockStorages as $storage) {
             $storage->expects($this->exactly(1))
              ->method('store')
@@ -85,13 +89,11 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
     }
 
-
     /**
      * @test
      */
     public function storeVersionShouldIterateAllInnerStorages()
     {
-
         foreach ($this->mockStorages as $storage) {
             $storage->expects($this->exactly(1))
              ->method('storeVersion')
@@ -113,7 +115,6 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
         $this->assertInstanceOf('\\Xi\\Filelib\\Storage\\Storage', $sessionStorage);
 
-
         $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
         $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
 
@@ -134,23 +135,18 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
         $this->assertEquals($this->mockStorages[1], $this->storage->getSessionStorage());
         $this->assertEquals($this->mockStorages[1], $this->storage->getSessionStorage());
-
     }
-
-
 
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function whenNoStoragesGetSessionStorageShouldThrowException()
     {
         $storage = new MultiStorage();
 
         $sessionStorage = $storage->getSessionStorage();
-
     }
-
 
     /**
      * @test
@@ -167,9 +163,7 @@ class MultiStorageTest extends \Xi\Tests\TestCase
              ->method('retrieveVersion')
              ->will($this->returnValue('1'));
 
-
         $this->storage->retrieveVersion($this->resource, $this->version);
-
     }
 
     /**
@@ -187,18 +181,15 @@ class MultiStorageTest extends \Xi\Tests\TestCase
              ->method('retrieve')
              ->will($this->returnValue('1'));
 
-
         $this->storage->retrieve($this->resource);
-
     }
 
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function addStorageShouldThrowExceptionWhenAddingMultiStorage()
     {
         $this->storage->addStorage(new MultiStorage());
     }
-
 }

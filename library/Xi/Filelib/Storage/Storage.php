@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Storage;
 
 use Xi\Filelib\FileLibrary;
@@ -15,21 +22,6 @@ use Xi\Filelib\FilelibException;
  */
 interface Storage
 {
-
-    /**
-     * Sets filelib
-     *
-     * @return FileLibrary
-     */
-    public function setFilelib(FileLibrary $resourcelib);
-
-    /**
-     * Returns filelib
-     *
-     * @return FileLibrary
-     */
-    public function getFilelib();
-
     /**
      * Stores an uploaded file
      *

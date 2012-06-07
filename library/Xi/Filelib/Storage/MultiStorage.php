@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Storage;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
@@ -54,7 +60,6 @@ class MultiStorage extends AbstractStorage implements Storage
         return $this->sessionStorageId;
     }
 
-
     /**
      * Returns session storage
      *
@@ -62,19 +67,17 @@ class MultiStorage extends AbstractStorage implements Storage
      */
     public function getSessionStorage()
     {
-        if(!$this->storages) {
+        if (!$this->storages) {
             throw new FilelibException('MultiStorage has no inner storages. Can not get session storage.');
         }
 
-        if(!$sessionStorageId = $this->getSessionStorageId()) {
+        if (!$sessionStorageId = $this->getSessionStorageId()) {
             $sessionStorageId = array_rand($this->storages);
             $this->setSessionStorageId($sessionStorageId);
         }
 
         return $this->storages[$this->getSessionStorageId()];
     }
-
-
 
     public function store(Resource $resource, $tempFile)
     {

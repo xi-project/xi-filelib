@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use Xi\Filelib\FileLibrary;
@@ -9,12 +16,9 @@ use Xi\Filelib\FilelibException;
 /**
  * Creates directories in a leveled hierarchy based on a numeric file id
  *
- * @author pekkis
- *
  */
 class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
 {
-
     /**
      * @var integer Files per directory
      */
@@ -28,12 +32,13 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     /**
      * Sets files per directory
      *
-     * @param integer $filesPerDirectory
+     * @param  integer                    $filesPerDirectory
      * @return LeveledDirectoryCalculator
      */
     public function setFilesPerDirectory($filesPerDirectory)
     {
         $this->filesPerDirectory = $filesPerDirectory;
+
         return $this;
     }
 
@@ -50,12 +55,13 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     /**
      * Sets levels per directory hierarchy
      *
-     * @param integer $directoryLevels
+     * @param  integer                    $directoryLevels
      * @return LeveledDirectoryCalculator
      */
     public function setDirectoryLevels($directoryLevels)
     {
         $this->directoryLevels = $directoryLevels;
+
         return $this;
     }
 
@@ -90,18 +96,15 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
         $arr = array();
         $tmpfileid = $resourceId - 1;
 
-        for($count = 1; $count <= $directoryLevels; ++$count) {
+        for ($count = 1; $count <= $directoryLevels; ++$count) {
             $lus = $tmpfileid / pow($filesPerDirectory, $directoryLevels - $count);
             $tmpfileid = $tmpfileid % pow($filesPerDirectory, $directoryLevels - $count);
             $arr[] = floor($lus) + 1;
         }
 
         $puuppa = array_pop($arr);
+
         return implode(DIRECTORY_SEPARATOR, $arr);
 
     }
-
-
-
-
 }

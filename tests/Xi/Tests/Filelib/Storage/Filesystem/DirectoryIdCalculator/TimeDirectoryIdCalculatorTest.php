@@ -1,14 +1,23 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use DateTime;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\File\Resource;
 
+/**
+ * @group storage
+ */
 class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 {
-
     protected $resource;
 
     protected $calc;
@@ -21,7 +30,6 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     *
      */
     public function differentFormatsShouldReturnCorrectResults()
     {
@@ -40,12 +48,11 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      *
      */
     public function unsetDateCreatedShouldThrowException()
     {
         $this->calc->calculateDirectoryId($this->resource);
     }
-
 }

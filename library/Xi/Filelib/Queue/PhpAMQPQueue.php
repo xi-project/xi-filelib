@@ -18,51 +18,62 @@ class PhpAMQPQueue implements Queue
 
     private $queue;
 
+    /**
+     * @var array
+     */
+    private $connectionOptions = array();
+
     public function __construct($host, $port, $user, $pass, $vhost, $exchange, $queue)
     {
-        $conn = new AMQPConnection($host, $port, $user, $pass, $vhost);
-        $ch = $conn->channel();
-
-        /*
-        name: $queue
-        passive: false
-        durable: true // the queue will survive server restarts
-        exclusive: false // the queue can be accessed in other channels
-        auto_delete: false //the queue won't be deleted once the channel is closed.
-        */
-        $ch->queue_declare($queue, false, true, false, false);
-
-        /*
-            name: $exchange
-            type: direct
-            passive: false
-            durable: true // the exchange will survive server restarts
-            auto_delete: false //the exchange won't be deleted once the channel is closed.
-        */
-        $ch->exchange_declare($exchange, 'direct', false, true, false);
-
-        $ch->queue_bind($queue, $exchange, 'filelib');
-
-
         $this->exchange = $exchange;
         $this->queue = $queue;
-        $this->channel = $ch;
 
-
+        $this->connectionOptions = array(
+            'host' => $host,
+            'port' => $port,
+            'user' => $user,
+            'pass' => $pass,
+            'vhost' => $vhost,
+        );
     }
+
+    /**
+     * Connects to AMQP and gets channel
+     *
+     * @return AMQPChannel
+     */
+    private function getChannel()
+    {
+        if (!$this->channel) {
+            $conn = new AMQPConnection(
+                $this->connectionOptions['host'],
+                $this->connectionOptions['port'],
+                $this->connectionOptions['user'],
+                $this->connectionOptions['pass'],
+                $this->connectionOptions['vhost']
+            );
+            $ch = $conn->channel();
+
+            $ch->queue_declare($this->queue, false, true, false, false);
+            $ch->exchange_declare($this->exchange, 'direct', false, true, false);
+            $ch->queue_bind($this->queue, $this->exchange, 'filelib');
+            $this->channel = $ch;
+        }
+        return $this->channel;
+    }
+
 
     public function enqueue(Enqueueable $enqueueable)
     {
         $msg = serialize($enqueueable);
         $msg = new AMQPMessage($msg, array('content_type' => 'text/plain', 'delivery-mode' => 1));
-        $this->channel->basic_publish($msg, $this->exchange, 'filelib', false, false);
-        return $enqueueable->getEnqueueReturnValue();
+        $this->getChannel()->basic_publish($msg, $this->exchange, 'filelib', false, false);
     }
 
 
     public function dequeue()
     {
-        $msg = $this->channel->basic_get($this->queue);
+        $msg = $this->getChannel()->basic_get($this->queue);
 
         if (!$msg) {
             return null;
@@ -71,22 +82,18 @@ class PhpAMQPQueue implements Queue
         $message = new Message($msg->body);
         $message->setIdentifier($msg->delivery_info['delivery_tag']);
         return $message;
-
     }
 
 
     public function purge()
     {
-        return $this->channel->queue_purge($this->queue);
+        return $this->getChannel()->queue_purge($this->queue);
     }
 
 
     public function ack(Message $message)
     {
-        $this->channel->basic_ack($message->getIdentifier());
+        $this->getChannel()->basic_ack($message->getIdentifier());
     }
-
-
-
 
 }

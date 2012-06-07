@@ -1,29 +1,37 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Storage;
 
 use MongoDB;
 use MongoGridFS;
 use MongoGridFSFile;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
 use Xi\Filelib\FilelibException;
-
 
 /**
  * Stores files in MongoDB's GridFS filesystem
  *
  * @author pekkis
- *
  */
 class GridfsStorage extends AbstractStorage implements Storage
 {
+    /**
+     * @var string
+     */
+    private $tempDir;
+
     /**
      * @var MongoDB Mongo reference
      */
@@ -50,11 +58,23 @@ class GridfsStorage extends AbstractStorage implements Storage
     private $tempFiles = array();
 
     /**
+     * @param  MongoDB       $mongo   A MongoDB instance
+     * @param  string        $tempDir Temporary directory
+     * @return GridfsStorage
+     */
+    public function __construct(MongoDB $mongo, $tempDir)
+    {
+        $this->setMongo($mongo);
+
+        $this->tempDir = $tempDir;
+    }
+
+    /**
      * Deletes all temp files on destruct
      */
     public function __destruct()
     {
-        foreach($this->tempFiles as $tempFile) {
+        foreach ($this->tempFiles as $tempFile) {
             unlink($tempFile->getPathname());
         }
     }
@@ -86,9 +106,10 @@ class GridfsStorage extends AbstractStorage implements Storage
      */
     public function getGridFS()
     {
-        if(!$this->gridFs) {
+        if (!$this->gridFs) {
             $this->gridFs = $this->getMongo()->getGridFS($this->getPrefix());
         }
+
         return $this->gridFs;
     }
 
@@ -121,7 +142,8 @@ class GridfsStorage extends AbstractStorage implements Storage
      */
     private function toTemp(MongoGridFSFile $file)
     {
-        $tmp = $this->getFilelib()->getTempDir() . '/' . tmpfile();
+        $tmp = tempnam($this->tempDir, 'filelib');
+
         $file->write($tmp);
 
         $fo = new FileObject($tmp);
@@ -129,7 +151,6 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->registerTempFile($fo);
 
         return $fo;
-
     }
 
     /**
@@ -162,10 +183,9 @@ class GridfsStorage extends AbstractStorage implements Storage
 
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
 
-        if(!$file) {
+        if (!$file) {
             throw new FilelibException("Filename '{$filename}' not retrievable");
         }
-
 
         return $this->toTemp($file);
     }
@@ -187,17 +207,14 @@ class GridfsStorage extends AbstractStorage implements Storage
     public function delete(Resource $resource)
     {
         $filename = $this->getFilename($resource);
-
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
     public function deleteVersion(Resource $resource, $version, File $file = null)
     {
         $filename = $this->getFilenameVersion($resource, $version);
-
         $this->getGridFS()->remove(array('filename' => $filename));
     }
-
 
     public function getFilename(Resource $resource)
     {
@@ -208,6 +225,5 @@ class GridfsStorage extends AbstractStorage implements Storage
     {
         return $resource->getId() . '/' . $version;
     }
-
 
 }
