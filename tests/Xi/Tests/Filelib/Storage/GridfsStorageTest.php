@@ -1,28 +1,33 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Tests\Filelib\Storage;
 
 use Mongo;
 use MongoDB;
-use MongoGridFS;
-use MongoCollection;
+
 use MongoConnectionException;
-use Xi\Tests\Filelib\TestCase;
 use Xi\Filelib\Storage\GridfsStorage;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\FilelibException;
 
-class GridFsStorageTest extends TestCase
+/**
+ * @group storage
+ */
+class GridFsStorageTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
-     *
      * @var MondoDB
      */
     protected $mongo;
 
     /**
-     *
      * @var GridfsStorage
      */
     protected $storage;
@@ -34,7 +39,6 @@ class GridFsStorageTest extends TestCase
     protected $fileResource;
 
     protected $filelib;
-
 
     protected function setUp()
     {
@@ -57,10 +61,7 @@ class GridFsStorageTest extends TestCase
 
         $this->mongo = $mongo->filelib_tests;
 
-        $storage = new GridfsStorage();
-        $storage->setMongo($this->mongo);
-
-        $this->storage = $storage;
+        $this->storage = new GridfsStorage($this->mongo, ROOT_TESTS . '/data/temp');
 
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
         $dc->expects($this->any())
@@ -69,9 +70,6 @@ class GridFsStorageTest extends TestCase
 
         $this->version = 'xoo';
 
-    }
-
-
     protected function tearDown()
     {
         if (extension_loaded('mongo') && $this->mongo) {
@@ -79,9 +77,7 @@ class GridFsStorageTest extends TestCase
                 $collection->drop();
             }
         }
-
     }
-
 
     /**
      * @test
@@ -91,10 +87,7 @@ class GridFsStorageTest extends TestCase
         $this->assertEquals('xi_filelib', $this->storage->getPrefix());
         $this->storage->setPrefix('luss');
         $this->assertEquals('luss', $this->storage->getPrefix());
-
     }
-
-
 
     /**
      * @test
@@ -149,18 +142,13 @@ class GridFsStorageTest extends TestCase
         unset($this->storage);
 
         $this->assertFileNotExists($realPath);
-
     }
-
-
 
     /**
      * @test
      */
     public function storeAndRetrieveAndDeleteVersionShouldWorkInHarmony()
     {
-
-
         $this->storage->setFilelib($this->getFilelib());
 
         $this->storage->storeVersion($this->resource, $this->version, $this->fileResource);
@@ -194,7 +182,6 @@ class GridFsStorageTest extends TestCase
     {
         $file = Resource::create(array('id' => 'lussenhofer.lus'));
         $this->storage->retrieve($file);
-
     }
 
     /**
@@ -206,6 +193,4 @@ class GridFsStorageTest extends TestCase
         $file = Resource::create(array('id' => 'lussenhofer.lus'));
         $this->storage->retrieveVersion($file, $this->version);
     }
-
-
 }

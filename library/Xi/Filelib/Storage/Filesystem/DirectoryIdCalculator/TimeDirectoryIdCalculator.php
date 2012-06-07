@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use DateTime;
@@ -12,7 +19,6 @@ class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
      * @var string
      */
     private $format = 'Y/m/d';
-
 
     /**
      * Sets directory creation format
@@ -43,9 +49,7 @@ class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
         }
 
         $path = $dt->format($this->getFormat());
+
         return $path;
     }
-
-
-
 }
