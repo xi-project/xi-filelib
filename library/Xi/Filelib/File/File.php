@@ -27,7 +27,8 @@ class File
         'date_created' => 'setDateCreated',
         'status' => 'setStatus',
         'uuid' => 'setUuid',
-        'resource' => 'setResource'
+        'resource' => 'setResource',
+        'versions' => 'setVersions',
     );
 
     /**
@@ -52,6 +53,12 @@ class File
     private $dateCreated;
 
     private $status;
+
+    /**
+     *
+     * @var array
+     */
+    private $versions = array();
 
     /**
      *
@@ -297,7 +304,8 @@ class File
             'date_created' => $this->getDateCreated(),
             'status' => $this->getStatus(),
             'resource' => $this->getResource(),
-            'uuid' => $this->getUuid()
+            'uuid' => $this->getUuid(),
+            'versions' => $this->getVersions(),
         );
     }
 
@@ -340,4 +348,58 @@ class File
         }
         return $this->data;
     }
+
+    /**
+     * Sets currently created versions
+     *
+     * @param array $versions
+     * @return Resource
+     */
+    public function setVersions(array $versions = array())
+    {
+        $this->versions = $versions;
+        return $this;
+    }
+
+    /**
+     * Returns currently created versions
+     *
+     * @return array
+     */
+    public function getVersions()
+    {
+        return $this->versions;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function addVersion($version)
+    {
+        if (!in_array($version, $this->versions)) {
+            array_push($this->versions, $version);
+        }
+    }
+
+    /**
+     *
+     * @param string $version
+     */
+    public function removeVersion($version)
+    {
+        $this->versions = array_diff($this->versions, array($version));
+    }
+
+    /**
+     * Returns whether resource has version
+     *
+     * @param string $version
+     * @return boolean
+     */
+    public function hasVersion($version)
+    {
+        return in_array($version, $this->versions);
+    }
+
+
 }

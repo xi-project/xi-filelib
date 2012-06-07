@@ -748,7 +748,9 @@ use Xi\Filelib\Folder\Folder;
         $this->assertArrayHasKey('status', $ret);
         $this->assertArrayHasKey('resource', $ret);
         $this->assertArrayHasKey('uuid', $ret);
+        $this->assertArrayHasKey('versions', $ret);
 
+        $this->assertInternalType('array', $ret['versions']);
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret['resource']);
         $this->assertInstanceOf('DateTime', $ret['date_created']);
     }
@@ -805,7 +807,9 @@ use Xi\Filelib\Folder\Folder;
             $this->assertArrayHasKey('status', $ret);
             $this->assertArrayHasKey('resource', $ret);
             $this->assertArrayHasKey('uuid', $ret);
+            $this->assertArrayHasKey('versions', $ret);
 
+            $this->assertInternalType('array', $ret['versions']);
             $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret['resource']);
             $this->assertInstanceOf('DateTime', $ret['date_created']);
         }
@@ -830,7 +834,8 @@ use Xi\Filelib\Folder\Folder;
             'date_created' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 666,
             'uuid'          => 'uuid-535',
-            'resource'      => $this->backend->findResource($resourceId)
+            'resource'      => $this->backend->findResource($resourceId),
+            'versions'      => array('lussi', 'watussi', 'klussi'),
         );
 
         $file = File::create($data);
@@ -841,7 +846,7 @@ use Xi\Filelib\Folder\Folder;
 
         $this->assertEquals($data['resource']->getId(), $updated['resource']->getId());
 
-        $fields = array('id', 'folder_id', 'profile', 'name', 'link', 'date_created', 'status', 'uuid');
+        $fields = array('id', 'folder_id', 'profile', 'name', 'link', 'date_created', 'status', 'uuid', 'versions');
         foreach ($fields as $field) {
             $this->assertEquals($data[$field], $updated[$field]);
         }
@@ -865,7 +870,8 @@ use Xi\Filelib\Folder\Folder;
             'date_created' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 4,
             'uuid'          => 'uuid-1',
-            'resource'      => Resource::create(array('id' => 1, 'hash' => 'hash-1', 'date_created' => new DateTime('1978-03-21 06:06:06')))
+            'resource'      => Resource::create(array('id' => 1, 'hash' => 'hash-1', 'date_created' => new DateTime('1978-03-21 06:06:06'))),
+            'versions'      => array(),
         );
 
         $file = File::create($updated);
@@ -938,10 +944,11 @@ use Xi\Filelib\Folder\Folder;
             'profile'       => 'versioned',
             'name'          => 'tohtori-tussi.png',
             'link'          => 'tohtori-tussi.png',
-            'date_created' => new DateTime('2011-01-01 16:16:16'),
+            'date_created'  => new DateTime('2011-01-01 16:16:16'),
             'status'        => 5,
             'uuid'          => 'uuid-lussid',
-            'resource'      => Resource::create(array('id' => 1))
+            'resource'      => Resource::create(array('id' => 1)),
+            'versions'      => array(),
         );
 
         $fodata = array(
@@ -966,6 +973,7 @@ use Xi\Filelib\Folder\Folder;
         $this->assertEquals($fidata['status'], $file->getStatus());
         $this->assertEquals($fidata['uuid'], $file->getUuid());
         $this->assertEquals($fidata['resource'], $file->getResource());
+        $this->assertEquals($fidata['versions'], $file->getVersions());
     }
 
     /**
@@ -981,10 +989,11 @@ use Xi\Filelib\Folder\Folder;
             'profile'       => 'versioned',
             'name'          => 'tohtori-tussi.png',
             'link'          => 'tohtori-tussi.png',
-            'date_created' => new DateTime('2011-01-01 16:16:16'),
+            'date_created'  => new DateTime('2011-01-01 16:16:16'),
             'status'        => 3,
             'uuid'          => 'uuid-lussid',
-            'resource'      => Resource::create(array('id' => 1))
+            'resource'      => Resource::create(array('id' => 1)),
+            'versions'      => array(),
         ));
 
         $folder = Folder::create(array(
@@ -1016,10 +1025,11 @@ use Xi\Filelib\Folder\Folder;
             'profile'       => 'versioned',
             'name'          => 'tohtori-vesala.png',
             'link'          => 'tohtori-vesala.png',
-            'date_created' => new DateTime('2011-01-01 16:16:16'),
+            'date_created'  => new DateTime('2011-01-01 16:16:16'),
             'status'        => 4,
             'uuid'          => 'uuid-lussid',
-            'resource'      => Resource::create(array('id' => 1))
+            'resource'      => Resource::create(array('id' => 1)),
+            'versions'      => array('na-na-naa-naa'),
         ));
 
         $folder = Folder::create(array(

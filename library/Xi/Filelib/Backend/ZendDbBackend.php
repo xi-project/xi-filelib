@@ -308,6 +308,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
                 'status'        => $data['status'],
                 'uuid'          => $data['uuid'],
                 'resource_id'   => $data['resource']->getId(),
+                'versions' => serialize($data['versions']),
             ),
             $this->getFileTable()
                  ->getAdapter()
@@ -349,6 +350,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
         $row->status        = $file->getStatus();
         $row->uuid          = $file->getUuid();
         $row->resource_id   = $file->getResource()->getId();
+        $row->versions = serialize($file->getVersions());
 
         try {
             $row->save();
@@ -390,7 +392,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'date_created' => new DateTime($fileRow['date_created']),
             'status'        => $fileRow['status'],
             'uuid'          => $fileRow['uuid'],
-            'resource'      => $this->resourceToArray($this->doFindResource($fileRow['resource_id']))
+            'resource'      => $this->resourceToArray($this->doFindResource($fileRow['resource_id'])),
+            'versions'      => unserialize($fileRow['versions']),
         );
     }
 

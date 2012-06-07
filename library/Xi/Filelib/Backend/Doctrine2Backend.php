@@ -200,6 +200,7 @@ class Doctrine2Backend extends AbstractBackend
         $entity->setStatus($file->getStatus());
         $entity->setUuid($file->getUuid());
         $entity->setResource($this->em->getReference($this->getResourceEntityName(), $file->getResource()->getId()));
+        $entity->setVersions($file->getVersions());
 
         $this->em->flush();
 
@@ -460,6 +461,7 @@ class Doctrine2Backend extends AbstractBackend
             $entity->setDateCreated($file->getDateCreated());
             $entity->setStatus($file->getStatus());
             $entity->setUuid($file->getUuid());
+            $entity->setVersions($file->getVersions());
 
             $resource = $file->getResource();
             if ($resource) {
@@ -500,7 +502,8 @@ class Doctrine2Backend extends AbstractBackend
             'date_created' => $file->getDateCreated(),
             'status'        => $file->getStatus(),
             'uuid'          => $file->getUuid(),
-            'resource' => ($file->getResource()) ? $this->resourceToArray($file->getResource()) : null
+            'resource' => ($file->getResource()) ? $this->resourceToArray($file->getResource()) : null,
+            'versions' => $file->getVersions(),
         );
     }
 

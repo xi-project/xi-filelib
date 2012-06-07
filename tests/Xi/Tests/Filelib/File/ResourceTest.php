@@ -206,7 +206,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function hasResourceShouldReturnWhetherResourceHasVersion()
+    public function hasVersionShouldReturnWhetherResourceHasVersion()
     {
         $resource = Resource::create(array('versions' => array('tussi', 'watussi')));
 

@@ -195,6 +195,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'status'        => 1,
                     'uuid'          => 'uuid-1',
                     'resource_id'   => '48a7011a05c677b9a9166101',
+                    'versions' => array(),
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166107'),
@@ -206,6 +207,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'status'        => 2,
                     'uuid'          => 'uuid-2',
                     'resource_id'   => '48a7011a05c677b9a9166102',
+                    'versions' => array(),
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166108'),
@@ -217,6 +219,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'status'        => 4,
                     'uuid'          => 'uuid-3',
                     'resource_id'   => '48a7011a05c677b9a9166103',
+                    'versions' => array(),
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166109'),
@@ -228,6 +231,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'status'        => 8,
                     'uuid'          => 'uuid-4',
                     'resource_id'   => '48a7011a05c677b9a9166104',
+                    'versions' => array(),
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166110'),
@@ -239,6 +243,7 @@ class MongoBackendTest extends AbstractBackendTest
                     'status'        => 16,
                     'uuid'          => 'uuid-5',
                     'resource_id'   => '48a7011a05c677b9a9166104',
+                    'versions' => array('kliussi', 'watussi'),
                 ),
             ),
         );

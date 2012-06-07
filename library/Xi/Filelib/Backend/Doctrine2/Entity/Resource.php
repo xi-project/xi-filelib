@@ -53,7 +53,6 @@ class Resource
      */
     private $versions = array();
 
-
     /**
      * Get id
      */

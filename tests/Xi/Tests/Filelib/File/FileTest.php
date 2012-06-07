@@ -93,6 +93,10 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($file, $file->setUuid($val));
         $this->assertEquals($val, $file->getUuid());
 
+        $val = array('lussen', 'le', 'tussen');
+        $this->assertEquals(array(), $file->getVersions());
+        $this->assertSame($file, $file->setVersions($val));
+        $this->assertEquals($val, $file->getVersions());
 
     }
 
@@ -111,7 +115,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
                     'date_created' => new \DateTime('2010-01-01 01:01:01'),
                     'status' => 8,
                     'uuid' => 'uuid-uuid',
-                    'resource' => new Resource()
+                    'resource' => new Resource(),
+                    'versions' => array('watussi', 'lussi')
                 ),
             ),
             array(
@@ -144,13 +149,19 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'status' => 'getStatus',
             'resource' => 'getResource',
             'uuid' => 'getUuid',
+            'versions' => 'getVersions'
         );
 
         foreach($map as $key => $method) {
             if(isset($data[$key])) {
                 $this->assertEquals($data[$key], $file->$method());
             } else {
-                $this->assertNull($file->$method());
+
+                if ($key == 'versions') {
+                    $this->assertEquals(array(), $file->$method());
+                } else {
+                    $this->assertNull($file->$method());
+                }
             }
         }
 
@@ -171,6 +182,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $file->setStatus(54);
         $file->setUuid('tussi-poski');
         $file->setResource(new Resource());
+        $file->setVersions(array('lussi', 'xussi'));
 
         $this->assertEquals($file->toArray(), array(
             'id' => 1,
@@ -181,7 +193,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'date_created' => new \DateTime('1978-03-21'),
             'status' => 54,
             'uuid' => 'tussi-poski',
-            'resource' => new Resource()
+            'resource' => new Resource(),
+            'versions' => array('lussi', 'xussi')
         ));
 
 
@@ -196,6 +209,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'status' => null,
             'uuid' => null,
             'resource' => null,
+            'versions' => array(),
         ));
 
 
@@ -225,6 +239,54 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($data, $file->getData());
 
+    }
+
+    /**
+     * @test
+     */
+    public function addVersionShouldAddVersion()
+    {
+        $file = File::create(array('versions' => array('tussi', 'watussi')));
+        $file->addVersion('lussi');
+
+        $this->assertEquals(array('tussi', 'watussi', 'lussi'), $file->getVersions());
+    }
+
+
+    /**
+     * @test
+     */
+    public function addVersionShouldNotAddVersionIfVersionExists()
+    {
+        $file = File::create(array('versions' => array('tussi', 'watussi')));
+        $file->addVersion('watussi');
+
+        $this->assertEquals(array('tussi', 'watussi'), $file->getVersions());
+    }
+
+
+    /**
+     * @test
+     */
+    public function removeVersionShouldRemoveVersion()
+    {
+        $file = File::create(array('versions' => array('tussi', 'watussi')));
+        $file->removeVersion('watussi');
+
+        $this->assertEquals(array('tussi'), $file->getVersions());
+    }
+
+
+    /**
+     * @test
+     */
+    public function hasVersionShouldReturnWhetherResourceHasVersion()
+    {
+        $file = File::create(array('versions' => array('tussi', 'watussi')));
+
+        $this->assertTrue($file->hasVersion('tussi'));
+        $this->assertTrue($file->hasVersion('watussi'));
+        $this->assertFalse($file->hasVersion('lussi'));
     }
 
 

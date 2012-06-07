@@ -122,9 +122,10 @@ class MongoBackend extends AbstractBackend implements Backend
             'name'          => $file->getName(),
             'profile'       => $file->getProfile(),
             'status'        => $file->getStatus(),
-            'date_created' => new MongoDate($file->getDateCreated()->getTimestamp()),
+            'date_created'  => new MongoDate($file->getDateCreated()->getTimestamp()),
             'uuid'          => $file->getUuid(),
             'resource_id'   => $file->getResource()->getId(),
+            'versions'      => $file->getVersions(),
         );
 
         $this->getMongo()->files->ensureIndex(array(
@@ -315,9 +316,10 @@ class MongoBackend extends AbstractBackend implements Backend
             'name'          => $file['name'],
             'link'          => $file['link'],
             'status'        => $file['status'],
-            'date_created' => DateTime::createFromFormat('U', $file['date_created']->sec)->setTimezone($date->getTimezone()),
+            'date_created'  => DateTime::createFromFormat('U', $file['date_created']->sec)->setTimezone($date->getTimezone()),
             'uuid'          => $file['uuid'],
             'resource'      => $this->resourceToArray($this->doFindResource($file['resource_id'])),
+            'versions'      => $file['versions'],
         );
     }
 

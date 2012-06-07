@@ -475,6 +475,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'status'        => 1,
                     'uuid'          => 'uuid-1',
                     'resource_id'   => 1,
+                    'versions' => serialize(array()),
                 ),
                 array(
                     'id'            => 2,
@@ -486,6 +487,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'status'        => 2,
                     'uuid'          => 'uuid-2',
                     'resource_id'   => 2,
+                    'versions' => serialize(array()),
                 ),
                 array(
                     'id'            => 3,
@@ -497,6 +499,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'status'        => 3,
                     'uuid'          => 'uuid-3',
                     'resource_id'   => 3,
+                    'versions' => serialize(array()),
                 ),
                 array(
                     'id'            => 4,
@@ -508,6 +511,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'status'        => 4,
                     'uuid'          => 'uuid-4',
                     'resource_id'   => 4,
+                    'versions' => serialize(array()),
                 ),
                 array(
                     'id'            => 5,
@@ -519,6 +523,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
                     'status'        => 5,
                     'uuid'          => 'uuid-5',
                     'resource_id'   => 4,
+                    'versions' => serialize(array()),
                 ),
             ),
         ));

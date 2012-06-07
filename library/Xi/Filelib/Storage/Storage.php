@@ -17,8 +17,6 @@ use Xi\Filelib\FilelibException;
 /**
  * Storage interface
  *
- * @author pekkis
- *
  */
 interface Storage
 {

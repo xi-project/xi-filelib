@@ -63,6 +63,11 @@ class File
     private $resource;
 
     /**
+     * @ORM\Column(name="versions", type="array")
+     */
+    private $versions = array();
+
+    /**
      * Get id
      */
     public function getId()
@@ -241,6 +246,22 @@ class File
         $this->resource = $resource;
         return $this;
     }
+
+    /**
+     *
+     * @param array $versions
+     */
+    public function setVersions(array $versions)
+    {
+        $this->versions = $versions;
+        return $this;
+    }
+
+    public function getVersions()
+    {
+        return $this->versions;
+    }
+
 
 
 }
