@@ -37,13 +37,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     protected $providesFor = array();
 
-    /**
-     * Allow shared resource
-     *
-     * @var boolean
-     */
-    protected $allowSharedResource = true;
-
     abstract public function createVersions(File $file);
 
     /**
@@ -162,7 +155,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
 
         foreach ($tmps as $version => $tmp) {
-            $this->getStorage()->storeVersion($file->getResource(), $version, $tmp);
+            $this->getStorage()->storeVersion($file->getResource(), $version, $tmp, $this->areSharedVersionsAllowed() ? null : $file);
             unlink($tmp);
         }
     }
@@ -226,13 +219,18 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function deleteVersions(File $file)
     {
         foreach ($this->getVersions() as $version) {
-            $this->getStorage()->deleteVersion($file->getResource(), $version);
+            $this->getStorage()->deleteVersion($file->getResource(), $version, $this->areSharedVersionsAllowed() ? null : $file);
         }
     }
 
 
     public function areVersionsCreated(File $file)
     {
+        // @todo solve this somehow
+        if (!$this->areSharedVersionsAllowed()) {
+            return false;
+        }
+
         $count = 0;
         foreach ($this->getVersions() as $version) {
             if ($file->getResource()->hasVersion($version)) {
@@ -243,12 +241,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             return true;
         }
         return false;
-    }
-
-
-    public function isSharedResourceAllowed()
-    {
-        return $this->allowSharedResource;
     }
 
 

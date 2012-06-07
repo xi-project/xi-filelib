@@ -111,7 +111,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     {
         $publisher = new SymlinkFilesystemPublisher();
         $file = File::create(array('id' => 1));
-        $relativePath = $publisher->getRelativePathToVersion($file, $this->versionProvider);
+        $relativePath = $publisher->getRelativePathToVersion($file, $this->versionProvider, 'tussi');
     }
 
 
