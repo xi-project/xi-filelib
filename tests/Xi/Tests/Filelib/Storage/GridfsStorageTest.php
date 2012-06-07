@@ -56,9 +56,6 @@ class GridFsStorageTest extends \PHPUnit_Framework_TestCase
 
         $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
 
-
-        $this->filelib = $this->getFilelib();
-
         $this->mongo = $mongo->filelib_tests;
 
         $this->storage = new GridfsStorage($this->mongo, ROOT_TESTS . '/data/temp');
@@ -69,6 +66,7 @@ class GridFsStorageTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue('1'));
 
         $this->version = 'xoo';
+    }
 
     protected function tearDown()
     {
@@ -94,8 +92,6 @@ class GridFsStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function storeAndRetrieveAndDeleteShouldWorkInHarmony()
     {
-        $this->storage->setFilelib($this->getFilelib());
-
         $this->storage->store($this->resource, $this->fileResource);
 
          $file = $this->storage->getGridFs()->findOne(array(
@@ -123,8 +119,6 @@ class GridFsStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function destructorShouldDeleteRetrievedFile()
     {
-        $this->storage->setFilelib($this->getFilelib());
-
         $this->storage->store($this->resource, $this->fileResource);
 
         $file = $this->storage->getGridFs()->findOne(array(
@@ -149,8 +143,6 @@ class GridFsStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function storeAndRetrieveAndDeleteVersionShouldWorkInHarmony()
     {
-        $this->storage->setFilelib($this->getFilelib());
-
         $this->storage->storeVersion($this->resource, $this->version, $this->fileResource);
 
          $file = $this->storage->getGridFs()->findOne(array(

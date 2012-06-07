@@ -71,33 +71,6 @@ class AmazonS3Storage extends AbstractStorage implements Storage
         return $this->bucket;
     }
 
-    public function setKey($key)
-    {
-        $this->key = $key;
-    }
-
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-
-    public function setSecretKey($secretKey)
-    {
-        $this->secretKey = $secretKey;
-    }
-
-    public function getSecretKey()
-    {
-        return $this->secretKey;
-    }
-
-
-    public function getPath($resource)
-    {
-        return $this->getBucket() . '/' . $resource->getId();
-    }
-
     /**
      * Stores an uploaded file
      *
@@ -197,12 +170,12 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     }
 
     /**
-     * @param  File   $file
+     * @param  Resource $resource
      * @return string
      */
-    private function getPath(File $file)
+    private function getPath(Resource $resource)
     {
-        return $this->getBucket() . '/' . $file->getId();
+        return $this->getBucket() . '/' . $resource->getId();
     }
 
     /**

@@ -1,10 +1,5 @@
 <?php
 
-namespace Xi\Tests\Filelib\Storage;
-
-use Xi\Filelib\Storage\AmazonS3Storage;
-use Xi\Filelib\File\Resource;
-
 /**
  * This file is part of the Xi Filelib package.
  *
@@ -12,8 +7,10 @@ use Xi\Filelib\File\Resource;
  * file that was distributed with this source code.
  */
 
+namespace Xi\Tests\Filelib\Storage;
+
 use Xi\Filelib\Storage\AmazonS3Storage;
-use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 
 /**
  * @group storage
@@ -49,7 +46,7 @@ class AmazonS3StorageTest extends \PHPUnit_Framework_TestCase
             'bucket'
         );
 
-        $this->file = $this->getMock('Xi\Filelib\File\File');
+        $this->file = $this->getMock('Xi\Filelib\File\Resource');
         $this->file->expects($this->once())
                    ->method('getId')
                    ->will($this->returnValue(123));
@@ -92,7 +89,7 @@ class AmazonS3StorageTest extends \PHPUnit_Framework_TestCase
              ->with('bucket/123')
              ->will($this->returnValue(file_get_contents($this->filePath)));
 
-        $retrieved = $this->storage->retrieve($this->resource);
+        $retrieved = $this->storage->retrieve($this->file);
 
         $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
 

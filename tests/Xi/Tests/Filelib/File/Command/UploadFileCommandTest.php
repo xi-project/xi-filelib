@@ -134,11 +134,6 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
            ->method('executeOrQueue')
            ->with($this->isInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand'));
 
-        $command = new UploadFileCommand($op, $path, $folder, 'versioned');
-        $ret = $command->execute();
-
-        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-
         $op->expects($this->once())->method('executeOrQueue')
            ->with($this->isInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand'));
 
