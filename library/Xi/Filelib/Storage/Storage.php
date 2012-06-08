@@ -12,7 +12,9 @@ namespace Xi\Filelib\Storage;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
-use Xi\Filelib\FilelibException;
+use Xi\Filelib\Exception\FilelibException;
+use Xi\Filelib\Exception\FileIOException;
+use Xi\Filelib\File\FileObject;
 
 /**
  * Storage interface
@@ -35,6 +37,7 @@ interface Storage
      * @param Resource $resource
      * @param string $version
      * @param string $tempResource Resource to be stored
+     * @param null|File $file
      * @throws FilelibException
      */
     public function storeVersion(Resource $resource, $version, $tempResource, File $file = null);
@@ -43,7 +46,8 @@ interface Storage
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
      * @param Resource $resource
-     * @return Resource
+     * @return FileObject
+     * @throws FilelibException
      */
     public function retrieve(Resource $resource);
 
@@ -52,7 +56,10 @@ interface Storage
      *
      * @param Resource $resource
      * @param string $version
-     * @return Resource
+     * @param null|File $file
+     * @return FileObject
+     * @throws FilelibException
+     *
      */
     public function retrieveVersion(Resource $resource, $version, File $file = null);
 
@@ -61,6 +68,7 @@ interface Storage
      *
      * @param Resource $resource
      * @return boolean
+     * @throws FilelibException
      */
     public function delete(Resource $resource);
 
@@ -69,7 +77,28 @@ interface Storage
      *
      * @param Resource $resource
      * @param string $version
+     * @param null|File $file
+     * @throws FilelibException
      */
     public function deleteVersion(Resource $resource, $version, File $file = null);
+
+
+    /**
+     * Returns whether stored file exists
+     *
+     * @param Resource $resource
+     * @return boolean
+     */
+    public function exists(Resource $resource);
+
+    /**
+     * Returns whether a stored version file exists
+     *
+     * @param Resource $resource
+     * @param $version
+     * @param null|File $file
+     * @return boolean
+     */
+    public function versionExists(Resource $resource, $version, File $file = null);
 
 }

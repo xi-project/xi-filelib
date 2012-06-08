@@ -46,11 +46,12 @@ class AmazonS3Storage extends AbstractStorage implements Storage
      * @param  string          $bucket
      * @return AmazonS3Storage
      */
-    public function __construct(AmazonService $amazonService, $tempDir, $bucket)
+    public function __construct(AmazonService $amazonService, $tempDir, $bucket, $options = array())
     {
         $this->amazonService = $amazonService;
         $this->tempDir = $tempDir;
         $this->bucket = $bucket;
+        parent::__construct($options);
     }
 
     /**
@@ -72,79 +73,54 @@ class AmazonS3Storage extends AbstractStorage implements Storage
         return $this->bucket;
     }
 
-    /**
-     * Stores an uploaded file
-     *
-     * @param Resource $resource
-     * @param string $tempFile File to be stored
-     */
-    public function store(Resource $resource, $tempFile)
+
+    public function exists(Resource $resource)
+    {
+        return $this->getAmazonService()->isObjectAvailable($this->getPath($resource));
+    }
+
+    public function versionExists(Resource $resource, $version, File $file = null)
+    {
+        return $this->getAmazonService()->isObjectAvailable($this->getPathVersion($resource, $version, $file));
+    }
+
+
+    protected function doStore(Resource $resource, $tempFile)
     {
         $object = $this->getPath($resource);
         $this->getAmazonService()->putFile($tempFile, $object);
     }
 
-    /**
-     * Stores a version of a file
-     *
-     * @param Resource $resource
-     * @param string $version
-     * @param string $tempFile File to be stored
-     */
-    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
+    protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
-        $object = $this->getPath($resource) . '_' . $version;
-        $this->getAmazonService()->putFile($tempFile, $object);
+        $path = $this->getPathVersion($resource, $version, $file);
+        $this->getAmazonService()->putFile($tempFile, $path);
     }
 
-    /**
-     * Retrieves a file and temporarily stores it somewhere so it can be read.
-     *
-     * @param Resource $resource
-     * @return FileObject
-     */
-    public function retrieve(Resource $resource)
+    protected function doRetrieve(Resource $resource)
     {
-        $object = $this->getPath($resource);
-        $ret = $this->getAmazonService()->getObject($object);
+        $path = $this->getPath($resource);
+        $ret = $this->getAmazonService()->getObject($path);
         return $this->toTemp($ret);
     }
 
-    /**
-     * Retrieves a version of a file and temporarily stores it somewhere so it can be read.
-     *
-     * @param Resource $resource
-     * @param string $version
-     * @return FileObject
-     */
-    public function retrieveVersion(Resource $resource, $version, File $file = null)
+    protected function doRetrieveVersion(Resource $resource, $version, File $file = null)
     {
-        $object = $this->getPath($resource) . '_' . $version;
-        $ret = $this->getAmazonService()->getObject($object);
+        $path = $this->getPathVersion($resource, $version, $file);
+        $ret = $this->getAmazonService()->getObject($path);
         return $this->toTemp($ret);
     }
 
-    /**
-     * Deletes a file
-     *
-     * @param Resource $resource
-     */
-    public function delete(Resource $resource)
+    protected function doDelete(Resource $resource)
     {
-        $object = $this->getPath($resource);
-        $this->getAmazonService()->removeObject($object);
+        $path = $this->getPath($resource);
+        $this->getAmazonService()->removeObject($path);
     }
 
-    /**
-     * Deletes a version of a file
-     *
-     * @param Resource $resource
-     * @param string $version
-     */
-    public function deleteVersion(Resource $resource, $version, File $file = null)
+    protected function doDeleteVersion(Resource $resource, $version, File $file = null)
     {
-        $object = $this->getPath($resource) . '_' . $version;
-        $this->getAmazonService()->removeObject($object);
+        $path = $this->getPathVersion($resource, $version, $file);
+        $this->getAmazonService()->removeObject($path);
     }
 
     /**
@@ -178,6 +154,16 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     {
         return $this->getBucket() . '/' . $resource->getId();
     }
+
+    private function getPathVersion(Resource $resource, $version, File $file = null)
+    {
+        $path = $this->getPath($resource) . '_' . $version;
+        if ($file) {
+            $path .= '_' . $file->getId();
+        }
+        return $path;
+    }
+
 
     /**
      * @return AmazonService

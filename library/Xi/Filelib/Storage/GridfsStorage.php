@@ -62,11 +62,11 @@ class GridfsStorage extends AbstractStorage implements Storage
      * @param  string        $tempDir Temporary directory
      * @return GridfsStorage
      */
-    public function __construct(MongoDB $mongo, $tempDir)
+    public function __construct(MongoDB $mongo, $tempDir, $options = array())
     {
         $this->setMongo($mongo);
-
         $this->tempDir = $tempDir;
+        parent::__construct($options);
     }
 
     /**
@@ -133,6 +133,23 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $this->prefix;
     }
 
+
+    public function exists(Resource $resource)
+    {
+        $filename = $this->getFilename($resource);
+        $file = $this->getGridFS()->findOne(array('filename' => $filename));
+        return (bool) $file;
+    }
+
+
+    public function versionExists(Resource $resource, $version, File $file = null)
+    {
+        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $file = $this->getGridFS()->findOne(array('filename' => $filename));
+        return (bool) $file;
+    }
+
+
     /**
      * Writes a mongo file to temporary file and registers it as an internal temp file
      *
@@ -163,67 +180,56 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->tempFiles[] = $fo;
     }
 
-    public function store(Resource $resource, $tempFile)
+    protected function doStore(Resource $resource, $tempFile)
     {
         $filename = $this->getFilename($resource);
-
         $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $resource->getId(), 'version' => 'original')));
     }
 
-    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
+    protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
-        $filename = $this->getFilenameVersion($resource, $version);
-
+        $filename = $this->getFilenameVersion($resource, $version, $file);
         $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $resource->getId(), 'version' => $version)));
     }
 
-    public function retrieve(Resource $resource)
+    protected function doRetrieve(Resource $resource)
     {
         $filename = $this->getFilename($resource);
-
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
-
-        if (!$file) {
-            throw new FilelibException("Filename '{$filename}' not retrievable");
-        }
-
         return $this->toTemp($file);
     }
 
-    public function retrieveVersion(Resource $resource, $version, File $file = null)
+    protected function doRetrieveVersion(Resource $resource, $version, File $file = null)
     {
-        $filename = $this->getFilenameVersion($resource, $version);
-
+        $filename = $this->getFilenameVersion($resource, $version, $file);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
-
-        if(!$file) {
-            throw new FilelibException("Filename '{$filename}' not retrievable");
-        }
-
-
         return $this->toTemp($file);
     }
 
-    public function delete(Resource $resource)
+    protected function doDelete(Resource $resource)
     {
         $filename = $this->getFilename($resource);
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    public function deleteVersion(Resource $resource, $version, File $file = null)
+    protected function doDeleteVersion(Resource $resource, $version, File $file = null)
     {
-        $filename = $this->getFilenameVersion($resource, $version);
+        $filename = $this->getFilenameVersion($resource, $version, $file);
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    public function getFilename(Resource $resource)
+    private function getFilename(Resource $resource)
     {
         return $resource->getId();
     }
 
-    public function getFilenameVersion(Resource $resource, $version, File $file = null)
+    private function getFilenameVersion(Resource $resource, $version, File $file = null)
     {
-        return $resource->getId() . '/' . $version;
+        $path = $resource->getId() . '/' . $version;
+        if ($file) {
+            $path = '/' . $file->getId();
+        }
+        return $path;
     }
 
 }

@@ -26,10 +26,8 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
     public function setUp()
     {
-        $mockStorage = $this->getMockForAbstractClass('\\Xi\\Filelib\\Storage\\AbstractStorage');
-
-        $mockStorage = $this->getMockBuilder('\\Xi\\Filelib\\Storage\\AbstractStorage')->getMock();
-        $mockStorage2 = $this->getMockBuilder('\\Xi\\Filelib\\Storage\\AbstractStorage')->getMock();
+        $mockStorage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $mockStorage2 = $this->getMock('Xi\Filelib\Storage\Storage');
 
         $this->mockStorages[] = $mockStorage;
         $this->mockStorages[] = $mockStorage2;
@@ -166,6 +164,8 @@ class MultiStorageTest extends \Xi\Tests\TestCase
         $this->storage->retrieveVersion($this->resource, $this->version);
     }
 
+
+
     /**
      * @test
      */
@@ -192,4 +192,40 @@ class MultiStorageTest extends \Xi\Tests\TestCase
     {
         $this->storage->addStorage(new MultiStorage());
     }
+
+
+    /**
+     * @test
+     */
+    public function existsShouldDelegateToSessionStorage()
+    {
+        $this->storage->setSessionStorageId(1);
+
+        $this->mockStorages[0]->expects($this->never())
+            ->method('exists');
+
+        $this->mockStorages[1]->expects($this->once())
+            ->method('exists')
+            ->will($this->returnValue(true));
+
+        $this->storage->exists($this->resource, $this->version);
+    }
+
+    /**
+     * @test
+     */
+    public function versionExistsShouldDelegateToSessionStorage()
+    {
+        $this->storage->setSessionStorageId(1);
+
+        $this->mockStorages[0]->expects($this->never())
+            ->method('versionExists');
+
+        $this->mockStorages[1]->expects($this->once())
+            ->method('versionExists')
+            ->will($this->returnValue(true));
+
+        $this->storage->versionExists($this->resource, $this->version);
+    }
+
 }

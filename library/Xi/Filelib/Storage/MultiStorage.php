@@ -15,7 +15,7 @@ use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 
-class MultiStorage extends AbstractStorage implements Storage
+class MultiStorage implements Storage
 {
     /**
      * @var array
@@ -89,7 +89,7 @@ class MultiStorage extends AbstractStorage implements Storage
     public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->storeVersion($resource, $version, $tempFile);
+            $storage->storeVersion($resource, $version, $tempFile, $file);
         }
     }
 
@@ -100,7 +100,7 @@ class MultiStorage extends AbstractStorage implements Storage
 
     public function retrieveVersion(Resource $resource, $version, File $file = null)
     {
-        return $this->getSessionStorage()->retrieveVersion($resource, $version);
+        return $this->getSessionStorage()->retrieveVersion($resource, $version, $file);
     }
 
     public function delete(Resource $resource)
@@ -113,8 +113,18 @@ class MultiStorage extends AbstractStorage implements Storage
     public function deleteVersion(Resource $resource, $version, File $file = null)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->deleteVersion($resource, $version);
+            $storage->deleteVersion($resource, $version, $file);
         }
     }
 
+
+    public function exists(Resource $resource)
+    {
+        return $this->getSessionStorage()->exists($resource);
+    }
+
+    public function versionExists(Resource $resource, $version, File $file = null)
+    {
+        return $this->getSessionStorage()->versionExists($resource, $version, $file);
+    }
 }
