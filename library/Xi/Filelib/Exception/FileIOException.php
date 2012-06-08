@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Exception;
 
-class NonUniqueFileException extends \Exception implements FilelibException
+class FileIOException extends \Exception implements FilelibException
 {
+
 }
