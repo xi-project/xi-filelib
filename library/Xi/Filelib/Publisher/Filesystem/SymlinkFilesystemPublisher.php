@@ -82,6 +82,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
         if(!$relativePath) {
             throw new FilelibException('Relative path must be set!');
         }
+
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
         $storage = $this->getFilelib()->getStorage();

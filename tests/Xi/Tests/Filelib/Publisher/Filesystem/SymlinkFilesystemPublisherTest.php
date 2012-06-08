@@ -123,22 +123,22 @@ class SymlinkFilesystemPublisherTest extends TestCase
             array(
                 File::create(array('id' => 1, 'resource' => Resource::create(array('id' => 1)))),
                 0,
-                '../private/1/1',
+                false,
             ),
             array(
                 File::create(array('id' => 2, 'resource' => Resource::create(array('id' => 2)))),
                 3,
-                '../../../../private/2/2/2',
+                true,
             ),
             array(
                 File::create(array('id' => 3, 'resource' => Resource::create(array('id' => 3)))),
                 2,
-                '../../../private/3/3/3/3',
+                true,
             ),
             array(
                 File::create(array('id' => 4, 'resource' => Resource::create(array('id' => 4)))),
                 1,
-                '../../private/666/4',
+                false
             ),
         );
     }
@@ -166,16 +166,37 @@ class SymlinkFilesystemPublisherTest extends TestCase
      * @test
      * @dataProvider provideDataForRelativePathTest
      */
-    public function getRelativePathToVersionShouldReturnRelativePathToFile($file, $levelsDown, $expectedRelativePath)
+    public function getRelativePathToVersionShouldReturnRelativePathToFile($file, $levelsDown, $versionProviderAllowsSharedResources)
     {
-        $this->filelib->setStorage($this->storage);
+        $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
+        $storage->expects($this->any())->method('getRoot')->will($this->returnValue('/tussin/lussu'));
+
+        $this->versionProvider->expects($this->atLeastOnce())
+            ->method('areSharedVersionsAllowed')
+            ->will($this->returnValue($versionProviderAllowsSharedResources));
 
         $publisher = new SymlinkFilesystemPublisher();
         $publisher->setFilelib($this->filelib);
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->setRelativePathToRoot('../private');
 
-        $this->assertEquals($expectedRelativePath, $publisher->getRelativePathToVersion($file, $this->versionProvider, $levelsDown));
+        if ($versionProviderAllowsSharedResources) {
+            $storage->expects($this->once())->method('retrieveVersion')
+                ->with($file->getResource(), 'tussi')
+                ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
+        } else {
+            $storage->expects($this->once())->method('retrieveVersion')
+                ->with($file->getResource(), 'tussi', $file)
+                ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
+        }
+
+        $this->filelib->setStorage($storage);
+
+        $ret = $publisher->getRelativePathToVersion($file, $this->versionProvider, 'tussi', $levelsDown);
+
+        $expectedPath = str_repeat("../", $levelsDown) . $publisher->getRelativePathToRoot() . '/lussutustiedosto';
+
+        $this->assertEquals($expectedPath, $ret);
 
     }
 

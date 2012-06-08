@@ -13,6 +13,7 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
     protected $profileObject;
     protected $storage;
     protected $filelib;
+    protected $version;
 
     public function setUp()
     {
