@@ -217,8 +217,6 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
     /**
      * @test
-     * @plugin
-     * @group watussi
      */
     public function createVersionsShouldCreateVersions()
     {

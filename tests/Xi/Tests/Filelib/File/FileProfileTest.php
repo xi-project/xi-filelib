@@ -340,17 +340,23 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
     {
         $profile = new FileProfile();
 
-        $imageProvider = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
+        $imageProvider = $this->getMock('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $imageProvider->expects($this->any())->method('getIdentifier')->will($this->returnValue('imagenizer'));
         $imageProvider->expects($this->any())->method('getVersions')->will($this->returnValue(array('imagenizer')));
+        $imageProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(true));
+        $imageProvider->expects($this->any())->method('providesFor')->will($this->returnCallback(function(File $file) { return $file->getMimetype() == 'image/png'; }));
 
-        $videoProvider = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
+        $videoProvider = $this->getMock('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $videoProvider->expects($this->any())->method('getIdentifier')->will($this->returnValue('videonizer'));
         $videoProvider->expects($this->any())->method('getVersions')->will($this->returnValue(array('videonizer')));
+        $videoProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(false));
+        $videoProvider->expects($this->any())->method('providesFor')->will($this->returnCallback(function(File $file) { return $file->getMimetype() == 'video/lus'; }));
 
-        $globalProvider = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
+        $globalProvider = $this->getMock('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $globalProvider->expects($this->any())->method('getIdentifier')->will($this->returnValue('globalizer'));
         $globalProvider->expects($this->any())->method('getVersions')->will($this->returnValue(array('globalizer')));
+        $globalProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(true));
+        $globalProvider->expects($this->any())->method('providesFor')->will($this->returnCallback(function(File $file) { return true; }));
 
         $profile->addFileVersion('image', 'imagenizer', $imageProvider);
         $profile->addFileVersion('video', 'videonizer', $videoProvider);
@@ -358,8 +364,39 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
         $profile->addFileVersion('image', 'globalizer', $globalProvider);
         $profile->addFileVersion('video', 'globalizer', $globalProvider);
 
+        $profile->addPlugin($imageProvider);
+        $profile->addPlugin($videoProvider);
+        $profile->addPlugin($globalProvider);
+
         return $profile;
     }
+
+    /**
+     * @return array
+     */
+    public function provideDataForisSharedResourceAllowed()
+    {
+        return array(
+            array(true, 'image/png'),
+            array(false, 'video/lus'),
+            array(true, 'lussen/tussen'),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideDataForisSharedResourceAllowed
+     */
+    public function isSharedResourceAllowedShouldReturnCorrectResult($expected, $mimetype)
+    {
+        $profile = $this->createProfileWithMockedVersions();
+        $profile->setFilelib($this->createMockedFilelib());
+
+        $file = File::create(array('resource' => Resource::create(array('mimetype' => $mimetype))));
+
+        $this->assertEquals($expected, $profile->isSharedResourceAllowed($file));
+    }
+
 
 
 

@@ -143,7 +143,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                         ->getMock();
 
         $command->expects($this->once())->method('getResource')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Upload\FileUpload'))
+                ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->isInstanceOf('Xi\Filelib\File\Upload\FileUpload'))
                 ->will($this->returnValue(Resource::create()));
 
         $ret = $command->execute();
@@ -187,6 +187,8 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getResourceShouldGenerateNewResourceIfProfileAllowsButNoResourceIsFound()
     {
+        $file = File::create(array());
+
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
@@ -205,6 +207,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $profile->expects($this->once())
             ->method('isSharedResourceAllowed')
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
             ->will($this->returnValue(true));
 
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
@@ -219,8 +222,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
         $command = new UploadFileCommand($op, $upload, $folder, $profile);
-
-        $ret = $command->getResource($upload);
+        $ret = $command->getResource($file, $upload);
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
         $this->assertSame($hash, $ret->getHash());
@@ -232,6 +234,8 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getResourceShouldGenerateNewResourceIfProfileRequires()
     {
+        $file = File::create(array());
+
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
@@ -248,7 +252,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
             ->with($this->equalTo('lussenhof'))
             ->will($this->returnValue($profile));
 
-        $profile->expects($this->once())
+        $profile->expects($this->atLeastOnce())
             ->method('isSharedResourceAllowed')
             ->will($this->returnValue(false));
 
@@ -257,13 +261,18 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $upload = new FileUpload($path);
         $hash = sha1_file($upload->getRealPath());
 
-        $backend->expects($this->never())->method('findResourcesByHash');
+        $backend->expects($this->once())->method('findResourcesByHash')
+            ->with($this->equalTo($hash))
+            ->will($this->returnValue(array(
+            Resource::create(array('id' => 'first-id')),
+            Resource::create(array('id' => 'second-id')),
+        )));
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
         $command = new UploadFileCommand($op, $upload, $folder, $profile);
 
-        $ret = $command->getResource($upload);
+        $ret = $command->getResource($file, $upload);
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
         $this->assertSame($hash, $ret->getHash());
@@ -276,6 +285,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getResourceShouldReuseResourceIfProfileAllowsAndResourcesAreFound()
     {
+        $file = File::create(array());
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
@@ -312,7 +322,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $command = new UploadFileCommand($op, $upload, $folder, $profile);
 
-        $ret = $command->getResource($upload);
+        $ret = $command->getResource($file, $upload);
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
         $this->assertSame('first-id', $ret->getId());

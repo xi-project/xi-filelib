@@ -326,15 +326,17 @@ class FileProfile implements EventSubscriberInterface
     }
 
     /**
-     * Returns whether profile allows shared resources
+     * Returns whether profile allows shared resources for a file
      *
+     * @param File $file
      * @return boolean
      */
-    public function isSharedResourceAllowed()
+    public function isSharedResourceAllowed(File $file)
     {
         foreach ($this->getPlugins() as $plugin) {
+
             if ($plugin instanceof VersionProvider) {
-                if (!$plugin->isSharedResourceAllowed()) {
+                if ($plugin->providesFor($file) && !$plugin->isSharedResourceAllowed()) {
                     return false;
                 }
             }

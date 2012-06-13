@@ -48,31 +48,46 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
     }
 
 
-    public function getResource(FileUpload $upload)
+    public function getResource(File $file, FileUpload $upload)
     {
+        $file = clone $file;
+
         $hash = sha1_file($upload->getRealPath());
         $profileObj = $this->fileOperator->getProfile($this->profile);
-        if ($profileObj->isSharedResourceAllowed()) {
-            $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
-            if ($resources) {
-                foreach ($resources as $resource) {
-                    if (!$resource->isExclusive()) {
-                        return $resource;
-                    }
+
+        $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
+        if ($resources) {
+            foreach ($resources as $resource) {
+                if (!$resource->isExclusive()) {
+                    $file->setResource($resource);
+                    break;
                 }
             }
+
+            if (!$profileObj->isSharedResourceAllowed($file)) {
+                $file->unsetResource();
+            }
+
         }
 
-        $resource = new Resource();
-        $resource->setDateCreated(new DateTime());
-        $resource->setHash($hash);
-        $resource->setSize($upload->getSize());
-        $resource->setMimetype($upload->getMimeType());
-        $this->fileOperator->getBackend()->createResource($resource);
-        return $resource;
+        if (!$file->getResource()) {
+
+            $resource = new Resource();
+            $resource->setDateCreated(new DateTime());
+            $resource->setHash($hash);
+            $resource->setSize($upload->getSize());
+            $resource->setMimetype($upload->getMimeType());
+
+            if (!$profileObj->isSharedResourceAllowed($file)) {
+                $resource->setExclusive(true);
+            }
+
+            $this->fileOperator->getBackend()->createResource($resource);
+            $file->setResource($resource);
+        }
+
+        return $file->getResource();
     }
-
-
 
     public function execute()
     {
@@ -101,10 +116,9 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         // @todo: actual statuses
         $file->setStatus(File::STATUS_RAW);
 
-        $resource = $this->getResource($upload);
+        $resource = $this->getResource($file, $upload);
 
         $file->setResource($resource);
-
         $this->fileOperator->getBackend()->upload($file, $folder);
         $this->fileOperator->getStorage()->store($resource, $upload->getRealPath());
 

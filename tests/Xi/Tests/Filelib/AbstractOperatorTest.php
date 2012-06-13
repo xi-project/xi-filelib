@@ -4,6 +4,7 @@ namespace Xi\Tests\Filelib;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Command;
+use Xi\Filelib\AbstractOperator;
 
 class AbstractOperatorTest extends TestCase
 {
@@ -266,6 +267,62 @@ class AbstractOperatorTest extends TestCase
         $this->assertEquals('executed!!!', $ret);
 
     }
+
+
+    public function provideCallbackStrategies()
+    {
+        return array(
+            array('asynchronous', Command::STRATEGY_ASYNCHRONOUS),
+            array('synchronous', Command::STRATEGY_SYNCHRONOUS),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideCallbackStrategies
+     */
+    public function executeOrQueueShouldUtilizeCallbacks($expectedValue, $strategy)
+    {
+        $callbacks = array(
+            Command::STRATEGY_ASYNCHRONOUS => function(AbstractOperator $op, $ret) {
+                return 'asynchronous';
+            },
+            Command::STRATEGY_SYNCHRONOUS => function(AbstractOperator $op, $ret) {
+                return 'synchronous';
+            }
+        );
+
+        $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+            ->disableOriginalConstructor()
+            ->setMethods(array('getCommandStrategy', 'getQueue'))
+            ->getMock();
+
+        $command = $this->getMockBuilder('Xi\Filelib\Command')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+
+        $op->expects($this->once())->method('getCommandStrategy')
+            ->with($this->equalTo('tussi'))
+            ->will($this->returnValue($strategy));
+
+        $op->expects($this->any())->method('getQueue')
+            ->will($this->returnValue($queue));
+
+        $command->expects($this->any())->method('execute')
+            ->will($this->returnValue('originalValue'));
+
+        $queue->expects($this->any())->method('enqueue')
+            ->will($this->returnValue('originalValue'));
+
+
+        $ret = $op->executeOrQueue($command, 'tussi', $callbacks);
+
+        $this->assertEquals($expectedValue, $ret);
+
+    }
+
 
 
 

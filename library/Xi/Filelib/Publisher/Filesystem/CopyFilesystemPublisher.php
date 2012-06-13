@@ -52,7 +52,12 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version);
+            if ($versionProvider->areSharedVersionsAllowed()) {
+                $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version, null);
+            } else {
+                $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version, $file);
+            }
+
             copy($tmp, $link);
             chmod($link, $this->getFilePermission());
         }

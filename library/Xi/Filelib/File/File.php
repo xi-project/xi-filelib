@@ -287,6 +287,10 @@ class File
         return $this->resource;
     }
 
+    public function unsetResource()
+    {
+        $this->resource = null;
+    }
 
     /**
      * Returns the file as standardized file array
