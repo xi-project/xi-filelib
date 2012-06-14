@@ -15,9 +15,10 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
     protected $filelib;
     protected $version;
 
+    public $resourcePaths = array();
+    public $linkPaths = array();
 
-    protected $resourcePaths = array();
-    protected $linkPaths = array();
+    protected $plinker;
 
     public function setUp()
     {
@@ -91,6 +92,24 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
         // $filelib->setFileOperator($fileop);
 
         $this->filelib = $filelib;
+
+        $plinker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
+
+        $self = $this;
+
+        $plinker->expects($this->any())->method('getLinkVersion')
+            ->will($this->returnCallback(function($file, $version) use ($self) {
+            return $self->linkPaths[$file->getId()] . '/' . $file->getId() . '-' . $version . '.lus';
+        }));
+
+        $plinker->expects($this->any())->method('getLink')
+            ->will($this->returnCallback(function($file) use ($self) {
+            return $self->linkPaths[$file->getId()] . '/' . $file->getId() . '.lus';
+        }));
+
+        $this->plinker = $plinker;
+
+
 
     }
 

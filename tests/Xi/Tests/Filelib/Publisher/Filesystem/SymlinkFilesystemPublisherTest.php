@@ -10,26 +10,6 @@ use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
 class SymlinkFilesystemPublisherTest extends TestCase
 {
 
-    protected $plinker;
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        $linker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
-        $linker->expects($this->any())->method('getLinkVersion')
-                ->will($this->returnCallback(function($file, $version) {
-                    return $this->linkPaths[$file->getId()] . '/' . $file->getId() . '-' . $version . '.lus';
-                }));
-        $linker->expects($this->any())->method('getLink')
-                ->will($this->returnCallback(function($file) {
-                    return $this->linkPaths[$file->getId()] . '/' . $file->getId() . '.lus';
-                 }));
-        $this->plinker = $linker;
-    }
-
-
-
     /**
      * @test
      */
