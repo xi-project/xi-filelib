@@ -44,6 +44,9 @@ use Xi\Filelib\Folder\Folder;
     {
         // Unset to keep database connections from piling up.
         $this->backend = null;
+
+        // Collect garbages manually to free up connections.
+        gc_collect_cycles();
     }
 
     /**
