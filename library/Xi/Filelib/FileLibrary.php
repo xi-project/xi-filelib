@@ -210,8 +210,8 @@ class FileLibrary
      */
     public function setStorage(Storage $storage)
     {
-        $storage->setFilelib($this);
         $this->storage = $storage;
+
         return $this;
     }
 

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\File;
 
 use Xi\Filelib\FileLibrary;
@@ -97,7 +104,6 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
         }
         $this->profiles[$identifier] = $profile;
         $profile->setFilelib($this->getFilelib());
-        $profile->getLinker()->setFilelib($this->getFilelib());
 
         $this->getEventDispatcher()->addSubscriber($profile);
 
@@ -220,12 +226,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->executeOrQueue(
             $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile)),
-            DefaultFileOperator::COMMAND_UPLOAD,
-            array(
-                Command::STRATEGY_SYNCHRONOUS => function(DefaultFileOperator $op, AfterUploadFileCommand $command) {
-                    return $op->executeOrQueue($command, DefaultFileOperator::COMMAND_AFTERUPLOAD);
-                }
-            )
+            DefaultFileOperator::COMMAND_UPLOAD
         );
     }
 

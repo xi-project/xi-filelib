@@ -2,25 +2,19 @@
 
 namespace Xi\Filelib\Linker;
 
-use \Xi\Filelib\Linker\AbstractLinker,
-    \Xi\Filelib\Linker\Linker,
-    \Xi\Filelib\File\File,
-    \Xi\Filelib\Folder\Folder,
-    \Xi\Filelib\Plugin\VersionProvider\VersionProvider,
-    \Xi\Filelib\FilelibException,
-    \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator
-    ;
+use Xi\Filelib\Linker\AbstractLinker;
+use Xi\Filelib\Linker\Linker;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
 
 /**
  * Sequential linker creates a sequential link with n levels of directories with m files per directory
  *
  * @author pekkis
  * @author Petri Mahanen
- *
  */
 class SequentialLinker extends AbstractLinker implements Linker
 {
-
     /**
      * @var integer Files per directory
      */
@@ -32,7 +26,6 @@ class SequentialLinker extends AbstractLinker implements Linker
     private $directoryLevels = 1;
 
     /**
-     *
      * @var LeveledDirectoryIdCalculator
      */
     private $directoryIdCalculator;
@@ -40,12 +33,13 @@ class SequentialLinker extends AbstractLinker implements Linker
     /**
      * Sets files per directory
      *
-     * @param integer $filesPerDirectory
+     * @param  integer          $filesPerDirectory
      * @return SequentialLinker
      */
     public function setFilesPerDirectory($filesPerDirectory)
     {
         $this->getDirectoryIdCalculator()->setFilesPerDirectory($filesPerDirectory);
+
         return $this;
     }
 
@@ -62,12 +56,13 @@ class SequentialLinker extends AbstractLinker implements Linker
     /**
      * Sets levels per directory hierarchy
      *
-     * @param integer $directoryLevels
+     * @param  integer          $directoryLevels
      * @return SequentialLinker
      */
     public function setDirectoryLevels($directoryLevels)
     {
         $this->getDirectoryIdCalculator()->setDirectoryLevels($directoryLevels);
+
         return $this;
     }
 
@@ -84,7 +79,7 @@ class SequentialLinker extends AbstractLinker implements Linker
     /**
      * Returns directory path for specified file id
      *
-     * @param File $file
+     * @param  File   $file
      * @return string
      */
     public function getDirectoryId($file)
@@ -92,7 +87,14 @@ class SequentialLinker extends AbstractLinker implements Linker
         return $this->getDirectoryIdCalculator()->calculateDirectoryId($file);
     }
 
-
+    /**
+     * Returns link for a version of a file
+     *
+     * @param  File   $file
+     * @param  string $version   Version identifier
+     * @param  string $extension Extension
+     * @return string Versioned link
+     */
     public function getLinkVersion(File $file, $version, $extension)
     {
 
@@ -104,7 +106,12 @@ class SequentialLinker extends AbstractLinker implements Linker
         return $link;
     }
 
-
+    /**
+     * Returns a link for a file
+     *
+     * @param  File   $file
+     * @return string Link
+     */
     public function getLink(File $file)
     {
         $url = array();
@@ -112,11 +119,11 @@ class SequentialLinker extends AbstractLinker implements Linker
         $name = $file->getName();
         $url[] = $name;
         $url = implode(DIRECTORY_SEPARATOR, $url);
+
         return $url;
     }
 
     /**
-     *
      * Returns directory id calculator
      *
      * @return LeveledDirectoryIdCalculator
@@ -131,5 +138,4 @@ class SequentialLinker extends AbstractLinker implements Linker
 
         return $this->directoryIdCalculator;
     }
-
 }

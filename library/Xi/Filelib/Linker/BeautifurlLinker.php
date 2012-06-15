@@ -1,46 +1,77 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Linker;
 
 use Xi\Filelib\Linker\AbstractLinker;
 use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Tool\Slugifier\Slugifier;
+use Xi\Filelib\Folder\FolderOperator;
 
 /**
  * Creates beautifurls(tm) from the virtual directory structure and file names.
  *
  * @author pekkis
- *
  */
 class BeautifurlLinker extends AbstractLinker implements Linker
 {
-
     /**
      * @var boolean Exclude root folder from beautifurls or not
      */
     private $excludeRoot = false;
 
+    /**
+     * @var string
+     */
     private $slugifierClass = 'Xi\Filelib\Tool\Slugifier\Zend2Slugifier';
 
+    /**
+     * @var object
+     */
     private $slugifier;
 
+    /**
+     * @var boolean
+     */
     private $slugify = true;
+
+    /**
+     * @var FolderOperator
+     */
+    private $folderOperator;
+
+    /**
+     * @param  FolderOperator   $folderOperator
+     * @param  array            $options
+     * @return BeautifurlLinker
+     */
+    public function __construct(FolderOperator $folderOperator, array $options = array())
+    {
+        parent::__construct($options);
+
+        $this->folderOperator = $folderOperator;
+    }
 
     /**
      * Sets whether the root folder is excluded from beautifurls.
      *
-     * @param boolean $excludeRoot
+     * @param  boolean          $excludeRoot
      * @return BeautifurlLinker
      */
     public function setExcludeRoot($excludeRoot)
     {
         $this->excludeRoot = $excludeRoot;
+
         return $this;
     }
-
 
     /**
      * Returns whether the root folder is to be excluded from beautifurls.
@@ -65,12 +96,13 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     /**
      * Sets slugifier class
      *
-     * @param type $slugifierClass
+     * @param  string           $slugifierClass
      * @return BeautifurlLinker
      */
     public function setSlugifierClass($slugifierClass)
     {
         $this->slugifierClass = $slugifierClass;
+
         return $this;
     }
 
@@ -85,18 +117,20 @@ class BeautifurlLinker extends AbstractLinker implements Linker
             $className = $this->slugifierClass;
             $this->slugifier = new $className();
         }
+
         return $this->slugifier;
     }
 
     /**
      * Enables or disables slugifying
      *
-     * @param boolean $slugify
+     * @param  boolean          $slugify
      * @return BeautifurlLinker
      */
     public function setSlugify($slugify)
     {
         $this->slugify = $slugify;
+
         return $this;
     }
 
@@ -110,7 +144,14 @@ class BeautifurlLinker extends AbstractLinker implements Linker
         return $this->slugify;
     }
 
-
+    /**
+     * Returns link for a version of a file
+     *
+     * @param  File   $file
+     * @param  string $version   Version identifier
+     * @param  string $extension Extension
+     * @return string Versioned link
+     */
     public function getLinkVersion(File $file, $version, $extension)
     {
         $link = $this->getLink($file);
@@ -122,23 +163,27 @@ class BeautifurlLinker extends AbstractLinker implements Linker
         return $link;
     }
 
-
+    /**
+     * Returns a link for a file
+     *
+     * @param  File   $file
+     * @return string Link
+     */
     public function getLink(File $file)
     {
         $folders = array();
-        $folders[] = $folder = $this->getFilelib()->getFolderOperator()->find($file->getFolderId());
+        $folders[] = $folder = $this->folderOperator->find($file->getFolderId());
 
-        while($folder->getParentId()) {
-            $folder = $this->getFilelib()->getFolderOperator()->find($folder->getParentId());
+        while ($folder->getParentId()) {
+            $folder = $this->folderOperator->find($folder->getParentId());
             array_unshift($folders, $folder);
         }
 
         $beautifurl = array();
 
-        foreach($folders as $folder) {
+        foreach ($folders as $folder) {
             $beautifurl[] = $folder->getName();
         }
-
 
         if ($this->getSlugify()) {
             $slugifier = $this->getSlugifier();
@@ -147,17 +192,14 @@ class BeautifurlLinker extends AbstractLinker implements Linker
             });
         }
 
-
         $beautifurl[] = $file->getName();
 
-        if($this->getExcludeRoot()) {
+        if ($this->getExcludeRoot()) {
             array_shift($beautifurl);
         }
 
         $beautifurl = implode(DIRECTORY_SEPARATOR, $beautifurl);
 
         return $beautifurl;
-
     }
-
 }
