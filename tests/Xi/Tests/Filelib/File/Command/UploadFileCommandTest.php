@@ -76,7 +76,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance'))
+                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'createCommand', 'executeOrQueue'))
                    ->getMock();
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
@@ -120,10 +120,25 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
            ->with($this->equalTo('versioned'))
            ->will($this->returnValue($profile));
 
+
+        $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $op->expects($this->once())
+           ->method('createCommand')
+           ->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))
+           ->will($this->returnValue($afterUploadCommand));
+
+        $op->expects($this->once())
+           ->method('executeOrQueue')
+           ->with($this->isInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand'));
+
         $command = new UploadFileCommand($op, $path, $folder, 'versioned');
         $ret = $command->execute();
 
-        $this->assertInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand', $ret);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
 
     }
 

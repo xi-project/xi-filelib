@@ -1,45 +1,57 @@
 {
-    "hash": "5354a90eb8a1d65f1d0cec56fc8b13f9",
+    "hash": "d82d8960dc60ed37b87599a06a4c3e5b",
     "packages": [
         {
             "package": "doctrine/common",
-            "version": "2.2.1"
+            "version": "2.2.2"
         },
         {
             "package": "doctrine/dbal",
-            "version": "2.2.1"
+            "version": "2.2.2"
         },
         {
             "package": "doctrine/orm",
-            "version": "2.2.1"
+            "version": "2.2.2"
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "v2.0.10"
+            "version": "v2.0.14"
         },
         {
             "package": "symfony/http-foundation",
-            "version": "v2.0.10"
+            "version": "v2.0.14"
         },
         {
             "package": "symfony/http-kernel",
-            "version": "v2.0.10"
+            "version": "v2.0.14"
         },
         {
             "package": "symfony/security",
-            "version": "v2.0.10"
+            "version": "v2.0.14"
         },
         {
             "package": "videlalvaro/php-amqplib",
             "version": "dev-master",
-            "source-reference": "b74879109f8f79aed336b95e723e41674bafdebc"
+            "source-reference": "e98ca899d867633cd8aa2ef04e8e9e6147d21df8"
         },
         {
             "package": "zendframework/zendframework",
             "version": "dev-master",
-            "source-reference": "d2f080ef1d636154335d35bef88ad568e79548e1"
+            "alias-pretty-version": "2.0.x-dev",
+            "alias-version": "2.0.9999999.9999999-dev"
+        },
+        {
+            "package": "zendframework/zendframework",
+            "version": "dev-master",
+            "source-reference": "47a0bd724e171cb8854e08c3dd0daed7fbae90ab"
         }
     ],
     "packages-dev": null,
-    "aliases": []
+    "aliases": [
+
+    ],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "zendframework/zendframework": 20
+    }
 }

@@ -226,12 +226,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->executeOrQueue(
             $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile)),
-            DefaultFileOperator::COMMAND_UPLOAD,
-            array(
-                Command::STRATEGY_SYNCHRONOUS => function(DefaultFileOperator $op, AfterUploadFileCommand $command) {
-                    return $op->executeOrQueue($command, DefaultFileOperator::COMMAND_AFTERUPLOAD);
-                }
-            )
+            DefaultFileOperator::COMMAND_UPLOAD
         );
     }
 

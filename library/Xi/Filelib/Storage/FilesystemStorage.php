@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Storage;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\File;
@@ -16,7 +22,6 @@ use Xi\Filelib\FilelibException;
  *
  * @author pekkis
  * @todo Fucktor caching to directoryIdCalculator
- *
  */
 class FilesystemStorage extends AbstractStorage implements Storage
 {
@@ -53,12 +58,13 @@ class FilesystemStorage extends AbstractStorage implements Storage
     /**
      * Sets caching of directory ids
      *
-     * @param boolean $cacheDirectoryIds
+     * @param  boolean           $cacheDirectoryIds
      * @return FilesystemStorage
      */
     public function setCacheDirectoryIds($cacheDirectoryIds)
     {
         $this->cacheDirectoryIds = $cacheDirectoryIds;
+
         return $this;
     }
 
@@ -72,19 +78,18 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return $this->cacheDirectoryIds;
     }
 
-
     /**
      * Sets directory id calculator
      *
-     * @param DirectoryIdCalculator $directoryIdCalculator
+     * @param  DirectoryIdCalculator $directoryIdCalculator
      * @return FilesystemStorage
      */
     public function setDirectoryIdCalculator(DirectoryIdCalculator $directoryIdCalculator)
     {
         $this->directoryIdCalculator = $directoryIdCalculator;
+
         return $this;
     }
-
 
     /**
      * Returns directory id calculator
@@ -97,35 +102,34 @@ class FilesystemStorage extends AbstractStorage implements Storage
     }
 
     /**
-     *
      * Returns directory id for a file
      *
-     * @param File $file
+     * @param  File   $file
      * @return string
      */
     public function getDirectoryId(File $file)
     {
-        if(!$this->getCacheDirectoryIds()) {
+        if (!$this->getCacheDirectoryIds()) {
             return $this->getDirectoryIdCalculator()->calculateDirectoryId($file);
         }
 
-        if(!isset($this->cache[$file->getId()])) {
+        if (!isset($this->cache[$file->getId()])) {
             $this->cache[$file->getId()] = $this->getDirectoryIdCalculator()->calculateDirectoryId($file);
         }
+
         return $this->cache[$file->getId()];
     }
-
-
 
     /**
      * Sets directory permission
      *
-     * @param integer $directoryPermission
+     * @param  integer           $directoryPermission
      * @return FilesystemStorage
      */
     public function setDirectoryPermission($directoryPermission)
     {
         $this->directoryPermission = octdec($directoryPermission);
+
         return $this;
     }
 
@@ -142,12 +146,13 @@ class FilesystemStorage extends AbstractStorage implements Storage
     /**
      * Sets file permission
      *
-     * @param integer $filePermission
+     * @param  integer           $filePermission
      * @return FilesystemStorage
      */
     public function setFilePermission($filePermission)
     {
         $this->filePermission = octdec($filePermission);
+
         return $this;
     }
 
@@ -164,7 +169,7 @@ class FilesystemStorage extends AbstractStorage implements Storage
     /**
      * Sets root
      *
-     * @param string $root
+     * @param  string            $root
      * @return FilesystemStorage
      */
     public function setRoot($root)
@@ -188,7 +193,7 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
         $dir = $this->getRoot() . '/' . $this->getDirectoryId($file);
 
-        if(!is_dir($dir)) {
+        if (!is_dir($dir)) {
             // Sorry for the silencer but it is needed here
             @mkdir($dir, $this->getDirectoryPermission(), true);
         }
@@ -197,7 +202,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
         copy($tempFile, $fileTarget);
         chmod($fileTarget, $this->getFilePermission());
-
     }
 
     public function storeVersion(File $file, $version, $tempFile)
@@ -206,7 +210,7 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version;
 
-        if(!is_dir($path)) {
+        if (!is_dir($path)) {
             // Sorry for the silencer but it is needed here
             @mkdir($path, $this->getDirectoryPermission(), true);
         }
@@ -218,7 +222,7 @@ class FilesystemStorage extends AbstractStorage implements Storage
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $file->getId();
 
-        if(!is_file($path)) {
+        if (!is_file($path)) {
             throw new FilelibException('Could not retrieve file');
         }
 
@@ -229,7 +233,7 @@ class FilesystemStorage extends AbstractStorage implements Storage
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version . '/' . $file->getId();
 
-        if(!is_file($path)) {
+        if (!is_file($path)) {
             throw new FilelibException('Could not retrieve file');
         }
 
@@ -243,9 +247,7 @@ class FilesystemStorage extends AbstractStorage implements Storage
         if (is_file($path) && is_writable($path)) {
             unlink($path);
         }
-
     }
-
 
     public function deleteVersion(File $file, $version)
     {
@@ -254,9 +256,7 @@ class FilesystemStorage extends AbstractStorage implements Storage
         if (is_file($path) && is_writable($path)) {
             unlink($path);
         }
-
     }
-
 
     private function assertRootExistsAndIsWritable()
     {
@@ -267,7 +267,5 @@ class FilesystemStorage extends AbstractStorage implements Storage
         if (!is_dir($root) || !is_writable($root)) {
             throw new \LogicException('Defined root is not writable');
         }
-
     }
-
 }

@@ -3,14 +3,13 @@
 namespace Xi\Filelib\Plugin\Video;
 
 use Services_Zencoder as ZencoderService;
-use Zend_Service_Amazon_S3 as AmazonService;
+use Zend\Service\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
-
 
 class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 {
@@ -152,11 +151,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         if(!$this->awsService) {
             $this->awsService = new AmazonService($this->getAwsKey(), $this->getAwsSecretKey());
         }
-
-        if(!$this->awsService->isBucketAvailable($this->getAwsBucket())) {
-            $this->awsService->createBucket($this->getAwsBucket());
-        }
-
         return $this->awsService;
     }
 

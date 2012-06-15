@@ -1,25 +1,35 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Tests\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
-use \DateTime;
+use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\File\File;
+use DateTime;
 
+/**
+ * @group storage
+ */
 class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 {
-    
     protected $file;
-    
+
     protected $calc;
-    
+
     protected function setUp()
     {
-        $this->calc = new \Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator();
-        $this->file = new \Xi\Filelib\File\File();
+        $this->calc = new TimeDirectoryIdCalculator();
+        $this->file = new File();
     }
-    
+
     /**
      * @test
-     * 
      */
     public function differentFormatsShouldReturnCorrectResults()
     {
@@ -30,25 +40,17 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 
         $this->file->setDateUploaded(new DateTime('2030-11-11 10:03:35'));
         $this->assertEquals("2030/11/11", $this->calc->calculateDirectoryId($this->file));
-                
+
         $this->calc->setFormat('m/d/Y/H/i/s');
         $this->assertEquals("11/11/2030/10/03/35", $this->calc->calculateDirectoryId($this->file));
-                
     }
-    
+
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
-     * 
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function unsetDateUploadedShouldThrowException()
     {
         $this->calc->calculateDirectoryId($this->file);
     }
-    
-      
-    
-    
-    
-    
 }
