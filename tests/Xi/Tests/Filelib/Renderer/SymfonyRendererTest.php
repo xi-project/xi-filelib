@@ -20,199 +20,6 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->assertContains('Xi\Filelib\Renderer\AcceleratedRenderer', class_implements('Xi\Filelib\Renderer\SymfonyRenderer'));
     }
 
-    /**
-     * @test
-     */
-    public function mergeOptionsShouldReturnSanitizedResult()
-    {
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = new SymfonyRenderer($filelib);
-
-        $expected = array(
-            'version' => 'original',
-            'download' => false,
-        );
-
-        $options = array();
-
-        $this->assertEquals($expected, $renderer->mergeOptions($options));
-
-        $expected = array(
-            'version' => 'orignaluss',
-            'download' => false,
-            'impossible' => 'impossibru'
-        );
-
-        $options = array(
-            'version' => 'orignaluss',
-            'impossible' => 'impossibru',
-        );
-
-        $this->assertEquals($expected, $renderer->mergeOptions($options));
-
-
-
-    }
-
-    /**
-     * @test
-     */
-    public function stripPrefixFromAcceleratedPathShouldDefaultToEmptyString()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new SymfonyRenderer($filelib);
-
-         $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
-
-    }
-
-    /**
-     * @test
-     */
-    public function stripPrefixFromAcceleratedPathShouldObeySetter()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new SymfonyRenderer($filelib);
-
-         $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
-
-         $renderer->setStripPrefixFromAcceleratedPath('luss');
-
-         $this->assertEquals('luss', $renderer->getStripPrefixFromAcceleratedPath());
-    }
-
-
-        /**
-     * @test
-     */
-    public function addPrefixToAcceleratedPathShouldDefaultToEmptyString()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new SymfonyRenderer($filelib);
-
-         $this->assertEquals('', $renderer->getAddPrefixToAcceleratedPath());
-
-    }
-
-    /**
-     * @test
-     */
-    public function addPrefixToAcceleratedPathShouldObeySetter()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new SymfonyRenderer($filelib);
-
-         $this->assertSame('', $renderer->getAddPrefixToAcceleratedPath());
-
-         $renderer->setAddPrefixToAcceleratedPath('luss');
-
-         $this->assertSame('luss', $renderer->getAddPrefixToAcceleratedPath());
-    }
-
-
-
-
-    /**
-     * @test
-     */
-    public function getPublisherShouldDelegateToFilelib()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = new SymfonyRenderer($filelib);
-
-        $filelib->expects($this->once())->method('getPublisher');
-
-        $renderer = $renderer->getPublisher();
-    }
-
-
-
-
-    /**
-     * @test
-     */
-    public function getAclShouldDelegateToFilelib()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = new SymfonyRenderer($filelib);
-
-        $filelib->expects($this->once())->method('getAcl');
-
-        $acl = $renderer->getAcl();
-    }
-
-
-    /**
-     * @test
-     */
-    public function getStorageShouldDelegateToFilelib()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = new SymfonyRenderer($filelib);
-
-        $filelib->expects($this->once())->method('getStorage');
-
-        $acl = $renderer->getStorage();
-    }
-
-    /**
-     * @test
-     */
-    public function getUrlShouldDelegateToPublisherWhenUsingOriginalVersion()
-    {
-        $file = File::create(array('id' => 1));
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
-                         ->setMethods(array('getPublisher'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
-
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $publisher->expects($this->once())->method('getUrl')->with($this->equalTo($file));
-
-        $renderer->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-
-        $url = $renderer->getUrl($file, array('version' => 'original'));
-
-
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function getUrlShouldDelegateToPublisherWhenUsingNonOriginalVersion()
-    {
-        $file = File::create(array('id' => 1));
-
-        $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
-
-        $fiop->expects($this->once())->method('getVersionProvider')
-             ->with($this->equalTo($file), $this->equalTo('lussen'))
-             ->will($this->returnValue($vp));
-
-
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\SymfonyRenderer')
-                         ->setMethods(array('getPublisher'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
-
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $publisher->expects($this->once())->method('getUrlVersion')->with($this->equalTo($file), $this->equalTo('lussen'), $this->equalTo($vp));
-
-        $renderer->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-
-        $url = $renderer->getUrl($file, array('version' => 'lussen'));
-
-    }
 
     /**
      * @test
@@ -337,6 +144,13 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
                          ->setConstructorArgs(array($filelib))
                          ->getMock();
 
+        $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $eventDispatcher->expects($this->once())->method('dispatch')
+            ->with('file.render', $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+
+        $filelib->expects($this->any())->method('getEventDispatcher')
+            ->will($this->returnValue($eventDispatcher));
+
         $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
         $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
 
@@ -357,7 +171,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
 
-        $response = $renderer->render($file, array('download' => true));
+        $response = $renderer->render($file, array('download' => true, 'track' => true));
 
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
 
@@ -454,35 +268,6 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals('image/jpeg', $response->headers->get('Content-Type'));
 
     }
-
-    /**
-     * @test
-     */
-    public function accelerationShouldBeDisabledByDefault()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new SymfonyRenderer($filelib);
-
-         $this->assertFalse($renderer->isAccelerationEnabled());
-
-    }
-
-    /**
-     * @test
-     */
-    public function enableAccelerationShouldEnableAcceleration()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new SymfonyRenderer($filelib);
-
-         $this->assertFalse($renderer->isAccelerationEnabled());
-
-         $renderer->enableAcceleration(true);
-
-         $this->assertTrue($renderer->isAccelerationEnabled());
-    }
-
-
 
     /**
      * @test

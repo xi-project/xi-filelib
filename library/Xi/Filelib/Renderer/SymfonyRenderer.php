@@ -7,92 +7,16 @@ use Xi\Filelib\FileLibrary;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\Event\FileEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class SymfonyRenderer implements AcceleratedRenderer
+class SymfonyRenderer extends AbstractAcceleratedRenderer implements AcceleratedRenderer
 {
-
-    /**
-     * Server signature regexes and their headers
-     *
-     * @var array
-     */
-    static protected $serverSignatures = array(
-        '[^nginx]' => 'x-accel-redirect',
-        '[^Apache]' => 'x-sendfile',
-        '[^lighttpd/(1\.5|2)]' => 'x-sendfile',
-        '[^lighttpd/1.4]' => 'x-lighttpd-send-file',
-        '[^Cherokee]' => 'x-sendfile',
-    );
-
-    /**
-     * @var string
-     */
-    private $accelerationHeader;
-
-    /**
-     * @var boolean
-     */
-    private $accelerationEnabled = false;
 
     /**
      * @var Request
      */
     private $request;
-
-    /**
-     * @var FileLibrary
-     */
-    private $filelib;
-
-    /**
-     * @var Default options
-     */
-    private $defaultOptions = array(
-        'download' => false,
-        'version' => 'original',
-    );
-
-    /**
-     * @var string
-     */
-    private $stripPrefixFromAcceleratedPath = '';
-
-    /**
-     * @var string
-     */
-    private $addPrefixToAcceleratedPath = '';
-
-    public function __construct(FileLibrary $filelib)
-    {
-        $this->filelib = $filelib;
-    }
-
-    /**
-     *
-     * @param string $stripPrefix
-     */
-    public function setStripPrefixFromAcceleratedPath($stripPrefix)
-    {
-        $this->stripPrefixFromAcceleratedPath = $stripPrefix;
-    }
-
-    public function getStripPrefixFromAcceleratedPath()
-    {
-        return $this->stripPrefixFromAcceleratedPath;
-    }
-
-
-    public function setAddPrefixToAcceleratedPath($addPrefix)
-    {
-        $this->addPrefixToAcceleratedPath = $addPrefix;
-    }
-
-    public function getAddPrefixToAcceleratedPath()
-    {
-        return $this->addPrefixToAcceleratedPath;
-    }
-
-
 
     /**
      * Sets request context
@@ -114,27 +38,6 @@ class SymfonyRenderer implements AcceleratedRenderer
         return $this->request;
     }
 
-
-    /**
-     *
-     * @return boolean Returns whether response can be accelerated
-     */
-    public function isAccelerationEnabled()
-    {
-        return $this->accelerationEnabled;
-    }
-
-    /**
-     * Enables or disables acceleration
-     *
-     * @param boolean $flag
-     */
-    public function enableAcceleration($flag)
-    {
-        $this->accelerationEnabled = $flag;
-    }
-
-
     public function isAccelerationPossible()
     {
         // If we have no request as context we cannot accelerate
@@ -153,31 +56,6 @@ class SymfonyRenderer implements AcceleratedRenderer
 
         return false;
 
-    }
-
-
-
-
-    /**
-     * Returns url to a file
-     *
-     * @param File $file
-     * @param type $options
-     * @return string
-     */
-    public function getUrl(File $file, $options = array())
-    {
-        $options = $this->mergeOptions($options);
-
-        if ($options['version'] === 'original') {
-            return $this->getPublisher()->getUrl($file);
-        }
-
-        // @todo: simplify. Publisher should need the string only!
-        $provider = $this->filelib->getFileOperator()->getVersionProvider($file, $options['version']);
-        $url = $this->getPublisher()->getUrlVersion($file, $options['version'], $provider);
-
-        return $url;
     }
 
     /**
@@ -211,54 +89,18 @@ class SymfonyRenderer implements AcceleratedRenderer
             return $response;
         }
 
-        if ($options['download'] === true) {
+        if ($options['download'] == true) {
             $response->headers->set('Content-disposition', "attachment; filename={$file->getName()}");
+        }
+
+        if ($options['track'] == true) {
+            $event = new FileEvent($file);
+            $this->getEventDispatcher()->dispatch('file.render', $event);
         }
 
         $this->setContent($response, $res);
 
         return $response;
-    }
-
-    /**
-     * Merges default options with supplied options
-     *
-     * @param array $options
-     * @return array
-     */
-    public function mergeOptions(array $options)
-    {
-        return array_merge($this->defaultOptions, $options);
-    }
-
-    /**
-     * Returns publisher
-     *
-     * @return Publisher
-     */
-    public function getPublisher()
-    {
-        return $this->filelib->getPublisher();
-    }
-
-    /**
-     * Returns Acl
-     *
-     * @return Acl
-     */
-    public function getAcl()
-    {
-        return $this->filelib->getAcl();
-    }
-
-    /**
-     * Returns storage
-     *
-     * @return Storage
-     */
-    public function getStorage()
-    {
-        return $this->filelib->getStorage();
     }
 
     /**
@@ -321,26 +163,6 @@ class SymfonyRenderer implements AcceleratedRenderer
     }
 
     /**
-     * Sets acceleration header name
-     *
-     * @param string $header
-     */
-    private function setAccelerationHeader($header)
-    {
-        $this->accelerationHeader = $header;
-    }
-
-    /**
-     * Returns acceleration header name
-     *
-     * @return string
-     */
-    private function getAccelerationHeader()
-    {
-        return $this->accelerationHeader;
-    }
-
-    /**
      * Accelerates response
      *
      * @param Response $response
@@ -353,6 +175,7 @@ class SymfonyRenderer implements AcceleratedRenderer
 
         $response->headers->set($this->getAccelerationHeader(), $path);
     }
+
 
 
 }

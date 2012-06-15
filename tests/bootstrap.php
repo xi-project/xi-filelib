@@ -1,7 +1,5 @@
 <?php
 
-use Doctrine\Common\ClassLoader;
-
 gc_enable();
 
 /**
@@ -20,7 +18,7 @@ set_include_path(implode(PATH_SEPARATOR, array(
 define('ROOT_TESTS', realpath(__DIR__));
 
 // Fucktored to use dem autoloader created by da composer
-require ROOT_TESTS . '/vendor/.composer/autoload.php';
+require ROOT_TESTS . '/vendor/autoload.php';
 
 /**
  * Register a trivial autoloader
