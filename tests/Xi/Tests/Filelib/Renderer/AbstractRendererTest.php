@@ -2,23 +2,40 @@
 
 namespace Xi\Tests\Filelib\Renderer;
 
-use Xi\Filelib\Renderer\AbstractRenderer;
 use Xi\Filelib\File\File;
 
 class AbstractRendererTest extends \Xi\Tests\Filelib\TestCase
 {
+
+    protected $renderer;
+
+    protected $filelib;
+
+    protected $publisher;
+
+    protected $fiop;
+
+    public function setUp()
+    {
+        $this->filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $this->fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $this->filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($this->fiop));
+
+        $this->renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
+                               ->setConstructorArgs(array($this->filelib))
+                               ->setMethods(array('getPublisher'))
+                               ->getMock();
+
+        $this->publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
+        $this->renderer->expects($this->any())->method('getPublisher')->will($this->returnValue($this->publisher));
+    }
+
 
     /**
      * @test
      */
     public function mergeOptionsShouldReturnSanitizedResult()
     {
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
-                         ->setConstructorArgs(array($filelib))
-                         ->getMockForAbstractClass();
 
         $expected = array(
             'version' => 'original',
@@ -28,7 +45,7 @@ class AbstractRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $options = array();
 
-        $this->assertEquals($expected, $renderer->mergeOptions($options));
+        $this->assertEquals($expected, $this->renderer->mergeOptions($options));
 
         $expected = array(
             'version' => 'orignaluss',
@@ -43,41 +60,35 @@ class AbstractRendererTest extends \Xi\Tests\Filelib\TestCase
             'track' => true,
         );
 
-        $this->assertEquals($expected, $renderer->mergeOptions($options));
+        $this->assertEquals($expected, $this->renderer->mergeOptions($options));
 
     }
-
 
     /**
      * @test
      */
     public function getPublisherShouldDelegateToFilelib()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
-            ->setConstructorArgs(array($filelib))
-            ->getMockForAbstractClass();
+        $this->filelib->expects($this->once())->method('getPublisher');
 
-        $filelib->expects($this->once())->method('getPublisher');
+        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
+            ->setConstructorArgs(array($this->filelib))
+            ->getMockForAbstractClass();
 
         $publisher = $renderer->getPublisher();
     }
-
-
-
 
     /**
      * @test
      */
     public function getAclShouldDelegateToFilelib()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
+        $this->filelib->expects($this->once())->method('getAcl');
+
         $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
-            ->setConstructorArgs(array($filelib))
+            ->setConstructorArgs(array($this->filelib))
             ->getMockForAbstractClass();
-
-
-        $filelib->expects($this->once())->method('getAcl');
 
         $acl = $renderer->getAcl();
     }
@@ -88,12 +99,11 @@ class AbstractRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getStorageShouldDelegateToFilelib()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
-            ->setConstructorArgs(array($filelib))
-            ->getMockForAbstractClass();
+        $this->filelib->expects($this->once())->method('getStorage');
 
-        $filelib->expects($this->once())->method('getStorage');
+        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
+            ->setConstructorArgs(array($this->filelib))
+            ->getMockForAbstractClass();
 
         $acl = $renderer->getStorage();
     }
@@ -104,23 +114,8 @@ class AbstractRendererTest extends \Xi\Tests\Filelib\TestCase
     public function getUrlShouldDelegateToPublisherWhenUsingOriginalVersion()
     {
         $file = File::create(array('id' => 1));
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
-            ->setConstructorArgs(array($filelib))
-            ->setMethods(array('getPublisher'))
-            ->getMock();
-
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $publisher->expects($this->once())->method('getUrl')->with($this->equalTo($file));
-
-        $renderer->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-
-        $url = $renderer->getUrl($file, array('version' => 'original'));
-
-
-
+        $this->publisher->expects($this->once())->method('getUrl')->with($this->equalTo($file));
+        $this->renderer->getUrl($file, array('version' => 'original'));
     }
 
 
@@ -133,25 +128,13 @@ class AbstractRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
-
-        $fiop->expects($this->once())->method('getVersionProvider')
+        $this->fiop->expects($this->once())->method('getVersionProvider')
             ->with($this->equalTo($file), $this->equalTo('lussen'))
             ->will($this->returnValue($vp));
 
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
-            ->setConstructorArgs(array($filelib))
-            ->setMethods(array('getPublisher'))
-            ->getMock();
+        $this->publisher->expects($this->once())->method('getUrlVersion')->with($this->equalTo($file), $this->equalTo('lussen'), $this->equalTo($vp));
 
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $publisher->expects($this->once())->method('getUrlVersion')->with($this->equalTo($file), $this->equalTo('lussen'), $this->equalTo($vp));
-
-        $renderer->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-
-        $url = $renderer->getUrl($file, array('version' => 'lussen'));
+        $this->renderer->getUrl($file, array('version' => 'lussen'));
 
     }
 

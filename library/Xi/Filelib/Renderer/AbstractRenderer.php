@@ -5,6 +5,7 @@ namespace Xi\Filelib\Renderer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Event\FileEvent;
 
 abstract class AbstractRenderer
 {
@@ -100,7 +101,16 @@ abstract class AbstractRenderer
         return $this->filelib->getStorage();
     }
 
-
+    /**
+     * Dispatches track event
+     *
+     * @param File $file
+     */
+    protected function dispatchTrackEvent(File $file)
+    {
+        $event = new FileEvent($file);
+        $this->getEventDispatcher()->dispatch('file.render', $event);
+    }
 
 
 }

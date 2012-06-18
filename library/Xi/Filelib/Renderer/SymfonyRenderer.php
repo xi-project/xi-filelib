@@ -3,12 +3,9 @@
 namespace Xi\Filelib\Renderer;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\FileLibrary;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\Event\FileEvent;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SymfonyRenderer extends AbstractAcceleratedRenderer implements AcceleratedRenderer
 {
@@ -37,6 +34,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
     {
         return $this->request;
     }
+
 
     public function isAccelerationPossible()
     {
@@ -72,6 +70,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
         $response = new Response();
 
         if (!$this->getAcl()->isFileReadable($file)) {
+
             $response->setStatusCode(403);
             $response->setContent(Response::$statusTexts[$response->getStatusCode()]);
             return $response;
@@ -94,12 +93,10 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
         }
 
         if ($options['track'] == true) {
-            $event = new FileEvent($file);
-            $this->getEventDispatcher()->dispatch('file.render', $event);
+                $this->dispatchTrackEvent($file);
         }
 
         $this->setContent($response, $res);
-
         return $response;
     }
 

@@ -3,11 +3,9 @@
 namespace Xi\Filelib\Renderer;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\FileLibrary;
 use Zend_Controller_Request_Http as Request;
 use Zend_Controller_Response_Http as Response;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\Event\FileEvent;
 
 class ZendRenderer extends AbstractAcceleratedRenderer implements AcceleratedRenderer
 {
@@ -128,10 +126,8 @@ class ZendRenderer extends AbstractAcceleratedRenderer implements AcceleratedRen
         $response->headersSentThrowsException = false;
 
         if (!$this->getAcl()->isFileReadable($file)) {
-
             $response->setHttpResponseCode(403);
             $response->setBody(self::$statusTexts[$response->getHttpResponseCode()]);
-
             return $response;
         }
 
@@ -147,13 +143,12 @@ class ZendRenderer extends AbstractAcceleratedRenderer implements AcceleratedRen
             return $response;
         }
 
-        if ($options['download'] === true) {
+        if ($options['download'] == true) {
             $response->setHeader('Content-disposition', "attachment; filename={$file->getName()}");
         }
 
         if ($options['track'] == true) {
-            $event = new FileEvent($file);
-            $this->getEventDispatcher()->dispatch('file.render', $event);
+            $this->dispatchTrackEvent($file);
         }
 
         $this->setBody($response, $res);
@@ -178,7 +173,6 @@ class ZendRenderer extends AbstractAcceleratedRenderer implements AcceleratedRen
         }
 
         $res = $this->getStorage()->retrieve($file);
-
         return $res;
     }
 
@@ -229,10 +223,7 @@ class ZendRenderer extends AbstractAcceleratedRenderer implements AcceleratedRen
     {
         $path = preg_replace("[^{$this->getStripPrefixFromAcceleratedPath()}]", '', $res->getRealPath());
         $path = $this->getAddPrefixToAcceleratedPath() . $path;
-
         $response->setHeader($this->getAccelerationHeader(), $path);
     }
 
-
 }
-

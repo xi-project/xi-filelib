@@ -7,18 +7,26 @@ use Xi\Filelib\File\File;
 
 class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var AbstractAcceleratedRenderer
+     */
+    protected $renderer;
+
+    public function setUp()
+    {
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $this->renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractAcceleratedRenderer')
+            ->setConstructorArgs(array($filelib))
+            ->getMockForAbstractClass();
+    }
 
     /**
      * @test
      */
     public function accelerationShouldBeDisabledByDefault()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractAcceleratedRenderer')
-            ->setConstructorArgs(array($filelib))
-            ->getMockForAbstractClass();
 
-        $this->assertFalse($renderer->isAccelerationEnabled());
+        $this->assertFalse($this->renderer->isAccelerationEnabled());
     }
 
     /**
@@ -26,16 +34,9 @@ class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
      */
     public function enableAccelerationShouldEnableAcceleration()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractAcceleratedRenderer')
-                         ->setConstructorArgs(array($filelib))
-                         ->getMockForAbstractClass();
-
-        $this->assertFalse($renderer->isAccelerationEnabled());
-
-        $renderer->enableAcceleration(true);
-
-        $this->assertTrue($renderer->isAccelerationEnabled());
+        $this->assertFalse($this->renderer->isAccelerationEnabled());
+        $this->renderer->enableAcceleration(true);
+        $this->assertTrue($this->renderer->isAccelerationEnabled());
     }
 
 
@@ -44,12 +45,7 @@ class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
      */
     public function stripPrefixFromAcceleratedPathShouldDefaultToEmptyString()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractAcceleratedRenderer')
-                         ->setConstructorArgs(array($filelib))
-                         ->getMockForAbstractClass();
-
-        $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
+        $this->assertEquals('', $this->renderer->getStripPrefixFromAcceleratedPath());
 
     }
 
@@ -58,16 +54,11 @@ class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
      */
     public function stripPrefixFromAcceleratedPathShouldObeySetter()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractAcceleratedRenderer')
-                         ->setConstructorArgs(array($filelib))
-                         ->getMockForAbstractClass();
+        $this->assertEquals('', $this->renderer->getStripPrefixFromAcceleratedPath());
 
-        $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
+        $this->renderer->setStripPrefixFromAcceleratedPath('luss');
 
-        $renderer->setStripPrefixFromAcceleratedPath('luss');
-
-        $this->assertEquals('luss', $renderer->getStripPrefixFromAcceleratedPath());
+        $this->assertEquals('luss', $this->renderer->getStripPrefixFromAcceleratedPath());
     }
 
 
@@ -76,13 +67,7 @@ class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
      */
     public function addPrefixToAcceleratedPathShouldDefaultToEmptyString()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractAcceleratedRenderer')
-                        ->setConstructorArgs(array($filelib))
-                        ->getMockForAbstractClass();
-
-        $this->assertEquals('', $renderer->getAddPrefixToAcceleratedPath());
-
+        $this->assertEquals('', $this->renderer->getAddPrefixToAcceleratedPath());
     }
 
 
@@ -91,16 +76,11 @@ class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
      */
     public function addPrefixToAcceleratedPathShouldObeySetter()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractAcceleratedRenderer')
-                          ->setConstructorArgs(array($filelib))
-                          ->getMockForAbstractClass();
+        $this->assertSame('', $this->renderer->getAddPrefixToAcceleratedPath());
 
-        $this->assertSame('', $renderer->getAddPrefixToAcceleratedPath());
+        $this->renderer->setAddPrefixToAcceleratedPath('luss');
 
-        $renderer->setAddPrefixToAcceleratedPath('luss');
-
-        $this->assertSame('luss', $renderer->getAddPrefixToAcceleratedPath());
+        $this->assertSame('luss', $this->renderer->getAddPrefixToAcceleratedPath());
     }
 
 
