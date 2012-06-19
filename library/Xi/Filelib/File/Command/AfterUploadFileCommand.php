@@ -36,7 +36,7 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
         $this->fileOperator->getEventDispatcher()->dispatch('file.afterUpload', $event);
 
         // @todo: actual statuses
-        $file->setStatus(File::STATUS_UPLOADED);
+        $file->setStatus(File::STATUS_COMPLETED);
         $file->setLink($profileObj->getLinker()->getLink($file, true));
         $this->fileOperator->getBackend()->updateFile($file);
 
