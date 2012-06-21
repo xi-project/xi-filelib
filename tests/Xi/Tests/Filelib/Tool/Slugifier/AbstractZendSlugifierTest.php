@@ -38,8 +38,10 @@ class AbstractZendSlugifierTest extends \Xi\Tests\Filelib\TestCase
         $trans = $this->getMock('Xi\Filelib\Tool\Transliterator\Transliterator');
 
         $slugifier = $this->getMockBuilder('Xi\Filelib\Tool\Slugifier\AbstractZendSlugifier')
-            ->setConstructorArgs(array($trans))
-            ->getMockForAbstractClass();
+                          ->setConstructorArgs(array($trans))
+                          ->getMockForAbstractClass();
+
+        $slugifier->expects($this->any())->method('getFilter')->will($this->returnValue($this->getMock('Zend\Filter\FilterChain')));
 
         $trans->expects($this->once())->method('transliterate')->with('tussihovi');
         $slugifier->slugify('tussihovi');
