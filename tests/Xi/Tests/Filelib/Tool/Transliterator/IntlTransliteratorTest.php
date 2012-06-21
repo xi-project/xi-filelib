@@ -12,8 +12,6 @@ class IntlTransliteratorTest extends TestCase
         if (!class_exists("Transliterator")) {
             $this->markTestSkipped("Transliterator class (from intl extension 2.0+) not found");
         }
-
-
     }
 
 

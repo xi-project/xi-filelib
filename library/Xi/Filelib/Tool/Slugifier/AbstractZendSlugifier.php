@@ -2,13 +2,33 @@
 
 namespace Xi\Filelib\Tool\Slugifier;
 
+use Xi\Filelib\Tool\Transliterator\Transliterator;
+
 /**
  * Abstract Zend Framework slugifier
  */
 abstract class AbstractZendSlugifier implements Slugifier
 {
+    /**
+     * @var Transliterator
+     */
+    private $transliterator;
+
+    public function __construct(Transliterator $transliterator)
+    {
+        $this->transliterator = $transliterator;
+    }
+
     abstract public function getFilter();
-        
+
+    /**
+     * @return Transliterator
+     */
+    public function getTransliterator()
+    {
+        return $this->transliterator;
+    }
+
     public function slugifyPath($path)
     {
         $path = explode('/', $path);
@@ -24,11 +44,8 @@ abstract class AbstractZendSlugifier implements Slugifier
     
     public function slugify($unslugged)
     {
-        $filter = $this->getFilter();
-        
-        $slugged = iconv('UTF-8', 'ASCII//TRANSLIT', $unslugged);
-        $slugged = $filter->filter($slugged);
-        
+        $slugged = $this->getTransliterator()->transliterate($unslugged);
+        $slugged = $this->getFilter()->filter($slugged);
         return $slugged;
     }
 }
