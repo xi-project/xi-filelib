@@ -7,16 +7,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Tests\Filelib\Tool\Slugifier;
+namespace Xi\Tests\Filelib\Tool\Transliterator;
 
-class SlugifierTest
+class TransliteratorTest extends \PHPUnit_Framework_TestCase
 {
- 
+
     /**
      * @test
      */
     public function interfaceShouldExist()
     {
-        $this->assertTrue(interface_exists('Xi\Filelib\Tool\Slugifier\Slugifier'));
+        $this->assertTrue(interface_exists('Xi\Filelib\Tool\Transliterator\Transliterator'));
     }
 }
