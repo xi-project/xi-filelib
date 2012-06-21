@@ -15,6 +15,9 @@ class AbstractZendSlugifierTest extends \Xi\Tests\Filelib\TestCase
     }
 
 
+    /**
+     * @test
+     */
     public function getTransliteratorShouldReturnTransliterator()
     {
         $trans = $this->getMock('Xi\Filelib\Tool\Transliterator\Transliterator');
@@ -27,6 +30,9 @@ class AbstractZendSlugifierTest extends \Xi\Tests\Filelib\TestCase
     }
 
 
+    /**
+     * @test
+     */
     public function slugifyShouldTransliterateViaTransliterator()
     {
         $trans = $this->getMock('Xi\Filelib\Tool\Transliterator\Transliterator');
@@ -39,7 +45,5 @@ class AbstractZendSlugifierTest extends \Xi\Tests\Filelib\TestCase
         $slugifier->slugify('tussihovi');
 
     }
-
-
 
 }
