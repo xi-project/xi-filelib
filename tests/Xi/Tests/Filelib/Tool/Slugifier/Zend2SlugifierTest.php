@@ -11,8 +11,10 @@ class Zend2SlugifierTest extends TestCase
         if (!class_exists('Zend\Filter\FilterChain')) {
             $this->markTestSkipped('Zend Framework 2 filters not loadable');
         }
-        
-        $this->slugifier = new Zend2Slugifier();
+
+        $trans = $this->getMock('Xi\Filelib\Tool\Transliterator\Transliterator');
+        $trans->expects($this->any())->method('transliterate')->will($this->returnArgument(0));
+        $this->slugifier = new Zend2Slugifier($trans);
     }
 
     
@@ -31,8 +33,8 @@ class Zend2SlugifierTest extends TestCase
      */
     public function getFilterShouldReturnAnInstanceOfZendFilterChainAndCacheItsResult()
     {
-        
-        $slugifier = new Zend2Slugifier();
+
+        $slugifier = new Zend2Slugifier($this->getMock('Xi\Filelib\Tool\Transliterator\Transliterator'));
         $filter = $slugifier->getFilter();
         
         $this->assertInstanceOf('Zend\Filter\FilterChain', $filter);

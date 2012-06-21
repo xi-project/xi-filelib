@@ -8,11 +8,17 @@ class ZendSlugifierTest extends TestCase
 {
     public function setUp()
     {
+        if (!class_exists("Transliterator")) {
+            $this->markTestSkipped("Transliterator class (from intl extension 2.0+) not found");
+        }
+
         if (!class_exists('\Zend_Filter')) {
             $this->markTestSkipped('Zend Framework 1 filters not loadable');
         }
-        
-        $this->slugifier = new ZendSlugifier();
+
+        $trans = $this->getMock('Xi\Filelib\Tool\Transliterator\Transliterator');
+        $trans->expects($this->any())->method('transliterate')->will($this->returnArgument(0));
+        $this->slugifier = new ZendSlugifier($trans);
     }
 
     /**
@@ -36,7 +42,7 @@ class ZendSlugifierTest extends TestCase
         require_once "Zend/Filter/StringToLower.php";
         require_once "Zend/Filter/Word/SeparatorToDash.php";
         
-        $slugifier = new ZendSlugifier();
+        $slugifier = new ZendSlugifier($this->getMock('Xi\Filelib\Tool\Transliterator\Transliterator'));
         $filter = $slugifier->getFilter();
         
         $this->assertInstanceOf('Zend_Filter', $filter);

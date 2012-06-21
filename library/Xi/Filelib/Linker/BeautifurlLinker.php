@@ -29,12 +29,7 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     private $excludeRoot = false;
 
     /**
-     * @var string
-     */
-    private $slugifierClass = 'Xi\Filelib\Tool\Slugifier\Zend2Slugifier';
-
-    /**
-     * @var object
+     * @var Slugifier
      */
     private $slugifier;
 
@@ -53,10 +48,10 @@ class BeautifurlLinker extends AbstractLinker implements Linker
      * @param  array            $options
      * @return BeautifurlLinker
      */
-    public function __construct(FolderOperator $folderOperator, array $options = array())
+    public function __construct(FolderOperator $folderOperator, Slugifier $slugifier, array $options = array())
     {
         parent::__construct($options);
-
+        $this->slugifier = $slugifier;
         $this->folderOperator = $folderOperator;
     }
 
@@ -84,40 +79,12 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     }
 
     /**
-     * Returns slugifier class
-     *
-     * @return string
-     */
-    public function getSlugifierClass()
-    {
-        return $this->slugifierClass;
-    }
-
-    /**
-     * Sets slugifier class
-     *
-     * @param  string           $slugifierClass
-     * @return BeautifurlLinker
-     */
-    public function setSlugifierClass($slugifierClass)
-    {
-        $this->slugifierClass = $slugifierClass;
-
-        return $this;
-    }
-
-    /**
      * Returns slugifier
      *
      * @return Slugifier
      */
     public function getSlugifier()
     {
-        if (!$this->slugifier) {
-            $className = $this->slugifierClass;
-            $this->slugifier = new $className();
-        }
-
         return $this->slugifier;
     }
 
@@ -130,7 +97,6 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     public function setSlugify($slugify)
     {
         $this->slugify = $slugify;
-
         return $this;
     }
 
