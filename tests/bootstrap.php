@@ -18,11 +18,13 @@ set_include_path(implode(PATH_SEPARATOR, array(
 define('ROOT_TESTS', realpath(__DIR__));
 
 // Fucktored to use dem autoloader created by da composer
-require ROOT_TESTS . '/vendor/autoload.php';
+require ROOT_TESTS . '/../vendor/autoload.php';
 
 /**
  * Register a trivial autoloader
  */
+
+
 spl_autoload_register(function($class) {
     $filename = str_replace(array("\\", "_"), DIRECTORY_SEPARATOR, $class) . '.php';
     foreach (explode(PATH_SEPARATOR, get_include_path()) as $includePath) {

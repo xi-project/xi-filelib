@@ -18,10 +18,24 @@
             "role": "Developer"
         }
     ],
+
     "require": {
         "php": ">=5.3.0",
-        "symfony/event-dispatcher": "2.0.x"
+        "symfony/event-dispatcher": "2.0.14"
     },
+
+    "require-dev": {
+        "doctrine/orm": "2.2.2",
+        "doctrine/dbal": "2.2.2",
+        "doctrine/common": "2.2.2",
+        "symfony/http-foundation": "2.0.14",
+        "symfony/http-kernel": "2.0.14",
+        "symfony/security": "2.0.14",
+        "zendframework/zendframework": ">=2.0.x-dev",
+        "videlalvaro/php-amqplib": ">=dev-master"
+
+    },
+
     "autoload": {
         "psr-0": {
             "Xi\\Filelib": "library"
