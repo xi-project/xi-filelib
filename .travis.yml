@@ -11,7 +11,7 @@ before_script:
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS xi_filelib_test;' -uroot; mysql -uroot xi_filelib_test < docs/schema-mysql.sql; fi"
   - sh -c "if [ '$DB' = 'sqlite' ]; then sqlite3 xi_filelib_test < docs/schema-sqlite.sql; fi"
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE xi_filelib_test;' -U postgres; psql xi_filelib_test -f docs/schema-postgresql.sql; fi"
-  - cd tests && php composer.phar install && cd ..
+  - curl -s http://getcomposer.org/installer | php && php composer.phar install
   - cd tests && wget http://framework.zend.com/releases/ZendFramework-1.11.11/ZendFramework-1.11.11-minimal.tar.gz && tar zxf ZendFramework-1.11.11-minimal.tar.gz && cd ..
   - pyrus install pear.phpunit.de/DbUnit
   - phpenv rehash
