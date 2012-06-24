@@ -216,9 +216,10 @@ class SymlinkFilesystemPublisherTest extends TestCase
      */
     public function publishShouldPublishFileWithoutRelativePaths($file, $expectedPath, $expectedVersionPath, $expectedRealPath)
     {
+        $self = $this;
         $this->storage->expects($this->atLeastOnce())->method('retrieve')
-             ->will($this->returnCallback(function(Resource $resource) {
-                 return $this->resourcePaths[$resource->getId()];
+             ->will($this->returnCallback(function(Resource $resource) use ($self) {
+                 return $self->resourcePaths[$resource->getId()];
              }));
 
         $this->filelib->setStorage($this->storage);
@@ -301,9 +302,10 @@ class SymlinkFilesystemPublisherTest extends TestCase
      */
     public function publishShouldPublishFileWithRelativePaths($file, $expectedPath, $expectedVersionPath, $expectedRealPath, $expectedRelativePath, $allowSharedVersions)
     {
+        $self = $this;
         $this->storage->expects($this->atLeastOnce())->method('retrieve')
-            ->will($this->returnCallback(function(Resource $resource) {
-            return $this->resourcePaths[$resource->getId()];
+            ->will($this->returnCallback(function(Resource $resource) use ($self) {
+            return $self->resourcePaths[$resource->getId()];
         }));
 
         $this->filelib->setStorage($this->storage);

@@ -83,9 +83,10 @@ class CopyFilesystemPublisherTest extends TestCase
      */
     public function publishShouldPublishFile($file, $expectedPath, $expectedVersionPath, $expectedRealPath)
     {
+        $self = $this;
         $this->storage->expects($this->atLeastOnce())->method('retrieve')
-            ->will($this->returnCallback(function(Resource $resource) {
-            return $this->resourcePaths[$resource->getId()];
+            ->will($this->returnCallback(function(Resource $resource) use ($self) {
+            return $self->resourcePaths[$resource->getId()];
         }));
 
         $this->filelib->setStorage($this->storage);
