@@ -133,7 +133,9 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
 
         $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
-        $file = File::create(array('id' => 1));
+
+        $resource = Resource::create();
+        $file = File::create(array('id' => 1, 'resource' => $resource));
 
         $response = $renderer->render($file);
 
@@ -213,14 +215,15 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
 
-        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
+        $resource = Resource::create();
+        $file = File::create(array('id' => 1, 'resource' => $resource));
 
         $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl', 'getStorage'));
 
         $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
 
         $this->storage->expects($this->once())->method('retrieveVersion')
-                ->with($this->equalTo($file), $this->equalTo('lussenhofer'))
+                ->with($this->equalTo($resource), $this->equalTo('lussenhofer'))
                 ->will($this->returnValue($retrieved));
 
         $this->fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(true));

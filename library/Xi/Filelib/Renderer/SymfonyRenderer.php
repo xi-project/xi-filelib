@@ -3,8 +3,10 @@
 namespace Xi\Filelib\Renderer;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\FileObject;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+
 
 class SymfonyRenderer extends AbstractAcceleratedRenderer implements AcceleratedRenderer
 {

@@ -205,7 +205,8 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
 
-        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
+        $resource = Resource::create();
+        $file = File::create(array('id' => 1, 'resource' => $resource));
 
         $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl', 'getStorage'));
 
@@ -213,7 +214,7 @@ class SymfonyRendererTest extends \Xi\Tests\Filelib\TestCase
         $vp->expects($this->any())->method('getIdentifier')->will($this->returnValue('xooxer'));
 
         $this->storage->expects($this->once())->method('retrieveVersion')
-                ->with($this->equalTo($file), $this->equalTo('lussenhofer'))
+                ->with($this->equalTo($resource), $this->equalTo('lussenhofer'))
                 ->will($this->returnValue($retrieved));
 
         $this->fiop->expects($this->atLeastOnce())->method('getVersionProvider')
