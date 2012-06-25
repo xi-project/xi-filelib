@@ -13,6 +13,7 @@ use Xi\Filelib\Exception\FolderNotEmptyException;
 use Xi\Filelib\Exception\NonUniqueFileException;
 use Xi\Filelib\Exception\ResourceReferencedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Event\ResourceEvent;
 use Exception;
 
 /**
@@ -247,7 +248,14 @@ abstract class AbstractBackend implements Backend
             throw new ResourceReferencedException("Resource #{$resource->getId()} is referenced {$rno} times and can't be deleted.");
         }
 
-        return (bool) $this->doDeleteResource($resource);
+        $ret = (bool) $this->doDeleteResource($resource);
+
+        if ($ret) {
+            $event = new ResourceEvent($resource);
+            $this->getEventDispatcher()->dispatch('resource.delete', $event);
+        }
+
+        return $ret;
     }
 
     /**

@@ -203,6 +203,10 @@ use Xi\Filelib\Folder\Folder;
 
         $resource = Resource::create($data);
 
+        $this->backend->getEventDispatcher()->expects($this->once())
+                      ->method('dispatch')
+                      ->with('resource.delete', $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
+
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $this->backend->findResource($resourceId));
 
         $this->assertTrue($this->backend->deleteResource($resource));
@@ -225,7 +229,12 @@ use Xi\Filelib\Folder\Folder;
 
         $resource = Resource::create($data);
 
+        $this->backend->getEventDispatcher()->expects($this->never())
+            ->method('dispatch');
+
         $this->assertFalse($this->backend->deleteResource($resource));
+
+
 
     }
 
