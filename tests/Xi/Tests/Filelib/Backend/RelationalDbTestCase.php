@@ -24,7 +24,7 @@ use Xi\Filelib\Folder\Folder;
  *
  * @group backend
  */
-abstract class RelationalDbTestCase extends AbstractBackendTest
+abstract class RelationalDbTestCase extends AbstractBackendTestCase
 {
     /**
      * @var string|null

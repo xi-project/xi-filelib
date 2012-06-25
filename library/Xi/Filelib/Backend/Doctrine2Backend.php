@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\EntityNotFoundException;
 use PDOException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Doctrine 2 backend for filelib
@@ -51,11 +52,13 @@ class Doctrine2Backend extends AbstractBackend
     private $em;
 
     /**
+     * @param  EventDispatcherInterface $eventDispatcher
      * @param  EntityManager    $em
      * @return Doctrine2Backend
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EventDispatcherInterface $eventDispatcher, EntityManager $em)
     {
+        parent::__construct($eventDispatcher);
         $this->setEntityManager($em);
     }
 

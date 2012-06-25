@@ -13,6 +13,7 @@ use Zend_Db_Adapter_Abstract;
 use Zend_Db_Table_Abstract;
 use Zend_Db_Statement_Exception;
 use DateTime;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * ZendDb backend for filelib
@@ -45,11 +46,13 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
 
     /**
+     * @param  EventDispatcherInterface $eventDispatcher
      * @param  Zend_Db_Adapter_Abstract $db
      * @return ZendDbBackend
      */
-    public function __construct(Zend_Db_Adapter_Abstract $db)
+    public function __construct(EventDispatcherInterface $eventDispatcher, Zend_Db_Adapter_Abstract $db)
     {
+        parent::__construct($eventDispatcher);
         $this->setDb($db);
     }
 

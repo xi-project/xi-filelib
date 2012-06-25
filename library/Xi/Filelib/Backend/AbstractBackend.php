@@ -12,6 +12,7 @@ use Xi\Filelib\Exception\FolderNotFoundException;
 use Xi\Filelib\Exception\FolderNotEmptyException;
 use Xi\Filelib\Exception\NonUniqueFileException;
 use Xi\Filelib\Exception\ResourceReferencedException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Exception;
 
 /**
@@ -24,10 +25,22 @@ abstract class AbstractBackend implements Backend
 {
 
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
      *
      * @var UuidGenerator
      */
     protected $uuidGenerator;
+
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
 
     /**
      * @param  mixed      $id
@@ -529,7 +542,20 @@ abstract class AbstractBackend implements Backend
         return $this->getUuidGenerator()->v4();
     }
 
+    /**
+     * Returns Event dispatcher
+     *
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
+    }
 
+
+    /**
+     * @return UuidGenerator
+     */
     protected function getUuidGenerator()
     {
         if (!$this->uuidGenerator) {

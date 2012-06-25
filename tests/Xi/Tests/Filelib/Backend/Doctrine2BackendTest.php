@@ -62,7 +62,8 @@ class Doctrine2BackendTest extends RelationalDbTestCase
 
         $em = EntityManager::create($connectionOptions, $config);
 
-        return new Doctrine2Backend($em);
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        return new Doctrine2Backend($ed, $em);
     }
 
     /**

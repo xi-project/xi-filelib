@@ -43,7 +43,8 @@ class ZendDbBackendTest extends RelationalDbTestCase
             'password' => PDO_PASSWORD,
         ));
 
-        return new ZendDbBackend($db);
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        return new ZendDbBackend($ed, $db);
     }
 
     /**

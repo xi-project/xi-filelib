@@ -17,7 +17,7 @@ use MongoConnectionException;
  * @group backend
  * @group mongo
  */
-class MongoBackendTest extends AbstractBackendTest
+class MongoBackendTest extends AbstractBackendTestCase
 {
     /**
      * @var @MongoDB
@@ -44,7 +44,8 @@ class MongoBackendTest extends AbstractBackendTest
         // TODO: Fix hard coded db name.
         $this->mongo = $mongo->filelib_tests;
 
-        return new MongoBackend($this->mongo);
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        return new MongoBackend($ed, $this->mongo);
     }
 
     protected function tearDown()

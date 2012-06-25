@@ -11,6 +11,7 @@ use MongoId;
 use MongoDate;
 use MongoCursorException;
 use DateTime;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * MongoDB backend for Filelib
@@ -29,11 +30,13 @@ class MongoBackend extends AbstractBackend implements Backend
     private $mongo;
 
     /**
+     * @param  EventDispatcherInterface $eventDispatcher
      * @param  MongoDB      $mongo
      * @return MongoBackend
      */
-    public function __construct(MongoDB $mongo)
+    public function __construct(EventDispatcherInterface $eventDispatcher, MongoDB $mongo)
     {
+        parent::__construct($eventDispatcher);
         $this->setMongo($mongo);
     }
 
