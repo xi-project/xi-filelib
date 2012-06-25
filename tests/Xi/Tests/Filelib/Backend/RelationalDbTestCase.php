@@ -32,7 +32,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     private $dataSet;
 
     /**
-     * @var
+     * @var PHPUnit_Extensions_Database_DefaultTester
      */
     private $databaseTester;
 
@@ -41,15 +41,16 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
      */
     protected function tearDown()
     {
-        $this->databaseTester->setTearDownOperation($this->getTearDownOperation());
-        $this->databaseTester->setDataSet($this->getDataSet($this->dataSet));
-        $this->databaseTester->onTearDown();
-        $this->databaseTester = null;
+        if ($this->databaseTester) {
+            $this->databaseTester->setTearDownOperation($this->getTearDownOperation());
+            $this->databaseTester->setDataSet($this->getDataSet($this->dataSet));
+            $this->databaseTester->onTearDown();
+            $this->databaseTester = null;
+        }
 
         $this->dataSet = null;
 
-        gc_collect_cycles();
-
+        parent::tearDown();
     }
 
     /**
@@ -612,7 +613,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
             ));
         }
 
-        return PHPUnit_Extensions_Database_Operation_Factory::DELETE_ALL();
+        return PHPUnit_Extensions_Database_Operation_Factory::TRUNCATE(true);
     }
 
     /**

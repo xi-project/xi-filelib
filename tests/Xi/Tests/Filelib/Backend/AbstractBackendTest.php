@@ -41,6 +41,15 @@ use Xi\Filelib\Folder\Folder;
         $this->backend = $this->setUpBackend();
     }
 
+    protected function tearDown()
+    {
+        // Unset to keep database connections from piling up.
+        $this->backend = null;
+
+        // Collect garbages manually to free up connections.
+        gc_collect_cycles();
+    }
+
     /**
      * @dataProvider identifierValidityProvider
      * @test

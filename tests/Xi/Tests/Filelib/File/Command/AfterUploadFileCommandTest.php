@@ -69,7 +69,7 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $fileitem->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
 
-        $fileitem->expects($this->once())->method('setStatus')->with($this->equalTo(File::STATUS_UPLOADED));
+        $fileitem->expects($this->once())->method('setStatus')->with($this->equalTo(File::STATUS_COMPLETED));
 
         $dispatcher->expects($this->at(0))->method('dispatch')
                    ->with($this->equalTo('file.afterUpload'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));

@@ -29,7 +29,7 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         $cache = new ArrayCache();
 
         AnnotationRegistry::registerFile(
-            ROOT_TESTS . '/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php'
+            ROOT_TESTS . '/../vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php'
         );
 
         $driver = new AnnotationDriver(

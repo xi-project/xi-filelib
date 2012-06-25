@@ -2,8 +2,6 @@
 
 namespace Xi\Tests\Filelib\Renderer;
 
-
-
 class AcceleratedRendererTest extends \Xi\Tests\Filelib\TestCase
 {
     

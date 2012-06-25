@@ -13,6 +13,8 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Linker\BeautifurlLinker;
+use Xi\Filelib\Tool\Slugifier\Zend2Slugifier;
+use Xi\Filelib\Tool\Transliterator\StupidTransliterator;
 
 /**
  * @group linker
@@ -85,7 +87,9 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
 
              }));
 
-        $this->linker = new BeautifurlLinker($fo);
+        $trans = new StupidTransliterator();
+        $slugifier = new Zend2Slugifier($trans);
+        $this->linker = new BeautifurlLinker($fo, $slugifier);
     }
 
     public function provideFiles()
@@ -205,27 +209,6 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function slugifierClassShouldDefaultToZf2Slugifier()
-    {
-        $this->assertEquals(
-            'Xi\Filelib\Tool\Slugifier\Zend2Slugifier',
-            $this->linker->getSlugifierClass()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function slugifierClassSetterAndGetterShouldWorkAsExpected()
-    {
-        $newSlugifierClass = 'Lussen\Tussen\Hofenslussifier';
-
-        $this->assertSame($this->linker, $this->linker->setSlugifierClass($newSlugifierClass));
-        $this->assertEquals($newSlugifierClass, $this->linker->getSlugifierClass());
-    }
 
     /**
      * @test
@@ -250,19 +233,16 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function getSlugifierShouldInstantiateAndCacheSlugifierObject()
+    public function getSlugifierShouldReturnSlugifier()
     {
-        $mockSlugifierClass = $this->getMockClass('Xi\Filelib\Tool\Slugifier\Slugifier');
+        $mockSlugifier = $this->getMock('Xi\Filelib\Tool\Slugifier\Slugifier');
+        $mockOperator = $this->getMock('Xi\Filelib\Folder\FolderOperator');
 
-        $this->linker->setSlugifierClass($mockSlugifierClass);
+        $linker = new BeautifurlLinker($mockOperator, $mockSlugifier);
 
-        $slugifier = $this->linker->getSlugifier();
+        $slugifier = $linker->getSlugifier();
 
-        $this->assertSame($mockSlugifierClass, get_class($slugifier));
-
-        $slugifier2 = $this->linker->getSlugifier();
-
-        $this->assertSame($slugifier, $slugifier2);
+        $this->assertSame($mockSlugifier, $slugifier);
     }
 
     /**
@@ -272,15 +252,14 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
     {
         $linker = new BeautifurlLinker(
             $this->getMock('Xi\Filelib\Folder\FolderOperator'),
+            $this->getMock('Xi\Filelib\Tool\Slugifier\Slugifier'),
             array(
                 'slugify'        => false,
-                'slugifierClass' => 'Foo\Bar',
                 'excludeRoot'    => true,
             )
         );
 
         $this->assertFalse($linker->getSlugify());
-        $this->assertEquals('Foo\Bar', $linker->getSlugifierClass());
         $this->assertTrue($linker->getExcludeRoot());
     }
 }

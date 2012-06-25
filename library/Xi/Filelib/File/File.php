@@ -11,7 +11,7 @@ use ArrayObject;
 class File
 {
     const STATUS_RAW = 1;
-    const STATUS_UPLOADED = 2;
+    const STATUS_COMPLETED = 2;
 
     /**
      * Key to method mapping for fromArray

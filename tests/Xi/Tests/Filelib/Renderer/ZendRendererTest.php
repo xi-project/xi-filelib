@@ -12,13 +12,59 @@ use Zend_Controller_Response_Http as Response;
 class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 {
 
+    protected $filelib;
+
+    protected $fiop;
+
+    protected $acl;
+
+    protected $profile;
+
+    protected $storage;
+
+    protected $eventDispatcher;
 
     public function setUp()
     {
         if (!class_exists('Zend_Controller_Response_Http')) {
             $this->markTestSkipped('Zend_Controller classes not found');
         }
+
+        $this->filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $this->fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $this->filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($this->fiop));
+
+        $this->profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $this->fiop->expects($this->any())->method('getProfile')->will($this->returnValue($this->profile));
+
+        $this->acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
+
+        $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
+
+        $this->eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $this->filelib->expects($this->any())->method('getEventDispatcher')
+            ->will($this->returnValue($this->eventDispatcher));
+
+
     }
+
+    /**
+     * @param array $methods
+     * @return SymfonyRenderer
+     */
+    private function getMockedRenderer($methods = array())
+    {
+        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
+            ->setMethods($methods)
+            ->setConstructorArgs(array($this->filelib))
+            ->getMock();
+        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($this->acl));
+        $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
+
+        return $renderer;
+    }
+
+
 
 
     /**
@@ -30,215 +76,14 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->assertContains('Xi\Filelib\Renderer\AcceleratedRenderer', class_implements('Xi\Filelib\Renderer\ZendRenderer'));
     }
 
-    /**
-     * @test
-     */
-    public function mergeOptionsShouldReturnSanitizedResult()
-    {
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = new ZendRenderer($filelib);
-
-        $expected = array(
-            'version' => 'original',
-            'download' => false,
-        );
-
-        $options = array();
-
-        $this->assertEquals($expected, $renderer->mergeOptions($options));
-
-        $expected = array(
-            'version' => 'orignaluss',
-            'download' => false,
-            'impossible' => 'impossibru'
-        );
-
-        $options = array(
-            'version' => 'orignaluss',
-            'impossible' => 'impossibru',
-        );
-
-        $this->assertEquals($expected, $renderer->mergeOptions($options));
-
-
-
-    }
-
-    /**
-     * @test
-     */
-    public function stripPrefixFromAcceleratedPathShouldDefaultToEmptyString()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new ZendRenderer($filelib);
-
-         $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
-
-    }
-
-    /**
-     * @test
-     */
-    public function stripPrefixFromAcceleratedPathShouldObeySetter()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new ZendRenderer($filelib);
-
-         $this->assertEquals('', $renderer->getStripPrefixFromAcceleratedPath());
-
-         $renderer->setStripPrefixFromAcceleratedPath('luss');
-
-         $this->assertEquals('luss', $renderer->getStripPrefixFromAcceleratedPath());
-    }
-
-
-        /**
-     * @test
-     */
-    public function addPrefixToAcceleratedPathShouldDefaultToEmptyString()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new ZendRenderer($filelib);
-
-         $this->assertEquals('', $renderer->getAddPrefixToAcceleratedPath());
-
-    }
-
-    /**
-     * @test
-     */
-    public function addPrefixToAcceleratedPathShouldObeySetter()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new ZendRenderer($filelib);
-
-         $this->assertSame('', $renderer->getAddPrefixToAcceleratedPath());
-
-         $renderer->setAddPrefixToAcceleratedPath('luss');
-
-         $this->assertSame('luss', $renderer->getAddPrefixToAcceleratedPath());
-    }
-
-
-
-
-    /**
-     * @test
-     */
-    public function getPublisherShouldDelegateToFilelib()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = new ZendRenderer($filelib);
-
-        $filelib->expects($this->once())->method('getPublisher');
-
-        $renderer = $renderer->getPublisher();
-    }
-
-
-
-
-    /**
-     * @test
-     */
-    public function getAclShouldDelegateToFilelib()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = new ZendRenderer($filelib);
-
-        $filelib->expects($this->once())->method('getAcl');
-
-        $acl = $renderer->getAcl();
-    }
-
-
-    /**
-     * @test
-     */
-    public function getStorageShouldDelegateToFilelib()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = new ZendRenderer($filelib);
-
-        $filelib->expects($this->once())->method('getStorage');
-
-        $acl = $renderer->getStorage();
-    }
-
-    /**
-     * @test
-     */
-    public function getUrlShouldDelegateToPublisherWhenUsingOriginalVersion()
-    {
-        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
-
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $publisher->expects($this->once())->method('getUrl')->with($this->equalTo($file));
-
-        $renderer->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-
-        $url = $renderer->getUrl($file, array('version' => 'original'));
-
-
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function getUrlShouldDelegateToPublisherWhenUsingNonOriginalVersion()
-    {
-        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
-
-        $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
-
-        $fiop->expects($this->once())->method('getVersionProvider')
-             ->with($this->equalTo($file), $this->equalTo('lussen'))
-             ->will($this->returnValue($vp));
-
-
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
-
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $publisher->expects($this->once())->method('getUrlVersion')->with($this->equalTo($file), $this->equalTo('lussen'), $this->equalTo($vp));
-
-        $renderer->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-
-        $url = $renderer->getUrl($file, array('version' => 'lussen'));
-
-    }
 
     /**
      * @test
      */
     public function responseShouldBe403WhenAclForbidsRead()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher', 'getAcl'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('fileIsReadable')->will($this->returnValue(false));
-
-        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
+        $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl'));
+        $this->acl->expects($this->any())->method('fileIsReadable')->will($this->returnValue(false));
 
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
@@ -258,23 +103,10 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function responseShouldBe403WhenProfileForbidsReadOfOriginalFile()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher', 'getAcl'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
+        $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl'));
+        $this->profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(false));
+        $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(false));
-
-        $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
-
-        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
@@ -294,34 +126,14 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
     {
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
-
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
-
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
+        $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl', 'getStorage'));
+        $this->profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
 
         $retrieved = new FileObject($path);
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')
-                 ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
-                ->will($this->returnValue($retrieved));
+        $this->storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
 
-        $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
-
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
-
-        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
-        $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
-
-        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
+        $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
+        $file = File::create(array('id' => 1));
 
         $response = $renderer->render($file);
 
@@ -342,35 +154,22 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
     {
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
+        $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl', 'getStorage'));
 
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
 
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
+        $this->eventDispatcher->expects($this->once())->method('dispatch')
+                        ->with('file.render', $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+
+        $this->profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
 
         $retrieved = new FileObject($path);
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
-                ->will($this->returnValue($retrieved));
+        $this->storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
 
-        $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
-
-        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
-        $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
+        $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
         $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
-        $response = $renderer->render($file, array('download' => true));
+        $response = $renderer->render($file, array('download' => true, 'track' => true));
 
         $this->assertInstanceOf('Zend_Controller_Response_Http', $response);
 
@@ -390,21 +189,9 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function responseShouldBe404WhenVersionDoesNotExist()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher', 'getAcl'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
-
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
-
-        $fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(false));
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
-
-        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
+        $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl'));
+        $this->fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(false));
+        $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
@@ -428,29 +215,17 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
-
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
+        $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl', 'getStorage'));
 
         $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
 
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieveVersion')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->equalTo('lussenhofer'))
+        $this->storage->expects($this->once())->method('retrieveVersion')
+                ->with($this->equalTo($file), $this->equalTo('lussenhofer'))
                 ->will($this->returnValue($retrieved));
 
-        $fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(true));
+        $this->fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(true));
 
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->atLeastOnce())->method('isFileReadable')->will($this->returnValue(true));
-
-        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
-        $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
+        $this->acl->expects($this->atLeastOnce())->method('isFileReadable')->will($this->returnValue(true));
 
         $response = $renderer->render($file, array('version' => 'lussenhofer'));
 
@@ -467,51 +242,15 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function accelerationShouldBeDisabledByDefault()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new ZendRenderer($filelib);
-
-         $this->assertFalse($renderer->isAccelerationEnabled());
-
-    }
-
-    /**
-     * @test
-     */
-    public function enableAccelerationShouldEnableAcceleration()
-    {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new ZendRenderer($filelib);
-
-         $this->assertFalse($renderer->isAccelerationEnabled());
-
-         $renderer->enableAcceleration(true);
-
-         $this->assertTrue($renderer->isAccelerationEnabled());
-    }
-
-
-
-    /**
-     * @test
-     */
     public function accelerationShouldNotBePossibleWithoutRequestAsContext()
     {
-         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-         $renderer = new ZendRenderer($filelib);
+         $renderer = new ZendRenderer($this->filelib);
          $renderer->enableAcceleration(true);
 
          $this->assertNull($renderer->getRequest());
          $this->assertTrue($renderer->isAccelerationEnabled());
-
          $this->assertFalse($renderer->isAccelerationPossible());
-
     }
-
-
-
-
 
     public function provideBadServerSignatures()
     {
@@ -536,8 +275,6 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
-
-
     /**
      * @test
      * @dataProvider provideBadServerSignatures
@@ -550,14 +287,10 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $request = new \Zend_Controller_Request_HttpTestCase();
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = new ZendRenderer($filelib);
+        $renderer = new ZendRenderer($this->filelib);
         $renderer->enableAcceleration(true);
-
         $renderer->setRequest($request);
-
         $this->assertEquals($expected, $renderer->isAccelerationPossible());
-
     }
 
 
@@ -599,17 +332,14 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function acceleratedRequestShouldBeEmptyAndContainCorrectHeaders($expectedHeader, $serverSignature)
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
+        $this->storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
+
+        $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl', 'getStorage'));
         $renderer->enableAcceleration(true);
 
         $server = array(
             'SERVER_SOFTWARE' => $serverSignature,
         );
-
 
         $_SERVER['SERVER_SOFTWARE'] = $serverSignature;
         $request = new \Zend_Controller_Request_HttpTestCase();
@@ -618,45 +348,29 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->setRequest($request);
         $this->assertTrue($renderer->isAccelerationPossible());
+        $this->assertTrue($renderer->isAccelerationEnabled());
 
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
-
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
+        $this->profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
 
         $retrieved = new FileObject($path);
-        $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
-        $storage->expects($this->once())->method('retrieve')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
-                ->will($this->returnValue($retrieved));
-        $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
+        $this->storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $this->storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
 
-        $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
-
-        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
-        $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
+        $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
         $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
-
         $renderer->setAddPrefixToAcceleratedPath('/protected/files');
 
         $response = $renderer->render($file, array('download' => false));
 
         $this->assertInstanceOf('Zend_Controller_Response_Http', $response);
-
         $this->assertEquals(200, $response->getHttpResponseCode());
         $this->assertEmpty($response->getBody());
-
         $this->assertHeadersContain($expectedHeader, $response->getHeaders());
-
         $this->assertHeaderEquals('/protected/files/data/self-lussing-manatee.jpg', $expectedHeader, $response);
     }
 
@@ -665,11 +379,9 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function acceleratedRequestShouldNotBeEmptyAndNotContainHeadersWhenAccelerationIsDisabled()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $renderer = $this->getMockBuilder('Xi\Filelib\Renderer\ZendRenderer')
-                         ->setMethods(array('getPublisher', 'getAcl', 'getStorage'))
-                         ->setConstructorArgs(array($filelib))
-                         ->getMock();
+        $this->storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
+
+        $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl', 'getStorage'));
         $renderer->enableAcceleration(false);
 
         $request = new \Zend_Controller_Request_HttpTestCase();
@@ -679,48 +391,30 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $renderer->setRequest($request);
         $this->assertTrue($renderer->isAccelerationPossible());
+        $this->assertFalse($renderer->isAccelerationEnabled());
 
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
-
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-        $profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
+        $this->profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
 
         $retrieved = new FileObject($path);
-        $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
-        $storage->expects($this->once())->method('retrieve')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
-                ->will($this->returnValue($retrieved));
+        $this->storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
+        $this->storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
 
-        $storage->expects($this->any())->method('getRoot')->will($this->returnValue(ROOT_TESTS));
-
-        $fiop->expects($this->any())->method('getProfile')->will($this->returnValue($profile));
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
-
-        $renderer->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
-        $renderer->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
+        $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
         $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
-
         $renderer->setAddPrefixToAcceleratedPath('/protected/files');
-
         $response = $renderer->render($file, array('download' => false));
 
         $this->assertInstanceOf('Zend_Controller_Response_Http', $response);
-
         $this->assertEquals(200, $response->getHttpResponseCode());
         $this->assertNotEmpty($response->getBody());
-
         $this->assertArrayNotHasKey('X-Sendfile', $response->getHeaders());
         $this->assertArrayNotHasKey('X-Lighttpd-Send-File', $response->getHeaders());
         $this->assertArrayNotHasKey('X-Accel-Redirect', $response->getHeaders());
-
     }
 
 
@@ -733,7 +427,6 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
      */
     public function assertHeaderEquals($expected, $headerName, Response $response)
     {
-
         $headers = $response->getHeaders();
         foreach ($headers as $header) {
             if ($header['name'] == $headerName) {
@@ -744,9 +437,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
                 }
             }
         }
-
         $this->fail("Header '{$headerName}' is not set");
-
     }
 
     /**
@@ -762,9 +453,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
                 return;
             }
         }
-
         $this->fail("Header '{$headerName}' is not set");
-
     }
 
 }
