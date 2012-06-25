@@ -7,6 +7,7 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 
@@ -21,10 +22,11 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
     static protected $subscribedEvents = array(
         'fileprofile.add' => 'onFileProfileAdd',
-        'file.afterUpload' => 'afterUpload',
+        'file.afterUpload' => 'onAfterUpload',
         'file.publish' => 'onPublish',
         'file.unpublish' => 'onUnpublish',
-        'file.delete' => 'onDelete',
+        'file.delete' => 'onFileDelete',
+        'resource.delete' => 'onResourceDelete',
     );
 
     /**
@@ -140,7 +142,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         return $this->getFilelib()->getPublisher();
     }
 
-    public function afterUpload(FileEvent $event)
+    public function onAfterUpload(FileEvent $event)
     {
         $file = $event->getFile();
 
@@ -150,8 +152,10 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
         $tmps = $this->createVersions($file);
 
+        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
+
         foreach (array_keys($tmps) as $version) {
-            $file->getResource()->addVersion($version);
+            $versionable->addVersion($version);
         }
 
         foreach ($tmps as $version => $tmp) {
@@ -195,7 +199,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
     }
 
-    public function onDelete(FileEvent $event)
+    public function onFileDelete(FileEvent $event)
     {
         $file = $event->getFile();
 
@@ -207,33 +211,53 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             return;
         }
 
-        $this->deleteVersions($file);
+        $this->deleteFileVersions($file);
+    }
+
+
+    /**
+     * Deletes resource versions
+     *
+     * @param ResourceEvent $event
+     */
+    public function onResourceDelete(ResourceEvent $event)
+    {
+        if (!$this->areSharedVersionsAllowed()) {
+            return;
+        }
+
+        foreach ($this->getVersions() as $version) {
+            if ($this->getStorage()->versionExists($event->getResource(), $version)) {
+                $this->getStorage()->deleteVersion($event->getResource(), $version);
+            }
+        }
     }
 
     /**
-     * Deletes a version
+     * Deletes file versions
      *
      * @param $file File
      *
      */
-    public function deleteVersions(File $file)
+    public function deleteFileVersions(File $file)
     {
+        if ($this->areSharedVersionsAllowed()) {
+            return;
+        }
+
         foreach ($this->getVersions() as $version) {
-            $this->getStorage()->deleteVersion($file->getResource(), $version, $this->areSharedVersionsAllowed() ? null : $file);
+            $this->getStorage()->deleteVersion($file->getResource(), $version, $file);
         }
     }
 
 
     public function areVersionsCreated(File $file)
     {
-        // @todo solve this somehow
-        if (!$this->areSharedVersionsAllowed()) {
-            return false;
-        }
+        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
 
         $count = 0;
         foreach ($this->getVersions() as $version) {
-            if ($file->getResource()->hasVersion($version)) {
+            if ($versionable->hasVersion($version)) {
                 $count++;
             }
         }

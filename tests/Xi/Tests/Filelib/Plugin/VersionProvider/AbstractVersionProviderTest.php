@@ -96,8 +96,8 @@ class AbstractVersionProviderTest extends TestCase
     public function provideVersions()
     {
         return array(
-            array(true, array('tussi'), array('tussi'), true, true),
-            array(false, array('tussi'), array('tussi'), false, false),
+            array(array('tussi'), array('tussi'), true, true),
+            array(array('tussi'), array('tussi'), false, false),
         );
     }
 
@@ -106,26 +106,34 @@ class AbstractVersionProviderTest extends TestCase
      * @dataProvider provideVersions
      * @test
      */
-    public function areVersionsCreatedShouldReturnExpectedResults($expected, $resourceVersions, $pluginVersions, $sharedVersionsAllowed, $expectGetVersions)
+    public function areVersionsCreatedShouldReturnExpectedResults($resourceVersions, $pluginVersions, $sharedVersionsAllowed, $expectResourceGetVersions)
     {
         $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
              ->will($this->returnValue($sharedVersionsAllowed));
 
-        $file = File::create(array('resource' => Resource::create(array('versions' => $resourceVersions))));
+        $resource = $this->getMock('Xi\Filelib\File\Resource');
+
+        $file = $this->getMock('Xi\Filelib\File\File');
+        $file->expects($this->any())->method('getResource')->will($this->returnValue($resource));
 
         $this->plugin->expects($this->atLeastOnce())->method('areSharedVersionsAllowed')
             ->will($this->returnValue(false));
 
-        if ($expectGetVersions) {
-            $this->plugin->expects($this->atLeastOnce())
-                ->method('getVersions')
-                ->will($this->returnValue($pluginVersions));
+        $this->plugin->expects($this->any())->method('getVersions')->will($this->returnValue($pluginVersions));
+
+        if ($expectResourceGetVersions) {
+            $resource->expects($this->atLeastOnce())
+                ->method('hasVersion')
+                ->with($this->isType('string'))
+                ->will($this->returnValue(true));
         } else {
-            $this->plugin->expects($this->never())
-                ->method('getVersions');
+            $file->expects($this->atLeastOnce())
+                ->method('hasVersion')
+                ->with($this->isType('string'))
+                ->will($this->returnValue(true));
         }
 
-        $this->assertEquals($expected, $this->plugin->areVersionsCreated($file));
+        $this->assertEquals(true, $this->plugin->areVersionsCreated($file));
 
     }
 
@@ -288,7 +296,7 @@ class AbstractVersionProviderTest extends TestCase
         ));
         $event = new FileEvent($file);
 
-        $this->plugin->afterUpload($event);
+        $this->plugin->onAfterUpload($event);
     }
 
 
@@ -318,7 +326,7 @@ class AbstractVersionProviderTest extends TestCase
                 );
         $event = new FileEvent($file);
 
-        $this->plugin->afterUpload($event);
+        $this->plugin->onAfterUpload($event);
 
 
     }
@@ -371,7 +379,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->createMockedTemporaryFile();
 
-        $this->plugin->afterUpload($event);
+        $this->plugin->onAfterUpload($event);
 
         $this->assertFileNotExists(ROOT_TESTS . '/data/temp/life-is-my-enemy.jpg');
     }
@@ -524,7 +532,7 @@ class AbstractVersionProviderTest extends TestCase
         $file = File::create(array('profile' => 'xooxer', 'resource' => Resource::create(array('mimetype' => 'image/xoo'))));
         $event = new FileEvent($file);
 
-        $this->plugin->afterUpload($event);
+        $this->plugin->onAfterUpload($event);
 
     }
 
@@ -545,7 +553,7 @@ class AbstractVersionProviderTest extends TestCase
         $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'iimage/xoo'))));
         $event = new FileEvent($file);
 
-        $this->plugin->onDelete($event);
+        $this->plugin->onFileDelete($event);
 
     }
 
@@ -572,7 +580,7 @@ class AbstractVersionProviderTest extends TestCase
         $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'image/png'))));
         $event = new FileEvent($file);
 
-        $this->plugin->onDelete($event);
+        $this->plugin->onFileDelete($event);
 
     }
 
@@ -592,7 +600,7 @@ class AbstractVersionProviderTest extends TestCase
         $file = File::create(array('profile' => 'xooxer', 'resource' => Resource::create(array('mimetype' => 'image/png'))));
         $event = new FileEvent($file);
 
-        $this->plugin->onDelete($event);
+        $this->plugin->onFileDelete($event);
 
     }
 
@@ -619,6 +627,7 @@ class AbstractVersionProviderTest extends TestCase
         $this->assertArrayHasKey('file.publish', $events);
         $this->assertArrayHasKey('file.unpublish', $events);
         $this->assertArrayHasKey('file.delete', $events);
+        $this->assertArrayHasKey('resource.delete', $events);
     }
 
     /**
