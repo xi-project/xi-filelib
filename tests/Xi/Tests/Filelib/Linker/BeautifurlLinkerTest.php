@@ -28,6 +28,10 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('Zend Framework 2 filters not loadable');
         }
 
+        if (!extension_loaded('intl')) {
+            $this->markTestSkipped('Intl extension must be loaded');
+        }
+
         $fo = $this->getMock('Xi\Filelib\Folder\FolderOperator');
         $fo->expects($this->any())
              ->method('find')

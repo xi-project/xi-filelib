@@ -31,9 +31,8 @@
         "symfony/http-foundation": "2.0.14",
         "symfony/http-kernel": "2.0.14",
         "symfony/security": "2.0.14",
-        "zendframework/zendframework": ">=2.0.x-dev",
-        "videlalvaro/php-amqplib": ">=dev-master",
-        "zendframework/zendframework1": "1.11.12"
+        "zendframework/zendframework": "2.0.0-beta5",
+        "videlalvaro/php-amqplib": ">=dev-master"
     },
 
     "autoload": {
@@ -41,5 +40,6 @@
             "Xi\\Filelib": "library/",
             "Xi\\Tests": "tests/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
