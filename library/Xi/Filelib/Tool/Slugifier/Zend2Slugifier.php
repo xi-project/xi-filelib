@@ -10,22 +10,22 @@
 namespace Xi\Filelib\Tool\Slugifier;
 
 use Zend\Filter\FilterChain;
-use Zend\Filter\Alnum as AlnumFilter;
+use Zend\I18n\Filter\Alnum as AlnumFilter;
 use Zend\Filter\Word\SeparatorToDash as SeparatorToDashFilter;
 use Zend\Filter\StringToLower as StringToLowerFilter;
 use Zend\Filter\Word\UnderscoreToDash as UnderscoreToDashFilter;
 use Zend\Filter\Word\UnderscoreToSeparator;
+
 /**
  * ZF2 slugifier
  */
 class Zend2Slugifier extends AbstractZendSlugifier
 {
     protected $filter;
-    
+
     public function getFilter()
     {
         if (!$this->filter) {
-
             $filter = new FilterChain();
             $filter->attach(new UnderscoreToSeparator(' '));
             $filter->attach(new AlnumFilter(true));
@@ -34,6 +34,7 @@ class Zend2Slugifier extends AbstractZendSlugifier
 
             $this->filter = $filter;
         }
+
         return $this->filter;
     }
 }
