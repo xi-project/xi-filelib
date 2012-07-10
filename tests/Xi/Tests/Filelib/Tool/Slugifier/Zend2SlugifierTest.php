@@ -12,6 +12,10 @@ class Zend2SlugifierTest extends TestCase
             $this->markTestSkipped('Zend Framework 2 filters not loadable');
         }
 
+        if (!extension_loaded('intl')) {
+            $this->markTestSkipped('Intl extension must be loaded');
+        }
+
         $trans = $this->getMock('Xi\Filelib\Tool\Transliterator\Transliterator');
         $trans->expects($this->any())->method('transliterate')->will($this->returnArgument(0));
         $this->slugifier = new Zend2Slugifier($trans);

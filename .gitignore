@@ -3,3 +3,4 @@ composer.lock
 tests/phpunit.xml
 nbproject
 /vendor/
+.idea
