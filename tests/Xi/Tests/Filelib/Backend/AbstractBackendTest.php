@@ -65,12 +65,19 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = $this->backend->findRootFolder();
 
+        $this->assertFolderHasAllFields($folder);
+        $this->assertNull($folder['parent_id']);
+    }
+
+    /**
+     * @param array $folder
+     */
+    private function assertFolderHasAllFields(array $folder)
+    {
         $this->assertArrayHasKey('id', $folder);
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
-
-        $this->assertNull($folder['parent_id']);
     }
 
     /**
@@ -82,11 +89,7 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = $this->backend->findRootFolder();
 
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-
+        $this->assertFolderHasAllFields($folder);
         $this->assertNull($folder['parent_id']);
     }
 
@@ -102,11 +105,7 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = $this->backend->findFolder($folderId);
 
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-
+        $this->assertFolderHasAllFields($folder);
         $this->assertEquals($folderId, $folder['id']);
         $this->assertEquals($data['name'], $folder['name']);
     }
