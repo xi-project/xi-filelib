@@ -30,7 +30,10 @@ class FileUploadTest extends TestCase
 
         $this->assertNull($upload->getOverrideBasename());
         $this->assertNull($upload->getOverrideFilename());
-        $this->assertInstanceOf('\DateTime', $upload->getDateUploaded());
+        $this->assertInstanceOf('DateTime', $upload->getDateUploaded());
+        $this->assertEquals('image/jpeg', $upload->getMimeType());
+        $this->assertEquals(23239, $upload->getSize());
+        $this->assertEquals(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $upload->getRealPath());
 
         $overrideBaseName = 'lussen';
         $overrideFileName = 'lussen.hof';
@@ -63,7 +66,6 @@ class FileUploadTest extends TestCase
         $this->assertFileExists($path);
 
         unlink($path);
-
     }
 
     /**

@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\File\Upload;
 
+use Xi\Filelib\File\FileObject;
 use DateTime;
 
 /**
@@ -16,8 +17,13 @@ use DateTime;
  *
  * @author pekkis
  */
-class FileUpload extends \Xi\Filelib\File\FileObject
+class FileUpload
 {
+    /**
+     * @var FileObject
+     */
+    private $fileObject;
+
     /**
      * @var string Override file name
      */
@@ -37,6 +43,15 @@ class FileUpload extends \Xi\Filelib\File\FileObject
      * @var boolean Temporary file or not
      */
     private $temporary = false;
+
+    /**
+     * @param  string     $filename
+     * @return FileUpload
+     */
+    public function __construct($filename)
+    {
+        $this->fileObject = new FileObject($filename);
+    }
 
     /**
      * Sets override base name
@@ -89,7 +104,7 @@ class FileUpload extends \Xi\Filelib\File\FileObject
     public function getUploadFilename()
     {
         if (!$uploadName = $this->getOverrideFilename()) {
-            $uploadName = $this->getFilename();
+            $uploadName = $this->fileObject->getFilename();
         }
 
         if (!$overrideBase = $this->getOverrideBasename()) {
@@ -151,12 +166,36 @@ class FileUpload extends \Xi\Filelib\File\FileObject
     }
 
     /**
+     * @return string
+     */
+    public function getMimeType()
+    {
+        return $this->fileObject->getMimeType();
+    }
+
+    /**
+     * @return integer
+     */
+    public function getSize()
+    {
+        return $this->fileObject->getSize();
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealPath()
+    {
+        return $this->fileObject->getRealPath();
+    }
+
+    /**
      * Deletes on destruct if temporary
      */
     public function __destruct()
     {
         if ($this->isTemporary()) {
-            unlink($this->getRealPath());
+            unlink($this->fileObject->getRealPath());
         }
     }
 }
