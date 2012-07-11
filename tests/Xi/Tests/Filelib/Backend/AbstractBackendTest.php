@@ -749,7 +749,6 @@ use Xi\Filelib\Folder\Folder;
             'profile'       => 'versioned',
             'size'          => '1000',
             'name'          => 'tohtori-tussi.png',
-            'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 3,
         ));
@@ -784,7 +783,6 @@ use Xi\Filelib\Folder\Folder;
             'profile'       => 'versioned',
             'size'          => '1000',
             'name'          => 'tohtori-vesala.png',
-            'link'          => 'tohtori-vesala.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 4,
         ));
