@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
@@ -14,12 +21,10 @@ use Xi\Filelib\Publisher\Publisher;
  * Abstract convenience class for version provider plugins
  *
  * @author pekkis
- *
  */
 abstract class AbstractVersionProvider extends AbstractPlugin implements VersionProvider
 {
-
-    static protected $subscribedEvents = array(
+    protected static $subscribedEvents = array(
         'fileprofile.add' => 'onFileProfileAdd',
         'file.afterUpload' => 'afterUpload',
         'file.publish' => 'onPublish',
@@ -55,7 +60,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
                 foreach ($this->getVersions() as $version) {
                     $profile->addFileVersion($fileType, $version, $this);
                 }
-
             }
         }
     }
@@ -63,12 +67,13 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     /**
      * Sets identifier
      *
-     * @param string $identifier
+     * @param  string          $identifier
      * @return VersionProvider
      */
     public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
+
         return $this;
     }
 
@@ -85,12 +90,13 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     /**
      * Sets file types for this version plugin.
      *
-     * @param array $providesFor Array of file types
+     * @param  array           $providesFor Array of file types
      * @return VersionProvider
      */
     public function setProvidesFor(array $providesFor)
     {
         $this->providesFor = $providesFor;
+
         return $this;
     }
 
@@ -107,7 +113,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     /**
      * Returns whether the plugin provides a version for a file.
      *
-     * @param File $file File item
+     * @param  File    $file File item
      * @return boolean
      */
     public function providesFor(File $file)
@@ -140,8 +146,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     {
         return $this->getFilelib()->getPublisher();
     }
-
-
 
     public function afterUpload(FileEvent $event)
     {
@@ -177,7 +181,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         foreach ($this->getVersions() as $version) {
             $this->getPublisher()->publishVersion($file, $version, $this);
         }
-
     }
 
     public function onUnpublish(FileEvent $event)
@@ -215,15 +218,12 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     /**
      * Deletes a version
      *
-     * @param $file File
-     *
+     * @param File $file
      */
     public function deleteVersions(File $file)
     {
         foreach ($this->getVersions() as $version) {
             $this->getStorage()->deleteVersion($file, $version);
         }
-
     }
-
 }

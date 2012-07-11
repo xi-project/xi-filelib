@@ -1,19 +1,23 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin\Image;
 
-use Imagick;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 
 /**
  * Versions an image
- *
  */
 class VersionPlugin extends AbstractVersionProvider
 {
-
     protected $providesFor = array('image');
 
     protected $imageMagickHelper;
@@ -39,13 +43,15 @@ class VersionPlugin extends AbstractVersionProvider
         if (!$this->imageMagickHelper) {
             $this->imageMagickHelper = new ImageMagickHelper();
         }
+
         return $this->imageMagickHelper;
     }
 
     /**
      * Creates and stores version
      *
-     * @param File $file
+     * @param  File  $file
+     * @return array
      */
     public function createVersions(File $file)
     {
@@ -69,13 +75,14 @@ class VersionPlugin extends AbstractVersionProvider
     /**
      * Sets file extension
      *
-     * @param string $extension File extension
+     * @param  string          $extension File extension
      * @return VersionProvider
      */
     public function setExtension($extension)
     {
         $extension = str_replace('.', '', $extension);
         $this->extension = $extension;
+
         return $this;
     }
 
@@ -93,5 +100,4 @@ class VersionPlugin extends AbstractVersionProvider
     {
         return $this->getExtension();
     }
-
 }

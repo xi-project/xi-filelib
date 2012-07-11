@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
@@ -9,7 +16,6 @@ use Xi\Filelib\Plugin\Plugin;
  * Interface for version providing plugins
  *
  * @author pekkis
- *
  */
 interface VersionProvider extends Plugin
 {
@@ -30,7 +36,7 @@ interface VersionProvider extends Plugin
     /**
      * Returns whether the plugin provides a version for a file.
      *
-     * @param File $file File item
+     * @param  File    $file File item
      * @return boolean
      */
     public function providesFor(File $file);
@@ -48,5 +54,4 @@ interface VersionProvider extends Plugin
      * @return array
      */
     public function getVersions();
-
 }

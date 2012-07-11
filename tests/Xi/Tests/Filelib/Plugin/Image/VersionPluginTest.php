@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Tests\Filelib\Plugin\Image;
 
 use Imagick;
@@ -53,7 +60,6 @@ class VersionPluginTest extends TestCase
                         ->getMock();
         $fobject->expects($this->once())->method('getPathName')->will($this->returnValue($retrievedPath));
 
-
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('retrieve')->with($this->equalTo($file))->will($this->returnValue($fobject));
 
@@ -85,13 +91,7 @@ class VersionPluginTest extends TestCase
         foreach ($ret as $version => $tmp) {
             $this->assertRegExp("#/tmp/dir#", $tmp);
         }
-
-
-
-
-
     }
-
 
     /**
      * @test
@@ -143,8 +143,5 @@ class VersionPluginTest extends TestCase
         $plugin->expects($this->once())->method('getExtension');
 
         $plugin->getExtensionFor('xooxoo');
-
     }
-
-
 }

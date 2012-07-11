@@ -1,25 +1,29 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin;
 
-use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Event\FileUploadEvent;
 
 /**
- * Randomizes all uploads' file names before uploading. Ensures that same file may be uploaded
- * to the same directory time and again
+ * Randomizes all uploads' file names before uploading. Ensures that same file
+ * may be uploaded to the same directory time and again
  *
  * @author pekkis
- *
  */
 class RandomizeNamePlugin extends AbstractPlugin
 {
-
-    static protected $subscribedEvents = array(
+    protected static $subscribedEvents = array(
         'fileprofile.add' => 'onFileProfileAdd',
         'file.beforeUpload' => 'beforeUpload'
     );
-    
+
     /**
      * @var string Prefix (for uniqid)
      */
@@ -28,11 +32,13 @@ class RandomizeNamePlugin extends AbstractPlugin
     /**
      * Sets prefix
      *
-     * @param $prefix
+     * @param  string              $prefix
+     * @return RandomizeNamePlugin
      */
     public function setPrefix($prefix)
     {
         $this->prefix = $prefix;
+
         return $this;
     }
 
@@ -51,12 +57,12 @@ class RandomizeNamePlugin extends AbstractPlugin
         if (!$this->hasProfile($event->getProfile()->getIdentifier())) {
             return;
         }
-        
-        $upload = $event->getFileUpload();
-        
-        $pinfo = pathinfo($upload->getUploadFilename());
-        $newname = uniqid($this->getPrefix(), true);
 
+        $upload = $event->getFileUpload();
+
+        $pinfo = pathinfo($upload->getUploadFilename());
+
+        $newname = uniqid($this->getPrefix(), true);
         $newname = str_replace('.', '_', $newname);
 
         if (isset($pinfo['extension'])) {
@@ -64,8 +70,7 @@ class RandomizeNamePlugin extends AbstractPlugin
         }
 
         $upload->setOverrideFilename($newname);
+
         return $upload;
     }
-
 }
-

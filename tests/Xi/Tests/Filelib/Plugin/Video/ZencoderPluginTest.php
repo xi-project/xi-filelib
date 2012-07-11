@@ -1,18 +1,20 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 use Services_Zencoder as ZencoderService;
-use Services_Zencoder_Account as Account;
-use Services_Zencoder_Exception as ZencoderException;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
-use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
 
 class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 {
-
     private $config;
 
     public function setUp()
@@ -32,7 +34,6 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         if (!S3_KEY) {
             $this->markTestSkipped('S3 not configured');
         }
-
 
         $this->config = array(
             'apiKey' => ZENCODER_KEY,
@@ -58,9 +59,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         );
 
         $this->plugin = new ZencoderPlugin($this->config);
-
     }
-
 
     public function tearDown()
     {
@@ -71,15 +70,13 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         if (!S3_KEY) {
             $this->markTestSkipped('S3 not configured');
         }
-        
+
         if (!ZENCODER_KEY) {
             $this->markTestSkipped('Zencoder service not configured');
         }
 
         $this->plugin->getAwsService()->cleanBucket($this->plugin->getAwsBucket());
-
     }
-
 
     /**
      * @test
@@ -107,7 +104,6 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $this->assertNull($plugin->getAwsBucket());
         $this->assertSame($plugin, $plugin->setAwsBucket($val));
         $this->assertEquals($val, $plugin->getAwsBucket());
-
     }
 
     /**
@@ -119,7 +115,6 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $this->assertInstanceOf('Services_Zencoder', $service);
         $this->assertSame($service, $this->plugin->getService());
     }
-
 
     /**
      * @test
@@ -157,7 +152,6 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertEquals('lussen', $this->plugin->getExtensionFor('pygmi'));
         $this->assertEquals('dorfer', $this->plugin->getExtensionFor('watussi'));
-
     }
 
     /**
@@ -180,13 +174,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         foreach ($ret as $rut) {
             $this->assertArrayHasKey('label', $rut);
         }
-
-
     }
-
-
-
-
 
     /**
      * @test
@@ -205,7 +193,6 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $plugin = new ZencoderPlugin();
         $this->assertEquals(array('video'), $plugin->getProvidesFor());
     }
-
 
     /**
      * @test
@@ -243,9 +230,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $this->assertCount(2, $ret);
         $this->assertArrayHasKey('pygmi', $ret);
         $this->assertArrayHasKey('watussi', $ret);
-
     }
-
 
     /**
      * @test
@@ -274,13 +259,10 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $filelib->setStorage($storage);
 
-
         $plugin->setFilelib($filelib);
 
-        $ret = $plugin->createVersions($file);
-
+        $plugin->createVersions($file);
     }
-
 
     public function getMockedZencoderService($makeItThrowUp = false)
     {
@@ -303,6 +285,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         if ($makeItThrowUp) {
             $zen->jobs->expects($this->once())->method('create')
                 ->will($this->throwException(new \Services_Zencoder_Exception('I threw up')));
+
             return $zen;
         }
 
@@ -328,7 +311,6 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
                                      ->disableOriginalConstructor()
                                      ->getMock();
         $progressUnfinished->state = 'waiting';
-
 
         $zen->outputs->expects($this->at(0))->method('progress')
                   ->with($this->equalTo(2))
@@ -363,8 +345,4 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         return $zen;
     }
-
-
-
-
 }

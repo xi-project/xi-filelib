@@ -1,18 +1,23 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin\Image\Command;
 
 use Imagick;
 
 /**
  * Watermarks an image version
- * 
- * @author pekkis
  *
+ * @author pekkis
  */
 class WatermarkCommand extends AbstractCommand
 {
-
     /**
      * @var string Watermark image
      */
@@ -27,24 +32,25 @@ class WatermarkCommand extends AbstractCommand
      * @var integer Watermark padding
      */
     protected $watermarkPadding = 0;
-    
+
     protected $watermark;
 
     /**
      * Sets watermark image
-     * 
-     * @param string $image
+     *
+     * @param  string           $image
      * @return WatermarkCommand
      */
     public function setWatermarkImage($image)
     {
         $this->watermarkImage = $image;
+
         return $this;
     }
 
     /**
      * Returns watermark image
-     * 
+     *
      * @return string
      */
     public function getWatermarkImage()
@@ -54,27 +60,31 @@ class WatermarkCommand extends AbstractCommand
 
     /**
      * Sets watermark position (nw, ne, se or sw)
-     * 
-     * @param string $position
+     *
+     * @param  string                    $position
      * @return WatermarkCommand
+     * @throws \InvalidArgumentException
      */
     public function setWatermarkPosition($position)
     {
         if (!is_string($position)) {
             throw new \InvalidArgumentException("Non-string watermark position");
         }
-        
+
         if (!in_array($position, array('nw', 'ne', 'sw', 'se'))) {
-            throw new \InvalidArgumentException(sprintf("Invalid watermark position '%s'", $position));
+            throw new \InvalidArgumentException(sprintf(
+                "Invalid watermark position '%s'", $position
+            ));
         }
-                        
+
         $this->watermarkPosition = $position;
+
         return $this;
     }
 
     /**
      * Returns watermark position
-     * 
+     *
      * @return string
      */
     public function getWatermarkPosition()
@@ -84,19 +94,20 @@ class WatermarkCommand extends AbstractCommand
 
     /**
      * Sets padding for watermark image (in pixels)
-     * 
-     * @param int $padding
+     *
+     * @param  int              $padding
      * @return WatermarkCommand
      */
     public function setWatermarkPadding($padding)
     {
         $this->watermarkPadding = $padding;
+
         return $this;
     }
 
     /**
      * Returns padding for watermark image (in pixels)
-     * 
+     *
      * @return integer
      */
     public function getWatermarkPadding()
@@ -104,24 +115,22 @@ class WatermarkCommand extends AbstractCommand
         return $this->watermarkPadding;
     }
 
-    public function execute(Imagick $img)
+    public function execute(Imagick $imagick)
     {
-        $watermark = $this->getWatermarkResource();
+        $coordinates = $this->calculateCoordinates($imagick);
 
-        $coordinates = $this->calculateCoordinates($img);
-        
-        $img->compositeImage(
-                $this->getWatermarkResource(), Imagick::COMPOSITE_OVER, $coordinates['x'], $coordinates['y']
+        $imagick->compositeImage(
+            $this->getWatermarkResource(),
+            Imagick::COMPOSITE_OVER,
+            $coordinates['x'],
+            $coordinates['y']
         );
-
-        return;
     }
 
-    
     public function calculateCoordinates(Imagick $img)
     {
         $watermark = $this->getWatermarkResource();
-        
+
         $imageWidth = $img->getImageWidth();
         $imageHeight = $img->getImageHeight();
 
@@ -129,7 +138,6 @@ class WatermarkCommand extends AbstractCommand
         $wHeight = $watermark->getImageHeight();
 
         switch ($this->getWatermarkPosition()) {
-
             case 'sw':
                 $x = 0 + $this->getWatermarkPadding();
                 $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
@@ -153,17 +161,18 @@ class WatermarkCommand extends AbstractCommand
 
         return array('x' => $x, 'y' => $y);
     }
-    
+
     /**
-     * Returns watermark imagick resource
-     * 
+     * Returns watermark Imagick resource
+     *
      * @return Imagick
      */
     public function getWatermarkResource()
-    {   
+    {
         if (!$this->watermark) {
             $this->watermark = $this->createImagick($this->getWatermarkImage());
         }
+
         return $this->watermark;
     }
 
@@ -181,5 +190,4 @@ class WatermarkCommand extends AbstractCommand
     {
         $this->destroyWatermarkResource();
     }
-
 }

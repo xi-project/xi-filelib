@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin\Video;
 
 use Services_Zencoder as ZencoderService;
@@ -9,18 +16,15 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
 
 class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 {
     /**
-     *
      * @var ZencoderService
      */
     protected $service;
 
     /**
-     *
      * @var AmazonService
      */
     private $awsService;
@@ -28,31 +32,26 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     protected $providesFor = array('video');
 
     /**
-     *
      * @var array
      */
     private $outputs = array();
 
     /**
-     *
      * @var string
      */
     private $apiKey;
 
     /**
-     *
      * @var string
      */
     private $awsKey;
 
     /**
-     *
      * @var string
      */
     private $awsSecretKey;
 
     /**
-     *
      * @var string
      */
     private $awsBucket;
@@ -63,18 +62,17 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     }
 
     /**
-     *
-     * @param string $awsKey
+     * @param  string         $awsKey
      * @return ZencoderPlugin
      */
     public function setAwsKey($awsKey)
     {
         $this->awsKey = $awsKey;
+
         return $this;
     }
 
     /**
-     *
      * @return string
      */
     public function getAwsKey()
@@ -83,29 +81,28 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     }
 
     /**
-     *
-     * @param string $awsSecretKey
+     * @param  string         $awsSecretKey
      * @return ZencoderPlugin
      */
     public function setAwsSecretKey($awsSecretKey)
     {
         $this->awsSecretKey = $awsSecretKey;
+
         return $this;
     }
 
     /**
-     *
-     * @param string $bucket
+     * @param  string         $bucket
      * @return ZencoderPlugin
      */
     public function setAwsBucket($bucket)
     {
         $this->awsBucket = $bucket;
+
         return $this;
     }
 
     /**
-     *
      * @return string
      */
     public function getAwsBucket()
@@ -114,7 +111,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     }
 
     /**
-     *
      * @return string
      */
     public function getAwsSecretKey()
@@ -123,18 +119,17 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     }
 
     /**
-     *
-     * @param string $apiKey
+     * @param  string         $apiKey
      * @return ZencoderPlugin
      */
     public function setApiKey($apiKey)
     {
         $this->apiKey = $apiKey;
+
         return $this;
     }
 
     /**
-     *
      * @return string
      */
     public function getApiKey()
@@ -143,18 +138,16 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     }
 
     /**
-     *
      * @return AmazonService
      */
     public function getAwsService()
     {
-        if(!$this->awsService) {
+        if (!$this->awsService) {
             $this->awsService = new AmazonService($this->getAwsKey(), $this->getAwsSecretKey());
         }
+
         return $this->awsService;
     }
-
-
 
     /**
      * Returns Zencoder-php service instance
@@ -166,6 +159,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         if (!$this->service) {
             $this->service = new ZencoderService($this->getApiKey());
         }
+
         return $this->service;
     }
 
@@ -174,8 +168,8 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      *
      * @param string $version
      */
-    public function getExtensionFor($version) {
-
+    public function getExtensionFor($version)
+    {
         return $this->outputs[$version]['extension'];
     }
 
@@ -190,14 +184,13 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     }
 
     /**
-     * @param File $file
+     * @param  File             $file
      * @return array
+     * @throws FilelibException
      * @todo should not depend on Amazon S3
      */
     public function createVersions(File $file)
     {
-        $filelib = $this->getFilelib();
-
         $zencoder = $this->getService();
 
         $retrieved = $this->getStorage()->retrieve($file);
@@ -230,15 +223,12 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
                     if ($progress->state === 'finished') {
                         $done = $done + 1;
                     }
-
                 }
-
             } while ($done < count($this->getVersions()));
 
             $tmps = array();
 
             foreach ($this->getVersions() as $version) {
-
                 $tempnam = tempnam($this->getFilelib()->getTempDir(), 'zen');
                 $output = $job->outputs[$version];
                 $details = $zencoder->outputs->details($output->id);
@@ -251,13 +241,10 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             $this->getAwsService()->removeObject($awsPath);
 
             return $tmps;
-
         } catch (\Services_Zencoder_Exception $e) {
             throw new FilelibException("Zencoder service responded with errors", 500, $e);
         }
-
     }
-
 
     public function setOutputs($outputs)
     {
@@ -275,5 +262,4 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             return $output['output'];
         }, $this->getOutputs()));
     }
-
 }
