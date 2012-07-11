@@ -514,6 +514,22 @@ use Xi\Filelib\Folder\Folder;
     }
 
     /**
+     * @test
+     * @dataProvider findFileProvider
+     * @param mixed $fileId
+     */
+    public function ensuresCorrectTypesForFile($fileId)
+    {
+        $this->setUpSimpleDataSet();
+
+        $file = $this->backend->findFile($fileId);
+
+        $this->assertInternalType('integer', $file['size']);
+        $this->assertInternalType('integer', $file['status']);
+        $this->assertInstanceOf('DateTime', $file['date_uploaded']);
+    }
+
+    /**
      * @param array $file
      */
     private function assertFileHasAllFields(array $file)
@@ -527,8 +543,6 @@ use Xi\Filelib\Folder\Folder;
         $this->assertArrayHasKey('link', $file);
         $this->assertArrayHasKey('date_uploaded', $file);
         $this->assertArrayHasKey('status', $file);
-
-        $this->assertInstanceOf('DateTime', $file['date_uploaded']);
     }
 
     /**
