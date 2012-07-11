@@ -703,7 +703,7 @@ use Xi\Filelib\Folder\Folder;
         $fidata = array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
-            'size'          => '1000',
+            'size'          => 1000,
             'name'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 5,
@@ -723,12 +723,16 @@ use Xi\Filelib\Folder\Folder;
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
         $this->assertNotNull($file->getId());
-
         $this->assertEquals($fodata['id'], $file->getFolderId());
-        $this->assertEquals($fidata['mimetype'], $file->getMimeType());
-        $this->assertEquals($fidata['profile'], $file->getProfile());
-        $this->assertEquals($fidata['date_uploaded'], $file->getDateUploaded());
-        $this->assertEquals($fidata['status'], $file->getStatus());
+
+        $fileDataAfterUpload = array_merge($fidata, array(
+            'id'        => $file->getId(),
+            'folder_id' => $file->getFolderId(),
+            'link'      => null,
+        ));
+
+        $this->assertEquals($fileDataAfterUpload, $file->toArray());
+        $this->assertEquals($fileDataAfterUpload, $this->backend->findFile($file->getId()));
     }
 
     /**
