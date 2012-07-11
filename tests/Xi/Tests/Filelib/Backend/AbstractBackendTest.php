@@ -511,21 +511,25 @@ use Xi\Filelib\Folder\Folder;
     {
         $this->setUpSimpleDataSet();
 
-        $ret = $this->backend->findFile($fileId);
+        $this->assertFileHasAllFields($this->backend->findFile($fileId));
+    }
 
-        $this->assertInternalType('array', $ret);
+    /**
+     * @param array $file
+     */
+    private function assertFileHasAllFields(array $file)
+    {
+        $this->assertArrayHasKey('id', $file);
+        $this->assertArrayHasKey('folder_id', $file);
+        $this->assertArrayHasKey('mimetype', $file);
+        $this->assertArrayHasKey('profile', $file);
+        $this->assertArrayHasKey('size', $file);
+        $this->assertArrayHasKey('name', $file);
+        $this->assertArrayHasKey('link', $file);
+        $this->assertArrayHasKey('date_uploaded', $file);
+        $this->assertArrayHasKey('status', $file);
 
-        $this->assertArrayHasKey('id', $ret);
-        $this->assertArrayHasKey('folder_id', $ret);
-        $this->assertArrayHasKey('mimetype', $ret);
-        $this->assertArrayHasKey('profile', $ret);
-        $this->assertArrayHasKey('size', $ret);
-        $this->assertArrayHasKey('name', $ret);
-        $this->assertArrayHasKey('link', $ret);
-        $this->assertArrayHasKey('date_uploaded', $ret);
-        $this->assertArrayHasKey('status', $ret);
-
-        $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
+        $this->assertInstanceOf('DateTime', $file['date_uploaded']);
     }
 
     /**
@@ -563,25 +567,13 @@ use Xi\Filelib\Folder\Folder;
     {
         $this->setUpSimpleDataSet();
 
-        $rets = $this->backend->findAllFiles();
+        $files = $this->backend->findAllFiles();
 
-        $this->assertInternalType('array', $rets);
-        $this->assertCount(5, $rets);
+        $this->assertInternalType('array', $files);
+        $this->assertCount(5, $files);
 
-        foreach ($rets as $ret) {
-            $this->assertInternalType('array', $ret);
-
-            $this->assertArrayHasKey('id', $ret);
-            $this->assertArrayHasKey('folder_id', $ret);
-            $this->assertArrayHasKey('mimetype', $ret);
-            $this->assertArrayHasKey('profile', $ret);
-            $this->assertArrayHasKey('size', $ret);
-            $this->assertArrayHasKey('name', $ret);
-            $this->assertArrayHasKey('link', $ret);
-            $this->assertArrayHasKey('date_uploaded', $ret);
-            $this->assertArrayHasKey('status', $ret);
-
-            $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
+        foreach ($files as $file) {
+            $this->assertFileHasAllFields($file);
         }
     }
 
