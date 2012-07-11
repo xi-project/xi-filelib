@@ -705,7 +705,6 @@ use Xi\Filelib\Folder\Folder;
             'profile'       => 'versioned',
             'size'          => '1000',
             'name'          => 'tohtori-tussi.png',
-            'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 5,
         );
@@ -728,7 +727,6 @@ use Xi\Filelib\Folder\Folder;
         $this->assertEquals($fodata['id'], $file->getFolderId());
         $this->assertEquals($fidata['mimetype'], $file->getMimeType());
         $this->assertEquals($fidata['profile'], $file->getProfile());
-        $this->assertEquals($fidata['link'], $file->getLink());
         $this->assertEquals($fidata['date_uploaded'], $file->getDateUploaded());
         $this->assertEquals($fidata['status'], $file->getStatus());
     }
