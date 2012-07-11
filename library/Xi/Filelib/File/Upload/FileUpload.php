@@ -1,46 +1,47 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\File\Upload;
 
-use \DateTime;
+use DateTime;
 
 /**
  * Uploadable file
  *
- * @package Xi_Filelib
  * @author pekkis
- *
  */
 class FileUpload extends \Xi\Filelib\File\FileObject
 {
-
     /**
      * @var string Override file name
      */
     private $overrideFilename;
 
     /**
-     *
      * @var string Override base name
      */
     private $overrideBasename;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateUploaded;
 
     /**
-     *
      * @var boolean Temporary file or not
      */
     private $temporary = false;
 
     /**
-     *
      * Sets override base name
-     * 
-     * @param string $basename 
+     *
+     * @param string $basename
      */
     public function setOverrideBasename($basename)
     {
@@ -49,7 +50,7 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Returns override base name
-     * 
+     *
      * @return string
      */
     public function getOverrideBasename()
@@ -70,8 +71,7 @@ class FileUpload extends \Xi\Filelib\File\FileObject
     /**
      * Returns override filename
      *
-     * @return string 
-     *
+     * @return string
      */
     public function getOverrideFilename()
     {
@@ -80,10 +80,11 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Returns actual upload filename
-     * 
-     * Overrides actual filename with overridden filename. Then overrides base name, if necessary. Returns computated result.
-     * 
-     * @return string 
+     *
+     * Overrides actual filename with overridden filename. Then overrides base
+     * name, if necessary. Returns computed result.
+     *
+     * @return string
      */
     public function getUploadFilename()
     {
@@ -107,21 +108,22 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Returns upload date
-     * 
-     * @return \DateTime
+     *
+     * @return DateTime
      */
     public function getDateUploaded()
     {
         if (!$this->dateUploaded) {
             $this->dateUploaded = new DateTime();
         }
+
         return $this->dateUploaded;
     }
 
     /**
      * Sets upload date
-     * 
-     * @param \DateTime $dateUploaded
+     *
+     * @param DateTime $dateUploaded
      */
     public function setDateUploaded(DateTime $dateUploaded)
     {
@@ -130,8 +132,8 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Sets whether file is temporary
-     * 
-     * @param bool $temporary 
+     *
+     * @param bool $temporary
      */
     public function setTemporary($temporary)
     {
@@ -140,7 +142,7 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Returns whether file is temporary
-     * 
+     *
      * @return bool
      */
     public function isTemporary()
@@ -157,5 +159,4 @@ class FileUpload extends \Xi\Filelib\File\FileObject
             unlink($this->getRealPath());
         }
     }
-
 }
