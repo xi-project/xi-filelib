@@ -328,12 +328,12 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'id'            => $fileRow['id'],
             'folder_id'     => $fileRow['folder_id'],
             'mimetype'      => $fileRow['mimetype'],
-            'size'          => $fileRow['filesize'],
+            'size'          => (int) $fileRow['filesize'],
             'name'          => $fileRow['filename'],
             'profile'       => $fileRow['fileprofile'],
             'link'          => $fileRow['filelink'],
             'date_uploaded' => new DateTime($fileRow['date_uploaded']),
-            'status'        => $fileRow['status'],
+            'status'        => (int) $fileRow['status'],
         );
     }
 

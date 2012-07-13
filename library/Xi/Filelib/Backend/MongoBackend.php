@@ -288,7 +288,7 @@ class MongoBackend extends AbstractBackend implements Backend
             'profile'       => $file['profile'],
             'size'          => (int) $file['size'],
             'name'          => $file['name'],
-            'link'          => $file['link'],
+            'link'          => isset($file['link']) ? $file['link'] : null,
             'status'        => $file['status'],
             'date_uploaded' => DateTime::createFromFormat(
                                    'U',
