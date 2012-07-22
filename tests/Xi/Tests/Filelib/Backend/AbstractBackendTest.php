@@ -65,12 +65,19 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = $this->backend->findRootFolder();
 
+        $this->assertFolderHasAllFields($folder);
+        $this->assertNull($folder['parent_id']);
+    }
+
+    /**
+     * @param array $folder
+     */
+    private function assertFolderHasAllFields(array $folder)
+    {
         $this->assertArrayHasKey('id', $folder);
         $this->assertArrayHasKey('parent_id', $folder);
         $this->assertArrayHasKey('name', $folder);
         $this->assertArrayHasKey('url', $folder);
-
-        $this->assertNull($folder['parent_id']);
     }
 
     /**
@@ -82,11 +89,7 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = $this->backend->findRootFolder();
 
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-
+        $this->assertFolderHasAllFields($folder);
         $this->assertNull($folder['parent_id']);
     }
 
@@ -102,11 +105,7 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = $this->backend->findFolder($folderId);
 
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-
+        $this->assertFolderHasAllFields($folder);
         $this->assertEquals($folderId, $folder['id']);
         $this->assertEquals($data['name'], $folder['name']);
     }
@@ -511,21 +510,39 @@ use Xi\Filelib\Folder\Folder;
     {
         $this->setUpSimpleDataSet();
 
-        $ret = $this->backend->findFile($fileId);
+        $this->assertFileHasAllFields($this->backend->findFile($fileId));
+    }
 
-        $this->assertInternalType('array', $ret);
+    /**
+     * @test
+     * @dataProvider findFileProvider
+     * @param mixed $fileId
+     */
+    public function ensuresCorrectTypesForFile($fileId)
+    {
+        $this->setUpSimpleDataSet();
 
-        $this->assertArrayHasKey('id', $ret);
-        $this->assertArrayHasKey('folder_id', $ret);
-        $this->assertArrayHasKey('mimetype', $ret);
-        $this->assertArrayHasKey('profile', $ret);
-        $this->assertArrayHasKey('size', $ret);
-        $this->assertArrayHasKey('name', $ret);
-        $this->assertArrayHasKey('link', $ret);
-        $this->assertArrayHasKey('date_uploaded', $ret);
-        $this->assertArrayHasKey('status', $ret);
+        $file = $this->backend->findFile($fileId);
 
-        $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
+        $this->assertInternalType('integer', $file['size']);
+        $this->assertInternalType('integer', $file['status']);
+        $this->assertInstanceOf('DateTime', $file['date_uploaded']);
+    }
+
+    /**
+     * @param array $file
+     */
+    private function assertFileHasAllFields(array $file)
+    {
+        $this->assertArrayHasKey('id', $file);
+        $this->assertArrayHasKey('folder_id', $file);
+        $this->assertArrayHasKey('mimetype', $file);
+        $this->assertArrayHasKey('profile', $file);
+        $this->assertArrayHasKey('size', $file);
+        $this->assertArrayHasKey('name', $file);
+        $this->assertArrayHasKey('link', $file);
+        $this->assertArrayHasKey('date_uploaded', $file);
+        $this->assertArrayHasKey('status', $file);
     }
 
     /**
@@ -563,25 +580,13 @@ use Xi\Filelib\Folder\Folder;
     {
         $this->setUpSimpleDataSet();
 
-        $rets = $this->backend->findAllFiles();
+        $files = $this->backend->findAllFiles();
 
-        $this->assertInternalType('array', $rets);
-        $this->assertCount(5, $rets);
+        $this->assertInternalType('array', $files);
+        $this->assertCount(5, $files);
 
-        foreach ($rets as $ret) {
-            $this->assertInternalType('array', $ret);
-
-            $this->assertArrayHasKey('id', $ret);
-            $this->assertArrayHasKey('folder_id', $ret);
-            $this->assertArrayHasKey('mimetype', $ret);
-            $this->assertArrayHasKey('profile', $ret);
-            $this->assertArrayHasKey('size', $ret);
-            $this->assertArrayHasKey('name', $ret);
-            $this->assertArrayHasKey('link', $ret);
-            $this->assertArrayHasKey('date_uploaded', $ret);
-            $this->assertArrayHasKey('status', $ret);
-
-            $this->assertInstanceOf('DateTime', $ret['date_uploaded']);
+        foreach ($files as $file) {
+            $this->assertFileHasAllFields($file);
         }
     }
 
@@ -600,7 +605,7 @@ use Xi\Filelib\Folder\Folder;
             'folder_id'     => $folderId,
             'mimetype'      => 'image/jpg',
             'profile'       => 'lussed',
-            'size'          => '1006',
+            'size'          => 1006,
             'name'          => 'tohtori-sykero.png',
             'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
@@ -627,7 +632,7 @@ use Xi\Filelib\Folder\Folder;
             'folder_id'     => $folderId,
             'mimetype'      => 'image/jpg',
             'profile'       => 'lussed',
-            'size'          => '1006',
+            'size'          => 1006,
             'name'          => 'tohtori-sykero.png',
             'link'          => 'tohtori-sykero.png',
             'date_uploaded' => new DateTime('2011-01-02 16:16:16'),
@@ -703,9 +708,8 @@ use Xi\Filelib\Folder\Folder;
         $fidata = array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
-            'size'          => '1000',
+            'size'          => 1000,
             'name'          => 'tohtori-tussi.png',
-            'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 5,
         );
@@ -724,13 +728,16 @@ use Xi\Filelib\Folder\Folder;
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
         $this->assertNotNull($file->getId());
-
         $this->assertEquals($fodata['id'], $file->getFolderId());
-        $this->assertEquals($fidata['mimetype'], $file->getMimeType());
-        $this->assertEquals($fidata['profile'], $file->getProfile());
-        $this->assertEquals($fidata['link'], $file->getLink());
-        $this->assertEquals($fidata['date_uploaded'], $file->getDateUploaded());
-        $this->assertEquals($fidata['status'], $file->getStatus());
+
+        $fileDataAfterUpload = array_merge($fidata, array(
+            'id'        => $file->getId(),
+            'folder_id' => $file->getFolderId(),
+            'link'      => null,
+        ));
+
+        $this->assertEquals($fileDataAfterUpload, $file->toArray());
+        $this->assertEquals($fileDataAfterUpload, $this->backend->findFile($file->getId()));
     }
 
     /**
@@ -745,9 +752,8 @@ use Xi\Filelib\Folder\Folder;
         $file = File::create(array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
-            'size'          => '1000',
+            'size'          => 1000,
             'name'          => 'tohtori-tussi.png',
-            'link'          => 'tohtori-tussi.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 3,
         ));
@@ -780,9 +786,8 @@ use Xi\Filelib\Folder\Folder;
         $file = File::create(array(
             'mimetype'      => 'image/png',
             'profile'       => 'versioned',
-            'size'          => '1000',
+            'size'          => 1000,
             'name'          => 'tohtori-vesala.png',
-            'link'          => 'tohtori-vesala.png',
             'date_uploaded' => new DateTime('2011-01-01 16:16:16'),
             'status'        => 4,
         ));
