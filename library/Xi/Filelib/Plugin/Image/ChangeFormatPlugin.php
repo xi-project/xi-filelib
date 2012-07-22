@@ -86,7 +86,7 @@ class ChangeFormatPlugin extends AbstractPlugin
             return;
         }
 
-        $img = $this->getImageMagickHelper()->createImagick($upload->getPathname());
+        $img = $this->getImageMagickHelper()->createImagick($upload->getRealPath());
         $this->getImageMagickHelper()->execute($img);
 
         $tempnam = $this->getFilelib()->getTempDir() . '/' . uniqid('cfp', true);
