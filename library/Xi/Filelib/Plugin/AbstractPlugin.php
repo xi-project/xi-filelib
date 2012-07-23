@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Plugin;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileProfileEvent;
 
@@ -20,11 +19,6 @@ use Xi\Filelib\Event\FileProfileEvent;
  */
 abstract class AbstractPlugin implements Plugin
 {
-    /**
-     * @var FileLibrary Filelib
-     */
-    protected $filelib;
-
     /**
      * @var array Array of profiles
      */
@@ -50,29 +44,6 @@ abstract class AbstractPlugin implements Plugin
     public function __construct($options = array())
     {
         Configurator::setConstructorOptions($this, $options);
-    }
-
-    /**
-     * Sets filelib
-     *
-     * @param  FileLibrary $filelib
-     * @return Plugin
-     */
-    public function setFilelib(FileLibrary $filelib)
-    {
-        $this->filelib = $filelib;
-
-        return $this;
-    }
-
-    /**
-     * Returns filelib
-     *
-     * @return FileLibrary
-     */
-    public function getFilelib()
-    {
-        return $this->filelib;
     }
 
     /**

@@ -11,6 +11,9 @@ namespace Xi\Tests\Filelib\Plugin\VersionProvider;
 
 use Xi\Tests\Filelib\TestCase;
 
+/**
+ * @group plugin
+ */
 class VersionProviderTest extends TestCase
 {
     /**

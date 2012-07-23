@@ -11,6 +11,9 @@ namespace Xi\Tests\Filelib\Plugin\Image\Command;
 
 use Xi\Tests\Filelib\Plugin\Image\TestCase;
 
+/**
+ * @group plugin
+ */
 class AbstractCommandTest extends TestCase
 {
     /**

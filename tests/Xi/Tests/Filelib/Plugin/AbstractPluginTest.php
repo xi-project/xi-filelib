@@ -13,6 +13,9 @@ use Xi\Tests\Filelib\TestCase;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Event\FileProfileEvent;
 
+/**
+ * @group plugin
+ */
 class AbstractPluginTest extends TestCase
 {
     /**
@@ -32,17 +35,11 @@ class AbstractPluginTest extends TestCase
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')->setMethods(array())->getMockForAbstractClass();
 
         $this->assertEquals(array(), $plugin->getProfiles());
-        $this->assertNull($plugin->getFilelib());
 
         $profiles = array('tussin', 'lussutus');
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
         $this->assertEquals($plugin, $plugin->setProfiles($profiles));
-        $this->assertEquals($plugin, $plugin->setFilelib($filelib));
-
         $this->assertEquals($profiles, $plugin->getProfiles());
-        $this->assertEquals($filelib, $plugin->getFilelib());
     }
 
     /**

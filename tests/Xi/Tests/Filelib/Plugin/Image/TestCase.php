@@ -11,6 +11,9 @@ namespace Xi\Tests\Filelib\Plugin\Image;
 
 use Imagick;
 
+/**
+ * @group plugin
+ */
 class TestCase extends \Xi\Tests\Filelib\TestCase
 {
     public function setUp()

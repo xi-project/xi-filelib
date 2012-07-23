@@ -13,6 +13,9 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 
+/**
+ * @group plugin
+ */
 class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 {
     private $config;

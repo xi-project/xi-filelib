@@ -246,12 +246,7 @@ class FileLibraryTest extends TestCase
                         ->with($this->equalTo('plugin.add'), $this->isInstanceOf('Xi\Filelib\Event\PluginEvent'));
 
         $filelib->setEventDispatcher($eventDispatcher);
-
-        $plugin->expects($this->once())->method('setFilelib')->with($this->equalTo($filelib));
-
         $filelib->addPlugin($plugin);
-
-
     }
 
 

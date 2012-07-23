@@ -12,6 +12,9 @@ namespace Xi\Tests\Filelib\Plugin\Image;
 use Imagick;
 use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 
+/**
+ * @group plugin
+ */
 class ImageMagickHelperTest extends TestCase
 {
     /**

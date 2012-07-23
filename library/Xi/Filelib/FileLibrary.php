@@ -315,19 +315,21 @@ class FileLibrary
     /**
      * Adds a plugin
      *
-     * @param Plugin Plugin $plugin
+     * @param  Plugin      $plugin
+     * @param  integer     $priority
      * @return FileLibrary
+     *
+     * TODO: Priority is not used.
      */
     public function addPlugin(Plugin $plugin, $priority = 1000)
     {
-        $plugin->setFilelib($this);
-
         $this->getEventDispatcher()->addSubscriber($plugin);
 
         $event = new PluginEvent($plugin);
         $this->getEventDispatcher()->dispatch('plugin.add', $event);
 
         $plugin->init();
+
         return $this;
     }
 

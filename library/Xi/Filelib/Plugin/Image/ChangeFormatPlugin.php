@@ -12,6 +12,7 @@ namespace Xi\Filelib\Plugin\Image;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\File\FileOperator;
 
 /**
  * Changes images' formats before uploading them.
@@ -29,10 +30,35 @@ class ChangeFormatPlugin extends AbstractPlugin
 
     protected $targetExtension;
 
-    public function __construct($options = array())
-    {
+    /**
+     * @var FileOperator
+     */
+    private $fileOperator;
+
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    /**
+     * @var array
+     */
+    private $options;
+
+    /**
+     * @param  FileOperator       $fileOperator
+     * @param  string             $tempDir
+     * @param  array              $options
+     * @return ChangeFormatPlugin
+     */
+    public function __construct(FileOperator $fileOperator, $tempDir,
+        array $options = array()
+    ) {
         parent::__construct($options);
-        Configurator::setOptions($this->getImageMagickHelper(), $options);
+
+        $this->fileOperator = $fileOperator;
+        $this->tempDir = $tempDir;
+        $this->options = $options;
     }
 
     /**
@@ -44,6 +70,8 @@ class ChangeFormatPlugin extends AbstractPlugin
     {
         if (!$this->imageMagickHelper) {
             $this->imageMagickHelper = new ImageMagickHelper();
+
+            Configurator::setOptions($this->imageMagickHelper, $this->options);
         }
 
         return $this->imageMagickHelper;
@@ -89,14 +117,13 @@ class ChangeFormatPlugin extends AbstractPlugin
         $img = $this->getImageMagickHelper()->createImagick($upload->getRealPath());
         $this->getImageMagickHelper()->execute($img);
 
-        $tempnam = $this->getFilelib()->getTempDir() . '/' . uniqid('cfp', true);
+        $tempnam = $this->tempDir . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);
 
         $pinfo = pathinfo($upload->getUploadFilename());
 
-        $nupload = $this->getFilelib()->getFileOperator()->prepareUpload($tempnam);
+        $nupload = $this->fileOperator->prepareUpload($tempnam);
         $nupload->setTemporary(true);
-
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $this->getTargetExtension());
 
         $event->setFileUpload($nupload);

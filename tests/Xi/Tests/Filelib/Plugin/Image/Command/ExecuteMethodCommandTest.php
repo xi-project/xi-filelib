@@ -13,6 +13,9 @@ use Xi\Tests\Filelib\Plugin\Image\TestCase;
 use Xi\Filelib\Plugin\Image\Command\ExecuteMethodCommand;
 use Imagick;
 
+/**
+ * @group plugin
+ */
 class ExecuteMethodCommandTest extends TestCase
 {
     /**

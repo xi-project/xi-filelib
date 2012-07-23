@@ -13,6 +13,9 @@ use Xi\Tests\Filelib\Plugin\Image\TestCase;
 use Xi\Filelib\Plugin\Image\Command\WatermarkCommand;
 use Imagick;
 
+/**
+ * @group plugin
+ */
 class WatermarkCommandTest extends TestCase
 {
     /**

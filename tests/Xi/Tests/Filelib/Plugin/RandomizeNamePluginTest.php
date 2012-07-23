@@ -14,6 +14,9 @@ use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Event\FileUploadEvent;
 
+/**
+ * @group plugin
+ */
 class RandomizeNamePluginTest extends TestCase
 {
     /**

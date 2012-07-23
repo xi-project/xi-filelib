@@ -11,6 +11,9 @@ namespace Xi\Tests\Filelib\Plugin;
 
 use Xi\Tests\Filelib\TestCase;
 
+/**
+ * @group plugin
+ */
 class PluginTest extends TestCase
 {
     /**

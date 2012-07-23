@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Plugin;
 
-use Xi\Filelib\FileLibrary;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -17,25 +16,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * @package Xi_Filelib
  * @author pekkis
- *
  */
 interface Plugin extends EventSubscriberInterface
 {
-    /**
-     * Sets filelib
-     *
-     * @param  FileLibrary $filelib Filelib
-     * @return Plugin
-     */
-    public function setFilelib(FileLibrary $filelib);
-
-    /**
-     * Returns filelib
-     *
-     * @return FileLibrary
-     */
-    public function getFilelib();
-
     /**
      * Returns an array of profiles
      *
