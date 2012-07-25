@@ -47,6 +47,8 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function setUp()
     {
+        parent::setUp();
+
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $this->publisher = $this->getMock('Xi\Filelib\Publisher\Publisher');
 

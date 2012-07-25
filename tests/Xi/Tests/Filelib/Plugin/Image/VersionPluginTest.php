@@ -43,6 +43,8 @@ class VersionPluginTest extends TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $this->publisher = $this->getMock('Xi\Filelib\Publisher\Publisher');
         $this->fileOperator = $this->getMock('Xi\Filelib\File\FileOperator');
