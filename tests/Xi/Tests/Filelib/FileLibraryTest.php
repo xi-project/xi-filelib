@@ -104,18 +104,24 @@ class FileLibraryTest extends TestCase
 
     /**
      * @test
-     * @expectedException InvalidArgumentException
      */
     public function setTempDirShouldFailWhenDirectoryDoesNotExists()
     {
         $filelib = new FileLibrary();
+
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            sprintf(
+                'Temp dir "%s" is not writable or does not exist',
+                ROOT_TESTS . '/nonexisting_directory'
+            )
+        );
+
         $filelib->setTempDir(ROOT_TESTS . '/nonexisting_directory');
     }
 
-
-     /**
+    /**
      * @test
-     * @expectedException InvalidArgumentException
      */
     public function setTempDirShouldFailWhenDirectoryIsNotWritable()
     {
@@ -124,6 +130,15 @@ class FileLibraryTest extends TestCase
         $this->assertFalse(is_writable($this->dirname));
 
         $filelib = new FileLibrary();
+
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            sprintf(
+                'Temp dir "%s" is not writable or does not exist',
+                $dirname
+            )
+        );
+
         $filelib->setTempDir($dirname);
     }
 

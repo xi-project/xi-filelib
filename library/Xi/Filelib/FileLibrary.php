@@ -98,8 +98,6 @@ class FileLibrary
         return $this;
     }
 
-
-
     /**
      * Sets temporary directory
      *
@@ -108,7 +106,10 @@ class FileLibrary
     public function setTempDir($tempDir)
     {
         if (!is_dir($tempDir) || !is_writable($tempDir)) {
-            throw new InvalidArgumentException("Temp dir is not writable or does not exist");
+            throw new InvalidArgumentException(sprintf(
+                'Temp dir "%s" is not writable or does not exist',
+                $tempDir
+            ));
         }
         $this->tempDir = $tempDir;
     }
