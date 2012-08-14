@@ -393,7 +393,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
             'profile'       => $fileRow['fileprofile'],
             'link'          => $fileRow['filelink'],
             'date_created' => new DateTime($fileRow['date_created']),
-            'status'        => $fileRow['status'],
+            'status'        => (int) $fileRow['status'],
             'uuid'          => $fileRow['uuid'],
             'resource'      => $this->resourceToArray($this->doFindResource($fileRow['resource_id'])),
             'versions'      => unserialize($fileRow['versions']),
@@ -463,7 +463,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return Resource::create(array(
             'id' => (int) $row['id'],
             'hash' => $row['hash'],
-            'size' => $row['filesize'],
+            'size' => (int) $row['filesize'],
             'mimetype' => $row['mimetype'],
             'date_created' => new DateTime($row['date_created']),
             'versions' => unserialize($row['versions']),

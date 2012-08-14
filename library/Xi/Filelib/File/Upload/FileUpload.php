@@ -1,18 +1,28 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\File\Upload;
 
-use \DateTime;
+use Xi\Filelib\File\FileObject;
+use DateTime;
 
 /**
  * Uploadable file
  *
- * @package Xi_Filelib
  * @author pekkis
- *
  */
-class FileUpload extends \Xi\Filelib\File\FileObject
+class FileUpload
 {
+    /**
+     * @var FileObject
+     */
+    private $fileObject;
 
     /**
      * @var string Override file name
@@ -20,27 +30,33 @@ class FileUpload extends \Xi\Filelib\File\FileObject
     private $overrideFilename;
 
     /**
-     *
      * @var string Override base name
      */
     private $overrideBasename;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateUploaded;
 
     /**
-     *
      * @var boolean Temporary file or not
      */
     private $temporary = false;
 
     /**
-     *
+     * @param  string     $filename
+     * @return FileUpload
+     */
+    public function __construct($filename)
+    {
+        $this->fileObject = new FileObject($filename);
+    }
+
+    /**
      * Sets override base name
-     * 
-     * @param string $basename 
+     *
+     * @param string $basename
      */
     public function setOverrideBasename($basename)
     {
@@ -49,7 +65,7 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Returns override base name
-     * 
+     *
      * @return string
      */
     public function getOverrideBasename()
@@ -70,8 +86,7 @@ class FileUpload extends \Xi\Filelib\File\FileObject
     /**
      * Returns override filename
      *
-     * @return string 
-     *
+     * @return string
      */
     public function getOverrideFilename()
     {
@@ -80,15 +95,16 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Returns actual upload filename
-     * 
-     * Overrides actual filename with overridden filename. Then overrides base name, if necessary. Returns computated result.
-     * 
-     * @return string 
+     *
+     * Overrides actual filename with overridden filename. Then overrides base
+     * name, if necessary. Returns computed result.
+     *
+     * @return string
      */
     public function getUploadFilename()
     {
         if (!$uploadName = $this->getOverrideFilename()) {
-            $uploadName = $this->getFilename();
+            $uploadName = $this->fileObject->getFilename();
         }
 
         if (!$overrideBase = $this->getOverrideBasename()) {
@@ -107,21 +123,22 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Returns upload date
-     * 
-     * @return \DateTime
+     *
+     * @return DateTime
      */
     public function getDateUploaded()
     {
         if (!$this->dateUploaded) {
             $this->dateUploaded = new DateTime();
         }
+
         return $this->dateUploaded;
     }
 
     /**
      * Sets upload date
-     * 
-     * @param \DateTime $dateUploaded
+     *
+     * @param DateTime $dateUploaded
      */
     public function setDateUploaded(DateTime $dateUploaded)
     {
@@ -130,8 +147,8 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Sets whether file is temporary
-     * 
-     * @param bool $temporary 
+     *
+     * @param bool $temporary
      */
     public function setTemporary($temporary)
     {
@@ -140,7 +157,7 @@ class FileUpload extends \Xi\Filelib\File\FileObject
 
     /**
      * Returns whether file is temporary
-     * 
+     *
      * @return bool
      */
     public function isTemporary()
@@ -149,13 +166,36 @@ class FileUpload extends \Xi\Filelib\File\FileObject
     }
 
     /**
+     * @return string
+     */
+    public function getMimeType()
+    {
+        return $this->fileObject->getMimeType();
+    }
+
+    /**
+     * @return integer
+     */
+    public function getSize()
+    {
+        return $this->fileObject->getSize();
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealPath()
+    {
+        return $this->fileObject->getRealPath();
+    }
+
+    /**
      * Deletes on destruct if temporary
      */
     public function __destruct()
     {
         if ($this->isTemporary()) {
-            unlink($this->getRealPath());
+            unlink($this->fileObject->getRealPath());
         }
     }
-
 }

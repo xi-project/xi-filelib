@@ -7,7 +7,7 @@
     </testsuites>
 
     <php>
-        <includePath>.:/path/to/Zend_Framework</includePath>
+        <includePath>.:/path/to/ZendFramework/library</includePath>
         <const name="PDO_DRIVER" value="pgsql" />
         <const name="PDO_HOST" value="127.0.0.1" />
         <const name="PDO_DBNAME" value="filelib_test" />

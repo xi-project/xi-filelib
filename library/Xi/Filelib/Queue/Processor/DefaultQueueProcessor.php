@@ -2,15 +2,9 @@
 
 namespace Xi\Filelib\Queue\Processor;
 
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\FileLibrary\File\FileOperator;
-use Xi\Filelib\FileLibrary\Folder\FolderOperator;
-use Xi\Filelib\Queue\Queue;
 use Xi\Filelib\Queue\Message;
 use Xi\Filelib\Command;
-use ReflectionObject;
 use InvalidArgumentException;
-use Xi\Filelib\FilelibException;
 
 /**
  * Default implementation of a queue processor
@@ -20,7 +14,7 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
     /**
      * Processes a single message from the queue
      *
-     * @return mixed
+     * @return boolean False if there are no messages in the queue.
      */
     public function process()
     {
@@ -29,38 +23,37 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
         $message = $queue->dequeue();
 
         if (!$message) {
-            return null;
+            return false;
         }
 
         $command = $this->extractCommandFromMessage($message);
 
-        return $this->tryToProcess($message, function(DefaultQueueProcessor $processor) use ($command) {
+        $this->processMessage($message, function(DefaultQueueProcessor $processor) use ($command) {
             $processor->injectOperators($command);
-            return $command->execute();
+            $command->execute();
         });
+
+        return true;
     }
 
     /**
-     * Tries to process a message with a processor function
+     * Processes a message with a processor function
      *
-     * @param Message $message
+     * Any exceptions thrown here are left for the caller to handle.
+     *
+     * TODO: Messages should be acked (and maybe logged?) when an exception is
+     *       thrown.
+     *
+     * @param Message  $message
      * @param callable $processorFunction
-     * @return boolean Success or not
      */
-    public function tryToProcess(Message $message, $processorFunction)
+    public function processMessage(Message $message, $processorFunction)
     {
-        try {
-            $ret = $processorFunction($this);
-            $this->getQueue()->ack($message);
+        $ret = $processorFunction($this);
+        $this->getQueue()->ack($message);
 
-            if ($ret instanceof Command) {
-                $this->getQueue()->enqueue($ret);
-            }
-
-            return true;
-
-        } catch (FilelibException $e) {
-            return false;
+        if ($ret instanceof Command) {
+            $this->getQueue()->enqueue(new Message(serialize($ret)));
         }
     }
 
@@ -79,7 +72,4 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
         }
         return $command;
     }
-
-
 }
-

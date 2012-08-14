@@ -2,7 +2,6 @@
 
 class AbstractBackendTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      */
@@ -17,6 +16,4 @@ class AbstractBackendTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($ed, $backend->getEventDispatcher());
     }
-
-
 }

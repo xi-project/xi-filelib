@@ -9,7 +9,6 @@ use Xi\Tests\Filelib\Queue\Processor\TestCommand;
 
 class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
 {
-
     protected $queue;
 
     protected $fileOperator;
@@ -36,7 +35,6 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
         $this->filelib = $filelib;
     }
 
-
     /**
      * @test
      */
@@ -46,19 +44,17 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
         $this->assertContains('Xi\Filelib\Queue\Processor\QueueProcessor', class_implements('Xi\Filelib\Queue\Processor\DefaultQueueProcessor'));
     }
 
-
     /**
      * @test
      */
-    public function processShouldExitEarlyIfQueueIsEmpty()
+    public function processReturnsFalseIfQueueIsEmpty()
     {
         $processor = new DefaultQueueProcessor($this->filelib);
 
         $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue(null));
-        $ret = $processor->process();
-        $this->assertNull($ret);
-    }
 
+        $this->assertFalse($processor->process());
+    }
 
     /**
      * @test
@@ -77,14 +73,12 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function processShouldTryToProcessWhenACommandIsDequeued()
+    public function processShouldProcessMessageWhenACommandIsDequeued()
     {
         $processor = $this->getMockBuilder('Xi\Filelib\Queue\Processor\DefaultQueueProcessor')
                           ->setConstructorArgs(array($this->filelib))
-                          ->setMethods(array('tryToProcess'))
+                          ->setMethods(array('processMessage'))
                           ->getMock();
-
-        // $processor = new DefaultQueueProcessor($this->filelib);
 
         $command = new TestCommand();
 
@@ -92,16 +86,15 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
 
         $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue($message));
 
-        $processor->expects($this->once())->method('tryToProcess');
+        $processor->expects($this->once())->method('processMessage')->with($message);
 
         $processor->process();
-
     }
 
-    /**
-     * @test
-     */
-    public function tryToProcessShouldReturnFalseWhenProcessorFunctionThrowsException()
+     /**
+      * @test
+      */
+    public function processMessageDoesNotCatchExceptionFromProcessorFunction()
     {
         $processor = new DefaultQueueProcessor($this->filelib);
 
@@ -111,16 +104,18 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
 
         $message = new Message(serialize('Tussihofen'));
 
-        $ret = $processor->tryToProcess($message, $processorFunc);
+        $this->setExpectedException(
+            'Xi\Filelib\FilelibException',
+            'Lussen lussen luu!'
+        );
 
-        $this->assertFalse($ret);
-
+        $processor->processMessage($message, $processorFunc);
     }
 
     /**
      * @test
      */
-    public function tryToProcessShouldAckMessageWhenProcessorFunctionDoesntThrowException()
+    public function processMessageShouldAckMessageWhenProcessorFunctionDoesntThrowException()
     {
         $processor = new DefaultQueueProcessor($this->filelib);
 
@@ -132,16 +127,13 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
 
         $this->queue->expects($this->once())->method('ack')->with($this->equalTo($message));
 
-        $ret = $processor->tryToProcess($message, $processorFunc);
-
-        $this->assertTrue($ret);
+        $processor->processMessage($message, $processorFunc);
     }
-
 
     /**
      * @test
      */
-    public function tryToProcessShouldEnqueeWhenProcessorFunctionReturnsANewCommand()
+    public function processMessageShouldEnqueeWhenProcessorFunctionReturnsANewCommand()
     {
         $processor = new DefaultQueueProcessor($this->filelib);
 
@@ -155,18 +147,13 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
 
         $this->queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Command'));
 
-        $ret = $processor->tryToProcess($message, $processorFunc);
-
-        $this->assertTrue($ret);
+        $processor->processMessage($message, $processorFunc);
     }
-
-
-
 
     /**
      * @test
      */
-    public function tryToProcessShouldExecuteCommand()
+    public function processMessageShouldExecuteCommand()
     {
         $processor = $this->getMockBuilder('Xi\Filelib\Queue\Processor\DefaultQueueProcessor')
                           ->setConstructorArgs(array($this->filelib))
@@ -201,7 +188,6 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
         $processor = new DefaultQueueProcessor($this->filelib);
 
         $processor->extractCommandFromMessage($message);
-
     }
 
     /**
@@ -217,9 +203,5 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
         $ret = $processor->extractCommandFromMessage($message);
 
         $this->assertInstanceOf('Xi\Tests\Filelib\Queue\Processor\TestCommand', $ret);
-
     }
-
-
 }
-
