@@ -22,7 +22,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('ZencoderService class could not be loaded');
         }
 
-        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
+        if (!class_exists('ZendService\Amazon\S3\S3')) {
             $this->markTestSkipped('Zend\Service\Amazon\S3\S3 class could not be loaded');
         }
 
@@ -135,7 +135,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
     public function getAwsServiceShouldReturnAndCacheAwsService()
     {
         $service = $this->plugin->getAwsService();
-        $this->assertInstanceOf('Zend\Service\Amazon\S3\S3', $service);
+        $this->assertInstanceOf('ZendService\Amazon\S3\S3', $service);
         $this->assertSame($service, $this->plugin->getAwsService());
     }
 
@@ -395,7 +395,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
     public function getMockedAwsService()
     {
-        $aws = $this->getMockBuilder('Zend_Service_Amazon_S3')
+        $aws = $this->getMockBuilder('ZendService\Amazon\S3\S3')
                     ->disableOriginalConstructor()
                     ->getMock();
 

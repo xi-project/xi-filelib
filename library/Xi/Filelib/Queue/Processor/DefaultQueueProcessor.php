@@ -50,10 +50,11 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
     public function processMessage(Message $message, $processorFunction)
     {
         $ret = $processorFunction($this);
+
         $this->getQueue()->ack($message);
 
         if ($ret instanceof Command) {
-            $this->getQueue()->enqueue(new Message(serialize($ret)));
+            $this->getQueue()->enqueue($ret);
         }
     }
 

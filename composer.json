@@ -19,6 +19,13 @@
         }
     ],
 
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://packages.zendframework.com/"
+        }
+    ],
+
     "require": {
         "php": ">=5.3.0",
         "symfony/event-dispatcher": "2.0.14"
@@ -31,14 +38,18 @@
         "symfony/http-foundation": "2.0.14",
         "symfony/http-kernel": "2.0.14",
         "symfony/security": "2.0.14",
-        "zendframework/zendframework": ">=2.0.x-dev",
+        "zendframework/zendservice-amazon": "2.0.0-rc3",
+        "zendframework/zend-i18n": "2.0.0-rc3",
+        "zendframework/zend-filter": "2.0.0-rc3",
+        "zendframework/zend-servicemanager": "2.0.0-rc3",
         "videlalvaro/php-amqplib": ">=dev-master"
-
     },
 
     "autoload": {
         "psr-0": {
-            "Xi\\Filelib": "library"
+            "Xi\\Filelib": "library/",
+            "Xi\\Tests": "tests/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
