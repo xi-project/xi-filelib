@@ -19,6 +19,11 @@ before_script:
   - tar -xzf mongo-1.2.7.tgz
   - sh -c "cd mongo-1.2.7 && phpize && ./configure --enable-mongo && make && sudo make install"
   - echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - sudo apt-get install -y imagemagick libtiff-dev libjpeg-dev libdjvulibre-dev libwmf-dev libmagickcore-dev libmagickwand-dev
+  - wget http://pecl.php.net/get/imagick-3.1.0RC2.tgz
+  - tar -xzf imagick-3.1.0RC2.tgz
+  - sh -c "cd imagick-3.1.0RC2 && phpize && ./configure --with-imagick=/usr/local && make && sudo make install"
+  - echo "extension=imagick.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 script: cd tests && phpunit --configuration travis/$DB.travis.xml
 
