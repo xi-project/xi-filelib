@@ -210,7 +210,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         if (!$this->providesFor($file)) {
             return;
         }
-
         $this->deleteFileVersions($file);
     }
 
@@ -222,10 +221,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function onResourceDelete(ResourceEvent $event)
     {
-        if (!$this->areSharedVersionsAllowed()) {
-            return;
-        }
-
         foreach ($this->getVersions() as $version) {
             if ($this->getStorage()->versionExists($event->getResource(), $version)) {
                 $this->getStorage()->deleteVersion($event->getResource(), $version);
@@ -241,10 +236,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function deleteFileVersions(File $file)
     {
-        if ($this->areSharedVersionsAllowed()) {
-            return;
-        }
-
         foreach ($this->getVersions() as $version) {
             $this->getStorage()->deleteVersion($file->getResource(), $version, $file);
         }
