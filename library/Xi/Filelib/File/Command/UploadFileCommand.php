@@ -52,22 +52,22 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
     {
         $file = clone $file;
 
+
         $hash = sha1_file($upload->getRealPath());
         $profileObj = $this->fileOperator->getProfile($this->profile);
 
         $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
         if ($resources) {
+
             foreach ($resources as $resource) {
                 if (!$resource->isExclusive()) {
                     $file->setResource($resource);
+                    if (!$profileObj->isSharedResourceAllowed($file)) {
+                        $file->unsetResource();
+                    }
                     break;
                 }
             }
-
-            if (!$profileObj->isSharedResourceAllowed($file)) {
-                $file->unsetResource();
-            }
-
         }
 
         if (!$file->getResource()) {
@@ -78,13 +78,17 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
             $resource->setSize($upload->getSize());
             $resource->setMimetype($upload->getMimeType());
 
+            $this->fileOperator->getBackend()->createResource($resource);
+            $file->setResource($resource);
+
+
             if (!$profileObj->isSharedResourceAllowed($file)) {
                 $resource->setExclusive(true);
             }
 
-            $this->fileOperator->getBackend()->createResource($resource);
-            $file->setResource($resource);
         }
+
+
 
         return $file->getResource();
     }
@@ -99,8 +103,13 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
             throw new FilelibException("Folder '{$folder->getId()}'not writable");
         }
 
+
+
+
+
         $profileObj = $this->fileOperator->getProfile($profile);
         $event = new FileUploadEvent($upload, $folder, $profileObj);
+
         $this->fileOperator->getEventDispatcher()->dispatch('file.beforeUpload', $event);
 
         $upload = $event->getFileUpload();
@@ -113,8 +122,12 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
             'uuid' => $this->getUuid(),
         ));
 
+
+
         // @todo: actual statuses
         $file->setStatus(File::STATUS_RAW);
+
+
 
         $resource = $this->getResource($file, $upload);
 
