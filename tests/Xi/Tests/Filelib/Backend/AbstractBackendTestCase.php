@@ -51,16 +51,6 @@ use Xi\Filelib\Folder\Folder;
     }
 
     /**
-     * @dataProvider identifierValidityProvider
-     * @test
-     */
-    public function isValidIdentifierShouldReturnCorrectResult($expected, $identifier)
-    {
-        $this->setUpEmptyDataSet();
-        $this->assertEquals($expected, $this->backend->isValidIdentifier($identifier));
-    }
-
-    /**
      *
      * @test
      */

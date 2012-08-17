@@ -61,8 +61,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string     $id
-     * @return array|null
+     * @see AbstractBackend::doFindFolder
      */
     protected function doFindFolder($id)
     {
@@ -72,8 +71,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string $id
-     * @return array
+     * @see AbstractBackend::doFindSubFolders
      */
     protected function doFindSubFolders($id)
     {
@@ -83,7 +81,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @return array
+     * @see AbstractBackend::doFindAllFiles
      */
     protected function doFindAllFiles()
     {
@@ -91,8 +89,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string     $id
-     * @return array|null
+     * @see AbstractBackend::doFindFile
      */
     protected function doFindFile($id)
     {
@@ -102,8 +99,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string $id
-     * @return array
+     * @see AbstractBackend::doFindFiles
      */
     protected function doFindFilesIn($id)
     {
@@ -113,10 +109,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File                   $file
-     * @param  Folder                 $folder
-     * @return File
-     * @throws NonUniqueFileException If file already exists folder
+     * @see AbstractBackend::doUpload
      */
     protected function doUpload(File $file, Folder $folder)
     {
@@ -151,8 +144,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder $folder
-     * @return Folder
+     * @see AbstractBackend::doCreateFolder
      */
     protected function doCreateFolder(Folder $folder)
     {
@@ -168,8 +160,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder  $folder
-     * @return boolean
+     * @see AbstractBackend::doDeleteFolder
      */
     protected function doDeleteFolder(Folder $folder)
     {
@@ -181,8 +172,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doDeleteFile
      */
     protected function doDeleteFile(File $file)
     {
@@ -194,8 +184,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder  $folder
-     * @return boolean
+     * @see AbstractBackend::doUpdateFolder
      */
     protected function doUpdateFolder(Folder $folder)
     {
@@ -212,8 +201,7 @@ class MongoBackend extends AbstractBackend implements Backend
 
 
     /**
-     * @param Resource $resource
-     * @return boolean
+     * @see AbstractBackend::doUpdateResource
      */
     protected function doUpdateResource(Resource $resource)
     {
@@ -234,8 +222,7 @@ class MongoBackend extends AbstractBackend implements Backend
 
 
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doUpdateFile
      */
     protected function doUpdateFile(File $file)
     {
@@ -258,7 +245,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @return array
+     * @see AbstractBackend::doFindRootFolder
      */
     protected function doFindRootFolder()
     {
@@ -281,8 +268,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string     $url
-     * @return array|null
+     * @see AbstractBackend::doFindFolderByUrl
      */
     protected function doFindFolderByUrl($url)
     {
@@ -290,9 +276,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder     $folder
-     * @param  string     $filename
-     * @return array|null
+     * @see AbstractBackend::doFindByFilename
      */
     protected function doFindFileByFilename(Folder $folder, $filename)
     {
@@ -303,8 +287,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  array $file
-     * @return array
+     * @see AbstractBackend::fileToArray
      */
     protected function fileToArray($file)
     {
@@ -327,8 +310,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  array $folder
-     * @return array
+     * @see AbstractBackend::folderToArray
      */
     protected function folderToArray($folder)
     {
@@ -343,12 +325,17 @@ class MongoBackend extends AbstractBackend implements Backend
         );
     }
 
-    public function isValidIdentifier($id)
+    /**
+     * @see AbstractBackend::isValidIdentifier
+     */
+    protected function isValidIdentifier($id)
     {
         return (is_string($id));
     }
 
-
+    /**
+     * @see AbstractBackend::doFindResource
+     */
     protected function doFindResource($id)
     {
         return $this->getMongo()->resources->findOne(array(
@@ -356,6 +343,9 @@ class MongoBackend extends AbstractBackend implements Backend
         ));
     }
 
+    /**
+     * @see AbstractBackend::doFindResourcesByHash
+     */
     protected function doFindResourcesByHash($hash)
     {
         return iterator_to_array($this->getMongo()->resources->find(array(
@@ -363,6 +353,9 @@ class MongoBackend extends AbstractBackend implements Backend
         )));
     }
 
+    /**
+     * @see AbstractBackend::doCreateResource
+     */
     protected function doCreateResource(Resource $resource)
     {
         $document = array(
@@ -386,6 +379,9 @@ class MongoBackend extends AbstractBackend implements Backend
         return $resource;
     }
 
+    /**
+     * @see AbstractBackend::doDeleteResource
+     */
     protected function doDeleteResource(Resource $resource)
     {
         $ret = $this->getMongo()->resources->remove(array('_id' => new MongoId($resource->getId())), array('safe' => true));
@@ -393,8 +389,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param mixed $resource
-     * @return array
+     * @see AbstractBackend::resourceToArray
      */
     protected function resourceToArray($resource)
     {
@@ -410,7 +405,9 @@ class MongoBackend extends AbstractBackend implements Backend
         ));
     }
 
-
+    /**
+     * @see AbstractBackend::doGetNumberOfReferences
+     */
     protected function doGetNumberOfReferences(Resource $resource)
     {
         $refs = $this->getMongo()->files->find(array(
@@ -418,7 +415,6 @@ class MongoBackend extends AbstractBackend implements Backend
         ));
 
         return $refs->count();
-
     }
 
 }

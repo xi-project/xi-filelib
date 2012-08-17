@@ -182,6 +182,13 @@ abstract class AbstractBackend implements Backend
     protected abstract function fileToArray($file);
 
     /**
+     * Returns whether an identifier is valid for the backend
+     *
+     * @return boolean
+     */
+    protected abstract function isValidIdentifier($id);
+
+    /**
      * Finds a folder
      *
      * @param  mixed                    $id

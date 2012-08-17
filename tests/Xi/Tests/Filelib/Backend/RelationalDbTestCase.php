@@ -113,17 +113,6 @@ abstract class RelationalDbTestCase extends AbstractBackendTestCase
     }
 
 
-    public function identifierValidityProvider()
-    {
-        return array(
-            array(true, 1),
-            array(false, 'xooxer'),
-            array(true, 45393),
-            array(false, ''),
-        );
-    }
-
-
     /**
      * @return array
      */

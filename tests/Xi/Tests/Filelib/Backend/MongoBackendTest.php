@@ -449,19 +449,6 @@ class MongoBackendTest extends AbstractBackendTestCase
         );
     }
 
-    /**
-     * @return array
-     */
-    public function identifierValidityProvider()
-    {
-        return array(
-            array(true, 'xooxer'),
-            array(false, null),
-            array(true, 'xoo xoo xoo'),
-            array(false, 666),
-        );
-    }
-
 
     public function nonExistingResourceIdProvider()
     {

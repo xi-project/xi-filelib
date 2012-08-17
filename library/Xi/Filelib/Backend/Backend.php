@@ -165,7 +165,6 @@ interface Backend
      */
     public function deleteResource(Resource $resource);
 
-
     /**
      * Updates a resource
      *
@@ -182,14 +181,6 @@ interface Backend
      * @return int
      */
     public function getNumberOfReferences(Resource $resource);
-
-
-    /**
-     * Returns whether an identifier is valid for the backend
-     *
-     * @return boolean
-     */
-    public function isValidIdentifier($id);
 
     /**
      * @return string

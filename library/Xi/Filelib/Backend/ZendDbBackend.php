@@ -44,7 +44,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
      */
     private $resourceTable;
 
-
     /**
      * @param  EventDispatcherInterface $eventDispatcher
      * @param  Zend_Db_Adapter_Abstract $db
@@ -103,7 +102,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return $this->folderTable;
     }
 
-
     /**
      * @param  Zend_Db_Table_Abstract $folderTable
      * @return ZendDbBackend
@@ -114,7 +112,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
         return $this;
     }
-
 
     /**
      * Returns resource table
@@ -140,10 +137,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return $this;
     }
 
-
-
     /**
-     * @return object
+     * @see AbstractBackend::doFindRootFolder
      */
     protected function doFindRootFolder()
     {
@@ -164,8 +159,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  integer   $id
-     * @return FolderRow
+     * @see AbstractBackend::doFindFolder
      */
     protected function doFindFolder($id)
     {
@@ -173,8 +167,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder $folder
-     * @return Folder
+     * @see AbstractBackend::doCreateFolder
      */
     protected function doCreateFolder(Folder $folder)
     {
@@ -192,8 +185,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder $folder
-     * @return boolean
+     * @see AbstractBackend::doDeleteFolder
      */
     protected function doDeleteFolder(Folder $folder)
     {
@@ -205,8 +197,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder  $folder
-     * @return boolean
+     * @see AbstractBackend::doUpdateFolder
      */
     protected function doUpdateFolder(Folder $folder)
     {
@@ -224,10 +215,8 @@ class ZendDbBackend extends AbstractBackend implements Backend
         );
     }
 
-
     /**
-     * @param Resource $resource
-     * @return boolean
+     * @see AbstractBackend::doUpdateResource
      */
     protected function doUpdateResource(Resource $resource)
     {
@@ -244,8 +233,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
 
 
     /**
-     * @param  integer $id
-     * @return array
+     * @see AbstractBackend::doFindSubFolders
      */
     protected function doFindSubFolders($id)
     {
@@ -255,8 +243,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string     $url
-     * @return array|null
+     * @see AbstractBackend::doFindFolderByUrl
      */
     protected function doFindFolderByUrl($url)
     {
@@ -266,8 +253,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  integer $id
-     * @return array
+     * @see AbstractBackend::doFindFilesIn
      */
     protected function doFindFilesIn($id)
     {
@@ -277,7 +263,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @return array
+     * @see AbstractBackend::doFindAllFiles
      */
     protected function doFindAllFiles()
     {
@@ -285,8 +271,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  integer    $id
-     * @return array|null
+     * @see AbstractBackend::doFindFile
      */
     protected function doFindFile($id)
     {
@@ -294,8 +279,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doUpdateFile
      */
     protected function doUpdateFile(File $file)
     {
@@ -320,8 +304,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doDeleteFile
      */
     protected function doDeleteFile(File $file)
     {
@@ -337,10 +320,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File                   $file
-     * @param  Folder                 $folder
-     * @return File
-     * @throws NonUniqueFileException If file already exists folder
+     * @see AbstractBackend::doUpload
      */
     protected function doUpload(File $file, Folder $folder)
     {
@@ -368,9 +348,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder     $folder
-     * @param  string     $filename
-     * @return array|null
+     * @see AbstractBackend::doFindFileByFilename
      */
     protected function doFindFileByFilename(Folder $folder, $filename)
     {
@@ -381,8 +359,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  FileRow $row
-     * @return array
+     * @see AbstractBackend::fileToArray
      */
     protected function fileToArray($fileRow)
     {
@@ -401,8 +378,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  FolderRow $folder
-     * @return array
+     * @see AbstractBackend::folderToArray
      */
     protected function folderToArray($folder)
     {
@@ -417,11 +393,17 @@ class ZendDbBackend extends AbstractBackend implements Backend
         );
     }
 
+    /**
+     * @see AbstractBackend::doFindResource
+     */
     protected function doFindResource($id)
     {
         return $this->getResourceTable()->find($id)->current();
     }
 
+    /**
+     * @see AbstractBackend::doFindResourcesByHash
+     */
     protected function doFindResourcesByHash($hash)
     {
         return $this->getResourceTable()->fetchAll(array(
@@ -429,6 +411,9 @@ class ZendDbBackend extends AbstractBackend implements Backend
         ))->toArray();
     }
 
+    /**
+     * @see AbstractBackend::doCreateResource
+     */
     protected function doCreateResource(Resource $resource)
     {
         $row = $this->getResourceTable()->createRow();
@@ -444,6 +429,9 @@ class ZendDbBackend extends AbstractBackend implements Backend
         return $resource;
     }
 
+    /**
+     * @see AbstractBackend::doDeleteResource
+     */
     protected function doDeleteResource(Resource $resource)
     {
         $row = $this->getResourceTable()->find($resource->getId())->current();
@@ -455,8 +443,7 @@ class ZendDbBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param mixed $resource
-     * @return array
+     * @see AbstractBackend::resourceToArray
      */
     protected function resourceToArray($row)
     {
@@ -471,14 +458,18 @@ class ZendDbBackend extends AbstractBackend implements Backend
         ));
     }
 
-
+    /**
+     * @see AbstractBackend::doGetNumberOfReferences
+     */
     protected function doGetNumberOfReferences(Resource $resource)
     {
         return $this->db->fetchOne("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
     }
 
-
-    public function isValidIdentifier($id)
+    /**
+     * @see AbstractBackend::isValidIdentifier
+     */
+    protected function isValidIdentifier($id)
     {
         return (is_numeric($id));
     }

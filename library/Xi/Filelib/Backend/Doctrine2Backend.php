@@ -143,8 +143,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  integer    $id
-     * @return array|null
+     * @see AbstractBackend::doFindFile
      */
     protected function doFindFile($id)
     {
@@ -152,9 +151,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  Folder     $folder
-     * @param  string     $filename
-     * @return array|null
+     * @see AbstractBackend::doFindFileByFilename
      */
     public function doFindFileByFilename(Folder $folder, $filename)
     {
@@ -165,7 +162,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @return array
+     * @see AbstractBackend::doFindAllFiles
      */
     protected function doFindAllFiles()
     {
@@ -178,8 +175,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  integer $id
-     * @return array
+     * @see AbstractBackend::doFindFilesIn
      */
     protected function doFindFilesIn($id)
     {
@@ -189,8 +185,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doUpdateFile
      */
     protected function doUpdateFile(File $file)
     {
@@ -211,8 +206,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doDeleteFile
      */
     protected function doDeleteFile(File $file)
     {
@@ -227,8 +221,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  integer     $id
-     * @return Folder|null
+     * @see AbstractBackend::doFindFolder
      */
     protected function dofindFolder($id)
     {
@@ -236,8 +229,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  string     $url
-     * @return array|null
+     * @see AbstractBackend::doFindFolderByUrl
      */
     protected function doFindFolderByUrl($url)
     {
@@ -247,7 +239,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @return object Folder entity
+     * @see AbstractBackend::doFindRootFolder
      */
     protected function doFindRootFolder()
     {
@@ -276,8 +268,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  integer $id
-     * @return array
+     * @see AbstractBackend::doFindSubFolders
      */
     protected function doFindSubFolders($id)
     {
@@ -287,8 +278,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  Folder $folder
-     * @return Folder
+     * @see AbstractBackend::doCreateFolder
      */
     protected function doCreateFolder(Folder $folder)
     {
@@ -307,8 +297,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  Folder  $folder
-     * @return boolean
+     * @see AbstractBackend::doUpdateFolder
      */
     protected function doUpdateFolder(Folder $folder)
     {
@@ -335,10 +324,8 @@ class Doctrine2Backend extends AbstractBackend
         }
     }
 
-
     /**
-     * @param Resource $resource
-     * @return boolean
+     * @see AbstractBackend::doUpdateResource
      */
     protected function doUpdateResource(Resource $resource)
     {
@@ -354,11 +341,8 @@ class Doctrine2Backend extends AbstractBackend
         }
     }
 
-
-
     /**
-     * @param  Folder  $folder
-     * @return boolean
+     * @see AbstractBackend::doDeleteFolder
      */
     protected function doDeleteFolder(Folder $folder)
     {
@@ -379,10 +363,8 @@ class Doctrine2Backend extends AbstractBackend
         }
     }
 
-
     /**
-     * @param  Resource  $resource
-     * @return boolean
+     * @see AbstractBackend::doDeleteResource
      */
     protected function doDeleteResource(Resource $resource)
     {
@@ -402,11 +384,8 @@ class Doctrine2Backend extends AbstractBackend
         }
     }
 
-
     /**
-     * @param  Resource           $resource
-     * @return Resource
-     * @throws FilelibException
+     * @see AbstractBackend::doCreateResource
      */
     protected function doCreateResource(Resource $resource)
     {
@@ -422,10 +401,8 @@ class Doctrine2Backend extends AbstractBackend
         return $resource;
     }
 
-
     /**
-     * @param  string     $hash
-     * @return array|null
+     * @see AbstractBackend::doFindResourcesByHash
      */
     public function doFindResourcesByHash($hash)
     {
@@ -434,10 +411,8 @@ class Doctrine2Backend extends AbstractBackend
         ));
     }
 
-
     /**
-     * @param  integer     $id
-     * @return Resource|null
+     * @see AbstractBackend::doFindResource
      */
     protected function dofindResource($id)
     {
@@ -445,10 +420,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  File                   $file
-     * @param  Folder                 $folder
-     * @return File
-     * @throws NonUniqueFileException If file already exists folder
+     * @see AbstractBackend::doUpload
      */
     protected function doUpload(File $file, Folder $folder)
     {
@@ -487,10 +459,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * File to array
-     *
-     * @param  File  $file
-     * @return array
+     * @see AbstractBackend::fileToArray
      */
     protected function fileToArray($file)
     {
@@ -511,10 +480,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * Folder to array
-     *
-     * @param  Folder $folder
-     * @return array
+     * @see AbstractBackend::folderToArray
      */
     protected function folderToArray($folder)
     {
@@ -529,7 +495,9 @@ class Doctrine2Backend extends AbstractBackend
         );
     }
 
-
+    /**
+     * @see AbstractBackend::resourceToArray
+     */
     protected function resourceToArray($resource)
     {
         return Resource::create(array(
@@ -543,7 +511,9 @@ class Doctrine2Backend extends AbstractBackend
         ));
     }
 
-
+    /**
+     * @see AbstractBackend::doGetNumberOfReferences
+     */
     public function doGetNumberOfReferences(Resource $resource)
     {
         return $this->em->getConnection()->fetchColumn("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
@@ -569,8 +539,10 @@ class Doctrine2Backend extends AbstractBackend
         return $this->em->getReference($this->folderEntityName, $id);
     }
 
-
-    public function isValidIdentifier($id)
+    /**
+     * @see AbstractBackend::isValidIdentifier
+     */
+    protected function isValidIdentifier($id)
     {
         return (is_numeric($id));
     }
