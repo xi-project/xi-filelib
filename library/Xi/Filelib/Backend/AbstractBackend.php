@@ -19,7 +19,7 @@ use Exception;
 /**
  * Abstract backend implementing common methods
  *
- * @author pekkis
+ * @author pekkis <pekkisx@gmail.com>
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  */
 abstract class AbstractBackend implements Backend
@@ -36,12 +36,10 @@ abstract class AbstractBackend implements Backend
      */
     protected $uuidGenerator;
 
-
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
     }
-
 
     /**
      * @param  mixed      $id
@@ -133,14 +131,36 @@ abstract class AbstractBackend implements Backend
      */
     protected abstract function doFindFileByFilename(Folder $folder, $filename);
 
+    /**
+     * @param $id
+     * @return Resource|false
+     */
     protected abstract function doFindResource($id);
 
+    /**
+     * @param $hash
+     * @return array
+     */
     protected abstract function doFindResourcesByHash($hash);
 
+    /**
+     * @param Resource $resource
+     * @return Resource
+     */
     protected abstract function doCreateResource(Resource $resource);
 
+    /**
+     * @param Resource $resource
+     * @return boolean
+     */
     protected abstract function doDeleteResource(Resource $resource);
 
+    /**
+     * Returns the number of references for a resource
+     *
+     * @param Resource $resource
+     * @return integer
+     */
     protected abstract function doGetNumberOfReferences(Resource $resource);
 
     /**
@@ -148,7 +168,6 @@ abstract class AbstractBackend implements Backend
      * @return array
      */
     protected abstract function resourceToArray($resource);
-
 
     /**
      * @param  mixed $folder
@@ -162,13 +181,12 @@ abstract class AbstractBackend implements Backend
      */
     protected abstract function fileToArray($file);
 
-
     /**
-     * Finds folder
+     * Finds a folder
      *
      * @param  mixed                    $id
      * @return array|false
-     * @throws InvalidArgumentException With invalid folder id
+     * @throws InvalidArgumentException with invalid folder id
      */
     public function findFolder($id)
     {
@@ -183,7 +201,13 @@ abstract class AbstractBackend implements Backend
         return $this->folderToArray($folder);
     }
 
-
+    /**
+     * Finds a resource
+     *
+     * @param mixed $id
+     * @return array|false
+     * @throws InvalidArgumentException with invalid folder id
+     */
     public function findResource($id)
     {
         $this->assertValidIdentifier($id, 'Resource');
@@ -198,6 +222,12 @@ abstract class AbstractBackend implements Backend
 
     }
 
+    /**
+     * Finds resources by hash
+     *
+     * @param string $hash
+     * @return array
+     */
     public function findResourcesByHash($hash)
     {
         return array_map(
@@ -205,7 +235,6 @@ abstract class AbstractBackend implements Backend
             $this->doFindResourcesByHash($hash)
         );
     }
-
 
     /**
      * Creates a resource
@@ -219,7 +248,6 @@ abstract class AbstractBackend implements Backend
         return $this->doCreateResource($resource);
     }
 
-
     /**
      * Updates a resource
      *
@@ -232,8 +260,6 @@ abstract class AbstractBackend implements Backend
         $this->assertValidIdentifier($resource->getId(), 'Resource');
         return (bool) $this->doUpdateResource($resource);
     }
-
-
 
     /**
      * Deletes a resource
@@ -399,7 +425,6 @@ abstract class AbstractBackend implements Backend
     public function deleteFile(File $file)
     {
         $this->assertValidIdentifier($file->getId(), 'File');
-
         return (bool) $this->doDeleteFile($file);
     }
 
@@ -484,7 +509,13 @@ abstract class AbstractBackend implements Backend
         return $this->fileToArray($file);
     }
 
-
+    /**
+     * Asserts that an identifier is valid
+     *
+     * @param  $id Identifier
+     * @param  $exceptionObjectName Object name (Folder, File, Resource)
+     * @throws InvalidArgumentException
+     */
     public function assertValidIdentifier($id, $exceptionObjectName)
     {
         $isValid = $this->isValidIdentifier($id);
@@ -496,7 +527,6 @@ abstract class AbstractBackend implements Backend
             );
         }
     }
-
 
     /**
      * @param  string                   $url
@@ -542,6 +572,7 @@ abstract class AbstractBackend implements Backend
     }
 
     /**
+     * Generates an UUID
      *
      * @return string
      */
@@ -551,7 +582,7 @@ abstract class AbstractBackend implements Backend
     }
 
     /**
-     * Returns Event dispatcher
+     * Returns event dispatcher
      *
      * @return EventDispatcherInterface
      */
@@ -559,7 +590,6 @@ abstract class AbstractBackend implements Backend
     {
         return $this->eventDispatcher;
     }
-
 
     /**
      * @return UuidGenerator
@@ -572,6 +602,5 @@ abstract class AbstractBackend implements Backend
 
         return $this->uuidGenerator;
     }
-
 
 }
