@@ -16,32 +16,32 @@ class Resource
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    private $id;
 
     /**
      * @ORM\Column(name="hash", type="string", length=255, nullable=false)
      */
-    protected $hash;
+    private $hash;
 
     /**
      * @ORM\Column(name="mimetype", type="string", length=255, nullable=false)
      */
-    protected $mimetype;
+    private $mimetype;
 
     /**
      * @ORM\Column(name="filesize", type="integer", nullable=false)
      */
-    protected $size;
+    private $size;
 
     /**
      * @ORM\Column(name="exclusive", type="boolean", nullable=false)
      */
-    protected $exclusive;
+    private $exclusive;
 
     /**
      * @ORM\Column(name="date_created", type="datetime", nullable=false)
      */
-    protected $date_created;
+    private $dateCreated;
 
     /**
      * @ORM\OneToMany(targetEntity="File", mappedBy="resource")
@@ -156,7 +156,7 @@ class Resource
      */
     public function getDateCreated()
     {
-        return $this->date_created;
+        return $this->dateCreated;
     }
 
     /**
@@ -167,7 +167,7 @@ class Resource
      */
     public function setDateCreated(DateTime $dateCreated)
     {
-        $this->date_created = $dateCreated;
+        $this->dateCreated = $dateCreated;
         return $this;
     }
 

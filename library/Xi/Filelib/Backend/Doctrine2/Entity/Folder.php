@@ -15,23 +15,22 @@ class Folder
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    private $id;
 
     /**
      * @ORM\Column(name="foldername", type="string", length=255)
      */
-    protected $name;
+    private $name;
 
     /**
      * @ORM\Column(name="folderurl", type="string", length=5000)
      */
-    protected $url;
+    private $url;
 
     /**
      * @ORM\Column(name="uuid", type="string", length=36, nullable=false, unique=true)
      */
-    protected $uuid;
-
+    private $uuid;
 
     /**
      * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent")

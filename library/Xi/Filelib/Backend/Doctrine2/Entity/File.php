@@ -18,43 +18,43 @@ class File
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    private $id;
 
     /**
      * @ORM\Column(name="fileprofile", type="string", length=255)
      */
-    protected $profile;
+    private $profile;
 
     /**
      * @ORM\Column(name="filename", type="string", length=255)
      */
-    protected $name;
+    private $name;
 
     /**
      * @ORM\Column(name="filelink", type="string", length=255, nullable=true, unique=true)
      */
-    protected $link;
+    private $link;
 
     /**
      * @ORM\Column(name="date_created", type="datetime")
      */
-    protected $date_created;
+    private $dateCreated;
 
     /**
      * @ORM\Column(name="status", type="integer", nullable=false)
      */
-    protected $status;
+    private $status;
 
     /**
      * @ORM\Column(name="uuid", type="string", length=36, nullable=false, unique=true)
      */
-    protected $uuid;
+    private $uuid;
 
     /**
      * @ORM\ManyToOne(targetEntity="Folder")
      * @ORM\JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
      */
-    protected $folder;
+    private $folder;
 
     /**
      * @ORM\ManyToOne(targetEntity="Resource", inversedBy="files")
@@ -174,7 +174,7 @@ class File
      */
     public function getDateCreated()
     {
-        return $this->date_created;
+        return $this->dateCreated;
     }
 
 
@@ -186,7 +186,7 @@ class File
      */
     public function setDateCreated(DateTime $dateUploaded)
     {
-        $this->date_created = $dateUploaded;
+        $this->dateCreated = $dateUploaded;
         return $this;
     }
 
