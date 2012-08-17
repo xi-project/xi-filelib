@@ -100,6 +100,9 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * @return array
+     */
     public function fromArrayProvider()
     {
         return array(
@@ -130,7 +133,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     }
 
- /**
+    /**
      * @dataProvider fromArrayProvider
      * @test
      */
@@ -223,8 +226,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Xi\Filelib\File\File', File::create(array()));
     }
 
-
-
     /**
      * @test
      */
@@ -288,7 +289,5 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($file->hasVersion('watussi'));
         $this->assertFalse($file->hasVersion('lussi'));
     }
-
-
 
 }
