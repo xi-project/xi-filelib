@@ -34,7 +34,6 @@ class DeleteFileCommand extends AbstractFileCommand implements Serializable
             $this->fileOperator->getBackend()->deleteResource($this->file->getResource());
         }
 
-
         $event = new FileEvent($this->file);
         $this->fileOperator->getEventDispatcher()->dispatch('file.delete', $event);
 

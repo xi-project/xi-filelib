@@ -47,7 +47,12 @@ class UploadFileCommand extends AbstractFileCommand implements Serializable
         $this->profile = $profile;
     }
 
-
+    /**
+     * @param File $file
+     * @param FileUpload $upload
+     * @return Resource
+     * @todo This method (isSharedResource() particularly) has the smell of code.
+     */
     public function getResource(File $file, FileUpload $upload)
     {
         $file = clone $file;

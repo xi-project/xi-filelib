@@ -50,13 +50,26 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
+    /**
+     * @return array
+     */
+    public function provideForDeleteDelegation()
+    {
+        return array(
+            array(false),
+            array(true),
+        );
+    }
+
 
 
     /**
      * @test
+     * @dataProvider provideForDeleteDelegation
      */
-    public function deleteShouldDelegateCorrectly()
+    public function deleteShouldDelegateCorrectly($exclusiveResource)
     {
+
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
@@ -79,16 +92,22 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
           ->will($this->returnValue($unpublishCommand));
 
 
-
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
 
-        $file = File::create(array('id' => 1, 'profile' => 'lussen', 'resource' => new Resource()));
+        $file = File::create(array('id' => 1, 'profile' => 'lussen', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
 
         $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
         $backend->expects($this->once())->method('deleteFile')->with($this->equalTo($file));
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('delete')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
+
+        if ($exclusiveResource) {
+            $storage->expects($this->once())->method('delete')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
+            $backend->expects($this->once())->method('deleteResource')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
+        } else {
+            $storage->expects($this->never())->method('delete');
+            $backend->expects($this->never())->method('deleteResource');
+        }
 
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
@@ -97,7 +116,6 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
 
         $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussen'))->will($this->returnValue($profile));
-
 
         $command = new DeleteFileCommand($op, $file);
         $command->execute();

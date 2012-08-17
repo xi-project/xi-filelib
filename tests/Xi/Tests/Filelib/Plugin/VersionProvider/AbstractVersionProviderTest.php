@@ -589,14 +589,17 @@ class AbstractVersionProviderTest extends TestCase
         $this->storage->expects($this->once())->method('deleteVersion')
              ->with(
                      $this->isInstanceOf('Xi\Filelib\File\Resource'),
-                     $this->equalTo('xooxer')
+                     $this->equalTo('lusser')
               );
 
+        $this->storage->expects($this->exactly(2))->method('versionExists')
+            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->isType('string'))
+            ->will($this->onConsecutiveCalls(false, true));
 
         $this->plugin->setProvidesFor(array('image', 'video'));
         $this->plugin->setProfiles(array('tussi', 'lussi'));
         $this->plugin->expects($this->atLeastOnce())->method('getVersions')
-                     ->will($this->returnValue(array('xooxer')));
+                     ->will($this->returnValue(array('xooxer', 'lusser')));
 
         $this->plugin->setFileLib($this->filelib);
 
