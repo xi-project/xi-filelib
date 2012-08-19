@@ -163,7 +163,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     /**
      * Sets sleepy time in seconds
      *
-     * @param type $sleepyTime
+     * @param  integer        $sleepyTime
      * @return ZencoderPlugin
      */
     public function setSleepyTime($sleepyTime)
@@ -172,12 +172,13 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         return $this;
     }
 
-
+    /**
+     * @return integer
+     */
     public function getSleepyTime()
     {
         return $this->sleepyTime;
     }
-
 
     /**
      * Returns Zencoder-php service instance
@@ -308,6 +309,4 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     {
         return true;
     }
-
-
 }
