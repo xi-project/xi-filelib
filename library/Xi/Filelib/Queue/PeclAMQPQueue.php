@@ -73,7 +73,7 @@ class PeclAMQPQueue implements Queue
             return null;
         }
 
-        $message = new Message(unserialize($msg->getBody()));
+        $message = new Message($msg->getBody());
         $message->setIdentifier($msg->getDeliveryTag());
 
         return $message;
