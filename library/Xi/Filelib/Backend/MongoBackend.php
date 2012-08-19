@@ -330,7 +330,7 @@ class MongoBackend extends AbstractBackend implements Backend
      */
     protected function isValidIdentifier($id)
     {
-        return (is_string($id));
+        return is_string($id);
     }
 
     /**

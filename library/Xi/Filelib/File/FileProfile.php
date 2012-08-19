@@ -239,7 +239,7 @@ class FileProfile implements EventSubscriberInterface
      */
     public function fileHasVersion(File $file, $version)
     {
-        return (in_array($version, $this->getFileVersions($file)));
+        return in_array($version, $this->getFileVersions($file));
     }
 
     /**
