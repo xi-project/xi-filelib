@@ -193,8 +193,7 @@ abstract class AbstractOperator
     }
 
     /**
-     *
-     * @return UuidGenerator
+     * @return PHPUuidGenerator
      */
     protected function getUuidGenerator()
     {
@@ -204,5 +203,4 @@ abstract class AbstractOperator
 
         return $this->uuidGenerator;
     }
-
 }

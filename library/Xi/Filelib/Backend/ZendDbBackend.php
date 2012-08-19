@@ -471,8 +471,6 @@ class ZendDbBackend extends AbstractBackend implements Backend
      */
     protected function isValidIdentifier($id)
     {
-        return (is_numeric($id));
+        return is_numeric($id);
     }
-
-
 }

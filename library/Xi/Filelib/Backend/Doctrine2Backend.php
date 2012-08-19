@@ -544,7 +544,6 @@ class Doctrine2Backend extends AbstractBackend
      */
     protected function isValidIdentifier($id)
     {
-        return (is_numeric($id));
+        return is_numeric($id);
     }
-
 }

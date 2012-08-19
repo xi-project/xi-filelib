@@ -232,7 +232,6 @@ class File
     }
 
     /**
-     *
      * @return Resource
      */
     public function getResource()
@@ -240,7 +239,10 @@ class File
         return $this->resource;
     }
 
-
+    /**
+     * @param  Resource $resource
+     * @return File
+     */
     public function setResource(Resource $resource)
     {
         $this->resource = $resource;
@@ -248,8 +250,8 @@ class File
     }
 
     /**
-     *
-     * @param array $versions
+     * @param  array $versions
+     * @return File
      */
     public function setVersions(array $versions)
     {
@@ -257,11 +259,11 @@ class File
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getVersions()
     {
         return $this->versions;
     }
-
-
-
 }
