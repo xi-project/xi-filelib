@@ -24,17 +24,15 @@ use Exception;
  */
 abstract class AbstractBackend implements Backend
 {
-
     /**
      * @var EventDispatcherInterface
      */
-    protected $eventDispatcher;
+    private $eventDispatcher;
 
     /**
-     *
      * @var UuidGenerator
      */
-    protected $uuidGenerator;
+    private $uuidGenerator;
 
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
