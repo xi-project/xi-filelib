@@ -57,7 +57,6 @@ class UploadFileCommand extends AbstractFileCommand
     {
         $file = clone $file;
 
-
         $hash = sha1_file($upload->getRealPath());
         $profileObj = $this->fileOperator->getProfile($this->profile);
 
@@ -92,8 +91,6 @@ class UploadFileCommand extends AbstractFileCommand
             }
 
         }
-
-
 
         return $file->getResource();
     }
