@@ -137,14 +137,11 @@ abstract class AbstractOperator
         }
     }
 
-
-
     public function getCommandStrategy($command)
     {
         $this->assertCommandExists($command);
         return $this->commandStrategies[$command];
     }
-
 
     public function setCommandStrategy($command, $strategy)
     {
@@ -154,13 +151,11 @@ abstract class AbstractOperator
         return $this;
     }
 
-
     public function createCommand($commandClass, array $args = array())
     {
         $reflClass = new \ReflectionClass($commandClass);
         return $reflClass->newInstanceArgs($args);
     }
-
 
     public function executeOrQueue(Command $commandObj, $commandName, array $callbacks = array())
     {
@@ -172,7 +167,6 @@ abstract class AbstractOperator
         }
         return $this->executeOrQueueHandleCallbacks($strategy, $callbacks, $ret);
     }
-
 
     private function executeOrQueueHandleCallbacks($strategy, $callbacks, $ret)
     {
@@ -193,7 +187,7 @@ abstract class AbstractOperator
     }
 
     /**
-     * @return PHPUuidGenerator
+     * @return UuidGenerator
      */
     protected function getUuidGenerator()
     {

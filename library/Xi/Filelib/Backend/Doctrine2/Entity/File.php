@@ -232,6 +232,8 @@ class File
     }
 
     /**
+     * Returns resource
+     *
      * @return Resource
      */
     public function getResource()

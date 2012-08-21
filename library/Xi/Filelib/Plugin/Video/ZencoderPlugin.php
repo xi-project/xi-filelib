@@ -52,13 +52,11 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     private $awsSecretKey;
 
     /**
-     *
      * @var string
      */
     private $awsBucket;
 
     /**
-     *
      * @var integer
      */
     private $sleepyTime = 5;

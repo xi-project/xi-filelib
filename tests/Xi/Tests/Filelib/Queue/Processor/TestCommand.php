@@ -13,8 +13,6 @@ class TestCommand implements Command
 
     private $isExecuted = false;
 
-    public $loso = 'tussi';
-
     public function execute()
     {
         $this->isExecuted = true;
