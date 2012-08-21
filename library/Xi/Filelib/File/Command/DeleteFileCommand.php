@@ -7,7 +7,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Serializable;
 
-class DeleteFileCommand extends AbstractFileCommand implements Serializable
+class DeleteFileCommand extends AbstractFileCommand
 {
 
     /**

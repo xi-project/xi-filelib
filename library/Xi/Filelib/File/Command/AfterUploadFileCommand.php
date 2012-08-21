@@ -10,7 +10,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\Upload\FileUpload;
 use Serializable;
 
-class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
+class AfterUploadFileCommand extends AbstractFileCommand
 {
 
     /**
@@ -26,6 +26,9 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
         $this->file = $file;
     }
 
+    /**
+     * @return File
+     */
     public function execute()
     {
         $file = $this->file;

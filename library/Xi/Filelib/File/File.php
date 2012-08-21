@@ -36,22 +36,49 @@ class File
      */
     private $filelib;
 
+    /**
+     * @var mixed
+     */
     private $id;
 
+    /**
+     * @var mixed
+     */
     private $folderId;
 
+    /**
+     * @var string
+     */
     private $mimetype;
 
+    /**
+     * @var string
+     */
     private $profile;
 
+    /**
+     * @var integer
+     */
     private $size;
 
+    /**
+     * @var string
+     */
     private $name;
 
+    /**
+     * @var string
+     */
     private $link;
 
+    /**
+     * @var DateTime
+     */
     private $dateCreated;
 
+    /**
+     * @var integer
+     */
     private $status;
 
     /**
@@ -77,7 +104,6 @@ class File
      * @var ArrayObject
      */
     private $data;
-
 
     /**
      * Sets id
@@ -282,11 +308,19 @@ class File
         return $this;
     }
 
+    /**
+     * Returns resource or null if file doesn't have one
+     *
+     * @return Resource|null
+     */
     public function getResource()
     {
         return $this->resource;
     }
 
+    /**
+     * Unsets resource
+     */
     public function unsetResource()
     {
         $this->resource = null;
@@ -344,7 +378,6 @@ class File
     /**
      * @return ArrayObject
      */
-
     public function getData()
     {
         if (!$this->data) {
@@ -376,6 +409,8 @@ class File
     }
 
     /**
+     * Adds version
+     *
      * @param string $version
      */
     public function addVersion($version)
@@ -386,6 +421,7 @@ class File
     }
 
     /**
+     * Removes a version
      *
      * @param string $version
      */
@@ -404,6 +440,5 @@ class File
     {
         return in_array($version, $this->versions);
     }
-
 
 }

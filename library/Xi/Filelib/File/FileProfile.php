@@ -30,7 +30,6 @@ class FileProfile implements EventSubscriberInterface
         'plugin.add' => 'onPluginAdd'
     );
 
-
     /**
      * @var FileLibrary
      */
@@ -85,7 +84,6 @@ class FileProfile implements EventSubscriberInterface
     {
         return static::$subscribedEvents;
     }
-
 
     /**
      * Sets filelib
@@ -303,7 +301,6 @@ class FileProfile implements EventSubscriberInterface
         return $this->publishOriginal;
     }
 
-
     /**
      * Fires on plugin.add event. Adds plugin if plugin has profile.
      *
@@ -316,7 +313,6 @@ class FileProfile implements EventSubscriberInterface
             $this->addPlugin($plugin);
         }
     }
-
 
     private function ensureFileVersionArrayExists($fileType)
     {
@@ -343,6 +339,5 @@ class FileProfile implements EventSubscriberInterface
         }
         return true;
     }
-
 
 }

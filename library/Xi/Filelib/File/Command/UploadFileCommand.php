@@ -14,7 +14,7 @@ use Xi\Filelib\FilelibException;
 use Serializable;
 use DateTime;
 
-class UploadFileCommand extends AbstractFileCommand implements Serializable
+class UploadFileCommand extends AbstractFileCommand
 {
     /**
      *

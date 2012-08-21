@@ -213,16 +213,19 @@ class Resource
     }
 
     /**
+     * Adds a version
+     *
      * @param string $version
      */
     public function addVersion($version)
     {
         if (!in_array($version, $this->versions)) {
-            array_push($this->versions, $version);
+            $this->versions[] = $version;
         }
     }
 
     /**
+     * Removes a version
      *
      * @param string $version
      */
@@ -242,9 +245,8 @@ class Resource
         return in_array($version, $this->versions);
     }
 
-
     /**
-     * Returns the resource as standardized hash array
+     * Returns the resource as array
      *
      * @return array
      */

@@ -7,7 +7,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Serializable;
 
-class DeleteFolderCommand extends AbstractFolderCommand implements Serializable
+class DeleteFolderCommand extends AbstractFolderCommand
 {
 
     /**

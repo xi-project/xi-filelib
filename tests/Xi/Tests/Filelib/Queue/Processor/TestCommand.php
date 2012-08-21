@@ -21,16 +21,25 @@ class TestCommand implements Command
         return 'lus';
     }
 
-
     public function isExecuted()
     {
         return $this->isExecuted;
     }
 
-
     public function getEnqueueReturnValue()
     {
         return 'tussihovi';
+    }
+
+    public function serialize()
+    {
+        return serialize($this->isExecuted());
+    }
+
+    public function unserialize($serialized)
+    {
+        $unserialized = unserialize($serialized);
+        $this->isExecuted = $unserialized;
     }
 
 }

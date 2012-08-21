@@ -11,7 +11,7 @@ use Serializable;
 use InvalidArgumentException;
 
 
-class CopyFileCommand extends AbstractFileCommand implements Serializable
+class CopyFileCommand extends AbstractFileCommand
 {
     /**
      *

@@ -7,7 +7,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Serializable;
 
-class CreateFolderCommand extends AbstractFolderCommand implements Serializable
+class CreateFolderCommand extends AbstractFolderCommand
 {
 
     /**

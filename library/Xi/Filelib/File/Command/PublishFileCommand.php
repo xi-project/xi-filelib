@@ -7,7 +7,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Serializable;
 
-class PublishFileCommand extends AbstractFileCommand implements Serializable
+class PublishFileCommand extends AbstractFileCommand
 {
 
     /**
