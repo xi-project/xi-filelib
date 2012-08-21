@@ -4,6 +4,7 @@ namespace Xi\Filelib\File;
 
 use DateTime;
 use ArrayObject;
+use Xi\Filelib\File\Resource;
 
 /**
  * File

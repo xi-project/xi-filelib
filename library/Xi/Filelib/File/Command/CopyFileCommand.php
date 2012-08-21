@@ -5,11 +5,12 @@ namespace Xi\Filelib\File\Command;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Event\FileCopyEvent;
 use Serializable;
 use InvalidArgumentException;
-
+use DateTime;
 
 class CopyFileCommand extends AbstractFileCommand
 {
@@ -72,6 +73,33 @@ class CopyFileCommand extends AbstractFileCommand
     }
 
     /**
+     * Handles impostor's resource
+     *
+     * @param File $file
+     */
+    public function handleImpostorResource(File $file)
+    {
+        $oldResource = $file->getResource();
+        if ($oldResource->isExclusive()) {
+
+            $retrieved = $this->fileOperator->getStorage()->retrieve($oldResource);
+
+            $resource = new Resource();
+            $resource->setDateCreated(new DateTime());
+            $resource->setHash($oldResource->getHash());
+            $resource->setSize($oldResource->getSize());
+            $resource->setMimetype($oldResource->getMimetype());
+
+            $this->fileOperator->getBackend()->createResource($resource);
+            $this->fileOperator->getStorage()->store($resource, $retrieved);
+
+            $file->setResource($resource);
+        }
+
+    }
+
+
+    /**
      * Clones the original file and iterates the impostor's names until
      * a free one is found.
      *
@@ -81,6 +109,11 @@ class CopyFileCommand extends AbstractFileCommand
     {
         $impostor = clone $this->file;
         $impostor->setUuid($this->getUuid());
+
+        foreach ($impostor->getVersions() as $version) {
+            $impostor->removeVersion($version);
+        }
+        $this->handleImpostorResource($impostor);
 
         $found = $this->fileOperator->findByFilename($this->folder, $impostor->getName());
 
@@ -108,7 +141,6 @@ class CopyFileCommand extends AbstractFileCommand
         $impostor = $this->getImpostor($this->file);
 
         $this->fileOperator->getBackend()->upload($impostor, $this->folder);
-        $this->fileOperator->getStorage()->store($impostor->getResource(), $this->fileOperator->getStorage()->retrieve($this->file->getResource()));
 
         $event = new FileCopyEvent($this->file, $impostor);
         $this->fileOperator->getEventDispatcher()->dispatch('file.copy', $event);
