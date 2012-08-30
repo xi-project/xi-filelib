@@ -31,6 +31,7 @@ class AfterUploadFileCommand extends AbstractFileCommand
      */
     public function execute()
     {
+
         $file = $this->file;
 
         $profileObj = $this->fileOperator->getProfile($file->getProfile());
@@ -45,8 +46,12 @@ class AfterUploadFileCommand extends AbstractFileCommand
 
         if ($this->fileOperator->getAcl()->isFileReadableByAnonymous($file)) {
 
+
             $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this->fileOperator, $this->file));
             $command->execute();
+
+
+
         }
 
         return $file;

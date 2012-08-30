@@ -6,7 +6,6 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
 use Xi\Filelib\File\Command\PublishFileCommand;
 
@@ -39,26 +38,36 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function commandShouldUploadAndDelegateCorrectly($expectedCallToPublish, $readableByAnonymous)
     {
+
+
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
+
 
         $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'createCommand'))
                    ->getMock();
 
+
+
         if ($expectedCallToPublish) {
+
 
             $publishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\PublishFileCommand')
                                    ->disableOriginalConstructor()
                                    ->getMock();
             $publishCommand->expects($this->once())->method('execute');
 
+
+
             $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\PublishFileCommand'))
                ->will($this->returnValue($publishCommand));
         }
+
+
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
 
@@ -92,6 +101,8 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
            ->with($this->equalTo('versioned'))
            ->will($this->returnValue($profile));
 
+
+
         $command = new AfterUploadFileCommand($op, $fileitem);
         $ret = $command->execute();
 
@@ -114,7 +125,7 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
-        $command = new AfterUploadFileCommand($op, $file);
+                $command = new AfterUploadFileCommand($op, $file);
 
 
 

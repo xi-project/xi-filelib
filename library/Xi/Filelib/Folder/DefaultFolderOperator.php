@@ -8,7 +8,7 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Command;
+use Xi\Filelib\EnqueueableCommand;
 use Xi\Filelib\Folder\Command\FolderCommand;
 use ArrayIterator;
 
@@ -22,10 +22,10 @@ use ArrayIterator;
 class DefaultFolderOperator extends AbstractOperator implements FolderOperator
 {
     protected $commandStrategies = array(
-        FolderOperator::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
-        FolderOperator::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
-        FolderOperator::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
-        FolderOperator::COMMAND_CREATE_BY_URL => Command::STRATEGY_SYNCHRONOUS,
+        FolderOperator::COMMAND_CREATE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FolderOperator::COMMAND_DELETE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FolderOperator::COMMAND_UPDATE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FolderOperator::COMMAND_CREATE_BY_URL => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
     );
 
     /**

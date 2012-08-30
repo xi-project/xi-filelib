@@ -132,7 +132,7 @@ abstract class AbstractOperator
 
     private function assertStrategyExists($strategy)
     {
-        if (!in_array($strategy, array(Command::STRATEGY_ASYNCHRONOUS, Command::STRATEGY_SYNCHRONOUS))) {
+        if (!in_array($strategy, array(EnqueueableCommand::STRATEGY_ASYNCHRONOUS, EnqueueableCommand::STRATEGY_SYNCHRONOUS))) {
             throw new \InvalidArgumentException("Invalid command strategy '{$strategy}'");
         }
     }
@@ -157,10 +157,10 @@ abstract class AbstractOperator
         return $reflClass->newInstanceArgs($args);
     }
 
-    public function executeOrQueue(Command $commandObj, $commandName, array $callbacks = array())
+    public function executeOrQueue(EnqueueableCommand $commandObj, $commandName, array $callbacks = array())
     {
         $strategy = $this->getCommandStrategy($commandName);
-        if ($strategy == Command::STRATEGY_ASYNCHRONOUS) {
+        if ($strategy == EnqueueableCommand::STRATEGY_ASYNCHRONOUS) {
             $ret = $this->getQueue()->enqueue($commandObj);
         } else {
             $ret = $commandObj->execute();

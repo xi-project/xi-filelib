@@ -49,31 +49,6 @@ class ResourceRefactorMigration implements Command
 
     }
 
-
-    /**
-     * @see Enqueueable::getEnqueueReturnValue
-     */
-    public function getEnqueueReturnValue()
-    {
-        return true;
-    }
-
-    /**
-     * @see Serializable::serialize
-     */
-    public function serialize()
-    {
-        return '';
-    }
-
-    /**
-     * @see Serializable::unserialize
-     */
-    public function unserialize($serialized)
-    {
-        return;
-    }
-
     /**
      * @param Folder $folder
      */

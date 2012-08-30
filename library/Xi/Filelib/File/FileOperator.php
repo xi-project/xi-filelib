@@ -13,7 +13,7 @@ use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Queue\Queue;
-use Xi\Filelib\Command;
+use Xi\Filelib\EnqueueableCommand;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
@@ -211,6 +211,6 @@ interface FileOperator
      * @param array $callbacks Callbacks
      * @return mixed Return value from the queue or commands execute method
      */
-    public function executeOrQueue(Command $commandObj, $commandName, array $callbacks = array());
+    public function executeOrQueue(EnqueueableCommand $commandObj, $commandName, array $callbacks = array());
 
 }

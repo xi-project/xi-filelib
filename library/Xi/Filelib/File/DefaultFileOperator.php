@@ -25,7 +25,7 @@ use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Queue\Queue;
-use Xi\Filelib\Command;
+use Xi\Filelib\EnqueueableCommand;
 use Xi\Filelib\File\Command\FileCommand;
 use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
@@ -45,13 +45,13 @@ use Xi\Filelib\Tool\TypeResolver\StupidTypeResolver;
 class DefaultFileOperator extends AbstractOperator implements FileOperator
 {
     protected $commandStrategies = array(
-        FileOperator::COMMAND_UPLOAD => Command::STRATEGY_SYNCHRONOUS,
-        FileOperator::COMMAND_AFTERUPLOAD => Command::STRATEGY_SYNCHRONOUS,
-        FileOperator::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
-        FileOperator::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
-        FileOperator::COMMAND_PUBLISH => Command::STRATEGY_SYNCHRONOUS,
-        FileOperator::COMMAND_UNPUBLISH => Command::STRATEGY_SYNCHRONOUS,
-        FileOperator::COMMAND_COPY => Command::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_UPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_AFTERUPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_UPDATE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_DELETE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_PUBLISH => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_UNPUBLISH => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_COPY => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
     );
 
 

@@ -16,7 +16,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\Command;
+use Xi\Filelib\EnqueueableCommand;
 
 class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -36,13 +36,13 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFileOperator($filelib);
 
-        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
-        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_AFTERUPLOAD));
-        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPDATE));
-        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_DELETE));
-        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_PUBLISH));
-        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UNPUBLISH));
-        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_COPY));
+        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_AFTERUPLOAD));
+        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPDATE));
+        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_DELETE));
+        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_PUBLISH));
+        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UNPUBLISH));
+        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_COPY));
     }
 
     /**
@@ -53,11 +53,11 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = new DefaultFileOperator($filelib);
 
-        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
 
-        $this->assertSame($op, $op->setCommandStrategy(FileOperator::COMMAND_UPLOAD, Command::STRATEGY_ASYNCHRONOUS));
+        $this->assertSame($op, $op->setCommandStrategy(FileOperator::COMMAND_UPLOAD, EnqueueableCommand::STRATEGY_ASYNCHRONOUS));
 
-        $this->assertEquals(Command::STRATEGY_ASYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(EnqueueableCommand::STRATEGY_ASYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
 
     }
 
@@ -121,7 +121,7 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
 
-        $op->setCommandStrategy(FileOperator::COMMAND_UPLOAD, Command::STRATEGY_ASYNCHRONOUS);
+        $op->setCommandStrategy(FileOperator::COMMAND_UPLOAD, EnqueueableCommand::STRATEGY_ASYNCHRONOUS);
 
         $op->upload($upload, $folder, $profile);
 
@@ -644,16 +644,16 @@ class DefaultFileOperatorTest extends \Xi\Tests\Filelib\TestCase
     public function provideCommandMethods()
     {
         return array(
-            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', FileOperator::COMMAND_COPY, Command::STRATEGY_ASYNCHRONOUS, true, true),
-            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', FileOperator::COMMAND_COPY, Command::STRATEGY_SYNCHRONOUS, false, true),
-            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', FileOperator::COMMAND_DELETE, Command::STRATEGY_ASYNCHRONOUS, true, false),
-            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', FileOperator::COMMAND_DELETE, Command::STRATEGY_SYNCHRONOUS, false, false),
-            array('Xi\Filelib\File\Command\PublishFileCommand', 'publish', FileOperator::COMMAND_PUBLISH, Command::STRATEGY_ASYNCHRONOUS, true, false),
-            array('Xi\Filelib\File\Command\PublishFileCommand', 'publish', FileOperator::COMMAND_PUBLISH, Command::STRATEGY_SYNCHRONOUS, false, false),
-            array('Xi\Filelib\File\Command\UnpublishFileCommand', 'unpublish', FileOperator::COMMAND_UNPUBLISH, Command::STRATEGY_ASYNCHRONOUS, true, false),
-            array('Xi\Filelib\File\Command\UnpublishFileCommand', 'unpublish', FileOperator::COMMAND_UNPUBLISH, Command::STRATEGY_SYNCHRONOUS, false, false),
-            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', FileOperator::COMMAND_UPDATE, Command::STRATEGY_ASYNCHRONOUS, true, false),
-            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', FileOperator::COMMAND_UPDATE, Command::STRATEGY_SYNCHRONOUS, false, false),
+            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', FileOperator::COMMAND_COPY, EnqueueableCommand::STRATEGY_ASYNCHRONOUS, true, true),
+            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', FileOperator::COMMAND_COPY, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false, true),
+            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', FileOperator::COMMAND_DELETE, EnqueueableCommand::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', FileOperator::COMMAND_DELETE, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false, false),
+            array('Xi\Filelib\File\Command\PublishFileCommand', 'publish', FileOperator::COMMAND_PUBLISH, EnqueueableCommand::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\PublishFileCommand', 'publish', FileOperator::COMMAND_PUBLISH, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false, false),
+            array('Xi\Filelib\File\Command\UnpublishFileCommand', 'unpublish', FileOperator::COMMAND_UNPUBLISH, EnqueueableCommand::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\UnpublishFileCommand', 'unpublish', FileOperator::COMMAND_UNPUBLISH, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false, false),
+            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', FileOperator::COMMAND_UPDATE, EnqueueableCommand::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', FileOperator::COMMAND_UPDATE, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false, false),
         );
 
 
