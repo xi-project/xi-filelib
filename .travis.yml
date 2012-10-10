@@ -14,7 +14,8 @@ before_script:
   - curl -s http://getcomposer.org/installer | php && php composer.phar install --dev
   - cd tests && wget http://packages.zendframework.com/releases/ZendFramework-1.12.0/ZendFramework-1.12.0-minimal.tar.gz && tar zxf ZendFramework-1.12.0-minimal.tar.gz && cd ..
   - pyrus channel-discover pear.symfony.com
-  - pyrus install --alldeps pear.phpunit.de/DbUnit
+  - pyrus install -o pear.phpunit.de/PHPUnit
+  - pyrus install -o pear.phpunit.de/DbUnit
   - phpenv rehash
   - wget http://pecl.php.net/get/mongo-1.2.7.tgz
   - tar -xzf mongo-1.2.7.tgz
