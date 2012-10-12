@@ -19,13 +19,6 @@
         }
     ],
 
-    "autoload": {
-        "psr-0": {
-            "Xi\\Tests": "./tests/",
-            "Xi\\Filelib": "./library/"
-        }
-    },
-
     "repositories": {
         "zencoder-php": {
             "type": "package",
@@ -60,8 +53,9 @@
 
     "autoload": {
         "psr-0": {
-            "Xi\\Filelib": "library/",
-            "Xi\\Tests": "tests/"
+            "Xi\\Filelib": "./library/",
+            "Xi\\Tests": "./tests/",
+            "Services_": "./vendor/zencoder/zencoder-php/"
         }
     },
     "minimum-stability": "dev"
