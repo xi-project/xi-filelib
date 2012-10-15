@@ -225,6 +225,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
                ->will($this->returnValue($zen));
 
         $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4'));
+        $dontSleep = 0;
 
         $filelib = $this->getFilelib();
 
@@ -237,7 +238,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $plugin->setFilelib($filelib);
 
-        $ret = $plugin->createVersions($file);
+        $ret = $plugin->createVersions($file, $dontSleep);
 
         $this->assertInternalType('array', $ret);
         $this->assertCount(2, $ret);
