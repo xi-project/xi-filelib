@@ -195,15 +195,13 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      * @return array
      * @todo should not depend on Amazon S3
      */
-    public function createVersions(File $file)
+    public function createVersions(File $file, $sleepyTime = 5)
     {
         $filelib = $this->getFilelib();
+        $s3 = $this->getAwsService();
+        $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
         $retrieved = $this->getStorage()->retrieve($file);
-
-        $s3 = $this->getAwsService();
-
-        $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
         $s3->putFile($retrieved->getRealPath(), $awsPath);
 
@@ -219,33 +217,16 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         try {
             $job = $this->getService()->jobs->create($options);
 
-            do {
-                $done = 0;
-                sleep(5);
-
-                foreach ($this->getVersions() as $label) {
-                    $output = $job->outputs[$label];
-
-                    $progress = $this->getService()->outputs->progress($output->id);
-
-                    if ($progress->state === 'finished') {
-                        $done = $done + 1;
-                    }
-
-                }
-
-            } while ($done < count($this->getVersions()));
+            $this->waitUntilJobFinished($job, $sleepyTime);
 
             $outputs = $this->fetchOutputs($job);
 
             $s3->removeObject($awsPath);
 
             return $outputs;
-
         } catch (\Services_Zencoder_Exception $e) {
             throw new FilelibException("Zencoder service responded with errors", 500, $e);
         }
-
     }
 
     /**
@@ -295,4 +276,20 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         }, $this->getOutputs()));
     }
 
+    private function waitUntilJobFinished(Job $job, $sleepyTime = 5) {
+        do {
+            $done = 0;
+            sleep($sleepyTime);
+
+            foreach ($this->getVersions() as $label) {
+                $output = $job->outputs[$label];
+                $progress = $this->getService()->outputs->progress($output->id);
+
+                if ($progress->state === 'finished') {
+                    $done = $done + 1;
+                }
+            }
+
+        } while ($done < count($this->getVersions()));
+    }
 }
