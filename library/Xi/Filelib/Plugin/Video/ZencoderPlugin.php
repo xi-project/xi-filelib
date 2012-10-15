@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Plugin\Video;
 
 use Services_Zencoder as ZencoderService;
+use Services_Zencoder_Job as Job;
 use Zend\Service\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
@@ -235,22 +236,11 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
             } while ($done < count($this->getVersions()));
 
-            $tmps = array();
-
-            foreach ($this->getVersions() as $version) {
-
-                $tempnam = tempnam($this->getFilelib()->getTempDir(), 'zen');
-                $output = $job->outputs[$version];
-                $details = $zencoder->outputs->details($output->id);
-
-                file_put_contents($tempnam, file_get_contents($details->url));
-
-                $tmps[$version] = $tempnam;
-            }
+            $outputs = $this->fetchOutputs($job);
 
             $this->getAwsService()->removeObject($awsPath);
 
-            return $tmps;
+            return $outputs;
 
         } catch (\Services_Zencoder_Exception $e) {
             throw new FilelibException("Zencoder service responded with errors", 500, $e);
@@ -258,6 +248,35 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
     }
 
+    /**
+     * Fetch all output versions from Zencoder
+     *
+     * @param   Job     $job      Zencoder Job
+     * @return  array             Array of temporary filenames
+     */
+    protected function fetchOutputs(Job $job) {
+        $tmps = array();
+        foreach ($this->getVersions() as $version) {
+            $tmps[$version] = $this->fetchOutput($job, $version);
+        }
+        return $tmps;
+    }
+
+    /**
+     * Fetch a single output version using Zencoder Job details
+     *
+     * @param   Job     $job      Zencoder Job
+     * @param   string  $version  Version identifier
+     * @return  string            Temporary filename
+     */
+    protected function fetchOutput(Job $job, $version) {
+        $tempnam = tempnam($this->getFilelib()->getTempDir(), 'zen');
+        $output = $job->outputs[$version];
+        $details = $this->getService()->outputs->details($output->id);
+
+        file_put_contents($tempnam, file_get_contents($details->url));
+        return $tempnam;
+    }
 
     public function setOutputs($outputs)
     {
