@@ -199,15 +199,15 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     {
         $filelib = $this->getFilelib();
 
-        $zencoder = $this->getService();
-
         $retrieved = $this->getStorage()->retrieve($file);
+
+        $s3 = $this->getAwsService();
 
         $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
-        $this->getAwsService()->putFile($retrieved->getRealPath(), $awsPath);
+        $s3->putFile($retrieved->getRealPath(), $awsPath);
 
-        $url = $this->getAwsService()->getEndpoint() . '/' . $awsPath;
+        $url = $s3->getEndpoint() . '/' . $awsPath;
 
         $options = array(
             "test" => false,
@@ -217,7 +217,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         );
 
         try {
-            $job = $zencoder->jobs->create($options);
+            $job = $this->getService()->jobs->create($options);
 
             do {
                 $done = 0;
@@ -226,7 +226,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
                 foreach ($this->getVersions() as $label) {
                     $output = $job->outputs[$label];
 
-                    $progress = $zencoder->outputs->progress($output->id);
+                    $progress = $this->getService()->outputs->progress($output->id);
 
                     if ($progress->state === 'finished') {
                         $done = $done + 1;
@@ -238,7 +238,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
             $outputs = $this->fetchOutputs($job);
 
-            $this->getAwsService()->removeObject($awsPath);
+            $s3->removeObject($awsPath);
 
             return $outputs;
 
