@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Plugin;
 
+use Xi\Filelib\Exception\SubprocessException;
 use Xi\Filelib\Exception\InvalidArgumentException;
 
 class ConsoleHelper
@@ -43,8 +44,11 @@ class ConsoleHelper
      */
     public function execute($args, $input='')
     {
+        // @TODO Use variable arg list, escape each argument and move input arg to setInput().
+        $cmd = $this->cmd . ' ' . $args;
+
         $proc = proc_open(
-            $this->cmd . ' ' . $args, // @TODO use variable arg list, escape each argument and move input arg to setInput() with fluent interface
+            $cmd,
             array(
                 0 => array('pipe', 'r'),
                 1 => array('pipe', 'w'),
@@ -59,11 +63,11 @@ class ConsoleHelper
         $ret = proc_close($proc);
 
         if ($stderr) {
-            throw new Exception(sprintf("Command execution had the following errors: %s", $stderr));
+            throw new SubprocessException(sprintf("Command execution had the following errors: %s", $stderr));
         }
 
         if (0 !== $ret) {
-            throw new Exception(sprintf("Command '%s' returned %s.", $cmd, $ret));
+            throw new SubprocessException(sprintf("Command '%s' returned %s.", $cmd, $ret));
         }
 
         return explode("\n", trim($stdout));

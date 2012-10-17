@@ -25,4 +25,20 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
     {
         return array(); // @TODO calculate from options' outfiles
     }
+
+    public function getDuration(File $file)
+    {
+        return (float) $this->getVideoInfo($file)->format->duration;
+    }
+
+    public function getVideoInfo(File $file)
+    {
+        $probe = new ConsoleHelper('ffprobe');
+        $path = $this->getStorage()->retrieve($file)->getPathname();
+
+        $json = implode("\n", $probe->execute(
+            sprintf("-loglevel quiet -print_format json -show_format %s", $path)
+        ));
+        return json_decode($json);
+    }
 }
