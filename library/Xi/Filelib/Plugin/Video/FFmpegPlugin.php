@@ -2,9 +2,9 @@
 
 namespace Xi\Filelib\Plugin\Video;
 
+use Symfony\Component\Process\Process;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\ConsoleHelper;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
@@ -14,7 +14,7 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function createVersions(File $file)
     {
-        $ffmpeg = new ConsoleHelper('ffmpeg', 'en_US.UTF-8');
+        //$ffmpeg = new Process("ffmpeg -i $file -vframes 1 thumb.jpg");
     }
 
     public function getExtensionFor($version)
@@ -33,12 +33,15 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function getVideoInfo(File $file)
     {
-        $probe = new ConsoleHelper('ffprobe');
         $path = $this->getStorage()->retrieve($file)->getPathname();
 
-        $json = implode("\n", $probe->execute(
-            sprintf("-loglevel quiet -print_format json -show_format %s", $path)
-        ));
-        return json_decode($json);
+        $probe = new Process(sprintf("ffprobe -loglevel quiet -print_format json -show_format %s", $path));
+        $probe->setTimeout(30);
+        $probe->run();
+
+        if (!$probe->isSuccessful()) {
+            throw new RuntimeException($process->getErrorOutput());
+        }
+        return json_decode($probe->getOutput());
     }
 }
