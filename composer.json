@@ -41,5 +41,13 @@
             "Xi\\Tests": "tests/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+
+    "extra": {
+        "branch-alias": {
+            "file-resource-refactor": "0.7.x-dev"
+        }
+    }
+
+
 }
