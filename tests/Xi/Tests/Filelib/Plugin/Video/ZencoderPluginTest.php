@@ -23,7 +23,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         }
 
         if (!class_exists('ZendService\Amazon\S3\S3')) {
-            $this->markTestSkipped('Zend\Service\Amazon\S3\S3 class could not be loaded');
+            $this->markTestSkipped('ZendService\Amazon\S3\S3 class could not be loaded');
         }
 
         if (!ZENCODER_KEY) {

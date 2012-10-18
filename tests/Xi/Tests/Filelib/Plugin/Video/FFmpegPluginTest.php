@@ -94,8 +94,7 @@ JSON;
 
     private function checkFFmpegFound()
     {
-        $found = trim(`ffmpeg -version &>/dev/null && echo "true" || echo "false"`);
-        return ('true' === $found);
+        return (boolean) trim(`sh -c "which ffmpeg"`);
     }
 
     private function getMockedStorage($path)
