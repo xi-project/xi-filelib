@@ -10,7 +10,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\Upload\FileUpload;
 use Serializable;
 
-class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
+class AfterUploadFileCommand extends AbstractFileCommand
 {
 
     /**
@@ -26,8 +26,12 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
         $this->file = $file;
     }
 
+    /**
+     * @return File
+     */
     public function execute()
     {
+
         $file = $this->file;
 
         $profileObj = $this->fileOperator->getProfile($file->getProfile());
@@ -42,8 +46,12 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
 
         if ($this->fileOperator->getAcl()->isFileReadableByAnonymous($file)) {
 
+
             $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this->fileOperator, $this->file));
             $command->execute();
+
+
+
         }
 
         return $file;
@@ -54,13 +62,15 @@ class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
+        $this->uuid = $data['uuid'];
     }
 
 
     public function serialize()
     {
         return serialize(array(
-           'file' => $this->file,
+            'file' => $this->file,
+            'uuid' => $this->uuid,
         ));
 
     }

@@ -5,6 +5,7 @@ namespace Xi\Tests\Filelib\Plugin\Image;
 use Imagick;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 
 class VersionPluginTest extends TestCase
 {
@@ -29,6 +30,24 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
+    public function pluginShouldAllowSharedResource()
+    {
+        $plugin = new VersionPlugin();
+        $this->assertTrue($plugin->isSharedResourceAllowed());
+    }
+
+    /**
+     * @test
+     */
+    public function pluginShouldAllowSharedVersions()
+    {
+        $plugin = new VersionPlugin();
+        $this->assertTrue($plugin->areSharedVersionsAllowed());
+    }
+
+    /**
+     * @test
+     */
     public function getImageMagickHelperShouldReturnImageMagickHelper()
     {
         $plugin = new VersionPlugin();
@@ -46,7 +65,7 @@ class VersionPluginTest extends TestCase
     {
         $retrievedPath = ROOT_TESTS . '/data/illusive-manatee.jpg';
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $fobject = $this->getMockBuilder('Xi\Filelib\File\FileObject')
                         ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
@@ -55,7 +74,7 @@ class VersionPluginTest extends TestCase
 
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')->with($this->equalTo($file))->will($this->returnValue($fobject));
+        $storage->expects($this->once())->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\Resource'))->will($this->returnValue($fobject));
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
@@ -104,6 +123,7 @@ class VersionPluginTest extends TestCase
         $this->assertArrayHasKey('file.publish', $events);
         $this->assertArrayHasKey('file.unpublish', $events);
         $this->assertArrayHasKey('file.delete', $events);
+        $this->assertArrayHasKey('resource.delete', $events);
     }
 
     /**

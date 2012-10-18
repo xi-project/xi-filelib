@@ -7,7 +7,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Serializable;
 
-class CreateFolderCommand extends AbstractFolderCommand implements Serializable
+class CreateFolderCommand extends AbstractFolderCommand
 {
 
     /**
@@ -34,6 +34,7 @@ class CreateFolderCommand extends AbstractFolderCommand implements Serializable
     {
         $route = $this->folderOperator->buildRoute($this->folder);
         $this->folder->setUrl($route);
+        $this->folder->setUuid($this->getUuid());
         $folder = $this->folderOperator->getBackend()->createFolder($this->folder);
         return $folder;
     }
@@ -43,6 +44,7 @@ class CreateFolderCommand extends AbstractFolderCommand implements Serializable
     {
         $data = unserialize($serialized);
         $this->folder = $data['folder'];
+        $this->uuid = $data['uuid'];
     }
 
 
@@ -50,6 +52,7 @@ class CreateFolderCommand extends AbstractFolderCommand implements Serializable
     {
         return serialize(array(
            'folder' => $this->folder,
+           'uuid' => $this->uuid,
         ));
     }
 

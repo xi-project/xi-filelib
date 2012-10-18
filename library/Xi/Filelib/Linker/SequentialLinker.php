@@ -5,7 +5,8 @@ namespace Xi\Filelib\Linker;
 use Xi\Filelib\Linker\AbstractLinker;
 use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Exception\InvalidArgumentException;
 
 /**
  * Sequential linker creates a sequential link with n levels of directories with m files per directory
@@ -26,11 +27,6 @@ class SequentialLinker extends AbstractLinker implements Linker
     private $directoryLevels = 1;
 
     /**
-     * @var LeveledDirectoryIdCalculator
-     */
-    private $directoryIdCalculator;
-
-    /**
      * Sets files per directory
      *
      * @param  integer          $filesPerDirectory
@@ -38,8 +34,7 @@ class SequentialLinker extends AbstractLinker implements Linker
      */
     public function setFilesPerDirectory($filesPerDirectory)
     {
-        $this->getDirectoryIdCalculator()->setFilesPerDirectory($filesPerDirectory);
-
+        $this->filesPerDirectory = $filesPerDirectory;
         return $this;
     }
 
@@ -61,8 +56,7 @@ class SequentialLinker extends AbstractLinker implements Linker
      */
     public function setDirectoryLevels($directoryLevels)
     {
-        $this->getDirectoryIdCalculator()->setDirectoryLevels($directoryLevels);
-
+        $this->directoryLevels = $directoryLevels;
         return $this;
     }
 
@@ -82,9 +76,9 @@ class SequentialLinker extends AbstractLinker implements Linker
      * @param  File   $file
      * @return string
      */
-    public function getDirectoryId($file)
+    public function getDirectoryId(File $file)
     {
-        return $this->getDirectoryIdCalculator()->calculateDirectoryId($file);
+        return $this->calculateDirectoryId($file);
     }
 
     /**
@@ -123,19 +117,33 @@ class SequentialLinker extends AbstractLinker implements Linker
         return $url;
     }
 
-    /**
-     * Returns directory id calculator
-     *
-     * @return LeveledDirectoryIdCalculator
-     */
-    private function getDirectoryIdCalculator()
+    private function calculateDirectoryId(File $file)
     {
-        if (!$this->directoryIdCalculator) {
-            $this->directoryIdCalculator = new LeveledDirectoryIdCalculator();
-            $this->directoryIdCalculator->setDirectoryLevels($this->getDirectoryLevels());
-            $this->directoryIdCalculator->setFilesPerDirectory($this->getFilesPerDirectory());
+        if(!is_numeric($file->getId())) {
+            throw new InvalidArgumentException("Leveled linker requires numeric file ids ('{$file->getId()}' was provided)");
         }
 
-        return $this->directoryIdCalculator;
+        if($this->getDirectoryLevels() < 1) {
+            throw new InvalidArgumentException("Invalid number of directory levels ({$this->getDirectoryLevels()})");
+        }
+
+
+        $fileId = $file->getId();
+
+        $directoryLevels = $this->getDirectoryLevels() + 1;
+        $filesPerDirectory = $this->getFilesPerDirectory();
+
+        $arr = array();
+        $tmpfileid = $fileId - 1;
+
+        for($count = 1; $count <= $directoryLevels; ++$count) {
+            $lus = $tmpfileid / pow($filesPerDirectory, $directoryLevels - $count);
+            $tmpfileid = $tmpfileid % pow($filesPerDirectory, $directoryLevels - $count);
+            $arr[] = floor($lus) + 1;
+        }
+
+        $puuppa = array_pop($arr);
+        return implode(DIRECTORY_SEPARATOR, $arr);
+
     }
 }

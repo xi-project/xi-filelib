@@ -14,7 +14,9 @@ use MongoGridFS;
 use MongoGridFSFile;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FilelibException;
 
@@ -60,11 +62,11 @@ class GridfsStorage extends AbstractStorage implements Storage
      * @param  string        $tempDir Temporary directory
      * @return GridfsStorage
      */
-    public function __construct(MongoDB $mongo, $tempDir)
+    public function __construct(MongoDB $mongo, $tempDir, $options = array())
     {
         $this->setMongo($mongo);
-
         $this->tempDir = $tempDir;
+        parent::__construct($options);
     }
 
     /**
@@ -131,11 +133,29 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $this->prefix;
     }
 
+
+    public function exists(Resource $resource)
+    {
+        $filename = $this->getFilename($resource);
+        $file = $this->getGridFS()->findOne(array('filename' => $filename));
+        return (bool) $file;
+    }
+
+
+    public function versionExists(Resource $resource, $version, File $file = null)
+    {
+        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $file = $this->getGridFS()->findOne(array('filename' => $filename));
+        return (bool) $file;
+    }
+
+
     /**
      * Writes a mongo file to temporary file and registers it as an internal temp file
      *
-     * @param  MongoGridFSFile $file
+     * @param MongoGridFSFile $resource
      * @return FileObject
+     *
      */
     private function toTemp(MongoGridFSFile $file)
     {
@@ -160,67 +180,56 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->tempFiles[] = $fo;
     }
 
-    public function store(File $file, $tempFile)
+    protected function doStore(Resource $resource, $tempFile)
     {
-        $filename = $this->getFilename($file);
-
-        $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $file->getId(), 'version' => 'original', 'mimetype' => $file->getMimetype()) ));
+        $filename = $this->getFilename($resource);
+        $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $resource->getId(), 'version' => 'original')));
     }
 
-    public function storeVersion(File $file, $version, $tempFile)
+    protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
-        $filename = $this->getFilenameVersion($file, $version);
-
-        $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $file->getId(), 'version' => $version, 'mimetype' => $file->getMimetype()) ));
+        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $resource->getId(), 'version' => $version)));
     }
 
-    public function retrieve(File $file)
+    protected function doRetrieve(Resource $resource)
     {
-        $filename = $this->getFilename($file);
-
+        $filename = $this->getFilename($resource);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
-
-        if (!$file) {
-            throw new FilelibException("Filename '{$filename}' not retrievable");
-        }
-
         return $this->toTemp($file);
     }
 
-    public function retrieveVersion(File $file, $version)
+    protected function doRetrieveVersion(Resource $resource, $version, File $file = null)
     {
-        $filename = $this->getFilenameVersion($file, $version);
-
+        $filename = $this->getFilenameVersion($resource, $version, $file);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
-
-        if (!$file) {
-            throw new FilelibException("Filename '{$filename}' not retrievable");
-        }
-
         return $this->toTemp($file);
     }
 
-    public function delete(File $file)
+    protected function doDelete(Resource $resource)
     {
-        $filename = $this->getFilename($file);
-
+        $filename = $this->getFilename($resource);
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    public function deleteVersion(File $file, $version)
+    protected function doDeleteVersion(Resource $resource, $version, File $file = null)
     {
-        $filename = $this->getFilenameVersion($file, $version);
-
+        $filename = $this->getFilenameVersion($resource, $version, $file);
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    public function getFilename(File $file)
+    private function getFilename(Resource $resource)
     {
-        return $file->getFolderId() . '/' . $file->getId();
+        return $resource->getId();
     }
 
-    public function getFilenameVersion(File $file, $version)
+    private function getFilenameVersion(Resource $resource, $version, File $file = null)
     {
-        return $file->getFolderId() . '/' . $file->getId() . '/' . $version;
+        $path = $resource->getId() . '/' . $version;
+        if ($file) {
+            $path = '/' . $file->getId();
+        }
+        return $path;
     }
+
 }

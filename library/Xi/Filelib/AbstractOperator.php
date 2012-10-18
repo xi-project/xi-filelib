@@ -11,8 +11,10 @@ use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\Command;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
+use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
 use Xi\Filelib\Queue\Message;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Abstract convenience class for operators
@@ -36,6 +38,11 @@ abstract class AbstractOperator
      */
     protected $commandStrategies = array();
 
+    /**
+     *
+     * @var UuidGenerator
+     */
+    protected $uuidGenerator;
 
     public function __construct(FileLibrary $filelib)
     {
@@ -51,7 +58,6 @@ abstract class AbstractOperator
     {
         return $this->getFilelib()->getBackend();
     }
-
 
     /**
      * Returns storage
@@ -126,19 +132,16 @@ abstract class AbstractOperator
 
     private function assertStrategyExists($strategy)
     {
-        if (!in_array($strategy, array(Command::STRATEGY_ASYNCHRONOUS, Command::STRATEGY_SYNCHRONOUS))) {
+        if (!in_array($strategy, array(EnqueueableCommand::STRATEGY_ASYNCHRONOUS, EnqueueableCommand::STRATEGY_SYNCHRONOUS))) {
             throw new \InvalidArgumentException("Invalid command strategy '{$strategy}'");
         }
     }
-
-
 
     public function getCommandStrategy($command)
     {
         $this->assertCommandExists($command);
         return $this->commandStrategies[$command];
     }
-
 
     public function setCommandStrategy($command, $strategy)
     {
@@ -148,27 +151,22 @@ abstract class AbstractOperator
         return $this;
     }
 
-
     public function createCommand($commandClass, array $args = array())
     {
         $reflClass = new \ReflectionClass($commandClass);
         return $reflClass->newInstanceArgs($args);
     }
 
-
-    public function executeOrQueue(Command $commandObj, $commandName, array $callbacks = array())
+    public function executeOrQueue(EnqueueableCommand $commandObj, $commandName, array $callbacks = array())
     {
         $strategy = $this->getCommandStrategy($commandName);
-        if ($strategy == Command::STRATEGY_ASYNCHRONOUS) {
-            $message = new Message(serialize($commandObj));
-            $ret = $this->getQueue()->enqueue($message);
+        if ($strategy == EnqueueableCommand::STRATEGY_ASYNCHRONOUS) {
+            $ret = $this->getQueue()->enqueue($commandObj);
         } else {
             $ret = $commandObj->execute();
         }
-
         return $this->executeOrQueueHandleCallbacks($strategy, $callbacks, $ret);
     }
-
 
     private function executeOrQueueHandleCallbacks($strategy, $callbacks, $ret)
     {
@@ -178,7 +176,25 @@ abstract class AbstractOperator
         return $ret;
     }
 
+    /**
+     * Generates UUID
+     *
+     * @return string
+     */
+    public function generateUuid()
+    {
+        return $this->getUuidGenerator()->v4();
+    }
 
+    /**
+     * @return UuidGenerator
+     */
+    protected function getUuidGenerator()
+    {
+        if (!$this->uuidGenerator) {
+            $this->uuidGenerator = new PHPUuidGenerator();
+        }
 
-
+        return $this->uuidGenerator;
+    }
 }

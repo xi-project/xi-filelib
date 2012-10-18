@@ -6,6 +6,7 @@ use Xi\Filelib\FileLibrary;
 
 use Xi\Filelib\Queue\Queue;
 use Xi\Filelib\Queue\Message;
+use Xi\Tests\Filelib\Queue\Processor\TestCommand;
 
 abstract class TestCase extends \Xi\Tests\TestCase
 {
@@ -20,9 +21,9 @@ abstract class TestCase extends \Xi\Tests\TestCase
 
     public function setUp()
     {
-        $this->message = new Message(serialize(array('all your base' => 'are belong to us', 'dr' => 'vesala')));
-
+        $this->message = new TestCommand();
         $this->queue = $this->getQueue();
+        $this->queue->purge();
     }
 
 
@@ -33,32 +34,21 @@ abstract class TestCase extends \Xi\Tests\TestCase
      * @test
      * @return Queue
      */
-    public function enqueueShouldEnqueueMessage()
+    public function dequeueShouldDequeueEnqueuedMessage()
     {
         $this->queue->enqueue($this->message);
 
-        return $this->queue;
+        $message = $this->queue->dequeue();
+        $this->assertInstanceOf('Xi\Filelib\Queue\Message', $message);
+        $this->queue->ack($message);
+
+        $this->assertEquals($this->message, unserialize($message->getBody()));
+        $this->assertNotNull($message->getIdentifier());
+
     }
 
     /**
      * @test
-     * @depends enqueueShouldEnqueueMessage
-     * @param type $queue
-     */
-    public function dequeueShouldDequeueMessage($queue)
-    {
-        $message = $queue->dequeue();
-        $queue->ack($message);
-
-        $this->assertEquals($this->message->getBody(), $message->getBody());
-        $this->assertNotNull($message->getIdentifier());
-
-
-        return $queue;
-    }
-
-    /**
-     * @xxxtest
      */
     public function dequeueShouldReturnNullIfQueueIsEmpty()
     {
@@ -69,22 +59,20 @@ abstract class TestCase extends \Xi\Tests\TestCase
 
     /**
      * @test
-     * @depends dequeueShouldDequeueMessage
      */
-    public function purgeShouldResultInAnEmptyQueue($queue)
+    public function purgeShouldResultInAnEmptyQueue()
     {
         for ($x = 10; $x <= 10; $x++) {
-            $queue->enqueue(new Message("Pitikö olla hoppu, nyt se on leikin loppu"));
+            $this->queue->enqueue(new TestCommand());
         }
 
-        $msg = $queue->dequeue();
+        $msg = $this->queue->dequeue();
         $this->assertNotNull($msg);
-        $queue->ack($msg);
+        $this->queue->ack($msg);
 
+        $this->queue->purge();
 
-        $queue->purge();
-
-        $this->assertNull($queue->dequeue());
+        $this->assertNull($this->queue->dequeue());
 
     }
 
@@ -100,7 +88,7 @@ abstract class TestCase extends \Xi\Tests\TestCase
 
         $this->assertNull($queue->dequeue());
 
-        $message = new Message('Acknowledge my power!');
+        $message = new TestCommand();
         $queue->enqueue($message);
 
         $this->assertInstanceOf('Xi\Filelib\Queue\Message', $queue->dequeue());

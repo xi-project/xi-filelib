@@ -11,7 +11,7 @@ namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use DateTime;
 use Xi\Filelib\FilelibException;
-use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 
 class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
 {
@@ -40,11 +40,14 @@ class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
         return $this->format;
     }
 
-    public function calculateDirectoryId(File $file)
+    /**
+     * @see DirectoryIdCalculator::calculateDirectoryId
+     */
+    public function calculateDirectoryId($resource)
     {
-        $dt = $file->getDateUploaded();
+        $dt = $resource->getDateCreated();
 
-        if (!$dt instanceof DateTime) {
+        if(!($dt instanceof DateTime)) {
             throw new FilelibException("Upload date not set in file");
         }
 

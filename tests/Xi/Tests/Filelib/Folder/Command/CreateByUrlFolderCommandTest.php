@@ -47,6 +47,7 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertAttributeEquals(null, 'folderOperator', $command2);
         $this->assertAttributeEquals($url, 'url', $command2);
+        $this->assertAttributeNotEmpty('uuid', $command2);
 
     }
 

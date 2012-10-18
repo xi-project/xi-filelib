@@ -3,12 +3,14 @@
 namespace Xi\Filelib\Backend;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\NonUniqueFileException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\EntityNotFoundException;
 use PDOException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Doctrine 2 backend for filelib
@@ -35,6 +37,14 @@ class Doctrine2Backend extends AbstractBackend
     private $folderEntityName = 'Xi\Filelib\Backend\Doctrine2\Entity\Folder';
 
     /**
+     * Resource entity name
+     *
+     * @var string
+     */
+    private $resourceEntityName = 'Xi\Filelib\Backend\Doctrine2\Entity\Resource';
+
+
+    /**
      * Entity manager
      *
      * @var EntityManager
@@ -42,11 +52,13 @@ class Doctrine2Backend extends AbstractBackend
     private $em;
 
     /**
+     * @param  EventDispatcherInterface $eventDispatcher
      * @param  EntityManager    $em
      * @return Doctrine2Backend
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EventDispatcherInterface $eventDispatcher, EntityManager $em)
     {
+        parent::__construct($eventDispatcher);
         $this->setEntityManager($em);
     }
 
@@ -111,8 +123,27 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  integer    $id
-     * @return array|null
+     * Sets the fully qualified resource entity classname
+     *
+     * @param string $resourceEntityName
+     */
+    public function setResourceEntityName($resourceEntityName)
+    {
+        $this->resourceEntityName = $resourceEntityName;
+    }
+
+    /**
+     * Returns the fully qualified resource entity classname
+     *
+     * @return string
+     */
+    public function getResourceEntityName()
+    {
+        return $this->resourceEntityName;
+    }
+
+    /**
+     * @see AbstractBackend::doFindFile
      */
     protected function doFindFile($id)
     {
@@ -120,9 +151,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  Folder     $folder
-     * @param  string     $filename
-     * @return array|null
+     * @see AbstractBackend::doFindFileByFilename
      */
     public function doFindFileByFilename(Folder $folder, $filename)
     {
@@ -133,7 +162,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @return array
+     * @see AbstractBackend::doFindAllFiles
      */
     protected function doFindAllFiles()
     {
@@ -146,8 +175,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  integer $id
-     * @return array
+     * @see AbstractBackend::doFindFilesIn
      */
     protected function doFindFilesIn($id)
     {
@@ -157,20 +185,20 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doUpdateFile
      */
     protected function doUpdateFile(File $file)
     {
         $entity = $this->getFileReference($file);
         $entity->setFolder($this->getFolderReference($file->getFolderId()));
-        $entity->setMimetype($file->getMimetype());
         $entity->setProfile($file->getProfile());
-        $entity->setSize($file->getSize());
         $entity->setName($file->getName());
         $entity->setLink($file->getLink());
-        $entity->setDateUploaded($file->getDateUploaded());
+        $entity->setDateCreated($file->getDateCreated());
         $entity->setStatus($file->getStatus());
+        $entity->setUuid($file->getUuid());
+        $entity->setResource($this->em->getReference($this->getResourceEntityName(), $file->getResource()->getId()));
+        $entity->setVersions($file->getVersions());
 
         $this->em->flush();
 
@@ -178,8 +206,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doDeleteFile
      */
     protected function doDeleteFile(File $file)
     {
@@ -194,8 +221,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  integer     $id
-     * @return Folder|null
+     * @see AbstractBackend::doFindFolder
      */
     protected function dofindFolder($id)
     {
@@ -203,8 +229,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  string     $url
-     * @return array|null
+     * @see AbstractBackend::doFindFolderByUrl
      */
     protected function doFindFolderByUrl($url)
     {
@@ -214,7 +239,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @return object Folder entity
+     * @see AbstractBackend::doFindRootFolder
      */
     protected function doFindRootFolder()
     {
@@ -233,6 +258,7 @@ class Doctrine2Backend extends AbstractBackend
             $folder->setName('root');
             $folder->setUrl('');
             $folder->removeParent();
+            $folder->setUuid($this->generateUuid());
 
             $this->em->persist($folder);
             $this->em->flush();
@@ -242,8 +268,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  integer $id
-     * @return array
+     * @see AbstractBackend::doFindSubFolders
      */
     protected function doFindSubFolders($id)
     {
@@ -253,8 +278,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  Folder $folder
-     * @return Folder
+     * @see AbstractBackend::doCreateFolder
      */
     protected function doCreateFolder(Folder $folder)
     {
@@ -262,6 +286,7 @@ class Doctrine2Backend extends AbstractBackend
         $folderEntity->setParent($this->getFolderReference($folder->getParentId()));
         $folderEntity->setName($folder->getName());
         $folderEntity->setUrl($folder->getUrl());
+        $folderEntity->setUuid($folder->getUuid());
 
         $this->em->persist($folderEntity);
         $this->em->flush();
@@ -272,8 +297,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  Folder  $folder
-     * @return boolean
+     * @see AbstractBackend::doUpdateFolder
      */
     protected function doUpdateFolder(Folder $folder)
     {
@@ -290,6 +314,7 @@ class Doctrine2Backend extends AbstractBackend
 
             $folderRow->setName($folder->getName());
             $folderRow->setUrl($folder->getUrl());
+            $folderRow->setUuid($folder->getUuid());
 
             $this->em->flush();
 
@@ -300,8 +325,24 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  Folder  $folder
-     * @return boolean
+     * @see AbstractBackend::doUpdateResource
+     */
+    protected function doUpdateResource(Resource $resource)
+    {
+        try {
+            $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
+            $resourceRow->setVersions($resource->getVersions());
+            $resourceRow->setExclusive($resource->isExclusive());
+            $resourceRow->setHash($resource->getHash());
+            $this->em->flush();
+            return true;
+        } catch (EntityNotFoundException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @see AbstractBackend::doDeleteFolder
      */
     protected function doDeleteFolder(Folder $folder)
     {
@@ -323,10 +364,63 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @param  File                   $file
-     * @param  Folder                 $folder
-     * @return File
-     * @throws NonUniqueFileException If file already exists folder
+     * @see AbstractBackend::doDeleteResource
+     */
+    protected function doDeleteResource(Resource $resource)
+    {
+        try {
+            $entity = $this->em->find($this->resourceEntityName, $resource->getId());
+
+            if (!$entity) {
+                return false;
+            }
+
+            $this->em->remove($entity);
+            $this->em->flush();
+
+            return true;
+        } catch (EntityNotFoundException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @see AbstractBackend::doCreateResource
+     */
+    protected function doCreateResource(Resource $resource)
+    {
+        $resourceRow = new $this->resourceEntityName();
+        $resourceRow->setHash($resource->getHash());
+        $resourceRow->setDateCreated($resource->getDateCreated());
+        $resourceRow->setMimetype($resource->getMimetype());
+        $resourceRow->setSize($resource->getSize());
+        $resourceRow->setExclusive($resource->isExclusive());
+        $this->em->persist($resourceRow);
+        $this->em->flush();
+        $resource->setId($resourceRow->getId());
+        return $resource;
+    }
+
+    /**
+     * @see AbstractBackend::doFindResourcesByHash
+     */
+    public function doFindResourcesByHash($hash)
+    {
+        return $this->em->getRepository($this->resourceEntityName)->findBy(array(
+            'hash'   => $hash,
+        ));
+    }
+
+    /**
+     * @see AbstractBackend::doFindResource
+     */
+    protected function dofindResource($id)
+    {
+        return $this->em->find($this->resourceEntityName, $id);
+    }
+
+    /**
+     * @see AbstractBackend::doUpload
      */
     protected function doUpload(File $file, Folder $folder)
     {
@@ -337,12 +431,17 @@ class Doctrine2Backend extends AbstractBackend
 
             $entity = new $fileEntityName;
             $entity->setFolder($self->getFolderReference($folder->getId()));
-            $entity->setMimetype($file->getMimeType());
-            $entity->setSize($file->getSize());
             $entity->setName($file->getName());
             $entity->setProfile($file->getProfile());
-            $entity->setDateUploaded($file->getDateUploaded());
+            $entity->setDateCreated($file->getDateCreated());
             $entity->setStatus($file->getStatus());
+            $entity->setUuid($file->getUuid());
+            $entity->setVersions($file->getVersions());
+
+            $resource = $file->getResource();
+            if ($resource) {
+                $entity->setResource($em->getReference($self->getResourceEntityName(), $resource->getId()));
+            }
 
             $em->persist($entity);
 
@@ -360,10 +459,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * File to array
-     *
-     * @param  File  $file
-     * @return array
+     * @see AbstractBackend::fileToArray
      */
     protected function fileToArray($file)
     {
@@ -372,21 +468,19 @@ class Doctrine2Backend extends AbstractBackend
             'folder_id'     => $file->getFolder()
                                    ? $file->getFolder()->getId()
                                    : null,
-            'mimetype'      => $file->getMimetype(),
             'profile'       => $file->getProfile(),
-            'size'          => $file->getSize(),
             'name'          => $file->getName(),
             'link'          => $file->getLink(),
-            'date_uploaded' => $file->getDateUploaded(),
+            'date_created' => $file->getDateCreated(),
             'status'        => $file->getStatus(),
+            'uuid'          => $file->getUuid(),
+            'resource' => ($file->getResource()) ? $this->resourceToArray($file->getResource()) : null,
+            'versions' => $file->getVersions(),
         );
     }
 
     /**
-     * Folder to array
-     *
-     * @param  Folder $folder
-     * @return array
+     * @see AbstractBackend::folderToArray
      */
     protected function folderToArray($folder)
     {
@@ -397,7 +491,32 @@ class Doctrine2Backend extends AbstractBackend
                                : null,
             'name'      => $folder->getName(),
             'url'       => $folder->getUrl(),
+            'uuid'      => $folder->getUuid(),
         );
+    }
+
+    /**
+     * @see AbstractBackend::resourceToArray
+     */
+    protected function resourceToArray($resource)
+    {
+        return Resource::create(array(
+            'id' => $resource->getId(),
+            'hash' => $resource->getHash(),
+            'date_created' => $resource->getDateCreated(),
+            'versions' => $resource->getVersions(),
+            'mimetype' => $resource->getMimetype(),
+            'size' => $resource->getSize(),
+            'exclusive' => $resource->getExclusive(),
+        ));
+    }
+
+    /**
+     * @see AbstractBackend::doGetNumberOfReferences
+     */
+    public function doGetNumberOfReferences(Resource $resource)
+    {
+        return $this->em->getConnection()->fetchColumn("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
     }
 
     /**
@@ -418,5 +537,13 @@ class Doctrine2Backend extends AbstractBackend
     public function getFolderReference($id)
     {
         return $this->em->getReference($this->folderEntityName, $id);
+    }
+
+    /**
+     * @see AbstractBackend::isValidIdentifier
+     */
+    protected function isValidIdentifier($id)
+    {
+        return is_numeric($id);
     }
 }

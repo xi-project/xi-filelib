@@ -63,9 +63,9 @@ class PhpAMQPQueue implements Queue
     }
 
 
-    public function enqueue(Message $message)
+    public function enqueue(Enqueueable $enqueueable)
     {
-        $msg = serialize($message->getBody());
+        $msg = serialize($enqueueable);
         $msg = new AMQPMessage($msg, array('content_type' => 'text/plain', 'delivery-mode' => 1));
         $this->getChannel()->basic_publish($msg, $this->exchange, 'filelib', false, false);
     }
@@ -79,7 +79,7 @@ class PhpAMQPQueue implements Queue
             return null;
         }
 
-        $message = new Message(unserialize($msg->body));
+        $message = new Message($msg->body);
         $message->setIdentifier($msg->delivery_info['delivery_tag']);
         return $message;
     }

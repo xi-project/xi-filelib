@@ -44,6 +44,11 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
         $this->assertSame($folder, $folder->setUrl($val));
         $this->assertEquals($val, $folder->getUrl());
 
+        $val = 'uuid';
+        $this->assertEquals(null, $folder->getUuid());
+        $this->assertSame($folder, $folder->setUuid($val));
+        $this->assertEquals($val, $folder->getUuid());
+
     }
 
 
@@ -56,6 +61,7 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
                     'parent_id' => 1,
                     'name' => 'puuppa.jpg',
                     'url' => 'lussenhoff',
+                    'uuid' => 'uuid-lusser',
                 ),
             ),
             array(
@@ -83,6 +89,7 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
             'parent_id' => 'getParentId',
             'name' => 'getName',
             'url' => 'getUrl',
+            'uuid' => 'getUuid',
         );
 
         foreach($map as $key => $method) {
@@ -105,12 +112,14 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
         $folder->setParentId(655);
         $folder->setName('klussutusta');
         $folder->setUrl('/lussen/hofen');
+        $folder->setUuid('luss3r');
 
         $this->assertEquals($folder->toArray(), array(
             'id' => 1,
             'parent_id' => 655,
             'name' => 'klussutusta',
             'url' => '/lussen/hofen',
+            'uuid' => 'luss3r',
         ));
 
 
@@ -120,6 +129,7 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
             'parent_id' => null,
             'name' => null,
             'url' => null,
+            'uuid' => null,
         ));
 
     }

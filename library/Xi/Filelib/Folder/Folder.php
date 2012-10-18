@@ -23,6 +23,7 @@ class Folder
         'parent_id' => 'setParentId',
         'name' => 'setName',
         'url' => 'setUrl',
+        'uuid' => 'setUuid',
     );
 
     private $id;
@@ -32,6 +33,8 @@ class Folder
     private $name;
 
     private $url;
+
+    private $uuid;
 
     /**
      * Sets id
@@ -100,6 +103,24 @@ class Folder
     }
 
 
+    /**
+     * @return Folder
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+        return $this;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
 
     public function toArray()
     {
@@ -108,6 +129,7 @@ class Folder
             'parent_id' => $this->getParentId(),
             'name' => $this->getName(),
             'url' => $this->getUrl(),
+            'uuid' => $this->getUuid(),
         );
     }
 

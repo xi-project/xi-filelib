@@ -15,18 +15,23 @@ class Folder
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    private $id;
 
     /**
      * @ORM\Column(name="foldername", type="string", length=255)
      */
-    protected $name;
-    
+    private $name;
+
     /**
      * @ORM\Column(name="folderurl", type="string", length=5000)
      */
-    protected $url;
-    
+    private $url;
+
+    /**
+     * @ORM\Column(name="uuid", type="string", length=36, nullable=false, unique=true)
+     */
+    private $uuid;
+
     /**
      * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent")
      */
@@ -69,7 +74,7 @@ class Folder
     {
         return $this->name;
     }
-    
+
     /**
      * Set url
      *
@@ -91,7 +96,29 @@ class Folder
     {
         return $this->url;
     }
-    
+
+
+    /**
+     * Sets uuid
+     *
+     * @param string $uuid
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * Returns uuid
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+
     /**
      * Set parent
      *
@@ -124,6 +151,6 @@ class Folder
     {
         return $this->parent;
     }
-    
+
 
 }

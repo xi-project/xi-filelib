@@ -25,7 +25,6 @@ class FileObject extends SplFileObject
     private static $typeResolver;
 
     /**
-     *
      * Sets type resolver
      *
      * @param TypeResolver $typeResolver
@@ -36,7 +35,6 @@ class FileObject extends SplFileObject
     }
 
     /**
-     *
      * Returns type resolver.
      *
      * @return TypeResolver
@@ -50,8 +48,6 @@ class FileObject extends SplFileObject
         return self::$typeResolver;
     }
 
-
-
     /**
      * Returns file's mime type (via type resolver).
      *
@@ -64,8 +60,5 @@ class FileObject extends SplFileObject
         }
         return $this->mimeType;
     }
-
-
-
 
 }

@@ -3,20 +3,42 @@
 namespace Xi\Filelib\Backend;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
+use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
 use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Exception\FolderNotFoundException;
 use Xi\Filelib\Exception\FolderNotEmptyException;
 use Xi\Filelib\Exception\NonUniqueFileException;
+use Xi\Filelib\Exception\ResourceReferencedException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Event\ResourceEvent;
+use Exception;
 
 /**
  * Abstract backend implementing common methods
  *
- * @author pekkis
+ * @author pekkis <pekkisx@gmail.com>
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  */
 abstract class AbstractBackend implements Backend
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+     * @var UuidGenerator
+     */
+    private $uuidGenerator;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
     /**
      * @param  mixed      $id
      * @return array|null
@@ -78,6 +100,12 @@ abstract class AbstractBackend implements Backend
     protected abstract function doUpdateFolder(Folder $folder);
 
     /**
+     * @param  Resource $resource
+     * @return boolean
+     */
+    protected abstract function doUpdateResource(Resource $resource);
+
+    /**
      * @param  File    $file
      * @return boolean
      */
@@ -102,6 +130,44 @@ abstract class AbstractBackend implements Backend
     protected abstract function doFindFileByFilename(Folder $folder, $filename);
 
     /**
+     * @param $id
+     * @return Resource|false
+     */
+    protected abstract function doFindResource($id);
+
+    /**
+     * @param $hash
+     * @return array
+     */
+    protected abstract function doFindResourcesByHash($hash);
+
+    /**
+     * @param Resource $resource
+     * @return Resource
+     */
+    protected abstract function doCreateResource(Resource $resource);
+
+    /**
+     * @param Resource $resource
+     * @return boolean
+     */
+    protected abstract function doDeleteResource(Resource $resource);
+
+    /**
+     * Returns the number of references for a resource
+     *
+     * @param Resource $resource
+     * @return integer
+     */
+    protected abstract function doGetNumberOfReferences(Resource $resource);
+
+    /**
+     * @param mixed $resource
+     * @return array
+     */
+    protected abstract function resourceToArray($resource);
+
+    /**
      * @param  mixed $folder
      * @return array
      */
@@ -114,15 +180,22 @@ abstract class AbstractBackend implements Backend
     protected abstract function fileToArray($file);
 
     /**
-     * Finds folder
+     * Returns whether an identifier is valid for the backend
+     *
+     * @return boolean
+     */
+    protected abstract function isValidIdentifier($id);
+
+    /**
+     * Finds a folder
      *
      * @param  mixed                    $id
      * @return array|false
-     * @throws InvalidArgumentException With invalid folder id
+     * @throws InvalidArgumentException with invalid folder id
      */
     public function findFolder($id)
     {
-        $this->assertValidFolderIdentifier($id);
+        $this->assertValidIdentifier($id, 'Folder');
 
         $folder = $this->doFindFolder($id);
 
@@ -134,6 +207,99 @@ abstract class AbstractBackend implements Backend
     }
 
     /**
+     * Finds a resource
+     *
+     * @param mixed $id
+     * @return array|false
+     * @throws InvalidArgumentException with invalid folder id
+     */
+    public function findResource($id)
+    {
+        $this->assertValidIdentifier($id, 'Resource');
+
+        $resource = $this->doFindResource($id);
+
+        if (!$resource) {
+            return false;
+        }
+
+        return $this->resourceToArray($resource);
+
+    }
+
+    /**
+     * Finds resources by hash
+     *
+     * @param string $hash
+     * @return array
+     */
+    public function findResourcesByHash($hash)
+    {
+        return array_map(
+            array($this, 'resourceToArray'),
+            $this->doFindResourcesByHash($hash)
+        );
+    }
+
+    /**
+     * Creates a resource
+     *
+     * @param  Resource         $resource
+     * @return Resource         Created folder
+     * @throws FilelibException When fails
+     */
+    public function createResource(Resource $resource)
+    {
+        return $this->doCreateResource($resource);
+    }
+
+    /**
+     * Updates a resource
+     *
+     * @param  Resource $resource
+     * @return boolean
+     * @throws InvalidArgumentException With invalid id
+     */
+    public function updateResource(Resource $resource)
+    {
+        $this->assertValidIdentifier($resource->getId(), 'Resource');
+        return (bool) $this->doUpdateResource($resource);
+    }
+
+    /**
+     * Deletes a resource
+     *
+     * @param  Resource         $resource
+     * @return boolean          True if deleted successfully.
+     * @throws ResourceReferencedException If resource has references
+     */
+    public function deleteResource(Resource $resource)
+    {
+        if ($rno = $this->getNumberOfReferences($resource)) {
+            throw new ResourceReferencedException("Resource #{$resource->getId()} is referenced {$rno} times and can't be deleted.");
+        }
+
+        $ret = (bool) $this->doDeleteResource($resource);
+
+        if ($ret) {
+            $event = new ResourceEvent($resource);
+            $this->getEventDispatcher()->dispatch('resource.delete', $event);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Returns the number of references to a resource
+     *
+     * @param Resource $resource
+     */
+    public function getNumberOfReferences(Resource $resource)
+    {
+        return $this->doGetNumberOfReferences($resource);
+    }
+
+    /**
      * Finds subfolders of a folder
      *
      * @param  Folder                   $folder
@@ -142,7 +308,7 @@ abstract class AbstractBackend implements Backend
      */
     public function findSubFolders(Folder $folder)
     {
-        $this->assertValidFolderIdentifier($folder->getId());
+        $this->assertValidIdentifier($folder->getId(), 'Folder');
 
         return array_map(
             array($this, 'folderToArray'),
@@ -172,7 +338,7 @@ abstract class AbstractBackend implements Backend
      */
     public function findFile($id)
     {
-        $this->assertValidFileIdentifier($id);
+        $this->assertValidIdentifier($id, 'File');
 
         $file = $this->doFindFile($id);
 
@@ -192,7 +358,7 @@ abstract class AbstractBackend implements Backend
      */
     public function findFilesIn(Folder $folder)
     {
-        $this->assertValidFolderIdentifier($folder->getId());
+        $this->assertValidIdentifier($folder->getId(), 'Folder');
 
         return array_map(
             array($this, 'fileToArray'),
@@ -263,8 +429,7 @@ abstract class AbstractBackend implements Backend
      */
     public function deleteFile(File $file)
     {
-        $this->assertValidFileIdentifier($file->getId());
-
+        $this->assertValidIdentifier($file->getId(), 'File');
         return (bool) $this->doDeleteFile($file);
     }
 
@@ -277,8 +442,7 @@ abstract class AbstractBackend implements Backend
      */
     public function updateFolder(Folder $folder)
     {
-        $this->assertValidFolderIdentifier($folder->getId());
-
+        $this->assertValidIdentifier($folder->getId(), 'Folder');
         return (bool) $this->doUpdateFolder($folder);
     }
 
@@ -297,7 +461,7 @@ abstract class AbstractBackend implements Backend
                 $file->getFolderId()
             ));
         }
-
+        $resUpdate = $this->updateResource($file->getResource());
         return (bool) $this->doUpdateFile($file);
     }
 
@@ -339,7 +503,7 @@ abstract class AbstractBackend implements Backend
      */
     public function findFileByFilename(Folder $folder, $filename)
     {
-        $this->assertValidFolderIdentifier($folder->getId());
+        $this->assertValidIdentifier($folder->getId(), 'Folder');
 
         $file = $this->doFindFileByFilename($folder, $filename);
 
@@ -348,6 +512,25 @@ abstract class AbstractBackend implements Backend
         }
 
         return $this->fileToArray($file);
+    }
+
+    /**
+     * Asserts that an identifier is valid
+     *
+     * @param  $id Identifier
+     * @param  $exceptionObjectName Object name (Folder, File, Resource)
+     * @throws InvalidArgumentException
+     */
+    public function assertValidIdentifier($id, $exceptionObjectName)
+    {
+        $isValid = $this->isValidIdentifier($id);
+
+        if (!$isValid) {
+            throw $this->createInvalidArgumentException(
+                $id,
+                "{$exceptionObjectName} id '%s' is invalid"
+            );
+        }
     }
 
     /**
@@ -366,42 +549,13 @@ abstract class AbstractBackend implements Backend
 
     /**
      * @param  mixed                    $id
-     * @throws InvalidArgumentException
-     */
-    protected function assertValidFolderIdentifier($id)
-    {
-        if (!is_numeric($id)) {
-            $this->throwInvalidArgumentException(
-                $id,
-                'Folder id must be an integer, %s (%s) given'
-            );
-        }
-    }
-
-    /**
-     * @param  mixed                    $id
-     * @throws InvalidArgumentException
-     */
-    protected function assertValidFileIdentifier($id)
-    {
-        if (!is_numeric($id)) {
-            $this->throwInvalidArgumentException(
-                $id,
-                'File id must be an integer, %s (%s) given'
-            );
-        }
-    }
-
-    /**
-     * @param  mixed                    $id
      * @param  string                   $message
-     * @throws InvalidArgumentException
+     * @return InvalidArgumentException
      */
-    protected function throwInvalidArgumentException($id, $message)
+    protected function createInvalidArgumentException($id, $message)
     {
-        throw new InvalidArgumentException(sprintf(
+        return new InvalidArgumentException(sprintf(
             $message,
-            gettype($id),
             $id
         ));
     }
@@ -421,4 +575,37 @@ abstract class AbstractBackend implements Backend
             $folder->getName()
         ));
     }
+
+    /**
+     * Generates an UUID
+     *
+     * @return string
+     */
+    public function generateUuid()
+    {
+        return $this->getUuidGenerator()->v4();
+    }
+
+    /**
+     * Returns event dispatcher
+     *
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
+    }
+
+    /**
+     * @return UuidGenerator
+     */
+    protected function getUuidGenerator()
+    {
+        if (!$this->uuidGenerator) {
+            $this->uuidGenerator = new PHPUuidGenerator();
+        }
+
+        return $this->uuidGenerator;
+    }
+
 }
