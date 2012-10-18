@@ -2,9 +2,9 @@
 
 namespace Xi\Filelib\File\Command;
 
-use Xi\Filelib\Command;
+use Xi\Filelib\EnqueueableCommand;
 
-interface FileCommand extends Command
+interface FileCommand extends EnqueueableCommand
 {
-    
+
 }

@@ -26,6 +26,14 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         return array(); // @TODO calculate from options' outfiles
     }
 
+    public function areSharedVersionsAllowed()
+    {
+    }
+
+    public function isSharedResourceAllowed()
+    {
+    }
+
     public function getDuration(File $file)
     {
         return (float) $this->getVideoInfo($file)->format->duration;
@@ -33,7 +41,7 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function getVideoInfo(File $file)
     {
-        $path = $this->getStorage()->retrieve($file)->getPathname();
+        $path = $this->getStorage()->retrieve($file->getResource())->getPathname();
 
         $probe = new Process(sprintf("ffprobe -loglevel quiet -print_format json -show_format %s", $path));
         $probe->setTimeout(30);

@@ -11,7 +11,7 @@ namespace Xi\Tests\Filelib\Storage;
 
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\Storage\MultiStorage;
-use Xi\Filelib\File\File;
+use \Xi\Filelib\File\Resource;
 
 /**
  * @group storage
@@ -22,14 +22,12 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
     protected $mockStorages = array();
 
-    protected $file;
+    protected $resource;
 
     public function setUp()
     {
-        $mockStorage = $this->getMockForAbstractClass('\\Xi\\Filelib\\Storage\\AbstractStorage');
-
-        $mockStorage = $this->getMockBuilder('\\Xi\\Filelib\\Storage\\AbstractStorage')->getMock();
-        $mockStorage2 = $this->getMockBuilder('\\Xi\\Filelib\\Storage\\AbstractStorage')->getMock();
+        $mockStorage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $mockStorage2 = $this->getMock('Xi\Filelib\Storage\Storage');
 
         $this->mockStorages[] = $mockStorage;
         $this->mockStorages[] = $mockStorage2;
@@ -39,10 +37,9 @@ class MultiStorageTest extends \Xi\Tests\TestCase
         $multiStorage->addStorage($mockStorage2);
 
         $this->storage = $multiStorage;
-
-        $this->file = File::create(array('id' => 1));
-
+        $this->resource = Resource::create(array('id' => 1));
         $this->version = 'xoo';
+
     }
 
     /**
@@ -53,11 +50,11 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
         foreach ($this->mockStorages as $storage) {
             $storage->expects($this->exactly(1))
-                    ->method('delete')
-                    ->will($this->returnValue('1'));
+             ->method('delete')
+             ->will($this->returnValue('1'));
         }
 
-        $this->storage->delete($this->file);
+        $this->storage->delete($this->resource);
     }
 
     /**
@@ -71,7 +68,8 @@ class MultiStorageTest extends \Xi\Tests\TestCase
              ->will($this->returnValue('1'));
         }
 
-        $this->storage->deleteVersion($this->file, $this->version);
+        $this->storage->deleteVersion($this->resource, $this->version);
+
     }
 
     /**
@@ -81,11 +79,12 @@ class MultiStorageTest extends \Xi\Tests\TestCase
     {
         foreach ($this->mockStorages as $storage) {
             $storage->expects($this->exactly(1))
-                    ->method('store')
-                    ->will($this->returnValue('1'));
+             ->method('store')
+             ->will($this->returnValue('1'));
         }
 
-        $this->storage->store($this->file, 'puuppapath');
+        $this->storage->store($this->resource, 'puuppapath');
+
     }
 
     /**
@@ -99,11 +98,14 @@ class MultiStorageTest extends \Xi\Tests\TestCase
              ->will($this->returnValue('1'));
         }
 
-        $this->storage->storeVersion($this->file, $this->version, 'puuppapath');
+        $this->storage->storeVersion($this->resource, $this->version, 'puuppapath');
+
     }
+
 
     /**
      * @test
+     *
      */
     public function sessionStorageShouldInitializeRandomlyAndAlwaysReturnTheSameStorage()
     {
@@ -111,12 +113,15 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
         $this->assertInstanceOf('\\Xi\\Filelib\\Storage\\Storage', $sessionStorage);
 
-        $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
-        $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
+        for ($x = 1; $x <= 10; $x++) {
+            $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
+        }
     }
+
 
     /**
      * @test
+     *
      */
     public function sessionStorageShouldObeySessionStorageIdSetterAndAlwaysReturnIt()
     {
@@ -156,8 +161,10 @@ class MultiStorageTest extends \Xi\Tests\TestCase
              ->method('retrieveVersion')
              ->will($this->returnValue('1'));
 
-        $this->storage->retrieveVersion($this->file, $this->version);
+        $this->storage->retrieveVersion($this->resource, $this->version);
     }
+
+
 
     /**
      * @test
@@ -174,7 +181,7 @@ class MultiStorageTest extends \Xi\Tests\TestCase
              ->method('retrieve')
              ->will($this->returnValue('1'));
 
-        $this->storage->retrieve($this->file);
+        $this->storage->retrieve($this->resource);
     }
 
     /**
@@ -185,4 +192,40 @@ class MultiStorageTest extends \Xi\Tests\TestCase
     {
         $this->storage->addStorage(new MultiStorage());
     }
+
+
+    /**
+     * @test
+     */
+    public function existsShouldDelegateToSessionStorage()
+    {
+        $this->storage->setSessionStorageId(1);
+
+        $this->mockStorages[0]->expects($this->never())
+            ->method('exists');
+
+        $this->mockStorages[1]->expects($this->once())
+            ->method('exists')
+            ->will($this->returnValue(true));
+
+        $this->storage->exists($this->resource, $this->version);
+    }
+
+    /**
+     * @test
+     */
+    public function versionExistsShouldDelegateToSessionStorage()
+    {
+        $this->storage->setSessionStorageId(1);
+
+        $this->mockStorages[0]->expects($this->never())
+            ->method('versionExists');
+
+        $this->mockStorages[1]->expects($this->once())
+            ->method('versionExists')
+            ->will($this->returnValue(true));
+
+        $this->storage->versionExists($this->resource, $this->version);
+    }
+
 }

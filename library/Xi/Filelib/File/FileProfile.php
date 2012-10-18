@@ -30,7 +30,6 @@ class FileProfile implements EventSubscriberInterface
         'plugin.add' => 'onPluginAdd'
     );
 
-
     /**
      * @var FileLibrary
      */
@@ -85,7 +84,6 @@ class FileProfile implements EventSubscriberInterface
     {
         return static::$subscribedEvents;
     }
-
 
     /**
      * Sets filelib
@@ -239,7 +237,7 @@ class FileProfile implements EventSubscriberInterface
      */
     public function fileHasVersion(File $file, $version)
     {
-        return (in_array($version, $this->getFileVersions($file)));
+        return in_array($version, $this->getFileVersions($file));
     }
 
     /**
@@ -303,7 +301,6 @@ class FileProfile implements EventSubscriberInterface
         return $this->publishOriginal;
     }
 
-
     /**
      * Fires on plugin.add event. Adds plugin if plugin has profile.
      *
@@ -317,12 +314,30 @@ class FileProfile implements EventSubscriberInterface
         }
     }
 
-
     private function ensureFileVersionArrayExists($fileType)
     {
         if (!isset($this->fileVersions[$fileType])) {
             $this->fileVersions[$fileType] = array();
         }
+    }
+
+    /**
+     * Returns whether profile allows shared resources for a file
+     *
+     * @param File $file
+     * @return boolean
+     */
+    public function isSharedResourceAllowed(File $file)
+    {
+        foreach ($this->getPlugins() as $plugin) {
+
+            if ($plugin instanceof VersionProvider) {
+                if ($plugin->providesFor($file) && !$plugin->isSharedResourceAllowed()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

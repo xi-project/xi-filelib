@@ -9,7 +9,7 @@ use Xi\Filelib\Configurator;
 
 /**
  * Abstract convenience class for versionplugin plugins
- * 
+ *
  * @author pekkis
  *
  */
@@ -23,7 +23,7 @@ abstract class AbstractCommand implements Command
 
     /**
      * Creates a new imagick resource from path
-     * 
+     *
      * @param string $path Image path
      * @return Imagick
      * @throws InvalidArgumentException

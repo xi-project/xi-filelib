@@ -145,7 +145,7 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
 
         $this->queue->expects($this->once())->method('ack')->with($this->equalTo($message));
 
-        $this->queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
+        $this->queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Command'));
 
         $processor->processMessage($message, $processorFunc);
     }

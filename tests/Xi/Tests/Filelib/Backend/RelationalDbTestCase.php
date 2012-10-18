@@ -20,10 +20,11 @@ use Xi\Filelib\Folder\Folder;
 
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
+ * @author Mikko Forsström <pekkisx@gmail.com>
  *
  * @group backend
  */
-abstract class RelationalDbTestCase extends AbstractBackendTest
+abstract class RelationalDbTestCase extends AbstractBackendTestCase
 {
     /**
      * @var string|null
@@ -71,6 +72,81 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     {
         $this->setUpDataSet('simple');
     }
+
+    /**
+     * @return array
+     */
+    public function referenceCountProvider()
+    {
+        return array(
+            array(1, 1),
+            array(1, 2),
+            array(1, 3),
+            array(2, 4),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function findResourceProvider()
+    {
+        return array(
+            array(1, array('hash' => 'hash-1', 'versions' => array('tussi', 'watussi', 'pygmi'))),
+            array(2, array('hash' => 'hash-2', 'versions' => array())),
+            array(3, array('hash' => 'hash-2', 'versions' => array('pygmi', 'tussi'))),
+            array(4, array('hash' => 'hash-3', 'versions' => array('watussi'))),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function nonExistingResourceIdProvider()
+    {
+        return array(
+            array(6),
+            array(66),
+            array(666),
+            array(6666)
+        );
+    }
+
+
+    /**
+     * @return array
+     */
+    public function resourceHashProvider()
+    {
+        return array(
+            array('hash-1', 1),
+            array('hash-2', 2),
+            array('hash-3', 1),
+            array('hash-4', 0),
+            array('hash-666', 0),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function orphanResourceIdProvider()
+    {
+        return array(
+            array(5),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function resourceIdWithReferencesProvider()
+    {
+        return array(
+            array(3),
+        );
+    }
+
 
     /**
      * @return array
@@ -165,7 +241,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     public function updateFileProvider()
     {
         return array(
-            array(1, 2),
+            array(1, 2, 2),
         );
     }
 
@@ -195,7 +271,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     public function findFileByFilenameProvider()
     {
         return array(
-            array(1, 1),
+            array(1, 1, 1),
         );
     }
 
@@ -273,98 +349,171 @@ abstract class RelationalDbTestCase extends AbstractBackendTest
     }
 
     /**
+     *
+     * @return array
+     */
+    public function updateResourceProvider()
+    {
+        return array(
+            array(
+                1, array('imaisebba', 'tussia'),
+            )
+        );
+    }
+
+
+    /**
      * @return ArrayDataSet
      */
     private function getSimpleDataSet()
     {
         return new ArrayDataSet(array(
+
+            'xi_filelib_resource' => array(
+                array(
+                    'id' => 1,
+                    'hash' => 'hash-1',
+                    'date_created' => '1978-03-21 06:06:06',
+                    'versions' => serialize(array('tussi', 'watussi', 'pygmi')),
+                    'mimetype'      => 'image/png',
+                    'filesize'      => '1000',
+                    'exclusive' => 1,
+                ),
+                array(
+                    'id' => 2,
+                    'hash' => 'hash-2',
+                    'date_created' => '1988-03-21 06:06:06',
+                    'versions' => serialize(array()),
+                    'mimetype'      => 'image/png',
+                    'filesize'      => '10001',
+                    'exclusive' => 0,
+                ),
+                array(
+                    'id' => 3,
+                    'hash' => 'hash-2',
+                    'date_created' => '1998-03-21 06:06:06',
+                    'versions' => serialize(array('pygmi', 'tussi')),
+                    'mimetype'      => 'image/png',
+                    'filesize'      => '20000',
+                    'exclusive' => 0,
+                ),
+                array(
+                    'id' => 4,
+                    'hash' => 'hash-3',
+                    'date_created' => '2008-03-21 06:06:06',
+                    'versions' => serialize(array('watussi')),
+                    'mimetype'      => 'image/png',
+                    'filesize'      => '50000',
+                    'exclusive' => 0,
+                ),
+                array(
+                    'id' => 5,
+                    'hash' => 'hash-5',
+                    'date_created' => '2009-03-21 06:06:06',
+                    'versions' => serialize(array('watussi', 'loso')),
+                    'mimetype'      => 'video/xxx',
+                    'filesize'      => '10000',
+                    'exclusive' => 0,
+                ),
+            ),
+
             'xi_filelib_folder' => array(
                 array(
                     'id'         => 1,
                     'parent_id'  => null,
                     'folderurl'  => '',
                     'foldername' => 'root',
+                    'uuid' => 'uuid-f-1',
                 ),
                 array(
                     'id'         => 2,
                     'parent_id'  => 1,
                     'folderurl'  => 'lussuttaja',
                     'foldername' => 'lussuttaja',
+                    'uuid' => 'uuid-f-2',
                 ),
                 array(
                     'id'         => 3,
                     'parent_id'  => 2,
                     'folderurl'  => 'lussuttaja/tussin',
                     'foldername' => 'tussin',
+                    'uuid' => 'uuid-f-3',
                 ),
                 array(
                     'id'         => 4,
                     'parent_id'  => 2,
                     'folderurl'  => 'lussuttaja/banskun',
                     'foldername' => 'banskun',
+                    'uuid' => 'uuid-f-4',
                 ),
                 array(
                     'id'         => 5,
                     'parent_id'  => 2,
                     'folderurl'  => 'lussuttaja/tiedoton-kansio',
                     'foldername' => 'tiedoton-kansio',
+                    'uuid' => 'uuid-f-5',
                 ),
             ),
             'xi_filelib_file' => array(
                 array(
                     'id'            => 1,
                     'folder_id'     => 1,
-                    'mimetype'      => 'image/png',
                     'fileprofile'   => 'versioned',
-                    'filesize'      => '1000',
                     'filename'      => 'tohtori-vesala.png',
                     'filelink'      => 'tohtori-vesala.png',
-                    'date_uploaded' => '2011-01-01 16:16:16',
+                    'date_created' => '2011-01-01 16:16:16',
                     'status'        => 1,
+                    'uuid'          => 'uuid-1',
+                    'resource_id'   => 1,
+                    'versions' => serialize(array()),
                 ),
                 array(
                     'id'            => 2,
                     'folder_id'     => 2,
-                    'mimetype'      => 'image/png',
                     'fileprofile'   => 'versioned',
-                    'filesize'      => '10001',
                     'filename'      => 'akuankka.png',
                     'filelink'      => 'lussuttaja/akuankka.png',
-                    'date_uploaded' => '2011-01-01 15:15:15',
+                    'date_created' => '2011-01-01 15:15:15',
                     'status'        => 2,
+                    'uuid'          => 'uuid-2',
+                    'resource_id'   => 2,
+                    'versions' => serialize(array()),
                 ),
                 array(
                     'id'            => 3,
                     'folder_id'     => 3,
-                    'mimetype'      => 'image/png',
                     'fileprofile'   => 'default',
-                    'filesize'      => '10000',
                     'filename'      => 'repesorsa.png',
                     'filelink'      => 'lussuttaja/tussin/repesorsa.png',
-                    'date_uploaded' => '2011-01-01 15:15:15',
+                    'date_created' => '2011-01-01 15:15:15',
                     'status'        => 3,
+                    'uuid'          => 'uuid-3',
+                    'resource_id'   => 3,
+                    'versions' => serialize(array()),
                 ),
                 array(
                     'id'            => 4,
                     'folder_id'     => 4,
-                    'mimetype'      => 'image/png',
                     'fileprofile'   => 'default',
-                    'filesize'      => '10000',
                     'filename'      => 'megatussi.png',
                     'filelink'      => 'lussuttaja/banskun/megatussi.png',
-                    'date_uploaded' => '2011-01-02 15:15:15',
+                    'date_created' => '2011-01-02 15:15:15',
                     'status'        => 4,
+                    'uuid'          => 'uuid-4',
+                    'resource_id'   => 4,
+                    'versions' => serialize(array()),
                 ),
                 array(
                     'id'            => 5,
                     'folder_id'     => 4,
-                    'mimetype'      => 'image/png',
                     'fileprofile'   => 'default',
-                    'filesize'      => '10000',
                     'filename'      => 'megatussi2.png',
                     'filelink'      => 'lussuttaja/banskun/megatussi2.png',
-                    'date_uploaded' => '2011-01-03 15:15:15',
+                    'date_created' => '2011-01-03 15:15:15',
                     'status'        => 5,
+                    'uuid'          => 'uuid-5',
+                    'resource_id'   => 4,
+                    'versions' => serialize(array()),
                 ),
             ),
         ));

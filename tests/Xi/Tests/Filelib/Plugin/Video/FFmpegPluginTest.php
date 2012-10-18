@@ -3,6 +3,7 @@
 namespace Xi\Tests\Filelib\Plugin\Video;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Video\FFmpegPlugin;
@@ -74,7 +75,7 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
 }
 JSON;
 
-        $video = File::create(array('id' => 1, 'name' => basename($path)));
+        $video = File::create(array('id' => 1, 'name' => basename($path), 'resource' => Resource::create(array('id' => 1))));
         $this->assertEquals(json_decode($expected), $this->plugin->getVideoInfo($video));
     }
 
@@ -87,7 +88,7 @@ JSON;
         $filelib = $this->getFilelib()->setStorage($this->getMockedStorage($path));
         $this->plugin->setFilelib($filelib);
 
-        $video = File::create(array('id' => 1, 'name' => basename($path)));
+        $video = File::create(array('id' => 1, 'name' => basename($path), 'resource' => Resource::create(array('id' => 1))));
         $this->assertEquals(3.989000, $this->plugin->getDuration($video));
     }
 
@@ -101,7 +102,7 @@ JSON;
     {
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('retrieve')
-            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
             ->will($this->returnValue(new FileObject($path)));
         return $storage;
     }

@@ -4,7 +4,7 @@ namespace Xi\Filelib\Plugin\Video;
 
 use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Job as Job;
-use Zend\Service\Amazon\S3\S3 as AmazonService;
+use ZendService\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
@@ -53,10 +53,14 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     private $awsSecretKey;
 
     /**
-     *
      * @var string
      */
     private $awsBucket;
+
+    /**
+     * @var integer
+     */
+    private $sleepyTime = 5;
 
     public function __construct($options = array())
     {
@@ -155,7 +159,25 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         return $this->awsService;
     }
 
+    /**
+     * Sets sleepy time in seconds
+     *
+     * @param  integer        $sleepyTime
+     * @return ZencoderPlugin
+     */
+    public function setSleepyTime($sleepyTime)
+    {
+        $this->sleepyTime = $sleepyTime;
+        return $this;
+    }
 
+    /**
+     * @return integer
+     */
+    public function getSleepyTime()
+    {
+        return $this->sleepyTime;
+    }
 
     /**
      * Returns Zencoder-php service instance
@@ -195,13 +217,13 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      * @return array
      * @todo should not depend on Amazon S3
      */
-    public function createVersions(File $file, $sleepyTime = 5)
+    public function createVersions(File $file)
     {
         $filelib = $this->getFilelib();
         $s3 = $this->getAwsService();
         $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
-        $retrieved = $this->getStorage()->retrieve($file);
+        $retrieved = $this->getStorage()->retrieve($file->getResource());
 
         $s3->putFile($retrieved->getRealPath(), $awsPath);
 
@@ -217,13 +239,14 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         try {
             $job = $this->getService()->jobs->create($options);
 
-            $this->waitUntilJobFinished($job, $sleepyTime);
+            $this->waitUntilJobFinished($job);
 
             $outputs = $this->fetchOutputs($job);
 
             $s3->removeObject($awsPath);
 
             return $outputs;
+
         } catch (\Services_Zencoder_Exception $e) {
             throw new FilelibException("Zencoder service responded with errors", 500, $e);
         }
@@ -276,10 +299,20 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         }, $this->getOutputs()));
     }
 
-    private function waitUntilJobFinished(Job $job, $sleepyTime = 5) {
+    public function isSharedResourceAllowed()
+    {
+        return true;
+    }
+
+    public function areSharedVersionsAllowed()
+    {
+        return true;
+    }
+
+    private function waitUntilJobFinished(Job $job) {
         do {
             $done = 0;
-            sleep($sleepyTime);
+            sleep($this->getSleepyTime());
 
             foreach ($this->getVersions() as $label) {
                 $output = $job->outputs[$label];

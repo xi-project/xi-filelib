@@ -25,7 +25,7 @@ use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Queue\Queue;
-use Xi\Filelib\Command;
+use Xi\Filelib\EnqueueableCommand;
 use Xi\Filelib\File\Command\FileCommand;
 use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
@@ -44,23 +44,14 @@ use Xi\Filelib\Tool\TypeResolver\StupidTypeResolver;
  */
 class DefaultFileOperator extends AbstractOperator implements FileOperator
 {
-
-    const COMMAND_UPLOAD = 'upload';
-    const COMMAND_AFTERUPLOAD = 'after_upload';
-    const COMMAND_UPDATE = 'update';
-    const COMMAND_DELETE = 'delete';
-    const COMMAND_PUBLISH = 'publish';
-    const COMMAND_UNPUBLISH = 'unpublish';
-    const COMMAND_COPY = 'copy';
-
     protected $commandStrategies = array(
-        self::COMMAND_UPLOAD => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_AFTERUPLOAD => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_PUBLISH => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UNPUBLISH => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_COPY => Command::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_UPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_AFTERUPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_UPDATE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_DELETE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_PUBLISH => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_UNPUBLISH => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        FileOperator::COMMAND_COPY => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
     );
 
 
@@ -76,9 +67,10 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     private $typeResolver;
 
     /**
-     * Returns an instance of the currently set fileitem class
+     * Returns a file
      *
      * @param mixed $data Data as array or a file instance
+     * @return File
      */
     public function getInstance($data = array())
     {
@@ -149,7 +141,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->executeOrQueue(
             $this->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array($this, $file)),
-            DefaultFileOperator::COMMAND_UPDATE
+            FileOperator::COMMAND_UPDATE
         );
     }
 
@@ -226,7 +218,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->executeOrQueue(
             $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile)),
-            DefaultFileOperator::COMMAND_UPLOAD
+            FileOperator::COMMAND_UPLOAD
         );
     }
 
@@ -239,7 +231,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->executeOrQueue(
             $this->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array($this, $file)),
-            DefaultFileOperator::COMMAND_DELETE
+            FileOperator::COMMAND_DELETE
         );
     }
 
@@ -254,7 +246,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->executeOrQueue(
             $this->createCommand('Xi\Filelib\File\Command\CopyFileCommand', array($this, $file, $folder)),
-            DefaultFileOperator::COMMAND_COPY
+            FileOperator::COMMAND_COPY
         );
 
     }
@@ -301,7 +293,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->executeOrQueue(
             $this->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this, $file)),
-            DefaultFileOperator::COMMAND_PUBLISH
+            FileOperator::COMMAND_PUBLISH
         );
     }
 
@@ -309,7 +301,7 @@ class DefaultFileOperator extends AbstractOperator implements FileOperator
     {
         return $this->executeOrQueue(
             $this->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this, $file)),
-            DefaultFileOperator::COMMAND_UNPUBLISH
+            FileOperator::COMMAND_UNPUBLISH
         );
 
     }

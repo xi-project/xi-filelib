@@ -8,9 +8,9 @@ interface Queue
     /**
      * Enqueues message
      *
-     * @param Message $message
+     * @param Enqueueable $enqueueable
      */
-    public function enqueue(Message $message);
+    public function enqueue(Enqueueable $enqueueable);
 
     /**
      * Dequeues message
