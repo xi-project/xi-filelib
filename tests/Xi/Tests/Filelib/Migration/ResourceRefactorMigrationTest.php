@@ -51,7 +51,7 @@ class ResourceRefactorMigrationTest extends \Xi\Tests\Filelib\TestCase
                 ->with($resource)->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
         $foop->expects($this->once())->method('findRoot')->will($this->returnValue($rootFolder));
-        $foop->expects($this->exactly(2))->method('findSubFolders')->with($rootFolder)
+        $foop->expects($this->exactly(2))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
              ->will($this->onConsecutiveCalls(array($childFolder), array()));
         $foop->expects($this->any())->method('generateUuid')->will($this->returnValue('uuid'));
         $foop->expects($this->exactly(2))->method('update')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));

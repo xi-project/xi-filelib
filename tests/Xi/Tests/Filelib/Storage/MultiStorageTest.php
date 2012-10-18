@@ -113,9 +113,9 @@ class MultiStorageTest extends \Xi\Tests\TestCase
 
         $this->assertInstanceOf('\\Xi\\Filelib\\Storage\\Storage', $sessionStorage);
 
-        $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
-        $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
-
+        for ($x = 1; $x <= 10; $x++) {
+            $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
+        }
     }
 
 

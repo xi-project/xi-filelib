@@ -71,7 +71,9 @@ class MultiStorage implements Storage
             throw new FilelibException('MultiStorage has no inner storages. Can not get session storage.');
         }
 
-        if (!$sessionStorageId = $this->getSessionStorageId()) {
+        $sessionStorageId = $this->getSessionStorageId();
+
+        if ($sessionStorageId === null) {
             $sessionStorageId = array_rand($this->storages);
             $this->setSessionStorageId($sessionStorageId);
         }
