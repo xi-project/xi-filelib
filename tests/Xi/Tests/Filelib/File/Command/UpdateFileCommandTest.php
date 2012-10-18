@@ -44,6 +44,7 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertAttributeEquals(null, 'fileOperator', $command2);
         $this->assertAttributeEquals($file, 'file', $command2);
+        $this->assertAttributeNotEmpty('uuid', $command2);
 
     }
 

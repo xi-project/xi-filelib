@@ -9,13 +9,13 @@
 
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
-use Xi\Filelib\File\File;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\FilelibException;
 
 /**
  * Creates directories in a leveled hierarchy based on a numeric file id
  *
- * @author pekkis
  */
 class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
 {
@@ -75,23 +75,26 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
         return $this->directoryLevels;
     }
 
-    public function calculateDirectoryId(File $file)
+    /**
+     * @see DirectoryIdCalculator::calculateDirectoryId
+     */
+    public function calculateDirectoryId($resource)
     {
-        if (!is_numeric($file->getId())) {
-            throw new FilelibException("Leveled directory id calculator requires numeric file ids ('{$file->getId()}' was provided)");
+        if(!is_numeric($resource->getId())) {
+            throw new FilelibException("Leveled directory id calculator requires numeric file ids ('{$resource->getId()}' was provided)");
         }
 
-        $fileId = $file->getId();
+        if($this->getDirectoryLevels() < 1) {
+            throw new FilelibException("Invalid number of directory levels ('{$this->getDirectoryLevels()}')");
+        }
+
+        $resourceId = $resource->getId();
 
         $directoryLevels = $this->getDirectoryLevels() + 1;
         $filesPerDirectory = $this->getFilesPerDirectory();
 
-        if ($directoryLevels < 1) {
-            throw new FilelibException("Invalid number of directory levels ('{$directoryLevels}')");
-        }
-
         $arr = array();
-        $tmpfileid = $fileId - 1;
+        $tmpfileid = $resourceId - 1;
 
         for ($count = 1; $count <= $directoryLevels; ++$count) {
             $lus = $tmpfileid / pow($filesPerDirectory, $directoryLevels - $count);
@@ -102,5 +105,6 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
         $puuppa = array_pop($arr);
 
         return implode(DIRECTORY_SEPARATOR, $arr);
+
     }
 }

@@ -6,7 +6,7 @@ use \Imagick;
 
 /**
  * Interface for imagemagick version plugin commands
- * 
+ *
  * @author pekkis
  *
  */
@@ -20,7 +20,7 @@ interface Command
 
     /**
      * Creates a new imagick resource
-     * 
+     *
      * @param string $path Image path
      * @return Imagick
      */

@@ -50,7 +50,7 @@ class VersionPlugin extends AbstractVersionProvider
     public function createVersions(File $file)
     {
         // Todo: optimize
-        $retrieved = $this->getStorage()->retrieve($file)->getPathname();
+        $retrieved = $this->getStorage()->retrieve($file->getResource())->getPathname();
         $img = $this->getImageMagickHelper()->createImagick($retrieved);
 
         $this->getImageMagickHelper()->execute($img);
@@ -92,6 +92,17 @@ class VersionPlugin extends AbstractVersionProvider
     public function getExtensionFor($version)
     {
         return $this->getExtension();
+    }
+
+
+    public function isSharedResourceAllowed()
+    {
+        return true;
+    }
+
+    public function areSharedVersionsAllowed()
+    {
+        return true;
     }
 
 }

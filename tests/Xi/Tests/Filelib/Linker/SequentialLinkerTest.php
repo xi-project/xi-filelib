@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of the Xi Filelib package.
  *
  * For copyright and license information, please view the LICENSE
@@ -10,6 +10,7 @@
 namespace Xi\Tests\Filelib\Linker;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Linker\SequentialLinker;
 
 /**
@@ -92,8 +93,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
                 File::create(array(
                     'id' => 888,
                     'name' => 'loso.png',
-                    'folder_id' => 3
-
+                    'folder_id' => 3,
                 )), 3, 48, array('1/1/19/loso.png', '1/1/19/loso-xoo.xoo'),
 
             ),
@@ -137,6 +137,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
      */
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $levels, $fpd, $beautifurl)
     {
+
         $linker = new SequentialLinker();
         $linker->setDirectoryLevels($levels);
         $linker->setFilesPerDirectory($fpd);
@@ -149,5 +150,33 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
                 $this->versionProvider->getExtensionFor($this->versionProvider->getIdentifier())
             )
         );
+
+    }
+
+    /**
+     * @test
+     * @expectedException Xi\Filelib\Exception\InvalidArgumentException
+     */
+    public function getDirectoryIdShouldThrowExceptionWithNonNumericFileIds()
+    {
+        $linker = new SequentialLinker();
+        $file = File::create(array('id' => 'xoo-xoo'));
+
+        $linker->getDirectoryId($file);
+
+    }
+
+    /**
+     * @test
+     * @expectedException Xi\Filelib\Exception\InvalidArgumentException
+     */
+    public function getDirectoryIdShouldThrowExceptionWhenDirectoryLevelsIsLessThanOne()
+    {
+        $linker = new SequentialLinker();
+        $file = File::create(array('id' => 1));
+
+        $linker->setDirectoryLevels(0);
+
+        $ret = $linker->getDirectoryId($file);
     }
 }

@@ -7,7 +7,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Serializable;
 
-class DeleteFolderCommand extends AbstractFolderCommand implements Serializable
+class DeleteFolderCommand extends AbstractFolderCommand
 {
 
     /**
@@ -56,13 +56,15 @@ class DeleteFolderCommand extends AbstractFolderCommand implements Serializable
     {
         $data = unserialize($serialized);
         $this->folder = $data['folder'];
+        $this->uuid = $data['uuid'];
     }
 
 
     public function serialize()
     {
         return serialize(array(
-           'folder' => $this->folder,
+            'folder' => $this->folder,
+            'uuid' => $this->uuid,
         ));
     }
 

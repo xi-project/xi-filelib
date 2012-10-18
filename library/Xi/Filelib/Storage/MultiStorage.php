@@ -12,9 +12,10 @@ namespace Xi\Filelib\Storage;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 
-class MultiStorage extends AbstractStorage implements Storage
+class MultiStorage implements Storage
 {
     /**
      * @var array
@@ -70,7 +71,9 @@ class MultiStorage extends AbstractStorage implements Storage
             throw new FilelibException('MultiStorage has no inner storages. Can not get session storage.');
         }
 
-        if (!$sessionStorageId = $this->getSessionStorageId()) {
+        $sessionStorageId = $this->getSessionStorageId();
+
+        if ($sessionStorageId === null) {
             $sessionStorageId = array_rand($this->storages);
             $this->setSessionStorageId($sessionStorageId);
         }
@@ -78,41 +81,52 @@ class MultiStorage extends AbstractStorage implements Storage
         return $this->storages[$this->getSessionStorageId()];
     }
 
-    public function store(File $file, $tempFile)
+    public function store(Resource $resource, $tempFile)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->store($file, $tempFile);
+            $storage->store($resource, $tempFile);
         }
     }
 
-    public function storeVersion(File $file, $version, $tempFile)
+    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->storeVersion($file, $version, $tempFile);
+            $storage->storeVersion($resource, $version, $tempFile, $file);
         }
     }
 
-    public function retrieve(File $file)
+    public function retrieve(Resource $resource)
     {
-        return $this->getSessionStorage()->retrieve($file);
+        return $this->getSessionStorage()->retrieve($resource);
     }
 
-    public function retrieveVersion(File $file, $version)
+    public function retrieveVersion(Resource $resource, $version, File $file = null)
     {
-        return $this->getSessionStorage()->retrieveVersion($file, $version);
+        return $this->getSessionStorage()->retrieveVersion($resource, $version, $file);
     }
 
-    public function delete(File $file)
+    public function delete(Resource $resource)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->delete($file);
+            $storage->delete($resource);
         }
     }
 
-    public function deleteVersion(File $file, $version)
+    public function deleteVersion(Resource $resource, $version, File $file = null)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->deleteVersion($file, $version);
+            $storage->deleteVersion($resource, $version, $file);
         }
+    }
+
+
+    public function exists(Resource $resource)
+    {
+        return $this->getSessionStorage()->exists($resource);
+    }
+
+    public function versionExists(Resource $resource, $version, File $file = null)
+    {
+        return $this->getSessionStorage()->versionExists($resource, $version, $file);
     }
 }

@@ -7,7 +7,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Serializable;
 
-class PublishFileCommand extends AbstractFileCommand implements Serializable
+class PublishFileCommand extends AbstractFileCommand
 {
 
     /**
@@ -37,13 +37,15 @@ class PublishFileCommand extends AbstractFileCommand implements Serializable
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
+        $this->uuid = $data['uuid'];
     }
 
 
     public function serialize()
     {
         return serialize(array(
-           'file' => $this->file,
+            'file' => $this->file,
+            'uuid' => $this->uuid,
         ));
 
     }

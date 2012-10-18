@@ -55,14 +55,11 @@ class PeclAMQPQueue implements Queue
 
     }
 
-
-
-    public function enqueue(Message $message)
+    public function enqueue(Enqueueable $enqueueable)
     {
-        $msg = serialize($message->getBody());
+        $msg = serialize($enqueueable);
         $this->exchange->publish($msg, 'filelib');
     }
-
 
     public function dequeue()
     {
@@ -72,11 +69,10 @@ class PeclAMQPQueue implements Queue
             return null;
         }
 
-        $message = new Message(unserialize($msg->getBody()));
+        $message = new Message($msg->getBody());
         $message->setIdentifier($msg->getDeliveryTag());
 
         return $message;
-
     }
 
 
