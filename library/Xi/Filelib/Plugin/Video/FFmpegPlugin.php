@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Plugin\Video;
 
+use RuntimeException;
 use Symfony\Component\Process\Process;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
@@ -48,7 +49,7 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         $probe->run();
 
         if (!$probe->isSuccessful()) {
-            throw new RuntimeException($process->getErrorOutput());
+            throw new RuntimeException($probe->getErrorOutput());
         }
         return json_decode($probe->getOutput());
     }
