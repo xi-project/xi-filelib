@@ -28,16 +28,16 @@
 
     "require": {
         "php": ">=5.3.3",
-        "symfony/event-dispatcher": ">=2.0.14"
+        "symfony/event-dispatcher": ">=2.0.14, <=2.1.2"
     },
 
     "require-dev": {
         "doctrine/orm": "2.2.2",
         "doctrine/dbal": "2.2.2",
         "doctrine/common": "2.2.2",
-        "symfony/http-foundation": "2.0.14",
-        "symfony/http-kernel": "2.0.14",
-        "symfony/security": "2.0.14",
+        "symfony/http-foundation": "2.1.2",
+        "symfony/http-kernel": "2.1.2",
+        "symfony/security": "2.1.2",
         "zendframework/zendservice-amazon": "2.0.*",
         "zendframework/zend-i18n": "2.0.*",
         "zendframework/zend-filter": "2.0.*",
