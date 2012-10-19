@@ -15,6 +15,33 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('FFmpeg could not be found');
         }
 
+        $this->testVideo = ROOT_TESTS . '/data/hauska-joonas.mp4';
+
+        $this->config = array(
+            'globalOptions' => array(
+                'y' => '',
+                'benchmark_all' => ''
+            ),
+            /* 'inputs' => array( */
+            /*     'watermark' => array( */
+            /*         'filename' => '' */
+            /*     ) */
+            /* ), */
+            'outputs' => array(
+                '1080p_stills' => array(
+                    'filename' => dirname($this->testVideo) . '/' . pathinfo($this->testVideo)['filename'] . '_%03d.png',
+                    'options' => array(
+                        'ss' => '00:00:01.000',
+                        'r' => '1/25',
+                        's' => '1920x1080',
+                        'aspect' => '16:9',
+                        'f' => 'image2',
+                        'vframes' => '3'
+                    ),
+                )
+            )
+        );
+
         $this->plugin = new FFmpegPlugin();
     }
 
@@ -40,8 +67,85 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function settersAndGettersShouldWorkAsExpected()
     {
-        $this->plugin = new FFmpegPlugin();
-        $this->assertTrue($this->checkFFmpegFound());
+        $plugin = new FFmpegPlugin();
+
+        $options = array(
+            'filename' => 'foo.png',
+            'options' => array(
+                'vframes' => '1',
+            )
+        );
+
+        $this->assertEquals(array(), $plugin->getGlobalOptions());
+        $plugin->setGlobalOptions($options);
+        $this->assertEquals($options, $plugin->getGlobalOptions());
+
+        $this->assertEquals(array(), $plugin->getInputs());
+        $plugin->setInputs($options);
+        $this->assertEquals($options, $plugin->getInputs());
+
+        $this->assertEquals(array(), $plugin->getOutputs());
+        $plugin->setOutputs($options);
+        $this->assertEquals($options, $plugin->getOutputs());
+    }
+
+    /**
+     * @test
+     */
+    public function testShellArguments()
+    {
+        $options = array(
+            'ss' => '00:00:01.000',
+            'r' => '1/25',
+            's' => '1920x1080',
+            'aspect' => '16:9',
+            'f' => 'image2',
+            'vframes' => '3'
+        );
+        $this->assertEquals(
+            "-ss '00:00:01.000' -r '1/25' -s '1920x1080' -aspect '16:9' -f 'image2' -vframes '3'",
+            FFmpegPlugin::shellArguments($options)
+        );
+    }
+
+    public function testGetCommand()
+    {
+        $config = array(
+            'globalOptions' => array(
+                'y' => true
+            ),
+            'inputs' => array(
+                'foo' => array(
+                    'filename' => 'video.mp4',
+                    'options' => array('r' => '1')
+                ),
+                'bar' => array(
+                    'filename' => 'simpsons.mp4',
+                    'options' => array('r' => '20')
+                )
+            ),
+            'outputs' => array(
+                'stills' => array(
+                    'filename' => 'still.png',
+                    'options' => array(
+                        'vframes' => '1'
+                    )
+                ),
+                'webm' => array(
+                    'filename' => 'video.webm',
+                    'options' => array(
+                        's' => '1280x720'
+                    )
+                )
+            )
+        );
+        $plugin = new FFmpegPlugin($config);
+
+        $file = $this->testVideo;
+        $this->assertEquals(
+            "ffmpeg -y -r '1' -i 'video.mp4' -r '20' -i 'simpsons.mp4' -vframes '1' 'still.png' -s '1280x720' 'video.webm'",
+            $plugin->getCommand()
+        );
     }
 
     /**
@@ -49,14 +153,13 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function testGetVideoInfo()
     {
-        $path = ROOT_TESTS . '/data/hauska-joonas.mp4';
-        $filelib = $this->getFilelib()->setStorage($this->getMockedStorage($path));
+        $filelib = $this->getFilelib()->setStorage($this->getMockedStorage($this->testVideo));
         $this->plugin->setFilelib($filelib);
 
         $expected = <<<JSON
 {
     "format": {
-        "filename": "$path",
+        "filename": "$this->testVideo",
         "nb_streams": 2,
         "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
         "format_long_name": "QuickTime / MOV",
@@ -74,7 +177,7 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
 }
 JSON;
 
-        $video = File::create(array('id' => 1, 'name' => basename($path)));
+        $video = File::create(array('id' => 1, 'name' => basename($this->testVideo)));
         $this->assertEquals(json_decode($expected), $this->plugin->getVideoInfo($video));
     }
 
