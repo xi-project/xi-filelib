@@ -5,11 +5,12 @@ namespace Xi\Filelib\File;
 use DateTime;
 use ArrayObject;
 use Xi\Filelib\File\Resource;
+use Xi\Filelib\IdentityMap\Identifiable;
 
 /**
  * File
  */
-class File
+class File implements Identifiable
 {
     const STATUS_RAW = 1;
     const STATUS_COMPLETED = 2;
@@ -370,7 +371,7 @@ class File
      * @param array $data
      * @return type File
      */
-    public static function create(array $data)
+    public static function create(array $data = array())
     {
         $file = new self();
         return $file->fromArray($data);

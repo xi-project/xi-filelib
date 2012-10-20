@@ -4,6 +4,7 @@ namespace Xi\Filelib\Folder;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\FilelibException;
+use Xi\Filelib\IdentityMap\Identifiable;
 
 /**
  * Folder
@@ -11,7 +12,7 @@ use Xi\Filelib\FilelibException;
  * @author pekkis
  *
  */
-class Folder
+class Folder implements Identifiable
 {
     /**
      * Key to method mapping for fromArray
@@ -153,7 +154,7 @@ class Folder
      * @param array $data
      * @return Folder
      */
-    public static function create(array $data)
+    public static function create(array $data = array())
     {
         $folder = new self();
         return $folder->fromArray($data);
