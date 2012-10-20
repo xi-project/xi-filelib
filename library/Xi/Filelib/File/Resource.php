@@ -3,11 +3,12 @@
 namespace Xi\Filelib\File;
 
 use DateTime;
+use Xi\Filelib\IdentityMap\Identifiable;
 
 /**
  * Resource
  */
-class Resource
+class Resource implements Identifiable
 {
     /**
      * Key to method mapping for fromArray
