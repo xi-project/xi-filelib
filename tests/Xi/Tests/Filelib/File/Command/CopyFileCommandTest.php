@@ -194,7 +194,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $this->acl->expects($this->once())->method('isFolderWritable')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue(true));
 
-        $backend = $this->getMock('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMock('Xi\Filelib\Backend\Platform\Backend');
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 

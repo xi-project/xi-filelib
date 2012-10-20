@@ -245,7 +245,7 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new FileOperator($filelib);
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('findFile')->with($this->equalTo($id))->will($this->returnValue(false));
 
         $filelib->setBackend($backend);
@@ -268,7 +268,7 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib->setEventDispatcher($eventDispatcher);
         $op = new FileOperator($filelib);
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('findFile')->with($this->equalTo($id))->will($this->returnValue(
             array(
                 'id' => $id,
@@ -298,7 +298,7 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('findFileByFilename')->with(
             $this->equalTo($folder),
             $this->equalTo($id)
@@ -326,7 +326,7 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('findFileByFilename')->with(
             $this->equalTo($folder),
             $this->equalTo($id)
@@ -360,7 +360,7 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $filelib->setEventDispatcher($eventDispatcher);
         $op = new FileOperator($filelib);
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('findAllFiles')->will($this->returnValue(array()));
 
         $filelib->setBackend($backend);
@@ -385,7 +385,7 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
 
         $op = new FileOperator($filelib);
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('findAllFiles')->will($this->returnValue(
             array(
                 array(

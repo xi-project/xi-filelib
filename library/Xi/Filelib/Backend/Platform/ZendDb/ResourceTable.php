@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Backend\ZendDb;
+namespace Xi\Filelib\Backend\Platform\ZendDb;
 
 /**
  * Folder table

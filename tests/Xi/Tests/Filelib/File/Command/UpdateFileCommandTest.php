@@ -93,7 +93,7 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $file->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('updateFile')->with($this->equalTo($file));
 
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
@@ -167,7 +167,7 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $file->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
 
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('updateFile')->with($this->equalTo($file));
 
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));

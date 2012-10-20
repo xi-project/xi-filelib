@@ -1,14 +1,14 @@
 <?php
 
-namespace Xi\Filelib\Backend;
+namespace Xi\Filelib\Backend\Platform;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\NonUniqueFileException;
-use Xi\Filelib\Backend\ZendDb\FileTable;
-use Xi\Filelib\Backend\ZendDb\FolderTable;
-use Xi\Filelib\Backend\ZendDb\ResourceTable;
+use Xi\Filelib\Backend\Platform\ZendDb\FileTable;
+use Xi\Filelib\Backend\Platform\ZendDb\FolderTable;
+use Xi\Filelib\Backend\Platform\ZendDb\ResourceTable;
 use Zend_Db_Adapter_Abstract;
 use Zend_Db_Table_Abstract;
 use Zend_Db_Statement_Exception;

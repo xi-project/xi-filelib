@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Backend\Doctrine2\Entity;
+namespace Xi\Filelib\Backend\Platform\Doctrine2\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 

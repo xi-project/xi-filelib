@@ -1,5 +1,7 @@
 <?php
 
+namespace Xi\Tests\Filelib\Backend\Platform;
+
 class AbstractBackendTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -9,7 +11,7 @@ class AbstractBackendTest extends \PHPUnit_Framework_TestCase
     {
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
-        $backend = $this->getMockBuilder('Xi\Filelib\Backend\AbstractBackend')
+        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Platform\AbstractBackend')
             ->setMethods(array())
             ->setConstructorArgs(array($ed))
             ->getMockForAbstractClass();

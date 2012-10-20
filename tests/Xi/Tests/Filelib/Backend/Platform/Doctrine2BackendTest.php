@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Tests\Filelib\Backend;
+namespace Xi\Tests\Filelib\Backend\Platform;
 
-use Xi\Filelib\Backend\Doctrine2Backend;
+use Xi\Filelib\Backend\Platform\Doctrine2Backend;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Resource;
 use Doctrine\ORM\EntityManager;
@@ -73,13 +73,13 @@ class Doctrine2BackendTest extends RelationalDbTestCase
     {
         $this->setUpEmptyDataSet();
 
-        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\File',
+        $this->assertEquals('Xi\Filelib\Backend\Platform\Doctrine2\Entity\File',
                             $this->backend->getFileEntityName());
 
-        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\Folder',
+        $this->assertEquals('Xi\Filelib\Backend\Platform\Doctrine2\Entity\Folder',
                             $this->backend->getFolderEntityName());
 
-        $this->assertEquals('Xi\Filelib\Backend\Doctrine2\Entity\Resource',
+        $this->assertEquals('Xi\Filelib\Backend\Platform\Doctrine2\Entity\Resource',
                             $this->backend->getResourceEntityName());
 
 

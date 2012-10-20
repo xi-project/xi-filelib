@@ -97,7 +97,7 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         $op->expects($this->at(6))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
                                        ->will($this->returnValue($deleteFileCommand));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->exactly(1))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
                 ->will($this->returnCallback(function($folder) {
 

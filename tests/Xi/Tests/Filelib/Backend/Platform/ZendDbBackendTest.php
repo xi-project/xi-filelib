@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Tests\Filelib\Backend;
+namespace Xi\Tests\Filelib\Backend\Platform;
 
-use Xi\Filelib\Backend\ZendDbBackend;
+use Xi\Filelib\Backend\Platform\ZendDbBackend;
 use Zend_Db;
 
 /**
@@ -55,12 +55,12 @@ class ZendDbBackendTest extends RelationalDbTestCase
         $this->setUpEmptyDataSet();
 
         $this->assertInstanceOf(
-            'Xi\Filelib\Backend\ZendDb\FileTable',
+            'Xi\Filelib\Backend\Platform\ZendDb\FileTable',
             $this->backend->getFileTable()
         );
 
         $this->assertInstanceOf(
-            'Xi\Filelib\Backend\ZendDb\FolderTable',
+            'Xi\Filelib\Backend\Platform\ZendDb\FolderTable',
             $this->backend->getFolderTable()
         );
     }
@@ -89,7 +89,7 @@ class ZendDbBackendTest extends RelationalDbTestCase
     {
         $this->setUpEmptyDataSet();
 
-        $resourceTable = $this->getMockBuilder('Xi\Filelib\Backend\ZendDb\ResourceTable')
+        $resourceTable = $this->getMockBuilder('Xi\Filelib\Backend\Platform\ZendDb\ResourceTable')
                               ->disableOriginalConstructor()
                               ->getMock();
 
@@ -107,7 +107,7 @@ class ZendDbBackendTest extends RelationalDbTestCase
     private function createFolderTableMock()
     {
         return $this->getMockAndDisableOriginalConstructor(
-            'Xi\Filelib\Backend\ZendDb\FolderTable'
+            'Xi\Filelib\Backend\Platform\ZendDb\FolderTable'
         );
     }
 }

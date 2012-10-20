@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Tests\Filelib\Backend;
+namespace Xi\Tests\Filelib\Backend\Platform;
 
 use PDO;
 use PDOException;

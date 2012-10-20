@@ -5,7 +5,7 @@ namespace Xi\Filelib;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Backend\Backend;
+use Xi\Filelib\Backend\Platform\Backend;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Acl\Acl;

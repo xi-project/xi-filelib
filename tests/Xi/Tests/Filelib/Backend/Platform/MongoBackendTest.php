@@ -1,9 +1,9 @@
 <?php
 
-namespace Xi\Tests\Filelib\Backend;
+namespace Xi\Tests\Filelib\Backend\Platform;
 
 use PHPUnit_Framework_TestCase;
-use Xi\Filelib\Backend\MongoBackend;
+use Xi\Filelib\Backend\Platform\MongoBackend;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use DateTime;

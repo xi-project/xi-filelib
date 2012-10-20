@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Backend;
+namespace Xi\Filelib\Backend\Platform;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
@@ -27,21 +27,21 @@ class Doctrine2Backend extends AbstractBackend
      *
      * @var string
      */
-    private $fileEntityName = 'Xi\Filelib\Backend\Doctrine2\Entity\File';
+    private $fileEntityName = 'Xi\Filelib\Backend\Platform\Doctrine2\Entity\File';
 
     /**
      * Folder entity name
      *
      * @var string
      */
-    private $folderEntityName = 'Xi\Filelib\Backend\Doctrine2\Entity\Folder';
+    private $folderEntityName = 'Xi\Filelib\Backend\Platform\Doctrine2\Entity\Folder';
 
     /**
      * Resource entity name
      *
      * @var string
      */
-    private $resourceEntityName = 'Xi\Filelib\Backend\Doctrine2\Entity\Resource';
+    private $resourceEntityName = 'Xi\Filelib\Backend\Platform\Doctrine2\Entity\Resource';
 
 
     /**

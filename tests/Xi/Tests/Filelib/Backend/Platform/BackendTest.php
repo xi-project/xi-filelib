@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Tests\Filelib\Backend;
+namespace Xi\Tests\Filelib\Backend\Platform;
 
 use Xi\Tests\Filelib\TestCase as FilelibTestCase;
 
@@ -14,6 +14,6 @@ class BackendTest extends FilelibTestCase
      */
     public function interfaceShouldExist()
     {
-        $this->assertTrue(interface_exists('Xi\Filelib\Backend\Backend'));
+        $this->assertTrue(interface_exists('Xi\Filelib\Backend\Platform\Backend'));
     }
 }

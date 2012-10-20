@@ -74,7 +74,7 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $op->expects($this->once())->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue('route'));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('createFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnArgument(0));
 
         $filelib->setBackend($backend);

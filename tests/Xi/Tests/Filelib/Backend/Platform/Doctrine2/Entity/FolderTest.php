@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Tests\Filelib\Backend\Doctrine2\Entity;
+namespace Xi\Tests\Filelib\Backend\Platform\Doctrine2\Entity;
 
-use Xi\Filelib\Backend\Doctrine2\Entity\Folder;
+use Xi\Filelib\Backend\Platform\Doctrine2\Entity\Folder;
 
 class FolderTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -11,9 +11,9 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Backend\Doctrine2\Entity\Folder'));
+        $this->assertTrue(class_exists('Xi\Filelib\Backend\Platform\Doctrine2\Entity\Folder'));
     }
-    
+
     /**
      * @test
      */
@@ -23,12 +23,12 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
 
         $value = 503;
         $this->assertNull($folder->getId());
-        
+
         $value = 'xooxer';
         $this->assertNull($folder->getName());
         $this->assertSame($folder, $folder->setName($value));
         $this->assertEquals($value, $folder->getName());
-        
+
         $value = 'url';
         $this->assertNull($folder->getUrl());
         $this->assertSame($folder, $folder->setUrl($value));
@@ -38,12 +38,12 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
         $this->assertNull($folder->getParent());
         $this->assertSame($folder, $folder->setParent($value));
         $this->assertSame($value, $folder->getParent());
-        
+
         $folder->removeParent();
         $this->assertNull($folder->getParent());
-        
+
     }
-    
-    
-    
+
+
+
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Backend;
+namespace Xi\Filelib\Backend\Platform;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;

@@ -102,7 +102,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $backend->expects($this->once())->method('upload')->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
@@ -196,7 +196,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('getBackend', 'getProfile'))
                     ->getMock();
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
@@ -243,7 +243,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
             ->setMethods(array('getBackend', 'getProfile'))
             ->getMock();
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
@@ -303,7 +303,7 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                 ->method('isSharedResourceAllowed')
                 ->will($this->returnValue(true));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';

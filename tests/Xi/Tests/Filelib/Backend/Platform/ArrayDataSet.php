@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Tests\Filelib\Backend;
+namespace Xi\Tests\Filelib\Backend\Platform;
 
 use PHPUnit_Util_Filter;
 use PHPUnit_Extensions_Database_DataSet_AbstractDataSet;
@@ -44,7 +44,7 @@ class ArrayDataSet extends PHPUnit_Extensions_Database_DataSet_AbstractDataSet
     public function getTable($tableName)
     {
         if (!isset($this->tables[$tableName])) {
-            throw new InvalidArgumentException("$tableName is not a table in the current database.");
+            throw new \InvalidArgumentException("$tableName is not a table in the current database.");
         }
 
         return $this->tables[$tableName];
