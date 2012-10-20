@@ -7,8 +7,14 @@ namespace Xi\Filelib\IdentityMap;
  */
 class IdentityMap
 {
+    /**
+     * @var array
+     */
     private $objectIdentifiers = array();
 
+    /**
+     * @var array
+     */
     private $objects = array();
 
     /**
