@@ -459,46 +459,42 @@ class DoctrineOrmPlatform extends AbstractPlatform
     }
 
     /**
-     * @see AbstractPlatform::fileToArray
+     * @see AbstractPlatform::exportFolder
      */
-    protected function fileToArray($file)
+    protected function exportFolder($folder)
     {
-        return array(
+        return Folder::create(array(
+            'id'        => $folder->getId(),
+            'parent_id' => $folder->getParent() ? $folder->getParent()->getId() : null,
+            'name'      => $folder->getName(),
+            'url'       => $folder->getUrl(),
+            'uuid'      => $folder->getUuid(),
+        ));
+    }
+
+    /**
+     * @see AbstractPlatform::exportFile
+     */
+    protected function exportFile($file)
+    {
+        return File::create(array(
             'id'            => $file->getId(),
-            'folder_id'     => $file->getFolder()
-                                   ? $file->getFolder()->getId()
-                                   : null,
+            'folder_id'     => $file->getFolder() ? $file->getFolder()->getId() : null,
             'profile'       => $file->getProfile(),
             'name'          => $file->getName(),
             'link'          => $file->getLink(),
             'date_created' => $file->getDateCreated(),
             'status'        => $file->getStatus(),
             'uuid'          => $file->getUuid(),
-            'resource' => ($file->getResource()) ? $this->resourceToArray($file->getResource()) : null,
+            'resource' => ($file->getResource()) ? $this->exportResource($file->getResource()) : null,
             'versions' => $file->getVersions(),
-        );
+        ));
     }
 
     /**
-     * @see AbstractPlatform::folderToArray
+     * @see AbstractPlatform::exportResource
      */
-    protected function folderToArray($folder)
-    {
-        return array(
-            'id'        => $folder->getId(),
-            'parent_id' => $folder->getParent()
-                               ? $folder->getParent()->getId()
-                               : null,
-            'name'      => $folder->getName(),
-            'url'       => $folder->getUrl(),
-            'uuid'      => $folder->getUuid(),
-        );
-    }
-
-    /**
-     * @see AbstractPlatform::resourceToArray
-     */
-    protected function resourceToArray($resource)
+    protected function exportResource($resource)
     {
         return Resource::create(array(
             'id' => $resource->getId(),

@@ -359,11 +359,11 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::fileToArray
+     * @see AbstractPlatform::exportFile
      */
-    protected function fileToArray($fileRow)
+    protected function exportFile($fileRow)
     {
-        return array(
+        return File::create(array(
             'id'            => $fileRow['id'],
             'folder_id'     => $fileRow['folder_id'],
             'name'          => $fileRow['filename'],
@@ -372,26 +372,26 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
             'date_created' => new DateTime($fileRow['date_created']),
             'status'        => (int) $fileRow['status'],
             'uuid'          => $fileRow['uuid'],
-            'resource'      => $this->resourceToArray($this->doFindResource($fileRow['resource_id'])),
+            'resource'      => $this->exportResource($this->doFindResource($fileRow['resource_id'])),
             'versions'      => unserialize($fileRow['versions']),
-        );
+        ));
     }
 
+
     /**
-     * @see AbstractPlatform::folderToArray
+     * @see AbstractPlatform::exportFolder
      */
-    protected function folderToArray($folder)
+    protected function exportFolder($folder)
     {
-        return array(
+        return Folder::create(array(
             'id'        => (int) $folder['id'],
-            'parent_id' => $folder['parent_id']
-                               ? (int) $folder['parent_id']
-                               : null,
+            'parent_id' => $folder['parent_id'] ? (int) $folder['parent_id'] : null,
             'name'      => $folder['foldername'],
             'url'       => $folder['folderurl'],
             'uuid'      => $folder['uuid'],
-        );
+        ));
     }
+
 
     /**
      * @see AbstractPlatform::doFindResource
@@ -443,9 +443,9 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::resourceToArray
+     * @see AbstractPlatform::exportResource
      */
-    protected function resourceToArray($row)
+    protected function exportResource($row)
     {
         return Resource::create(array(
             'id' => (int) $row['id'],

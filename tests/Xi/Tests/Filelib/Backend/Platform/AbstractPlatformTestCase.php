@@ -66,6 +66,7 @@ use Xi\Filelib\Folder\Folder;
      * @test
      * @dataProvider rootFolderIdProvider
      * @param mixed $rootFolderId
+     * @group refactor
      */
     public function findRootFolderShouldReturnRootFolder($rootFolderId)
     {
@@ -73,17 +74,17 @@ use Xi\Filelib\Folder\Folder;
 
         $rootFolder = $this->backend->findFolder($rootFolderId);
 
-        // Check that root folder exists already.
-        $this->assertNull($rootFolder['parent_id']);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $rootFolder);
+        $this->assertNull($rootFolder->getParentId());
 
         $folder = $this->backend->findRootFolder();
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
 
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-        $this->assertArrayHasKey('uuid', $folder);
-        $this->assertNull($folder['parent_id']);
+        $this->assertNotNull($folder->getId());
+        $this->assertNotNull($folder->getName());
+        $this->assertNotNull($folder->getUrl());
+        $this->assertNotNull($folder->getUuid());
+        $this->assertNull($folder->getParentId());
     }
 
 
@@ -136,7 +137,6 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $resource = $this->backend->findResource($resourceId);
-
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $resource);
 
         $this->assertEquals($resourceId, $resource->getId());
@@ -299,6 +299,7 @@ use Xi\Filelib\Folder\Folder;
 
     /**
      * @test
+     * @group refactor
      */
     public function findRootFolderCreatesRootFolderIfItDoesNotExist()
     {
@@ -306,13 +307,12 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = $this->backend->findRootFolder();
 
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-        $this->assertArrayHasKey('uuid', $folder);
-
-        $this->assertNull($folder['parent_id']);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
+        $this->assertNotNull($folder->getId());
+        $this->assertNotNull($folder->getName());
+        $this->assertNotNull($folder->getUrl());
+        $this->assertNotNull($folder->getUuid());
+        $this->assertNull($folder->getParentId());
     }
 
     /**
@@ -320,6 +320,7 @@ use Xi\Filelib\Folder\Folder;
      * @dataProvider findFolderProvider
      * @param integer $folderId
      * @param array   $data
+     * @group refactor
      */
     public function findFolderShouldReturnCorrectFolder($folderId, array $data)
     {
@@ -327,14 +328,14 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = $this->backend->findFolder($folderId);
 
-        $this->assertArrayHasKey('id', $folder);
-        $this->assertArrayHasKey('parent_id', $folder);
-        $this->assertArrayHasKey('name', $folder);
-        $this->assertArrayHasKey('url', $folder);
-        $this->assertArrayHasKey('uuid', $folder);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
+        $this->assertNotNull($folder->getId());
+        $this->assertNotNull($folder->getName());
+        $this->assertNotNull($folder->getUrl());
+        $this->assertNotNull($folder->getUuid());
 
-        $this->assertEquals($folderId, $folder['id']);
-        $this->assertEquals($data['name'], $folder['name']);
+        $this->assertEquals($folderId, $folder->getId());
+        $this->assertEquals($data['name'], $folder->getName());
     }
 
     /**
@@ -431,10 +432,8 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = Folder::create($data);
 
-        $this->assertInternalType('array', $this->backend->findFolder($folderId));
-
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $this->backend->findFolder($folderId));
         $this->assertTrue($this->backend->deleteFolder($folder));
-
         $this->assertFalse($this->backend->findFolder($folderId));
     }
 
@@ -457,7 +456,8 @@ use Xi\Filelib\Folder\Folder;
             'name'      => 'klus',
         ));
 
-        $this->assertInternalType('array', $this->backend->findFolder($folderId));
+
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $this->backend->findFolder($folderId));
 
         $this->setExpectedException(
             'Xi\Filelib\Exception\FolderNotEmptyException',
@@ -491,19 +491,20 @@ use Xi\Filelib\Folder\Folder;
      * @param mixed $folderId
      * @param mixed $parentFolderId
      * @param mixed $updatedParentFolderId
+     * @group refactor
      */
     public function updateFolderShouldUpdateFolder($folderId, $parentFolderId,
         $updatedParentFolderId
     ) {
         $this->setUpSimpleDataSet();
 
-        $data = array(
+        $data = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => $parentFolderId,
             'url'       => 'lussuttaja/tussin',
             'name'      => 'tussin',
             'uuid'      => 'uuid-f-' . $folderId,
-        );
+        ));
 
         $this->assertEquals($data, $this->backend->findFolder($folderId));
 
@@ -514,34 +515,32 @@ use Xi\Filelib\Folder\Folder;
             'name'      => 'lussander',
             'uuid'      => 'sika-uuid',
         );
-
         $folder = Folder::create($updateData);
 
         $this->assertTrue($this->backend->updateFolder($folder));
-        $this->assertEquals($updateData, $this->backend->findFolder($folderId));
+        $this->assertEquals($folder, $this->backend->findFolder($folderId));
     }
 
     /**
      * @test
      * @dataProvider rootFolderIdProvider
      * @param mixed $folderId
+     * @group refactor
      */
     public function updatesRootFolder($folderId)
     {
         $this->setUpSimpleDataSet();
 
-        $data = array(
+        $folder = Folder::create(array(
             'id'        => $folderId,
             'parent_id' => null,
             'url'       => 'foo/bar',
             'name'      => 'xoo',
             'uuid'      => 'tussi-uuid',
-        );
-
-        $folder = Folder::create($data);
+        ));
 
         $this->assertTrue($this->backend->updateFolder($folder));
-        $this->assertEquals($data, $this->backend->findFolder($folderId));
+        $this->assertEquals($folder, $this->backend->findFolder($folderId));
     }
 
     /**
@@ -589,6 +588,7 @@ use Xi\Filelib\Folder\Folder;
      * @dataProvider subFolderProvider
      * @param mixed   $folderId
      * @param integer $subFoldersCount
+     * @group refactorx
      */
     public function findSubFoldersShouldReturnArrayOfSubFolders($folderId,
         $subFoldersCount
@@ -606,6 +606,11 @@ use Xi\Filelib\Folder\Folder;
 
         $this->assertInternalType('array', $ret);
         $this->assertCount($subFoldersCount, $ret);
+
+        foreach ($ret as $f) {
+            $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $f);
+        }
+
     }
 
     /**
@@ -636,6 +641,7 @@ use Xi\Filelib\Folder\Folder;
      * @dataProvider folderByUrlProvider
      * @param string $folderUrl
      * @param mixed  $folderId
+     * @group refactorxx
      */
     public function findFolderByUrlShouldReturnFolder($folderUrl, $folderId)
     {
@@ -643,8 +649,8 @@ use Xi\Filelib\Folder\Folder;
 
         $ret = $this->backend->findFolderByUrl($folderUrl);
 
-        $this->assertInternalType('array', $ret);
-        $this->assertEquals($folderId, $ret['id']);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $ret);
+        $this->assertEquals($folderId, $ret->getId());
     }
 
     /**
@@ -692,6 +698,7 @@ use Xi\Filelib\Folder\Folder;
      * @dataProvider findFilesInProvider
      * @param mixed   $folderId
      * @param integer $filesInFolder
+     * @group refactorxx
      */
     public function findFilesInShouldReturnArrayOfFiles($folderId,
         $filesInFolder
@@ -709,6 +716,11 @@ use Xi\Filelib\Folder\Folder;
 
         $this->assertInternalType('array', $ret);
         $this->assertCount($filesInFolder, $ret);
+
+        foreach ($ret as $f) {
+            $this->assertInstanceOf('Xi\Filelib\File\File', $f);
+        }
+
     }
 
     /**
@@ -745,22 +757,10 @@ use Xi\Filelib\Folder\Folder;
 
         $ret = $this->backend->findFile($fileId);
 
-        $this->assertInternalType('array', $ret);
-
-        $this->assertArrayHasKey('id', $ret);
-        $this->assertArrayHasKey('folder_id', $ret);
-        $this->assertArrayHasKey('profile', $ret);
-        $this->assertArrayHasKey('name', $ret);
-        $this->assertArrayHasKey('link', $ret);
-        $this->assertArrayHasKey('date_created', $ret);
-        $this->assertArrayHasKey('status', $ret);
-        $this->assertArrayHasKey('resource', $ret);
-        $this->assertArrayHasKey('uuid', $ret);
-        $this->assertArrayHasKey('versions', $ret);
-
-        $this->assertInternalType('array', $ret['versions']);
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret['resource']);
-        $this->assertInstanceOf('DateTime', $ret['date_created']);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
+        $this->assertInternalType('array', $ret->getVersions());
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret->getResource());
+        $this->assertInstanceOf('DateTime', $ret->getDateCreated());
     }
 
     /**
@@ -804,22 +804,11 @@ use Xi\Filelib\Folder\Folder;
         $this->assertCount(5, $rets);
 
         foreach ($rets as $ret) {
-            $this->assertInternalType('array', $ret);
 
-            $this->assertArrayHasKey('id', $ret);
-            $this->assertArrayHasKey('folder_id', $ret);
-            $this->assertArrayHasKey('profile', $ret);
-            $this->assertArrayHasKey('name', $ret);
-            $this->assertArrayHasKey('link', $ret);
-            $this->assertArrayHasKey('date_created', $ret);
-            $this->assertArrayHasKey('status', $ret);
-            $this->assertArrayHasKey('resource', $ret);
-            $this->assertArrayHasKey('uuid', $ret);
-            $this->assertArrayHasKey('versions', $ret);
-
-            $this->assertInternalType('array', $ret['versions']);
-            $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret['resource']);
-            $this->assertInstanceOf('DateTime', $ret['date_created']);
+            $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
+            $this->assertInternalType('array', $ret->getVersions());
+            $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret->getResource());
+            $this->assertInstanceOf('DateTime', $ret->getDateCreated());
         }
     }
 
@@ -845,19 +834,13 @@ use Xi\Filelib\Folder\Folder;
             'resource'      => $this->backend->findResource($resourceId),
             'versions'      => array('lussi', 'watussi', 'klussi'),
         );
-
         $file = File::create($data);
 
         $this->assertTrue($this->backend->updateFile($file));
 
         $updated = $this->backend->findFile($fileId);
 
-        $this->assertEquals($data['resource']->getId(), $updated['resource']->getId());
-
-        $fields = array('id', 'folder_id', 'profile', 'name', 'link', 'date_created', 'status', 'uuid', 'versions');
-        foreach ($fields as $field) {
-            $this->assertEquals($data[$field], $updated[$field]);
-        }
+        $this->assertEquals($file, $updated);
     }
 
     /**
@@ -1092,10 +1075,10 @@ use Xi\Filelib\Folder\Folder;
 
         $file = $this->backend->findFileByFileName($folder, 'tohtori-vesala.png');
 
-        $this->assertInternalType('array', $file);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
 
-        $this->assertEquals($folder->getId(), $file['folder_id']);
-        $this->assertEquals($fidata['name'], $file['name']);
+        $this->assertEquals($folder->getId(), $file->getFolderId());
+        $this->assertEquals($fidata['name'], $file->getName());
 
     }
 

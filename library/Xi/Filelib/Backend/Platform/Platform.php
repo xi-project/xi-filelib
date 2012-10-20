@@ -8,10 +8,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\FilelibException;
 
 /**
- * Filelib backend interface
- *
- * @package Xi_Filelib
- * @author  pekkis
+ * Filelib backend platform interface
  */
 interface Platform
 {

@@ -287,42 +287,37 @@ class MongoPlatform extends AbstractPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::fileToArray
+     * @see AbstractPlatform::exportFolder
      */
-    protected function fileToArray($file)
+    protected function exportFolder($folder)
+    {
+        return Folder::create(array(
+            'id'        => (string) $folder['_id'],
+            'parent_id' => isset($folder['parent_id']) ? $folder['parent_id'] : null,
+            'name'      => $folder['name'],
+            'url'       => $folder['url'],
+            'uuid'      => $folder['uuid'],
+        ));
+    }
+
+    /**
+     * @see AbstractPlatform::exportFile
+     */
+    protected function exportFile($file)
     {
         $date = new DateTime();
-
-        return array(
+        return File::create(array(
             'id'            => (string) $file['_id'],
-            'folder_id'     => isset($file['folder_id'])
-                                   ? $file['folder_id']
-                                   : null,
+            'folder_id'     => isset($file['folder_id']) ? $file['folder_id'] : null,
             'profile'       => $file['profile'],
             'name'          => $file['name'],
             'link'          => isset($file['link']) ? $file['link'] : null,
             'status'        => $file['status'],
             'date_created'  => DateTime::createFromFormat('U', $file['date_created']->sec)->setTimezone($date->getTimezone()),
             'uuid'          => $file['uuid'],
-            'resource'      => $this->resourceToArray($this->doFindResource($file['resource_id'])),
+            'resource'      => $this->exportResource($this->doFindResource($file['resource_id'])),
             'versions'      => $file['versions'],
-        );
-    }
-
-    /**
-     * @see AbstractPlatform::folderToArray
-     */
-    protected function folderToArray($folder)
-    {
-        return array(
-            'id'        => (string) $folder['_id'],
-            'parent_id' => isset($folder['parent_id'])
-                               ? $folder['parent_id']
-                               : null,
-            'name'      => $folder['name'],
-            'url'       => $folder['url'],
-            'uuid'      => $folder['uuid'],
-        );
+        ));
     }
 
     /**
@@ -389,9 +384,9 @@ class MongoPlatform extends AbstractPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::resourceToArray
+     * @see AbstractPlatform::exportResource
      */
-    protected function resourceToArray($resource)
+    protected function exportResource($resource)
     {
         $date = new DateTime();
         return Resource::create(array(

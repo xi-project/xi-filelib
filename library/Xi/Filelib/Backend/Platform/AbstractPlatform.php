@@ -165,19 +165,21 @@ abstract class AbstractPlatform implements Platform
      * @param mixed $resource
      * @return array
      */
-    protected abstract function resourceToArray($resource);
+    protected abstract function exportResource($resource);
 
     /**
-     * @param  mixed $folder
-     * @return array
+     * @abstract
+     * @param $folder
+     * @return Folder|false
      */
-    protected abstract function folderToArray($folder);
+    protected abstract function exportFolder($folder);
 
     /**
-     * @param  mixed $file
-     * @return array
+     * @abstract
+     * @param $file
+     * @return File|false
      */
-    protected abstract function fileToArray($file);
+    protected abstract function exportFile($file);
 
     /**
      * Returns whether an identifier is valid for the backend
@@ -189,21 +191,18 @@ abstract class AbstractPlatform implements Platform
     /**
      * Finds a folder
      *
-     * @param  mixed                    $id
-     * @return array|false
+     * @param  mixed $id
+     * @return Folder|false
      * @throws InvalidArgumentException with invalid folder id
      */
     public function findFolder($id)
     {
         $this->assertValidIdentifier($id, 'Folder');
-
         $folder = $this->doFindFolder($id);
-
         if (!$folder) {
             return false;
         }
-
-        return $this->folderToArray($folder);
+        return $this->exportFolder($folder);
     }
 
     /**
@@ -223,7 +222,7 @@ abstract class AbstractPlatform implements Platform
             return false;
         }
 
-        return $this->resourceToArray($resource);
+        return $this->exportResource($resource);
 
     }
 
@@ -236,7 +235,7 @@ abstract class AbstractPlatform implements Platform
     public function findResourcesByHash($hash)
     {
         return array_map(
-            array($this, 'resourceToArray'),
+            array($this, 'exportResource'),
             $this->doFindResourcesByHash($hash)
         );
     }
@@ -311,7 +310,7 @@ abstract class AbstractPlatform implements Platform
         $this->assertValidIdentifier($folder->getId(), 'Folder');
 
         return array_map(
-            array($this, 'folderToArray'),
+            array($this, 'exportFolder'),
             $this->doFindSubFolders($folder->getId())
         );
     }
@@ -324,7 +323,7 @@ abstract class AbstractPlatform implements Platform
     public function findAllFiles()
     {
         return array_map(
-            array($this, 'fileToArray'),
+            array($this, 'exportFile'),
             $this->doFindAllFiles()
         );
     }
@@ -346,7 +345,7 @@ abstract class AbstractPlatform implements Platform
             return false;
         }
 
-        return $this->fileToArray($file);
+        return $this->exportFile($file);
     }
 
     /**
@@ -361,7 +360,7 @@ abstract class AbstractPlatform implements Platform
         $this->assertValidIdentifier($folder->getId(), 'Folder');
 
         return array_map(
-            array($this, 'fileToArray'),
+            array($this, 'exportFile'),
             $this->doFindFilesIn($folder->getId())
         );
     }
@@ -472,7 +471,7 @@ abstract class AbstractPlatform implements Platform
      */
     public function findRootFolder()
     {
-        return $this->folderToArray($this->doFindRootFolder());
+        return $this->exportFolder($this->doFindRootFolder());
     }
 
     /**
@@ -492,7 +491,7 @@ abstract class AbstractPlatform implements Platform
             return false;
         }
 
-        return $this->folderToArray($folder);
+        return $this->exportFolder($folder);
     }
 
     /**
@@ -511,7 +510,7 @@ abstract class AbstractPlatform implements Platform
             return false;
         }
 
-        return $this->fileToArray($file);
+        return $this->exportFile($file);
     }
 
     /**
