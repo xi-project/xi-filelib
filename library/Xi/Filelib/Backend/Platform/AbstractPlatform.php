@@ -22,7 +22,7 @@ use Exception;
  * @author pekkis <pekkisx@gmail.com>
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  */
-abstract class AbstractBackend implements Backend
+abstract class AbstractPlatform implements Platform
 {
     /**
      * @var EventDispatcherInterface

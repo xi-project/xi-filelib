@@ -24,7 +24,7 @@ use Xi\Filelib\Folder\Folder;
  *
  * @group backend
  */
-abstract class RelationalDbTestCase extends AbstractBackendTestCase
+abstract class RelationalDbTestCase extends AbstractPlatformTestCase
 {
     /**
      * @var string|null
@@ -54,7 +54,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTestCase
     }
 
     /**
-     * Implements AbstractBackendTest::setUpEmptyDataSet
+     * Implements AbstractPlatformTest::setUpEmptyDataSet
      *
      * Set up a test using an empty data set.
      */
@@ -64,7 +64,7 @@ abstract class RelationalDbTestCase extends AbstractBackendTestCase
     }
 
     /**
-     * Implements AbstractBackendTest::setUpSimpleDataSet
+     * Implements AbstractPlatformTest::setUpSimpleDataSet
      *
      * Set up a test using a simple data set.
      */

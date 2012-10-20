@@ -4,7 +4,7 @@ namespace Xi\Tests\Filelib\Backend\Platform;
 
 use PHPUnit_Framework_TestCase;
 use DateTime;
-use Xi\Filelib\Backend\Platform\Backend;
+use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
@@ -14,15 +14,15 @@ use Xi\Filelib\Folder\Folder;
  *
  * @group backend
  */
- abstract class AbstractBackendTestCase extends PHPUnit_Framework_TestCase
+ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Backend
+     * @var Platform
      */
     protected $backend;
 
     /**
-     * @return Backend
+     * @return Platform
      */
     protected abstract function setUpBackend();
 

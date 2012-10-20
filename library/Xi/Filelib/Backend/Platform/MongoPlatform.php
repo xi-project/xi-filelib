@@ -20,7 +20,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @category Xi
  * @package  Filelib
  */
-class MongoBackend extends AbstractBackend implements Backend
+class MongoPlatform extends AbstractPlatform implements Platform
 {
     /**
      * MongoDB reference
@@ -32,7 +32,7 @@ class MongoBackend extends AbstractBackend implements Backend
     /**
      * @param  EventDispatcherInterface $eventDispatcher
      * @param  MongoDB      $mongo
-     * @return MongoBackend
+     * @return MongoPlatform
      */
     public function __construct(EventDispatcherInterface $eventDispatcher, MongoDB $mongo)
     {
@@ -61,7 +61,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindFolder
+     * @see AbstractPlatform::doFindFolder
      */
     protected function doFindFolder($id)
     {
@@ -71,7 +71,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindSubFolders
+     * @see AbstractPlatform::doFindSubFolders
      */
     protected function doFindSubFolders($id)
     {
@@ -81,7 +81,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindAllFiles
+     * @see AbstractPlatform::doFindAllFiles
      */
     protected function doFindAllFiles()
     {
@@ -89,7 +89,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindFile
+     * @see AbstractPlatform::doFindFile
      */
     protected function doFindFile($id)
     {
@@ -99,7 +99,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindFiles
+     * @see AbstractPlatform::doFindFiles
      */
     protected function doFindFilesIn($id)
     {
@@ -109,7 +109,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doUpload
+     * @see AbstractPlatform::doUpload
      */
     protected function doUpload(File $file, Folder $folder)
     {
@@ -144,7 +144,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doCreateFolder
+     * @see AbstractPlatform::doCreateFolder
      */
     protected function doCreateFolder(Folder $folder)
     {
@@ -160,7 +160,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doDeleteFolder
+     * @see AbstractPlatform::doDeleteFolder
      */
     protected function doDeleteFolder(Folder $folder)
     {
@@ -172,7 +172,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doDeleteFile
+     * @see AbstractPlatform::doDeleteFile
      */
     protected function doDeleteFile(File $file)
     {
@@ -184,7 +184,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doUpdateFolder
+     * @see AbstractPlatform::doUpdateFolder
      */
     protected function doUpdateFolder(Folder $folder)
     {
@@ -201,7 +201,7 @@ class MongoBackend extends AbstractBackend implements Backend
 
 
     /**
-     * @see AbstractBackend::doUpdateResource
+     * @see AbstractPlatform::doUpdateResource
      */
     protected function doUpdateResource(Resource $resource)
     {
@@ -222,7 +222,7 @@ class MongoBackend extends AbstractBackend implements Backend
 
 
     /**
-     * @see AbstractBackend::doUpdateFile
+     * @see AbstractPlatform::doUpdateFile
      */
     protected function doUpdateFile(File $file)
     {
@@ -245,7 +245,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindRootFolder
+     * @see AbstractPlatform::doFindRootFolder
      */
     protected function doFindRootFolder()
     {
@@ -268,7 +268,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindFolderByUrl
+     * @see AbstractPlatform::doFindFolderByUrl
      */
     protected function doFindFolderByUrl($url)
     {
@@ -276,7 +276,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindByFilename
+     * @see AbstractPlatform::doFindByFilename
      */
     protected function doFindFileByFilename(Folder $folder, $filename)
     {
@@ -287,7 +287,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::fileToArray
+     * @see AbstractPlatform::fileToArray
      */
     protected function fileToArray($file)
     {
@@ -310,7 +310,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::folderToArray
+     * @see AbstractPlatform::folderToArray
      */
     protected function folderToArray($folder)
     {
@@ -326,7 +326,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::isValidIdentifier
+     * @see AbstractPlatform::isValidIdentifier
      */
     protected function isValidIdentifier($id)
     {
@@ -334,7 +334,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindResource
+     * @see AbstractPlatform::doFindResource
      */
     protected function doFindResource($id)
     {
@@ -344,7 +344,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doFindResourcesByHash
+     * @see AbstractPlatform::doFindResourcesByHash
      */
     protected function doFindResourcesByHash($hash)
     {
@@ -354,7 +354,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doCreateResource
+     * @see AbstractPlatform::doCreateResource
      */
     protected function doCreateResource(Resource $resource)
     {
@@ -380,7 +380,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doDeleteResource
+     * @see AbstractPlatform::doDeleteResource
      */
     protected function doDeleteResource(Resource $resource)
     {
@@ -389,7 +389,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::resourceToArray
+     * @see AbstractPlatform::resourceToArray
      */
     protected function resourceToArray($resource)
     {
@@ -406,7 +406,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @see AbstractBackend::doGetNumberOfReferences
+     * @see AbstractPlatform::doGetNumberOfReferences
      */
     protected function doGetNumberOfReferences(Resource $resource)
     {

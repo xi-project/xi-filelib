@@ -20,28 +20,28 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author   Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  * @author   pekkis
  */
-class Doctrine2Backend extends AbstractBackend
+class DoctrineOrmPlatform extends AbstractPlatform
 {
     /**
      * File entity name
      *
      * @var string
      */
-    private $fileEntityName = 'Xi\Filelib\Backend\Platform\Doctrine2\Entity\File';
+    private $fileEntityName = 'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\File';
 
     /**
      * Folder entity name
      *
      * @var string
      */
-    private $folderEntityName = 'Xi\Filelib\Backend\Platform\Doctrine2\Entity\Folder';
+    private $folderEntityName = 'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder';
 
     /**
      * Resource entity name
      *
      * @var string
      */
-    private $resourceEntityName = 'Xi\Filelib\Backend\Platform\Doctrine2\Entity\Resource';
+    private $resourceEntityName = 'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource';
 
 
     /**
@@ -54,7 +54,7 @@ class Doctrine2Backend extends AbstractBackend
     /**
      * @param  EventDispatcherInterface $eventDispatcher
      * @param  EntityManager    $em
-     * @return Doctrine2Backend
+     * @return DoctrineOrmPlatform
      */
     public function __construct(EventDispatcherInterface $eventDispatcher, EntityManager $em)
     {
@@ -143,7 +143,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindFile
+     * @see AbstractPlatform::doFindFile
      */
     protected function doFindFile($id)
     {
@@ -151,7 +151,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindFileByFilename
+     * @see AbstractPlatform::doFindFileByFilename
      */
     public function doFindFileByFilename(Folder $folder, $filename)
     {
@@ -162,7 +162,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindAllFiles
+     * @see AbstractPlatform::doFindAllFiles
      */
     protected function doFindAllFiles()
     {
@@ -175,7 +175,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindFilesIn
+     * @see AbstractPlatform::doFindFilesIn
      */
     protected function doFindFilesIn($id)
     {
@@ -185,7 +185,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doUpdateFile
+     * @see AbstractPlatform::doUpdateFile
      */
     protected function doUpdateFile(File $file)
     {
@@ -206,7 +206,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doDeleteFile
+     * @see AbstractPlatform::doDeleteFile
      */
     protected function doDeleteFile(File $file)
     {
@@ -221,7 +221,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindFolder
+     * @see AbstractPlatform::doFindFolder
      */
     protected function dofindFolder($id)
     {
@@ -229,7 +229,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindFolderByUrl
+     * @see AbstractPlatform::doFindFolderByUrl
      */
     protected function doFindFolderByUrl($url)
     {
@@ -239,7 +239,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindRootFolder
+     * @see AbstractPlatform::doFindRootFolder
      */
     protected function doFindRootFolder()
     {
@@ -268,7 +268,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindSubFolders
+     * @see AbstractPlatform::doFindSubFolders
      */
     protected function doFindSubFolders($id)
     {
@@ -278,7 +278,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doCreateFolder
+     * @see AbstractPlatform::doCreateFolder
      */
     protected function doCreateFolder(Folder $folder)
     {
@@ -297,7 +297,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doUpdateFolder
+     * @see AbstractPlatform::doUpdateFolder
      */
     protected function doUpdateFolder(Folder $folder)
     {
@@ -325,7 +325,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doUpdateResource
+     * @see AbstractPlatform::doUpdateResource
      */
     protected function doUpdateResource(Resource $resource)
     {
@@ -342,7 +342,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doDeleteFolder
+     * @see AbstractPlatform::doDeleteFolder
      */
     protected function doDeleteFolder(Folder $folder)
     {
@@ -364,7 +364,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doDeleteResource
+     * @see AbstractPlatform::doDeleteResource
      */
     protected function doDeleteResource(Resource $resource)
     {
@@ -385,7 +385,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doCreateResource
+     * @see AbstractPlatform::doCreateResource
      */
     protected function doCreateResource(Resource $resource)
     {
@@ -402,7 +402,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindResourcesByHash
+     * @see AbstractPlatform::doFindResourcesByHash
      */
     public function doFindResourcesByHash($hash)
     {
@@ -412,7 +412,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doFindResource
+     * @see AbstractPlatform::doFindResource
      */
     protected function dofindResource($id)
     {
@@ -420,7 +420,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doUpload
+     * @see AbstractPlatform::doUpload
      */
     protected function doUpload(File $file, Folder $folder)
     {
@@ -459,7 +459,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::fileToArray
+     * @see AbstractPlatform::fileToArray
      */
     protected function fileToArray($file)
     {
@@ -480,7 +480,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::folderToArray
+     * @see AbstractPlatform::folderToArray
      */
     protected function folderToArray($folder)
     {
@@ -496,7 +496,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::resourceToArray
+     * @see AbstractPlatform::resourceToArray
      */
     protected function resourceToArray($resource)
     {
@@ -512,7 +512,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::doGetNumberOfReferences
+     * @see AbstractPlatform::doGetNumberOfReferences
      */
     public function doGetNumberOfReferences(Resource $resource)
     {
@@ -540,7 +540,7 @@ class Doctrine2Backend extends AbstractBackend
     }
 
     /**
-     * @see AbstractBackend::isValidIdentifier
+     * @see AbstractPlatform::isValidIdentifier
      */
     protected function isValidIdentifier($id)
     {

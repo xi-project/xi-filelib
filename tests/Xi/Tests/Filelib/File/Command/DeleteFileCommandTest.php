@@ -96,7 +96,7 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $file = File::create(array('id' => 1, 'profile' => 'lussen', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Platform');
         $backend->expects($this->once())->method('deleteFile')->with($this->equalTo($file));
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');

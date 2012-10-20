@@ -7,7 +7,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Backend\Platform\Backend;
+use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\Command;
@@ -52,7 +52,7 @@ abstract class AbstractOperator
     /**
      * Returns backend
      *
-     * @return Backend
+     * @return Platform
      */
     public function getBackend()
     {

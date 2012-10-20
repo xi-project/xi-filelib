@@ -5,7 +5,7 @@ namespace Xi\Filelib;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Backend\Platform\Backend;
+use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Acl\Acl;
@@ -32,7 +32,7 @@ class FileLibrary
     private $eventDispatcher;
 
     /**
-     * @var Backend Backend
+     * @var Platform Backend
      */
     private $backend;
 
@@ -249,10 +249,10 @@ class FileLibrary
     /**
      * Sets backend
      *
-     * @param Backend $backend
+     * @param Platform $backend
      * @return FileLibrary
      */
-    public function setBackend(Backend $backend)
+    public function setBackend(Platform $backend)
     {
         $this->backend = $backend;
         return $this;
@@ -261,7 +261,7 @@ class FileLibrary
     /**
      * Returns backend
      *
-     * @return Backend
+     * @return Platform
      */
     public function getBackend()
     {

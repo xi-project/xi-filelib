@@ -2,7 +2,7 @@
 
 namespace Xi\Tests\Filelib\Backend\Platform;
 
-use Xi\Filelib\Backend\Platform\ZendDbBackend;
+use Xi\Filelib\Backend\Platform\ZendDbPlatform;
 use Zend_Db;
 
 /**
@@ -11,7 +11,7 @@ use Zend_Db;
  * @group  backend
  * @group  zenddb
  */
-class ZendDbBackendTest extends RelationalDbTestCase
+class ZendDbPlatformTest extends RelationalDbTestCase
 {
     public function setUp()
     {
@@ -32,7 +32,7 @@ class ZendDbBackendTest extends RelationalDbTestCase
     }
 
     /**
-     * @return ZendDbBackend
+     * @return ZendDbPlatform
      */
     protected function setUpBackend()
     {
@@ -44,7 +44,7 @@ class ZendDbBackendTest extends RelationalDbTestCase
         ));
 
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        return new ZendDbBackend($ed, $db);
+        return new ZendDbPlatform($ed, $db);
     }
 
     /**

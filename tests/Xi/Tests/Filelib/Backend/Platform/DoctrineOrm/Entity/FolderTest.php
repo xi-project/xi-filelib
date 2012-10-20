@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Tests\Filelib\Backend\Platform\Doctrine2\Entity;
+namespace Xi\Tests\Filelib\Backend\Platform\DoctrineOrm\Entity;
 
-use Xi\Filelib\Backend\Platform\Doctrine2\Entity\Folder;
+use Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder;
 
 class FolderTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -11,7 +11,7 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Backend\Platform\Doctrine2\Entity\Folder'));
+        $this->assertTrue(class_exists('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder'));
     }
 
     /**

@@ -13,7 +13,7 @@ use Xi\Filelib\FilelibException;
  * @package Xi_Filelib
  * @author  pekkis
  */
-interface Backend
+interface Platform
 {
     /**
      * Finds folder

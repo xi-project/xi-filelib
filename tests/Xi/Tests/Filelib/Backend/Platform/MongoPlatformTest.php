@@ -3,7 +3,7 @@
 namespace Xi\Tests\Filelib\Backend\Platform;
 
 use PHPUnit_Framework_TestCase;
-use Xi\Filelib\Backend\Platform\MongoBackend;
+use Xi\Filelib\Backend\Platform\MongoPlatform;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use DateTime;
@@ -17,7 +17,7 @@ use MongoConnectionException;
  * @group backend
  * @group mongo
  */
-class MongoBackendTest extends AbstractBackendTestCase
+class MongoPlatformTest extends AbstractPlatformTestCase
 {
     /**
      * @var @MongoDB
@@ -25,9 +25,9 @@ class MongoBackendTest extends AbstractBackendTestCase
     protected $mongo;
 
     /**
-     * Implements AbstractBackendTest::setUpBackend
+     * Implements AbstractPlatformTest::setUpBackend
      *
-     * @return MongoBackend
+     * @return MongoPlatform
      */
     protected function setUpBackend()
     {
@@ -45,7 +45,7 @@ class MongoBackendTest extends AbstractBackendTestCase
         $this->mongo = $mongo->filelib_tests;
 
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        return new MongoBackend($ed, $this->mongo);
+        return new MongoPlatform($ed, $this->mongo);
     }
 
     protected function tearDown()
@@ -62,7 +62,7 @@ class MongoBackendTest extends AbstractBackendTestCase
     }
 
     /**
-     * Implements AbstractBackendTest::setUpEmptyDataSet
+     * Implements AbstractPlatformTest::setUpEmptyDataSet
      */
     protected function setUpEmptyDataSet()
     {
@@ -70,7 +70,7 @@ class MongoBackendTest extends AbstractBackendTestCase
     }
 
     /**
-     * Implements AbstractBackendTest::setUpSimpleDataSet
+     * Implements AbstractPlatformTest::setUpSimpleDataSet
      */
     protected function setUpSimpleDataSet()
     {

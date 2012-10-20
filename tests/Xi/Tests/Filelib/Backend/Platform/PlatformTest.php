@@ -14,6 +14,6 @@ class BackendTest extends FilelibTestCase
      */
     public function interfaceShouldExist()
     {
-        $this->assertTrue(interface_exists('Xi\Filelib\Backend\Platform\Backend'));
+        $this->assertTrue(interface_exists('Xi\Filelib\Backend\Platform\Platform'));
     }
 }

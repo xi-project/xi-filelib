@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Tests\Filelib\Backend\Platform\Doctrine2\Entity;
+namespace Xi\Tests\Filelib\Backend\Platform\DoctrineOrm\Entity;
 
-use Xi\Filelib\Backend\Platform\Doctrine2\Entity\Resource;
+use Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource;
 use DateTime;
 
 class ResourceTest extends \Xi\Tests\Filelib\TestCase
@@ -12,7 +12,7 @@ class ResourceTest extends \Xi\Tests\Filelib\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Backend\Platform\Doctrine2\Entity\Resource'));
+        $this->assertTrue(class_exists('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource'));
     }
 
 

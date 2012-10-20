@@ -2,7 +2,7 @@
 
 namespace Xi\Tests\Filelib\Backend\Platform;
 
-use Xi\Filelib\Backend\Platform\Doctrine2Backend;
+use Xi\Filelib\Backend\Platform\DoctrineOrmPlatform;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Resource;
 use Doctrine\ORM\EntityManager;
@@ -19,10 +19,10 @@ use PHPUnit_Framework_MockObject_MockObject;
  * @group backend
  * @group doctrine
  */
-class Doctrine2BackendTest extends RelationalDbTestCase
+class DoctrineOrmPlatformTest extends RelationalDbTestCase
 {
     /**
-     * @return Doctrine2Backend
+     * @return DoctrineOrmPlatform
      */
     protected function setUpBackend()
     {
@@ -35,7 +35,7 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         $driver = new AnnotationDriver(
             new CachedReader(new AnnotationReader(), $cache),
             array(
-                ROOT_TESTS . '/../library/Xi/Filelib/Backend/Doctrine2/Entity',
+                ROOT_TESTS . '/../library/Xi/Filelib/Backend/DoctrineOrm/Entity',
             )
         );
 
@@ -63,7 +63,7 @@ class Doctrine2BackendTest extends RelationalDbTestCase
         $em = EntityManager::create($connectionOptions, $config);
 
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        return new Doctrine2Backend($ed, $em);
+        return new DoctrineOrmPlatform($ed, $em);
     }
 
     /**
@@ -73,13 +73,13 @@ class Doctrine2BackendTest extends RelationalDbTestCase
     {
         $this->setUpEmptyDataSet();
 
-        $this->assertEquals('Xi\Filelib\Backend\Platform\Doctrine2\Entity\File',
+        $this->assertEquals('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\File',
                             $this->backend->getFileEntityName());
 
-        $this->assertEquals('Xi\Filelib\Backend\Platform\Doctrine2\Entity\Folder',
+        $this->assertEquals('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder',
                             $this->backend->getFolderEntityName());
 
-        $this->assertEquals('Xi\Filelib\Backend\Platform\Doctrine2\Entity\Resource',
+        $this->assertEquals('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource',
                             $this->backend->getResourceEntityName());
 
 

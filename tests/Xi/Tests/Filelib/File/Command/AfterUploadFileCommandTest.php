@@ -71,7 +71,7 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Backend');
+        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Platform');
         $backend->expects($this->once())->method('updateFile')->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
         $fileitem->expects($this->any())->method('getProfile')->will($this->returnValue('versioned'));

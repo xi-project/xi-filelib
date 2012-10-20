@@ -44,7 +44,7 @@ class SchemaGenerator
         $driver = new AnnotationDriver(
             new CachedReader(new AnnotationReader(), new ArrayCache()),
             array(
-                ROOT_TESTS . '/../library/Xi/Filelib/Backend/Doctrine2/Entity',
+                ROOT_TESTS . '/../library/Xi/Filelib/Backend/DoctrineOrm/Entity',
             )
         );
 
