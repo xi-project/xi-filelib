@@ -14,9 +14,7 @@ use Xi\Filelib\Command;
 use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
 use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
 use Xi\Filelib\Queue\Message;
-use Xi\Filelib\IdentityMap\IdentityMap;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
 
 /**
  * Abstract convenience class for operators
@@ -49,14 +47,6 @@ abstract class AbstractOperator
     public function __construct(FileLibrary $filelib)
     {
         $this->filelib = $filelib;
-    }
-
-    /**
-     * @return IdentityMap
-     */
-    public function getIdentityMap()
-    {
-        return $this->getFilelib()->getIdentityMap();
     }
 
     /**
