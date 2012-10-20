@@ -21,7 +21,7 @@ class AbstractFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $uuid = 'tussi-id';
 
-        $fileOperator = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $fileOperator = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
 
         $fileOperator->expects($this->once())->method('generateUuid')
                      ->will($this->returnValue($uuid));

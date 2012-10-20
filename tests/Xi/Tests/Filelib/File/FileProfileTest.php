@@ -323,7 +323,8 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
     private function createMockedFilelib()
     {
         $filelib = new FileLibrary();
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
+
 
         $fiop->expects($this->any())->method('getType')->will($this->returnCallBack(function ($file) {
             $split = explode('/', $file->getMimetype());

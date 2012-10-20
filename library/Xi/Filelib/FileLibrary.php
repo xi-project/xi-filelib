@@ -4,8 +4,6 @@ namespace Xi\Filelib;
 
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Folder\DefaultFolderOperator;
-use Xi\Filelib\File\DefaultFileOperator;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Plugin\Plugin;
@@ -183,7 +181,7 @@ class FileLibrary
     public function getFileOperator()
     {
         if (!$this->fileOperator) {
-            $this->fileOperator = new DefaultFileOperator($this);
+            $this->fileOperator = new FileOperator($this);
         }
         return $this->fileOperator;
     }
@@ -196,7 +194,7 @@ class FileLibrary
     public function getFolderOperator()
     {
         if (!$this->folderOperator) {
-            $this->folderOperator = new DefaultFolderOperator($this);
+            $this->folderOperator = new FolderOperator($this);
         }
 
         return $this->folderOperator;

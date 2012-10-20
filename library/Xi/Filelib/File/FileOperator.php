@@ -1,27 +1,48 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\File;
 
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\AbstractOperator;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\Plugin\Plugin;
+use InvalidArgumentException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Plugin\Plugin;
-use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\File\FileProfile;
-use Xi\Filelib\FilelibException;
+use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Event\FileProfileEvent;
+use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Queue\Queue;
 use Xi\Filelib\EnqueueableCommand;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
+use Xi\Filelib\File\Command\FileCommand;
+use Xi\Filelib\File\Command\UploadFileCommand;
+use Xi\Filelib\File\Command\AfterUploadFileCommand;
+use Xi\Filelib\File\Command\UpdateFileCommand;
+use Xi\Filelib\File\Command\DeleteFileCommand;
+use Xi\Filelib\File\Command\PublishFileCommand;
+use Xi\Filelib\File\Command\UnpublishFileCommand;
+use Xi\Filelib\Tool\TypeResolver\TypeResolver;
+use Xi\Filelib\Tool\TypeResolver\StupidTypeResolver;
 
 /**
+ * File operator
  *
  * @author pekkis
+ *
  */
-interface FileOperator
+class FileOperator extends AbstractOperator
 {
     const COMMAND_UPLOAD = 'upload';
     const COMMAND_AFTERUPLOAD = 'after_upload';
@@ -31,62 +52,154 @@ interface FileOperator
     const COMMAND_UNPUBLISH = 'unpublish';
     const COMMAND_COPY = 'copy';
 
+    protected $commandStrategies = array(
+        self::COMMAND_UPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_AFTERUPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UPDATE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_DELETE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_PUBLISH => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UNPUBLISH => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_COPY => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+    );
+
+
     /**
-     * Returns an instance of file
+     * @var array Profiles
+     */
+    private $profiles = array();
+
+    /**
+     *
+     * @var type TypeResolver
+     */
+    private $typeResolver;
+
+    /**
+     * Returns a file
      *
      * @param mixed $data Data as array or a file instance
      * @return File
      */
-    public function getInstance($data = null);
+    public function getInstance($data = array())
+    {
+        $file = new File();
+        if ($data) {
+            $file->fromArray($data);
+        }
+        return $file;
+    }
 
     /**
      * Adds a file profile
      *
      * @param FileProfile $profile
      * @return FileLibrary
+     * @throws InvalidArgumentException
      */
-    public function addProfile(FileProfile $profile);
+    public function addProfile(FileProfile $profile)
+    {
+        $identifier = $profile->getIdentifier();
+        if (isset($this->profiles[$identifier])) {
+            throw new InvalidArgumentException("Profile '{$identifier}' already exists");
+        }
+        $this->profiles[$identifier] = $profile;
+        $profile->setFilelib($this->getFilelib());
+
+        $this->getEventDispatcher()->addSubscriber($profile);
+
+        $event = new FileProfileEvent($profile);
+        $this->getEventDispatcher()->dispatch('fileprofile.add', $event);
+
+        return $this;
+    }
 
     /**
      * Returns a file profile
      *
      * @param string $identifier File profile identifier
-     * @throws FilelibException
+     * @throws InvalidArgumentException
      * @return FileProfile
      */
-    public function getProfile($identifier);
+    public function getProfile($identifier)
+    {
+        if (!isset($this->profiles[$identifier])) {
+            throw new InvalidArgumentException("File profile '{$identifier}' not found");
+        }
+
+        return $this->profiles[$identifier];
+    }
 
     /**
      * Returns all file profiles
      *
      * @return array Array of file profiles
      */
-    public function getProfiles();
+    public function getProfiles()
+    {
+        return $this->profiles;
+    }
 
     /**
      * Updates a file
      *
      * @param File $file
-     * @return unknown_type
+     * @return FileOperator
      */
-    public function update(File $file);
+    public function update(File $file)
+    {
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array($this, $file)),
+            self::COMMAND_UPDATE
+        );
+    }
 
     /**
      * Finds a file
      *
      * @param mixed $id File id
-     * @return File
+     * @return \Xi\Filelib\File\File
      */
-    public function find($id);
+    public function find($id)
+    {
+        $file = $this->getBackend()->findFile($id);
 
-    public function findByFilename(Folder $folder, $filename);
+        if (!$file) {
+            return false;
+        }
+
+        $file = $this->getInstanceAndTriggerEvent($file);
+        return $file;
+    }
+
+    public function findByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
+    {
+        $file = $this->getBackend()->findFileByFilename($folder, $filename);
+
+        if (!$file) {
+            return false;
+        }
+
+        $file = $this->getInstanceAndTriggerEvent($file);
+
+        return $file;
+    }
 
     /**
      * Finds and returns all files
      *
-     * @return \ArrayIterator
+     * @return array
      */
-    public function findAll();
+    public function findAll()
+    {
+        $ritems = $this->getBackend()->findAllFiles();
+
+        $items = array();
+        foreach ($ritems as $ritem) {
+            $item = $this->getInstanceAndTriggerEvent($ritem);
+            $items[] = $item;
+        }
+        return $items;
+    }
 
     /**
      * Gets a new upload
@@ -94,8 +207,11 @@ interface FileOperator
      * @param string $path Path to upload file
      * @return FileUpload
      */
-    public function prepareUpload($path);
-
+    public function prepareUpload($path)
+    {
+        $upload = new FileUpload($path);
+        return $upload;
+    }
 
     /**
      * Uploads file to filelib.
@@ -104,16 +220,45 @@ interface FileOperator
      * @param Folder $folder
      * @return File
      * @throws FilelibException
+     * @todo Remove the upload kludgeration with prepareUpload
      */
-    public function upload($upload, Folder $folder, $profile = 'default');
+    public function upload($upload, Folder $folder, $profile = 'default')
+    {
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile)),
+            self::COMMAND_UPLOAD
+        );
+    }
 
     /**
      * Deletes a file
      *
      * @param File $file
-     * @throws FilelibException
      */
-    public function delete(File $file);
+    public function delete(File $file)
+    {
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array($this, $file)),
+            self::COMMAND_DELETE
+        );
+    }
+
+
+    /**
+     * Copies a file to folder
+     *
+     * @param File $file
+     * @param Folder $folder
+     */
+    public function copy(File $file, Folder $folder)
+    {
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\CopyFileCommand', array($this, $file, $folder)),
+            self::COMMAND_COPY
+        );
+
+    }
+
 
     /**
      * Returns file type of a file
@@ -121,96 +266,107 @@ interface FileOperator
      * @param File File $file item
      * @return string File type
      */
-    public function getType(File $file);
+    public function getType(File $file)
+    {
+        return $this->getTypeResolver()->resolveType($file->getMimeType());
+    }
 
     /**
      * Returns whether a file has a certain version
      *
-     * @param \Xi\Filelib\File\File $file File item
+     * @param File $file File item
      * @param string $version Version
      * @return boolean
      */
-    public function hasVersion(File $file, $version);
-
+    public function hasVersion(File $file, $version)
+    {
+        $profile = $this->getProfile($file->getProfile());
+        return $profile->fileHasVersion($file, $version);
+    }
 
     /**
      * Returns version provider for a file/version
      *
      * @param File $file File item
      * @param string $version Version
-     * @return object Provider
+     * @return VersionProvider Provider
      */
-    public function getVersionProvider(File $file, $version);
+    public function getVersionProvider(File $file, $version)
+    {
+        $profile = $this->getProfile($file->getProfile());
+        return $profile->getVersionProvider($file, $version);
+    }
 
-    public function publish(File $file);
+    public function publish(File $file)
+    {
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this, $file)),
+            self::COMMAND_PUBLISH
+        );
+    }
 
-    public function unpublish(File $file);
+    public function unpublish(File $file)
+    {
+        return $this->executeOrQueue(
+            $this->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this, $file)),
+            self::COMMAND_UNPUBLISH
+        );
 
-    public function addPlugin(Plugin $plugin, $priority = 0);
+    }
 
-    /**
-     * @return Publisher
-     */
-    public function getPublisher();
-
-    /**
-     * @return Storage
-     */
-    public function getStorage();
-
-    /**
-     * @return Backend
-     */
-    public function getBackend();
-
-    /**
-     * @return Acl
-     */
-    public function getAcl();
-
-    /**
-     * @return EventDispatcherInterface
-     */
-    public function getEventDispatcher();
-
-    /**
-     * @return Queue
-     */
-    public function getQueue();
+    public function addPlugin(Plugin $plugin, $priority = 0)
+    {
+        foreach ($plugin->getProfiles() as $profileIdentifier) {
+            $profile = $this->getProfile($profileIdentifier);
+            $profile->addPlugin($plugin, $priority);
+        }
+    }
 
 
     /**
-     * Copies a file to a folder
      *
-     * @param File $file Source file
-     * @param Folder $folder Target folder
+     * @return FolderOperator
      */
-    public function copy(File $file, Folder $folder);
+    public function getFolderOperator()
+    {
+        return $this->getFilelib()->getFolderOperator();
+    }
+
 
     /**
-     * Generates UUID
+     * Gets instance and triggers instantiate event
      *
-     * @return string
+     * @param array $file
      */
-    public function generateUuid();
+    public function getInstanceAndTriggerEvent(array $file)
+    {
+        $file = $this->getInstance($file);
+        $event = new FileEvent($file);
+        $this->getEventDispatcher()->dispatch('file.instantiate', $event);
+        return $file;
+    }
 
     /**
-     * Creates a command
-     *
-     * @param $commandClass Command classname
-     * @param array $args Params for constructor
-     * @return Command
+     * @return TypeResolver
      */
-    public function createCommand($commandClass, array $args = array());
+    public function getTypeResolver()
+    {
+        if (!$this->typeResolver) {
+            $this->typeResolver = new StupidTypeResolver();
+        }
+        return $this->typeResolver;
+    }
 
     /**
-     * Executes or queues command
      *
-     * @param Command $commandObj Command class
-     * @param $commandName Command name
-     * @param array $callbacks Callbacks
-     * @return mixed Return value from the queue or commands execute method
+     * @param TypeResolver $typeResolver
+     * @return FileOperator
      */
-    public function executeOrQueue(EnqueueableCommand $commandObj, $commandName, array $callbacks = array());
+    public function setTypeResolver(TypeResolver $typeResolver)
+    {
+        $this->typeResolver = $typeResolver;
+        return $this;
+    }
+
 
 }

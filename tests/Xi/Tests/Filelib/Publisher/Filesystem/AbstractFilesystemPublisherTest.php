@@ -81,7 +81,7 @@ class AbstractFilesystemPublisherTest extends TestCase
     public function getLinkerForFileShouldDelegateToFilelib()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $fileop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $fileop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
 
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher')

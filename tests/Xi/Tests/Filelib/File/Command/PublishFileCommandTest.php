@@ -3,7 +3,7 @@
 namespace Xi\Tests\Filelib\File\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\DefaultFileOperator;
+use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -30,7 +30,7 @@ class PublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array('getAcl'))
                     ->getMock();
@@ -62,7 +62,7 @@ class PublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('unpublish', 'getProfile'))
                    ->getMock();
@@ -103,7 +103,7 @@ class PublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $dispatcher->expects($this->once())->method('dispatch')
                    ->with($this->equalTo('file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('unpublish', 'getProfile'))
                    ->getMock();

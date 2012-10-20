@@ -3,7 +3,7 @@
 namespace Xi\Tests\Filelib\File\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\DefaultFileOperator;
+use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
@@ -46,7 +46,7 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'createCommand'))
                    ->getMock();
@@ -118,7 +118,7 @@ class AfterUploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array('getAcl'))
                     ->getMock();

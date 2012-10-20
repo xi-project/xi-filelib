@@ -22,8 +22,8 @@ class DefaultQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
 
         $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-        $fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-        $foop = $this->getMockForAbstractClass('Xi\Filelib\Folder\FolderOperator');
+        $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
+        $foop = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
 
         $filelib->setQueue($queue);
         $filelib->setFileOperator($fiop);
