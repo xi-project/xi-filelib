@@ -10,7 +10,6 @@
 namespace Xi\Filelib\File;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\AbstractOperator;
 use Xi\Filelib\FilelibException;
