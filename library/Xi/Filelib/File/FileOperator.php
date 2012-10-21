@@ -51,6 +51,11 @@ class FileOperator extends AbstractOperator
     const COMMAND_UNPUBLISH = 'unpublish';
     const COMMAND_COPY = 'copy';
 
+    /**
+     * Default command strategies
+     *
+     * @var array
+     */
     protected $commandStrategies = array(
         self::COMMAND_UPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
         self::COMMAND_AFTERUPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
@@ -60,7 +65,6 @@ class FileOperator extends AbstractOperator
         self::COMMAND_UNPUBLISH => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
         self::COMMAND_COPY => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
     );
-
 
     /**
      * @var array Profiles
@@ -156,7 +160,7 @@ class FileOperator extends AbstractOperator
      * Finds a file
      *
      * @param mixed $id File id
-     * @return \Xi\Filelib\File\File
+     * @return File|false
      */
     public function find($id)
     {
@@ -170,7 +174,14 @@ class FileOperator extends AbstractOperator
         return $file;
     }
 
-    public function findByFilename(\Xi\Filelib\Folder\Folder $folder, $filename)
+    /**
+     * Finds file by filename in a folder
+     *
+     * @param Folder $folder
+     * @param $filename
+     * @return File|false
+     */
+    public function findByFilename(Folder $folder, $filename)
     {
         $file = $this->getBackend()->findFileByFilename($folder, $filename);
 
@@ -213,13 +224,12 @@ class FileOperator extends AbstractOperator
     }
 
     /**
-     * Uploads file to filelib.
+     * Uploads a file
      *
      * @param mixed $upload Uploadable, path or object
      * @param Folder $folder
      * @return File
      * @throws FilelibException
-     * @todo Remove the upload kludgeration with prepareUpload
      */
     public function upload($upload, Folder $folder, $profile = 'default')
     {
@@ -242,7 +252,6 @@ class FileOperator extends AbstractOperator
         );
     }
 
-
     /**
      * Copies a file to folder
      *
@@ -257,7 +266,6 @@ class FileOperator extends AbstractOperator
         );
 
     }
-
 
     /**
      * Returns file type of a file
@@ -296,6 +304,12 @@ class FileOperator extends AbstractOperator
         return $profile->getVersionProvider($file, $version);
     }
 
+    /**
+     * Publishes a file
+     *
+     * @param File $file
+     * @return mixed
+     */
     public function publish(File $file)
     {
         return $this->executeOrQueue(
@@ -304,6 +318,12 @@ class FileOperator extends AbstractOperator
         );
     }
 
+    /**
+     * Unpublishes a file
+     *
+     * @param File $file
+     * @return mixed
+     */
     public function unpublish(File $file)
     {
         return $this->executeOrQueue(
@@ -313,6 +333,12 @@ class FileOperator extends AbstractOperator
 
     }
 
+    /**
+     * Adds a plugin
+     *
+     * @param Plugin $plugin
+     * @param int $priority
+     */
     public function addPlugin(Plugin $plugin, $priority = 0)
     {
         foreach ($plugin->getProfiles() as $profileIdentifier) {
@@ -320,7 +346,6 @@ class FileOperator extends AbstractOperator
             $profile->addPlugin($plugin, $priority);
         }
     }
-
 
     /**
      *
@@ -366,6 +391,5 @@ class FileOperator extends AbstractOperator
         $this->typeResolver = $typeResolver;
         return $this;
     }
-
 
 }

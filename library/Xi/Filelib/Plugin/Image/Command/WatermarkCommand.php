@@ -1,12 +1,19 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin\Image\Command;
 
 use Imagick;
 
 /**
  * Watermarks an image version
- * 
+ *
  * @author pekkis
  *
  */
@@ -27,12 +34,12 @@ class WatermarkCommand extends AbstractCommand
      * @var integer Watermark padding
      */
     protected $watermarkPadding = 0;
-    
+
     protected $watermark;
 
     /**
      * Sets watermark image
-     * 
+     *
      * @param string $image
      * @return WatermarkCommand
      */
@@ -44,7 +51,7 @@ class WatermarkCommand extends AbstractCommand
 
     /**
      * Returns watermark image
-     * 
+     *
      * @return string
      */
     public function getWatermarkImage()
@@ -54,7 +61,7 @@ class WatermarkCommand extends AbstractCommand
 
     /**
      * Sets watermark position (nw, ne, se or sw)
-     * 
+     *
      * @param string $position
      * @return WatermarkCommand
      */
@@ -63,18 +70,18 @@ class WatermarkCommand extends AbstractCommand
         if (!is_string($position)) {
             throw new \InvalidArgumentException("Non-string watermark position");
         }
-        
+
         if (!in_array($position, array('nw', 'ne', 'sw', 'se'))) {
             throw new \InvalidArgumentException(sprintf("Invalid watermark position '%s'", $position));
         }
-                        
+
         $this->watermarkPosition = $position;
         return $this;
     }
 
     /**
      * Returns watermark position
-     * 
+     *
      * @return string
      */
     public function getWatermarkPosition()
@@ -84,7 +91,7 @@ class WatermarkCommand extends AbstractCommand
 
     /**
      * Sets padding for watermark image (in pixels)
-     * 
+     *
      * @param int $padding
      * @return WatermarkCommand
      */
@@ -96,7 +103,7 @@ class WatermarkCommand extends AbstractCommand
 
     /**
      * Returns padding for watermark image (in pixels)
-     * 
+     *
      * @return integer
      */
     public function getWatermarkPadding()
@@ -109,7 +116,7 @@ class WatermarkCommand extends AbstractCommand
         $watermark = $this->getWatermarkResource();
 
         $coordinates = $this->calculateCoordinates($img);
-        
+
         $img->compositeImage(
                 $this->getWatermarkResource(), Imagick::COMPOSITE_OVER, $coordinates['x'], $coordinates['y']
         );
@@ -117,11 +124,11 @@ class WatermarkCommand extends AbstractCommand
         return;
     }
 
-    
+
     public function calculateCoordinates(Imagick $img)
     {
         $watermark = $this->getWatermarkResource();
-        
+
         $imageWidth = $img->getImageWidth();
         $imageHeight = $img->getImageHeight();
 
@@ -153,14 +160,14 @@ class WatermarkCommand extends AbstractCommand
 
         return array('x' => $x, 'y' => $y);
     }
-    
+
     /**
      * Returns watermark imagick resource
-     * 
+     *
      * @return Imagick
      */
     public function getWatermarkResource()
-    {   
+    {
         if (!$this->watermark) {
             $this->watermark = $this->createImagick($this->getWatermarkImage());
         }
