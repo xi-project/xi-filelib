@@ -3,8 +3,8 @@
 namespace Xi\Tests\Filelib\Folder\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\DefaultFolderOperator;
-use Xi\Filelib\File\DefaultFileOperator;
+use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -31,12 +31,12 @@ class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array('createCommand'))
                     ->getMock();
 
-        $fop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array())
                     ->getMock();
@@ -62,7 +62,7 @@ class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = new FileLibrary();
 
-         $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
+         $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array('createCommand'))
                     ->getMock();
@@ -129,7 +129,7 @@ class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $backend->expects($this->exactly(1))->method('UpdateFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
 
-        $fiop = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                       ->setMethods(array('delete'))
                       ->setConstructorArgs(array($filelib))
                       ->getMock();

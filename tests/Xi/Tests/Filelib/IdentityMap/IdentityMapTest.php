@@ -87,6 +87,7 @@ class IdentityMapTest extends TestCase
     public function getShouldReturnFalseWhenObjectNotFound()
     {
         $ret = $this->im->get(1, 'Xi\Filelib\File\File');
+        $this->assertFalse($ret);
     }
 
     /**

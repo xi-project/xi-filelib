@@ -18,7 +18,7 @@ class AbstractRendererTest extends \Xi\Tests\Filelib\TestCase
     public function setUp()
     {
         $this->filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $this->fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $this->fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $this->filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($this->fiop));
 
         $this->renderer = $this->getMockBuilder('Xi\Filelib\Renderer\AbstractRenderer')
