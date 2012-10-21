@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\File\Upload;
 
-use \Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\File\Upload\FileUpload;
 
 /**
  * Limits file types that are allowed / denied to be uploaded
@@ -25,8 +32,8 @@ class Limiter
 
     /**
      * Accept a file type. A regex or an array of regexes to accept.
-     * 
-     * @param mixed $what 
+     *
+     * @param mixed $what
      * @return \Xi\Filelib\File\Uploader
      */
     public function accept($what)
@@ -49,8 +56,8 @@ class Limiter
 
     /**
      * Deny a file type. A regex or an array of regexes to deny.
-     * 
-     * @param mixed $what 
+     *
+     * @param mixed $what
      * @return \Xi\Filelib\File\Uploader
      */
     public function deny($what)
@@ -73,7 +80,7 @@ class Limiter
 
     /**
      * Returns all accepted types
-     * 
+     *
      * @return array
      */
     public function getAccepted()
@@ -83,7 +90,7 @@ class Limiter
 
     /**
      * Returns all denied types
-     * 
+     *
      * @return array
      */
     public function getDenied()
@@ -93,7 +100,7 @@ class Limiter
 
     /**
      * Returns whether a file upload may be uploaded
-     * 
+     *
      * @param \Xi\Filelib\File\Upload\FileUpload $upload
      * @return boolean
      */

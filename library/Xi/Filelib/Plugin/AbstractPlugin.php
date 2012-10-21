@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin;
 
 use Xi\Filelib\FileLibrary;
@@ -16,7 +23,7 @@ use Xi\Filelib\Event\FileProfileEvent;
  */
 abstract class AbstractPlugin implements Plugin
 {
-    
+
     /**
      * @var FileLibrary Filelib
      */
@@ -26,31 +33,31 @@ abstract class AbstractPlugin implements Plugin
      * @var array Array of profiles
      */
     protected $profiles = array();
-    
+
     /**
      * @var array Subscribed events
      */
     static protected $subscribedEvents = array(
         'fileprofile.add' => 'onFileProfileAdd',
     );
-    
+
     /**
      * Returns an array of subscribed events
-     * 
+     *
      * @return array
      */
     static public function getSubscribedEvents()
     {
         return static::$subscribedEvents;
     }
-    
-    
+
+
     public function __construct($options = array())
     {
         Configurator::setConstructorOptions($this, $options);
     }
-    
-    
+
+
     /**
      * Sets filelib
      *
@@ -73,9 +80,9 @@ abstract class AbstractPlugin implements Plugin
         return $this->filelib;
     }
 
-    /** 
+    /**
      * Sets the profiles attached to the plugin
-     * 
+     *
      * @return Plugin
      */
     public function setProfiles(array $profiles)
@@ -84,9 +91,9 @@ abstract class AbstractPlugin implements Plugin
         return $this;
     }
 
-    /** 
+    /**
      * Returns an array of profiles attached to the plugin
-     * 
+     *
      * @return array
      */
     public function getProfiles()
@@ -96,7 +103,7 @@ abstract class AbstractPlugin implements Plugin
 
     /**
      * Returns whether plugin belongs to a profile
-     * 
+     *
      * @param string $profile
      * @return boolean
      */
@@ -104,11 +111,11 @@ abstract class AbstractPlugin implements Plugin
     {
         return in_array($profile, $this->getProfiles());
     }
-    
-    
+
+
     public function init()
     { }
-    
+
     public function onFileProfileAdd(FileProfileEvent $event)
     {
         $profile = $event->getProfile();
@@ -116,6 +123,6 @@ abstract class AbstractPlugin implements Plugin
             $profile->addPlugin($this);
         }
     }
-    
+
 
 }
