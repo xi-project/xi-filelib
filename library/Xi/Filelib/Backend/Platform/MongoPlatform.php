@@ -13,12 +13,19 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\NonUniqueFileException;
+
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\Backend\Finder\ResourceFinder;
+use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\Backend\Finder\FolderFinder;
+
 use MongoDb;
 use MongoId;
 use MongoDate;
 use MongoCursorException;
 use DateTime;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use ArrayIterator;
 
 /**
  * MongoDB backend for Filelib
@@ -35,6 +42,12 @@ class MongoPlatform extends AbstractPlatform implements Platform
      * @var MongoDB
      */
     private $mongo;
+
+    private $finderMap = array(
+        'id' => '_id',
+        'hash' => 'hash',
+    );
+
 
     /**
      * @param  EventDispatcherInterface $eventDispatcher
@@ -296,35 +309,45 @@ class MongoPlatform extends AbstractPlatform implements Platform
     /**
      * @see AbstractPlatform::exportFolder
      */
-    protected function exportFolder($folder)
+    public function exportFolders(ArrayIterator $iter)
     {
-        return Folder::create(array(
-            'id'        => (string) $folder['_id'],
-            'parent_id' => isset($folder['parent_id']) ? $folder['parent_id'] : null,
-            'name'      => $folder['name'],
-            'url'       => $folder['url'],
-            'uuid'      => $folder['uuid'],
-        ));
+        $ret = new ArrayIterator(array());
+
+        foreach ($iter as $folder) {
+            $ret->append(Folder::create(array(
+                'id'        => (string) $folder['_id'],
+                'parent_id' => isset($folder['parent_id']) ? $folder['parent_id'] : null,
+                'name'      => $folder['name'],
+                'url'       => $folder['url'],
+                'uuid'      => $folder['uuid'],
+            )));
+        }
+        return $ret;
     }
 
     /**
      * @see AbstractPlatform::exportFile
      */
-    protected function exportFile($file)
+    public function exportFiles(ArrayIterator $iter)
     {
+        $ret = new ArrayIterator(array());
         $date = new DateTime();
-        return File::create(array(
-            'id'            => (string) $file['_id'],
-            'folder_id'     => isset($file['folder_id']) ? $file['folder_id'] : null,
-            'profile'       => $file['profile'],
-            'name'          => $file['name'],
-            'link'          => isset($file['link']) ? $file['link'] : null,
-            'status'        => $file['status'],
-            'date_created'  => DateTime::createFromFormat('U', $file['date_created']->sec)->setTimezone($date->getTimezone()),
-            'uuid'          => $file['uuid'],
-            'resource'      => $this->exportResource($this->doFindResource($file['resource_id'])),
-            'versions'      => $file['versions'],
-        ));
+
+        foreach ($iter as $file) {
+            $ret->append(File::create(array(
+                'id'            => (string) $file['_id'],
+                'folder_id'     => isset($file['folder_id']) ? $file['folder_id'] : null,
+                'profile'       => $file['profile'],
+                'name'          => $file['name'],
+                'link'          => isset($file['link']) ? $file['link'] : null,
+                'status'        => $file['status'],
+                'date_created'  => DateTime::createFromFormat('U', $file['date_created']->sec)->setTimezone($date->getTimezone()),
+                'uuid'          => $file['uuid'],
+                'resource'      => $this->exportResource($this->doFindResource($file['resource_id'])),
+                'versions'      => $file['versions'],
+            )));
+        }
+        return $ret;
     }
 
     /**
@@ -340,9 +363,8 @@ class MongoPlatform extends AbstractPlatform implements Platform
      */
     protected function doFindResource($id)
     {
-        return $this->getMongo()->resources->findOne(array(
-            '_id' => new MongoId($id),
-        ));
+        $ret = $this->findResourcesByIds(array($id));
+        return $ret->getNext();
     }
 
     /**
@@ -393,18 +415,23 @@ class MongoPlatform extends AbstractPlatform implements Platform
     /**
      * @see AbstractPlatform::exportResource
      */
-    protected function exportResource($resource)
+    public function exportResources(ArrayIterator $iter)
     {
         $date = new DateTime();
-        return Resource::create(array(
-            'id' => (string) $resource['_id'],
-            'hash' => $resource['hash'],
-            'mimetype' => $resource['mimetype'],
-            'size' => $resource['size'],
-            'date_created' => DateTime::createFromFormat('U', $resource['date_created']->sec)->setTimezone($date->getTimezone()),
-            'versions' => $resource['versions'],
-            'exclusive' => $resource['exclusive'],
-        ));
+        $ret = new ArrayIterator(array());
+
+        foreach ($iter as $resource) {
+            $ret->append(Resource::create(array(
+                'id' => (string) $resource['_id'],
+                'hash' => $resource['hash'],
+                'mimetype' => $resource['mimetype'],
+                'size' => $resource['size'],
+                'date_created' => DateTime::createFromFormat('U', $resource['date_created']->sec)->setTimezone($date->getTimezone()),
+                'versions' => $resource['versions'],
+                'exclusive' => $resource['exclusive'],
+            )));
+        }
+        return $ret;
     }
 
     /**
@@ -417,6 +444,66 @@ class MongoPlatform extends AbstractPlatform implements Platform
         ));
 
         return $refs->count();
+    }
+
+
+    public function findResourcesByIds(array $ids) {
+
+        array_walk($ids, function(&$value) {
+           $value = new MongoId($value);
+        });
+
+        $ret = $this->getMongo()->resources->find(array(
+            '_id' => array('$in' => $ids),
+        ));
+
+        $iter = new ArrayIterator(array());
+
+        foreach($ret as $doc) {
+            $iter->append($doc);
+        }
+
+        return $this->exportResources($iter);
+    }
+
+    public function findFilesByFinder(FileFinder $finder)
+    {
+        return false;
+    }
+
+    public function findFoldersByFinder(FolderFinder $finder)
+    {
+        return false;
+    }
+
+
+    public function findResourcesByFinder(ResourceFinder $finder)
+    {
+        $params = $this->finderParametersToInternalParameters($finder->getParameters());
+
+        $cursor = $this->getMongo()->resources->find($params, array('_id'));
+
+        $ret = array();
+        foreach ($cursor as $doc) {
+            $ret[] = $doc['_id']->__toString();
+        }
+
+        return $ret;
+
+    }
+
+    protected function finderParametersToInternalParameters(array $parameters)
+    {
+        $ret = array();
+        foreach ($parameters as $key => $value) {
+            $ret[$this->finderMap[$key]] = $value;
+        }
+
+        if (isset($ret['_id'])) {
+            $ret['_id'] = new MongoId($ret['_id']);
+        }
+
+        return $ret;
     }
 
 }

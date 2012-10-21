@@ -9,6 +9,11 @@
 
 namespace Xi\Filelib\Backend\Platform;
 
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\Backend\Finder\FolderFinder;
+use Xi\Filelib\Backend\Finder\ResourceFinder;
+
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
@@ -167,26 +172,6 @@ abstract class AbstractPlatform implements Platform
      * @return integer
      */
     protected abstract function doGetNumberOfReferences(Resource $resource);
-
-    /**
-     * @param mixed $resource
-     * @return array
-     */
-    protected abstract function exportResource($resource);
-
-    /**
-     * @abstract
-     * @param $folder
-     * @return Folder|false
-     */
-    protected abstract function exportFolder($folder);
-
-    /**
-     * @abstract
-     * @param $file
-     * @return File|false
-     */
-    protected abstract function exportFile($file);
 
     /**
      * Returns whether an identifier is valid for the backend
@@ -613,5 +598,29 @@ abstract class AbstractPlatform implements Platform
 
         return $this->uuidGenerator;
     }
+
+
+    public function findByFinder(Finder $finder)
+    {
+        switch(get_class($finder)) {
+
+            case 'Xi\Filelib\Backend\Finder\FileFinder':
+                return $this->findFilesByFinder($finder);
+
+            case 'Xi\Filelib\Backend\Finder\FolderFinder':
+                return $this->findFoldersByFinder($finder);
+
+            case 'Xi\Filelib\Backend\Finder\ResourceFinder':
+                return $this->findResourcesByFinder($finder);
+        }
+
+    }
+
+    protected abstract function findResourcesByFinder(ResourceFinder $finder);
+
+    protected abstract function findFoldersByFinder(FolderFinder $finder);
+
+    protected abstract function findFilesByFinder(FileFinder $finder);
+
 
 }

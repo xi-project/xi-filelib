@@ -13,6 +13,8 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\FilelibException;
+use Xi\Filelib\Backend\Finder\Finder;
+use ArrayIterator;
 
 /**
  * Filelib backend platform interface
@@ -190,5 +192,29 @@ interface Platform
      * @return string
      */
     public function generateUuid();
+
+    /**
+     * @param ArrayIterator $iter
+     * @return ArrayIterator
+     */
+    public function exportResources(ArrayIterator $iter);
+
+    /**
+     * @param ArrayIterator $iter
+     * @return ArrayIterator
+     */
+    public function exportFiles(ArrayIterator $iter);
+
+    /**
+     * @param ArrayIterator $iter
+     * @return ArrayIterator
+     */
+    public function exportFolders(ArrayIterator $iter);
+
+    /**
+     * @param Finder $finder
+     * @return ArrayIterator
+     */
+    public function findByFinder(Finder $finder);
 
 }
