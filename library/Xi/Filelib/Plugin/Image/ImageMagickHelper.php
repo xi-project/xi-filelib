@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin\Image;
 
 use Imagick;
@@ -81,7 +88,7 @@ class ImageMagickHelper
 
     /**
      * Creates a new imagick resource from path
-     * 
+     *
      * @param string $path Image path
      * @return Imagick
      * @throws InvalidArgumentException
@@ -97,9 +104,9 @@ class ImageMagickHelper
 
     /**
      * Creates and returns a command from config array
-     * 
+     *
      * @param array $arr Config array
-     * @return Command 
+     * @return Command
      */
     public function createCommandFromArray($arr)
     {

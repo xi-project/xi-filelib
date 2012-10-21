@@ -3,7 +3,7 @@
 namespace Xi\Tests\Filelib\File\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\DefaultFileOperator;
+use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
@@ -31,7 +31,7 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array('getAcl'))
                     ->getMock();
@@ -78,7 +78,7 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $dispatcher->expects($this->at(0))->method('dispatch')
                    ->with($this->equalTo('file.delete'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('unpublish', 'publish', 'getProfile', 'createCommand'))
                    ->getMock();

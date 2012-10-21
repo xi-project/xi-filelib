@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin;
 
 use Xi\Filelib\File\Upload\FileUpload;
@@ -19,7 +26,7 @@ class RandomizeNamePlugin extends AbstractPlugin
         'fileprofile.add' => 'onFileProfileAdd',
         'file.beforeUpload' => 'beforeUpload'
     );
-    
+
     /**
      * @var string Prefix (for uniqid)
      */
@@ -51,9 +58,9 @@ class RandomizeNamePlugin extends AbstractPlugin
         if (!$this->hasProfile($event->getProfile()->getIdentifier())) {
             return;
         }
-        
+
         $upload = $event->getFileUpload();
-        
+
         $pinfo = pathinfo($upload->getUploadFilename());
         $newname = uniqid($this->getPrefix(), true);
 
