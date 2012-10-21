@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Event;
 
 use Symfony\Component\EventDispatcher\Event;
@@ -14,14 +21,14 @@ class FileUploadEvent extends Event
      * @var FileUpload
      */
     private $fileUpload;
-    
+
     /**
      * @var Folder
      */
     private $folder;
-    
+
     /**
-     * @var FileProfile 
+     * @var FileProfile
      */
     private $profile;
 
@@ -34,7 +41,7 @@ class FileUploadEvent extends Event
 
     /**
      * Returns file upload
-     * 
+     *
      * @return FileUpload
      */
     public function getFileUpload()
@@ -44,7 +51,7 @@ class FileUploadEvent extends Event
 
     /**
      * Sets file upload
-     * 
+     *
      */
     public function setFileUpload(FileUpload $upload)
     {
@@ -53,22 +60,22 @@ class FileUploadEvent extends Event
 
     /**
      * Returns profile
-     * 
+     *
      * @return FileProfile
      */
     public function getProfile()
     {
         return $this->profile;
     }
-    
+
     /**
      * Returns folder
-     * 
+     *
      * @return Folder
      */
     public function getFolder()
     {
         return $this->folder;
     }
-    
+
 }

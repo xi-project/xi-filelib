@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Acl;
 
 use Xi\Filelib\File\File;
@@ -7,7 +14,7 @@ use Xi\Filelib\Folder\Folder;
 
 /**
  * Simple ACL allows everything to everyone
- * 
+ *
  * @author pekkis
  *
  */
@@ -15,15 +22,15 @@ class SimpleAcl implements Acl
 {
 
     private $isReadableByAnonymous = true;
-    
-    
+
+
     public function __construct($isReadableByAnonymous = true)
     {
         $this->isReadableByAnonymous = $isReadableByAnonymous;
     }
-    
-    
-    /** 
+
+
+    /**
      * {@inheritdoc}
      */
     public function isFileReadable(File $file)
@@ -41,7 +48,7 @@ class SimpleAcl implements Acl
     }
 
 
-    /** 
+    /**
      * {@inheritdoc}
      */
     public function isFileReadableByAnonymous(File $file)
@@ -50,7 +57,7 @@ class SimpleAcl implements Acl
     }
 
 
-    /** 
+    /**
      * {@inheritdoc}
      */
     public function isFolderReadable(Folder $file)
@@ -68,7 +75,7 @@ class SimpleAcl implements Acl
     }
 
 
-    /** 
+    /**
      * {@inheritdoc}
      */
     public function isFolderReadableByAnonymous(Folder $file)
