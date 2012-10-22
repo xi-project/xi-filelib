@@ -8,6 +8,7 @@
  */
 
 namespace Xi\Filelib\IdentityMap;
+use Iterator;
 
 /**
  * Identity map
@@ -58,6 +59,18 @@ class IdentityMap
         $this->objects[$identifier] = $object;
 
         return true;
+    }
+
+    /**
+     * Adds many identifiables to identity map
+     *
+     * @param Iterator $iterator
+     */
+    public function addMany(Iterator $iterator)
+    {
+        foreach ($iterator as $object) {
+            $this->add($object);
+        }
     }
 
     /**

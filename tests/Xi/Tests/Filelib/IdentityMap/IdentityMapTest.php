@@ -8,6 +8,7 @@ use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
+use ArrayIterator;
 
 class IdentityMapTest extends TestCase
 {
@@ -79,6 +80,29 @@ class IdentityMapTest extends TestCase
 
         $this->assertFalse($ret);
         $this->assertTrue($this->im->has($object));
+    }
+
+    /**
+     * @test
+     */
+    public function addManyShouldAddAllObjects()
+    {
+        $array = array(
+            File::create(array('id' => 6)),
+            Folder::create(array('id' => 6)),
+            File::create(array('id' => 6)),
+        );
+        $iter = new ArrayIterator($array);
+
+        $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+                   ->setMethods(array('add'))
+                   ->getMock();
+
+        $im->expects($this->exactly(3))
+            ->method('add')
+            ->with($this->isInstanceOf('Xi\Filelib\IdentityMap\Identifiable'));
+
+        $im->addMany($iter);
     }
 
     /**
