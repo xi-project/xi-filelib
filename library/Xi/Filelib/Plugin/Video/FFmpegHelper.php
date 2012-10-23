@@ -14,7 +14,7 @@ class FFmpegHelper
     private $command = 'ffmpeg';
 
     /* @var array */
-    private $globalOptions = array();
+    private $options = array();
 
     /* @var array */
     private $inputs = array();
@@ -37,18 +37,21 @@ class FFmpegHelper
      */
     public function setCommand($command)
     {
+        if (!$command) {
+            throw new InvalidArgumentException('Command must not be empty.');
+        }
         $this->command = $command;
         return $this;
     }
 
-    public function getGlobalOptions()
+    public function getOptions()
     {
-        return $this->globalOptions;
+        return $this->options;
     }
 
-    public function setGlobalOptions($options)
+    public function setOptions($options)
     {
-        $this->globalOptions = $options;
+        $this->options = $options;
         return $this;
     }
 
@@ -79,6 +82,29 @@ class FFmpegHelper
         return $this;
     }
 
+    public function execute()
+    {
+        return $this->runProcess($this->getCommand(), 0);
+    }
+
+    public function getCommandLine()
+    {
+        return implode(' ', array_merge(
+            array($this->getCommand()),
+            array(FFmpegHelper::shellArguments($this->getOptions())),
+            array_map(
+                function($input) {
+                    return $this->shellArgumentsFor($input, '-i');
+                },
+                $this->getInputs()
+            ),
+            array_map(
+                array($this, 'shellArgumentsFor'),
+                $this->getOutputs()
+            )
+        ));
+    }
+
     public static function shellArguments($options)
     {
         $args = array();
@@ -96,24 +122,6 @@ class FFmpegHelper
     public function shellArgumentsFor($io, $prefix = '')
     {
         return FFmpegHelper::shellArguments($io['options']) . ($prefix ? " $prefix " : ' ') . escapeshellarg($io['filename']);
-    }
-
-    public function getCommandLine()
-    {
-        return implode(' ', array_merge(
-            array('ffmpeg'),
-            array(FFmpegHelper::shellArguments($this->getGlobalOptions())),
-            array_map(
-                function($input) {
-                    return $this->shellArgumentsFor($input, '-i');
-                },
-                $this->getInputs()
-            ),
-            array_map(
-                array($this, 'shellArgumentsFor'),
-                $this->getOutputs()
-            )
-        ));
     }
 
     public function getDuration(FileObject $file)

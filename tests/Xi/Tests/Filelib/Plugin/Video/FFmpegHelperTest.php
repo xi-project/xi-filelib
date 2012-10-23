@@ -67,9 +67,9 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
             )
         );
 
-        $this->assertEquals(array(), $ffmpeg->getGlobalOptions());
-        $ffmpeg->setGlobalOptions($options);
-        $this->assertEquals($options, $ffmpeg->getGlobalOptions());
+        $this->assertEquals(array(), $ffmpeg->getOptions());
+        $ffmpeg->setOptions($options);
+        $this->assertEquals($options, $ffmpeg->getOptions());
 
         $this->assertEquals(array(), $ffmpeg->getInputs());
         $ffmpeg->setInputs($options);
@@ -130,7 +130,7 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
     {
         $config = array(
             'command' => 'ffmpeg',
-            'globalOptions' => array(
+            'options' => array(
                 'y' => true
             ),
             'inputs' => array(
