@@ -4,6 +4,7 @@ namespace Xi\Filelib\Plugin\Video;
 
 use RuntimeException;
 use Symfony\Component\Process\Process;
+use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
@@ -51,8 +52,30 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function setOutputs($outputs)
     {
+        foreach ($outputs as $output) {
+            if (array_key_exists('filename', $output) && ('.' !== dirname($output['filename']))) {
+                throw new InvalidArgumentException('Output filenames must not contain paths.');
+            }
+        }
         $this->outputs = $outputs;
         return $this;
+    }
+
+    public function getExtensionFor($version)
+    {
+        return pathinfo($this->getOutputs()[$version]['filename'], PATHINFO_EXTENSION);
+    }
+
+    /**
+     * Returns an array of (potentially) provided versions
+     *
+     * @return array
+     */
+    public function getVersions()
+    {
+        // @TODO calculate output filenames from ffmpeg options (it's complicated),
+        // and enable producing multiple output files (file resources) per version
+        return array_keys($this->getOutputs());
     }
 
     public static function shellArguments($options)
@@ -76,26 +99,29 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function getCommand()
     {
-        return implode(' ', array(
-            'ffmpeg',
-            FFmpegPlugin::shellArguments($this->getGlobalOptions()),
-            implode(' ', array_map(function($input) { return $this->shellArgumentsFor($input, '-i'); }, $this->getInputs())),
-            implode(' ', array_map(array($this, 'shellArgumentsFor'), $this->getOutputs()))
+        return implode(' ', array_merge(
+            array('ffmpeg'),
+            array(FFmpegPlugin::shellArguments($this->getGlobalOptions())),
+            array_map(
+                function($input) {
+                    return $this->shellArgumentsFor($input, '-i');
+                },
+                $this->getInputs()
+            ),
+            array_map(
+                array($this, 'shellArgumentsFor'),
+                $this->getOutputs()
+            )
         ));
     }
 
     public function createVersions(File $file)
     {
-        //$ffmpeg = new Process("ffmpeg -i $file -vframes 1 thumb.jpg");
-    }
+        $path = $this->getPathname($file);
 
-    public function getExtensionFor($version)
-    {
-    }
+        $this->runProcess($this->getCommand(), 0);
 
-    public function getVersions()
-    {
-        return array(); // @TODO calculate from options' outfiles
+        // return $this->storeOutputs();
     }
 
     public function getDuration(File $file)
@@ -105,15 +131,30 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function getVideoInfo(File $file)
     {
-        $path = $this->getStorage()->retrieve($file)->getPathname();
+        return json_decode(
+            $this->runProcess(
+                sprintf(
+                    "ffprobe -loglevel quiet -print_format json -show_streams -show_format %s",
+                    $this->getPathname($file)
+                )
+            )
+        );
+    }
 
-        $probe = new Process(sprintf("ffprobe -loglevel quiet -print_format json -show_format %s", $path));
-        $probe->setTimeout(30);
-        $probe->run();
+    private function getPathname(File $file)
+    {
+        return $this->getStorage()->retrieve($file)->getPathname();
+    }
 
-        if (!$probe->isSuccessful()) {
-            throw new RuntimeException($probe->getErrorOutput());
+    private function runProcess($cmd, $timeout = 30)
+    {
+        $proc = new Process($cmd);
+        if ($timeout) { $proc->setTimeout($timeout); }
+        $proc->run();
+
+        if (!$proc->isSuccessful()) {
+            throw new RuntimeException($proc->getErrorOutput());
         }
-        return json_decode($probe->getOutput());
+        return $proc->getOutput();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Xi\Tests\Filelib\Plugin\Video;
 
+use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
@@ -16,32 +17,6 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
         }
 
         $this->testVideo = ROOT_TESTS . '/data/hauska-joonas.mp4';
-
-        $this->config = array(
-            'globalOptions' => array(
-                'y' => '',
-                'benchmark_all' => ''
-            ),
-            /* 'inputs' => array( */
-            /*     'watermark' => array( */
-            /*         'filename' => '' */
-            /*     ) */
-            /* ), */
-            'outputs' => array(
-                '1080p_stills' => array(
-                    'filename' => dirname($this->testVideo) . '/' . pathinfo($this->testVideo)['filename'] . '_%03d.png',
-                    'options' => array(
-                        'ss' => '00:00:01.000',
-                        'r' => '1/25',
-                        's' => '1920x1080',
-                        'aspect' => '16:9',
-                        'f' => 'image2',
-                        'vframes' => '3'
-                    ),
-                )
-            )
-        );
-
         $this->plugin = new FFmpegPlugin();
     }
 
@@ -70,9 +45,11 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
         $plugin = new FFmpegPlugin();
 
         $options = array(
-            'filename' => 'foo.png',
-            'options' => array(
-                'vframes' => '1',
+            'foo' => array(
+                'filename' => 'foo.png',
+                'options' => array(
+                    'vframes' => '1'
+                )
             )
         );
 
@@ -87,6 +64,70 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals(array(), $plugin->getOutputs());
         $plugin->setOutputs($options);
         $this->assertEquals($options, $plugin->getOutputs());
+    }
+
+    public function invalidOutputFilenames()
+    {
+        return array(
+            array(''),
+            array('/foo'),
+            array('/foo.ext'),
+            array('/foo/bar.ext'),
+            array('../foo.ext'),
+            array('../bar/./foo.ext')
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider invalidOutputFilenames
+     * @expectedException Xi\Filelib\Exception\InvalidArgumentException
+     */
+    public function setOutputsShouldThrowExceptionForInvalidFilenames($filename)
+    {
+        $options = array(
+            'outputs' => array(
+                'foo' => array('filename' => $filename)
+            )
+        );
+        $plugin = new FFmpegPlugin($options);
+    }
+
+    /**
+     * @test
+     */
+    public function testExtensionFor()
+    {
+        $options = array(
+            'outputs' => array(
+                'foo' => array(
+                    'filename' => 'still.png'
+                ),
+                'bar' => array(
+                    'filename' => 'video.webm'
+                )
+            )
+        );
+        $plugin = new FFmpegPlugin($options);
+
+        $this->assertEquals('png', $plugin->getExtensionFor('foo'));
+        $this->assertEquals('webm', $plugin->getExtensionFor('bar'));
+    }
+
+    /**
+     * @test
+     */
+    public function testGetVersions()
+    {
+        $options = array(
+            'outputs' => array(
+                'alpha' => array('filename' => 'lus.png'),
+                'beta' => array('filename' => 'tus.png')
+            )
+        );
+        $plugin = new FFmpegPlugin($options);
+
+        $this->assertEquals(array('alpha', 'beta'), $plugin->getVersions());
     }
 
     /**
@@ -178,7 +219,7 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
 JSON;
 
         $video = File::create(array('id' => 1, 'name' => basename($this->testVideo)));
-        $this->assertEquals(json_decode($expected), $this->plugin->getVideoInfo($video));
+        $this->assertEquals(json_decode($expected)->format, $this->plugin->getVideoInfo($video)->format);
     }
 
     /**
