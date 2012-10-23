@@ -135,7 +135,7 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
             ),
             'inputs' => array(
                 'foo' => array(
-                    'filename' => 'video.mp4',
+                    'filename' => true,
                     'options' => array('r' => '1')
                 ),
                 'bar' => array(
@@ -159,10 +159,11 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
             )
         );
         $ffmpeg = new FFmpegHelper($config);
+        $tmpDir = realpath(sys_get_temp_dir());
 
         $this->assertEquals(
-            "ffmpeg -y -r '1' -i 'video.mp4' -r '20' -i 'simpsons.mp4' -vframes '1' 'still.png' -s '1280x720' 'video.webm'",
-            $ffmpeg->getCommandLine()
+            "ffmpeg -y -r '1' -i 'video.mp4' -r '20' -i 'simpsons.mp4' -vframes '1' '$tmpDir/still.png' -s '1280x720' '$tmpDir/video.webm'",
+            $ffmpeg->getCommandLine('video.mp4', $tmpDir)
         );
     }
 

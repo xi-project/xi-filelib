@@ -37,10 +37,9 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
     public function createVersions(File $file)
     {
         $path = $this->getPathname($file);
+        $retrieved = $this->getStorage()->retrieve($file)->getPathname();
 
-        $this->runProcess($this->getCommand(), 0);
-
-        // return $this->storeOutputs();
+        return $this->getHelper()->execute($retrieved, $tmpDir);
     }
 
     public function getExtensionFor($version)

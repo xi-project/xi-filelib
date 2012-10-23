@@ -82,12 +82,17 @@ class FFmpegHelper
         return $this;
     }
 
-    public function execute()
+    public function execute($original, $outputDir)
     {
-        return $this->runProcess($this->getCommand(), 0);
+        $timout = 3600 // 1 hour
+        return $this->runProcess($this->getCommandLine($original, $outputDir), $timout);
     }
 
-    public function getCommandLine()
+    /**
+     * @param string $original Pathname to original file
+     * @param string @outputDir Directory to place processed outputs
+     */
+    public function getCommandLine($original, $outputDir)
     {
         return implode(' ', array_merge(
             array($this->getCommand()),
@@ -96,13 +101,44 @@ class FFmpegHelper
                 function($input) {
                     return $this->shellArgumentsFor($input, '-i');
                 },
-                $this->getInputs()
+                $this->getProcessedInputs($original)
             ),
             array_map(
                 array($this, 'shellArgumentsFor'),
-                $this->getOutputs()
+                $this->getProcessedOutputs($outputDir)
             )
         ));
+    }
+
+    private function getProcessedInputs($original)
+    {
+        return array_map(
+            function ($input) use ($original) {
+                return array(
+                    'filename' => (
+                        (!array_key_exists('filename', $input) ||
+                         array_key_exists('filename', $input) && $input['filename'] === true) ?
+                        $original :
+                        $input['filename']
+                    ),
+                    'options' => $input['options']
+                );
+            },
+            $this->getInputs()
+        );
+    }
+
+    private function getProcessedOutputs($outputDir)
+    {
+        return array_map(
+            function ($output) use ($outputDir) {
+                return array(
+                    'filename' => realpath($outputDir) .'/'. $output['filename'],
+                    'options' => $output['options']
+                );
+            },
+            $this->getOutputs()
+        );
     }
 
     public static function shellArguments($options)
