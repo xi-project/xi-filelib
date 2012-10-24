@@ -4,8 +4,10 @@ namespace Xi\Filelib\Plugin\Video;
 
 use RuntimeException;
 use Symfony\Component\Process\Process;
+use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\Video\FFmpegHelper;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
@@ -13,18 +15,33 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
 {
     protected $providesFor = array('video');
 
+    protected $helper;
+
+    public function __construct($options = array())
+    {
+        parent::__construct($options);
+        Configurator::setOptions($this->getHelper(), $options);
+    }
+
+    /**
+     * @return FFmpegHelper
+     */
+    public function getHelper()
+    {
+        if (!$this->helper) {
+            $this->helper = new FFmpegHelper();
+        }
+        return $this->helper;
+    }
+
     public function createVersions(File $file)
     {
-        //$ffmpeg = new Process("ffmpeg -i $file -vframes 1 thumb.jpg");
-    }
+        $retrieved = $this->getPathname($file);
+        $tmpDir = $this->getFilelib()->getTempdir();
 
-    public function getExtensionFor($version)
-    {
-    }
+        $this->getHelper()->execute($retrieved, $tmpDir);
 
-    public function getVersions()
-    {
-        return array(); // @TODO calculate from options' outfiles
+        return $this->getHelper()->getOutputPathnames($tmpDir);
     }
 
     public function areSharedVersionsAllowed()
@@ -35,22 +52,26 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
     {
     }
 
-    public function getDuration(File $file)
+    public function getExtensionFor($version)
     {
-        return (float) $this->getVideoInfo($file)->format->duration;
+        return pathinfo($this->getHelper()->getOutputs()[$version]['filename'], PATHINFO_EXTENSION);
     }
 
-    public function getVideoInfo(File $file)
+    /**
+     * Returns an array of (potentially) provided versions
+     *
+     * @return array
+     */
+    public function getVersions()
     {
-        $path = $this->getStorage()->retrieve($file->getResource())->getPathname();
-
-        $probe = new Process(sprintf("ffprobe -loglevel quiet -print_format json -show_format %s", $path));
-        $probe->setTimeout(30);
-        $probe->run();
-
-        if (!$probe->isSuccessful()) {
-            throw new RuntimeException($probe->getErrorOutput());
-        }
-        return json_decode($probe->getOutput());
+        // @TODO calculate output filenames from ffmpeg options (it's complicated),
+        // and enable producing multiple output files (file resources) per version
+        return array_keys($this->getHelper()->getOutputs());
     }
+
+    private function getPathname(File $file)
+    {
+        return $this->getStorage()->retrieve($file->getResource())->getPathname();
+    }
+
 }
