@@ -22,6 +22,39 @@ use ArrayIterator;
 interface Platform
 {
     /**
+     * Returns how many times a resource is referenced by files
+     *
+     * @param Resource $resource
+     * @return int
+     */
+    public function getNumberOfReferences(Resource $resource);
+
+    /**
+     * @param ArrayIterator $iter
+     * @return ArrayIterator
+     */
+    public function exportResources(ArrayIterator $iter);
+
+    /**
+     * @param ArrayIterator $iter
+     * @return ArrayIterator
+     */
+    public function exportFiles(ArrayIterator $iter);
+
+    /**
+     * @param ArrayIterator $iter
+     * @return ArrayIterator
+     */
+    public function exportFolders(ArrayIterator $iter);
+
+    /**
+     * @param Finder $finder
+     * @return ArrayIterator
+     */
+    public function findByFinder(Finder $finder);
+
+
+    /**
      * Finds folder
      *
      * @param  mixed       $id
@@ -180,41 +213,8 @@ interface Platform
     public function updateResource(Resource $resource);
 
 
-    /**
-     * Returns how many times a resource is referenced by files
-     *
-     * @param Resource $resource
-     * @return int
-     */
-    public function getNumberOfReferences(Resource $resource);
+    public function assertValidIdentifier($object);
 
-    /**
-     * @return string
-     */
-    public function generateUuid();
 
-    /**
-     * @param ArrayIterator $iter
-     * @return ArrayIterator
-     */
-    public function exportResources(ArrayIterator $iter);
-
-    /**
-     * @param ArrayIterator $iter
-     * @return ArrayIterator
-     */
-    public function exportFiles(ArrayIterator $iter);
-
-    /**
-     * @param ArrayIterator $iter
-     * @return ArrayIterator
-     */
-    public function exportFolders(ArrayIterator $iter);
-
-    /**
-     * @param Finder $finder
-     * @return ArrayIterator
-     */
-    public function findByFinder(Finder $finder);
 
 }

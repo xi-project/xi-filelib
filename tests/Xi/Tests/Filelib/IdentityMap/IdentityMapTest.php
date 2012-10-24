@@ -85,29 +85,6 @@ class IdentityMapTest extends TestCase
     /**
      * @test
      */
-    public function addManyShouldAddAllObjects()
-    {
-        $array = array(
-            File::create(array('id' => 6)),
-            Folder::create(array('id' => 6)),
-            File::create(array('id' => 6)),
-        );
-        $iter = new ArrayIterator($array);
-
-        $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
-                   ->setMethods(array('add'))
-                   ->getMock();
-
-        $im->expects($this->exactly(3))
-            ->method('add')
-            ->with($this->isInstanceOf('Xi\Filelib\IdentityMap\Identifiable'));
-
-        $im->addMany($iter);
-    }
-
-    /**
-     * @test
-     */
     public function getShouldReturnFalseWhenObjectNotFound()
     {
         $ret = $this->im->get(1, 'Xi\Filelib\File\File');

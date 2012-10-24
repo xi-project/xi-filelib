@@ -24,7 +24,6 @@ use Xi\Filelib\Exception\FolderNotFoundException;
 use Xi\Filelib\Exception\FolderNotEmptyException;
 use Xi\Filelib\Exception\NonUniqueFileException;
 use Xi\Filelib\Exception\ResourceReferencedException;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\ResourceEvent;
 use Exception;
 
@@ -36,21 +35,6 @@ use Exception;
  */
 abstract class AbstractPlatform implements Platform
 {
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
-     * @var UuidGenerator
-     */
-    private $uuidGenerator;
-
-    public function __construct(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-    }
-
     /**
      * @param  mixed      $id
      * @return array|null
@@ -245,19 +229,6 @@ abstract class AbstractPlatform implements Platform
     }
 
     /**
-     * Updates a resource
-     *
-     * @param  Resource $resource
-     * @return boolean
-     * @throws InvalidArgumentException With invalid id
-     */
-    public function updateResource(Resource $resource)
-    {
-        $this->assertValidIdentifier($resource->getId(), 'Resource');
-        return (bool) $this->doUpdateResource($resource);
-    }
-
-    /**
      * Deletes a resource
      *
      * @param  Resource         $resource
@@ -278,16 +249,6 @@ abstract class AbstractPlatform implements Platform
         }
 
         return $ret;
-    }
-
-    /**
-     * Returns the number of references to a resource
-     *
-     * @param Resource $resource
-     */
-    public function getNumberOfReferences(Resource $resource)
-    {
-        return $this->doGetNumberOfReferences($resource);
     }
 
     /**
@@ -425,38 +386,6 @@ abstract class AbstractPlatform implements Platform
     }
 
     /**
-     * Updates a folder
-     *
-     * @param  Folder                   $folder
-     * @return boolean
-     * @throws InvalidArgumentException With invalid folder id
-     */
-    public function updateFolder(Folder $folder)
-    {
-        $this->assertValidIdentifier($folder->getId(), 'Folder');
-        return (bool) $this->doUpdateFolder($folder);
-    }
-
-    /**
-     * Updates a file
-     *
-     * @param  File                    $file
-     * @return boolean
-     * @throws FolderNotFoundException If folder was not found
-     */
-    public function updateFile(File $file)
-    {
-        if (!$this->findFolder($file->getFolderId())) {
-            throw new FolderNotFoundException(sprintf(
-                'Folder was not found with id "%s"',
-                $file->getFolderId()
-            ));
-        }
-        $resUpdate = $this->updateResource($file->getResource());
-        return (bool) $this->doUpdateFile($file);
-    }
-
-    /**
      * Finds the root folder
      *
      * @return array
@@ -566,39 +495,6 @@ abstract class AbstractPlatform implements Platform
             $folder->getName()
         ));
     }
-
-    /**
-     * Generates an UUID
-     *
-     * @return string
-     */
-    public function generateUuid()
-    {
-        return $this->getUuidGenerator()->v4();
-    }
-
-    /**
-     * Returns event dispatcher
-     *
-     * @return EventDispatcherInterface
-     */
-    public function getEventDispatcher()
-    {
-        return $this->eventDispatcher;
-    }
-
-    /**
-     * @return UuidGenerator
-     */
-    protected function getUuidGenerator()
-    {
-        if (!$this->uuidGenerator) {
-            $this->uuidGenerator = new PHPUuidGenerator();
-        }
-
-        return $this->uuidGenerator;
-    }
-
 
     public function findByFinder(Finder $finder)
     {

@@ -17,9 +17,24 @@ use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
+use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
+use Xi\Filelib\Exception\FolderNotFoundException;
+use Xi\Filelib\Exception\FolderNotEmptyException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Backend
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+     * @var UuidGenerator
+     */
+    private $uuidGenerator;
+
     /**
      * @var Platform
      */
@@ -30,11 +45,45 @@ class Backend
      */
     private $identityMap;
 
-    public function __construct(Platform $platform, IdentityMap $identityMap)
+    public function __construct(EventDispatcherInterface $eventDispatcher, Platform $platform, IdentityMap $identityMap)
     {
         $this->platform = $platform;
         $this->identityMap = $identityMap;
+        $this->eventDispatcher = $eventDispatcher;
     }
+
+    /**
+     * Generates an UUID
+     *
+     * @return string
+     */
+    public function generateUuid()
+    {
+        return $this->getUuidGenerator()->v4();
+    }
+
+    /**
+     * Returns event dispatcher
+     *
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
+    }
+
+    /**
+     * @return UuidGenerator
+     */
+    public function getUuidGenerator()
+    {
+        if (!$this->uuidGenerator) {
+            $this->uuidGenerator = new PHPUuidGenerator();
+        }
+        return $this->uuidGenerator;
+    }
+
+
 
     /**
      * @return Platform
@@ -61,7 +110,7 @@ class Backend
     public function findFolder($id)
     {
         $ret = $this->getPlatform()->findByFinder(new FolderFinder(array('id' => $id)));
-        return $this->getPlatform()->exportFolder($ret)->current();
+        return $ret->current();
     }
 
     /**
@@ -73,7 +122,7 @@ class Backend
     public function findSubFolders(Folder $folder)
     {
         $ret = $this->getPlatform()->findByFinder(new FolderFinder(array('parent_id' => $folder->g)));
-        return $this->getPlatform()->exportFolder($ret);
+        return $this->getPlatform()->exportFolders($ret);
     }
 
     /**
@@ -84,7 +133,7 @@ class Backend
     public function findAllFiles()
     {
         $ret = $this->getPlatform()->findByFinder(new FileFinder(array()));
-        return $this->getPlatform()->exportFile($ret);
+        return $this->getPlatform()->exportFiles($ret);
     }
 
     /**
@@ -96,7 +145,7 @@ class Backend
     public function findFile($id)
     {
         $ret = $this->getPlatform()->findByFinder(new FileFinder(array('id' => $id)));
-        return $this->getPlatform()->exportFile($ret)->current();
+        return $this->getPlatform()->exportFiles($ret)->current();
     }
 
     /**
@@ -169,6 +218,7 @@ class Backend
      */
     public function updateFolder(Folder $folder)
     {
+        $this->getPlatform()->assertValidIdentifier($folder);
         return $this->getPlatform()->updateFolder($folder);
     }
 
@@ -181,6 +231,11 @@ class Backend
      */
     public function updateFile(File $file)
     {
+        $this->getPlatform()->assertValidIdentifier($file);
+        if (!$this->findFolder($file->getFolderId())) {
+            throw new FolderNotFoundException(sprintf('Folder was not found with id "%s"', $file->getFolderId()));
+        }
+        $this->updateResource($file->getResource());
         return $this->getPlatform()->updateFile($file);
     }
 
@@ -280,6 +335,7 @@ class Backend
      */
     public function updateResource(Resource $resource)
     {
+        $this->getPlatform()->assertValidIdentifier($resource);
         return $this->getPlatform()->updateResource($resource);
     }
 
@@ -294,15 +350,6 @@ class Backend
     {
         return $this->getPlatform()->getNumberOfReferences($resource);
     }
-
-    /**
-     * @return string
-     */
-    public function generateUuid()
-    {
-        return $this->getPlatform()->generateUuid();
-    }
-
 
 
 }
