@@ -3,6 +3,7 @@
 namespace Xi\Tests\Filelib\Plugin\Video;
 
 use Xi\Filelib\Exception\InvalidArgumentException;
+use Xi\Filelib\Exception\NotImplementedException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
@@ -18,6 +19,37 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
 
         $this->testVideo = new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4');
         $this->ffmpeg = new FFmpegHelper();
+
+        $this->config = array(
+            'command' => 'ffmpeg',
+            'options' => array(
+                'y' => true
+            ),
+            'inputs' => array(
+                'foo' => array(
+                    'filename' => true,
+                    'options' => array('r' => '1')
+                ),
+                'bar' => array(
+                    'filename' => 'simpsons.mp4',
+                    'options' => array('r' => '20')
+                )
+            ),
+            'outputs' => array(
+                'stills' => array(
+                    'filename' => 'still.png',
+                    'options' => array(
+                        'vframes' => '1'
+                    )
+                ),
+                'webm' => array(
+                    'filename' => 'video.webm',
+                    'options' => array(
+                        's' => '1280x720'
+                    )
+                )
+            )
+        );
     }
 
     public function tearDown()
@@ -107,6 +139,29 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
         $ffmpeg = new FFmpegHelper($options);
     }
 
+    public function numberedOutputFilenames()
+    {
+        return array(
+            array('still_%d.png'),
+            array('still_%03d.png')
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider numberedOutputFilenames
+     * @expectedException Xi\Filelib\Exception\NotImplementedException
+     */
+    public function setOutputsShouldThrowExceptionForNumberedFilenames($filename)
+    {
+        $options = array(
+            'outputs' => array(
+                'foo' => array('filename' => $filename)
+            )
+        );
+        $ffmpeg = new FFmpegHelper($options);
+    }
+
     /**
      * @test
      */
@@ -128,42 +183,29 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
 
     public function testGetCommandLine()
     {
-        $config = array(
-            'command' => 'ffmpeg',
-            'options' => array(
-                'y' => true
-            ),
-            'inputs' => array(
-                'foo' => array(
-                    'filename' => true,
-                    'options' => array('r' => '1')
-                ),
-                'bar' => array(
-                    'filename' => 'simpsons.mp4',
-                    'options' => array('r' => '20')
-                )
-            ),
-            'outputs' => array(
-                'stills' => array(
-                    'filename' => 'still.png',
-                    'options' => array(
-                        'vframes' => '1'
-                    )
-                ),
-                'webm' => array(
-                    'filename' => 'video.webm',
-                    'options' => array(
-                        's' => '1280x720'
-                    )
-                )
-            )
-        );
-        $ffmpeg = new FFmpegHelper($config);
+        $ffmpeg = new FFmpegHelper($this->config);
         $tmpDir = realpath(sys_get_temp_dir());
 
         $this->assertEquals(
             "ffmpeg -y -r '1' -i 'video.mp4' -r '20' -i 'simpsons.mp4' -vframes '1' '$tmpDir/still.png' -s '1280x720' '$tmpDir/video.webm'",
             $ffmpeg->getCommandLine('video.mp4', $tmpDir)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function testgetOutputPathnames()
+    {
+        $ffmpeg = new FFmpegHelper($this->config);
+        $tmpDir = realpath(sys_get_temp_dir());
+
+        $this->assertEquals(
+            array(
+                'stills' => "$tmpDir/still.png",
+                'webm' => "$tmpDir/video.webm"
+            ),
+            $ffmpeg->getOutputPathnames($tmpDir)
         );
     }
 

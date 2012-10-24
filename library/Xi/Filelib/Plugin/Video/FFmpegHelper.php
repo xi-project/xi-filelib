@@ -5,6 +5,7 @@ namespace Xi\Filelib\Plugin\Video;
 use RuntimeException;
 use Symfony\Component\Process\Process;
 use Xi\Filelib\Exception\InvalidArgumentException;
+use Xi\Filelib\Exception\NotImplementedException;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 
@@ -74,8 +75,13 @@ class FFmpegHelper
     public function setOutputs($outputs)
     {
         foreach ($outputs as $output) {
-            if (array_key_exists('filename', $output) && ('.' !== dirname($output['filename']))) {
-                throw new InvalidArgumentException('Output filenames must not contain paths.');
+            if (array_key_exists('filename', $output)) {
+                if ('.' !== dirname($output['filename'])) {
+                    throw new InvalidArgumentException('Output filenames must not contain paths.');
+                }
+                if (preg_match('/%(0\d+)?d/u', $output['filename'])) {
+                    throw new NotImplementedException('Number templated filenames are not supported.');
+                }
             }
         }
         $this->outputs = $outputs;
@@ -84,8 +90,8 @@ class FFmpegHelper
 
     public function execute($original, $outputDir)
     {
-        $timout = 3600 // 1 hour
-        return $this->runProcess($this->getCommandLine($original, $outputDir), $timout);
+        $timeout = 3600; // 1 hour
+        return $this->runProcess($this->getCommandLine($original, $outputDir), $timeout);
     }
 
     /**
@@ -136,6 +142,16 @@ class FFmpegHelper
                     'filename' => realpath($outputDir) .'/'. $output['filename'],
                     'options' => $output['options']
                 );
+            },
+            $this->getOutputs()
+        );
+    }
+
+    public function getOutputPathnames($outputDir)
+    {
+        return array_map(
+            function ($output) use ($outputDir) {
+                return realpath($outputDir) .'/'. $output['filename'];
             },
             $this->getOutputs()
         );
