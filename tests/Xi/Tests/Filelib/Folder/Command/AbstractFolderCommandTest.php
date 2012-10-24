@@ -21,7 +21,7 @@ class AbstractFolderCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $uuid = 'loso-id';
 
-        $folderOperator = $this->getMockForAbstractClass('Xi\Filelib\Folder\FolderOperator');
+        $folderOperator = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
 
         $folderOperator->expects($this->once())->method('generateUuid')
                        ->will($this->returnValue($uuid));

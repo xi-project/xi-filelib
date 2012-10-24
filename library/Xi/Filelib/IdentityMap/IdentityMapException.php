@@ -7,11 +7,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Folder\Command;
+namespace Xi\Filelib\IdentityMap;
 
-use Xi\Filelib\EnqueueableCommand;
+use Xi\Filelib\Exception\FilelibException;
 
-interface FolderCommand extends EnqueueableCommand
+/**
+ * Identity map exception
+ */
+class IdentityMapException extends \Exception implements FilelibException
 {
 
 }
