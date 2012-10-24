@@ -44,14 +44,6 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         return $this->getHelper()->getOutputPathnames($tmpDir);
     }
 
-    public function areSharedVersionsAllowed()
-    {
-    }
-
-    public function isSharedResourceAllowed()
-    {
-    }
-
     public function getExtensionFor($version)
     {
         return pathinfo($this->getHelper()->getOutputs()[$version]['filename'], PATHINFO_EXTENSION);
@@ -69,7 +61,17 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         return array_keys($this->getHelper()->getOutputs());
     }
 
-    private function getPathname(File $file)
+    public function areSharedVersionsAllowed()
+    {
+        return true;
+    }
+
+    public function isSharedResourceAllowed()
+    {
+        return true;
+    }
+
+   private function getPathname(File $file)
     {
         return $this->getStorage()->retrieve($file->getResource())->getPathname();
     }

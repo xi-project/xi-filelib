@@ -144,6 +144,24 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
         $this->assertEquals(array('alpha', 'beta'), $plugin->getVersions());
     }
 
+    /**
+     * @test
+     */
+    public function pluginShouldAllowSharedResource()
+    {
+        $plugin = new FFmpegPlugin();
+        $this->assertTrue($plugin->isSharedResourceAllowed());
+    }
+
+    /**
+     * @test
+     */
+    public function pluginShouldAllowSharedVersions()
+    {
+        $plugin = new FFmpegPlugin();
+        $this->assertTrue($plugin->areSharedVersionsAllowed());
+    }
+
     private function checkFFmpegFound()
     {
         return (boolean) trim(`sh -c "which ffmpeg"`);
