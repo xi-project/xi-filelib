@@ -3,7 +3,6 @@
 namespace Xi\Tests\Filelib\Plugin\Video\FFmpeg;
 
 use Xi\Filelib\Exception\InvalidArgumentException;
-use Xi\Filelib\Exception\NotImplementedException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
@@ -150,7 +149,7 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      * @dataProvider numberedOutputFilenames
-     * @expectedException Xi\Filelib\Exception\NotImplementedException
+     * @expectedException Xi\Filelib\Exception\InvalidArgumentException
      */
     public function setOutputsShouldThrowExceptionForNumberedFilenames($filename)
     {

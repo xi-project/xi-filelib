@@ -5,7 +5,6 @@ namespace Xi\Filelib\Plugin\Video\FFmpeg;
 use RuntimeException;
 use Symfony\Component\Process\Process;
 use Xi\Filelib\Exception\InvalidArgumentException;
-use Xi\Filelib\Exception\NotImplementedException;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 
@@ -80,7 +79,7 @@ class FFmpegHelper
                     throw new InvalidArgumentException('Output filenames must not contain paths.');
                 }
                 if (preg_match('/%(0\d+)?d/u', $output['filename'])) {
-                    throw new NotImplementedException('Number templated filenames are not supported.');
+                    throw new InvalidArgumentException('Number templated filenames are not supported.');
                 }
             }
         }
