@@ -34,6 +34,12 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         return $this->helper;
     }
 
+    /**
+     * Create image, audio and/or video versions using FFmpegHelper
+     *
+     * @param File $file
+     * @return array
+     */
     public function createVersions(File $file)
     {
         $retrieved = $this->getPathname($file);
@@ -44,6 +50,9 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         return $this->getHelper()->getOutputPathnames($tmpDir);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getExtensionFor($version)
     {
         return pathinfo($this->getHelper()->getOutputs()[$version]['filename'], PATHINFO_EXTENSION);

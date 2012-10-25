@@ -10,16 +10,24 @@ use Xi\Filelib\File\FileObject;
 
 class FFmpegHelper
 {
-    /* @var string */
+    /**
+     * @var string
+     */
     private $command = 'ffmpeg';
 
-    /* @var array */
+    /**
+     * @var array
+     */
     private $options = array();
 
-    /* @var array */
+    /**
+     * @var array
+     */
     private $inputs = array();
 
-    /* @var array */
+    /**
+     * @var array
+     */
     private $outputs = array();
 
     public function __construct($options = array())
@@ -27,13 +35,19 @@ class FFmpegHelper
         Configurator::setConstructorOptions($this, $options);
     }
 
+    /**
+     * Get the path of the command line command for ffmpeg
+     * @return string
+     */
     public function getCommand()
     {
         return $this->command;
     }
 
     /**
-     * @param string $command The path of the command line command
+     * Set the path of the command line command for ffmpeg
+     * @param string $command
+     * @return FFmpegHelper
      */
     public function setCommand($command)
     {
@@ -44,33 +58,66 @@ class FFmpegHelper
         return $this;
     }
 
+    /**
+     * Get the global options for ffmpeg
+     * @return array
+     */
     public function getOptions()
     {
         return $this->options;
     }
 
+    /**
+     * Set the global options for ffmpeg
+     *
+     * @param array @options
+     * @return FFmpegHelper
+     */
     public function setOptions($options)
     {
         $this->options = $options;
         return $this;
     }
 
+    /**
+     * Get an array of input filenames and their options
+     * @return array
+     */
     public function getInputs()
     {
         return $this->inputs;
     }
 
+    /**
+     * Set an array of input filenames and their options
+     *
+     * @param array @inputs
+     * @return FFmpegHelper
+     */
     public function setInputs($inputs)
     {
         $this->inputs = $inputs;
         return $this;
     }
 
+    /**
+     * Get an array of output filenames and their options
+     * @return array
+     */
     public function getOutputs()
     {
         return $this->outputs;
     }
 
+    /**
+     * Set an array of output filenames and their options.
+     * Filenames must not contain paths (slashes).
+     * Number templated filenames (%d) are not supported at this time.
+     *
+     * @param array $outputs
+     * @return FFmpegHelper
+     * @throws InvalidArgumentException
+     */
     public function setOutputs($outputs)
     {
         foreach ($outputs as $output) {
@@ -87,6 +134,13 @@ class FFmpegHelper
         return $this;
     }
 
+    /**
+     * Execute ffmpeg processing in a subprocess.
+     *
+     * @param string @original Filename to replace default values (true) on inputs
+     * @param string @outputDir Path to where put the outputs
+     * @return string Output from the command
+     */
     public function execute($original, $outputDir)
     {
         $timeout = 3600; // 1 hour
@@ -94,6 +148,8 @@ class FFmpegHelper
     }
 
     /**
+     * Construct the ffmpeg command line from options and parameters
+     *
      * @param string $original Pathname to original file
      * @param string @outputDir Directory to place processed outputs
      */
@@ -115,6 +171,12 @@ class FFmpegHelper
         ));
     }
 
+    /**
+     * Replaces the default filenames (boolean true) with the string $original in inputs
+     *
+     * @param string original
+     * @return array
+     */
     private function getProcessedInputs($original)
     {
         return array_map(
@@ -133,6 +195,12 @@ class FFmpegHelper
         );
     }
 
+    /**
+     * Prepends the output directory to the output filenames
+     *
+     * @param string $outputDir
+     * @return array
+     */
     private function getProcessedOutputs($outputDir)
     {
         return array_map(
@@ -146,6 +214,12 @@ class FFmpegHelper
         );
     }
 
+    /**
+     * Return a map of output keys to their absolute paths in the $outputDir
+     *
+     * @param string $outputDir
+     * @return array
+     */
     public function getOutputPathnames($outputDir)
     {
         return array_map(
@@ -156,6 +230,12 @@ class FFmpegHelper
         );
     }
 
+    /**
+     * Generate command line options for ffmpeg from one $options array
+     *
+     * @param array $options
+     * @return string
+     */
     public static function shellArguments($options)
     {
         $args = array();
@@ -170,16 +250,35 @@ class FFmpegHelper
         return implode(' ', $args);
     }
 
+    /**
+     * Generate command line options for one input (use $prefix "-i") or output file from $io array
+     *
+     * @param array $io
+     * @param string $prefix
+     * @return string
+     */
     public function shellArgumentsFor($io, $prefix = '')
     {
         return FFmpegHelper::shellArguments($io['options']) . ($prefix ? " $prefix " : ' ') . escapeshellarg($io['filename']);
     }
 
+    /**
+     * Get the duration of a video using ffprobe
+     *
+     * @param FileObject $file
+     * @return float
+     */
     public function getDuration(FileObject $file)
     {
         return (float) $this->getVideoInfo($file)->format->duration;
     }
 
+    /**
+     * Get information about video format and it's streams
+     *
+     * @param FileObject $file
+     * @return stdClass
+     */
     public function getVideoInfo(FileObject $file)
     {
         return json_decode(
@@ -192,6 +291,14 @@ class FFmpegHelper
         );
     }
 
+    /**
+     * Run a command in subprocess using Symfony Process component.
+     *
+     * @param string $cmd
+     * @param int $timeout Time limit for the command to run. Run forever with 0.
+     * @return string Command output
+     * @throws RuntimeException
+     */
     private function runProcess($cmd, $timeout = 30)
     {
         $proc = new Process($cmd);
