@@ -1,13 +1,13 @@
 <?php
 
-namespace Xi\Tests\Filelib\Plugin\Video;
+namespace Xi\Tests\Filelib\Plugin\Video\FFmpeg;
 
 use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Exception\NotImplementedException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Plugin\Video\FFmpegHelper;
+use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper;
 
 class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -62,7 +62,7 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Plugin\Video\FFmpegHelper'));
+        $this->assertTrue(class_exists('Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper'));
     }
 
     /**

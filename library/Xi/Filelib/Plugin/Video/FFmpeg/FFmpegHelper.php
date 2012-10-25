@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Plugin\Video;
+namespace Xi\Filelib\Plugin\Video\FFmpeg;
 
 use RuntimeException;
 use Symfony\Component\Process\Process;

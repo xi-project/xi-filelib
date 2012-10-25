@@ -1,12 +1,12 @@
 <?php
 
-namespace Xi\Tests\Filelib\Plugin\Video;
+namespace Xi\Tests\Filelib\Plugin\Video\FFmpeg;
 
 use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Plugin\Video\FFmpegPlugin;
+use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegPlugin;
 
 class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -30,10 +30,10 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Plugin\Video\FFmpegPlugin'));
+        $this->assertTrue(class_exists('Xi\Filelib\Plugin\Video\FFmpeg\FFmpegPlugin'));
         $this->assertArrayHasKey(
             'Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider',
-            class_parents('Xi\Filelib\Plugin\Video\FFmpegPlugin')
+            class_parents('Xi\Filelib\Plugin\Video\FFmpeg\FFmpegPlugin')
         );
     }
 
@@ -45,7 +45,7 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
         $plugin = new FFmpegPlugin();
         $helper = $plugin->getHelper();
 
-        $this->assertInstanceOf('Xi\Filelib\Plugin\Video\FFmpegHelper', $helper);
+        $this->assertInstanceOf('Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper', $helper);
 
         $this->assertSame($helper, $plugin->getHelper());
     }

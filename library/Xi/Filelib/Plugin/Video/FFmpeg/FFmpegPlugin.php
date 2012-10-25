@@ -1,13 +1,13 @@
 <?php
 
-namespace Xi\Filelib\Plugin\Video;
+namespace Xi\Filelib\Plugin\Video\FFmpeg;
 
 use RuntimeException;
 use Symfony\Component\Process\Process;
 use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\Video\FFmpegHelper;
+use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
