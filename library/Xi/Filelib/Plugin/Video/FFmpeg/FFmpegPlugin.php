@@ -1,13 +1,13 @@
 <?php
 
-namespace Xi\Filelib\Plugin\Video;
+namespace Xi\Filelib\Plugin\Video\FFmpeg;
 
 use RuntimeException;
 use Symfony\Component\Process\Process;
 use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\Video\FFmpegHelper;
+use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
@@ -34,6 +34,12 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         return $this->helper;
     }
 
+    /**
+     * Create image, audio and/or video versions using FFmpegHelper
+     *
+     * @param File $file
+     * @return array
+     */
     public function createVersions(File $file)
     {
         $retrieved = $this->getPathname($file);
@@ -44,6 +50,9 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         return $this->getHelper()->getOutputPathnames($tmpDir);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getExtensionFor($version)
     {
         return pathinfo($this->getHelper()->getOutputs()[$version]['filename'], PATHINFO_EXTENSION);
