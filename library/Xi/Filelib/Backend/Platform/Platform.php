@@ -53,6 +53,12 @@ interface Platform
      */
     public function findByFinder(Finder $finder);
 
+    public function findResourcesByIds(array $ids = array());
+
+    public function findFilesByIds(array $ids = array());
+
+    public function findFoldersByIds(array $ids = array());
+
 
     /**
      * Finds folder
@@ -94,14 +100,14 @@ interface Platform
     public function findFilesIn(Folder $folder);
 
     /**
-     * Uploads a file
+     * Creates a file
      *
      * @param  File             $file
      * @param  Folder           $folder
      * @return File             Uploaded file
      * @throws FilelibException If file could not be uploaded.
      */
-    public function upload(File $file, Folder $folder);
+    public function createFile(File $file, Folder $folder);
 
     /**
      * Creates a folder

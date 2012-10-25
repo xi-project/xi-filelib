@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Backend;
 
+use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\IdentityMap\IdentityMap;
 use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
@@ -21,7 +22,10 @@ use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
 use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
 use Xi\Filelib\Exception\FolderNotFoundException;
 use Xi\Filelib\Exception\FolderNotEmptyException;
+use Xi\Filelib\Exception\ResourceReferencedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Event\ResourceEvent;
+use Closure;
 
 class Backend
 {
@@ -50,6 +54,41 @@ class Backend
         $this->platform = $platform;
         $this->identityMap = $identityMap;
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+
+    protected function tryOneFromIdentityMap($id, $class, Closure $callable)
+    {
+        if ($ret = $this->getIdentityMap()->get($id, $class)) {
+            return $ret;
+        }
+
+        $ret = $callable($this->getPlatform(), $id);
+
+        $this->getIdentityMap()->addMany($ret);
+        return $ret->current();
+    }
+
+    protected function tryManyFromIdentityMap($ids, $class, Closure $callable)
+    {
+
+    }
+
+    protected function tryAndAddToIdentityMap(Closure $callable)
+    {
+        $args = func_get_args();
+        array_shift($args);
+        array_unshift($args, $this->getPlatform());
+        $ret = call_user_func_array($callable, $args);
+        $this->getIdentityMap()->add($ret);
+        return $ret;
+    }
+
+    protected function tryAndRemoveFromIdentityMap(Closure $callable, Identifiable $identifiable)
+    {
+        $ret = $callable($this->getPlatform(), $identifiable);
+        $this->getIdentityMap()->remove($identifiable);
+        return $ret;
     }
 
     /**
@@ -109,8 +148,9 @@ class Backend
      */
     public function findFolder($id)
     {
-        $ret = $this->getPlatform()->findByFinder(new FolderFinder(array('id' => $id)));
-        return $ret->current();
+        return $this->tryOneFromIdentityMap($id, 'Xi\Filelib\Folder\Folder', function(Platform $platform, $id) {
+            return $platform->findFoldersByIds(array($id));
+        });
     }
 
     /**
@@ -144,8 +184,9 @@ class Backend
      */
     public function findFile($id)
     {
-        $ret = $this->getPlatform()->findByFinder(new FileFinder(array('id' => $id)));
-        return $this->getPlatform()->exportFiles($ret)->current();
+        return $this->tryOneFromIdentityMap($id, 'Xi\Filelib\File\File', function(Platform $platform, $id) {
+            return $platform->findFilesByIds(array($id));
+        });
     }
 
     /**
@@ -161,16 +202,18 @@ class Backend
     }
 
     /**
-     * Uploads a file
+     * Creates a file
      *
      * @param  File             $file
      * @param  Folder           $folder
      * @return File             Uploaded file
      * @throws FilelibException If file could not be uploaded.
      */
-    public function upload(File $file, Folder $folder)
+    public function createFile(File $file, Folder $folder)
     {
-        return $this->getPlatform()->upload($file, $folder);
+        return $this->tryAndAddToIdentityMap(function(Platform $platform, File $file, Folder $folder) {
+            return $platform->createFile($file, $folder);
+        }, $file, $folder);
     }
 
     /**
@@ -182,7 +225,13 @@ class Backend
      */
     public function createFolder(Folder $folder)
     {
-        return $this->getPlatform()->createFolder($folder);
+        if (!$this->findFolder($folder->getParentId())) {
+            throw new FolderNotFoundException(sprintf('Parent folder was not found with id "%s"', $folder->getParentId()));
+        }
+
+        return $this->tryAndAddToIdentityMap(function(Platform $platform, Folder $folder) {
+            return $platform->createFolder($folder);
+        }, $folder);
     }
 
     /**
@@ -194,7 +243,13 @@ class Backend
      */
     public function deleteFolder(Folder $folder)
     {
-        return $this->getPlatform()->deleteFolder($folder);
+        if ($this->findFilesIn($folder)->count()) {
+            throw new FolderNotEmptyException('Can not delete folder with files');
+        }
+
+        return $this->tryAndRemoveFromIdentityMap(function(Platform $platform, Folder $folder) {
+            return $platform->deleteFolder($folder);
+        }, $folder);
     }
 
     /**
@@ -206,7 +261,9 @@ class Backend
      */
     public function deleteFile(File $file)
     {
-        return $this->getPlatform()->deleteFile($file);
+        return $this->tryAndRemoveFromIdentityMap(function(Platform $platform, File $file) {
+            return $platform->deleteFile($file);
+        }, $file);
     }
 
     /**
@@ -272,6 +329,9 @@ class Backend
         return $this->getPlatform()->findFileByFilename($folder, $filename);
     }
 
+
+
+
     /**
      * Finds resource by id
      *
@@ -280,18 +340,9 @@ class Backend
      */
     public function findResource($id)
     {
-        if ($ret = $this->getIdentityMap()->get($id, 'Xi\Filelib\File\Resource')) {
-            return $ret;
-        }
-
-        $ret = $this->getPlatform()->findResourcesByIds(array($id));
-
-        if (!$ret->count()) {
-            return false;
-        }
-
-        $this->getIdentityMap()->add($ret->current());
-        return $ret->current();
+        return $this->tryOneFromIdentityMap($id, 'Xi\Filelib\File\Resource', function(Platform $platform, $id) {
+            return $platform->findResourcesByIds(array($id));
+        });
     }
 
     /**
@@ -313,7 +364,9 @@ class Backend
      */
     public function createResource(Resource $resource)
     {
-        return $this->getPlatform()->createResource($resource);
+        return $this->tryAndAddToIdentityMap(function(Platform $platform, Resource $resource) {
+            return $platform->createResource($resource);
+        }, $resource);
     }
 
     /**
@@ -324,7 +377,19 @@ class Backend
      */
     public function deleteResource(Resource $resource)
     {
-        return $this->getPlatform()->deleteResource($resource);
+        if ($rno = $this->getNumberOfReferences($resource)) {
+            throw new ResourceReferencedException("Resource #{$resource->getId()} is referenced {$rno} times and can't be deleted.");
+        }
+
+        $ret = $this->tryAndRemoveFromIdentityMap(function(Platform $platform, Resource $resource) {
+            return $platform->deleteResource($resource);
+        }, $resource);
+
+        $event = new ResourceEvent($resource);
+        $this->getEventDispatcher()->dispatch('resource.delete', $event);
+
+        return $ret;
+
     }
 
     /**

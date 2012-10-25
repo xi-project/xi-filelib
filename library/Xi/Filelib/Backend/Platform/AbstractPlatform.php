@@ -165,44 +165,6 @@ abstract class AbstractPlatform implements Platform
     protected abstract function isValidIdentifier($id);
 
     /**
-     * Finds a folder
-     *
-     * @param  mixed $id
-     * @return Folder|false
-     * @throws InvalidArgumentException with invalid folder id
-     */
-    public function findFolder($id)
-    {
-        $this->assertValidIdentifier($id, 'Folder');
-        $folder = $this->doFindFolder($id);
-        if (!$folder) {
-            return false;
-        }
-        return $this->exportFolder($folder);
-    }
-
-    /**
-     * Finds a resource
-     *
-     * @param mixed $id
-     * @return array|false
-     * @throws InvalidArgumentException with invalid folder id
-     */
-    public function findResource($id)
-    {
-        $this->assertValidIdentifier($id, 'Resource');
-
-        $resource = $this->doFindResource($id);
-
-        if (!$resource) {
-            return false;
-        }
-
-        return $this->exportResource($resource);
-
-    }
-
-    /**
      * Finds resources by hash
      *
      * @param string $hash
@@ -214,18 +176,6 @@ abstract class AbstractPlatform implements Platform
             array($this, 'exportResource'),
             $this->doFindResourcesByHash($hash)
         );
-    }
-
-    /**
-     * Creates a resource
-     *
-     * @param  Resource         $resource
-     * @return Resource         Created folder
-     * @throws FilelibException When fails
-     */
-    public function createResource(Resource $resource)
-    {
-        return $this->doCreateResource($resource);
     }
 
     /**
@@ -338,25 +288,6 @@ abstract class AbstractPlatform implements Platform
     }
 
     /**
-     * Creates a folder
-     *
-     * @param  Folder                  $folder
-     * @return Folder                  Created folder
-     * @throws FolderNotFoundException If parent folder was not found
-     */
-    public function createFolder(Folder $folder)
-    {
-        if (!$this->findFolder($folder->getParentId())) {
-            throw new FolderNotFoundException(sprintf(
-                'Parent folder was not found with id "%s"',
-                $folder->getParentId()
-            ));
-        }
-
-        return $this->doCreateFolder($folder);
-    }
-
-    /**
      * Deletes a folder
      *
      * @param  Folder                  $folder
@@ -365,24 +296,6 @@ abstract class AbstractPlatform implements Platform
      */
     public function deleteFolder(Folder $folder)
     {
-        if (count($this->findFilesIn($folder))) {
-            throw new FolderNotEmptyException('Can not delete folder with files');
-        }
-
-        return (bool) $this->doDeleteFolder($folder);
-    }
-
-    /**
-     * Deletes a file
-     *
-     * @param  File                     $file
-     * @return boolean
-     * @throws InvalidArgumentException With invalid file id
-     */
-    public function deleteFile(File $file)
-    {
-        $this->assertValidIdentifier($file->getId(), 'File');
-        return (bool) $this->doDeleteFile($file);
     }
 
     /**

@@ -62,6 +62,33 @@ class IdentityMap
     }
 
     /**
+     * Adds many identifiables to identity map
+     *
+     * @param Iterator $iterator
+     */
+    public function addMany(Iterator $iterator)
+    {
+        foreach ($iterator as $object) {
+            $this->add($object);
+        }
+    }
+
+    /**
+     * Removes many identifiables from identity map
+     *
+     * @param Iterator $iterator
+     */
+    public function removeMany(Iterator $iterator)
+    {
+        foreach ($iterator as $object) {
+            $this->remove($object);
+        }
+    }
+
+
+
+
+    /**
      * Removes an identifiable
      *
      * @param Identifiable $object
