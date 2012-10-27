@@ -69,7 +69,7 @@ class BackendTest extends TestCase
      */
     public function getIdentityMapShouldReturnIdentityMap()
     {
-        $this->assertSame($this->ed, $this->backend->getEventDispatcher());
+        $this->assertSame($this->im, $this->backend->getIdentityMap());
     }
 
     /**
@@ -486,5 +486,30 @@ class BackendTest extends TestCase
     }
 
 
+    /**
+     * @test
+     */
+    public function findResourcesByHashShouldTryManyFromIdentityMap()
+    {
+        $this->platform->expects($this->once())->method('findByFinder')
+             ->with($this->isInstanceOf('Xi\Filelib\Backend\Finder\ResourceFinder'))
+             ->will($this->returnValue(array(1, 2, 3, 4, 5)));
+
+        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
+                        ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
+                        ->setMethods(array('getIdentityMapHelper'))
+                        ->getMock();
+
+        $helper = $this->getMockBuilder('Xi\Filelib\Backend\IdentityMapHelper')
+                       ->disableOriginalConstructor()->getMock();
+
+        $backend->expects($this->any())->method('getIdentityMapHelper')->will($this->returnValue($helper));
+
+        $helper->expects($this->once())->method('tryManyFromIdentityMap')
+               ->with(array(1, 2, 3, 4, 5), 'Xi\Filelib\File\Resource', $this->isInstanceOf('Closure'));
+
+        $backend->findResourcesByHash('hashautus');
+
+    }
 
 }

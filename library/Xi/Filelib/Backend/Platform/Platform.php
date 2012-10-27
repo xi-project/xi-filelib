@@ -49,15 +49,15 @@ interface Platform
 
     /**
      * @param Finder $finder
-     * @return ArrayIterator
+     * @return array
      */
     public function findByFinder(Finder $finder);
 
-    public function findResourcesByIds(array $ids = array());
+    public function findResourcesByIds(array $ids);
 
-    public function findFilesByIds(array $ids = array());
+    public function findFilesByIds(array $ids);
 
-    public function findFoldersByIds(array $ids = array());
+    public function findFoldersByIds(array $ids);
 
 
     /**
