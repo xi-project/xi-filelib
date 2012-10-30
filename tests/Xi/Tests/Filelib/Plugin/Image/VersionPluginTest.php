@@ -15,6 +15,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\File\Resource;
 
 /**
  * @group plugin
@@ -79,6 +80,22 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
+    public function pluginShouldAllowSharedResource()
+    {
+        $this->assertTrue($this->plugin->isSharedResourceAllowed());
+    }
+
+    /**
+     * @test
+     */
+    public function pluginShouldAllowSharedVersions()
+    {
+        $this->assertTrue($this->plugin->areSharedVersionsAllowed());
+    }
+
+    /**
+     * @test
+     */
     public function getImageMagickHelperShouldReturnImageMagickHelper()
     {
         $helper = $this->plugin->getImageMagickHelper();
@@ -94,14 +111,14 @@ class VersionPluginTest extends TestCase
     {
         $retrievedPath = ROOT_TESTS . '/data/illusive-manatee.jpg';
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $fobject = $this->getMockBuilder('Xi\Filelib\File\FileObject')
                         ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
                         ->getMock();
         $fobject->expects($this->once())->method('getPathName')->will($this->returnValue($retrievedPath));
 
-        $this->storage->expects($this->once())->method('retrieve')->with($this->equalTo($file))->will($this->returnValue($fobject));
+        $this->storage->expects($this->once())->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\Resource'))->will($this->returnValue($fobject));
 
         $helper = $this->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
 
@@ -145,6 +162,7 @@ class VersionPluginTest extends TestCase
         $this->assertArrayHasKey('file.publish', $events);
         $this->assertArrayHasKey('file.unpublish', $events);
         $this->assertArrayHasKey('file.delete', $events);
+        $this->assertArrayHasKey('resource.delete', $events);
     }
 
     /**

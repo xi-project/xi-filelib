@@ -15,6 +15,7 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 
@@ -27,10 +28,11 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 {
     protected static $subscribedEvents = array(
         'fileprofile.add' => 'onFileProfileAdd',
-        'file.afterUpload' => 'afterUpload',
+        'file.afterUpload' => 'onAfterUpload',
         'file.publish' => 'onPublish',
         'file.unpublish' => 'onUnpublish',
-        'file.delete' => 'onDelete',
+        'file.delete' => 'onFileDelete',
+        'resource.delete' => 'onResourceDelete',
     );
 
     /**
@@ -156,7 +158,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
                 return true;
             }
         }
-
         return false;
     }
 
@@ -180,21 +181,24 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         return $this->publisher;
     }
 
-    public function afterUpload(FileEvent $event)
+    public function onAfterUpload(FileEvent $event)
     {
         $file = $event->getFile();
 
-        if (!$this->hasProfile($file->getProfile())) {
-            return;
-        }
-
-        if (!$this->providesFor($file)) {
+        if (!$this->hasProfile($file->getProfile()) || !$this->providesFor($file) || $this->areVersionsCreated($file)) {
             return;
         }
 
         $tmps = $this->createVersions($file);
+
+        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
+
+        foreach (array_keys($tmps) as $version) {
+            $versionable->addVersion($version);
+        }
+
         foreach ($tmps as $version => $tmp) {
-            $this->getStorage()->storeVersion($file, $version, $tmp);
+            $this->getStorage()->storeVersion($file->getResource(), $version, $tmp, $this->areSharedVersionsAllowed() ? null : $file);
             unlink($tmp);
         }
     }
@@ -233,7 +237,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
     }
 
-    public function onDelete(FileEvent $event)
+    public function onFileDelete(FileEvent $event)
     {
         $file = $event->getFile();
 
@@ -244,19 +248,51 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         if (!$this->providesFor($file)) {
             return;
         }
+        $this->deleteFileVersions($file);
+    }
 
-        $this->deleteVersions($file);
+
+    /**
+     * Deletes resource versions
+     *
+     * @param ResourceEvent $event
+     */
+    public function onResourceDelete(ResourceEvent $event)
+    {
+        foreach ($this->getVersions() as $version) {
+            if ($this->getStorage()->versionExists($event->getResource(), $version)) {
+                $this->getStorage()->deleteVersion($event->getResource(), $version);
+            }
+        }
     }
 
     /**
-     * Deletes a version
+     * Deletes file versions
      *
      * @param File $file
      */
-    public function deleteVersions(File $file)
+    public function deleteFileVersions(File $file)
     {
         foreach ($this->getVersions() as $version) {
-            $this->getStorage()->deleteVersion($file, $version);
+            if ($this->getStorage()->versionExists($file->getResource(), $version, $file)) {
+                $this->getStorage()->deleteVersion($file->getResource(), $version, $file);
+            }
         }
+    }
+
+    public function areVersionsCreated(File $file)
+    {
+        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
+
+        $count = 0;
+        foreach ($this->getVersions() as $version) {
+            if ($versionable->hasVersion($version)) {
+                $count++;
+            }
+        }
+        if ($count == count($this->getVersions())) {
+            return true;
+        }
+        return false;
     }
 }

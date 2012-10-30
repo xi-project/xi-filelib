@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Backend;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\NonUniqueFileException;
 use MongoDb;
@@ -10,6 +11,7 @@ use MongoId;
 use MongoDate;
 use MongoCursorException;
 use DateTime;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * MongoDB backend for Filelib
@@ -28,11 +30,13 @@ class MongoBackend extends AbstractBackend implements Backend
     private $mongo;
 
     /**
+     * @param  EventDispatcherInterface $eventDispatcher
      * @param  MongoDB      $mongo
      * @return MongoBackend
      */
-    public function __construct(MongoDB $mongo)
+    public function __construct(EventDispatcherInterface $eventDispatcher, MongoDB $mongo)
     {
+        parent::__construct($eventDispatcher);
         $this->setMongo($mongo);
     }
 
@@ -57,8 +61,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string     $id
-     * @return array|null
+     * @see AbstractBackend::doFindFolder
      */
     protected function doFindFolder($id)
     {
@@ -68,8 +71,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string $id
-     * @return array
+     * @see AbstractBackend::doFindSubFolders
      */
     protected function doFindSubFolders($id)
     {
@@ -79,7 +81,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @return array
+     * @see AbstractBackend::doFindAllFiles
      */
     protected function doFindAllFiles()
     {
@@ -87,8 +89,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string     $id
-     * @return array|null
+     * @see AbstractBackend::doFindFile
      */
     protected function doFindFile($id)
     {
@@ -98,8 +99,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string $id
-     * @return array
+     * @see AbstractBackend::doFindFiles
      */
     protected function doFindFilesIn($id)
     {
@@ -109,22 +109,19 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File                   $file
-     * @param  Folder                 $folder
-     * @return File
-     * @throws NonUniqueFileException If file already exists folder
+     * @see AbstractBackend::doUpload
      */
     protected function doUpload(File $file, Folder $folder)
     {
         $document = array(
             'folder_id'     => $folder->getId(),
-            'mimetype'      => $file->getMimeType(),
-            'size'          => $file->getSize(),
             'name'          => $file->getName(),
             'profile'       => $file->getProfile(),
             'status'        => $file->getStatus(),
-            'date_uploaded' => new MongoDate($file->getDateUploaded()
-                                                  ->getTimestamp()),
+            'date_created'  => new MongoDate($file->getDateCreated()->getTimestamp()),
+            'uuid'          => $file->getUuid(),
+            'resource_id'   => $file->getResource()->getId(),
+            'versions'      => $file->getVersions(),
         );
 
         $this->getMongo()->files->ensureIndex(array(
@@ -147,8 +144,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder $folder
-     * @return Folder
+     * @see AbstractBackend::doCreateFolder
      */
     protected function doCreateFolder(Folder $folder)
     {
@@ -164,8 +160,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder  $folder
-     * @return boolean
+     * @see AbstractBackend::doDeleteFolder
      */
     protected function doDeleteFolder(Folder $folder)
     {
@@ -177,8 +172,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doDeleteFile
      */
     protected function doDeleteFile(File $file)
     {
@@ -190,8 +184,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder  $folder
-     * @return boolean
+     * @see AbstractBackend::doUpdateFolder
      */
     protected function doUpdateFolder(Folder $folder)
     {
@@ -206,18 +199,42 @@ class MongoBackend extends AbstractBackend implements Backend
         return (bool) $ret['n'];
     }
 
+
     /**
-     * @param  File    $file
-     * @return boolean
+     * @see AbstractBackend::doUpdateResource
+     */
+    protected function doUpdateResource(Resource $resource)
+    {
+        $document = $resource->toArray();
+
+        if ($document['date_created']) {
+            $document['date_created'] = new MongoDate($resource->getDateCreated()->getTimestamp());
+        }
+        unset($document['id']);
+
+        $ret = $this->getMongo()->resources->update(array(
+            '_id' => new MongoId($resource->getId()),
+        ), $document, array('safe' => true));
+
+        return (bool) $ret['n'];
+    }
+
+
+
+    /**
+     * @see AbstractBackend::doUpdateFile
      */
     protected function doUpdateFile(File $file)
     {
         $document = $file->toArray();
 
-        unset($document['id']);
+        $document['resource_id'] = $file->getResource()->getId();
 
-        $document['date_uploaded'] = new MongoDate(
-            $document['date_uploaded']->getTimestamp()
+        unset($document['id']);
+        unset($document['resource']);
+
+        $document['date_created'] = new MongoDate(
+            $document['date_created']->getTimestamp()
         );
 
         $ret = $this->getMongo()->files->update(array(
@@ -228,7 +245,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @return array
+     * @see AbstractBackend::doFindRootFolder
      */
     protected function doFindRootFolder()
     {
@@ -241,6 +258,7 @@ class MongoBackend extends AbstractBackend implements Backend
                 'parent_id' => null,
                 'name'      => 'root',
                 'url'       => '',
+                'uuid'      => $this->generateUuid(),
             );
 
             $mongo->folders->save($folder);
@@ -250,8 +268,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  string     $url
-     * @return array|null
+     * @see AbstractBackend::doFindFolderByUrl
      */
     protected function doFindFolderByUrl($url)
     {
@@ -259,9 +276,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  Folder     $folder
-     * @param  string     $filename
-     * @return array|null
+     * @see AbstractBackend::doFindByFilename
      */
     protected function doFindFileByFilename(Folder $folder, $filename)
     {
@@ -272,8 +287,7 @@ class MongoBackend extends AbstractBackend implements Backend
     }
 
     /**
-     * @param  array $file
-     * @return array
+     * @see AbstractBackend::fileToArray
      */
     protected function fileToArray($file)
     {
@@ -284,22 +298,19 @@ class MongoBackend extends AbstractBackend implements Backend
             'folder_id'     => isset($file['folder_id'])
                                    ? $file['folder_id']
                                    : null,
-            'mimetype'      => $file['mimetype'],
             'profile'       => $file['profile'],
-            'size'          => (int) $file['size'],
             'name'          => $file['name'],
             'link'          => isset($file['link']) ? $file['link'] : null,
             'status'        => $file['status'],
-            'date_uploaded' => DateTime::createFromFormat(
-                                   'U',
-                                   $file['date_uploaded']->sec
-                               )->setTimezone($date->getTimezone()),
+            'date_created'  => DateTime::createFromFormat('U', $file['date_created']->sec)->setTimezone($date->getTimezone()),
+            'uuid'          => $file['uuid'],
+            'resource'      => $this->resourceToArray($this->doFindResource($file['resource_id'])),
+            'versions'      => $file['versions'],
         );
     }
 
     /**
-     * @param  array $folder
-     * @return array
+     * @see AbstractBackend::folderToArray
      */
     protected function folderToArray($folder)
     {
@@ -309,35 +320,101 @@ class MongoBackend extends AbstractBackend implements Backend
                                ? $folder['parent_id']
                                : null,
             'name'      => $folder['name'],
-            'url'       => $folder['url']
+            'url'       => $folder['url'],
+            'uuid'      => $folder['uuid'],
         );
     }
 
     /**
-     * @param  mixed                    $id
-     * @throws InvalidArgumentException
+     * @see AbstractBackend::isValidIdentifier
      */
-    protected function assertValidFolderIdentifier($id)
+    protected function isValidIdentifier($id)
     {
-        if (!is_string($id)) {
-            $this->throwInvalidArgumentException(
-                $id,
-                'Folder id must be a string, %s (%s) given'
-            );
-        }
+        return is_string($id);
     }
 
     /**
-     * @param  mixed                    $id
-     * @throws InvalidArgumentException
+     * @see AbstractBackend::doFindResource
      */
-    protected function assertValidFileIdentifier($id)
+    protected function doFindResource($id)
     {
-        if (!is_string($id)) {
-            $this->throwInvalidArgumentException(
-                $id,
-                'File id must be a string, %s (%s) given'
-            );
-        }
+        return $this->getMongo()->resources->findOne(array(
+            '_id' => new MongoId($id),
+        ));
     }
+
+    /**
+     * @see AbstractBackend::doFindResourcesByHash
+     */
+    protected function doFindResourcesByHash($hash)
+    {
+        return iterator_to_array($this->getMongo()->resources->find(array(
+            'hash' => $hash,
+        )));
+    }
+
+    /**
+     * @see AbstractBackend::doCreateResource
+     */
+    protected function doCreateResource(Resource $resource)
+    {
+        $document = array(
+            'hash' => $resource->getHash(),
+            'mimetype' => $resource->getMimetype(),
+            'size' => $resource->getSize(),
+            'date_created' => new MongoDate($resource->getDateCreated()->getTimestamp()),
+            'versions' => $resource->getVersions(),
+            'exclusive' => $resource->isExclusive(),
+        );
+
+        $this->getMongo()->resources->ensureIndex(array(
+            'hash' => 1,
+        ), array(
+            'unique' => false,
+        ));
+
+        $this->getMongo()->resources->insert($document, array('safe' => true));
+        $resource->setId((string) $document['_id']);
+
+        return $resource;
+    }
+
+    /**
+     * @see AbstractBackend::doDeleteResource
+     */
+    protected function doDeleteResource(Resource $resource)
+    {
+        $ret = $this->getMongo()->resources->remove(array('_id' => new MongoId($resource->getId())), array('safe' => true));
+        return (boolean) $ret['n'];
+    }
+
+    /**
+     * @see AbstractBackend::resourceToArray
+     */
+    protected function resourceToArray($resource)
+    {
+        $date = new DateTime();
+        return Resource::create(array(
+            'id' => (string) $resource['_id'],
+            'hash' => $resource['hash'],
+            'mimetype' => $resource['mimetype'],
+            'size' => $resource['size'],
+            'date_created' => DateTime::createFromFormat('U', $resource['date_created']->sec)->setTimezone($date->getTimezone()),
+            'versions' => $resource['versions'],
+            'exclusive' => $resource['exclusive'],
+        ));
+    }
+
+    /**
+     * @see AbstractBackend::doGetNumberOfReferences
+     */
+    protected function doGetNumberOfReferences(Resource $resource)
+    {
+        $refs = $this->getMongo()->files->find(array(
+            'resource_id' => $resource->getId(),
+        ));
+
+        return $refs->count();
+    }
+
 }

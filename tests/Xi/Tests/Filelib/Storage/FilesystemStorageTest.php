@@ -10,48 +10,21 @@
 namespace Xi\Tests\Filelib\Storage;
 
 use Xi\Filelib\Storage\FilesystemStorage;
-use Xi\Filelib\File\File;
-use RecursiveDirectoryIterator;
+use Xi\Filelib\File\Resource;
 use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use Xi\Filelib\Exception\FileIOException;
 
 /**
  * @group storage
  */
-class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
+class FilesystemStorageTest extends TestCase
 {
-    protected $storage;
 
-    protected $file;
-
-    protected $versionProvider;
-
-    protected $fileResource;
-
-    protected function setUp()
-    {
-        $this->file = File::create(array('id' => 1));
-
-        $this->fileResource = realpath(ROOT_TESTS . '/data') . '/self-lussing-manatee.jpg';
-
-        $dc = $this->getMock('Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
-        $dc->expects($this->any())
-             ->method('calculateDirectoryId')
-             ->will($this->returnValue('1'));
-
-        $storage = new FilesystemStorage();
-        $storage->setDirectoryIdCalculator($dc);
-        $storage->setCacheDirectoryIds(false);
-        $storage->setRoot(ROOT_TESTS . '/data/files');
-
-        $this->storage = $storage;
-
-        $this->version = 'xoo';
-    }
-
-    protected function tearDown()
+    public function tearDown()
     {
         $diter = new RecursiveDirectoryIterator($this->storage->getRoot());
-        $riter = new RecursiveIteratorIterator($diter, RecursiveIteratorIterator::CHILD_FIRST);
+        $riter = new RecursiveIteratorIterator($diter, \RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($riter as $item) {
             if ($item->isFile() && $item->getFilename() !== '.gitignore') {
@@ -64,6 +37,22 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
                 @rmdir($item->getPathName());
             }
         }
+    }
+
+    protected function getStorage()
+    {
+        $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+        $dc->expects($this->any())
+             ->method('calculateDirectoryId')
+             ->will($this->returnValue('1'));
+
+        $storage = new FilesystemStorage();
+        $storage->setDirectoryIdCalculator($dc);
+        $storage->setCacheDirectoryIds(false);
+        $storage->setRoot(ROOT_TESTS . '/data/files');
+
+        return $storage;
+
     }
 
     /**
@@ -131,9 +120,10 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertFalse($this->storage->getCacheDirectoryIds());
 
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->file));
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->file));
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->file));
+        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
+        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
+        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
+
     }
 
     /**
@@ -152,105 +142,52 @@ class FilesystemStorageTest extends \Xi\Tests\Filelib\TestCase
         $this->storage->setCacheDirectoryIds(true);
         $this->assertTrue($this->storage->getCacheDirectoryIds());
 
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->file));
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->file));
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->file));
+        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
+        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
+        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
 
     }
 
     /**
      * @test
-     */
-    public function storeAndRetrieveAndDeleteShouldWorkInHarmony()
-    {
-         $this->storage->store($this->file, $this->fileResource);
-
-         $this->assertFileExists($this->storage->getRoot() . '/1/1');
-         $this->assertFileEquals($this->fileResource, $this->storage->getRoot() . '/1/1');
-
-         $retrieved = $this->storage->retrieve($this->file);
-         $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
-         $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
-
-         $this->storage->delete($this->file);
-         $this->assertFalse(file_exists($this->storage->getRoot() . '/1/1'));
-    }
-
-    /**
-     * @test
-     * @expectedException LogicException
+     * @expectedException Xi\Filelib\Exception\FileIOException
      */
     public function storeShouldFailIfRootIsNotDefined()
     {
         $storage = new FilesystemStorage();
-        $storage->store($this->file, $this->fileResource);
+        $storage->store($this->resource, $this->resourcePath);
     }
 
     /**
      * @test
-     * @expectedException LogicException
+     * @expectedException Xi\Filelib\Exception\FileIOException
      */
     public function storeShouldFailIfRootIsNotWritable()
     {
         $storage = new FilesystemStorage();
         $storage->setRoot(ROOT_TESTS . '/data/illusive_directory');
-        $storage->store($this->file, $this->fileResource);
+        $storage->store($this->resource, $this->resourcePath);
     }
 
     /**
      * @test
-     * @expectedException LogicException
+     * @expectedException Xi\Filelib\Exception\FileIOException
      */
     public function storeVersionShouldFailIfRootIsNotDefined()
     {
         $storage = new FilesystemStorage();
-        $storage->storeVersion($this->file, $this->version, $this->fileResource);
+        $storage->storeVersion($this->resource, $this->version, $this->resourcePath);
     }
 
     /**
      * @test
-     * @expectedException LogicException
+     * @expectedException Xi\Filelib\Exception\FileIOException
      */
     public function storeVersionShouldFailIfRootIsNotWritable()
     {
         $storage = new FilesystemStorage();
         $storage->setRoot(ROOT_TESTS . '/data/illusive_directory');
-        $storage->storeVersion($this->file, $this->version, $this->fileResource);
+        $storage->storeVersion($this->resource, $this->version, $this->resourcePath);
     }
 
-    /**
-     * @test
-     */
-    public function versionStoreAndRetrieveAndDeleteShouldWorkInHarmony()
-    {
-         $this->storage->storeVersion($this->file, $this->version, $this->fileResource);
-
-         $this->assertFileExists($this->storage->getRoot() . '/1/xoo/1');
-         $this->assertFileEquals($this->fileResource, $this->storage->getRoot() . '/1/xoo/1');
-
-         $retrieved = $this->storage->retrieveVersion($this->file, $this->version);
-         $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
-         $this->assertFileEquals($this->fileResource, $retrieved->getRealPath());
-
-         $this->storage->deleteVersion($this->file, $this->version);
-         $this->assertFalse(file_exists($this->storage->getRoot() . '/1/xoo/1'));
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function retrieveShouldFailWithNonExistingFile()
-    {
-        $retrieved = $this->storage->retrieve($this->file);
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function retrieveVersionShouldFailWithNonExistingFile()
-    {
-         $retrieved = $this->storage->retrieveVersion($this->file, $this->version);
-    }
 }

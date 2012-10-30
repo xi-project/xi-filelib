@@ -2,9 +2,10 @@
 
 namespace Xi\Tests\Filelib\File;
 
-use Xi\Filelib\FileLibrary,
-    DateTime,
-    Xi\Filelib\File\File;
+use Xi\Filelib\FileLibrary;
+use DateTime;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,6 +16,26 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\File\File'));
+    }
+
+
+    /**
+     * @test
+     */
+    public function getSizeAndGetMimeTypeShouldBeDelegatedToResource()
+    {
+        $resource = $this->getMock('Xi\Filelib\File\Resource');
+
+        $file = File::create(array(
+            'resource' => $resource,
+        ));
+
+        $resource->expects($this->once())->method('getMimetype');
+        $resource->expects($this->once())->method('getSize');
+
+        $ret = $file->getMimetype();
+        $ret = $file->getSize();
+
     }
 
 
@@ -37,20 +58,10 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($file, $file->setFolderId($val));
         $this->assertEquals($val, $file->getFolderId());
 
-        $val = 'image/lus';
-        $this->assertNull($file->getMimetype());
-        $this->assertSame($file, $file->setMimetype($val));
-        $this->assertEquals($val, $file->getMimetype());
-
         $val = 'lamanmeister';
         $this->assertNull($file->getProfile());
         $this->assertSame($file, $file->setProfile($val));
         $this->assertEquals($val, $file->getProfile());
-
-        $val = 64643;
-        $this->assertNull($file->getSize());
-        $this->assertSame($file, $file->setSize($val));
-        $this->assertEquals($val, $file->getSize());
 
         $val = 'lamanmeister.xoo';
         $this->assertNull($file->getName());
@@ -63,20 +74,35 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($val, $file->getLink());
 
         $val = new DateTime('1978-01-02');
-        $this->assertNull($file->getDateUploaded());
-        $this->assertSame($file, $file->setDateUploaded($val));
-        $this->assertSame($val, $file->getDateUploaded());
-
+        $this->assertNull($file->getDateCreated());
+        $this->assertSame($file, $file->setDateCreated($val));
+        $this->assertSame($val, $file->getDateCreated());
 
         $val = 1;
         $this->assertNull($file->getStatus());
         $this->assertSame($file, $file->setStatus($val));
         $this->assertEquals($val, $file->getStatus());
 
+        $val = new Resource();
+        $this->assertNull($file->getResource());
+        $this->assertSame($file, $file->setResource($val));
+        $this->assertSame($val, $file->getResource());
 
+        $val = 'uuid-uuid-uuid';
+        $this->assertNull($file->getUuid());
+        $this->assertSame($file, $file->setUuid($val));
+        $this->assertEquals($val, $file->getUuid());
+
+        $val = array('lussen', 'le', 'tussen');
+        $this->assertEquals(array(), $file->getVersions());
+        $this->assertSame($file, $file->setVersions($val));
+        $this->assertEquals($val, $file->getVersions());
 
     }
 
+    /**
+     * @return array
+     */
     public function fromArrayProvider()
     {
         return array(
@@ -89,8 +115,11 @@ class FileTest extends \PHPUnit_Framework_TestCase
                     'size' => 600,
                     'name' => 'puuppa.jpg',
                     'link' => 'lussenhoff',
-                    'date_uploaded' => new \DateTime('2010-01-01 01:01:01'),
+                    'date_created' => new \DateTime('2010-01-01 01:01:01'),
                     'status' => 8,
+                    'uuid' => 'uuid-uuid',
+                    'resource' => new Resource(),
+                    'versions' => array('watussi', 'lussi')
                 ),
             ),
             array(
@@ -110,26 +139,32 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function fromArrayShouldWorkAsExpected($data)
     {
-        $file = new \Xi\Filelib\File\File();
+        $file = new File();
         $file->fromArray($data);
 
         $map = array(
             'id' => 'getId',
             'folder_id' => 'getFolderId',
-            'mimetype' => 'getMimeType',
             'profile' => 'getProfile',
-            'size' => 'getSize',
             'name' => 'getName',
             'link' => 'getLink',
-            'date_uploaded' => 'getDateUploaded',
+            'date_created' => 'getDateCreated',
             'status' => 'getStatus',
+            'resource' => 'getResource',
+            'uuid' => 'getUuid',
+            'versions' => 'getVersions'
         );
 
         foreach($map as $key => $method) {
             if(isset($data[$key])) {
                 $this->assertEquals($data[$key], $file->$method());
             } else {
-                $this->assertNull($file->$method());
+
+                if ($key == 'versions') {
+                    $this->assertEquals(array(), $file->$method());
+                } else {
+                    $this->assertNull($file->$method());
+                }
             }
         }
 
@@ -140,41 +175,44 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function toArrayShouldWorkAsExpected()
     {
-        $file = new \Xi\Filelib\File\File();
+        $file = new File();
         $file->setId(1);
         $file->setFolderId(655);
-        $file->setMimeType('tussi/lussutus');
         $file->setProfile('unknown');
-        $file->setSize(123456);
         $file->setName('kukkuu.png');
         $file->setLink('linksor');
-        $file->setDateUploaded(new \DateTime('1978-03-21'));
+        $file->setDateCreated(new \DateTime('1978-03-21'));
         $file->setStatus(54);
+        $file->setUuid('tussi-poski');
+        $file->setResource(new Resource());
+        $file->setVersions(array('lussi', 'xussi'));
 
         $this->assertEquals($file->toArray(), array(
             'id' => 1,
             'folder_id' => 655,
-            'mimetype' => 'tussi/lussutus',
             'profile' => 'unknown',
-            'size' => 123456,
             'name' => 'kukkuu.png',
             'link' => 'linksor',
-            'date_uploaded' => new \DateTime('1978-03-21'),
+            'date_created' => new \DateTime('1978-03-21'),
             'status' => 54,
+            'uuid' => 'tussi-poski',
+            'resource' => new Resource(),
+            'versions' => array('lussi', 'xussi')
         ));
 
 
-        $file = new \Xi\Filelib\File\File();
+        $file = new File();
         $this->assertEquals($file->toArray(), array(
             'id' => null,
             'folder_id' => null,
-            'mimetype' => null,
             'profile' => null,
-            'size' => null,
             'name' => null,
             'link' => null,
-            'date_uploaded' => null,
+            'date_created' => null,
             'status' => null,
+            'uuid' => null,
+            'resource' => null,
+            'versions' => array(),
         ));
 
 
@@ -187,8 +225,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf('Xi\Filelib\File\File', File::create(array()));
     }
-
-
 
     /**
      * @test
@@ -206,6 +242,52 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * @test
+     */
+    public function addVersionShouldAddVersion()
+    {
+        $file = File::create(array('versions' => array('tussi', 'watussi')));
+        $file->addVersion('lussi');
 
+        $this->assertEquals(array('tussi', 'watussi', 'lussi'), $file->getVersions());
+    }
+
+
+    /**
+     * @test
+     */
+    public function addVersionShouldNotAddVersionIfVersionExists()
+    {
+        $file = File::create(array('versions' => array('tussi', 'watussi')));
+        $file->addVersion('watussi');
+
+        $this->assertEquals(array('tussi', 'watussi'), $file->getVersions());
+    }
+
+
+    /**
+     * @test
+     */
+    public function removeVersionShouldRemoveVersion()
+    {
+        $file = File::create(array('versions' => array('tussi', 'watussi')));
+        $file->removeVersion('watussi');
+
+        $this->assertEquals(array('tussi'), $file->getVersions());
+    }
+
+
+    /**
+     * @test
+     */
+    public function hasVersionShouldReturnWhetherResourceHasVersion()
+    {
+        $file = File::create(array('versions' => array('tussi', 'watussi')));
+
+        $this->assertTrue($file->hasVersion('tussi'));
+        $this->assertTrue($file->hasVersion('watussi'));
+        $this->assertFalse($file->hasVersion('lussi'));
+    }
 
 }

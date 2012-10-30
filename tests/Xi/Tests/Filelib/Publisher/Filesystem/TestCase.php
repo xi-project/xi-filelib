@@ -13,10 +13,32 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
     protected $profileObject;
     protected $storage;
     protected $filelib;
+    protected $version;
+
+    public $resourcePaths = array();
+    public $linkPaths = array();
+
+    protected $plinker;
 
     public function setUp()
     {
         parent::setUp();
+
+        $this->resourcePaths = array(
+            1 => ROOT_TESTS . '/data/publisher/private/1/1',
+            2 => ROOT_TESTS . '/data/publisher/private/2/2/2',
+            3 => ROOT_TESTS . '/data/publisher/private/3/3/3/3',
+            4 => ROOT_TESTS . '/data/publisher/private/666/4',
+            5 => ROOT_TESTS . '/data/publisher/private/1/5'
+        );
+
+        $this->linkPaths = array(
+            1 => 'lussin/tussin',
+            2 => 'lussin/tussin/jussin/pussin',
+            3 => 'tohtori/vesalan/suuri/otsa',
+            4 => 'lussen/hof',
+            5 => '',
+        );
 
         $linker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
         $linker->expects($this->any())->method('getLinkVersion')
@@ -61,56 +83,7 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
                         case 5:
                             return '1';
                     }
-
-
-
         }));
-
-        $storage->expects($this->any())->method('retrieve')
-                ->will($this->returnCallback(function($file){
-
-                    switch ($file->getId()) {
-
-                        case 1:
-                            return ROOT_TESTS . '/data/publisher/private/1/1';
-
-                        case 2:
-                            return ROOT_TESTS . '/data/publisher/private/2/2/2';
-
-                        case 3:
-                            return ROOT_TESTS . '/data/publisher/private/3/3/3/3';
-
-                        case 4:
-                            return ROOT_TESTS . '/data/publisher/private/666/4';
-                        case 5:
-                            return ROOT_TESTS . '/data/publisher/private/1/5';
-                    }
-
-        }));
-
-        $storage->expects($this->any())->method('retrieveVersion')
-                ->will($this->returnCallback(function($file, $version){
-
-                    switch ($file->getId()) {
-
-                        case 1:
-                            return ROOT_TESTS . '/data/publisher/private/1/1';
-
-                        case 2:
-                            return ROOT_TESTS . '/data/publisher/private/2/2/2';
-
-                        case 3:
-                            return ROOT_TESTS . '/data/publisher/private/3/3/3/3';
-
-                        case 4:
-                            return ROOT_TESTS . '/data/publisher/private/666/4';
-
-                        case 5:
-                            return ROOT_TESTS . '/data/publisher/private/1/5';
-                    }
-
-        }));
-
 
         $this->storage = $storage;
 
@@ -119,6 +92,24 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
         // $filelib->setFileOperator($fileop);
 
         $this->filelib = $filelib;
+
+        $plinker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
+
+        $self = $this;
+
+        $plinker->expects($this->any())->method('getLinkVersion')
+            ->will($this->returnCallback(function($file, $version) use ($self) {
+            return $self->linkPaths[$file->getId()] . '/' . $file->getId() . '-' . $version . '.lus';
+        }));
+
+        $plinker->expects($this->any())->method('getLink')
+            ->will($this->returnCallback(function($file) use ($self) {
+            return $self->linkPaths[$file->getId()] . '/' . $file->getId() . '.lus';
+        }));
+
+        $this->plinker = $plinker;
+
+
 
     }
 

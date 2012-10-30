@@ -54,4 +54,18 @@ interface VersionProvider extends Plugin
      * @return array
      */
     public function getVersions();
+
+    /**
+     * Returns whether versions are already created for a resource
+     *
+     * @return bool
+     */
+    public function areVersionsCreated(File $file);
+
+    /**
+     * Returns whether plugin allows sharing of resources
+     */
+    public function isSharedResourceAllowed();
+
+    public function areSharedVersionsAllowed();
 }

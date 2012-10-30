@@ -60,7 +60,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
         $storage = $this->getFilelib()->getStorage();
-        $retrieved = $storage->retrieve($file);
+        $retrieved = $storage->retrieve($file->getResource());
 
         $path = preg_replace("[^{$storage->getRoot()}]", $relativePath, $retrieved);
 
@@ -75,17 +75,19 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
      * @param $levelsDown How many levels down from root we are
      * @return string
      */
-    public function getRelativePathToVersion(File $file, $version, $levelsDown = 0)
+    public function getRelativePathToVersion(File $file, VersionProvider $versionProvider, $version, $levelsDown = 0)
     {
         $relativePath = $this->getRelativePathToRoot();
 
         if(!$relativePath) {
             throw new FilelibException('Relative path must be set!');
         }
+
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
         $storage = $this->getFilelib()->getStorage();
-        $retrieved = $storage->retrieveVersion($file, $version);
+
+        $retrieved = $storage->retrieveVersion($file->getResource(), $version, $versionProvider->areSharedVersionsAllowed() ? null : $file);
 
         $path = preg_replace("[^{$storage->getRoot()}]", $relativePath, $retrieved);
 
@@ -124,7 +126,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
                 symlink($this->getRelativePathTo($file, $depth), $link);
                 chdir($oldCwd);
             } else {
-                symlink($this->getFilelib()->getStorage()->retrieve($file), $link);
+                symlink($this->getFilelib()->getStorage()->retrieve($file->getResource()), $link);
             }
         }
 
@@ -156,8 +158,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
                     $depth = sizeof(explode(DIRECTORY_SEPARATOR, $path2));
                 }
 
-                $fp = $this->getRelativePathToVersion($file, $version, $depth);
-
+                $fp = $this->getRelativePathToVersion($file, $versionProvider, $version, $depth);
 
                 // Relative linking requires some movin'n groovin.
                 $oldCwd = getcwd();
@@ -165,7 +166,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
                 symlink($fp, $link);
                 chdir($oldCwd);
             } else {
-                symlink($this->getFilelib()->getStorage()->retrieveVersion($file, $version), $link);
+                symlink($this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version, $versionProvider->areSharedVersionsAllowed() ? null: $file), $link);
             }
 
         }

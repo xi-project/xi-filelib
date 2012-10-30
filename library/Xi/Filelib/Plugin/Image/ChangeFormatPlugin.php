@@ -124,6 +124,7 @@ class ChangeFormatPlugin extends AbstractPlugin
 
         $nupload = $this->fileOperator->prepareUpload($tempnam);
         $nupload->setTemporary(true);
+
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $this->getTargetExtension());
 
         $event->setFileUpload($nupload);

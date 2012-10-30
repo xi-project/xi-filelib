@@ -4,79 +4,12 @@ namespace Xi\Tests\Filelib\Publisher\Filesystem;
 
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher;
 
 class CopyFilesystemPublisherTest extends TestCase
 {
-
-    protected $plinker;
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        $linker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
-
-        $linker->expects($this->any())->method('getLinkVersion')
-                ->will($this->returnCallback(function($file, $version, $extension) {
-
-                    switch ($file->getId()) {
-
-                        case 1:
-                            $prefix = 'lussin/tussin';
-                            break;
-                        case 2:
-                            $prefix = 'lussin/tussin/jussin/pussin';
-                            break;
-                        case 3:
-                            $prefix = 'tohtori/vesalan/suuri/otsa';
-                            break;
-                        case 4:
-                            $prefix = 'lussen/hof';
-                            break;
-                        case 5:
-                            $prefix = '';
-                            break;
-                    }
-
-
-                    return $prefix . '/' . $file->getId() . '-' . $version . '.lus';
-
-                }));
-        $linker->expects($this->any())->method('getLink')
-                ->will($this->returnCallback(function($file) {
-
-                    switch ($file->getId()) {
-
-                        case 1:
-                            $prefix = 'lussin/tussin';
-                            break;
-                        case 2:
-                            $prefix = 'lussin/tussin/jussin/pussin';
-                            break;
-                        case 3:
-                            $prefix = 'tohtori/vesalan/suuri/otsa';
-                            break;
-                        case 4:
-                            $prefix = 'lussen/hof';
-                            break;
-                        case 5:
-                            $prefix = '';
-                            break;
-
-
-                    }
-
-                    return $prefix . '/' . $file->getId() . '.lus';
-                 }));
-
-
-        $this->plinker = $linker;
-
-    }
-
-
 
     public function provideDataForPublishingTests()
     {
@@ -84,6 +17,12 @@ class CopyFilesystemPublisherTest extends TestCase
 
         for ($x = 1; $x <= 5; $x++) {
             $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
+
+            $file->expects($this->any())->method('getProfile')
+                ->will($this->returnValue('profile'));
+
+            $file->expects($this->any())->method('getResource')->will($this->returnValue(Resource::create(array('id' => $x))));
+
             $file->expects($this->any())->method('getId')->will($this->returnValue($x));
 
             $files[$x-1] = $file;
@@ -96,6 +35,7 @@ class CopyFilesystemPublisherTest extends TestCase
                 ROOT_TESTS . '/data/publisher/public/lussin/tussin/1-xooxer.lus',
                 ROOT_TESTS . '/data/publisher/private/1/1',
                 '../../../private/1/1',
+                true,
             ),
             array(
                 $files[1],
@@ -103,6 +43,7 @@ class CopyFilesystemPublisherTest extends TestCase
                 ROOT_TESTS . '/data/publisher/public/lussin/tussin/jussin/pussin/2-xooxer.lus',
                 ROOT_TESTS . '/data/publisher/private/2/2/2',
                 '../../../../../private/2/2/2',
+                false,
             ),
             array(
                 $files[2],
@@ -110,6 +51,7 @@ class CopyFilesystemPublisherTest extends TestCase
                 ROOT_TESTS . '/data/publisher/public/tohtori/vesalan/suuri/otsa/3-xooxer.lus',
                 ROOT_TESTS . '/data/publisher/private/3/3/3/3',
                 '../../../../../private/3/3/3/3',
+                false,
             ),
             array(
                 $files[3],
@@ -117,15 +59,16 @@ class CopyFilesystemPublisherTest extends TestCase
                 ROOT_TESTS . '/data/publisher/public/lussen/hof/4-xooxer.lus',
                 ROOT_TESTS . '/data/publisher/private/666/4',
                 '../../../private/666/4',
+                true
             ),
             array(
                 $files[4],
                 ROOT_TESTS . '/data/publisher/public/5.lus',
                 ROOT_TESTS . '/data/publisher/public/5-xooxer.lus',
                 ROOT_TESTS . '/data/publisher/private/1/5',
-                '../../../private/1/5',
+                '../private/1/5',
+                true,
             ),
-
 
         );
 
@@ -134,13 +77,18 @@ class CopyFilesystemPublisherTest extends TestCase
     }
 
 
-
     /**
      * @test
      * @dataProvider provideDataForPublishingTests
      */
     public function publishShouldPublishFile($file, $expectedPath, $expectedVersionPath, $expectedRealPath)
     {
+        $self = $this;
+        $this->storage->expects($this->atLeastOnce())->method('retrieve')
+            ->will($this->returnCallback(function(Resource $resource) use ($self) {
+            return $self->resourcePaths[$resource->getId()];
+        }));
+
         $this->filelib->setStorage($this->storage);
 
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher')
@@ -172,8 +120,22 @@ class CopyFilesystemPublisherTest extends TestCase
      * @test
      * @dataProvider provideDataForPublishingTests
      */
-    public function publishShouldPublishFileVersion($file, $expectedPath, $expectedVersionPath, $expectedRealPath)
+    public function publishShouldPublishFileVersion($file, $expectedPath, $expectedVersionPath, $expectedRealPath, $expectedRelativePath, $allowSharedVersions)
     {
+        $this->versionProvider->expects($this->atLeastOnce())
+            ->method('areSharedVersionsAllowed')
+            ->will($this->returnValue($allowSharedVersions));
+
+        if ($allowSharedVersions) {
+            $this->storage->expects($this->once())->method('retrieveVersion')
+                ->with($file->getResource(), 'xooxer')
+                ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
+        } else {
+            $this->storage->expects($this->once())->method('retrieveVersion')
+                ->with($file->getResource(), 'xooxer', $file)
+                ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
+        }
+
         $this->filelib->setStorage($this->storage);
 
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher')
