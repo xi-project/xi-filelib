@@ -3,7 +3,7 @@
 namespace Xi\Tests\Filelib\File\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\DefaultFileOperator;
+use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -30,7 +30,7 @@ class UnPublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array('getAcl'))
                     ->getMock();
@@ -45,6 +45,7 @@ class UnPublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertAttributeEquals(null, 'fileOperator', $command2);
         $this->assertAttributeEquals($file, 'file', $command2);
+        $this->assertAttributeNotEmpty('uuid', $command2);
 
     }
 
@@ -64,7 +65,7 @@ class UnPublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $dispatcher->expects($this->once())->method('dispatch')
                    ->with($this->equalTo('file.unpublish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\DefaultFileOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('publish', 'getProfile', 'getPublisher'))
                    ->getMock();

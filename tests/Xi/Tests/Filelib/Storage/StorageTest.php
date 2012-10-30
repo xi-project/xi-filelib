@@ -9,12 +9,10 @@
 
 namespace Xi\Tests\Filelib\Storage;
 
-use Xi\Tests\Filelib\TestCase;
-
 /**
  * @group storage
  */
-class StorageTest extends TestCase
+class StorageTest extends \Xi\Tests\Filelib\TestCase
 {
     /**
      * @test

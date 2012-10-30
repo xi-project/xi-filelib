@@ -1,9 +1,17 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Folder;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\FilelibException;
+use Xi\Filelib\IdentityMap\Identifiable;
 
 /**
  * Folder
@@ -11,7 +19,7 @@ use Xi\Filelib\FilelibException;
  * @author pekkis
  *
  */
-class Folder
+class Folder implements Identifiable
 {
     /**
      * Key to method mapping for fromArray
@@ -23,6 +31,7 @@ class Folder
         'parent_id' => 'setParentId',
         'name' => 'setName',
         'url' => 'setUrl',
+        'uuid' => 'setUuid',
     );
 
     private $id;
@@ -32,6 +41,8 @@ class Folder
     private $name;
 
     private $url;
+
+    private $uuid;
 
     /**
      * Sets id
@@ -100,6 +111,24 @@ class Folder
     }
 
 
+    /**
+     * @return Folder
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+        return $this;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
 
     public function toArray()
     {
@@ -108,6 +137,7 @@ class Folder
             'parent_id' => $this->getParentId(),
             'name' => $this->getName(),
             'url' => $this->getUrl(),
+            'uuid' => $this->getUuid(),
         );
     }
 
@@ -131,7 +161,7 @@ class Folder
      * @param array $data
      * @return Folder
      */
-    public static function create(array $data)
+    public static function create(array $data = array())
     {
         $folder = new self();
         return $folder->fromArray($data);

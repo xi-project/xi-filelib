@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\File;
 
 use \SplFileObject;
@@ -25,7 +32,6 @@ class FileObject extends SplFileObject
     private static $typeResolver;
 
     /**
-     *
      * Sets type resolver
      *
      * @param TypeResolver $typeResolver
@@ -36,7 +42,6 @@ class FileObject extends SplFileObject
     }
 
     /**
-     *
      * Returns type resolver.
      *
      * @return TypeResolver
@@ -50,8 +55,6 @@ class FileObject extends SplFileObject
         return self::$typeResolver;
     }
 
-
-
     /**
      * Returns file's mime type (via type resolver).
      *
@@ -64,8 +67,5 @@ class FileObject extends SplFileObject
         }
         return $this->mimeType;
     }
-
-
-
 
 }

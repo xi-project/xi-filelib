@@ -166,6 +166,8 @@ class FileUpload
     }
 
     /**
+     * Returns mime type
+     *
      * @return string
      */
     public function getMimeType()
@@ -174,6 +176,8 @@ class FileUpload
     }
 
     /**
+     * Returns file size in bytes
+     *
      * @return integer
      */
     public function getSize()
@@ -182,6 +186,8 @@ class FileUpload
     }
 
     /**
+     * Returns path to file
+     *
      * @return string
      */
     public function getRealPath()
