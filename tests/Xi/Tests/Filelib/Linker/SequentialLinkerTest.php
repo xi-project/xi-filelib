@@ -20,7 +20,7 @@ class SequentialLinkerTest extends \Xi\Tests\Filelib\TestCase
 {
     public function setUp()
     {
-        $fo = $this->getMockBuilder('\Xi\Filelib\Folder\FolderOperator')->getMock();
+        $fo = $this->getMockBuilder('\Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
         $fo->expects($this->any())
              ->method('find')
              ->will($this->returnCallback(function($id) {

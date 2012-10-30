@@ -319,7 +319,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         if ($makeItThrowUp) {
             $zen->jobs->expects($this->once())->method('create')
-                ->will($this->throwException(new \Services_Zencoder_Exception('I threw up')));
+                ->will($this->throwException(new FilelibException('I threw up')));
 
             return $zen;
         }

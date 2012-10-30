@@ -48,7 +48,11 @@ class VersionPluginTest extends TestCase
 
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $this->publisher = $this->getMock('Xi\Filelib\Publisher\Publisher');
-        $this->fileOperator = $this->getMock('Xi\Filelib\File\FileOperator');
+
+        $this->fileOperator = $this
+            ->getMockBuilder('Xi\Filelib\File\FileOperator')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->plugin = new VersionPlugin(
             $this->storage,

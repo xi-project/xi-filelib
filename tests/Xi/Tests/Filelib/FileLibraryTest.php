@@ -167,30 +167,30 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function getFileOperatorShouldDefaultToDefaultFileOperator()
+    public function getFileOperatorShouldDefaultToFileOperator()
     {
         $filelib = new FileLibrary();
         $fop = $filelib->getFileOperator();
 
-        $this->assertEquals('Xi\Filelib\File\DefaultFileOperator', get_class($fop));
+        $this->assertEquals('Xi\Filelib\File\FileOperator', get_class($fop));
     }
 
     /**
      * @test
      */
-    public function getFolderOperatorShouldDefaultToDefaultFolderOperator()
+    public function getFolderOperatorShouldDefaultToFolderOperator()
     {
         $filelib = new FileLibrary();
         $fop = $filelib->getFolderOperator();
-        $this->assertEquals('Xi\Filelib\Folder\DefaultFolderOperator', get_class($fop));
+        $this->assertEquals('Xi\Filelib\Folder\FolderOperator', get_class($fop));
     }
 
     /**
      * @test
      */
-    public function setFileOperatorShouldOverrideDefaultFileOperator()
+    public function setFileOperatorShouldOverrideFileOperator()
     {
-        $mock = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $mock = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $filelib = new FileLibrary();
         $this->assertSame($filelib, $filelib->setFileOperator($mock));
         $this->assertSame($mock, $filelib->getFileOperator());
@@ -199,9 +199,9 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function setFolderOperatorShouldOverrideDefaultFolderOperator()
+    public function setFolderOperatorShouldOverrideFolderOperator()
     {
-        $mock = $this->getMockForAbstractClass('Xi\Filelib\Folder\FolderOperator');
+        $mock = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
         $filelib = new FileLibrary();
         $this->assertSame($filelib, $filelib->setFolderOperator($mock));
         $this->assertSame($mock, $filelib->getFolderOperator());
@@ -212,7 +212,7 @@ class FileLibraryTest extends TestCase
      */
     public function getProfilesShouldDelegateToFileOperator()
     {
-        $fop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $fop->expects($this->once())->method('getProfiles');
 
         $filelib = new FileLibrary();
@@ -231,7 +231,7 @@ class FileLibraryTest extends TestCase
 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
 
-        $fop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $fop->expects($this->once())->method('addProfile')->with($this->equalTo($profile));
 
         $filelib = new FileLibrary();
@@ -248,7 +248,7 @@ class FileLibraryTest extends TestCase
      */
     public function addPluginShouldFirePluginAddEvent()
     {
-        $fop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
 
         $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->once())->method('init');
@@ -270,8 +270,7 @@ class FileLibraryTest extends TestCase
      */
     public function addPluginShouldAddPluginAsSubscriber()
     {
-        $fop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
-
+        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
 
         $filelib = new FileLibrary();

@@ -267,7 +267,13 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             $this->getAwsService()->removeObject($awsPath);
             return $tmps;
         } catch (\Services_Zencoder_Exception $e) {
-            throw new FilelibException("Zencoder service responded with errors", 500, $e);
+            $msgs = [];
+            foreach ($e->getErrors() as $error) {
+                $msgs[] = (string) $error;
+            }
+            throw new FilelibException(
+                "Zencoder service responded with errors: " . implode(". ", $msgs), 500, $e
+            );
         }
     }
 

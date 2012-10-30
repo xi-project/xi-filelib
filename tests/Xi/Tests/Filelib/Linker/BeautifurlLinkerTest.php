@@ -33,7 +33,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('Intl extension must be loaded');
         }
 
-        $fo = $this->getMock('Xi\Filelib\Folder\FolderOperator');
+        $fo = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
         $fo->expects($this->any())
              ->method('find')
              ->will($this->returnCallback(function($id) {
@@ -240,7 +240,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
     public function getSlugifierShouldReturnSlugifier()
     {
         $mockSlugifier = $this->getMock('Xi\Filelib\Tool\Slugifier\Slugifier');
-        $mockOperator = $this->getMock('Xi\Filelib\Folder\FolderOperator');
+        $mockOperator = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();;
 
         $linker = new BeautifurlLinker($mockOperator, $mockSlugifier);
 
@@ -255,7 +255,7 @@ class BeautifurlLinkerTest extends \Xi\Tests\Filelib\TestCase
     public function takesOptionalOptionsInConstructor()
     {
         $linker = new BeautifurlLinker(
-            $this->getMock('Xi\Filelib\Folder\FolderOperator'),
+            $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock(),
             $this->getMock('Xi\Filelib\Tool\Slugifier\Slugifier'),
             array(
                 'slugify'        => false,

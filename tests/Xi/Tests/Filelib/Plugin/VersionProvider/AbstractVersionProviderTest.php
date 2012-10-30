@@ -54,7 +54,11 @@ class AbstractVersionProviderTest extends TestCase
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $this->publisher = $this->getMock('Xi\Filelib\Publisher\Publisher');
 
-        $this->fileOperator = $this->getMock('Xi\Filelib\File\FileOperator');
+        $this->fileOperator = $this
+            ->getMockBuilder('Xi\Filelib\File\FileOperator')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->fileOperator->expects($this->any())
                            ->method('getType')
                            ->will($this->returnCallback(function(File $file) {

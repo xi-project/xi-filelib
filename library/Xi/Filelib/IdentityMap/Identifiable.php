@@ -7,11 +7,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Folder\Command;
+namespace Xi\Filelib\IdentityMap;
 
-use Xi\Filelib\EnqueueableCommand;
-
-interface FolderCommand extends EnqueueableCommand
+/**
+ * Interface for identifiable objects
+ */
+interface Identifiable
 {
-
+    public function getId();
 }
