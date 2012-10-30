@@ -186,7 +186,7 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
         $tmpDir = realpath(sys_get_temp_dir());
 
         $this->assertEquals(
-            "ffmpeg -y -r '1' -i 'video.mp4' -r '20' -i 'simpsons.mp4' -vframes '1' '$tmpDir/still.png' -s '1280x720' '$tmpDir/video.webm'",
+            "ffmpeg -y -r '1' -i 'video.mp4' -r '20' -i 'simpsons.mp4' -vframes '1' '$tmpDir/still.png' -s '1280x720' '$tmpDir/video.webm' </dev/null",
             $ffmpeg->getCommandLine('video.mp4', $tmpDir)
         );
     }
@@ -194,7 +194,7 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
     /**
      * @test
      */
-    public function testgetOutputPathnames()
+    public function testGetOutputPathnames()
     {
         $ffmpeg = new FFmpegHelper($this->config);
         $tmpDir = realpath(sys_get_temp_dir());
@@ -206,6 +206,61 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
             ),
             $ffmpeg->getOutputPathnames($tmpDir)
         );
+    }
+
+    /**
+     * @test
+     */
+    public function executeShouldWriteOutputFiles()
+    {
+        $config = array(
+            'options' => array(
+                'y' => true,
+                'loglevel' => 'error'
+            ),
+            'inputs' => array(
+                'one_second' => array(
+                    'filename' => true,
+                    'options' => array(
+                        'r' => '1',
+                        'ss' => '00:00:01.000',
+                        'vframes' => '1'
+                    )
+                )
+            ),
+            'outputs' => array(
+                '720p_still' => array(
+                    'filename' => 'Joonas_still_720.jpg',
+                    'options' => array(
+                        's' => '1280x720',
+                        'vframes' => '1'
+                    )
+                ),
+                '480p_still' => array(
+                    'filename' => 'Joonas_still_480.jpg',
+                    'options' => array(
+                        's' => '854x480',
+                        'vframes' => '1'
+                    )
+                )
+            )
+        );
+        $ffmpeg = new FFmpegHelper($config);
+        $tmpDir = realpath(sys_get_temp_dir());
+
+        $ffmpeg->execute($this->testVideo->getPathname(), $tmpDir);
+
+        $outputs = $ffmpeg->getOutputPathnames($tmpDir);
+        $expected = 'image/jpeg';
+
+        foreach ($outputs as $output) {
+            $this->assertFileExists($output);
+            $this->assertEquals(
+                $expected,
+                substr(`file -b --mime $output`, 0, strlen($expected))
+            );
+            unlink($output);
+        }
     }
 
     /**
