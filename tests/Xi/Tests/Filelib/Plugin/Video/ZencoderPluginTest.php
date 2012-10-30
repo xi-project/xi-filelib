@@ -7,6 +7,7 @@ use Services_Zencoder_Exception as ZencoderException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\FilelibException;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
@@ -330,7 +331,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         if ($makeItThrowUp) {
             $zen->jobs->expects($this->once())->method('create')
-                ->will($this->throwException(new \Services_Zencoder_Exception('I threw up')));
+                ->will($this->throwException(new FilelibException('I threw up')));
             return $zen;
         }
 
