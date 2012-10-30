@@ -167,7 +167,8 @@ class FFmpegHelper
             array_map(
                 array($this, 'shellArgumentsFor'),
                 $this->getProcessedOutputs($outputDir)
-            )
+            ),
+            array('</dev/null')
         ));
     }
 
