@@ -205,4 +205,12 @@ class VersionPluginTest extends TestCase
 
         $plugin->getExtensionFor('xooxoo');
     }
+
+    /**
+     * @test
+     */
+    public function getsTempDir()
+    {
+        $this->assertEquals(ROOT_TESTS . '/data/temp', $this->plugin->getTempDir());
+    }
 }

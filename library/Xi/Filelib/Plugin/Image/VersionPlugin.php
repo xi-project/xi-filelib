@@ -127,6 +127,14 @@ class VersionPlugin extends AbstractVersionProvider
         return $this->getExtension();
     }
 
+    /**
+     * @return string
+     */
+    public function getTempDir()
+    {
+        return $this->tempDir;
+    }
+
     public function isSharedResourceAllowed()
     {
         return true;
