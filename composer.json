@@ -19,8 +19,12 @@
         }
     ],
 
-    "repositories": {
-        "zencoder-php": {
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://packages.zendframework.com/"
+        },
+        {
             "type": "package",
             "package": {
                 "name": "zencoder/zencoder-php",
@@ -32,22 +36,25 @@
                 }
             }
         }
-    },
+    ],
 
     "require": {
-        "php": ">=5.3.0",
-        "symfony/event-dispatcher": "2.0.14"
+        "php": ">=5.3.3",
+        "symfony/event-dispatcher": ">=2.0.14, <=2.1.2"
     },
 
     "require-dev": {
         "doctrine/orm": "2.2.2",
         "doctrine/dbal": "2.2.2",
         "doctrine/common": "2.2.2",
-        "symfony/http-foundation": "2.0.14",
-        "symfony/http-kernel": "2.0.14",
-        "symfony/security": "2.0.14",
-        "zendframework/zendframework": "2.0.0-beta5",
+        "symfony/http-foundation": "2.1.2",
+        "symfony/http-kernel": "2.1.2",
+        "symfony/security": "2.1.2",
         "videlalvaro/php-amqplib": ">=dev-master",
+        "zendframework/zendservice-amazon": "2.0.*",
+        "zendframework/zend-i18n": "2.0.*",
+        "zendframework/zend-filter": "2.0.*",
+        "zendframework/zend-servicemanager": "2.0.*",
         "zencoder/zencoder-php": "2.0.2"
     },
 
@@ -58,5 +65,13 @@
             "Services_": "./vendor/zencoder/zencoder-php/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.8.x-dev"
+        }
+    }
+
+
 }

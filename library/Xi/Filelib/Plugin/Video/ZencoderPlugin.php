@@ -1,9 +1,16 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin\Video;
 
 use Services_Zencoder as ZencoderService;
-use Zend\Service\Amazon\S3\S3 as AmazonService;
+use ZendService\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
@@ -52,10 +59,14 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     private $awsSecretKey;
 
     /**
-     *
      * @var string
      */
     private $awsBucket;
+
+    /**
+     * @var integer
+     */
+    private $sleepyTime = 5;
 
     public function __construct($options = array())
     {
@@ -154,7 +165,25 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         return $this->awsService;
     }
 
+    /**
+     * Sets sleepy time in seconds
+     *
+     * @param  integer        $sleepyTime
+     * @return ZencoderPlugin
+     */
+    public function setSleepyTime($sleepyTime)
+    {
+        $this->sleepyTime = $sleepyTime;
+        return $this;
+    }
 
+    /**
+     * @return integer
+     */
+    public function getSleepyTime()
+    {
+        return $this->sleepyTime;
+    }
 
     /**
      * Returns Zencoder-php service instance
@@ -200,7 +229,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
         $zencoder = $this->getService();
 
-        $retrieved = $this->getStorage()->retrieve($file);
+        $retrieved = $this->getStorage()->retrieve($file->getResource());
 
         $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
@@ -220,7 +249,8 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
             do {
                 $done = 0;
-                sleep(5);
+
+                sleep($this->getSleepyTime());
 
                 foreach ($this->getVersions() as $label) {
                     $output = $job->outputs[$label];
@@ -249,11 +279,16 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             }
 
             $this->getAwsService()->removeObject($awsPath);
-
             return $tmps;
 
         } catch (\Services_Zencoder_Exception $e) {
-            throw new FilelibException("Zencoder service responded with errors", 500, $e);
+            $msgs = [];
+            foreach ($e->getErrors() as $error) {
+                $msgs[] = (string) $error;
+            }
+            throw new FilelibException(
+                "Zencoder service responded with errors: " . implode(". ", $msgs), 500, $e
+            );
         }
 
     }
@@ -276,4 +311,13 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         }, $this->getOutputs()));
     }
 
+    public function isSharedResourceAllowed()
+    {
+        return true;
+    }
+
+    public function areSharedVersionsAllowed()
+    {
+        return true;
+    }
 }

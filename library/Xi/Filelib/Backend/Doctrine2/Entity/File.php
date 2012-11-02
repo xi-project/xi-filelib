@@ -18,48 +18,54 @@ class File
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
-
-    /**
-     * @ORM\Column(name="mimetype", type="string", length=255)
-     */
-    protected $mimetype;
+    private $id;
 
     /**
      * @ORM\Column(name="fileprofile", type="string", length=255)
      */
-    protected $profile;
-
-    /**
-     * @ORM\Column(name="filesize", type="integer", nullable=true)
-     */
-    protected $size;
+    private $profile;
 
     /**
      * @ORM\Column(name="filename", type="string", length=255)
      */
-    protected $name;
+    private $name;
 
     /**
      * @ORM\Column(name="filelink", type="string", length=255, nullable=true, unique=true)
      */
-    protected $link;
-    
+    private $link;
+
     /**
-     * @ORM\Column(name="date_uploaded", type="datetime")
+     * @ORM\Column(name="date_created", type="datetime")
      */
-    protected $date_uploaded;
-    
+    private $dateCreated;
+
     /**
      * @ORM\Column(name="status", type="integer", nullable=false)
      */
-    protected $status;
-    
+    private $status;
+
+    /**
+     * @ORM\Column(name="uuid", type="string", length=36, nullable=false, unique=true)
+     */
+    private $uuid;
+
     /**
      * @ORM\ManyToOne(targetEntity="Folder")
      * @ORM\JoinColumn(name="folder_id", referencedColumnName="id", nullable=false)
      */
-    protected $folder;
+    private $folder;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Resource", inversedBy="files")
+     * @ORM\JoinColumn(name="resource_id", referencedColumnName="id", nullable=false)
+     **/
+    private $resource;
+
+    /**
+     * @ORM\Column(name="versions", type="array")
+     */
+    private $versions = array();
 
     /**
      * Get id
@@ -67,29 +73,6 @@ class File
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set mimetype
-     *
-     * @param  string             $value
-     * @return File
-     */
-    public function setMimetype($value)
-    {
-        $this->mimetype = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get mimetype
-     *
-     * @return string
-     */
-    public function getMimetype()
-    {
-        return $this->mimetype;
     }
 
     /**
@@ -113,29 +96,6 @@ class File
     public function getProfile()
     {
         return $this->profile;
-    }
-
-    /**
-     * Set size
-     *
-     * @param  integer            $value
-     * @return File
-     */
-    public function setSize($value)
-    {
-        $this->size = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get size
-     *
-     * @return integer
-     */
-    public function getSize()
-    {
-        return $this->size;
     }
 
     /**
@@ -184,7 +144,7 @@ class File
         return $this->link;
     }
 
-    
+
     /**
      * Set filelib folder
      *
@@ -209,41 +169,40 @@ class File
 
     /**
      * Returns date uploaded
-     * 
+     *
      * @return DateTime
      */
-    public function getDateUploaded()
+    public function getDateCreated()
     {
-        return $this->date_uploaded;
+        return $this->dateCreated;
     }
-    
-    
+
+
     /**
      * Sets date uploaded
-     * 
+     *
      * @param DateTime $dateUploaded
-     * @return File 
+     * @return File
      */
-    public function setDateUploaded(DateTime $dateUploaded)
+    public function setDateCreated(DateTime $dateUploaded)
     {
-        $this->date_uploaded = $dateUploaded;
+        $this->dateCreated = $dateUploaded;
         return $this;
     }
-    
+
     /**
      * Returns status
-     * 
+     *
      * @return integer
      */
     public function getStatus()
     {
         return $this->status;
     }
-    
-    
+
     /**
      * Sets status
-     * 
+     *
      * @param integer $status
      */
     public function setStatus($status)
@@ -251,5 +210,62 @@ class File
         $this->status = $status;
         return $this;
     }
-    
+
+    /**
+     * Sets uuid
+     *
+     * @param string $uuid
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * Returns uuid
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * Returns resource
+     *
+     * @return Resource
+     */
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+    /**
+     * @param  Resource $resource
+     * @return File
+     */
+    public function setResource(Resource $resource)
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    /**
+     * @param  array $versions
+     * @return File
+     */
+    public function setVersions(array $versions)
+    {
+        $this->versions = $versions;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getVersions()
+    {
+        return $this->versions;
+    }
 }

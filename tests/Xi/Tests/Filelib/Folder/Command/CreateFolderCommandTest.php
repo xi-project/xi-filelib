@@ -3,8 +3,8 @@
 namespace Xi\Tests\Filelib\Folder\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\DefaultFolderOperator;
-use Xi\Filelib\File\DefaultFileOperator;
+use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -31,7 +31,7 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
+        $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
                     ->setConstructorArgs(array($filelib))
                     ->setMethods(array('createCommand'))
                     ->getMock();
@@ -45,6 +45,7 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $this->assertAttributeEquals(null, 'folderOperator', $command2);
         $this->assertAttributeEquals($folder, 'folder', $command2);
+        $this->assertAttributeNotEmpty('uuid', $command2);
 
     }
 
@@ -56,12 +57,19 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
     public function commandShouldCreateFolder()
     {
         $filelib = new FileLibrary();
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\DefaultFolderOperator')
-                   ->setMethods(array('buildRoute'))
+        $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
+                   ->setMethods(array('buildRoute', 'generateUuid'))
                    ->setConstructorArgs(array($filelib))
                    ->getMock();
 
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $op->expects($this->once())->method('generateUuid')
+           ->will($this->returnValue('uusi-uuid'));
+
+        $folder = $this->getMockBuilder('Xi\Filelib\Folder\Folder')
+                       ->disableOriginalConstructor()
+                       ->setMethods(array('setUrl'))
+                       ->getMock();
+
         $folder->expects($this->once())->method('setUrl')->with($this->equalTo('route'));
 
         $op->expects($this->once())->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue('route'));
@@ -74,6 +82,7 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         $command = new CreateFolderCommand($op, $folder);
 
         $folder2 = $command->execute();
+        $this->assertEquals('uusi-uuid', $folder2->getUuid());
 
     }
 

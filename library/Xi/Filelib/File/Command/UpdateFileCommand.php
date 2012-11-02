@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\File\Command;
 
 use Xi\Filelib\File\FileOperator;
@@ -7,7 +14,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Serializable;
 
-class UpdateFileCommand extends AbstractFileCommand implements Serializable
+class UpdateFileCommand extends AbstractFileCommand
 {
 
     /**
@@ -48,6 +55,7 @@ class UpdateFileCommand extends AbstractFileCommand implements Serializable
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
+        $this->uuid = $data['uuid'];
     }
 
 
@@ -55,6 +63,7 @@ class UpdateFileCommand extends AbstractFileCommand implements Serializable
     {
         return serialize(array(
            'file' => $this->file,
+           'uuid' => $this->uuid,
         ));
     }
 

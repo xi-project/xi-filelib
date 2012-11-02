@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Publisher\Filesystem;
 
 use Xi\Filelib\File\File;
@@ -29,7 +36,7 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            $tmp = $this->getFilelib()->getStorage()->retrieve($file);
+            $tmp = $this->getFilelib()->getStorage()->retrieve($file->getResource());
 
             copy($tmp, $link);
             chmod($link, $this->getFilePermission());
@@ -52,7 +59,12 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file, $version);
+            if ($versionProvider->areSharedVersionsAllowed()) {
+                $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version, null);
+            } else {
+                $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version, $file);
+            }
+
             copy($tmp, $link);
             chmod($link, $this->getFilePermission());
         }

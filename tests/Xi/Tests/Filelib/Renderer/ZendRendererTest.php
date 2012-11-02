@@ -4,6 +4,7 @@ namespace Xi\Tests\Filelib\Renderer;
 
 use Xi\Filelib\Renderer\ZendRenderer;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
 use Zend_Controller_Request_Http as Request;
 use Zend_Controller_Response_Http as Response;
@@ -30,7 +31,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         }
 
         $this->filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $this->fiop = $this->getMockForAbstractClass('Xi\Filelib\File\FileOperator');
+        $this->fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $this->filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($this->fiop));
 
         $this->profile = $this->getMock('Xi\Filelib\File\FileProfile');
@@ -84,7 +85,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl'));
         $this->acl->expects($this->any())->method('fileIsReadable')->will($this->returnValue(false));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file);
 
@@ -107,7 +108,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file);
 
@@ -132,7 +133,9 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->storage->expects($this->once())->method('retrieve')->will($this->returnValue($retrieved));
 
         $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
-        $file = File::create(array('id' => 1));
+
+        $resource = Resource::create();
+        $file = File::create(array('id' => 1, 'resource' => $resource));
 
         $response = $renderer->render($file);
 
@@ -166,7 +169,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
-        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $response = $renderer->render($file, array('download' => true, 'track' => true));
 
@@ -192,7 +195,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
         $this->fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(false));
         $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
-        $file = File::create(array('id' => 1));
+        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $response = $renderer->render($file, array('version' => 'lussenhofer'));
 
@@ -212,14 +215,15 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = new FileObject($path);
 
-        $file = File::create(array('id' => 1));
+        $resource = Resource::create();
+        $file = File::create(array('id' => 1, 'resource' => $resource));
 
         $renderer = $this->getMockedRenderer(array('getPublisher', 'getAcl', 'getStorage'));
 
         $vp = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
 
         $this->storage->expects($this->once())->method('retrieveVersion')
-                ->with($this->equalTo($file), $this->equalTo('lussenhofer'))
+                ->with($this->equalTo($resource), $this->equalTo('lussenhofer'))
                 ->will($this->returnValue($retrieved));
 
         $this->fiop->expects($this->any())->method('hasVersion')->will($this->returnValue(true));
@@ -359,7 +363,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
-        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
         $renderer->setAddPrefixToAcceleratedPath('/protected/files');
@@ -402,7 +406,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
         $this->acl->expects($this->any())->method('isFileReadable')->will($this->returnValue(true));
 
-        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus'));
+        $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $renderer->setStripPrefixFromAcceleratedPath($renderer->getStorage()->getRoot());
         $renderer->setAddPrefixToAcceleratedPath('/protected/files');

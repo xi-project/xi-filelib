@@ -1,6 +1,6 @@
 <?php
 
-require '../tests/bootstrap.php';
+require __DIR__ . '/../tests/bootstrap.php';
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Configuration;
@@ -76,6 +76,7 @@ EOT;
 }
 
 $options['driver'] = 'pdo_' . $argv[1];
+$options['host'] = '127.0.0.1';
 
 $generator = new SchemaGenerator($options);
 

@@ -172,7 +172,7 @@ class ZendRenderer extends AbstractAcceleratedRenderer implements AcceleratedRen
             return;
         }
 
-        $res = $this->getStorage()->retrieve($file);
+        $res = $this->getStorage()->retrieve($file->getResource());
         return $res;
     }
 
@@ -192,8 +192,7 @@ class ZendRenderer extends AbstractAcceleratedRenderer implements AcceleratedRen
             return;
         }
 
-        $res = $this->getStorage()->retrieveVersion($file, $version);
-
+        $res = $this->getStorage()->retrieveVersion($file->getResource(), $version);
         return $res;
     }
 

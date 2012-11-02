@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin\Image;
 
 use Imagick;
@@ -50,7 +57,7 @@ class VersionPlugin extends AbstractVersionProvider
     public function createVersions(File $file)
     {
         // Todo: optimize
-        $retrieved = $this->getStorage()->retrieve($file)->getPathname();
+        $retrieved = $this->getStorage()->retrieve($file->getResource())->getPathname();
         $img = $this->getImageMagickHelper()->createImagick($retrieved);
 
         $this->getImageMagickHelper()->execute($img);
@@ -92,6 +99,17 @@ class VersionPlugin extends AbstractVersionProvider
     public function getExtensionFor($version)
     {
         return $this->getExtension();
+    }
+
+
+    public function isSharedResourceAllowed()
+    {
+        return true;
+    }
+
+    public function areSharedVersionsAllowed()
+    {
+        return true;
     }
 
 }

@@ -4,11 +4,13 @@ namespace Xi\Filelib\File;
 
 use DateTime;
 use ArrayObject;
+use Xi\Filelib\File\Resource;
+use Xi\Filelib\IdentityMap\Identifiable;
 
 /**
  * File
  */
-class File
+class File implements Identifiable
 {
     const STATUS_RAW = 1;
     const STATUS_COMPLETED = 2;
@@ -21,13 +23,14 @@ class File
     protected static $map = array(
         'id' => 'setId',
         'folder_id' => 'setFolderId',
-        'mimetype' => 'setMimeType',
         'profile' => 'setProfile',
-        'size' => 'setSize',
         'name' => 'setName',
         'link' => 'setLink',
-        'date_uploaded' => 'setDateUploaded',
+        'date_created' => 'setDateCreated',
         'status' => 'setStatus',
+        'uuid' => 'setUuid',
+        'resource' => 'setResource',
+        'versions' => 'setVersions',
     );
 
     /**
@@ -35,30 +38,74 @@ class File
      */
     private $filelib;
 
+    /**
+     * @var mixed
+     */
     private $id;
 
+    /**
+     * @var mixed
+     */
     private $folderId;
 
+    /**
+     * @var string
+     */
     private $mimetype;
 
+    /**
+     * @var string
+     */
     private $profile;
 
+    /**
+     * @var integer
+     */
     private $size;
 
+    /**
+     * @var string
+     */
     private $name;
 
+    /**
+     * @var string
+     */
     private $link;
 
-    private $dateUploaded;
+    /**
+     * @var DateTime
+     */
+    private $dateCreated;
 
+    /**
+     * @var integer
+     */
     private $status;
+
+    /**
+     *
+     * @var array
+     */
+    private $versions = array();
+
+    /**
+     *
+     * @var Resource
+     */
+    private $resource;
+
+    /**
+     *
+     * @var string
+     */
+    private $uuid;
 
     /**
      *
      * @var ArrayObject
      */
     private $data;
-
 
     /**
      * Sets id
@@ -105,25 +152,13 @@ class File
     }
 
     /**
-     * Sets mimetype
-     *
-     * @param string $mimetype
-     * @return File
-     */
-    public function setMimetype($mimetype)
-    {
-        $this->mimetype = $mimetype;
-        return $this;
-    }
-
-    /**
      * Returns mimetype
      *
      * @return string
      */
     public function getMimetype()
     {
-        return $this->mimetype;
+        return $this->getResource()->getMimetype();
     }
 
     /**
@@ -149,25 +184,13 @@ class File
     }
 
     /**
-     * Sets file size
-     *
-     * @param int $size
-     * @return File
-     */
-    public function setSize($size)
-    {
-        $this->size = $size;
-        return $this;
-    }
-
-    /**
      * Returns file size
      *
      * @return int
      */
     public function getSize()
     {
-        return $this->size;
+        return $this->getResource()->getSize();
     }
 
     /**
@@ -215,24 +238,24 @@ class File
     }
 
     /**
-     * Returns upload date
+     * Returns create date
      *
      * @return DateTime
      */
-    public function getDateUploaded()
+    public function getDateCreated()
     {
-        return $this->dateUploaded;
+        return $this->dateCreated;
     }
 
     /**
-     * Sets upload date
+     * Sets create date
      *
-     * @param DateTime $dateUploaded
+     * @param DateTime $dateCreated
      * @return File
      */
-    public function setDateUploaded(DateTime $dateUploaded)
+    public function setDateCreated(DateTime $dateCreated)
     {
-        $this->dateUploaded = $dateUploaded;
+        $this->dateCreated = $dateCreated;
         return $this;
     }
 
@@ -259,6 +282,53 @@ class File
     }
 
     /**
+     * @return File
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+        return $this;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     *
+     * @param Resource $resource
+     * @return File
+     */
+    public function setResource(Resource $resource)
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    /**
+     * Returns resource or null if file doesn't have one
+     *
+     * @return Resource|null
+     */
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+    /**
+     * Unsets resource
+     */
+    public function unsetResource()
+    {
+        $this->resource = null;
+    }
+
+    /**
      * Returns the file as standardized file array
      *
      * @return array
@@ -268,13 +338,14 @@ class File
         return array(
             'id' => $this->getId(),
             'folder_id' => $this->getFolderId(),
-            'mimetype' => $this->getMimetype(),
             'profile' => $this->getProfile(),
-            'size' => $this->getSize(),
             'name' => $this->getName(),
             'link' => $this->getLink(),
-            'date_uploaded' => $this->getDateUploaded(),
+            'date_created' => $this->getDateCreated(),
             'status' => $this->getStatus(),
+            'resource' => $this->getResource(),
+            'uuid' => $this->getUuid(),
+            'versions' => $this->getVersions(),
         );
     }
 
@@ -300,7 +371,7 @@ class File
      * @param array $data
      * @return type File
      */
-    public static function create(array $data)
+    public static function create(array $data = array())
     {
         $file = new self();
         return $file->fromArray($data);
@@ -315,6 +386,61 @@ class File
             $this->data = new ArrayObject();
         }
         return $this->data;
+    }
+
+    /**
+     * Sets currently created versions
+     *
+     * @param array $versions
+     * @return Resource
+     */
+    public function setVersions(array $versions = array())
+    {
+        $this->versions = $versions;
+        return $this;
+    }
+
+    /**
+     * Returns currently created versions
+     *
+     * @return array
+     */
+    public function getVersions()
+    {
+        return $this->versions;
+    }
+
+    /**
+     * Adds version
+     *
+     * @param string $version
+     */
+    public function addVersion($version)
+    {
+        if (!in_array($version, $this->versions)) {
+            array_push($this->versions, $version);
+        }
+    }
+
+    /**
+     * Removes a version
+     *
+     * @param string $version
+     */
+    public function removeVersion($version)
+    {
+        $this->versions = array_diff($this->versions, array($version));
+    }
+
+    /**
+     * Returns whether resource has version
+     *
+     * @param string $version
+     * @return boolean
+     */
+    public function hasVersion($version)
+    {
+        return in_array($version, $this->versions);
     }
 
 }

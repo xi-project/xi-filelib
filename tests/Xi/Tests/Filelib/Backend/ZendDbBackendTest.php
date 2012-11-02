@@ -15,19 +15,19 @@ class ZendDbBackendTest extends RelationalDbTestCase
 {
     public function setUp()
     {
-        if (!class_exists('\Zend_Db')) {
+        if (!class_exists('Zend_Db')) {
             $this->markTestSkipped("Zend Db could not be loaded");
         }
-        
+
         parent::setUp();
     }
 
     public function tearDown()
     {
-        if (!class_exists('\Zend_Db')) {
+        if (!class_exists('Zend_Db')) {
             $this->markTestSkipped("Zend Db could not be loaded");
         }
-        
+
         parent::tearDown();
     }
 
@@ -43,7 +43,8 @@ class ZendDbBackendTest extends RelationalDbTestCase
             'password' => PDO_PASSWORD,
         ));
 
-        return new ZendDbBackend($db);
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        return new ZendDbBackend($ed, $db);
     }
 
     /**
@@ -79,6 +80,26 @@ class ZendDbBackendTest extends RelationalDbTestCase
 
         $this->assertSame($folderTable, $this->backend->getFolderTable());
     }
+
+
+    /**
+     * @test
+     */
+    public function getsAndSetsResourceTable()
+    {
+        $this->setUpEmptyDataSet();
+
+        $resourceTable = $this->getMockBuilder('Xi\Filelib\Backend\ZendDb\ResourceTable')
+                              ->disableOriginalConstructor()
+                              ->getMock();
+
+        $this->assertInstanceOf('Zend_Db_Table_Abstract', $this->backend->getFolderTable());
+        $this->assertNotSame($resourceTable, $this->backend->getResourceTable());
+
+        $this->backend->setResourceTable($resourceTable);
+        $this->assertSame($resourceTable, $this->backend->getResourceTable());
+    }
+
 
     /**
      * @return PHPUnit_Framework_MockObject_MockObject

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Folder\Command;
 
 use Xi\Filelib\Folder\FolderOperator;
@@ -7,7 +14,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Serializable;
 
-class CreateByUrlFolderCommand extends AbstractFolderCommand implements Serializable
+class CreateByUrlFolderCommand extends AbstractFolderCommand
 {
 
     /**
@@ -69,13 +76,15 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand implements Serializ
     {
         $data = unserialize($serialized);
         $this->url = $data['url'];
+        $this->uuid = $data['uuid'];
     }
 
 
     public function serialize()
     {
         return serialize(array(
-           'url' => $this->url,
+            'url' => $this->url,
+            'uuid' => $this->uuid,
         ));
     }
 
