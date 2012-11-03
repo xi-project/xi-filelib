@@ -11,6 +11,9 @@ namespace Xi\Filelib\Backend\Finder;
 
 use Xi\Filelib\Exception\FilelibException;
 
+/**
+ * Generic finder exception
+ */
 class FinderException extends \Exception implements FilelibException
 {
 

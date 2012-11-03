@@ -9,12 +9,15 @@
 
 namespace Xi\Filelib\Backend\Finder;
 
+/**
+ * Folder finder
+ */
 class FolderFinder extends AbstractFinder
 {
-
     protected $fields = array(
         'id',
         'parent_id',
     );
 
+    protected $resultClass = 'Xi\Filelib\Folder\Folder';
 }

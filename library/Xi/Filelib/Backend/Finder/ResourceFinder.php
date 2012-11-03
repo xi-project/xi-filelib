@@ -9,12 +9,15 @@
 
 namespace Xi\Filelib\Backend\Finder;
 
+/**
+ * Resource finder
+ */
 class ResourceFinder extends AbstractFinder
 {
-
     protected $fields = array(
         'id',
         'hash',
     );
 
+    protected $resultClass = 'Xi\Filelib\File\Resource';
 }
