@@ -62,30 +62,6 @@ use Xi\Filelib\Folder\Folder;
     }
 
 
-    /**
-     * @test
-     * @dataProvider rootFolderIdProvider
-     * @param mixed $rootFolderId
-     * @group refactor
-     */
-    public function findRootFolderShouldReturnRootFolder($rootFolderId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $rootFolder = $this->backend->findFolder($rootFolderId);
-
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $rootFolder);
-        $this->assertNull($rootFolder->getParentId());
-
-        $folder = $this->backend->findRootFolder();
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-
-        $this->assertNotNull($folder->getId());
-        $this->assertNotNull($folder->getName());
-        $this->assertNotNull($folder->getUrl());
-        $this->assertNotNull($folder->getUuid());
-        $this->assertNull($folder->getParentId());
-    }
 
 
     /**
@@ -126,56 +102,6 @@ use Xi\Filelib\Folder\Folder;
     }
 
 
-    /**
-     * @test
-     * @dataProvider findResourceProvider
-     * @param integer $resourceId
-     * @param array   $data
-     */
-    public function findResourceShouldReturnCorrectResource($resourceId, array $data)
-    {
-        $this->setUpSimpleDataSet();
-
-        $resource = $this->backend->findResource($resourceId);
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $resource);
-
-        $this->assertEquals($resourceId, $resource->getId());
-        $this->assertEquals($data['hash'], $resource->getHash());
-        $this->assertEquals($data['versions'], $resource->getVersions());
-        $this->assertNotNull($resource->getMimetype());
-        $this->assertNotNull($resource->getDateCreated());
-        $this->assertNotNull($resource->getSize());
-        $this->assertNotNull($resource->isExclusive());
-    }
-
-
-    /**
-     * @test
-     * @dataProvider nonExistingResourceIdProvider
-     * @param mixed $resourceId
-     */
-    public function findResourceShouldReturnFalseWhenTryingToFindNonExistingResource($resourceId)
-    {
-        $this->setUpEmptyDataSet();
-        $this->assertFalse($this->backend->findResource($resourceId));
-    }
-
-
-    /**
-     * @test
-     * @dataProvider resourceHashProvider
-     * @param mixed   $hash
-     * @param integer $expectedCount
-     */
-    public function findResourcesByHashShouldReturnArrayOfResources($hash, $expectedCount)
-    {
-        $this->setUpSimpleDataSet();
-
-        $ret = $this->backend->findResourcesByHash($hash);
-
-        $this->assertInternalType('array', $ret);
-        $this->assertCount($expectedCount, $ret);
-    }
 
 
     /**
@@ -193,15 +119,11 @@ use Xi\Filelib\Folder\Folder;
 
         $resource = Resource::create($data);
 
-        $this->backend->getEventDispatcher()->expects($this->once())
-                      ->method('dispatch')
-                      ->with('resource.delete', $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
-
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $this->backend->findResource($resourceId));
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $this->findResource($resourceId));
 
         $this->assertTrue($this->backend->deleteResource($resource));
 
-        $this->assertFalse($this->backend->findResource($resourceId));
+        $this->assertNull($this->findResource($resourceId));
     }
 
     /**
@@ -219,37 +141,9 @@ use Xi\Filelib\Folder\Folder;
 
         $resource = Resource::create($data);
 
-        $this->backend->getEventDispatcher()->expects($this->never())
-            ->method('dispatch');
-
         $this->assertFalse($this->backend->deleteResource($resource));
 
-
-
     }
-
-
-    /**
-     * @test
-     * @dataProvider resourceIdWithReferencesProvider
-     * @param mixed $resourceId
-     *
-     */
-    public function deleteResourceThrowsExceptionWhenDeletingResourceWithReferences($resourceId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $resource = Resource::create(array(
-            'id'        => $resourceId,
-        ));
-
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $this->backend->findResource($resourceId));
-
-        $this->setExpectedException('Xi\Filelib\Exception\ResourceReferencedException');
-
-        $this->backend->deleteResource($resource);
-    }
-
 
     /**
      * @test
@@ -262,7 +156,9 @@ use Xi\Filelib\Folder\Folder;
     {
         $this->setUpSimpleDataSet();
 
-        $resource = $this->backend->findResource($resourceId);
+        $resource = $this->findResource($resourceId);
+
+        $this->assertInstanceOf('Xi\Filelib\File\Resource', $resource);
 
         $this->assertEquals($resourceId, $resource->getId());
         $this->assertNotEquals($versions, $resource->getVersions());
@@ -272,7 +168,7 @@ use Xi\Filelib\Folder\Folder;
         $resource->setExclusive(false);
         $this->assertTrue($this->backend->updateResource($resource));
 
-        $resource2 = $this->backend->findResource($resourceId);
+        $resource2 = $this->findResource($resourceId);
         $this->assertEquals($versions, $resource2->getVersions());
         $this->assertFalse($resource2->isExclusive());
     }
@@ -299,76 +195,6 @@ use Xi\Filelib\Folder\Folder;
 
     /**
      * @test
-     * @group refactor
-     */
-    public function findRootFolderCreatesRootFolderIfItDoesNotExist()
-    {
-        $this->setUpEmptyDataSet();
-
-        $folder = $this->backend->findRootFolder();
-
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-        $this->assertNotNull($folder->getId());
-        $this->assertNotNull($folder->getName());
-        $this->assertNotNull($folder->getUrl());
-        $this->assertNotNull($folder->getUuid());
-        $this->assertNull($folder->getParentId());
-    }
-
-    /**
-     * @test
-     * @dataProvider findFolderProvider
-     * @param integer $folderId
-     * @param array   $data
-     * @group refactor
-     */
-    public function findFolderShouldReturnCorrectFolder($folderId, array $data)
-    {
-        $this->setUpSimpleDataSet();
-
-        $folder = $this->backend->findFolder($folderId);
-
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-        $this->assertNotNull($folder->getId());
-        $this->assertNotNull($folder->getName());
-        $this->assertNotNull($folder->getUrl());
-        $this->assertNotNull($folder->getUuid());
-
-        $this->assertEquals($folderId, $folder->getId());
-        $this->assertEquals($data['name'], $folder->getName());
-    }
-
-    /**
-     * @test
-     * @dataProvider nonExistingFolderIdProvider
-     * @param mixed $folderId
-     */
-    public function findFolderShouldReturnFalseWhenTryingToFindNonExistingFolder(
-        $folderId
-    ) {
-        $this->setUpEmptyDataSet();
-
-        $this->assertFalse($this->backend->findFolder($folderId));
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidFolderIdProvider
-     * @param mixed  $folderId
-     * @param string $validType
-     */
-    public function findFolderThrowsExceptionWhenTryingToFindFolderWithInvalidIdentifier(
-        $folderId, $validType
-    ) {
-        $this->setUpEmptyDataSet();
-
-        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
-
-        $this->backend->findFolder($folderId);
-    }
-
-    /**
-     * @test
      * @dataProvider parentFolderIdProvider
      * @param mixed $parentFolderId
      */
@@ -390,30 +216,6 @@ use Xi\Filelib\Folder\Folder;
         $this->assertNotNull($this->backend->createFolder($folder)->getId());
     }
 
-    /**
-     * @test
-     * @dataProvider notFoundFolderIdProvider
-     * @param mixed $folderId
-     */
-    public function createFolderThrowsExceptionWhenGivenParentFolderIdIsNotFound(
-        $folderId
-    ) {
-        $this->setUpEmptyDataSet();
-
-        $data = array(
-            'parent_id' => $folderId,
-            'name'      => 'lusander',
-            'url'       => 'lussuttaja/tussin/lusander',
-            'uuid'      => 'sika-f-uuid'
-        );
-
-        $this->setExpectedException(
-            'Xi\Filelib\Exception\FolderNotFoundException',
-            sprintf('Parent folder was not found with id "%s"', $folderId)
-        );
-
-        $this->backend->createFolder(Folder::create($data));
-    }
 
     /**
      * @test
@@ -432,39 +234,9 @@ use Xi\Filelib\Folder\Folder;
 
         $folder = Folder::create($data);
 
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $this->backend->findFolder($folderId));
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $this->findFolder($folderId));
         $this->assertTrue($this->backend->deleteFolder($folder));
-        $this->assertFalse($this->backend->findFolder($folderId));
-    }
-
-    /**
-     * @test
-     * @dataProvider folderIdWithFilesProvider
-     * @param mixed $folderId
-     *
-     * TODO: Is this actually what we want? How should one actually delete a
-     *       folder with all files?
-     */
-    public function deleteFolderThrowsExceptionWhenDeletingFolderWithFiles(
-        $folderId
-    ) {
-        $this->setUpSimpleDataSet();
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'name'      => 'klus',
-        ));
-
-
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $this->backend->findFolder($folderId));
-
-        $this->setExpectedException(
-            'Xi\Filelib\Exception\FolderNotEmptyException',
-            'Can not delete folder with files'
-        );
-
-        $this->backend->deleteFolder($folder);
+        $this->assertNull($this->findFolder($folderId));
     }
 
     /**
@@ -506,7 +278,7 @@ use Xi\Filelib\Folder\Folder;
             'uuid'      => 'uuid-f-' . $folderId,
         ));
 
-        $this->assertEquals($data, $this->backend->findFolder($folderId));
+        $this->assertEquals($data, $this->findFolder($folderId));
 
         $updateData = array(
             'id'        => $folderId,
@@ -518,7 +290,7 @@ use Xi\Filelib\Folder\Folder;
         $folder = Folder::create($updateData);
 
         $this->assertTrue($this->backend->updateFolder($folder));
-        $this->assertEquals($folder, $this->backend->findFolder($folderId));
+        $this->assertEquals($folder, $this->findFolder($folderId));
     }
 
     /**
@@ -540,7 +312,7 @@ use Xi\Filelib\Folder\Folder;
         ));
 
         $this->assertTrue($this->backend->updateFolder($folder));
-        $this->assertEquals($folder, $this->backend->findFolder($folderId));
+        $this->assertEquals($folder, $this->findFolder($folderId));
     }
 
     /**
@@ -560,129 +332,6 @@ use Xi\Filelib\Folder\Folder;
     }
 
     /**
-     * @test
-     * @dataProvider invalidFolderIdProvider
-     * @param mixed  $folderId
-     * @param string $validType
-     */
-    public function updateFolderThrowsExceptionWhenUpdatingFolderWithInvalidIdentifier(
-        $folderId, $validType
-    ) {
-        $this->setUpEmptyDataSet();
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => 'xoo',
-            'url'       => '',
-            'name'      => '',
-            'uuid'      => 'sika-uuid',
-        ));
-
-        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
-
-        $this->backend->updateFolder($folder);
-    }
-
-    /**
-     * @test
-     * @dataProvider subFolderProvider
-     * @param mixed   $folderId
-     * @param integer $subFoldersCount
-     * @group refactorx
-     */
-    public function findSubFoldersShouldReturnArrayOfSubFolders($folderId,
-        $subFoldersCount
-    ) {
-        $this->setUpSimpleDataSet();
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $ret = $this->backend->findSubFolders($folder);
-
-        $this->assertInternalType('array', $ret);
-        $this->assertCount($subFoldersCount, $ret);
-
-        foreach ($ret as $f) {
-            $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $f);
-        }
-
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidFolderIdProvider
-     * @param mixed  $folderId
-     * @param string $validType
-     */
-    public function findSubFoldersThrowsExceptionForFolderWithInvalidIdentifier(
-        $folderId, $validType
-    ) {
-        $this->setUpEmptyDataSet();
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
-
-        $this->backend->findSubFolders($folder);
-    }
-
-    /**
-     * @test
-     * @dataProvider folderByUrlProvider
-     * @param string $folderUrl
-     * @param mixed  $folderId
-     * @group refactorxx
-     */
-    public function findFolderByUrlShouldReturnFolder($folderUrl, $folderId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $ret = $this->backend->findFolderByUrl($folderUrl);
-
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $ret);
-        $this->assertEquals($folderId, $ret->getId());
-    }
-
-    /**
-     * @test
-     */
-    public function findFolderByUrlShouldNotReturnNonExistingFolder()
-    {
-        $this->setUpEmptyDataSet();
-
-        $this->assertFalse(
-            $this->backend->findFolderByUrl('lussuttaja/tussinnnnn')
-        );
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidFolderUrlProvider
-     * @param mixed $url
-     */
-    public function findFolderByUrlShouldThrowExceptionIfUrlIsNotAString($url)
-    {
-        $this->setUpEmptyDataSet();
-
-        $this->setExpectedException(
-            'Xi\Filelib\Exception\InvalidArgumentException',
-            sprintf('Folder URL must be a string, %s given', gettype($url))
-        );
-
-        $this->backend->findFolderByUrl($url);
-    }
-
-    /**
      * @return array
      */
     public function invalidFolderUrlProvider()
@@ -691,125 +340,6 @@ use Xi\Filelib\Folder\Folder;
             array(array()),
             array(new \stdClass()),
         );
-    }
-
-    /**
-     * @test
-     * @dataProvider findFilesInProvider
-     * @param mixed   $folderId
-     * @param integer $filesInFolder
-     * @group refactorxx
-     */
-    public function findFilesInShouldReturnArrayOfFiles($folderId,
-        $filesInFolder
-    ) {
-        $this->setUpSimpleDataSet();
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $ret = $this->backend->findFilesIn($folder);
-
-        $this->assertInternalType('array', $ret);
-        $this->assertCount($filesInFolder, $ret);
-
-        foreach ($ret as $f) {
-            $this->assertInstanceOf('Xi\Filelib\File\File', $f);
-        }
-
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidFolderIdProvider
-     * @param mixed  $folderId
-     * @param string $validType
-     */
-    public function findFilesInThrowsExceptionWithInvalidFolderIdentifier(
-        $folderId, $validType
-    ) {
-        $this->setUpEmptyDataSet();
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
-
-        $this->backend->findFilesIn($folder);
-    }
-
-    /**
-     * @test
-     * @dataProvider findFileProvider
-     * @param mixed $fileId
-     */
-    public function findFileShouldReturnFile($fileId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $ret = $this->backend->findFile($fileId);
-
-        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-        $this->assertInternalType('array', $ret->getVersions());
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret->getResource());
-        $this->assertInstanceOf('DateTime', $ret->getDateCreated());
-    }
-
-    /**
-     * @test
-     * @dataProvider findFileProvider
-     * @param mixed $fileId
-     */
-    public function findFileReturnsFalseIfFileIsNotFound($fileId)
-    {
-        $this->setUpEmptyDataSet();
-
-        $this->assertFalse($this->backend->findFile($fileId));
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidFileIdProvider
-     * @param mixed  $fileId
-     * @param string $validType
-     */
-    public function findFileThrowsExceptionWithInvalidIdentifier($fileId,
-        $validType
-    ) {
-        $this->setUpEmptyDataSet();
-
-        $this->expectInvalidArgumentExceptionForInvalidFileId($fileId, $validType);
-
-        $this->backend->findFile($fileId);
-    }
-
-    /**
-     * @test
-     */
-    public function findAllFilesShouldReturnAllFiles()
-    {
-        $this->setUpSimpleDataSet();
-
-        $rets = $this->backend->findAllFiles();
-
-        $this->assertInternalType('array', $rets);
-        $this->assertCount(5, $rets);
-
-        foreach ($rets as $ret) {
-
-            $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-            $this->assertInternalType('array', $ret->getVersions());
-            $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret->getResource());
-            $this->assertInstanceOf('DateTime', $ret->getDateCreated());
-        }
     }
 
     /**
@@ -831,48 +361,16 @@ use Xi\Filelib\Folder\Folder;
             'date_created' => new DateTime('2011-01-02 16:16:16'),
             'status'        => 666,
             'uuid'          => 'uuid-535',
-            'resource'      => $this->backend->findResource($resourceId),
+            'resource'      => $this->findResource($resourceId),
             'versions'      => array('lussi', 'watussi', 'klussi'),
         );
         $file = File::create($data);
 
         $this->assertTrue($this->backend->updateFile($file));
 
-        $updated = $this->backend->findFile($fileId);
+        $updated = $this->findFile($fileId);
 
         $this->assertEquals($file, $updated);
-    }
-
-    /**
-     * @test
-     * @dataProvider notFoundFolderIdProvider
-     * @param mixed $folderId
-     */
-    public function updateFileThrowsExceptionWithNotFoundFolder($folderId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $updated = array(
-            'id'            => 1,
-            'folder_id'     => $folderId,
-            'profile'       => 'lussed',
-            'name'          => 'tohtori-sykero.png',
-            'link'          => 'tohtori-sykero.png',
-            'date_created' => new DateTime('2011-01-02 16:16:16'),
-            'status'        => 4,
-            'uuid'          => 'uuid-1',
-            'resource'      => Resource::create(array('id' => 1, 'hash' => 'hash-1', 'date_created' => new DateTime('1978-03-21 06:06:06'))),
-            'versions'      => array(),
-        );
-
-        $file = File::create($updated);
-
-        $this->setExpectedException(
-            'Xi\Filelib\Exception\FolderNotFoundException',
-            sprintf('Folder was not found with id "%s"', $folderId)
-        );
-
-        $this->backend->updateFile($file);
     }
 
     /**
@@ -887,25 +385,7 @@ use Xi\Filelib\Folder\Folder;
         $file = File::create(array('id' => $fileId));
 
         $this->assertTrue($this->backend->deleteFile($file));
-        $this->assertFalse($this->backend->findFile($fileId));
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidFileIdProvider
-     * @param mixed  $fileId
-     * @param string $validType
-     */
-    public function deleteFileThrowsExceptionWithInvalidIdentifier($fileId,
-        $validType
-    ) {
-        $this->setUpEmptyDataSet();
-
-        $file = File::create(array('id' => $fileId));
-
-        $this->expectInvalidArgumentExceptionForInvalidFileId($fileId, $validType);
-
-        $this->backend->deleteFile($file);
+        $this->assertNull($this->findFile($fileId));
     }
 
     /**
@@ -927,7 +407,7 @@ use Xi\Filelib\Folder\Folder;
      * @dataProvider folderIdProvider
      * @param mixed $folderId
      */
-    public function fileUploadShouldUploadFile($folderId)
+    public function fileCreateShouldCreateFile($folderId)
     {
         $this->setUpSimpleDataSet();
 
@@ -952,7 +432,7 @@ use Xi\Filelib\Folder\Folder;
         $file = File::create($fidata);
         $folder = Folder::create($fodata);
 
-        $file = $this->backend->upload($file, $folder);
+        $file = $this->backend->createFile($file, $folder);
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
         $this->assertNotNull($file->getId());
@@ -968,189 +448,6 @@ use Xi\Filelib\Folder\Folder;
     }
 
     /**
-     * @test
-     * @dataProvider notFoundFolderIdProvider
-     * @param mixed $folderId
-     */
-    public function fileUploadThrowsExceptionWithNotFoundFolder($folderId)
-    {
-        $this->setUpEmptyDataSet();
-
-        $file = File::create(array(
-            'profile'       => 'versioned',
-            'name'          => 'tohtori-tussi.png',
-            'link'          => 'tohtori-tussi.png',
-            'date_created'  => new DateTime('2011-01-01 16:16:16'),
-            'status'        => 3,
-            'uuid'          => 'uuid-lussid',
-            'resource'      => Resource::create(array('id' => 1)),
-            'versions'      => array(),
-        ));
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $this->setExpectedException(
-            'Xi\Filelib\Exception\FolderNotFoundException',
-            sprintf('Folder was not found with id "%s"', $folderId)
-        );
-
-        $this->backend->upload($file, $folder);
-    }
-
-    /**
-     * @test
-     * @dataProvider folderIdProvider
-     * @param mixed $folderId
-     */
-    public function fileUploadShouldThrowExceptionWithAlreadyExistingFile(
-        $folderId
-    ) {
-        $this->setUpSimpleDataSet();
-
-        $file = File::create(array(
-            'profile'       => 'versioned',
-            'name'          => 'tohtori-vesala.png',
-            'link'          => 'tohtori-vesala.png',
-            'date_created'  => new DateTime('2011-01-01 16:16:16'),
-            'status'        => 4,
-            'uuid'          => 'uuid-lussid',
-            'resource'      => Resource::create(array('id' => 1)),
-            'versions'      => array('na-na-naa-naa'),
-        ));
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => 'root',
-        ));
-
-        $this->setExpectedException(
-            'Xi\Filelib\Exception\NonUniqueFileException',
-            sprintf(
-                'A file with the name "%s" already exists in folder "%s"',
-                'tohtori-vesala.png',
-                'root'
-            )
-        );
-
-        $this->backend->upload($file, $folder);
-    }
-
-    /**
-     * @test
-     * @dataProvider findFileByFilenameProvider
-     * @param mixed $fileId
-     * @param mixed $folderId
-     */
-    public function findFileByFilenameShouldReturnCorrectFile($fileId, $folderId, $resourceId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $fidata = array(
-            'profile'       => 'versioned',
-            'name'          => 'tohtori-vesala.png',
-            'link'          => 'tohtori-vesala.png',
-            'date_created' => new DateTime('2011-01-01 16:16:16'),
-            'id'            => $fileId,
-            'folder_id'     => $folderId,
-            'status'        => 1,
-            'uuid'          => 'uuid-1',
-            'resource'   => Resource::create(array('id' => $resourceId)),
-       );
-
-        $fodata = array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        );
-
-        $folder = Folder::create($fodata);
-
-        $file = $this->backend->findFileByFileName($folder, 'tohtori-vesala.png');
-
-        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-
-        $this->assertEquals($folder->getId(), $file->getFolderId());
-        $this->assertEquals($fidata['name'], $file->getName());
-
-    }
-
-    /**
-     * @test
-     * @dataProvider folderIdProvider
-     * @param mixed $folderId
-     */
-    public function findFileByFilenameShouldNotFindNonExistingFile($folderId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $this->assertFalse(
-            $this->backend->findFileByFileName($folder, 'tohtori-tussi.png')
-        );
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidFolderIdProvider
-     * @param mixed  $folderId
-     * @param string $validType
-     */
-    public function findFileByFileNameThrowsExceptionWithInvalidFolderIdentifier(
-        $folderId, $validType
-    ) {
-        $this->setUpEmptyDataSet();
-
-        $folder = Folder::create(array(
-            'id'        => $folderId,
-            'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
-        ));
-
-        $this->expectInvalidArgumentExceptionForInvalidFolderId($folderId, $validType);
-
-        $this->backend->findFileByFileName($folder, 'tohtori-tussi.png');
-    }
-
-     /**
-     * @param mixed  $fileId
-     * @param string $validType
-     */
-    private function expectInvalidArgumentExceptionForInvalidFileId($fileId,
-        $validType
-    ) {
-        $this->setExpectedException(
-            'Xi\Filelib\Exception\InvalidArgumentException'
-        );
-    }
-
-    /**
-     * @param mixed  $folderId
-     * @param string $validType
-     */
-    private function expectInvalidArgumentExceptionForInvalidFolderId($folderId,
-        $validType
-    ) {
-        $this->setExpectedException(
-            'Xi\Filelib\Exception\InvalidArgumentException'
-        );
-    }
-
-    /**
      * @return PHPUnit_Framework_MockObject_MockObject
      */
     protected function getMockAndDisableOriginalConstructor($className)
@@ -1161,4 +458,24 @@ use Xi\Filelib\Folder\Folder;
     }
 
 
-}
+
+    public function findResource($id)
+    {
+        $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\Resource');
+        return $ret->current();
+    }
+
+     public function findFile($id)
+     {
+         $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\File');
+         return $ret->current();
+     }
+
+     public function findFolder($id)
+     {
+         $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\Folder\Folder');
+         return $ret->current();
+     }
+
+
+ }

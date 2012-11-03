@@ -14,6 +14,7 @@ use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\IdentityMap\Identifiable;
 use ArrayIterator;
 
 /**
@@ -29,23 +30,24 @@ interface Platform
      */
     public function getNumberOfReferences(Resource $resource);
 
-    /**
-     * @param ArrayIterator $iter
-     * @return ArrayIterator
-     */
-    public function exportResources(ArrayIterator $iter);
 
     /**
      * @param ArrayIterator $iter
      * @return ArrayIterator
      */
-    public function exportFiles(ArrayIterator $iter);
+    // public function exportResources(ArrayIterator $iter);
 
     /**
      * @param ArrayIterator $iter
      * @return ArrayIterator
      */
-    public function exportFolders(ArrayIterator $iter);
+    // public function exportFiles(ArrayIterator $iter);
+
+    /**
+     * @param ArrayIterator $iter
+     * @return ArrayIterator
+     */
+    // public function exportFolders(ArrayIterator $iter);
 
     /**
      * @param Finder $finder
@@ -53,51 +55,7 @@ interface Platform
      */
     public function findByFinder(Finder $finder);
 
-    public function findResourcesByIds(array $ids);
-
-    public function findFilesByIds(array $ids);
-
-    public function findFoldersByIds(array $ids);
-
-
-    /**
-     * Finds folder
-     *
-     * @param  mixed       $id
-     * @return Folder|false False if folder is not found.
-     */
-    public function findFolder($id);
-
-    /**
-     * Finds subfolders of a folder
-     *
-     * @param  Folder $folder
-     * @return array Array of folders
-     */
-    public function findSubFolders(Folder $folder);
-
-    /**
-     * Finds all files
-     *
-     * @return array Array of files
-     */
-    public function findAllFiles();
-
-    /**
-     * Finds a file
-     *
-     * @param  mixed       $id
-     * @return File|false False if file is not found.
-     */
-    public function findFile($id);
-
-    /**
-     * Finds files in a folder
-     *
-     * @param  Folder $folder
-     * @return array Array of files
-     */
-    public function findFilesIn(Folder $folder);
+    public function findByIds(array $ids, $className);
 
     /**
      * Creates a file
@@ -154,45 +112,6 @@ interface Platform
      */
     public function updateFile(File $file);
 
-    /**
-     * Returns the root folder. Creates it if it does not exist.
-     *
-     * @return Folder
-     */
-    public function findRootFolder();
-
-    /**
-     * Finds folder by url
-     *
-     * @param  string      $url
-     * @return Folder|false False if folder was not found.
-     */
-    public function findFolderByUrl($url);
-
-    /**
-     * Finds file in a folder by filename
-     *
-     * @param  Folder $folder
-     * @param  string $filename
-     * @return File
-     */
-    public function findFileByFilename(Folder $folder, $filename);
-
-    /**
-     * Finds resource by id
-     *
-     * @param mixed $id
-     * @return Resource
-     */
-    public function findResource($id);
-
-    /**
-     * Finds resources by hash
-     *
-     * @param string $hash
-     * @return array Array of Resources
-     */
-    public function findResourcesByHash($hash);
 
     /**
      * Creates a resource
@@ -218,9 +137,14 @@ interface Platform
      */
     public function updateResource(Resource $resource);
 
+    public function assertValidIdentifier(Identifiable $object);
 
-    public function assertValidIdentifier($object);
-
-
+    /**
+     * Generates and returns an UUID
+     *
+     * @abstract
+     * @return string
+     */
+    public function generateUuid();
 
 }

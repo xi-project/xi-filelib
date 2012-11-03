@@ -44,8 +44,7 @@ class MongoPlatformTest extends AbstractPlatformTestCase
         // TODO: Fix hard coded db name.
         $this->mongo = $mongo->filelib_tests;
 
-        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        return new MongoPlatform($ed, $this->mongo);
+        return new MongoPlatform($this->mongo);
     }
 
     protected function tearDown()

@@ -14,6 +14,8 @@ use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Exception\NonUniqueFileException;
 
+use Xi\Filelib\IdentityMap\Identifiable;
+
 use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
@@ -24,7 +26,6 @@ use MongoId;
 use MongoDate;
 use MongoCursorException;
 use DateTime;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use ArrayIterator;
 
 /**
@@ -48,15 +49,19 @@ class MongoPlatform extends AbstractPlatform implements Platform
         'hash' => 'hash',
     );
 
+    private $classNameToResources = array(
+        'Xi\Filelib\File\Resource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
+        'Xi\Filelib\File\File' => array('collection' => 'files', 'exporter' => 'exportFiles'),
+        'Xi\Filelib\Folder\Folder' => array('collection' => 'folders', 'exporter' => 'exportFolders'),
+    );
+
 
     /**
-     * @param  EventDispatcherInterface $eventDispatcher
      * @param  MongoDB      $mongo
      * @return MongoPlatform
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, MongoDB $mongo)
+    public function __construct(MongoDB $mongo)
     {
-        parent::__construct($eventDispatcher);
         $this->setMongo($mongo);
     }
 
@@ -80,58 +85,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return $this->mongo;
     }
 
-    /**
-     * @see AbstractPlatform::doFindFolder
-     */
-    protected function doFindFolder($id)
-    {
-        return $this->getMongo()->folders->findOne(array(
-            '_id' => new MongoId($id),
-        ));
-    }
-
-    /**
-     * @see AbstractPlatform::doFindSubFolders
-     */
-    protected function doFindSubFolders($id)
-    {
-        return iterator_to_array($this->getMongo()->folders->find(array(
-            'parent_id' => $id,
-        )));
-    }
-
-    /**
-     * @see AbstractPlatform::doFindAllFiles
-     */
-    protected function doFindAllFiles()
-    {
-        return iterator_to_array($this->getMongo()->files->find());
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFile
-     */
-    protected function doFindFile($id)
-    {
-        return $this->getMongo()->files->findOne(array(
-            '_id' => new MongoId($id),
-        ));
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFiles
-     */
-    protected function doFindFilesIn($id)
-    {
-        return iterator_to_array($this->getMongo()->files->find(array(
-            'folder_id' => $id,
-        )));
-    }
-
-    /**
-     * @see AbstractPlatform::doUpload
-     */
-    protected function doUpload(File $file, Folder $folder)
+    public function createFile(File $file, Folder $folder)
     {
         $document = array(
             'folder_id'     => $folder->getId(),
@@ -163,10 +117,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return $file;
     }
 
-    /**
-     * @see AbstractPlatform::doCreateFolder
-     */
-    protected function doCreateFolder(Folder $folder)
+    public function createFolder(Folder $folder)
     {
         $document = $folder->toArray();
 
@@ -179,10 +130,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return $folder;
     }
 
-    /**
-     * @see AbstractPlatform::doDeleteFolder
-     */
-    protected function doDeleteFolder(Folder $folder)
+    public function deleteFolder(Folder $folder)
     {
         $ret = $this->getMongo()->folders->remove(array(
             '_id' => new MongoId($folder->getId()),
@@ -191,10 +139,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return (boolean) $ret['n'];
     }
 
-    /**
-     * @see AbstractPlatform::doDeleteFile
-     */
-    protected function doDeleteFile(File $file)
+    public function deleteFile(File $file)
     {
         $ret = $this->getMongo()->files->remove(array(
             '_id' => new MongoId($file->getId()),
@@ -203,10 +148,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return (bool) $ret['n'];
     }
 
-    /**
-     * @see AbstractPlatform::doUpdateFolder
-     */
-    protected function doUpdateFolder(Folder $folder)
+    public function updateFolder(Folder $folder)
     {
         $document = $folder->toArray();
 
@@ -219,11 +161,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return (bool) $ret['n'];
     }
 
-
-    /**
-     * @see AbstractPlatform::doUpdateResource
-     */
-    protected function doUpdateResource(Resource $resource)
+    public function updateResource(Resource $resource)
     {
         $document = $resource->toArray();
 
@@ -239,12 +177,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return (bool) $ret['n'];
     }
 
-
-
-    /**
-     * @see AbstractPlatform::doUpdateFile
-     */
-    protected function doUpdateFile(File $file)
+    public function updateFile(File $file)
     {
         $document = $file->toArray();
 
@@ -262,48 +195,6 @@ class MongoPlatform extends AbstractPlatform implements Platform
         ), $document, array('safe' => true));
 
         return (bool) $ret['n'];
-    }
-
-    /**
-     * @see AbstractPlatform::doFindRootFolder
-     */
-    protected function doFindRootFolder()
-    {
-        $mongo = $this->getMongo();
-
-        $folder = $mongo->folders->findOne(array('parent_id' => null));
-
-        if (!$folder) {
-            $folder = array(
-                'parent_id' => null,
-                'name'      => 'root',
-                'url'       => '',
-                'uuid'      => $this->generateUuid(),
-            );
-
-            $mongo->folders->save($folder);
-        }
-
-        return $folder;
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFolderByUrl
-     */
-    protected function doFindFolderByUrl($url)
-    {
-        return $this->getMongo()->folders->findOne(array('url' => $url));
-    }
-
-    /**
-     * @see AbstractPlatform::doFindByFilename
-     */
-    protected function doFindFileByFilename(Folder $folder, $filename)
-    {
-        return $this->getMongo()->files->findOne(array(
-            'folder_id' => $folder->getId(),
-            'name'      => $filename,
-        ));
     }
 
     /**
@@ -334,6 +225,9 @@ class MongoPlatform extends AbstractPlatform implements Platform
         $date = new DateTime();
 
         foreach ($iter as $file) {
+
+            $resource = $this->findByIds(array($file['resource_id']), 'Xi\Filelib\File\Resource')->current();
+
             $ret->append(File::create(array(
                 'id'            => (string) $file['_id'],
                 'folder_id'     => isset($file['folder_id']) ? $file['folder_id'] : null,
@@ -343,7 +237,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
                 'status'        => $file['status'],
                 'date_created'  => DateTime::createFromFormat('U', $file['date_created']->sec)->setTimezone($date->getTimezone()),
                 'uuid'          => $file['uuid'],
-                'resource'      => $this->exportResource($this->doFindResource($file['resource_id'])),
+                'resource'      => $resource,
                 'versions'      => $file['versions'],
             )));
         }
@@ -353,34 +247,12 @@ class MongoPlatform extends AbstractPlatform implements Platform
     /**
      * @see AbstractPlatform::isValidIdentifier
      */
-    protected function isValidIdentifier($id)
+    public function isValidIdentifier($id)
     {
         return is_string($id);
     }
 
-    /**
-     * @see AbstractPlatform::doFindResource
-     */
-    protected function doFindResource($id)
-    {
-        $ret = $this->findResourcesByIds(array($id));
-        return $ret->getNext();
-    }
-
-    /**
-     * @see AbstractPlatform::doFindResourcesByHash
-     */
-    protected function doFindResourcesByHash($hash)
-    {
-        return iterator_to_array($this->getMongo()->resources->find(array(
-            'hash' => $hash,
-        )));
-    }
-
-    /**
-     * @see AbstractPlatform::doCreateResource
-     */
-    protected function doCreateResource(Resource $resource)
+    public function createResource(Resource $resource)
     {
         $document = array(
             'hash' => $resource->getHash(),
@@ -403,10 +275,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return $resource;
     }
 
-    /**
-     * @see AbstractPlatform::doDeleteResource
-     */
-    protected function doDeleteResource(Resource $resource)
+    public function deleteResource(Resource $resource)
     {
         $ret = $this->getMongo()->resources->remove(array('_id' => new MongoId($resource->getId())), array('safe' => true));
         return (boolean) $ret['n'];
@@ -434,10 +303,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return $ret;
     }
 
-    /**
-     * @see AbstractPlatform::doGetNumberOfReferences
-     */
-    protected function doGetNumberOfReferences(Resource $resource)
+    public function getNumberOfReferences(Resource $resource)
     {
         $refs = $this->getMongo()->files->find(array(
             'resource_id' => $resource->getId(),
@@ -449,21 +315,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
 
     public function findResourcesByIds(array $ids) {
 
-        array_walk($ids, function(&$value) {
-           $value = new MongoId($value);
-        });
 
-        $ret = $this->getMongo()->resources->find(array(
-            '_id' => array('$in' => $ids),
-        ));
-
-        $iter = new ArrayIterator(array());
-
-        foreach($ret as $doc) {
-            $iter->append($doc);
-        }
-
-        return $this->exportResources($iter);
     }
 
     public function findFilesByFinder(FileFinder $finder)
@@ -505,5 +357,46 @@ class MongoPlatform extends AbstractPlatform implements Platform
 
         return $ret;
     }
+
+
+    public function findByFinder(Finder $finder)
+    {
+
+        return false;
+
+    }
+
+
+
+    public function assertValidIdentifier(Identifiable $identifiable)
+    {
+        return true;
+    }
+
+
+
+    public function findByIds(array $ids, $className)
+    {
+        $resources = $this->classNameToResources[$className];
+
+        array_walk($ids, function(&$value) {
+            $value = new MongoId($value);
+        });
+
+        $ret = $this->getMongo()->selectCollection($resources['collection'])->find(array(
+            '_id' => array('$in' => $ids),
+        ));
+
+        $iter = new ArrayIterator(array());
+
+        foreach($ret as $doc) {
+            $iter->append($doc);
+        }
+
+        $exporter = $resources['exporter'];
+        return $this->$exporter($iter);
+    }
+
+
 
 }
