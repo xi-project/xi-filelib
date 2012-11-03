@@ -9,17 +9,15 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\IdentityMap\IdentityMap;
 use Xi\Filelib\Backend\Platform\Platform;
-use Xi\Filelib\Backend\Finder\ResourceFinder;
+use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
-use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
+use Xi\Filelib\Exception\FilelibException;
 use Xi\Filelib\Exception\FolderNotFoundException;
 use Xi\Filelib\Exception\FolderNotEmptyException;
 use Xi\Filelib\Exception\ResourceReferencedException;
@@ -36,19 +34,9 @@ class Backend
     private $eventDispatcher;
 
     /**
-     * @var UuidGenerator
-     */
-    private $uuidGenerator;
-
-    /**
      * @var Platform
      */
     private $platform;
-
-    /**
-     * @var IdentityMap
-     */
-    private $identityMap;
 
     /**
      * @var IdentityMapHelper
@@ -58,20 +46,8 @@ class Backend
     public function __construct(EventDispatcherInterface $eventDispatcher, Platform $platform, IdentityMap $identityMap)
     {
         $this->platform = $platform;
-        $this->identityMap = $identityMap;
         $this->eventDispatcher = $eventDispatcher;
-
         $this->identityMapHelper = new IdentityMapHelper($identityMap, $platform);
-    }
-
-    /**
-     * Generates an UUID
-     *
-     * @return string
-     */
-    public function generateUuid()
-    {
-        return $this->getUuidGenerator()->v4();
     }
 
     /**
@@ -85,32 +61,11 @@ class Backend
     }
 
     /**
-     * @return UuidGenerator
-     */
-    public function getUuidGenerator()
-    {
-        if (!$this->uuidGenerator) {
-            $this->uuidGenerator = new PHPUuidGenerator();
-        }
-        return $this->uuidGenerator;
-    }
-
-
-
-    /**
      * @return Platform
      */
     public function getPlatform()
     {
         return $this->platform;
-    }
-
-    /**
-     * @return IdentityMap
-     */
-    public function getIdentityMap()
-    {
-        return $this->identityMap;
     }
 
     /**
@@ -121,66 +76,40 @@ class Backend
         return $this->identityMapHelper;
     }
 
-
     /**
-     * Finds folder
+     * Finds objects via finder
      *
-     * @param  mixed       $id
-     * @return Folder|false False if folder is not found.
+     * @param Finder $finder
+     * @return ArrayIterator
      */
-    public function findFolder($id)
+    public function findByFinder(Finder $finder)
     {
-        return $this->getIdentityMapHelper()->tryOneFromIdentityMap($id, 'Xi\Filelib\Folder\Folder', function(Platform $platform, $id) {
-            return $platform->findFoldersByIds(array($id));
-        });
+        $resultClass = $finder->getResultClass();
+        return $this->getIdentityMapHelper()->tryManyFromIdentityMap(
+            $this->getPlatform()->findByFinder($finder),
+            $finder->getResultClass(),
+            function(Platform $platform, $ids) use ($resultClass) {
+                return $platform->findByIds($ids, $resultClass);
+            }
+        );
     }
 
     /**
-     * Finds subfolders of a folder
+     * Finds an object via id and class
      *
-     * @param  Folder $folder
-     * @return array Array of folders
+     * @param mixed $id
+     * @param string $className
+     * @return Identifiable
      */
-    public function findSubFolders(Folder $folder)
+    public function findById($id, $className)
     {
-        $ret = $this->getPlatform()->findByFinder(new FolderFinder(array('parent_id' => $folder->g)));
-        return $this->getPlatform()->exportFolders($ret);
-    }
-
-    /**
-     * Finds all files
-     *
-     * @return array Array of files
-     */
-    public function findAllFiles()
-    {
-        $ret = $this->getPlatform()->findByFinder(new FileFinder(array()));
-        return $this->getPlatform()->exportFiles($ret);
-    }
-
-    /**
-     * Finds a file
-     *
-     * @param  mixed       $id
-     * @return File|false False if file is not found.
-     */
-    public function findFile($id)
-    {
-        return $this->getIdentityMapHelper()->tryOneFromIdentityMap($id, 'Xi\Filelib\File\File', function(Platform $platform, $id) {
-            return $platform->findFilesByIds(array($id));
-        });
-    }
-
-    /**
-     * Finds files in a folder
-     *
-     * @param  Folder $folder
-     * @return array Array of files
-     */
-    public function findFilesIn(Folder $folder)
-    {
-        $ret = $this->getPlatform()->findByFinder(new FileFinder(array('folder_id' => $folder->getId())));
-        return $this->getPlatform()->exportFile($ret)->current();
+        return $this->getIdentityMapHelper()->tryOneFromIdentityMap(
+            $id,
+            $className,
+            function(Platform $platform, $id) use ($className) {
+                return $platform->findByIds(array($id), $className);
+            }
+        );
     }
 
     /**
@@ -207,7 +136,7 @@ class Backend
      */
     public function createFolder(Folder $folder)
     {
-        if (!$this->findFolder($folder->getParentId())) {
+        if (!$this->findById($folder->getParentId(), 'Xi\Filelib\Folder\Folder')) {
             throw new FolderNotFoundException(sprintf('Parent folder was not found with id "%s"', $folder->getParentId()));
         }
 
@@ -225,7 +154,7 @@ class Backend
      */
     public function deleteFolder(Folder $folder)
     {
-        if ($this->findFilesIn($folder)->count()) {
+        if ($this->findByFinder(new FileFinder(array('folder_id' => $folder->getId())))->count()) {
             throw new FolderNotEmptyException('Can not delete folder with files');
         }
 
@@ -271,85 +200,11 @@ class Backend
     public function updateFile(File $file)
     {
         $this->getPlatform()->assertValidIdentifier($file);
-        if (!$this->findFolder($file->getFolderId())) {
+        if (!$this->findById($file->getFolderId(), 'Xi\Filelib\Folder\Folder')) {
             throw new FolderNotFoundException(sprintf('Folder was not found with id "%s"', $file->getFolderId()));
         }
         $this->updateResource($file->getResource());
         return $this->getPlatform()->updateFile($file);
-    }
-
-    /**
-     * Returns the root folder. Creates it if it does not exist.
-     *
-     * @return Folder
-     */
-    public function findRootFolder()
-    {
-        return $this->getPlatform()->findRootFolder();
-    }
-
-    /**
-     * Finds folder by url
-     *
-     * @param  string      $url
-     * @return Folder|false False if folder was not found.
-     */
-    public function findFolderByUrl($url)
-    {
-        return $this->getPlatform()->findFolderByUrl($url);
-    }
-
-    /**
-     * Finds file in a folder by filename
-     *
-     * @param  Folder $folder
-     * @param  string $filename
-     * @return File
-     */
-    public function findFileByFilename(Folder $folder, $filename)
-    {
-        return $this->getIdentityMapHelper()->tryManyFromIdentityMap(
-            $this->getPlatform()->findByFinder(new ResourceFinder(array('hash' => $hash))),
-            'Xi\Filelib\File\Resource',
-            function(Platform $platform, array $ids) {
-                return $platform->findResourcesByIds($ids);
-            }
-        );
-
-        return $this->getPlatform()->findFileByFilename($folder, $filename);
-    }
-
-
-
-
-    /**
-     * Finds resource by id
-     *
-     * @param mixed $id
-     * @return Resource
-     */
-    public function findResource($id)
-    {
-        return $this->getIdentityMapHelper()->tryOneFromIdentityMap($id, 'Xi\Filelib\File\Resource', function(Platform $platform, $id) {
-            return $platform->findResourcesByIds(array($id));
-        });
-    }
-
-    /**
-     * Finds resources by hash
-     *
-     * @param string $hash
-     * @return array Array of Resources
-     */
-    public function findResourcesByHash($hash)
-    {
-        return $this->getIdentityMapHelper()->tryManyFromIdentityMap(
-            $this->getPlatform()->findByFinder(new ResourceFinder(array('hash' => $hash))),
-            'Xi\Filelib\File\Resource',
-            function(Platform $platform, array $ids) {
-                return $platform->findResourcesByIds($ids);
-            }
-        );
     }
 
     /**

@@ -9,6 +9,11 @@ use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Tests\Filelib\TestCase;
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\Backend\Finder\ResourceFinder;
+use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\Backend\Finder\FolderFinder;
+
 use ArrayIterator;
 
 class BackendTest extends TestCase
@@ -67,34 +72,9 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function getIdentityMapShouldReturnIdentityMap()
-    {
-        $this->assertSame($this->im, $this->backend->getIdentityMap());
-    }
-
-    /**
-     * @test
-     */
     public function getPlatformShouldReturnPlatform()
     {
         $this->assertSame($this->platform, $this->backend->getPlatform());
-    }
-
-    /**
-     * @test
-     */
-    public function getUuidGeneratorShouldReturnCachedPhpUuidGenerator()
-    {
-        $ug = $this->backend->getUuidGenerator();
-        $this->assertInstanceOf('Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator', $this->backend->getUuidGenerator());
-    }
-
-    /**
-     * @test
-     */
-    public function generateUuidShouldGenerateUuid()
-    {
-        $this->assertRegexp("/^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/", $this->backend->generateUuid());
     }
 
     /**
@@ -135,12 +115,12 @@ class BackendTest extends TestCase
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->setMethods(array('findFolder', 'updateResource'))
+            ->setMethods(array('findById'))
             ->getMock();
 
         $this->platform->expects($this->once())->method('assertValidIdentifier')->with($file);
 
-        $backend->expects($this->once())->method('findFolder')->with($file->getFolderId())
+        $backend->expects($this->once())->method('findById')->with($file->getFolderId(), 'Xi\Filelib\Folder\Folder')
             ->will($this->returnValue(false));
 
         $backend->expects($this->never())->method('updateResource');
@@ -162,12 +142,12 @@ class BackendTest extends TestCase
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
                         ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-                        ->setMethods(array('findFolder', 'updateResource'))
+                        ->setMethods(array('findById', 'updateResource'))
                         ->getMock();
 
         $this->platform->expects($this->once())->method('assertValidIdentifier')->with($file);
 
-        $backend->expects($this->once())->method('findFolder')->with($file->getFolderId())
+        $backend->expects($this->once())->method('findById')->with($file->getFolderId(), 'Xi\Filelib\Folder\Folder')
                 ->will($this->returnValue($folder));
 
         $backend->expects($this->once())->method('updateResource')->with($resource);
@@ -175,102 +155,6 @@ class BackendTest extends TestCase
         $this->platform->expects($this->once())->method('updateFile')->with($file)->will($this->returnValue(true));
         $ret = $backend->updateFile($file);
         $this->assertTrue($ret);
-    }
-
-    /**
-     * @test
-     */
-    public function findResourceShouldTryIdentityMapAndExitEarlyWhenFound()
-    {
-        $obj = Resource::create(array('id' => 1));
-        $this->im->expects($this->once())->method('get')->with(1, 'Xi\Filelib\File\Resource')
-             ->will($this->returnValue($obj));
-        $this->platform->expects($this->never())->method('findResourcesByIds');
-        $this->im->expects($this->never())->method('addMany');
-
-        $ret = $this->backend->findResource(1);
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function findResourceShouldTryIdentityMapAndDelegateToPlatformWhenNotFound()
-    {
-        $obj = Resource::create(array('id' => 1));
-        $this->im->expects($this->once())->method('get')->with(1, 'Xi\Filelib\File\Resource')
-            ->will($this->returnValue(false));
-        $this->platform->expects($this->once())->method('findResourcesByIds')
-              ->with(array(1))->will($this->returnValue(new ArrayIterator(array($obj))));
-        $this->im->expects($this->once())->method('addMany')->with($this->isInstanceOf('ArrayIterator'));
-
-        $ret = $this->backend->findResource(1);
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
-
-    }
-
-    /**
-     * @test
-     */
-    public function findFileShouldTryIdentityMapAndExitEarlyWhenFound()
-    {
-        $obj = File::create(array('id' => 1));
-        $this->im->expects($this->once())->method('get')->with(1, 'Xi\Filelib\File\File')
-            ->will($this->returnValue($obj));
-        $this->platform->expects($this->never())->method('findFilesByIds');
-        $this->im->expects($this->never())->method('addMany');
-
-        $ret = $this->backend->findFile(1);
-        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function findFileShouldTryIdentityMapAndDelegateToPlatformWhenNotFound()
-    {
-        $obj = File::create(array('id' => 1));
-        $this->im->expects($this->once())->method('get')->with(1, 'Xi\Filelib\File\File')
-            ->will($this->returnValue(false));
-        $this->platform->expects($this->once())->method('findFilesByIds')
-            ->with(array(1))->will($this->returnValue(new ArrayIterator(array($obj))));
-        $this->im->expects($this->once())->method('addMany')->with($this->isInstanceOf('ArrayIterator'));
-
-        $ret = $this->backend->findFile(1);
-        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-
-    }
-
-    /**
-     * @test
-     */
-    public function findFolderShouldTryIdentityMapAndExitEarlyWhenFound()
-    {
-        $obj = Folder::create(array('id' => 1));
-        $this->im->expects($this->once())->method('get')->with(1, 'Xi\Filelib\Folder\Folder')
-            ->will($this->returnValue($obj));
-        $this->platform->expects($this->never())->method('findFoldersByIds');
-        $this->im->expects($this->never())->method('addMany');
-
-        $ret = $this->backend->findFolder(1);
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function findFolderShouldTryIdentityMapAndDelegateToPlatformWhenNotFound()
-    {
-        $obj = Folder::create(array('id' => 1));
-        $this->im->expects($this->once())->method('get')->with(1, 'Xi\Filelib\Folder\Folder')
-            ->will($this->returnValue(false));
-        $this->platform->expects($this->once())->method('findFoldersByIds')
-            ->with(array(1))->will($this->returnValue(new ArrayIterator(array($obj))));
-        $this->im->expects($this->once())->method('addMany')->with($this->isInstanceOf('ArrayIterator'));
-
-        $ret = $this->backend->findFolder(1);
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $ret);
-
     }
 
     /**
@@ -305,10 +189,10 @@ class BackendTest extends TestCase
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->setMethods(array('findFolder'))
+            ->setMethods(array('findById'))
             ->getMock();
 
-        $backend->expects($this->once())->method('findFolder')->with(66)->will($this->returnValue($parent));
+        $backend->expects($this->once())->method('findById')->with(66, 'Xi\Filelib\Folder\Folder')->will($this->returnValue($parent));
 
         $ret = $backend->createFolder($obj);
 
@@ -330,10 +214,10 @@ class BackendTest extends TestCase
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->setMethods(array('findFolder'))
+            ->setMethods(array('findById'))
             ->getMock();
 
-        $backend->expects($this->once())->method('findFolder')->with(66)->will($this->returnValue(false));
+        $backend->expects($this->once())->method('findById')->with(66, 'Xi\Filelib\Folder\Folder')->will($this->returnValue(false));
 
         $ret = $backend->createFolder($obj);
 
@@ -373,11 +257,19 @@ class BackendTest extends TestCase
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->setMethods(array('findFilesIn'))
+            ->setMethods(array('findByFinder'))
             ->getMock();
 
-        $backend->expects($this->once())->method('findFilesIn')->with($obj)
-                ->will($this->returnValue(new ArrayIterator(array())));
+        $self = $this;
+        $backend->expects($this->once())->method('findByFinder')->with($this->isInstanceOf('Xi\Filelib\Backend\Finder\FileFinder'))
+                ->will($this->returnCallback(function(FileFinder $finder) use ($self) {
+                    $expectedParams = array(
+                        'folder_id' => 1,
+                    );
+                    $self->assertEquals($expectedParams, $finder->getParameters());
+                    return new ArrayIterator(array());
+                }));
+
 
         $ret = $backend->deleteFolder($obj);
 
@@ -405,11 +297,18 @@ class BackendTest extends TestCase
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->setMethods(array('findFilesIn'))
+            ->setMethods(array('findByFinder'))
             ->getMock();
 
-        $backend->expects($this->once())->method('findFilesIn')->with($obj)
-            ->will($this->returnValue(new ArrayIterator($files)));
+        $self = $this;
+        $backend->expects($this->once())->method('findByFinder')->with($this->isInstanceOf('Xi\Filelib\Backend\Finder\FileFinder'))
+            ->will($this->returnCallback(function(FileFinder $finder) use ($self, $files) {
+            $expectedParams = array(
+                'folder_id' => 1,
+            );
+            $self->assertEquals($expectedParams, $finder->getParameters());
+            return new ArrayIterator($files);
+        }));
 
         $ret = $backend->deleteFolder($obj);
 
@@ -485,31 +384,101 @@ class BackendTest extends TestCase
 
     }
 
+    /**
+     * @return array
+     */
+    public function provideFinders()
+    {
+        return array(
+            array(new FileFinder()),
+            array(new FolderFinder()),
+            array(new ResourceFinder())
+        );
+    }
 
     /**
      * @test
+     * @dataProvider provideFinders
+     * @param Finder $finder
      */
-    public function findResourcesByHashShouldTryManyFromIdentityMap()
+    public function findByFinderShouldTryManyFromIdentityMapAndDelegateToPlatform(Finder $finder)
     {
         $this->platform->expects($this->once())->method('findByFinder')
-             ->with($this->isInstanceOf('Xi\Filelib\Backend\Finder\ResourceFinder'))
-             ->will($this->returnValue(array(1, 2, 3, 4, 5)));
+            ->with($finder)
+            ->will($this->returnValue(array(1, 2, 3, 4, 5)));
+
+        $this->platform->expects($this->once())->method('findByIds')
+            ->with(array(2, 4), $finder->getResultClass())
+            ->will($this->returnValue('lus'));
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
-                        ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-                        ->setMethods(array('getIdentityMapHelper'))
-                        ->getMock();
+            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
+            ->setMethods(array('getIdentityMapHelper'))
+            ->getMock();
 
         $helper = $this->getMockBuilder('Xi\Filelib\Backend\IdentityMapHelper')
-                       ->disableOriginalConstructor()->getMock();
+            ->disableOriginalConstructor()->getMock();
 
         $backend->expects($this->any())->method('getIdentityMapHelper')->will($this->returnValue($helper));
 
+        $platform = $this->platform;
         $helper->expects($this->once())->method('tryManyFromIdentityMap')
-               ->with(array(1, 2, 3, 4, 5), 'Xi\Filelib\File\Resource', $this->isInstanceOf('Closure'));
+            ->with(array(1, 2, 3, 4, 5), $finder->getResultClass(), $this->isInstanceOf('Closure'))
+            ->will($this->returnCallback(function($ids, $class, $callback) use ($platform) {
+            return $callback($platform, array(2, 4));
+        }));
 
-        $backend->findResourcesByHash('hashautus');
+        $ret = $backend->findByFinder($finder);
+
+        $this->assertEquals('lus', $ret);
 
     }
+
+    public function provideClassNames()
+    {
+        return array(
+            array('Xi\Filelib\File\File'),
+            array('Xi\Filelib\File\Resource'),
+            array('Xi\Filelib\Folder\Folder'),
+        );
+    }
+
+
+    /**
+     * @test
+     * @dataProvider provideClassNames
+     * @param string $className
+     */
+    public function findByIdShouldTryOneFromIdentityMapAndDelegateToPlatform($className)
+    {
+        $this->platform->expects($this->once())->method('findByIds')
+            ->with(array(1), $className)
+            ->will($this->returnValue('lus'));
+
+        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
+            ->setMethods(array('getIdentityMapHelper'))
+            ->getMock();
+
+        $helper = $this->getMockBuilder('Xi\Filelib\Backend\IdentityMapHelper')
+            ->disableOriginalConstructor()->getMock();
+
+        $backend->expects($this->any())->method('getIdentityMapHelper')->will($this->returnValue($helper));
+
+        $platform = $this->platform;
+        $helper->expects($this->once())->method('tryOneFromIdentityMap')
+            ->with(1, $className, $this->isInstanceOf('Closure'))
+            ->will($this->returnCallback(function($id, $className, $callback) use ($platform) {
+            return $callback($platform, $id, $className);
+        }));
+
+        $ret = $backend->findById(1, $className);
+
+        $this->assertEquals('lus', $ret);
+    }
+
+
+
+
 
 }
