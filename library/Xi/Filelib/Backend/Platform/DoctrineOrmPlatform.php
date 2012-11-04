@@ -17,7 +17,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\EntityNotFoundException;
 use PDOException;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\IdentityMap\Identifiable;
 
 /**
  * Doctrine 2 backend for filelib
@@ -63,9 +64,8 @@ class DoctrineOrmPlatform extends AbstractPlatform
      * @param  EntityManager    $em
      * @return DoctrineOrmPlatform
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, EntityManager $em)
+    public function __construct(EntityManager $em)
     {
-        parent::__construct($eventDispatcher);
         $this->setEntityManager($em);
     }
 
@@ -149,52 +149,11 @@ class DoctrineOrmPlatform extends AbstractPlatform
         return $this->resourceEntityName;
     }
 
-    /**
-     * @see AbstractPlatform::doFindFile
-     */
-    protected function doFindFile($id)
-    {
-        return $this->em->find($this->fileEntityName, $id);
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFileByFilename
-     */
-    public function doFindFileByFilename(Folder $folder, $filename)
-    {
-        return $this->em->getRepository($this->fileEntityName)->findOneBy(array(
-            'folder' => $folder->getId(),
-            'name'   => $filename,
-        ));
-    }
-
-    /**
-     * @see AbstractPlatform::doFindAllFiles
-     */
-    protected function doFindAllFiles()
-    {
-        $qb = $this->em->createQueryBuilder();
-        $qb->select('f')
-           ->from($this->fileEntityName, 'f')
-           ->orderBy('f.id', 'ASC');
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFilesIn
-     */
-    protected function doFindFilesIn($id)
-    {
-        return $this->em->getRepository($this->fileEntityName)->findBy(array(
-            'folder' => $id,
-        ));
-    }
 
     /**
      * @see AbstractPlatform::doUpdateFile
      */
-    protected function doUpdateFile(File $file)
+    public function updateFile(File $file)
     {
         $entity = $this->getFileReference($file);
         $entity->setFolder($this->getFolderReference($file->getFolderId()));
@@ -215,7 +174,7 @@ class DoctrineOrmPlatform extends AbstractPlatform
     /**
      * @see AbstractPlatform::doDeleteFile
      */
-    protected function doDeleteFile(File $file)
+    public function deleteFile(File $file)
     {
         if (!$entity = $this->em->find($this->fileEntityName, $file->getId())) {
             return false;
@@ -228,66 +187,9 @@ class DoctrineOrmPlatform extends AbstractPlatform
     }
 
     /**
-     * @see AbstractPlatform::doFindFolder
-     */
-    protected function dofindFolder($id)
-    {
-        return $this->em->find($this->folderEntityName, $id);
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFolderByUrl
-     */
-    protected function doFindFolderByUrl($url)
-    {
-        return $this->em->getRepository($this->folderEntityName)->findOneBy(array(
-            'url' => $url,
-        ));
-    }
-
-    /**
-     * @see AbstractPlatform::doFindRootFolder
-     */
-    protected function doFindRootFolder()
-    {
-        $qb = $this->em->createQueryBuilder();
-
-        $qb->select('f')
-           ->from($this->folderEntityName, 'f')
-           ->where('f.parent IS NULL');
-
-        try {
-            $folder = $qb->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
-            $className = $this->getFolderEntityName();
-
-            $folder = new $className();
-            $folder->setName('root');
-            $folder->setUrl('');
-            $folder->removeParent();
-            $folder->setUuid($this->generateUuid());
-
-            $this->em->persist($folder);
-            $this->em->flush();
-        }
-
-        return $folder;
-    }
-
-    /**
-     * @see AbstractPlatform::doFindSubFolders
-     */
-    protected function doFindSubFolders($id)
-    {
-        return $this->em->getRepository($this->folderEntityName)->findBy(array(
-            'parent' => $id,
-        ));
-    }
-
-    /**
      * @see AbstractPlatform::doCreateFolder
      */
-    protected function doCreateFolder(Folder $folder)
+    public function createFolder(Folder $folder)
     {
         $folderEntity = new $this->folderEntityName();
         $folderEntity->setParent($this->getFolderReference($folder->getParentId()));
@@ -306,7 +208,7 @@ class DoctrineOrmPlatform extends AbstractPlatform
     /**
      * @see AbstractPlatform::doUpdateFolder
      */
-    protected function doUpdateFolder(Folder $folder)
+    public function updateFolder(Folder $folder)
     {
         try {
             $folderRow = $this->getFolderReference($folder->getId());
@@ -334,7 +236,7 @@ class DoctrineOrmPlatform extends AbstractPlatform
     /**
      * @see AbstractPlatform::doUpdateResource
      */
-    protected function doUpdateResource(Resource $resource)
+    public function updateResource(Resource $resource)
     {
         try {
             $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
@@ -351,7 +253,7 @@ class DoctrineOrmPlatform extends AbstractPlatform
     /**
      * @see AbstractPlatform::doDeleteFolder
      */
-    protected function doDeleteFolder(Folder $folder)
+    public function deleteFolder(Folder $folder)
     {
         try {
             $folderEntity = $this->em->find($this->folderEntityName,
@@ -373,7 +275,7 @@ class DoctrineOrmPlatform extends AbstractPlatform
     /**
      * @see AbstractPlatform::doDeleteResource
      */
-    protected function doDeleteResource(Resource $resource)
+    public function deleteResource(Resource $resource)
     {
         try {
             $entity = $this->em->find($this->resourceEntityName, $resource->getId());
@@ -394,7 +296,7 @@ class DoctrineOrmPlatform extends AbstractPlatform
     /**
      * @see AbstractPlatform::doCreateResource
      */
-    protected function doCreateResource(Resource $resource)
+    public function createResource(Resource $resource)
     {
         $resourceRow = new $this->resourceEntityName();
         $resourceRow->setHash($resource->getHash());
@@ -409,27 +311,9 @@ class DoctrineOrmPlatform extends AbstractPlatform
     }
 
     /**
-     * @see AbstractPlatform::doFindResourcesByHash
-     */
-    public function doFindResourcesByHash($hash)
-    {
-        return $this->em->getRepository($this->resourceEntityName)->findBy(array(
-            'hash'   => $hash,
-        ));
-    }
-
-    /**
-     * @see AbstractPlatform::doFindResource
-     */
-    protected function dofindResource($id)
-    {
-        return $this->em->find($this->resourceEntityName, $id);
-    }
-
-    /**
      * @see AbstractPlatform::doUpload
      */
-    protected function doUpload(File $file, Folder $folder)
+    public function createFile(File $file, Folder $folder)
     {
         $self = $this;
 
@@ -517,7 +401,7 @@ class DoctrineOrmPlatform extends AbstractPlatform
     /**
      * @see AbstractPlatform::doGetNumberOfReferences
      */
-    public function doGetNumberOfReferences(Resource $resource)
+    public function getNumberOfReferences(Resource $resource)
     {
         return $this->em->getConnection()->fetchColumn("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
     }
@@ -542,11 +426,23 @@ class DoctrineOrmPlatform extends AbstractPlatform
         return $this->em->getReference($this->folderEntityName, $id);
     }
 
-    /**
-     * @see AbstractPlatform::isValidIdentifier
-     */
-    protected function isValidIdentifier($id)
+
+    public function findByFinder(Finder $finder)
     {
-        return is_numeric($id);
+        return false;
     }
+
+
+    public function assertValidIdentifier(Identifiable $identifiable)
+    {
+        return is_numeric($identifiable->getId());
+    }
+
+
+    public function findByIds(array $ids, $className)
+    {
+        return false;
+    }
+
+
 }

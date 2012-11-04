@@ -18,6 +18,11 @@ use Xi\Tests\PHPUnit\Extensions\Database\Operation\MySQL55Truncate;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 
+use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\Backend\Finder\FolderFinder;
+use Xi\Filelib\Backend\Finder\ResourceFinder;
+
+
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  * @author Mikko Forsström <pekkisx@gmail.com>
@@ -518,6 +523,33 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
             ),
         ));
     }
+
+
+    /**
+     * @return array
+     */
+    public function provideFinders()
+    {
+        return array(
+            array(5, new FileFinder()),
+            array(0, new FileFinder(array('id' => 666))),
+            array(1, new FileFinder(array('folder_id' => 1))),
+            array(2, new FileFinder(array('folder_id' => 4))),
+            array(1, new FileFinder(array('folder_id' => 4, 'id' => 5))),
+            array(0, new FileFinder(array('folder_id' => 4, 'id' => 6))),
+
+            array(1, new FolderFinder(array('parent_id' => null))),
+            array(3, new FolderFinder(array('parent_id' => 2))),
+
+            array(0, new ResourceFinder(array('hash' => 'unexisting-hash'))),
+            array(1, new ResourceFinder(array('hash' => 'hash-1'))),
+            array(2, new ResourceFinder(array('hash' => 'hash-2'))),
+
+        );
+    }
+
+
+
 
     /**
      * @param string $dataSet

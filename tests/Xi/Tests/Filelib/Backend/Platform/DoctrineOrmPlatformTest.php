@@ -21,6 +21,7 @@ use PHPUnit_Framework_MockObject_MockObject;
  */
 class DoctrineOrmPlatformTest extends RelationalDbTestCase
 {
+
     /**
      * @return DoctrineOrmPlatform
      */
@@ -62,8 +63,7 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
 
         $em = EntityManager::create($connectionOptions, $config);
 
-        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        return new DoctrineOrmPlatform($ed, $em);
+        return new DoctrineOrmPlatform($em);
     }
 
     /**

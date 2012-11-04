@@ -6,12 +6,16 @@ use PHPUnit_Framework_TestCase;
 use Xi\Filelib\Backend\Platform\MongoPlatform;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\Backend\Finder\FolderFinder;
+use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
 use Mongo;
 use MongoDB;
 use MongoId;
 use MongoDate;
 use MongoConnectionException;
+
 
 /**
  * @group backend
@@ -23,6 +27,7 @@ class MongoPlatformTest extends AbstractPlatformTestCase
      * @var @MongoDB
      */
     protected $mongo;
+
 
     /**
      * Implements AbstractPlatformTest::setUpBackend
@@ -260,6 +265,32 @@ class MongoPlatformTest extends AbstractPlatformTestCase
 
         return $data;
     }
+
+
+    /**
+     * @return array
+     */
+    public function provideFinders()
+    {
+        return array(
+            array(5, new FileFinder()),
+            array(0, new FileFinder(array('id' => 'xooxersson'))),
+            array(1, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166101'))),
+            array(2, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104'))),
+            array(1, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a9166110'))),
+            array(0, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a916611x'))),
+
+            array(1, new FolderFinder(array('parent_id' => null))),
+            array(3, new FolderFinder(array('parent_id' => '49a7011a05c677b9a9166102'))),
+
+            array(0, new ResourceFinder(array('hash' => 'unexisting-hash'))),
+            array(1, new ResourceFinder(array('hash' => 'hash-1'))),
+            array(2, new ResourceFinder(array('hash' => 'hash-2'))),
+
+        );
+    }
+
+
 
     /**
      * @return array
@@ -532,6 +563,8 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             )
         );
     }
+
+
 
 
 }

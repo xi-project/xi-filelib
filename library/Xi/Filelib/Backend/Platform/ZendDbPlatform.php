@@ -20,7 +20,11 @@ use Zend_Db_Adapter_Abstract;
 use Zend_Db_Table_Abstract;
 use Zend_Db_Statement_Exception;
 use DateTime;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\IdentityMap\Identifiable;
+use Iterator;
+use ArrayIterator;
+
 
 /**
  * ZendDb backend for filelib
@@ -51,15 +55,38 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
      */
     private $resourceTable;
 
+    private $finderMap = array(
+        'Xi\Filelib\File\Resource' => array(
+            'id' => 'id',
+            'hash' => 'hash',
+        ),
+        'Xi\Filelib\File\File' => array(
+            'id' => 'id',
+            'folder_id' => 'folder_id',
+        ),
+        'Xi\Filelib\Folder\Folder' => array(
+            'id' => 'id',
+            'parent_id' => 'parent_id',
+        ),
+    );
+
+    private $classNameToResources;
+
     /**
      * @param  EventDispatcherInterface $eventDispatcher
      * @param  Zend_Db_Adapter_Abstract $db
      * @return ZendDbPlatform
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, Zend_Db_Adapter_Abstract $db)
+    public function __construct(Zend_Db_Adapter_Abstract $db)
     {
-        parent::__construct($eventDispatcher);
         $this->setDb($db);
+
+        $this->classNameToResources = array(
+            'Xi\Filelib\File\Resource' => array('table' => array($this, 'getResourceTable'), 'exporter' => 'exportResources'),
+            'Xi\Filelib\File\File' => array('table' => array($this, 'getFileTable'), 'exporter' => 'exportFiles'),
+            'Xi\Filelib\Folder\Folder' => array('table' => array($this, 'getFolderTable'), 'exporter' => 'exportFolders'),
+        );
+
     }
 
     /**
@@ -145,38 +172,9 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doFindRootFolder
-     */
-    protected function doFindRootFolder()
-    {
-        $folder = $this->getFolderTable()->fetchRow(array('parent_id IS NULL'));
-
-        if (!$folder) {
-            $folder = $this->getFolderTable()->createRow();
-
-            $folder->foldername = 'root';
-            $folder->parent_id  = null;
-            $folder->folderurl  = '';
-            $folder->uuid = $this->generateUuid();
-
-            $folder->save();
-        }
-
-        return $folder;
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFolder
-     */
-    protected function doFindFolder($id)
-    {
-        return $this->getFolderTable()->find($id)->current();
-    }
-
-    /**
      * @see AbstractPlatform::doCreateFolder
      */
-    protected function doCreateFolder(Folder $folder)
+    public function createFolder(Folder $folder)
     {
         $folderRow = $this->getFolderTable()->createRow();
         $folderRow->foldername = $folder->getName();
@@ -194,7 +192,7 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     /**
      * @see AbstractPlatform::doDeleteFolder
      */
-    protected function doDeleteFolder(Folder $folder)
+    public function deleteFolder(Folder $folder)
     {
         return (bool) $this->getFolderTable()->delete(
             $this->getFolderTable()
@@ -206,7 +204,7 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     /**
      * @see AbstractPlatform::doUpdateFolder
      */
-    protected function doUpdateFolder(Folder $folder)
+    public function updateFolder(Folder $folder)
     {
         return (bool) $this->getFolderTable()->update(
             array(
@@ -225,7 +223,7 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     /**
      * @see AbstractPlatform::doUpdateResource
      */
-    protected function doUpdateResource(Resource $resource)
+    public function updateResource(Resource $resource)
     {
         return (bool) $this->getResourceTable()->update(
             array(
@@ -238,57 +236,10 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
         );
     }
 
-
-    /**
-     * @see AbstractPlatform::doFindSubFolders
-     */
-    protected function doFindSubFolders($id)
-    {
-        return $this->getFolderTable()->fetchAll(array(
-            'parent_id = ?' => $id,
-        ))->toArray();
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFolderByUrl
-     */
-    protected function doFindFolderByUrl($url)
-    {
-        return $this->getFolderTable()->fetchRow(array(
-            'folderurl = ?' => $url,
-        ));
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFilesIn
-     */
-    protected function doFindFilesIn($id)
-    {
-        return $this->getFileTable()->fetchAll(array(
-            'folder_id = ?' => $id,
-        ))->toArray();
-    }
-
-    /**
-     * @see AbstractPlatform::doFindAllFiles
-     */
-    protected function doFindAllFiles()
-    {
-        return $this->getFileTable()->fetchAll(array(), "id ASC")->toArray();
-    }
-
-    /**
-     * @see AbstractPlatform::doFindFile
-     */
-    protected function doFindFile($id)
-    {
-        return $this->getFileTable()->find($id)->current();
-    }
-
     /**
      * @see AbstractPlatform::doUpdateFile
      */
-    protected function doUpdateFile(File $file)
+    public function updateFile(File $file)
     {
         $data = $file->toArray();
 
@@ -313,7 +264,7 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     /**
      * @see AbstractPlatform::doDeleteFile
      */
-    protected function doDeleteFile(File $file)
+    public function deleteFile(File $file)
     {
         $fileRow = $this->getFileTable()->find($file->getId())->current();
 
@@ -329,7 +280,7 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     /**
      * @see AbstractPlatform::doUpload
      */
-    protected function doUpload(File $file, Folder $folder)
+    public function createFile(File $file, Folder $folder)
     {
         $row = $this->getFileTable()->createRow();
 
@@ -354,74 +305,72 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
         return $file;
     }
 
-    /**
-     * @see AbstractPlatform::doFindFileByFilename
-     */
-    protected function doFindFileByFilename(Folder $folder, $filename)
+    protected function exportFiles(Iterator $iter)
     {
-        return $this->getFileTable()->fetchRow(array(
-            'folder_id = ?' => $folder->getId(),
-            'filename = ?'  => $filename,
-        ));
-    }
+        $ret = new ArrayIterator(array());
 
-    /**
-     * @see AbstractPlatform::exportFile
-     */
-    protected function exportFile($fileRow)
-    {
-        return File::create(array(
-            'id'            => $fileRow['id'],
-            'folder_id'     => $fileRow['folder_id'],
-            'name'          => $fileRow['filename'],
-            'profile'       => $fileRow['fileprofile'],
-            'link'          => $fileRow['filelink'],
-            'date_created' => new DateTime($fileRow['date_created']),
-            'status'        => (int) $fileRow['status'],
-            'uuid'          => $fileRow['uuid'],
-            'resource'      => $this->exportResource($this->doFindResource($fileRow['resource_id'])),
-            'versions'      => unserialize($fileRow['versions']),
-        ));
+        foreach ($iter as $fileRow) {
+
+            $resource = $this->findByIds(array($fileRow['resource_id']), 'Xi\Filelib\File\Resource')->current();
+
+            $ret->append(File::create(array(
+                'id'            => $fileRow['id'],
+                'folder_id'     => $fileRow['folder_id'],
+                'name'          => $fileRow['filename'],
+                'profile'       => $fileRow['fileprofile'],
+                'link'          => $fileRow['filelink'],
+                'date_created' => new DateTime($fileRow['date_created']),
+                'status'        => (int) $fileRow['status'],
+                'uuid'          => $fileRow['uuid'],
+                'resource'      => $resource,
+                'versions'      => unserialize($fileRow['versions']),
+            )));
+        }
+        return $ret;
     }
 
 
     /**
      * @see AbstractPlatform::exportFolder
      */
-    protected function exportFolder($folder)
+    protected function exportFolders(Iterator $iter)
     {
-        return Folder::create(array(
-            'id'        => (int) $folder['id'],
-            'parent_id' => $folder['parent_id'] ? (int) $folder['parent_id'] : null,
-            'name'      => $folder['foldername'],
-            'url'       => $folder['folderurl'],
-            'uuid'      => $folder['uuid'],
-        ));
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $folder) {
+
+            $ret->append(Folder::create(array(
+                'id'        => (int) $folder['id'],
+                'parent_id' => $folder['parent_id'] ? (int) $folder['parent_id'] : null,
+                'name'      => $folder['foldername'],
+                'url'       => $folder['folderurl'],
+                'uuid'      => $folder['uuid'],
+            )));
+        }
+
+        return $ret;
     }
 
-
-    /**
-     * @see AbstractPlatform::doFindResource
-     */
-    protected function doFindResource($id)
+    protected function exportResources(Iterator $iter)
     {
-        return $this->getResourceTable()->find($id)->current();
-    }
-
-    /**
-     * @see AbstractPlatform::doFindResourcesByHash
-     */
-    protected function doFindResourcesByHash($hash)
-    {
-        return $this->getResourceTable()->fetchAll(array(
-            'hash = ?' => $hash,
-        ))->toArray();
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $row) {
+            $ret->append(Resource::create(array(
+                'id' => (int) $row['id'],
+                'hash' => $row['hash'],
+                'size' => (int) $row['filesize'],
+                'mimetype' => $row['mimetype'],
+                'date_created' => new DateTime($row['date_created']),
+                'versions' => unserialize($row['versions']),
+                'exclusive' => (bool) $row['exclusive'],
+            )));
+        }
+        return $ret;
     }
 
     /**
      * @see AbstractPlatform::doCreateResource
      */
-    protected function doCreateResource(Resource $resource)
+    public function createResource(Resource $resource)
     {
         $row = $this->getResourceTable()->createRow();
         $row->hash = $resource->getHash();
@@ -439,7 +388,7 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     /**
      * @see AbstractPlatform::doDeleteResource
      */
-    protected function doDeleteResource(Resource $resource)
+    public function deleteResource(Resource $resource)
     {
         $row = $this->getResourceTable()->find($resource->getId())->current();
         if (!$row) {
@@ -449,35 +398,67 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
         return true;
     }
 
-    /**
-     * @see AbstractPlatform::exportResource
-     */
-    protected function exportResource($row)
-    {
-        return Resource::create(array(
-            'id' => (int) $row['id'],
-            'hash' => $row['hash'],
-            'size' => (int) $row['filesize'],
-            'mimetype' => $row['mimetype'],
-            'date_created' => new DateTime($row['date_created']),
-            'versions' => unserialize($row['versions']),
-            'exclusive' => (bool) $row['exclusive'],
-        ));
-    }
 
     /**
      * @see AbstractPlatform::doGetNumberOfReferences
      */
-    protected function doGetNumberOfReferences(Resource $resource)
+    public function getNumberOfReferences(Resource $resource)
     {
         return $this->db->fetchOne("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
     }
 
-    /**
-     * @see AbstractPlatform::isValidIdentifier
-     */
-    protected function isValidIdentifier($id)
+
+    public function assertValidIdentifier(Identifiable $identifiable)
     {
-        return is_numeric($id);
+        return is_numeric($identifiable->getId());
     }
+
+
+    public function findByFinder(Finder $finder)
+    {
+        $resources = $this->classNameToResources[$finder->getResultClass()];
+        $params = $this->finderParametersToInternalParameters($finder);
+
+        $table = call_user_func($resources['table']);
+        $tableName = $table->info('name');
+
+        $select = $table->getAdapter()->select();
+
+        $select->from($tableName, 'id');
+
+        foreach ($params as $key => $param) {
+
+            if ($param === null) {
+                $select->where("{$key} IS NULL");
+            } else {
+                $select->where("{$key} = ?", $param);
+            }
+        }
+
+        $ids = $table->getAdapter()->fetchCol($select);
+        return $ids;
+    }
+
+    private function finderParametersToInternalParameters(Finder $finder)
+    {
+        $ret = array();
+        foreach ($finder->getParameters() as $key => $value) {
+            $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
+        }
+        return $ret;
+    }
+
+    public function findByIds(array $ids, $className)
+    {
+        $resources = $this->classNameToResources[$className];
+
+        $table = call_user_func($resources['table']);
+
+        $rows = $table->find($ids);
+
+        $exporter = $resources['exporter'];
+        return $this->$exporter($rows);
+    }
+
+
 }

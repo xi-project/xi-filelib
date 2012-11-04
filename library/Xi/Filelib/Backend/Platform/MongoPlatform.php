@@ -45,8 +45,18 @@ class MongoPlatform extends AbstractPlatform implements Platform
     private $mongo;
 
     private $finderMap = array(
-        'id' => '_id',
-        'hash' => 'hash',
+        'Xi\Filelib\File\Resource' => array(
+            'id' => '_id',
+            'hash' => 'hash',
+        ),
+        'Xi\Filelib\File\File' => array(
+            'id' => '_id',
+            'folder_id' => 'folder_id',
+        ),
+        'Xi\Filelib\Folder\Folder' => array(
+            'id' => '_id',
+            'parent_id' => 'parent_id',
+        ),
     );
 
     private $classNameToResources = array(
@@ -132,20 +142,12 @@ class MongoPlatform extends AbstractPlatform implements Platform
 
     public function deleteFolder(Folder $folder)
     {
-        $ret = $this->getMongo()->folders->remove(array(
-            '_id' => new MongoId($folder->getId()),
-        ), array('safe' => true));
-
-        return (boolean) $ret['n'];
+        return $this->deleteIdentifiable($folder);
     }
 
     public function deleteFile(File $file)
     {
-        $ret = $this->getMongo()->files->remove(array(
-            '_id' => new MongoId($file->getId()),
-        ), array('safe' => true));
-
-        return (bool) $ret['n'];
+        return $this->deleteIdentifiable($file);
     }
 
     public function updateFolder(Folder $folder)
@@ -275,10 +277,18 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return $resource;
     }
 
+
+    protected function deleteIdentifiable(Identifiable $identifiable)
+    {
+        $resources = $this->classNameToResources[get_class($identifiable)];
+        $ret = $this->getMongo()->selectCollection($resources['collection'])->remove(array('_id' => new MongoId($identifiable->getId())), array('safe' => true));
+        return (boolean) $ret['n'];
+    }
+
+
     public function deleteResource(Resource $resource)
     {
-        $ret = $this->getMongo()->resources->remove(array('_id' => new MongoId($resource->getId())), array('safe' => true));
-        return (boolean) $ret['n'];
+       return $this->deleteIdentifiable($resource);
     }
 
     /**
@@ -312,43 +322,29 @@ class MongoPlatform extends AbstractPlatform implements Platform
         return $refs->count();
     }
 
-
-    public function findResourcesByIds(array $ids) {
-
-
-    }
-
-    public function findFilesByFinder(FileFinder $finder)
+    public function assertValidIdentifier(Identifiable $identifiable)
     {
-        return false;
-    }
-
-    public function findFoldersByFinder(FolderFinder $finder)
-    {
-        return false;
+        return is_string($identifiable->getId());
     }
 
 
-    public function findResourcesByFinder(ResourceFinder $finder)
+    public function findByFinder(Finder $finder)
     {
-        $params = $this->finderParametersToInternalParameters($finder->getParameters());
-
-        $cursor = $this->getMongo()->resources->find($params, array('_id'));
-
+        $resources = $this->classNameToResources[$finder->getResultClass()];
+        $params = $this->finderParametersToInternalParameters($finder);
+        $cursor = $this->getMongo()->selectCollection($resources['collection'])->find($params, array('_id'));
         $ret = array();
         foreach ($cursor as $doc) {
             $ret[] = $doc['_id']->__toString();
         }
-
         return $ret;
-
     }
 
-    protected function finderParametersToInternalParameters(array $parameters)
+    private function finderParametersToInternalParameters(Finder $finder)
     {
         $ret = array();
-        foreach ($parameters as $key => $value) {
-            $ret[$this->finderMap[$key]] = $value;
+        foreach ($finder->getParameters() as $key => $value) {
+            $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
         }
 
         if (isset($ret['_id'])) {
@@ -359,19 +355,6 @@ class MongoPlatform extends AbstractPlatform implements Platform
     }
 
 
-    public function findByFinder(Finder $finder)
-    {
-
-        return false;
-
-    }
-
-
-
-    public function assertValidIdentifier(Identifiable $identifiable)
-    {
-        return true;
-    }
 
 
 

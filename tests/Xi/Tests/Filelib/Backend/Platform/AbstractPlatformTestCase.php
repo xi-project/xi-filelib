@@ -8,13 +8,14 @@ use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Backend\Finder\Finder;
 
 /**
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  *
  * @group backend
  */
- abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
+abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Platform
@@ -62,8 +63,6 @@ use Xi\Filelib\Folder\Folder;
     }
 
 
-
-
     /**
      * @test
      * @dataProvider referenceCountProvider
@@ -87,7 +86,7 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $data = array(
-            'hash'         => 'hashendaal',
+            'hash' => 'hashendaal',
             'date_created' => new DateTime('2010-10-10 10:10:10'),
             'versions' => array('loso', 'puuppa'),
             'size' => 6000,
@@ -102,8 +101,6 @@ use Xi\Filelib\Folder\Folder;
     }
 
 
-
-
     /**
      * @test
      * @dataProvider orphanResourceIdProvider
@@ -114,7 +111,7 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $data = array(
-            'id'        => $resourceId,
+            'id' => $resourceId,
         );
 
         $resource = Resource::create($data);
@@ -136,7 +133,7 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $data = array(
-            'id'        => $resourceId,
+            'id' => $resourceId,
         );
 
         $resource = Resource::create($data);
@@ -174,7 +171,6 @@ use Xi\Filelib\Folder\Folder;
     }
 
 
-
     /**
      * @test
      * @dataProvider nonExistingResourceIdProvider
@@ -191,8 +187,6 @@ use Xi\Filelib\Folder\Folder;
     }
 
 
-
-
     /**
      * @test
      * @dataProvider parentFolderIdProvider
@@ -204,9 +198,9 @@ use Xi\Filelib\Folder\Folder;
 
         $data = array(
             'parent_id' => $parentFolderId,
-            'name'      => 'lusander',
-            'url'       => 'lussuttaja/tussin/lusander',
-            'uuid'      => 'uuid-f-566',
+            'name' => 'lusander',
+            'url' => 'lussuttaja/tussin/lusander',
+            'uuid' => 'uuid-f-566',
         );
 
         $folder = Folder::create($data);
@@ -227,9 +221,9 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $data = array(
-            'id'        => $folderId,
+            'id' => $folderId,
             'parent_id' => null,
-            'name'      => 'klus',
+            'name' => 'klus',
         );
 
         $folder = Folder::create($data);
@@ -249,9 +243,9 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpEmptyDataSet();
 
         $folder = Folder::create(array(
-            'id'        => $folderId,
+            'id' => $folderId,
             'parent_id' => null,
-            'name'      => 'klus',
+            'name' => 'klus',
         ));
 
         $this->assertFalse($this->backend->deleteFolder($folder));
@@ -266,26 +260,27 @@ use Xi\Filelib\Folder\Folder;
      * @group refactor
      */
     public function updateFolderShouldUpdateFolder($folderId, $parentFolderId,
-        $updatedParentFolderId
-    ) {
+                                                   $updatedParentFolderId
+    )
+    {
         $this->setUpSimpleDataSet();
 
         $data = Folder::create(array(
-            'id'        => $folderId,
+            'id' => $folderId,
             'parent_id' => $parentFolderId,
-            'url'       => 'lussuttaja/tussin',
-            'name'      => 'tussin',
-            'uuid'      => 'uuid-f-' . $folderId,
+            'url' => 'lussuttaja/tussin',
+            'name' => 'tussin',
+            'uuid' => 'uuid-f-' . $folderId,
         ));
 
         $this->assertEquals($data, $this->findFolder($folderId));
 
         $updateData = array(
-            'id'        => $folderId,
+            'id' => $folderId,
             'parent_id' => $updatedParentFolderId,
-            'url'       => 'lussuttaja/lussander',
-            'name'      => 'lussander',
-            'uuid'      => 'sika-uuid',
+            'url' => 'lussuttaja/lussander',
+            'name' => 'lussander',
+            'uuid' => 'sika-uuid',
         );
         $folder = Folder::create($updateData);
 
@@ -304,11 +299,11 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $folder = Folder::create(array(
-            'id'        => $folderId,
+            'id' => $folderId,
             'parent_id' => null,
-            'url'       => 'foo/bar',
-            'name'      => 'xoo',
-            'uuid'      => 'tussi-uuid',
+            'url' => 'foo/bar',
+            'name' => 'xoo',
+            'uuid' => 'tussi-uuid',
         ));
 
         $this->assertTrue($this->backend->updateFolder($folder));
@@ -353,16 +348,16 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $data = array(
-            'id'            => $fileId,
-            'folder_id'     => $folderId,
-            'profile'       => 'lussed',
-            'name'          => 'tohtori-sykero.png',
-            'link'          => 'tohtori-sykero.png',
+            'id' => $fileId,
+            'folder_id' => $folderId,
+            'profile' => 'lussed',
+            'name' => 'tohtori-sykero.png',
+            'link' => 'tohtori-sykero.png',
             'date_created' => new DateTime('2011-01-02 16:16:16'),
-            'status'        => 666,
-            'uuid'          => 'uuid-535',
-            'resource'      => $this->findResource($resourceId),
-            'versions'      => array('lussi', 'watussi', 'klussi'),
+            'status' => 666,
+            'uuid' => 'uuid-535',
+            'resource' => $this->findResource($resourceId),
+            'versions' => array('lussi', 'watussi', 'klussi'),
         );
         $file = File::create($data);
 
@@ -412,21 +407,21 @@ use Xi\Filelib\Folder\Folder;
         $this->setUpSimpleDataSet();
 
         $fidata = array(
-            'profile'       => 'versioned',
-            'name'          => 'tohtori-tussi.png',
-            'link'          => 'tohtori-tussi.png',
-            'date_created'  => new DateTime('2011-01-01 16:16:16'),
-            'status'        => 5,
-            'uuid'          => 'uuid-lussid',
-            'resource'      => Resource::create(array('id' => 1)),
-            'versions'      => array(),
+            'profile' => 'versioned',
+            'name' => 'tohtori-tussi.png',
+            'link' => 'tohtori-tussi.png',
+            'date_created' => new DateTime('2011-01-01 16:16:16'),
+            'status' => 5,
+            'uuid' => 'uuid-lussid',
+            'resource' => Resource::create(array('id' => 1)),
+            'versions' => array(),
         );
 
         $fodata = array(
-            'id'        => $folderId,
+            'id' => $folderId,
             'parent_id' => null,
-            'url'       => '',
-            'name'      => '',
+            'url' => '',
+            'name' => '',
         );
 
         $file = File::create($fidata);
@@ -447,16 +442,29 @@ use Xi\Filelib\Folder\Folder;
         $this->assertEquals($fidata['versions'], $file->getVersions());
     }
 
+
+    /**
+     * @test
+     * @group finder
+     * @dataProvider provideFinders
+     */
+    public function findingWithFinderShouldReturnExpectedAmountOfIds($expected, Finder $finder)
+    {
+        $this->setUpSimpleDataSet();
+        $ids = $this->backend->findByFinder($finder);
+        $this->assertCount($expected, $ids);
+    }
+
+
     /**
      * @return PHPUnit_Framework_MockObject_MockObject
      */
     protected function getMockAndDisableOriginalConstructor($className)
     {
         return $this->getMockBuilder($className)
-                    ->disableOriginalConstructor()
-                    ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
     }
-
 
 
     public function findResource($id)
@@ -465,17 +473,17 @@ use Xi\Filelib\Folder\Folder;
         return $ret->current();
     }
 
-     public function findFile($id)
-     {
-         $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\File');
-         return $ret->current();
-     }
+    public function findFile($id)
+    {
+        $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\File');
+        return $ret->current();
+    }
 
-     public function findFolder($id)
-     {
-         $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\Folder\Folder');
-         return $ret->current();
-     }
+    public function findFolder($id)
+    {
+        $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\Folder\Folder');
+        return $ret->current();
+    }
 
 
- }
+}
