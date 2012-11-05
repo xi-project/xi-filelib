@@ -271,9 +271,8 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      */
-    public function createVersionsShouldThrowExecptionOnZencoderError()
+    public function createVersionsShouldThrowExceptionOnZencoderError()
     {
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Video\ZencoderPlugin')
                        ->setConstructorArgs(array($this->config))
@@ -306,6 +305,12 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $filelib->setStorage($storage);
         $plugin->setFilelib($filelib);
 
+        $this->setExpectedException(
+            'Xi\Filelib\FilelibException',
+            'Zencoder service responded with errors: Url of input file is invalid. lus',
+            500
+        );
+
         $ret = $plugin->createVersions($file);
     }
 
@@ -330,7 +335,12 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         if ($makeItThrowUp) {
             $zen->jobs->expects($this->once())->method('create')
-                ->will($this->throwException(new FilelibException('I threw up')));
+                ->will($this->throwException(
+                    new ZencoderException(
+                        'I threw up',
+                        json_encode(array('errors' => array('Url of input file is invalid', 'lus')))
+                    )
+                ));
             return $zen;
         }
 
