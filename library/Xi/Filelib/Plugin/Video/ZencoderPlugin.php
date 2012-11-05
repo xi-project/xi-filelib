@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Plugin\Video;
 
 use Services_Zencoder as ZencoderService;
+use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
 use ZendService\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\Configurator;
@@ -254,13 +255,9 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
             return $outputs;
 
-        } catch (\Services_Zencoder_Exception $e) {
-            $msgs = [];
-            foreach ($e->getErrors() as $error) {
-                $msgs[] = (string) $error;
-            }
+        } catch (Services_Zencoder_Exception $e) {
             throw new FilelibException(
-                "Zencoder service responded with errors: " . implode(". ", $msgs), 500, $e
+                "Zencoder service responded with errors: " . $this->getZencoderErrors($e), 500, $e
             );
         }
     }
@@ -337,5 +334,17 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             }
 
         } while ($done < count($this->getVersions()));
+    }
+
+    /**
+     * @param Services_Zencoder_Exception $exception
+     * @return string
+     */
+    private function getZencoderErrors(Services_Zencoder_Exception $exception) {
+        $msgs = [];
+        foreach ($exception->getErrors() as $error) {
+            $msgs[] = (string) $error;
+        }
+        return implode(". ", $msgs);
     }
 }
