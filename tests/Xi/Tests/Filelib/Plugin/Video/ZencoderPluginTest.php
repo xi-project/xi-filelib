@@ -24,7 +24,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         }
 
         if (!class_exists('ZendService\Amazon\S3\S3')) {
-            $this->markTestSkipped('Zend\Service\Amazon\S3\S3 class could not be loaded');
+            $this->markTestSkipped('ZendService\Amazon\S3\S3 class could not be loaded');
         }
 
         if (!ZENCODER_KEY) {
@@ -242,10 +242,8 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $plugin->expects($this->any())->method('getService')
                ->will($this->returnValue($zen));
 
-
         $plugin->expects($this->any())->method('getAwsService')
                ->will($this->returnValue($aws));
-
 
         $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
 
@@ -260,6 +258,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $plugin->setFilelib($filelib);
 
+        $plugin->setSleepyTime(0);
         $ret = $plugin->createVersions($file);
 
         $this->assertInternalType('array', $ret);
