@@ -48,6 +48,7 @@ class FFmpegHelper
      * Set the path of the command line command for ffmpeg
      * @param string $command
      * @return FFmpegHelper
+     * @throws InvalidArgumentException
      */
     public function setCommand($command)
     {

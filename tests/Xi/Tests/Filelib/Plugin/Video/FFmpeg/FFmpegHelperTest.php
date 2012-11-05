@@ -2,6 +2,7 @@
 
 namespace Xi\Tests\Filelib\Plugin\Video\FFmpeg;
 
+use RuntimeException;
 use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
@@ -80,6 +81,17 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
     {
         $options = array('lussen' => 'hofer', 'tussen' => 'lussen');
         $helper = new FFmpegHelper($options);
+    }
+
+    /**
+     * @test
+     */
+    public function setCommandThrowsOnEmptyCommand() {
+        $this->setExpectedException('InvalidArgumentException', 'Command must not be empty.');
+        $this->ffmpeg->setCommand('');
+
+        $this->setExpectedException('InvalidArgumentException', 'Command must not be empty.');
+        $this->ffmpeg->setCommand(null);
     }
 
     /**
@@ -261,6 +273,16 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
             );
             unlink($output);
         }
+    }
+
+    /**
+     * @test
+     */
+    public function runProcessThrowsRuntimeExceptionOnFailedProcess()
+    {
+        $failing = new FFmpegHelper(array('command' => 'zzz_non_existing'));
+        $this->setExpectedException('RuntimeException', "sh: line 0: exec: zzz_non_existing: not found\n");
+        $failing->execute('foo', 'bar');
     }
 
     /**
