@@ -51,12 +51,12 @@
         "symfony/http-kernel": "2.1.2",
         "symfony/process": "2.1.2",
         "symfony/security": "2.1.2",
+        "videlalvaro/php-amqplib": ">=dev-master",
         "zencoder/zencoder-php": "2.0.2",
         "zendframework/zendservice-amazon": "2.0.*",
         "zendframework/zend-i18n": "2.0.*",
         "zendframework/zend-filter": "2.0.*",
-        "zendframework/zend-servicemanager": "2.0.*",
-        "videlalvaro/php-amqplib": ">=dev-master"
+        "zendframework/zend-servicemanager": "2.0.*"
     },
 
     "autoload": {
