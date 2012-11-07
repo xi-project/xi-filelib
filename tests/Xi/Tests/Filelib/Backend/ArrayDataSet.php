@@ -2,7 +2,6 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use PHPUnit_Util_Filter;
 use PHPUnit_Extensions_Database_DataSet_AbstractDataSet;
 use PHPUnit_Extensions_Database_DataSet_DefaultTableIterator;
 use PHPUnit_Extensions_Database_DataSet_DefaultTable;

@@ -6,7 +6,6 @@ use Xi\Filelib\Renderer\ZendRenderer;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
-use Zend_Controller_Request_Http as Request;
 use Zend_Controller_Response_Http as Response;
 
 class ZendRendererTest extends \Xi\Tests\Filelib\TestCase

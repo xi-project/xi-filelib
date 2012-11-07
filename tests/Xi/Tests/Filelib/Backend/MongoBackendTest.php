@@ -2,10 +2,7 @@
 
 namespace Xi\Tests\Filelib\Backend;
 
-use PHPUnit_Framework_TestCase;
 use Xi\Filelib\Backend\MongoBackend;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\File;
 use DateTime;
 use Mongo;
 use MongoDB;

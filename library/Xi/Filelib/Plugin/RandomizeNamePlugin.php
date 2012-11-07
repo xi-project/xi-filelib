@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Plugin;
 
-use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Event\FileUploadEvent;
 
 /**

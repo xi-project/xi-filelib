@@ -18,7 +18,6 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
 
 class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 {

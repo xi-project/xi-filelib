@@ -4,7 +4,6 @@ namespace Xi\Tests\Filelib\Publisher\Filesystem;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
 
 class SymlinkFilesystemPublisherTest extends TestCase

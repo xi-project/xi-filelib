@@ -3,7 +3,6 @@
 namespace Xi\Tests\Filelib\Plugin\VersionProvider;
 
 use Xi\Tests\Filelib\TestCase;
-use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Storage\Storage;

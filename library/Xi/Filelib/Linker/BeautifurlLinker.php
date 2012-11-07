@@ -12,7 +12,6 @@ namespace Xi\Filelib\Linker;
 use Xi\Filelib\Linker\AbstractLinker;
 use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Folder\FolderOperator;
 

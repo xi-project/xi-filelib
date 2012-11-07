@@ -9,8 +9,6 @@
 
 namespace Xi\Filelib\Folder;
 
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\FilelibException;
 use Xi\Filelib\IdentityMap\Identifiable;
 
 /**

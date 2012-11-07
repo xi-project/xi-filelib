@@ -17,7 +17,6 @@ use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FilelibException;
-use Serializable;
 use DateTime;
 
 class UploadFileCommand extends AbstractFileCommand

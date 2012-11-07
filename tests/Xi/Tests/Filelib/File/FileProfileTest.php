@@ -6,7 +6,6 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
-
 use Xi\Filelib\Event\PluginEvent;
 
 class FileProfileTest extends \Xi\Tests\Filelib\TestCase

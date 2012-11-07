@@ -7,8 +7,6 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Queue\Queue;
 
-use Xi\Filelib\Folder\Command\DeleteFolderCommand;
-
 class AbstractQueueProcessorTest extends \Xi\Tests\Filelib\TestCase
 {
 

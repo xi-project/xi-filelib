@@ -14,7 +14,6 @@ use Xi\Filelib\Exception\NonUniqueFileException;
 use Xi\Filelib\Exception\ResourceReferencedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\ResourceEvent;
-use Exception;
 
 /**
  * Abstract backend implementing common methods

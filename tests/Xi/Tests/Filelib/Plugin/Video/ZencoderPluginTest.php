@@ -1,16 +1,12 @@
 <?php
 
 use Services_Zencoder as ZencoderService;
-use Services_Zencoder_Account as Account;
 use Services_Zencoder_Exception as ZencoderException;
-
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FilelibException;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
-use Xi\Filelib\Publisher\Filesystem\SymlinkPublisher;
 
 class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 {

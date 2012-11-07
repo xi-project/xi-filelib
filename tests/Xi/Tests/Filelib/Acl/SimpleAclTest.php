@@ -6,9 +6,8 @@ use \PHPUnit_Framework_TestCase as TestCase;
 
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
-
-use Xi\Filelib\Acl\Acl,
-    Xi\Filelib\Acl\SimpleAcl;
+use Xi\Filelib\Acl\Acl;
+use Xi\Filelib\Acl\SimpleAcl;
 
 class SimpleAclTest extends \Xi\Tests\Filelib\TestCase
 {
