@@ -9,8 +9,6 @@
 
 namespace Xi\Filelib\File;
 
-use Xi\Filelib\Plugin\PriorityQueue;
-use Xi\Filelib\FilelibException;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Linker\Linker;

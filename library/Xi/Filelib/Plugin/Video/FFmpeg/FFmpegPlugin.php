@@ -2,9 +2,6 @@
 
 namespace Xi\Filelib\Plugin\Video\FFmpeg;
 
-use RuntimeException;
-use Symfony\Component\Process\Process;
-use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper;

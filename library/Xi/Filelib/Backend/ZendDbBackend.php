@@ -5,7 +5,6 @@ namespace Xi\Filelib\Backend;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Exception\NonUniqueFileException;
 use Xi\Filelib\Backend\ZendDb\FileTable;
 use Xi\Filelib\Backend\ZendDb\FolderTable;
 use Xi\Filelib\Backend\ZendDb\ResourceTable;

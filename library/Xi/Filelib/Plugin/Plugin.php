@@ -10,8 +10,6 @@
 namespace Xi\Filelib\Plugin;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\File\File;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**

@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use Imagick;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;

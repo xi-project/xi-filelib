@@ -4,7 +4,6 @@ namespace Xi\Filelib\Queue;
 
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-use PhpAmqpLib\Channel\AMQPMChannel;
 
 class PhpAMQPQueue implements Queue
 {

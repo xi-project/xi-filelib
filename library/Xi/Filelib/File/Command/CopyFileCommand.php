@@ -15,7 +15,6 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Event\FileCopyEvent;
-use Serializable;
 use InvalidArgumentException;
 use DateTime;
 

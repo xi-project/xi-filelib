@@ -8,7 +8,6 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\CopyFileCommand;
-use Xi\Filelib\File\Upload\FileUpload;
 
 class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
 {

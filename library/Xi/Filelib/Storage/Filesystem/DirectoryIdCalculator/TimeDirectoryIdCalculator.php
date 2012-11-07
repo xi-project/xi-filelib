@@ -11,7 +11,6 @@ namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use DateTime;
 use Xi\Filelib\FilelibException;
-use Xi\Filelib\File\Resource;
 
 class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
 {

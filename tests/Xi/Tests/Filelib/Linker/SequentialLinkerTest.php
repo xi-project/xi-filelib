@@ -10,7 +10,6 @@
 namespace Xi\Tests\Filelib\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
 use Xi\Filelib\Linker\SequentialLinker;
 
 /**

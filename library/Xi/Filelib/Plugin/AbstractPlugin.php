@@ -11,8 +11,6 @@ namespace Xi\Filelib\Plugin;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Configurator;
-use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileProfileEvent;
 
 /**

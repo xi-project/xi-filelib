@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use Imagick;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileUploadEvent;

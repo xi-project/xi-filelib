@@ -6,9 +6,6 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\Upload\FileUpload;
-
 use Xi\Filelib\File\Command\DeleteFileCommand;
 
 class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
