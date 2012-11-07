@@ -2,7 +2,6 @@
 
 namespace Xi\Tests\Filelib\Plugin\Video\FFmpeg;
 
-use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;

@@ -16,9 +16,7 @@ use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\FilelibException;
 
 /**
  * Stores files in MongoDB's GridFS filesystem

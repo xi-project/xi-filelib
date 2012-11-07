@@ -3,7 +3,6 @@
 namespace Xi\Tests\Filelib\Plugin\Image;
 
 use Imagick;
-use ImagickException;
 use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 
 class ImageMagickHelperTest extends TestCase

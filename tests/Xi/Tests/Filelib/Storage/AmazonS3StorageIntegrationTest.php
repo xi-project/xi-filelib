@@ -10,7 +10,6 @@
 namespace Xi\Tests\Filelib\Storage;
 
 use Xi\Filelib\Storage\AmazonS3Storage;
-use Xi\Filelib\File\Resource;
 use ZendService\Amazon\S3\S3 as AmazonService;
 
 /**

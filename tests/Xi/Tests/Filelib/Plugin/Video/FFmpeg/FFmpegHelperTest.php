@@ -4,9 +4,7 @@ namespace Xi\Tests\Filelib\Plugin\Video\FFmpeg;
 
 use RuntimeException;
 use Xi\Filelib\Exception\InvalidArgumentException;
-use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper;
 
 class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase

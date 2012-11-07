@@ -3,9 +3,7 @@
 namespace Xi\Tests\Filelib\Plugin\Image\Command;
 
 use Xi\Tests\Filelib\Plugin\Image\TestCase;
-
 use Xi\Filelib\Plugin\Image\Command\WatermarkCommand;
-
 use Imagick;
 
 class WatermarkCommandTest extends TestCase

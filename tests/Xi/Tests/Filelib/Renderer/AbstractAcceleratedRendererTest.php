@@ -3,7 +3,6 @@
 namespace Xi\Tests\Filelib\Renderer;
 
 use Xi\Filelib\Renderer\AbstractAcceleratedRenderer;
-use Xi\Filelib\File\File;
 
 class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
 {

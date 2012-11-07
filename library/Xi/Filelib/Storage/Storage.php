@@ -9,11 +9,9 @@
 
 namespace Xi\Filelib\Storage;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Exception\FilelibException;
-use Xi\Filelib\Exception\FileIOException;
 use Xi\Filelib\File\FileObject;
 
 /**

@@ -2,9 +2,9 @@
 
 namespace Xi\Tests\PHPUnit\Extensions\Database\Operation;
 
-use PHPUnit_Extensions_Database_Operation_Truncate,
-    PHPUnit_Extensions_Database_DB_IDatabaseConnection,
-    PHPUnit_Extensions_Database_DataSet_IDataSet;
+use PHPUnit_Extensions_Database_Operation_Truncate;
+use PHPUnit_Extensions_Database_DB_IDatabaseConnection;
+use PHPUnit_Extensions_Database_DataSet_IDataSet;
 
 /**
  * Executes a mysql 5.5 safe truncate against all tables in a dataset.

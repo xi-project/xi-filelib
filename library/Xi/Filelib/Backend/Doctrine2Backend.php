@@ -5,7 +5,6 @@ namespace Xi\Filelib\Backend;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Exception\NonUniqueFileException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\EntityNotFoundException;

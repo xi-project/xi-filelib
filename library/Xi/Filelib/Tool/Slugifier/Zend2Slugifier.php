@@ -13,7 +13,6 @@ use Zend\Filter\FilterChain;
 use Zend\I18n\Filter\Alnum as AlnumFilter;
 use Zend\Filter\Word\SeparatorToDash as SeparatorToDashFilter;
 use Zend\Filter\StringToLower as StringToLowerFilter;
-use Zend\Filter\Word\UnderscoreToDash as UnderscoreToDashFilter;
 use Zend\Filter\Word\UnderscoreToSeparator;
 
 /**

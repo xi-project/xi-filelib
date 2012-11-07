@@ -4,11 +4,7 @@ namespace Xi\Tests\Filelib\Folder\Command;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\File;
-use Xi\Filelib\File\Upload\FileUpload;
-
 use Xi\Filelib\Folder\Command\CreateByUrlFolderCommand;
 
 class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase

@@ -6,7 +6,6 @@ namespace Xi\Tests\Filelib\Publisher\Filesystem;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher;
-
 use Xi\Tests\Filelib\TestCase;
 
 class AbstractFilesystemPublisherTest extends TestCase
