@@ -11,7 +11,6 @@ namespace Xi\Filelib\Storage;
 
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 

@@ -4,7 +4,6 @@ namespace Xi\Tests\Filelib;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileProfile;
-
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

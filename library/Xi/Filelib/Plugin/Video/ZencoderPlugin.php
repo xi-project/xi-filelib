@@ -10,6 +10,8 @@
 namespace Xi\Filelib\Plugin\Video;
 
 use Services_Zencoder as ZencoderService;
+use Services_Zencoder_Exception;
+use Services_Zencoder_Job as Job;
 use ZendService\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
@@ -216,15 +218,14 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     public function createVersions(File $file)
     {
-        $zencoder = $this->getService();
+        $s3 = $this->getAwsService();
+        $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
         $retrieved = $this->getStorage()->retrieve($file->getResource());
 
-        $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
+        $s3->putFile($retrieved->getRealPath(), $awsPath);
 
-        $this->getAwsService()->putFile($retrieved->getRealPath(), $awsPath);
-
-        $url = $this->getAwsService()->getEndpoint() . '/' . $awsPath;
+        $url = $s3->getEndpoint() . '/' . $awsPath;
 
         $options = array(
             "test" => false,
@@ -234,47 +235,51 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         );
 
         try {
-            $job = $zencoder->jobs->create($options);
+            $job = $this->getService()->jobs->create($options);
 
-            do {
-                $done = 0;
+            $this->waitUntilJobFinished($job);
 
-                sleep($this->getSleepyTime());
+            $outputs = $this->fetchOutputs($job);
 
-                foreach ($this->getVersions() as $label) {
-                    $output = $job->outputs[$label];
+            $s3->removeObject($awsPath);
 
-                    $progress = $zencoder->outputs->progress($output->id);
+            return $outputs;
 
-                    if ($progress->state === 'finished') {
-                        $done = $done + 1;
-                    }
-                }
-            } while ($done < count($this->getVersions()));
-
-            $tmps = array();
-
-            foreach ($this->getVersions() as $version) {
-                $tempnam = tempnam($this->getFilelib()->getTempDir(), 'zen');
-                $output = $job->outputs[$version];
-                $details = $zencoder->outputs->details($output->id);
-
-                file_put_contents($tempnam, file_get_contents($details->url));
-
-                $tmps[$version] = $tempnam;
-            }
-
-            $this->getAwsService()->removeObject($awsPath);
-            return $tmps;
-        } catch (\Services_Zencoder_Exception $e) {
-            $msgs = [];
-            foreach ($e->getErrors() as $error) {
-                $msgs[] = (string) $error;
-            }
+        } catch (Services_Zencoder_Exception $e) {
             throw new FilelibException(
-                "Zencoder service responded with errors: " . implode(". ", $msgs), 500, $e
+                "Zencoder service responded with errors: " . $this->getZencoderErrors($e), 500, $e
             );
         }
+    }
+
+    /**
+     * Fetch all output versions from Zencoder
+     *
+     * @param   Job     $job      Zencoder Job
+     * @return  array             Array of temporary filenames
+     */
+    protected function fetchOutputs(Job $job) {
+        $tmps = array();
+        foreach ($this->getVersions() as $version) {
+            $tmps[$version] = $this->fetchOutput($job, $version);
+        }
+        return $tmps;
+    }
+
+    /**
+     * Fetch a single output version using Zencoder Job details
+     *
+     * @param   Job     $job      Zencoder Job
+     * @param   string  $version  Version identifier
+     * @return  string            Temporary filename
+     */
+    protected function fetchOutput(Job $job, $version) {
+        $tempnam = tempnam($this->getFilelib()->getTempDir(), 'zen');
+        $output = $job->outputs[$version];
+        $details = $this->getService()->outputs->details($output->id);
+
+        file_put_contents($tempnam, file_get_contents($details->url));
+        return $tempnam;
     }
 
     public function setOutputs($outputs)
@@ -302,5 +307,34 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     public function areSharedVersionsAllowed()
     {
         return true;
+    }
+
+    private function waitUntilJobFinished(Job $job) {
+        do {
+            $done = 0;
+            sleep($this->getSleepyTime());
+
+            foreach ($this->getVersions() as $label) {
+                $output = $job->outputs[$label];
+                $progress = $this->getService()->outputs->progress($output->id);
+
+                if ($progress->state === 'finished') {
+                    $done = $done + 1;
+                }
+            }
+
+        } while ($done < count($this->getVersions()));
+    }
+
+    /**
+     * @param Services_Zencoder_Exception $exception
+     * @return string
+     */
+    private function getZencoderErrors(Services_Zencoder_Exception $exception) {
+        $msgs = [];
+        foreach ($exception->getErrors() as $error) {
+            $msgs[] = (string) $error;
+        }
+        return implode(". ", $msgs);
     }
 }

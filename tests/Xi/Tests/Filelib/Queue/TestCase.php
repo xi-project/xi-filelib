@@ -2,8 +2,6 @@
 
 namespace Xi\Tests\Filelib\Queue;
 
-use Xi\Filelib\FileLibrary;
-
 use Xi\Filelib\Queue\Queue;
 use Xi\Filelib\Queue\Message;
 use Xi\Tests\Filelib\Queue\Processor\TestCommand;

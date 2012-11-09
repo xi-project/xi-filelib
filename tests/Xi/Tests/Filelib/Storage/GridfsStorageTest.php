@@ -11,11 +11,8 @@ namespace Xi\Tests\Filelib\Storage;
 
 use Mongo;
 use MongoDB;
-
 use MongoConnectionException;
 use Xi\Filelib\Storage\GridfsStorage;
-use Xi\Filelib\File\Resource;
-use Xi\Filelib\FilelibException;
 
 /**
  * @group storage

@@ -8,10 +8,11 @@
  */
 
 use Services_Zencoder as ZencoderService;
-
+use Services_Zencoder_Exception as ZencoderException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 
 /**
@@ -28,7 +29,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         }
 
         if (!class_exists('ZendService\Amazon\S3\S3')) {
-            $this->markTestSkipped('Zend\Service\Amazon\S3\S3 class could not be loaded');
+            $this->markTestSkipped('ZendService\Amazon\S3\S3 class could not be loaded');
         }
 
         if (!ZENCODER_KEY) {
@@ -232,10 +233,8 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $plugin->expects($this->any())->method('getService')
                ->will($this->returnValue($zen));
 
-
         $plugin->expects($this->any())->method('getAwsService')
                ->will($this->returnValue($aws));
-
 
         $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
 
@@ -250,6 +249,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $plugin->setFilelib($filelib);
 
+        $plugin->setSleepyTime(0);
         $ret = $plugin->createVersions($file);
 
         $this->assertInternalType('array', $ret);
@@ -260,9 +260,8 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
      */
-    public function createVersionsShouldThrowExecptionOnZencoderError()
+    public function createVersionsShouldThrowExceptionOnZencoderError()
     {
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Video\ZencoderPlugin')
                        ->setConstructorArgs(array($this->config))
@@ -296,7 +295,13 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $plugin->setFilelib($filelib);
 
-        $plugin->createVersions($file);
+        $this->setExpectedException(
+            'Xi\Filelib\FilelibException',
+            'Zencoder service responded with errors: Url of input file is invalid. lus',
+            500
+        );
+
+        $ret = $plugin->createVersions($file);
     }
 
     public function getMockedZencoderService($makeItThrowUp = false)
@@ -319,7 +324,12 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         if ($makeItThrowUp) {
             $zen->jobs->expects($this->once())->method('create')
-                ->will($this->throwException(new FilelibException('I threw up')));
+                ->will($this->throwException(
+                    new ZencoderException(
+                        'I threw up',
+                        json_encode(array('errors' => array('Url of input file is invalid', 'lus')))
+                    )
+                ));
 
             return $zen;
         }

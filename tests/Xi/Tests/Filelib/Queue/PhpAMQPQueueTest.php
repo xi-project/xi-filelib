@@ -3,7 +3,6 @@
 namespace Xi\Tests\Filelib\Queue;
 
 use Xi\Filelib\Queue\PhpAMQPQueue;
-use Xi\Filelib\Queue\Message;
 
 
 class PhpAMQPQueueTest extends \Xi\Tests\Filelib\Queue\TestCase

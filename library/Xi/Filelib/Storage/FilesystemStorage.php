@@ -16,7 +16,6 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Xi\Filelib\Exception\FileIOException;
 
 /**
  * Stores files in a filesystem

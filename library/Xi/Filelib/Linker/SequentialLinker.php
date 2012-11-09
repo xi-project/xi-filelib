@@ -12,7 +12,6 @@ namespace Xi\Filelib\Linker;
 use Xi\Filelib\Linker\AbstractLinker;
 use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Exception\InvalidArgumentException;
 
 /**
