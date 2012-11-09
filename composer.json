@@ -62,8 +62,7 @@
     "autoload": {
         "psr-0": {
             "Xi\\Filelib": "library/",
-            "Xi\\Tests": "tests/",
-            "Services_": "vendor/zencoder/zencoder-php/"
+            "Xi\\Tests": "tests/"
         }
     },
     "minimum-stability": "dev",
