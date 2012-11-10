@@ -40,7 +40,6 @@ sudo port install ffmpeg-devel@-gpl2-nonfree
 
 Example:
 
-    ```
     xi_filelib:
         ...
         profiles:
@@ -94,7 +93,6 @@ Example:
                         options:
                             s: '240x135'
                             vframes: 1
-    ```
 
 To create the output `1080p_still` for an uploaded video called `Manatees.mp4`,  
 the above example will call `ffmpeg` with the following options:
