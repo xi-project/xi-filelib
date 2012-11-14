@@ -7,14 +7,14 @@ use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper;
 
+/**
+ * @group plugin
+ * @group ffmpeg
+ */
 class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
 {
     public function setUp()
     {
-        if (!$this->checkFFmpegFound()) {
-            $this->markTestSkipped('FFmpeg could not be found');
-        }
-
         $this->testVideo = new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4');
         $this->ffmpeg = new FFmpegHelper();
 
@@ -288,6 +288,10 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function testGetVideoInfo()
     {
+        if (!$this->checkFFprobeFound()) {
+            $this->markTestSkipped('ffprobe could not be found');
+        }
+
         $filename = $this->testVideo->getPathname();
         $expected = <<<JSON
 {
@@ -321,11 +325,15 @@ JSON;
      */
     public function testGetDuration()
     {
+        if (!$this->checkFFprobeFound()) {
+            $this->markTestSkipped('ffprobe could not be found');
+        }
+
         $this->assertEquals(3.989000, $this->ffmpeg->getDuration($this->testVideo));
     }
 
-    private function checkFFmpegFound()
+    private function checkFFprobeFound()
     {
-        return (boolean) trim(`sh -c "which ffmpeg"`);
+        return (boolean) trim(`ffprobe -print_format json 2>/dev/null`);
     }
 }
