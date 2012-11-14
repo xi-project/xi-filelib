@@ -5,11 +5,29 @@ namespace Xi\Tests\Filelib\Plugin\Video\FFmpeg;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegPlugin;
 
+/**
+ * @group plugin
+ * @group ffmpeg
+ */
 class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
 {
+    /**
+     * @var FFmpegPlugin
+     */
+    private $plugin;
+
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $storage;
+
     public function setUp()
     {
         if (!$this->checkFFmpegFound()) {
@@ -17,7 +35,45 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
         }
 
         $this->testVideo = ROOT_TESTS . '/data/hauska-joonas.mp4';
-        $this->plugin = new FFmpegPlugin();
+
+        $this->storage = $this->getMockBuilder('Xi\Filelib\Storage\Storage')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $options = array(
+            'command' => 'echo',
+            'options' => array(
+                'y' => true
+            ),
+            'inputs' => array(
+                'original' => array(
+                    'filename' => true,
+                    'options' => array(
+                        'ss' => '00:00:01.000',
+                        'r' => '1',
+                        'vframes' => '1'
+                    )
+                )
+            ),
+            'outputs' => array(
+                'still' => array(
+                    'filename' => 'still.png',
+                    'options' => array()
+                ),
+                'video' => array(
+                    'filename' => 'video.webm',
+                    'options' => array()
+                ),
+            )
+        );
+
+        $this->tempDir = ROOT_TESTS . '/data/temp';
+
+        $this->plugin = new FFmpegPlugin(
+            $this->storage,
+            $this->tempDir,
+            $options
+        );
     }
 
     public function tearDown()
@@ -42,12 +98,10 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function getHelperShouldReturnFFmpegHelper()
     {
-        $plugin = new FFmpegPlugin();
-        $helper = $plugin->getHelper();
+        $helper = $this->plugin->getHelper();
 
         $this->assertInstanceOf('Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper', $helper);
-
-        $this->assertSame($helper, $plugin->getHelper());
+        $this->assertSame($helper, $this->plugin->getHelper());
     }
 
     /**
@@ -55,54 +109,25 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function testCreateVersions()
     {
-        $options = array(
-            'command' => 'echo',
-            'options' => array(
-                'y' => true
-            ),
-            'inputs' => array(
-                'original' => array(
-                    'filename' => true,
-                    'options' => array(
-                        'ss' => '00:00:01.000',
-                        'r' => '1',
-                        'vframes' => '1'
-                    )
-                )
-            ),
-            'outputs' => array(
-                'still' => array(
-                    'filename' => 'still.png',
-                    'options' => array()
-                )
-            )
-        );
-
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
-
 
         $fobject = $this->getMockBuilder('Xi\Filelib\File\FileObject')
                         ->setConstructorArgs(array($this->testVideo))
                         ->getMock();
         $fobject->expects($this->once())->method('getPathName')->will($this->returnValue($this->testVideo));
 
-        $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())
-            ->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+        $this->storage
+            ->expects($this->once())
+            ->method('retrieve')
+            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
             ->will($this->returnValue($fobject));
 
-        $tmpDir = realpath(sys_get_temp_dir());
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue($tmpDir));
-        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
-
-        $ffmpeg = new FFmpegPlugin($options);
-        $ffmpeg->setFilelib($filelib);
-
         $this->assertEquals(
-            array('still' => "$tmpDir/still.png"),
-            $ffmpeg->createVersions($file)
+            array(
+                'still' => "$this->tempDir/still.png",
+                'video' => "$this->tempDir/video.webm"
+            ),
+            $this->plugin->createVersions($file)
         );
     }
 
@@ -111,20 +136,8 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function testExtensionFor()
     {
-        $options = array(
-            'outputs' => array(
-                'foo' => array(
-                    'filename' => 'still.png'
-                ),
-                'bar' => array(
-                    'filename' => 'video.webm'
-                )
-            )
-        );
-        $plugin = new FFmpegPlugin($options);
-
-        $this->assertEquals('png', $plugin->getExtensionFor('foo'));
-        $this->assertEquals('webm', $plugin->getExtensionFor('bar'));
+        $this->assertEquals('png', $this->plugin->getExtensionFor('still'));
+        $this->assertEquals('webm', $this->plugin->getExtensionFor('video'));
     }
 
     /**
@@ -132,15 +145,7 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function testGetVersions()
     {
-        $options = array(
-            'outputs' => array(
-                'alpha' => array('filename' => 'lus.png'),
-                'beta' => array('filename' => 'tus.png')
-            )
-        );
-        $plugin = new FFmpegPlugin($options);
-
-        $this->assertEquals(array('alpha', 'beta'), $plugin->getVersions());
+        $this->assertEquals(array('still', 'video'), $this->plugin->getVersions());
     }
 
     /**
@@ -148,8 +153,7 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function pluginShouldAllowSharedResource()
     {
-        $plugin = new FFmpegPlugin();
-        $this->assertTrue($plugin->isSharedResourceAllowed());
+        $this->assertTrue($this->plugin->isSharedResourceAllowed());
     }
 
     /**
@@ -157,21 +161,11 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function pluginShouldAllowSharedVersions()
     {
-        $plugin = new FFmpegPlugin();
-        $this->assertTrue($plugin->areSharedVersionsAllowed());
+        $this->assertTrue($this->plugin->areSharedVersionsAllowed());
     }
 
     private function checkFFmpegFound()
     {
         return (boolean) trim(`sh -c "which ffmpeg"`);
-    }
-
-    private function getMockedStorage($path)
-    {
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')
-            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
-            ->will($this->returnValue(new FileObject($path)));
-        return $storage;
     }
 }

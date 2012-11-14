@@ -12,7 +12,6 @@ use Services_Zencoder_Exception as ZencoderException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 
 /**
@@ -21,6 +20,21 @@ use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 {
     private $config;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $storage;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $zencoderService;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $amazonService;
 
     public function setUp()
     {
@@ -32,20 +46,12 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             $this->markTestSkipped('ZendService\Amazon\S3\S3 class could not be loaded');
         }
 
-        if (!ZENCODER_KEY) {
-            $this->markTestSkipped('Zencoder service not configured');
-        }
-
-        if (!S3_KEY) {
-            $this->markTestSkipped('S3 not configured');
-        }
-
         $this->config = array(
-            'apiKey' => ZENCODER_KEY,
-            'awsKey' => S3_KEY,
-            'awsSecretKey' => S3_SECRETKEY,
-            'awsBucket' => ZENCODER_S3_BUCKET,
-            'sleepyTime' => 1,
+            'apiKey' => 'api key',
+            'awsKey' => 'aws key',
+            'awsSecretKey' => 'aws secret key',
+            'awsBucket' => 'aws bucket',
+            'sleepyTime' => 5,
             'outputs' => array(
                 'pygmi' => array(
                     'extension' => 'mp4',
@@ -64,7 +70,23 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             )
         );
 
-        $this->plugin = new ZencoderPlugin($this->config);
+        $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $this->amazonService = $this->getMockedAwsService();
+
+        $this->zencoderService = $this->getMockBuilder('Services_Zencoder')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->zencoderService->jobs = $this->getMockBuilder('Services_Zencoder_Jobs')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->plugin = new ZencoderPlugin(
+            $this->storage,
+            $this->zencoderService,
+            $this->amazonService,
+            ROOT_TESTS . '/data/temp',
+            $this->config
+        );
     }
 
     public function tearDown()
@@ -89,34 +111,30 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function settersAndGettersShouldWorkAsExpected()
     {
-        $plugin = new ZencoderPlugin();
-
         $val = 'xooxer';
-        $this->assertNull($plugin->getApiKey());
-        $this->assertSame($plugin, $plugin->setApiKey($val));
-        $this->assertEquals($val, $plugin->getApiKey());
+        $this->assertEquals('api key', $this->plugin->getApiKey());
+        $this->assertSame($this->plugin, $this->plugin->setApiKey($val));
+        $this->assertEquals($val, $this->plugin->getApiKey());
 
         $val = 'xooxer2';
-        $this->assertNull($plugin->getAwsKey());
-        $this->assertSame($plugin, $plugin->setAwsKey($val));
-        $this->assertEquals($val, $plugin->getAwsKey());
+        $this->assertEquals('aws key', $this->plugin->getAwsKey());
+        $this->assertSame($this->plugin, $this->plugin->setAwsKey($val));
+        $this->assertEquals($val, $this->plugin->getAwsKey());
 
         $val = 'xooxer3';
-        $this->assertNull($plugin->getAwsSecretKey());
-        $this->assertSame($plugin, $plugin->setAwsSecretKey($val));
-        $this->assertEquals($val, $plugin->getAwsSecretKey());
+        $this->assertEquals('aws secret key', $this->plugin->getAwsSecretKey());
+        $this->assertSame($this->plugin, $this->plugin->setAwsSecretKey($val));
+        $this->assertEquals($val, $this->plugin->getAwsSecretKey());
 
         $val = 'xooxer4';
-        $this->assertNull($plugin->getAwsBucket());
-        $this->assertSame($plugin, $plugin->setAwsBucket($val));
-        $this->assertEquals($val, $plugin->getAwsBucket());
+        $this->assertEquals('aws bucket', $this->plugin->getAwsBucket());
+        $this->assertSame($this->plugin, $this->plugin->setAwsBucket($val));
+        $this->assertEquals($val, $this->plugin->getAwsBucket());
 
         $val = 1;
-        $this->assertEquals(5, $plugin->getSleepyTime());
-        $this->assertSame($plugin, $plugin->setSleepyTime($val));
-        $this->assertEquals($val, $plugin->getSleepyTime());
-
-
+        $this->assertEquals(5, $this->plugin->getSleepyTime());
+        $this->assertSame($this->plugin, $this->plugin->setSleepyTime($val));
+        $this->assertEquals($val, $this->plugin->getSleepyTime());
     }
 
     /**
@@ -203,8 +221,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function pluginShouldProvideForVideo()
     {
-        $plugin = new ZencoderPlugin();
-        $this->assertEquals(array('video'), $plugin->getProvidesFor());
+        $this->assertEquals(array('video'), $this->plugin->getProvidesFor());
     }
 
     /**
@@ -212,45 +229,34 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function createVersionsShouldCreateVersions()
     {
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Video\ZencoderPlugin')
-                       ->setConstructorArgs(array($this->config))
-                       ->setMethods(array('getService', 'getAwsService'))
-                       ->getMock();
+        $this->setupStubsForZencoderService();
 
-        $zen = $this->getMockedZencoderService();
-
-        $aws = $this->getMockedAwsService();
-
-        $aws->expects($this->at(0))->method('putFile')
+        $this->amazonService
+            ->expects($this->at(0))
+            ->method('putFile')
             ->with($this->isType('string'), $this->isType('string'));
 
-        $aws->expects($this->at(1))->method('getEndpoint')
+        $this->amazonService
+            ->expects($this->at(1))
+            ->method('getEndpoint')
             ->will($this->returnValue('http://dr-kobros.com'));
 
-        $aws->expects($this->at(2))->method('removeObject')
+        $this->amazonService
+            ->expects($this->at(2))
+            ->method('removeObject')
             ->with($this->isType('string'));
-
-        $plugin->expects($this->any())->method('getService')
-               ->will($this->returnValue($zen));
-
-        $plugin->expects($this->any())->method('getAwsService')
-               ->will($this->returnValue($aws));
 
         $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
 
-        $filelib = $this->getFilelib();
+        $this->storage
+            ->expects($this->once())
+            ->method('retrieve')
+            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+            ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
 
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
-                ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
+        $this->plugin->setSleepyTime(0);
 
-        $filelib->setStorage($storage);
-
-        $plugin->setFilelib($filelib);
-
-        $plugin->setSleepyTime(0);
-        $ret = $plugin->createVersions($file);
+        $ret = $this->plugin->createVersions($file);
 
         $this->assertInternalType('array', $ret);
         $this->assertCount(2, $ret);
@@ -258,42 +264,96 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $this->assertArrayHasKey('watussi', $ret);
     }
 
+    private function setupStubsForZencoderService()
+    {
+        $this->zencoderService->outputs = $this->getMockBuilder('Services_Zencoder_Outputs')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $job = $this->getMockBuilder('Services_Zencoder_Job')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->zencoderService->jobs->expects($this->once())->method('create')
+            ->will($this->returnValue($job));
+
+        $job->outputs['watussi'] = $this->getMockBuilder('Services_Zencoder_Output')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $job->outputs['watussi']->id = 1;
+
+        $job->outputs['pygmi'] = $this->getMockBuilder('Services_Zencoder_Output')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $job->outputs['pygmi']->id = 2;
+
+        $progressFinished = $this->getMockBuilder('Services_Zencoder_Progress')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $progressFinished->state = 'finished';
+
+        $progressUnfinished = $this->getMockBuilder('Services_Zencoder_Progress')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $progressUnfinished->state = 'waiting';
+
+        $this->zencoderService->outputs->expects($this->at(0))->method('progress')
+            ->with($this->equalTo(2))
+            ->will($this->returnValue($progressUnfinished));
+
+        $this->zencoderService->outputs->expects($this->at(1))->method('progress')
+            ->with($this->equalTo(1))
+            ->will($this->returnValue($progressUnfinished));
+
+        $this->zencoderService->outputs->expects($this->at(2))->method('progress')
+            ->with($this->equalTo(2))
+            ->will($this->returnValue($progressFinished));
+
+        $this->zencoderService->outputs->expects($this->at(3))->method('progress')
+            ->with($this->equalTo(1))
+            ->will($this->returnValue($progressFinished));
+
+        $details = $this->getMockBuilder('Services_Zencoder_Output')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $details->url = ROOT_TESTS . '/data/hauska-joonas.mp4';
+
+        $this->zencoderService->outputs->expects($this->at(4))
+            ->method('details')
+            ->with($this->equalTo(2))
+            ->will($this->returnValue($details));
+
+        $this->zencoderService->outputs->expects($this->at(5))
+            ->method('details')
+            ->with($this->equalTo(1))
+            ->will($this->returnValue($details));
+    }
+
     /**
      * @test
      */
     public function createVersionsShouldThrowExceptionOnZencoderError()
     {
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Video\ZencoderPlugin')
-                       ->setConstructorArgs(array($this->config))
-                       ->setMethods(array('getService', 'getAwsService'))
-                       ->getMock();
+        $this->zencoderService->jobs->expects($this->once())->method('create')
+            ->will($this->throwException(
+                new ZencoderException(
+                    'I threw up',
+                    json_encode(array('errors' => array('Url of input file is invalid', 'lus')))
+                )
+            ));
 
-        $zen = $this->getMockedZencoderService(true);
-
-        $aws = $this->getMockedAwsService();
-
-        $aws->expects($this->at(0))->method('putFile')
+        $this->amazonService
+            ->expects($this->at(0))
+            ->method('putFile')
             ->with($this->isType('string'), $this->isType('string'));
-
-
-        $plugin->expects($this->any())->method('getService')
-               ->will($this->returnValue($zen));
-
-        $plugin->expects($this->any())->method('getAwsService')
-               ->will($this->returnValue($aws));
 
         $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
 
-        $filelib = $this->getFilelib();
-
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')
-                ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
-                ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
-
-        $filelib->setStorage($storage);
-
-        $plugin->setFilelib($filelib);
+        $this->storage
+            ->expects($this->once())
+            ->method('retrieve')
+            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+            ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
 
         $this->setExpectedException(
             'Xi\Filelib\FilelibException',
@@ -301,114 +361,22 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
             500
         );
 
-        $ret = $plugin->createVersions($file);
+        $this->plugin->createVersions($file);
     }
 
-    public function getMockedZencoderService($makeItThrowUp = false)
+    private function getMockedAwsService()
     {
-        $zen = $this->getMockBuilder('Services_Zencoder')
+        return $this->getMockBuilder('ZendService\Amazon\S3\S3')
                     ->disableOriginalConstructor()
                     ->getMock();
-
-        $zen->jobs = $this->getMockBuilder('Services_Zencoder_Jobs')
-                          ->disableOriginalConstructor()
-                          ->getMock();
-
-        $zen->outputs = $this->getMockBuilder('Services_Zencoder_Outputs')
-                             ->disableOriginalConstructor()
-                             ->getMock();
-
-        $job = $this->getMockBuilder('Services_Zencoder_Job')
-                          ->disableOriginalConstructor()
-                          ->getMock();
-
-        if ($makeItThrowUp) {
-            $zen->jobs->expects($this->once())->method('create')
-                ->will($this->throwException(
-                    new ZencoderException(
-                        'I threw up',
-                        json_encode(array('errors' => array('Url of input file is invalid', 'lus')))
-                    )
-                ));
-
-            return $zen;
-        }
-
-        $zen->jobs->expects($this->once())->method('create')
-                ->will($this->returnValue($job));
-
-        $job->outputs['watussi'] = $this->getMockBuilder('Services_Zencoder_Output')
-                                     ->disableOriginalConstructor()
-                                     ->getMock();
-        $job->outputs['watussi']->id = 1;
-
-        $job->outputs['pygmi'] = $this->getMockBuilder('Services_Zencoder_Output')
-                                     ->disableOriginalConstructor()
-                                     ->getMock();
-        $job->outputs['pygmi']->id = 2;
-
-        $progressFinished = $this->getMockBuilder('Services_Zencoder_Progress')
-                                     ->disableOriginalConstructor()
-                                     ->getMock();
-        $progressFinished->state = 'finished';
-
-        $progressUnfinished = $this->getMockBuilder('Services_Zencoder_Progress')
-                                     ->disableOriginalConstructor()
-                                     ->getMock();
-        $progressUnfinished->state = 'waiting';
-
-        $zen->outputs->expects($this->at(0))->method('progress')
-                  ->with($this->equalTo(2))
-                  ->will($this->returnValue($progressUnfinished));
-
-        $zen->outputs->expects($this->at(1))->method('progress')
-                  ->with($this->equalTo(1))
-                  ->will($this->returnValue($progressUnfinished));
-
-        $zen->outputs->expects($this->at(2))->method('progress')
-                  ->with($this->equalTo(2))
-                  ->will($this->returnValue($progressFinished));
-
-        $zen->outputs->expects($this->at(3))->method('progress')
-                  ->with($this->equalTo(1))
-                  ->will($this->returnValue($progressFinished));
-
-        $details = $this->getMockBuilder('Services_Zencoder_Output')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-        $details->url = ROOT_TESTS . '/data/hauska-joonas.mp4';
-
-        $zen->outputs->expects($this->at(4))
-            ->method('details')
-            ->with($this->equalTo(2))
-            ->will($this->returnValue($details));
-
-        $zen->outputs->expects($this->at(5))
-            ->method('details')
-            ->with($this->equalTo(1))
-            ->will($this->returnValue($details));
-
-        return $zen;
     }
-
-
-    public function getMockedAwsService()
-    {
-        $aws = $this->getMockBuilder('ZendService\Amazon\S3\S3')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-        return $aws;
-    }
-
 
     /**
      * @test
      */
     public function pluginShouldAllowSharedResource()
     {
-        $plugin = new ZencoderPlugin();
-        $this->assertTrue($plugin->isSharedResourceAllowed());
+        $this->assertTrue($this->plugin->isSharedResourceAllowed());
     }
 
     /**
@@ -416,10 +384,8 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     public function pluginShouldAllowSharedVersions()
     {
-        $plugin = new ZencoderPlugin();
-        $this->assertTrue($plugin->areSharedVersionsAllowed());
+        $this->assertTrue($this->plugin->areSharedVersionsAllowed());
     }
-
 
     /**
      * @test
@@ -434,8 +400,4 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
         $this->assertArrayHasKey('file.delete', $events);
         $this->assertArrayHasKey('resource.delete', $events);
     }
-
-
-
-
 }

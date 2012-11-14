@@ -18,18 +18,29 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Storage\Storage;
 
 class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 {
     /**
+     * @var Storage
+     */
+    private $storage;
+
+    /**
      * @var ZencoderService
      */
-    protected $service;
+    private $zencoderService;
 
     /**
      * @var AmazonService
      */
-    private $awsService;
+    private $amazonService;
+
+    /**
+     * @var string
+     */
+    private $tempDir;
 
     protected $providesFor = array('video');
 
@@ -63,8 +74,18 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     private $sleepyTime = 5;
 
-    public function __construct($options = array())
-    {
+    public function __construct(
+        Storage $storage,
+        ZencoderService $zencoderService,
+        AmazonService $amazonService,
+        $tempDir,
+        $options = array()
+    ) {
+        $this->storage = $storage;
+        $this->zencoderService = $zencoderService;
+        $this->amazonService = $amazonService;
+        $this->tempDir = $tempDir;
+
         Configurator::setOptions($this, $options);
     }
 
@@ -149,11 +170,11 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     public function getAwsService()
     {
-        if (!$this->awsService) {
-            $this->awsService = new AmazonService($this->getAwsKey(), $this->getAwsSecretKey());
+        if (!$this->amazonService) {
+            $this->amazonService = new AmazonService($this->getAwsKey(), $this->getAwsSecretKey());
         }
 
-        return $this->awsService;
+        return $this->amazonService;
     }
 
     /**
@@ -183,11 +204,11 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     public function getService()
     {
-        if (!$this->service) {
-            $this->service = new ZencoderService($this->getApiKey());
+        if (!$this->zencoderService) {
+            $this->zencoderService = new ZencoderService($this->getApiKey());
         }
 
-        return $this->service;
+        return $this->zencoderService;
     }
 
     /**
@@ -221,7 +242,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         $s3 = $this->getAwsService();
         $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
-        $retrieved = $this->getStorage()->retrieve($file->getResource());
+        $retrieved = $this->storage->retrieve($file->getResource());
 
         $s3->putFile($retrieved->getRealPath(), $awsPath);
 
@@ -273,8 +294,9 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      * @param   string  $version  Version identifier
      * @return  string            Temporary filename
      */
-    protected function fetchOutput(Job $job, $version) {
-        $tempnam = tempnam($this->getFilelib()->getTempDir(), 'zen');
+    protected function fetchOutput(Job $job, $version)
+    {
+        $tempnam = tempnam($this->tempDir, 'zen');
         $output = $job->outputs[$version];
         $details = $this->getService()->outputs->details($output->id);
 
