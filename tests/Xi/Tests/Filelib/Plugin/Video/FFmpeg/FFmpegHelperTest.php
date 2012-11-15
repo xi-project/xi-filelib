@@ -223,6 +223,10 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function executeShouldWriteOutputFiles()
     {
+        if (!$this->checkFFmpegFound()) {
+            $this->markTestSkipped('ffmpeg could not be found');
+        }
+
         $config = array(
             'options' => array(
                 'y' => true,
@@ -332,8 +336,19 @@ JSON;
         $this->assertEquals(3.989000, $this->ffmpeg->getDuration($this->testVideo));
     }
 
+    /**
+     * @return boolean
+     */
     private function checkFFprobeFound()
     {
         return (boolean) trim(`ffprobe -print_format json 2>/dev/null`);
+    }
+
+    /**
+     * @return boolean
+     */
+    private function checkFFmpegFound()
+    {
+        return (boolean) trim(`which ffmpeg`);
     }
 }
