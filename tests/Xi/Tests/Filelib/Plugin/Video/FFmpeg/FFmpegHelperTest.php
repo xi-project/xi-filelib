@@ -283,8 +283,19 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
     public function runProcessThrowsRuntimeExceptionOnFailedProcess()
     {
         $failing = new FFmpegHelper(array('command' => 'zzz_non_existing'));
-        $this->setExpectedException('RuntimeException', "sh: line 0: exec: zzz_non_existing: not found\n");
-        $failing->execute('foo', 'bar');
+
+        try {
+            $failing->execute('foo', 'bar');
+
+            $this->fail('Expected an RuntimeException');
+        } catch (\RuntimeException $e) {
+            if (!preg_match('/exec: zzz_non_existing: not found/', $e->getMessage())) {
+                $this->fail(sprintf(
+                    'Expected error message containing "exec: zzz_non_existing: not found", got "%s"',
+                    $e->getMessage()
+                ));
+            }
+        }
     }
 
     /**
