@@ -19,7 +19,15 @@ use Xi\Filelib\Plugin\Video\ZencoderPlugin;
  */
 class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 {
+    /**
+     * @var array
+     */
     private $config;
+
+    /**
+     * @var ZencoderPlugin
+     */
+    private $plugin;
 
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject

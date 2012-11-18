@@ -13,6 +13,21 @@ use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper;
  */
 class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
 {
+    /**
+     * @var FileObject
+     */
+    private $testVideo;
+
+    /**
+     * @var FFmpegHelper
+     */
+    private $ffmpeg;
+
+    /**
+     * @var array
+     */
+    private $config;
+
     public function setUp()
     {
         $this->testVideo = new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4');
@@ -69,7 +84,7 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function constructorShouldFailWithNonArrayOptions()
     {
-        $helper = new FFmpegHelper('this is not an array');
+        new FFmpegHelper('this is not an array');
     }
 
     /**
@@ -77,14 +92,14 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function constructorShouldPassWithArrayOptions()
     {
-        $options = array('lussen' => 'hofer', 'tussen' => 'lussen');
-        $helper = new FFmpegHelper($options);
+        new FFmpegHelper(array('lussen' => 'hofer', 'tussen' => 'lussen'));
     }
 
     /**
      * @test
      */
-    public function setCommandThrowsOnEmptyCommand() {
+    public function setCommandThrowsOnEmptyCommand()
+    {
         $this->setExpectedException('InvalidArgumentException', 'Command must not be empty.');
         $this->ffmpeg->setCommand('');
 
@@ -140,12 +155,11 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function setOutputsShouldThrowExceptionForInvalidFilenames($filename)
     {
-        $options = array(
+        new FFmpegHelper(array(
             'outputs' => array(
                 'foo' => array('filename' => $filename)
             )
-        );
-        $ffmpeg = new FFmpegHelper($options);
+        ));
     }
 
     public function numberedOutputFilenames()
@@ -163,12 +177,11 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function setOutputsShouldThrowExceptionForNumberedFilenames($filename)
     {
-        $options = array(
+        new FFmpegHelper(array(
             'outputs' => array(
                 'foo' => array('filename' => $filename)
             )
-        );
-        $ffmpeg = new FFmpegHelper($options);
+        ));
     }
 
     /**
