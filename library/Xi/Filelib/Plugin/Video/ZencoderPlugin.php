@@ -19,14 +19,11 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\File\FileOperator;
 
 class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 {
-    /**
-     * @var Storage
-     */
-    private $storage;
-
     /**
      * @var ZencoderService
      */
@@ -76,12 +73,15 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function __construct(
         Storage $storage,
+        Publisher $publisher,
+        FileOperator $fileOperator,
         ZencoderService $zencoderService,
         AmazonService $amazonService,
         $tempDir,
         $options = array()
     ) {
-        $this->storage = $storage;
+        parent::__construct($storage, $publisher, $fileOperator, $options);
+
         $this->zencoderService = $zencoderService;
         $this->amazonService = $amazonService;
         $this->tempDir = $tempDir;
@@ -242,7 +242,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         $s3 = $this->getAwsService();
         $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
-        $retrieved = $this->storage->retrieve($file->getResource());
+        $retrieved = $this->getStorage()->retrieve($file->getResource());
 
         $s3->putFile($retrieved->getRealPath(), $awsPath);
 

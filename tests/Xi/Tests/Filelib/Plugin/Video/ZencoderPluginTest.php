@@ -82,6 +82,10 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
         $this->plugin = new ZencoderPlugin(
             $this->storage,
+            $this->getMock('Xi\Filelib\Publisher\Publisher'),
+            $this->getMockBuilder('Xi\Filelib\File\FileOperator')
+                ->disableOriginalConstructor()
+                ->getMock(),
             $this->zencoderService,
             $this->amazonService,
             ROOT_TESTS . '/data/temp',
