@@ -28,6 +28,11 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
      */
     private $storage;
 
+    /**
+     * @var string
+     */
+    private $testVideo;
+
     public function setUp()
     {
         if (!$this->checkFFmpegFound()) {
