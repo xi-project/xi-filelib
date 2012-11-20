@@ -13,7 +13,7 @@ use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
-use Zend\Service\Amazon\S3\S3 as AmazonService;
+use ZendService\Amazon\S3\S3 as AmazonService;
 
 class AmazonS3Storage extends AbstractStorage implements Storage
 {

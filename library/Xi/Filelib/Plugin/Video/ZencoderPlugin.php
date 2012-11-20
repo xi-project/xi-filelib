@@ -4,7 +4,7 @@ namespace Xi\Filelib\Plugin\Video;
 
 use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Job as Job;
-use Zend\Service\Amazon\S3\S3 as AmazonService;
+use ZendService\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
