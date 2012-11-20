@@ -19,8 +19,8 @@
         }
     ],
 
-    "repositories": {
-        "zencoder-php": {
+    "repositories": [
+        {
             "type": "package",
             "package": {
                 "name": "zencoder/zencoder-php",
@@ -31,8 +31,12 @@
                     "reference": "v2.0.2"
                 }
             }
+        },
+        {
+            "type": "vcs",
+            "url": "git://github.com/peterhil/ZendService_Amazon.git"
         }
-    },
+    ],
 
     "require": {
         "php": ">=5.3.0",
@@ -47,7 +51,7 @@
         "symfony/http-kernel": "2.1.*",
         "symfony/process": "2.1.*",
         "symfony/security": "2.1.*",
-        "zendframework/zendservice-amazon": "2.0.*",
+        "zendframework/zendservice-amazon": "dev-fix-s3-client",
         "zendframework/zend-i18n": "2.0.*",
         "zendframework/zend-filter": "2.0.*",
         "zendframework/zend-servicemanager": "2.0.*",
