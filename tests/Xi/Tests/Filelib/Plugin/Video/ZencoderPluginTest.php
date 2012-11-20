@@ -63,7 +63,7 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
 
     public function tearDown()
     {
-        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
+        if (!class_exists('ZendService\Amazon\S3\S3')) {
             return;
         }
 
