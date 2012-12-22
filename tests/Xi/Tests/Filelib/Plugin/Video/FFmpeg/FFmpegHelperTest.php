@@ -326,6 +326,7 @@ JSON;
 
     private function checkFFmpegFound()
     {
+        return false;
         return (boolean) trim(`sh -c "which ffmpeg"`);
     }
 }
