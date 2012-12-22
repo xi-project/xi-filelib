@@ -9,18 +9,18 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use Imagick;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Publisher\Publisher;
 
 /**
  * Versions an image
- *
  */
 class VersionPlugin extends AbstractVersionProvider
 {
-
     protected $providesFor = array('image');
 
     protected $imageMagickHelper;
@@ -30,10 +30,31 @@ class VersionPlugin extends AbstractVersionProvider
      */
     protected $extension;
 
-    public function __construct($options = array())
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    /**
+     * @var array
+     */
+    private $options;
+
+    /**
+     * @param  Storage       $storage
+     * @param  Publisher     $publisher
+     * @param  FileOperator  $fileOperator
+     * @param  array         $options
+     * @param  string        $tempDir
+     * @return VersionPlugin
+     */
+    public function __construct(Storage $storage, Publisher $publisher,
+        FileOperator $fileOperator, $tempDir, array $options = array())
     {
-        parent::__construct($options);
-        Configurator::setOptions($this->getImageMagickHelper(), $options);
+        parent::__construct($storage, $publisher, $fileOperator, $options);
+
+        $this->tempDir = $tempDir;
+        $this->options = $options;
     }
 
     /**
@@ -45,14 +66,18 @@ class VersionPlugin extends AbstractVersionProvider
     {
         if (!$this->imageMagickHelper) {
             $this->imageMagickHelper = new ImageMagickHelper();
+
+            Configurator::setOptions($this->imageMagickHelper, $this->options);
         }
+
         return $this->imageMagickHelper;
     }
 
     /**
      * Creates and stores version
      *
-     * @param File $file
+     * @param  File  $file
+     * @return array
      */
     public function createVersions(File $file)
     {
@@ -62,7 +87,7 @@ class VersionPlugin extends AbstractVersionProvider
 
         $this->getImageMagickHelper()->execute($img);
 
-        $tmp = $this->getFilelib()->getTempDir() . '/' . uniqid('', true);
+        $tmp = $this->tempDir . '/' . uniqid('', true);
         $img->writeImage($tmp);
 
         return array($this->getIdentifier() => $tmp);
@@ -76,13 +101,14 @@ class VersionPlugin extends AbstractVersionProvider
     /**
      * Sets file extension
      *
-     * @param string $extension File extension
+     * @param  string          $extension File extension
      * @return VersionProvider
      */
     public function setExtension($extension)
     {
         $extension = str_replace('.', '', $extension);
         $this->extension = $extension;
+
         return $this;
     }
 
@@ -101,6 +127,13 @@ class VersionPlugin extends AbstractVersionProvider
         return $this->getExtension();
     }
 
+    /**
+     * @return string
+     */
+    public function getTempDir()
+    {
+        return $this->tempDir;
+    }
 
     public function isSharedResourceAllowed()
     {
@@ -111,5 +144,4 @@ class VersionPlugin extends AbstractVersionProvider
     {
         return true;
     }
-
 }

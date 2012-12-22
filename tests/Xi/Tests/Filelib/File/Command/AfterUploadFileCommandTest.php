@@ -5,7 +5,6 @@ namespace Xi\Tests\Filelib\File\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
 use Xi\Filelib\File\Command\PublishFileCommand;
 

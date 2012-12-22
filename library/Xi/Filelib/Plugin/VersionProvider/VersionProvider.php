@@ -16,7 +16,6 @@ use Xi\Filelib\Plugin\Plugin;
  * Interface for version providing plugins
  *
  * @author pekkis
- *
  */
 interface VersionProvider extends Plugin
 {
@@ -37,7 +36,7 @@ interface VersionProvider extends Plugin
     /**
      * Returns whether the plugin provides a version for a file.
      *
-     * @param File $file File item
+     * @param  File    $file File item
      * @return boolean
      */
     public function providesFor(File $file);
@@ -69,6 +68,4 @@ interface VersionProvider extends Plugin
     public function isSharedResourceAllowed();
 
     public function areSharedVersionsAllowed();
-
-
 }

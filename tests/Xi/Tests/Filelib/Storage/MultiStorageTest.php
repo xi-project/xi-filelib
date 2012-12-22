@@ -9,7 +9,6 @@
 
 namespace Xi\Tests\Filelib\Storage;
 
-use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\Storage\MultiStorage;
 use \Xi\Filelib\File\Resource;
 

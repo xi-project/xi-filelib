@@ -10,9 +10,6 @@
 namespace Xi\Filelib;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\Publisher\Publisher;
@@ -20,7 +17,6 @@ use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\Command;
 use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
 use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
-use Xi\Filelib\Queue\Message;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**

@@ -9,14 +9,11 @@
 
 namespace Xi\Filelib\Folder;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\AbstractOperator;
 use Xi\Filelib\FilelibException;
-use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\EnqueueableCommand;
-use Xi\Filelib\Folder\Command\FolderCommand;
 use ArrayIterator;
 
 /**

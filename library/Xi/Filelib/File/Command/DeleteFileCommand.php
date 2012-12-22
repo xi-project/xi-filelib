@@ -12,7 +12,6 @@ namespace Xi\Filelib\File\Command;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
-use Serializable;
 
 class DeleteFileCommand extends AbstractFileCommand
 {

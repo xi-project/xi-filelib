@@ -10,7 +10,6 @@
 namespace Xi\Tests\Filelib\Storage;
 
 use Xi\Filelib\Storage\FilesystemStorage;
-use Xi\Filelib\File\Resource;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use Xi\Filelib\Exception\FileIOException;

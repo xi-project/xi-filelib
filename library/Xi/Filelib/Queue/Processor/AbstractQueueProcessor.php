@@ -13,7 +13,6 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\FileLibrary\File\FileOperator;
 use Xi\Filelib\FileLibrary\Folder\FolderOperator;
 use Xi\Filelib\Queue\Queue;
-use Xi\Filelib\Queue\Message;
 use Xi\Filelib\Command;
 use ReflectionObject;
 

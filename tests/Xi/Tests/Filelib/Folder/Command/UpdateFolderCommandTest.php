@@ -7,8 +7,6 @@ use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Upload\FileUpload;
-
 use Xi\Filelib\Folder\Command\UpdateFolderCommand;
 
 class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase

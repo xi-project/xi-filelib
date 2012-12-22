@@ -16,13 +16,12 @@ use Xi\Filelib\Configurator;
 use Xi\Filelib\Plugin\Image\Command\Command;
 
 /**
- * Imagemagick helper
+ * ImageMagick helper
  *
  * @author pekkis
  */
 class ImageMagickHelper
 {
-
     protected $commands = array();
     protected $imageMagickOptions = array();
 
@@ -71,7 +70,6 @@ class ImageMagickHelper
     public function execute($img)
     {
         foreach ($this->getImageMagickOptions() as $key => $value) {
-
             if (!is_array($value)) {
                 $value = array($value);
             }
@@ -89,7 +87,7 @@ class ImageMagickHelper
     /**
      * Creates a new imagick resource from path
      *
-     * @param string $path Image path
+     * @param  string                   $path Image path
      * @return Imagick
      * @throws InvalidArgumentException
      */
@@ -98,15 +96,20 @@ class ImageMagickHelper
         try {
             return new Imagick($path);
         } catch (ImagickException $e) {
-            throw new InvalidArgumentException(sprintf("ImageMagick could not be created from path '%s'", $path), 500, $e);
+            throw new InvalidArgumentException(
+                sprintf("ImageMagick could not be created from path '%s'", $path),
+                500,
+                $e
+            );
         }
     }
 
     /**
      * Creates and returns a command from config array
      *
-     * @param array $arr Config array
+     * @param  array                     $arr Config array
      * @return Command
+     * @throws \InvalidArgumentException
      */
     public function createCommandFromArray($arr)
     {
@@ -118,11 +121,13 @@ class ImageMagickHelper
         unset($arr['type']);
 
         if (!class_exists($className)) {
-            throw new \InvalidArgumentException(sprintf("Class '%s' does not exist", $className));
+            throw new \InvalidArgumentException(sprintf(
+                "Class '%s' does not exist", $className
+            ));
         }
 
         $command = new $className($arr);
+
         return $command;
     }
-
 }

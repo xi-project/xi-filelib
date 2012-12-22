@@ -1,7 +1,6 @@
 <?php
 
 namespace Xi\Tests\Filelib\Backend\Platform;
-
 use PHPUnit_Framework_TestCase;
 use Xi\Filelib\Backend\Platform\MongoPlatform;
 use Xi\Filelib\Folder\Folder;
@@ -15,7 +14,6 @@ use MongoDB;
 use MongoId;
 use MongoDate;
 use MongoConnectionException;
-
 
 /**
  * @group backend

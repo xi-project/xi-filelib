@@ -1,21 +1,76 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Tests\Filelib\Plugin\Image;
 
 use Imagick;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\File\Resource;
 
+/**
+ * @group plugin
+ */
 class VersionPluginTest extends TestCase
 {
     /**
+     * @var VersionPlugin
+     */
+    private $plugin;
+
+    /**
+     * @var Storage
+     */
+    private $storage;
+
+    /**
+     * @var Publisher
+     */
+    private $publisher;
+
+    /**
+     * @var FileOperator
+     */
+    private $fileOperator;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $this->publisher = $this->getMock('Xi\Filelib\Publisher\Publisher');
+
+        $this->fileOperator = $this
+            ->getMockBuilder('Xi\Filelib\File\FileOperator')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->plugin = new VersionPlugin(
+            $this->storage,
+            $this->publisher,
+            $this->fileOperator,
+            ROOT_TESTS . '/data/temp'
+        );
+    }
+
+    /**
      * @test
      */
-    public function classShouldExist()
+    public function classExtendsAbstractPlugin()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Plugin\Image\VersionPlugin'));
-        $this->assertArrayHasKey('Xi\Filelib\Plugin\AbstractPlugin', class_parents('Xi\Filelib\Plugin\Image\VersionPlugin'));
+        $this->assertArrayHasKey(
+            'Xi\Filelib\Plugin\AbstractPlugin',
+            class_parents($this->plugin)
+        );
     }
 
     /**
@@ -23,8 +78,7 @@ class VersionPluginTest extends TestCase
      */
     public function pluginShouldProvideForImage()
     {
-        $plugin = new VersionPlugin();
-        $this->assertEquals(array('image'), $plugin->getProvidesFor());
+        $this->assertEquals(array('image'), $this->plugin->getProvidesFor());
     }
 
     /**
@@ -32,8 +86,7 @@ class VersionPluginTest extends TestCase
      */
     public function pluginShouldAllowSharedResource()
     {
-        $plugin = new VersionPlugin();
-        $this->assertTrue($plugin->isSharedResourceAllowed());
+        $this->assertTrue($this->plugin->isSharedResourceAllowed());
     }
 
     /**
@@ -41,8 +94,7 @@ class VersionPluginTest extends TestCase
      */
     public function pluginShouldAllowSharedVersions()
     {
-        $plugin = new VersionPlugin();
-        $this->assertTrue($plugin->areSharedVersionsAllowed());
+        $this->assertTrue($this->plugin->areSharedVersionsAllowed());
     }
 
     /**
@@ -50,12 +102,10 @@ class VersionPluginTest extends TestCase
      */
     public function getImageMagickHelperShouldReturnImageMagickHelper()
     {
-        $plugin = new VersionPlugin();
-        $helper = $plugin->getImageMagickHelper();
+        $helper = $this->plugin->getImageMagickHelper();
 
         $this->assertInstanceOf('Xi\Filelib\Plugin\Image\ImageMagickHelper', $helper);
-
-        $this->assertSame($helper, $plugin->getImageMagickHelper());
+        $this->assertSame($helper, $this->plugin->getImageMagickHelper());
     }
 
     /**
@@ -72,45 +122,38 @@ class VersionPluginTest extends TestCase
                         ->getMock();
         $fobject->expects($this->once())->method('getPathName')->will($this->returnValue($retrievedPath));
 
-
-        $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
-        $storage->expects($this->once())->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\Resource'))->will($this->returnValue($fobject));
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $this->storage->expects($this->once())->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\Resource'))->will($this->returnValue($fobject));
 
         $helper = $this->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
 
         $mock = $this->getMock('Imagick');
-        $mock->expects($this->once())->method('writeImage')->with($this->matchesRegularExpression("#^/tmp/dir#"));
+        $mock->expects($this->once())
+             ->method('writeImage')
+             ->with($this->matchesRegularExpression('#^' . ROOT_TESTS . '/data/temp#'));
 
         $helper->expects($this->once())->method('createImagick')->with($this->equalTo($retrievedPath))->will($this->returnValue($mock));
         $helper->expects($this->once())->method('execute')->with($this->equalTo($mock));
 
-        $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue('/tmp/dir'));
-        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
-
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\VersionPlugin')
                        ->setMethods(array('getImageMagickHelper'))
-                        ->disableOriginalConstructor()
+                       ->setConstructorArgs(array(
+                           $this->storage,
+                           $this->publisher,
+                           $this->fileOperator,
+                           ROOT_TESTS . '/data/temp'
+                       ))
                        ->getMock();
 
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
 
-        $plugin->setFilelib($filelib);
         $ret = $plugin->createVersions($file);
 
         $this->assertInternalType('array', $ret);
 
         foreach ($ret as $version => $tmp) {
-            $this->assertRegExp("#/tmp/dir#", $tmp);
+            $this->assertRegExp('#^' . ROOT_TESTS . '/data/temp#', $tmp);
         }
-
-
-
-
-
     }
-
 
     /**
      * @test
@@ -131,10 +174,9 @@ class VersionPluginTest extends TestCase
      */
     public function getVersionsShouldReturnArrayOfOneContainingIdentifier()
     {
-         $plugin = new VersionPlugin();
-         $plugin->setIdentifier('xooxer');
+         $this->plugin->setIdentifier('xooxer');
 
-         $this->assertEquals(array('xooxer'), $plugin->getVersions());
+         $this->assertEquals(array('xooxer'), $this->plugin->getVersions());
     }
 
     /**
@@ -142,13 +184,11 @@ class VersionPluginTest extends TestCase
      */
     public function gettersAndSettersShouldWork()
     {
-        $plugin = new VersionPlugin();
-
         $extension = 'lus';
-        $this->assertNull($plugin->getExtension());
-        $this->assertSame($plugin, $plugin->setExtension($extension));
-        $this->assertEquals($extension, $plugin->getExtension());
 
+        $this->assertNull($this->plugin->getExtension());
+        $this->assertSame($this->plugin, $this->plugin->setExtension($extension));
+        $this->assertEquals($extension, $this->plugin->getExtension());
     }
 
     /**
@@ -157,14 +197,20 @@ class VersionPluginTest extends TestCase
     public function getExtensionForShouldDelegateToGetExtension()
     {
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\VersionPlugin')
-                        ->setMethods(array('getExtension'))
-                        ->getMock();
+                       ->setMethods(array('getExtension'))
+                       ->disableOriginalConstructor()
+                       ->getMock();
 
         $plugin->expects($this->once())->method('getExtension');
 
         $plugin->getExtensionFor('xooxoo');
-
     }
 
-
+    /**
+     * @test
+     */
+    public function getsTempDir()
+    {
+        $this->assertEquals(ROOT_TESTS . '/data/temp', $this->plugin->getTempDir());
+    }
 }

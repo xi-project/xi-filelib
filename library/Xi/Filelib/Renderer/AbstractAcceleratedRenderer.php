@@ -9,8 +9,6 @@
 
 namespace Xi\Filelib\Renderer;
 
-use Xi\Filelib\File\File;
-
 abstract class AbstractAcceleratedRenderer extends AbstractRenderer
 {
     /**

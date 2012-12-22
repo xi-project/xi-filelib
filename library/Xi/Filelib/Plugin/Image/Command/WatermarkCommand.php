@@ -15,11 +15,9 @@ use Imagick;
  * Watermarks an image version
  *
  * @author pekkis
- *
  */
 class WatermarkCommand extends AbstractCommand
 {
-
     /**
      * @var string Watermark image
      */
@@ -40,12 +38,13 @@ class WatermarkCommand extends AbstractCommand
     /**
      * Sets watermark image
      *
-     * @param string $image
+     * @param  string           $image
      * @return WatermarkCommand
      */
     public function setWatermarkImage($image)
     {
         $this->watermarkImage = $image;
+
         return $this;
     }
 
@@ -62,8 +61,9 @@ class WatermarkCommand extends AbstractCommand
     /**
      * Sets watermark position (nw, ne, se or sw)
      *
-     * @param string $position
+     * @param  string                    $position
      * @return WatermarkCommand
+     * @throws \InvalidArgumentException
      */
     public function setWatermarkPosition($position)
     {
@@ -72,10 +72,13 @@ class WatermarkCommand extends AbstractCommand
         }
 
         if (!in_array($position, array('nw', 'ne', 'sw', 'se'))) {
-            throw new \InvalidArgumentException(sprintf("Invalid watermark position '%s'", $position));
+            throw new \InvalidArgumentException(sprintf(
+                "Invalid watermark position '%s'", $position
+            ));
         }
 
         $this->watermarkPosition = $position;
+
         return $this;
     }
 
@@ -92,12 +95,13 @@ class WatermarkCommand extends AbstractCommand
     /**
      * Sets padding for watermark image (in pixels)
      *
-     * @param int $padding
+     * @param  int              $padding
      * @return WatermarkCommand
      */
     public function setWatermarkPadding($padding)
     {
         $this->watermarkPadding = $padding;
+
         return $this;
     }
 
@@ -111,19 +115,17 @@ class WatermarkCommand extends AbstractCommand
         return $this->watermarkPadding;
     }
 
-    public function execute(Imagick $img)
+    public function execute(Imagick $imagick)
     {
-        $watermark = $this->getWatermarkResource();
+        $coordinates = $this->calculateCoordinates($imagick);
 
-        $coordinates = $this->calculateCoordinates($img);
-
-        $img->compositeImage(
-                $this->getWatermarkResource(), Imagick::COMPOSITE_OVER, $coordinates['x'], $coordinates['y']
+        $imagick->compositeImage(
+            $this->getWatermarkResource(),
+            Imagick::COMPOSITE_OVER,
+            $coordinates['x'],
+            $coordinates['y']
         );
-
-        return;
     }
-
 
     public function calculateCoordinates(Imagick $img)
     {
@@ -136,7 +138,6 @@ class WatermarkCommand extends AbstractCommand
         $wHeight = $watermark->getImageHeight();
 
         switch ($this->getWatermarkPosition()) {
-
             case 'sw':
                 $x = 0 + $this->getWatermarkPadding();
                 $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
@@ -162,7 +163,7 @@ class WatermarkCommand extends AbstractCommand
     }
 
     /**
-     * Returns watermark imagick resource
+     * Returns watermark Imagick resource
      *
      * @return Imagick
      */
@@ -171,6 +172,7 @@ class WatermarkCommand extends AbstractCommand
         if (!$this->watermark) {
             $this->watermark = $this->createImagick($this->getWatermarkImage());
         }
+
         return $this->watermark;
     }
 
@@ -188,5 +190,4 @@ class WatermarkCommand extends AbstractCommand
     {
         $this->destroyWatermarkResource();
     }
-
 }

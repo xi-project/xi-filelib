@@ -13,7 +13,6 @@ use AMQPConnection;
 use AMQPChannel;
 use AMQPExchange;
 use AMQPQueue;
-use AMQPEnvelope;
 
 class PeclAMQPQueue implements Queue
 {

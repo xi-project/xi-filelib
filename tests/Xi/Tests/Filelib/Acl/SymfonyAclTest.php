@@ -14,7 +14,6 @@ use Xi\Filelib\Acl\SymfonyAcl;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
-use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 
 class SymfonyAclTest extends \PHPUnit_Framework_TestCase
 {
