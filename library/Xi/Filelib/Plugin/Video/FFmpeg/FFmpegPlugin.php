@@ -7,16 +7,42 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\File\FileOperator;
 
 class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
 {
     protected $providesFor = array('video');
 
+    /**
+     * @var FFmpegHelper
+     */
     protected $helper;
 
-    public function __construct($options = array())
-    {
-        parent::__construct($options);
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    /**
+     * @param Storage      $storage
+     * @param Publisher    $publisher
+     * @param FileOperator $fileOperator
+     * @param array        $tempDir
+     * @param array        $options
+     */
+    public function __construct(
+        Storage $storage,
+        Publisher $publisher,
+        FileOperator $fileOperator,
+        $tempDir,
+        $options = array()
+    ) {
+        parent::__construct($storage, $publisher, $fileOperator, $options);
+
+        $this->tempDir = $tempDir;
+
         Configurator::setOptions($this->getHelper(), $options);
     }
 
@@ -40,7 +66,7 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
     public function createVersions(File $file)
     {
         $retrieved = $this->getPathname($file);
-        $tmpDir = $this->getFilelib()->getTempdir();
+        $tmpDir = $this->tempDir;
 
         $this->getHelper()->execute($retrieved, $tmpDir);
 
@@ -77,9 +103,8 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         return true;
     }
 
-   private function getPathname(File $file)
+    private function getPathname(File $file)
     {
         return $this->getStorage()->retrieve($file->getResource())->getPathname();
     }
-
 }

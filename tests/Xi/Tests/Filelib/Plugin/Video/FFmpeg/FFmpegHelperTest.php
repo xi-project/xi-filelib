@@ -7,14 +7,29 @@ use Xi\Filelib\Exception\InvalidArgumentException;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Plugin\Video\FFmpeg\FFmpegHelper;
 
+/**
+ * @group plugin
+ * @group ffmpeg
+ */
 class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
 {
+    /**
+     * @var FileObject
+     */
+    private $testVideo;
+
+    /**
+     * @var FFmpegHelper
+     */
+    private $ffmpeg;
+
+    /**
+     * @var array
+     */
+    private $config;
+
     public function setUp()
     {
-        if (!$this->checkFFmpegFound()) {
-            $this->markTestSkipped('FFmpeg could not be found');
-        }
-
         $this->testVideo = new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4');
         $this->ffmpeg = new FFmpegHelper();
 
@@ -69,7 +84,7 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function constructorShouldFailWithNonArrayOptions()
     {
-        $helper = new FFmpegHelper('this is not an array');
+        new FFmpegHelper('this is not an array');
     }
 
     /**
@@ -77,14 +92,14 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function constructorShouldPassWithArrayOptions()
     {
-        $options = array('lussen' => 'hofer', 'tussen' => 'lussen');
-        $helper = new FFmpegHelper($options);
+        new FFmpegHelper(array('lussen' => 'hofer', 'tussen' => 'lussen'));
     }
 
     /**
      * @test
      */
-    public function setCommandThrowsOnEmptyCommand() {
+    public function setCommandThrowsOnEmptyCommand()
+    {
         $this->setExpectedException('InvalidArgumentException', 'Command must not be empty.');
         $this->ffmpeg->setCommand('');
 
@@ -140,12 +155,11 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function setOutputsShouldThrowExceptionForInvalidFilenames($filename)
     {
-        $options = array(
+        new FFmpegHelper(array(
             'outputs' => array(
                 'foo' => array('filename' => $filename)
             )
-        );
-        $ffmpeg = new FFmpegHelper($options);
+        ));
     }
 
     public function numberedOutputFilenames()
@@ -163,12 +177,11 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function setOutputsShouldThrowExceptionForNumberedFilenames($filename)
     {
-        $options = array(
+        new FFmpegHelper(array(
             'outputs' => array(
                 'foo' => array('filename' => $filename)
             )
-        );
-        $ffmpeg = new FFmpegHelper($options);
+        ));
     }
 
     /**
@@ -223,6 +236,10 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function executeShouldWriteOutputFiles()
     {
+        if (!$this->checkFFmpegFound()) {
+            $this->markTestSkipped('ffmpeg could not be found');
+        }
+
         $config = array(
             'options' => array(
                 'y' => true,
@@ -279,8 +296,19 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
     public function runProcessThrowsRuntimeExceptionOnFailedProcess()
     {
         $failing = new FFmpegHelper(array('command' => 'zzz_non_existing'));
-        $this->setExpectedException('RuntimeException', "sh: line 0: exec: zzz_non_existing: not found\n");
-        $failing->execute('foo', 'bar');
+
+        try {
+            $failing->execute('foo', 'bar');
+
+            $this->fail('Expected an RuntimeException');
+        } catch (\RuntimeException $e) {
+            if (!preg_match('/exec: zzz_non_existing: not found/', $e->getMessage())) {
+                $this->fail(sprintf(
+                    'Expected error message containing "exec: zzz_non_existing: not found", got "%s"',
+                    $e->getMessage()
+                ));
+            }
+        }
     }
 
     /**
@@ -288,6 +316,10 @@ class FFmpegHelperTest extends \Xi\Tests\Filelib\TestCase
      */
     public function testGetVideoInfo()
     {
+        if (!$this->checkFFprobeFound()) {
+            $this->markTestSkipped('ffprobe could not be found');
+        }
+
         $filename = $this->testVideo->getPathname();
         $expected = <<<JSON
 {
@@ -321,12 +353,28 @@ JSON;
      */
     public function testGetDuration()
     {
+        if (!$this->checkFFprobeFound()) {
+            $this->markTestSkipped('ffprobe could not be found');
+        }
+
         $this->assertEquals(3.989000, $this->ffmpeg->getDuration($this->testVideo));
     }
 
+    /**
+     * @return boolean
+     */
+    private function checkFFprobeFound()
+    {
+        return (boolean) trim(`ffprobe -print_format json 2>/dev/null`);
+    }
+
+    /**
+     * @return boolean
+     */
     private function checkFFmpegFound()
     {
+        // Skip 4 now because version always too old.
         return false;
-        return (boolean) trim(`sh -c "which ffmpeg"`);
+        // return (boolean) trim(`sh -c "which ffmpeg"`);
     }
 }

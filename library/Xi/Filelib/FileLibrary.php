@@ -96,8 +96,6 @@ class FileLibrary
         return $this;
     }
 
-
-
     /**
      * Sets temporary directory
      *
@@ -106,7 +104,10 @@ class FileLibrary
     public function setTempDir($tempDir)
     {
         if (!is_dir($tempDir) || !is_writable($tempDir)) {
-            throw new InvalidArgumentException("Temp dir is not writable or does not exist");
+            throw new InvalidArgumentException(sprintf(
+                'Temp dir "%s" is not writable or does not exist',
+                $tempDir
+            ));
         }
         $this->tempDir = $tempDir;
     }
@@ -313,19 +314,21 @@ class FileLibrary
     /**
      * Adds a plugin
      *
-     * @param Plugin Plugin $plugin
+     * @param  Plugin      $plugin
+     * @param  integer     $priority
      * @return FileLibrary
+     *
+     * TODO: Priority is not used.
      */
     public function addPlugin(Plugin $plugin, $priority = 1000)
     {
-        $plugin->setFilelib($this);
-
         $this->getEventDispatcher()->addSubscriber($plugin);
 
         $event = new PluginEvent($plugin);
         $this->getEventDispatcher()->dispatch('plugin.add', $event);
 
         $plugin->init();
+
         return $this;
     }
 
