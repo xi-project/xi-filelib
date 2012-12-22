@@ -5,7 +5,7 @@ namespace Xi\Filelib\Backend;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
-use MongoDb;
+use MongoDB;
 use MongoId;
 use MongoDate;
 use MongoCursorException;

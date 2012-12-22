@@ -12,16 +12,14 @@ namespace Xi\Filelib\Plugin;
 use Xi\Filelib\Event\FileUploadEvent;
 
 /**
- * Randomizes all uploads' file names before uploading. Ensures that same file may be uploaded
- * to the same directory time and again
+ * Randomizes all uploads' file names before uploading. Ensures that same file
+ * may be uploaded to the same directory time and again
  *
  * @author pekkis
- *
  */
 class RandomizeNamePlugin extends AbstractPlugin
 {
-
-    static protected $subscribedEvents = array(
+    protected static $subscribedEvents = array(
         'fileprofile.add' => 'onFileProfileAdd',
         'file.beforeUpload' => 'beforeUpload'
     );
@@ -34,11 +32,13 @@ class RandomizeNamePlugin extends AbstractPlugin
     /**
      * Sets prefix
      *
-     * @param $prefix
+     * @param  string              $prefix
+     * @return RandomizeNamePlugin
      */
     public function setPrefix($prefix)
     {
         $this->prefix = $prefix;
+
         return $this;
     }
 
@@ -61,8 +61,8 @@ class RandomizeNamePlugin extends AbstractPlugin
         $upload = $event->getFileUpload();
 
         $pinfo = pathinfo($upload->getUploadFilename());
-        $newname = uniqid($this->getPrefix(), true);
 
+        $newname = uniqid($this->getPrefix(), true);
         $newname = str_replace('.', '_', $newname);
 
         if (isset($pinfo['extension'])) {
@@ -70,8 +70,7 @@ class RandomizeNamePlugin extends AbstractPlugin
         }
 
         $upload->setOverrideFilename($newname);
+
         return $upload;
     }
-
 }
-

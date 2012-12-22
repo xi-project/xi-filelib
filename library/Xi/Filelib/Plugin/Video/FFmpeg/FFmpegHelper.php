@@ -156,12 +156,14 @@ class FFmpegHelper
      */
     public function getCommandLine($original, $outputDir)
     {
+        $self = $this;
+
         return implode(' ', array_merge(
             array($this->getCommand()),
             array(FFmpegHelper::shellArguments($this->getOptions())),
             array_map(
-                function($input) {
-                    return $this->shellArgumentsFor($input, '-i');
+                function ($input) use ($self) {
+                    return $self->shellArgumentsFor($input, '-i');
                 },
                 $this->getProcessedInputs($original)
             ),

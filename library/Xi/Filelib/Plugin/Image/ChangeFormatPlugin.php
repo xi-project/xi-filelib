@@ -12,16 +12,16 @@ namespace Xi\Filelib\Plugin\Image;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\File\FileOperator;
 
 /**
  * Changes images' formats before uploading them.
  *
  * @author pekkis
- *
  */
 class ChangeFormatPlugin extends AbstractPlugin
 {
-    static protected $subscribedEvents = array(
+    protected static $subscribedEvents = array(
         'fileprofile.add' => 'onFileProfileAdd',
         'file.beforeUpload' => 'beforeUpload'
     );
@@ -30,10 +30,35 @@ class ChangeFormatPlugin extends AbstractPlugin
 
     protected $targetExtension;
 
-    public function __construct($options = array())
-    {
+    /**
+     * @var FileOperator
+     */
+    private $fileOperator;
+
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    /**
+     * @var array
+     */
+    private $options;
+
+    /**
+     * @param  FileOperator       $fileOperator
+     * @param  string             $tempDir
+     * @param  array              $options
+     * @return ChangeFormatPlugin
+     */
+    public function __construct(FileOperator $fileOperator, $tempDir,
+        array $options = array()
+    ) {
         parent::__construct($options);
-        Configurator::setOptions($this->getImageMagickHelper(), $options);
+
+        $this->fileOperator = $fileOperator;
+        $this->tempDir = $tempDir;
+        $this->options = $options;
     }
 
     /**
@@ -45,18 +70,23 @@ class ChangeFormatPlugin extends AbstractPlugin
     {
         if (!$this->imageMagickHelper) {
             $this->imageMagickHelper = new ImageMagickHelper();
+
+            Configurator::setOptions($this->imageMagickHelper, $this->options);
         }
+
         return $this->imageMagickHelper;
     }
 
     /**
      * Sets target file's extension
      *
-     * @param string $targetExtension
+     * @param  string             $targetExtension
+     * @return ChangeFormatPlugin
      */
     public function setTargetExtension($targetExtension)
     {
         $this->targetExtension = $targetExtension;
+
         return $this;
     }
 
@@ -70,7 +100,6 @@ class ChangeFormatPlugin extends AbstractPlugin
         return $this->targetExtension;
     }
 
-
     public function beforeUpload(FileUploadEvent $event)
     {
         if (!$this->hasProfile($event->getProfile()->getIdentifier())) {
@@ -81,19 +110,19 @@ class ChangeFormatPlugin extends AbstractPlugin
 
         $mimetype = $upload->getMimeType();
         // @todo: use filebankstas type detection
-        if(!preg_match("/^image/", $mimetype)) {
+        if (!preg_match("/^image/", $mimetype)) {
             return;
         }
 
         $img = $this->getImageMagickHelper()->createImagick($upload->getRealPath());
         $this->getImageMagickHelper()->execute($img);
 
-        $tempnam = $this->getFilelib()->getTempDir() . '/' . uniqid('cfp', true);
+        $tempnam = $this->tempDir . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);
 
         $pinfo = pathinfo($upload->getUploadFilename());
 
-        $nupload = $this->getFilelib()->getFileOperator()->prepareUpload($tempnam);
+        $nupload = $this->fileOperator->prepareUpload($tempnam);
         $nupload->setTemporary(true);
 
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $this->getTargetExtension());
@@ -102,5 +131,4 @@ class ChangeFormatPlugin extends AbstractPlugin
 
         return $nupload;
     }
-
 }

@@ -9,26 +9,26 @@
 
 namespace Xi\Filelib\Plugin\Image\Command;
 
-use \Imagick;
+use Imagick;
 
 /**
- * Interface for imagemagick version plugin commands
+ * Interface for ImageMagick version plugin commands
  *
  * @author pekkis
- *
  */
 interface Command
 {
-
     /**
      * Executes command
+     *
+     * @param Imagick $imagick
      */
-    public function execute(Imagick $img);
+    public function execute(Imagick $imagick);
 
     /**
-     * Creates a new imagick resource
+     * Creates a new Imagick resource
      *
-     * @param string $path Image path
+     * @param  string  $path Image path
      * @return Imagick
      */
     public function createImagick($path);
