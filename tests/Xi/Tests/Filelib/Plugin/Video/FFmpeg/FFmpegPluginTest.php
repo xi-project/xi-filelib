@@ -175,8 +175,8 @@ class FFmpegPluginTest extends \Xi\Tests\Filelib\TestCase
 
     private function checkFFmpegFound()
     {
-        // Skip 4 now because no version identifier.
+        // Skip 4 now because version always too old.
         return false;
-        return (boolean) trim(`sh -c "which ffmpeg"`);
+        // return (boolean) trim(`sh -c "which ffmpeg"`);
     }
 }
