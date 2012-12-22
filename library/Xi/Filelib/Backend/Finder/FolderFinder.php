@@ -17,6 +17,7 @@ class FolderFinder extends AbstractFinder
     protected $fields = array(
         'id',
         'parent_id',
+        'url',
     );
 
     protected $resultClass = 'Xi\Filelib\Folder\Folder';

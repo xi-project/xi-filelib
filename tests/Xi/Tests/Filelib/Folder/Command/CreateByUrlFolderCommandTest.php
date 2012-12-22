@@ -57,7 +57,10 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new FolderOperator($filelib);
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Platform');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
         $backend->expects($this->once())->method('findRootFolder')->will($this->returnValue(array('id' => 1, 'name' => 'root')));
 
 
@@ -89,7 +92,11 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new FolderOperator($filelib);
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Platform');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $backend->expects($this->once())->method('findRootFolder')->will($this->returnValue(array('id' => 1, 'name' => 'root')));
 
 
@@ -133,7 +140,10 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib = new FileLibrary();
         $op = new FolderOperator($filelib);
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Platform');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $backend->expects($this->never())->method('findRoot');
 

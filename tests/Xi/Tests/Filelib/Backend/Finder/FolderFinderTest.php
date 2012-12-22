@@ -19,7 +19,8 @@ class FolderFinderTest extends TestCase
     {
         return array(
             'id',
-            'parent_id'
+            'parent_id',
+            'url',
         );
     }
 

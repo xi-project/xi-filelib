@@ -139,7 +139,7 @@ class UploadFileCommand extends AbstractFileCommand
         $resource = $this->getResource($file, $upload);
 
         $file->setResource($resource);
-        $this->fileOperator->getBackend()->upload($file, $folder);
+        $this->fileOperator->getBackend()->createFile($file, $folder);
         $this->fileOperator->getStorage()->store($resource, $upload->getRealPath());
 
         $event = new FileEvent($file);

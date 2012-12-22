@@ -29,6 +29,8 @@ use Xi\Filelib\File\Command\PublishFileCommand;
 use Xi\Filelib\File\Command\UnpublishFileCommand;
 use Xi\Filelib\Tool\TypeResolver\TypeResolver;
 use Xi\Filelib\Tool\TypeResolver\StupidTypeResolver;
+use Xi\Filelib\Backend\Finder\FileFinder;
+use ArrayIterator;
 
 /**
  * File operator
@@ -159,13 +161,13 @@ class FileOperator extends AbstractOperator
      */
     public function find($id)
     {
-        $file = $this->getBackend()->findFile($id);
+        $file = $this->getBackend()->findById($id, 'Xi\Filelib\File\File');
 
         if (!$file) {
             return false;
         }
 
-        $file = $this->getInstanceAndTriggerEvent($file);
+        $this->triggerEvent($file);
         return $file;
     }
 
@@ -178,32 +180,30 @@ class FileOperator extends AbstractOperator
      */
     public function findByFilename(Folder $folder, $filename)
     {
-        $file = $this->getBackend()->findFileByFilename($folder, $filename);
+        $file = $this->getBackend()->findByFinder(
+            new FileFinder(array('folder_id' => $folder->getId(), 'name' => $filename))
+        )->current();
 
         if (!$file) {
             return false;
         }
 
-        $file = $this->getInstanceAndTriggerEvent($file);
-
+        $this->triggerEvent($file);
         return $file;
     }
 
     /**
      * Finds and returns all files
      *
-     * @return array
+     * @return ArrayIterator
      */
     public function findAll()
     {
-        $ritems = $this->getBackend()->findAllFiles();
-
-        $items = array();
-        foreach ($ritems as $ritem) {
-            $item = $this->getInstanceAndTriggerEvent($ritem);
-            $items[] = $item;
+        $files = $this->getBackend()->findByFinder(new FileFinder());
+        foreach ($files as $file) {
+            $this->triggerEvent($file);
         }
-        return $items;
+        return $files;
     }
 
     /**
@@ -357,12 +357,12 @@ class FileOperator extends AbstractOperator
      *
      * @param array $file
      */
-    public function getInstanceAndTriggerEvent(array $file)
+    public function triggerEvent(File $file)
     {
-        $file = $this->getInstance($file);
+        // $file = $this->getInstance($file);
         $event = new FileEvent($file);
         $this->getEventDispatcher()->dispatch('file.instantiate', $event);
-        return $file;
+        // return $file;
     }
 
     /**

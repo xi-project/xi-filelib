@@ -11,7 +11,7 @@ use Xi\Filelib\File\Resource;
 use Xi\Tests\Filelib\TestCase;
 use ArrayIterator;
 
-class BackendTest extends TestCase
+class IdentityMapHelperTest extends TestCase
 {
 
     /**

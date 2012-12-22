@@ -14,6 +14,8 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\EnqueueableCommand;
+use Xi\Filelib\Backend\Finder\FolderFinder;
+use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 
 /**
@@ -120,14 +122,13 @@ class FolderOperator extends AbstractOperator
      */
     public function findRoot()
     {
-        $folder = $this->getBackend()->findRootFolder();
+        $folder = $this->getBackend()->findByFinder(
+            new FolderFinder(array('parent_id' => null))
+        )->current();
 
         if (!$folder) {
             throw new FilelibException('Could not locate root folder', 500);
         }
-
-        $folder = $this->getInstance($folder);
-
         return $folder;
     }
 
@@ -139,24 +140,16 @@ class FolderOperator extends AbstractOperator
      */
     public function find($id)
     {
-        $folder = $this->getBackend()->findFolder($id);
-        if (!$folder) {
-            return false;
-        }
-
-        $folder = $this->getInstance($folder);
+        $folder = $this->getBackend()->findById($id, 'Xi\Filelib\Folder\Folder');
         return $folder;
     }
 
     public function findByUrl($url)
     {
-        $folder = $this->getBackend()->findFolderByUrl($url);
+        $folder = $this->getBackend()->findByFinder(
+            new FolderFinder(array('url' => $url))
+        )->current();
 
-        if (!$folder) {
-            return false;
-        }
-
-        $folder = $this->getInstance($folder);
         return $folder;
     }
 
@@ -176,14 +169,11 @@ class FolderOperator extends AbstractOperator
      */
     public function findSubFolders(Folder $folder)
     {
-        $rawFolders = $this->getBackend()->findSubFolders($folder);
+        $folders = $this->getBackend()->findByFinder(
+            new FolderFinder(array('parent_id' => $folder->getId()))
+        );
 
-        $folders = array();
-        foreach ($rawFolders as $rawFolder) {
-            $folder = $this->getInstance($rawFolder);
-            $folders[] = $folder;
-        }
-        return new ArrayIterator($folders);
+        return $folders;
     }
 
     /**
@@ -198,13 +188,8 @@ class FolderOperator extends AbstractOperator
             return false;
         }
 
-        $parent = $this->getBackend()->findFolder($parentId);
-
-        if (!$parent) {
-            return false;
-        }
-
-        return $this->getInstance($parent);
+        $parent = $this->getBackend()->findById($folder->getParentId(), 'Xi\Filelib\Folder\Folder');
+        return $parent;
     }
 
     /**
@@ -213,18 +198,11 @@ class FolderOperator extends AbstractOperator
      */
     public function findFiles(Folder $folder)
     {
-        $ritems = $this->getBackend()->findFilesIn($folder);
-
-        $items = array();
-        foreach ($ritems as $ritem) {
-            $item = $this->getFileOperator()->getInstanceAndTriggerEvent($ritem);
-            $items[] = $item;
-        }
-
-        return new ArrayIterator($items);
+        $files = $this->getBackend()->findByFinder(
+            new FileFinder(array('folder_id' => $folder->getId()))
+        );
+        return $files;
     }
-
-
 
     /**
      *
@@ -234,6 +212,4 @@ class FolderOperator extends AbstractOperator
     {
         return $this->getFilelib()->getFileOperator();
     }
-
-
 }

@@ -52,6 +52,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         'Xi\Filelib\File\File' => array(
             'id' => '_id',
             'folder_id' => 'folder_id',
+            'name' => 'name',
         ),
         'Xi\Filelib\Folder\Folder' => array(
             'id' => '_id',
@@ -360,6 +361,10 @@ class MongoPlatform extends AbstractPlatform implements Platform
 
     public function findByIds(array $ids, $className)
     {
+        if (!$ids) {
+            return new ArrayIterator(array());
+        }
+
         $resources = $this->classNameToResources[$className];
 
         array_walk($ids, function(&$value) {

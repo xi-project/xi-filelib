@@ -21,6 +21,7 @@ class FileFinderTest extends TestCase
         return array(
             'id',
             'folder_id',
+            'name',
         );
     }
 

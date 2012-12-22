@@ -18,6 +18,11 @@ use Doctrine\ORM\EntityNotFoundException;
 use PDOException;
 use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\IdentityMap\Identifiable;
+use Doctrine\DBAL\Statement;
+use PDO;
+use Iterator;
+
+use ArrayIterator;
 
 /**
  * Doctrine 2 backend for filelib
@@ -58,6 +63,24 @@ class DoctrineOrmPlatform extends AbstractPlatform
      */
     private $em;
 
+    private $finderMap = array(
+        'Xi\Filelib\File\Resource' => array(
+            'id' => 'id',
+            'hash' => 'hash',
+        ),
+        'Xi\Filelib\File\File' => array(
+            'id' => 'id',
+            'folder_id' => 'folder_id',
+            'name' => 'filename',
+        ),
+        'Xi\Filelib\Folder\Folder' => array(
+            'id' => 'id',
+            'parent_id' => 'parent_id',
+        ),
+    );
+
+    private $classNameToResources;
+
     /**
      * @param  EventDispatcherInterface $eventDispatcher
      * @param  EntityManager    $em
@@ -66,6 +89,24 @@ class DoctrineOrmPlatform extends AbstractPlatform
     public function __construct(EntityManager $em)
     {
         $this->setEntityManager($em);
+        $this->classNameToResources = array(
+            'Xi\Filelib\File\Resource' => array(
+                'table' => 'xi_filelib_resource',
+                'exporter' => 'exportResources',
+                'getEntityName' => 'getResourceEntityName',
+            ),
+            'Xi\Filelib\File\File' => array(
+                'table' => 'xi_filelib_file',
+                'exporter' => 'exportFiles',
+                'getEntityName' => 'getFileEntityName',
+            ),
+            'Xi\Filelib\Folder\Folder' => array(
+                'table' => 'xi_filelib_folder',
+                'exporter' => 'exportFolders',
+                'getEntityName' => 'getFolderEntityName',
+            ),
+        );
+
     }
 
     /**
@@ -351,50 +392,68 @@ class DoctrineOrmPlatform extends AbstractPlatform
     /**
      * @see AbstractPlatform::exportFolder
      */
-    protected function exportFolder($folder)
+    protected function exportFolders(Iterator $iter)
     {
-        return Folder::create(array(
-            'id'        => $folder->getId(),
-            'parent_id' => $folder->getParent() ? $folder->getParent()->getId() : null,
-            'name'      => $folder->getName(),
-            'url'       => $folder->getUrl(),
-            'uuid'      => $folder->getUuid(),
-        ));
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $folder) {
+            $ret->append(Folder::create(array(
+                'id'        => $folder->getId(),
+                'parent_id' => $folder->getParent() ? $folder->getParent()->getId() : null,
+                'name'      => $folder->getName(),
+                'url'       => $folder->getUrl(),
+                'uuid'      => $folder->getUuid(),
+            )));
+        }
+        return $ret;
     }
 
     /**
-     * @see AbstractPlatform::exportFile
+     * @see AbstractPlatform::exportFiles
      */
-    protected function exportFile($file)
+    protected function exportFiles(Iterator $iter)
     {
-        return File::create(array(
-            'id'            => $file->getId(),
-            'folder_id'     => $file->getFolder() ? $file->getFolder()->getId() : null,
-            'profile'       => $file->getProfile(),
-            'name'          => $file->getName(),
-            'link'          => $file->getLink(),
-            'date_created' => $file->getDateCreated(),
-            'status'        => $file->getStatus(),
-            'uuid'          => $file->getUuid(),
-            'resource' => ($file->getResource()) ? $this->exportResource($file->getResource()) : null,
-            'versions' => $file->getVersions(),
-        ));
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $file) {
+
+            $resource = $this->findByIds(array($file->getResource()->getId()), 'Xi\Filelib\File\Resource')->current();
+
+            $ret->append(File::create(array(
+                'id'            => $file->getId(),
+                'folder_id'     => $file->getFolder() ? $file->getFolder()->getId() : null,
+                'profile'       => $file->getProfile(),
+                'name'          => $file->getName(),
+                'link'          => $file->getLink(),
+                'date_created' => $file->getDateCreated(),
+                'status'        => $file->getStatus(),
+                'uuid'          => $file->getUuid(),
+                'resource' => $resource,
+                'versions' => $file->getVersions(),
+            )));
+        }
+        return $ret;
+
+
     }
 
     /**
      * @see AbstractPlatform::exportResource
      */
-    protected function exportResource($resource)
+    protected function exportResources(Iterator $iter)
     {
-        return Resource::create(array(
-            'id' => $resource->getId(),
-            'hash' => $resource->getHash(),
-            'date_created' => $resource->getDateCreated(),
-            'versions' => $resource->getVersions(),
-            'mimetype' => $resource->getMimetype(),
-            'size' => $resource->getSize(),
-            'exclusive' => $resource->getExclusive(),
-        ));
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $resource) {
+
+            $ret->append(Resource::create(array(
+                'id' => $resource->getId(),
+                'hash' => $resource->getHash(),
+                'date_created' => $resource->getDateCreated(),
+                'versions' => $resource->getVersions(),
+                'mimetype' => $resource->getMimetype(),
+                'size' => $resource->getSize(),
+                'exclusive' => $resource->getExclusive(),
+            )));
+        }
+        return $ret;
     }
 
     /**
@@ -425,23 +484,90 @@ class DoctrineOrmPlatform extends AbstractPlatform
         return $this->em->getReference($this->folderEntityName, $id);
     }
 
-
-    public function findByFinder(Finder $finder)
-    {
-        return false;
-    }
-
-
     public function assertValidIdentifier(Identifiable $identifiable)
     {
         return is_numeric($identifiable->getId());
     }
 
+    public function findByFinder(Finder $finder)
+    {
+        $resources = $this->classNameToResources[$finder->getResultClass()];
+        $params = $this->finderParametersToInternalParameters($finder);
+
+        $tableName = $resources['table'];
+
+
+
+        $conn = $this->em->getConnection();
+
+        $qb = $conn->createQueryBuilder();
+        $qb->select("id")->from($tableName, 't');
+
+        $bindParams = array();
+        foreach($params as $param => $value) {
+
+            if ($value === null) {
+                $qb->andWhere("t.{$param} IS NULL");
+            } else {
+                $qb->andWhere("t.{$param} = :{$param}");
+                $bindParams[$param] = $value;
+            }
+
+        }
+
+        $sql = $qb->getSQL();
+        $stmt = $conn->prepare($sql);
+        foreach ($bindParams as $param => $value) {
+            $stmt->bindValue($param, $value);
+        }
+        $stmt->execute();
+
+        $ret = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $ret = array_map(function ($ret) {
+            return $ret['id'];
+        }, $ret);
+
+        return $ret;
+    }
+
+    private function finderParametersToInternalParameters(Finder $finder)
+    {
+        $ret = array();
+        foreach ($finder->getParameters() as $key => $value) {
+            $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
+        }
+        return $ret;
+    }
 
     public function findByIds(array $ids, $className)
     {
-        return false;
+        if (!$ids) {
+            return new ArrayIterator(array());
+        }
+
+        $resources = $this->classNameToResources[$className];
+
+        $table = $resources['table'];
+
+        $entityName = $this->$resources['getEntityName']();
+
+        $repo = $this->em->getRepository($this->$resources['getEntityName']());
+
+
+        $rows = $repo->findBy(
+            array(
+                'id' => $ids
+            )
+        );
+
+        $rows = new ArrayIterator($rows);
+
+        $exporter = $resources['exporter'];
+        return $this->$exporter($rows);
     }
+
+
 
 
 }

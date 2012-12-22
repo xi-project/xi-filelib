@@ -97,8 +97,6 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
            ->method('find')
            ->will($this->throwException(new EntityNotFoundException()));
 
-        $this->returnEmptyArrayForFindFilesInFolder($em);
-
         $this->backend->setEntityManager($em);
 
         $resource = Folder::create(array(
@@ -122,16 +120,6 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
         $em->expects($this->once())
            ->method('find')
            ->will($this->throwException(new EntityNotFoundException()));
-
-        $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
-                     ->disableOriginalConstructor()
-                     ->getMock();
-
-        $em->expects($this->once())->method('getConnection')
-           ->will($this->returnValue($conn));
-
-        $conn->expects($this->once())->method('fetchColumn')
-           ->will($this->returnValue(0));
 
         $this->backend->setEntityManager($em);
 

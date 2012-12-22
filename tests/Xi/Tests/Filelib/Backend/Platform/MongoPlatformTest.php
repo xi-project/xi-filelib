@@ -278,6 +278,12 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             array(1, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a9166110'))),
             array(0, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a916611x'))),
 
+            array(0, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166103', 'name' => 'repesorsa.lus'))),
+            array(1, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166103', 'name' => 'repesorsa.png'))),
+
+            array(1, new FileFinder(array('url' => 'lussuttaja/tussin'))),
+            array(0, new FileFinder(array('url' => 'lussuttaja/banskun'))),
+
             array(1, new FolderFinder(array('parent_id' => null))),
             array(3, new FolderFinder(array('parent_id' => '49a7011a05c677b9a9166102'))),
 

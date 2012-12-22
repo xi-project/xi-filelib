@@ -102,8 +102,12 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Platform');
-        $backend->expects($this->once())->method('upload')->with($this->isInstanceOf('Xi\Filelib\File\File'));
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $backend->expects($this->once())->method('createFile')->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
@@ -196,7 +200,11 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                     ->setMethods(array('getBackend', 'getProfile'))
                     ->getMock();
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Platform');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
@@ -243,7 +251,11 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
             ->setMethods(array('getBackend', 'getProfile'))
             ->getMock();
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Platform');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
@@ -303,7 +315,11 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
                 ->method('isSharedResourceAllowed')
                 ->will($this->returnValue(true));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Platform\Platform');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';

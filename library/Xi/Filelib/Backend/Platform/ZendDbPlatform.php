@@ -63,6 +63,7 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
         'Xi\Filelib\File\File' => array(
             'id' => 'id',
             'folder_id' => 'folder_id',
+            'name' => 'filename',
         ),
         'Xi\Filelib\Folder\Folder' => array(
             'id' => 'id',
@@ -80,7 +81,6 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     public function __construct(Zend_Db_Adapter_Abstract $db)
     {
         $this->setDb($db);
-
         $this->classNameToResources = array(
             'Xi\Filelib\File\Resource' => array('table' => array($this, 'getResourceTable'), 'exporter' => 'exportResources'),
             'Xi\Filelib\File\File' => array('table' => array($this, 'getFileTable'), 'exporter' => 'exportFiles'),
@@ -308,9 +308,7 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
     protected function exportFiles(Iterator $iter)
     {
         $ret = new ArrayIterator(array());
-
         foreach ($iter as $fileRow) {
-
             $resource = $this->findByIds(array($fileRow['resource_id']), 'Xi\Filelib\File\Resource')->current();
 
             $ret->append(File::create(array(
@@ -450,6 +448,10 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
 
     public function findByIds(array $ids, $className)
     {
+        if (!$ids) {
+            return new ArrayIterator(array());
+        }
+
         $resources = $this->classNameToResources[$className];
 
         $table = call_user_func($resources['table']);

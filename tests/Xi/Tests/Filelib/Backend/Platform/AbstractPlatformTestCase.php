@@ -453,6 +453,13 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $this->setUpSimpleDataSet();
         $ids = $this->backend->findByFinder($finder);
         $this->assertCount($expected, $ids);
+
+        $objs = $this->backend->findByIds($ids, $finder->getResultClass());
+        $this->assertCount($expected, $objs);
+
+        foreach ($objs as $obj) {
+            $this->assertInstanceOf($finder->getResultClass(), $obj);
+        }
     }
 
 
