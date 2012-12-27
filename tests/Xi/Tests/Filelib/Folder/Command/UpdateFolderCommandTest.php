@@ -8,6 +8,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Command\UpdateFolderCommand;
+use ArrayIterator;
 
 class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -56,87 +57,75 @@ class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
         /**
      * @test
      */
-    public function deleteShouldUpdateFoldersAndFilesRecursively()
+    public function updateShouldUpdateFoldersAndFilesRecursively()
     {
-        $filelib = new FileLibrary();
+        $filelib = $this->getFilelib();
+        $op = $this
+            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
+            ->setConstructorArgs(array($filelib))
+            ->setMethods(array('createCommand', 'findSubFolders', 'findFiles'))
+            ->getMock();
 
-         $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('createCommand'))
-                    ->getMock();
-
-         $deleteCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\UpdateFolderCommand')
-                               ->disableOriginalConstructor()
-                               ->getMock();
-
-         $deleteFileCommand = $this->getMockBuilder('Xi\Filelib\File\Command\DeleteFileCommand')
-                               ->disableOriginalConstructor()
-                               ->getMock();
-
-
-        $deleteCommand->expects($this->exactly(3))->method('execute');
-        $deleteFileCommand->expects($this->exactly(4))->method('execute');
-
-
-        $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))
-                                       ->will($this->returnValue($deleteFileCommand));
-        $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))
-                                       ->will($this->returnValue($deleteFileCommand));
-
-        $op->expects($this->at(2))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))
-                                       ->will($this->returnValue($deleteFileCommand));
-        $op->expects($this->at(3))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UpdateFileCommand'))
-                                       ->will($this->returnValue($deleteFileCommand));
-
-
-
-        $op->expects($this->at(4))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\UpdateFolderCommand'))
-                                       ->will($this->returnValue($deleteCommand));
-        $op->expects($this->at(5))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\UpdateFolderCommand'))
-                                       ->will($this->returnValue($deleteCommand));
-        $op->expects($this->at(6))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\UpdateFolderCommand'))
-                                       ->will($this->returnValue($deleteCommand));
-
-
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+        $updateCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\UpdateFolderCommand')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $backend->expects($this->exactly(1))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
+        $updateFileCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UpdateFileCommand')
+            ->disableOriginalConstructor()
+            ->getMock();
 
-                    if($folder->getId() == 1) {
-                        return array(
-                            array('id' => 2, 'parent_id' => 1),
-                            array('id' => 3, 'parent_id' => 1),
-                            array('id' => 4, 'parent_id' => 1),
-                        );
+        $updateCommand->expects($this->exactly(3))->method('execute');
+        $updateFileCommand->expects($this->exactly(4))->method('execute');
+
+        $op->expects($this->exactly(1))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
+            ->will($this->returnCallback(function($folder) {
+
+            if($folder->getId() == 1) {
+                return new ArrayIterator(array(
+                    Folder::create(array('id' => 2, 'parent_id' => 1)),
+                    Folder::create(array('id' => 3, 'parent_id' => 1)),
+                    Folder::create(array('id' => 4, 'parent_id' => 1)),
+                ));
+            }
+            return new ArrayIterator(array());
+        }));
+
+        $op->expects($this->exactly(1))->method('findFiles')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
+            ->will($this->returnCallback(function ($folder) {
+
+            if($folder->getId() == 1) {
+                return new ArrayIterator(array(
+                    Folder::create(array('id' => 1, 'name' => 'tohtori-vesala.avi')),
+                    Folder::create(array('id' => 2, 'name' => 'tohtori-vesala.png')),
+                    Folder::create(array('id' => 3, 'name' => 'tohtori-vesala.jpg')),
+                    Folder::create(array('id' => 4, 'name' => 'tohtori-vesala.bmp')),
+                ));
+            }
+            return new ArrayIterator(array());
+        }));
+
+        $op
+            ->expects($this->any())
+            ->method('createCommand')
+            ->will(
+            $this->returnCallback(
+                function ($className) use ($updateCommand, $updateFileCommand) {
+
+                    if ($className === 'Xi\Filelib\Folder\Command\UpdateFolderCommand') {
+                        return $updateCommand;
+                    } elseif ($className == 'Xi\Filelib\File\Command\UpdateFileCommand') {
+                        return $updateFileCommand;
                     }
-                    return array();
-                 }));
-        $backend->expects($this->exactly(1))->method('findFilesIn')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
-
-                    if($folder->getId() == 1) {
-                        return array(
-                            array('id' => 1, 'name' => 'tohtori-vesala.avi'),
-                            array('id' => 2, 'name' => 'tohtori-vesala.png'),
-                            array('id' => 3, 'name' => 'tohtori-vesala.jpg'),
-                            array('id' => 4, 'name' => 'tohtori-vesala.bmp'),
-                        );
-                    }
-                    return array();
-                 }));
-
-        $backend->expects($this->exactly(1))->method('UpdateFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
+                }
+            )
+        );
 
         $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                      ->setMethods(array('delete'))
-                      ->setConstructorArgs(array($filelib))
-                      ->getMock();
+            ->setMethods(array('delete'))
+            ->setConstructorArgs(array($filelib))
+            ->getMock();
 
-
+        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')->disableOriginalConstructor()->getMock();
         $filelib->setBackend($backend);
         $filelib->setFileOperator($fiop);
 

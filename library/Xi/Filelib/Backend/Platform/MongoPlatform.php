@@ -57,6 +57,7 @@ class MongoPlatform extends AbstractPlatform implements Platform
         'Xi\Filelib\Folder\Folder' => array(
             'id' => '_id',
             'parent_id' => 'parent_id',
+            'url' => 'url',
         ),
     );
 

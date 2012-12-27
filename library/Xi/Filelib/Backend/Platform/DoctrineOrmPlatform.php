@@ -76,6 +76,7 @@ class DoctrineOrmPlatform extends AbstractPlatform
         'Xi\Filelib\Folder\Folder' => array(
             'id' => 'id',
             'parent_id' => 'parent_id',
+            'url' => 'folderurl',
         ),
     );
 

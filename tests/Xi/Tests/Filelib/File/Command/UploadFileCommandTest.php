@@ -9,6 +9,8 @@ use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\Backend\Finder\ResourceFinder;
+use ArrayIterator;
 
 class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -107,7 +109,10 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $backend->expects($this->once())->method('createFile')->with($this->isInstanceOf('Xi\Filelib\File\File'));
+        $backend
+            ->expects($this->once())
+            ->method('createFile')
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
@@ -223,9 +228,15 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $upload = new FileUpload($path);
         $hash = sha1_file($upload->getRealPath());
 
-        $backend->expects($this->once())->method('findResourcesByHash')
-                ->with($this->equalTo($hash))
-                ->will($this->returnValue(array()));
+
+        $finder = new ResourceFinder(
+            array(
+                'hash' => $hash,
+            )
+        );
+        $backend->expects($this->once())->method('findByFinder')
+                ->with($this->equalTo($finder))
+                ->will($this->returnValue(new ArrayIterator(array())));
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
@@ -273,12 +284,17 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $upload = new FileUpload($path);
         $hash = sha1_file($upload->getRealPath());
 
-        $backend->expects($this->once())->method('findResourcesByHash')
-            ->with($this->equalTo($hash))
-            ->will($this->returnValue(array(
-            Resource::create(array('id' => 'first-id')),
-            Resource::create(array('id' => 'second-id')),
-        )));
+        $finder = new ResourceFinder(
+            array(
+                'hash' => $hash,
+            )
+        );
+        $backend->expects($this->once())->method('findByFinder')
+            ->with($this->equalTo($finder))
+            ->will($this->returnValue(new ArrayIterator(array(
+                Resource::create(array('id' => 'first-id')),
+                Resource::create(array('id' => 'second-id')),
+            ))));
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
@@ -327,12 +343,17 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $upload = new FileUpload($path);
         $hash = sha1_file($upload->getRealPath());
 
-        $backend->expects($this->once())->method('findResourcesByHash')
-                ->with($this->equalTo($hash))
-                ->will($this->returnValue(array(
-                    Resource::create(array('id' => 'first-id')),
-                    Resource::create(array('id' => 'second-id')),
-                )));
+        $finder = new ResourceFinder(
+            array(
+                'hash' => $hash,
+            )
+        );
+        $backend->expects($this->once())->method('findByFinder')
+            ->with($this->equalTo($finder))
+            ->will($this->returnValue(new ArrayIterator(array(
+            Resource::create(array('id' => 'first-id')),
+            Resource::create(array('id' => 'second-id')),
+        ))));
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 

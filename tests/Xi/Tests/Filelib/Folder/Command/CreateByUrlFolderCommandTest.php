@@ -6,6 +6,8 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\Command\CreateByUrlFolderCommand;
+use Xi\Filelib\Backend\Finder\FolderFinder;
+use ArrayIterator;
 
 class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -54,74 +56,84 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function createByUrlShouldCreateRecursivelyIfFolderDoesNotExist()
     {
-        $filelib = new FileLibrary();
-        $op = new FolderOperator($filelib);
+        $op = $this->getMockedOp();
 
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $backend->expects($this->once())->method('findRootFolder')->will($this->returnValue(array('id' => 1, 'name' => 'root')));
+        $root = Folder::create(array('parent_id' => null, 'name' => 'root'));
 
+        $op
+            ->expects($this->once())
+            ->method('findRoot')
+            ->will($this->returnValue($root));
 
-        $backend->expects($this->exactly(4))->method('createFolder')->will($this->returnCallback(function($folder) {
-            static $count = 1;
-            $folder->setId($count++);
-            return $folder;
-        }));
+        $op
+            ->expects($this->any())
+            ->method('findByUrl')
+            ->will($this->returnValue(false));
 
-
-        $backend->expects($this->exactly(5))->method('findFolderByUrl')->will($this->returnValue(false));
-
-        $filelib->setBackend($backend);
+        $self = $this;
+        $op
+            ->expects($this->exactly(4))
+            ->method('createCommand')
+            ->with(
+                'Xi\Filelib\Folder\Command\CreateFolderCommand',
+                $this->isType('array')
+            )
+            ->will($this->returnCallback(function($className) use ($self) {
+                $command = $self->getMockBuilder($className)->disableOriginalConstructor()->getMock();
+                $command->expects($this->once())->method('execute');
+                return $command;
+            }));
 
         $command = new CreateByUrlFolderCommand($op, 'tussin/lussutus/festivaali/2012');
         $folder = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
         $this->assertEquals('2012', $folder->getName());
-
     }
 
 
     /**
      * @test
+     * @group lusso
      */
     public function createByUrlShouldCreateRecursivelyFromTheMiddleIfSomeFoldersExist()
     {
-        $filelib = new FileLibrary();
-        $op = new FolderOperator($filelib);
+        $op = $this->getMockedOp();
 
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $root = Folder::create(array('parent_id' => null, 'name' => 'root'));
 
-        $backend->expects($this->once())->method('findRootFolder')->will($this->returnValue(array('id' => 1, 'name' => 'root')));
+        $op
+            ->expects($this->once())
+            ->method('findRoot')
+            ->will($this->returnValue($root));
 
-
-        $backend->expects($this->exactly(2))->method('createFolder')->will($this->returnCallback(function($folder) {
-            static $count = 1;
-            $folder->setId($count++);
-            return $folder;
+        $self = $this;
+        $op
+            ->expects($this->exactly(2))
+            ->method('createCommand')
+            ->with(
+                'Xi\Filelib\Folder\Command\CreateFolderCommand',
+                $this->isType('array')
+            )
+            ->will($this->returnCallback(function($className) use ($self) {
+            $command = $self->getMockBuilder($className)->disableOriginalConstructor()->getMock();
+            $command->expects($this->once())->method('execute');
+            return $command;
         }));
 
-        $backend->expects($this->exactly(5))->method('findFolderByUrl')->will($this->returnCallback(function($url) {
+        $op->expects($this->exactly(5))->method('findByUrl')->will($this->returnCallback(function($url) {
 
             if ($url === 'tussin') {
-                return array('id' => 536, 'parent_id' => 545, 'url' => 'tussin');
+                return Folder::create(array('id' => 536, 'parent_id' => 545, 'url' => 'tussin'));
             }
 
             if ($url === 'tussin/lussutus') {
-                return array('id' => 537, 'parent_id' => 5476, 'url' => 'tussin/lussutus');
+                return Folder::create(array('id' => 537, 'parent_id' => 5476, 'url' => 'tussin/lussutus'));
             }
 
             return false;
 
         }));
-
-        $filelib->setBackend($backend);
-
 
         $command = new CreateByUrlFolderCommand($op, 'tussin/lussutus/festivaali/2012');
         $folder = $command->execute();
@@ -137,21 +149,22 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function createByUrlShouldExitEarlyIfFolderExists()
     {
-        $filelib = new FileLibrary();
-        $op = new FolderOperator($filelib);
-
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+        $op = $this
+            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $backend->expects($this->never())->method('findRoot');
+        $root = Folder::create(array('parent_id' => null, 'name' => 'root'));
 
-        $backend->expects($this->once())->method('findFolderByUrl')->with($this->equalTo('tussin/lussutus/festivaali/2010'))
-                ->will($this->returnValue(array('id' => 666, 'parent_id' => 555)));
+        $op
+            ->expects($this->never())
+            ->method('findRoot');
 
-
-        $filelib->setBackend($backend);
+        $op
+            ->expects($this->once())
+            ->method('findByUrl')
+            ->with('tussin/lussutus/festivaali/2010')
+            ->will($this->returnValue(Folder::create(array('id' => 666))));
 
         $command = new CreateByUrlFolderCommand($op, 'tussin/lussutus/festivaali/2010');
         $folder = $command->execute();
@@ -161,11 +174,19 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getMockedOp()
+    {
+        $op = $this
+            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
+            ->disableOriginalConstructor()
+            ->setMethods(array('findRoot', 'findByUrl', 'createCommand'))
+            ->getMock();
 
-
-
-
-
+        return $op;
+    }
 
 }
 

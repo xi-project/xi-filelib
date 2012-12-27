@@ -210,7 +210,12 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $file = File::create(array('name' => 'tohtori-vesala.jpg', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
 
-        $backend->expects($this->once())->method('upload')->with($this->isInstanceOf('Xi\Filelib\File\File'));
+        $backend
+            ->expects($this->once())
+            ->method('createFile')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\File\File')
+            );
 
         if ($exclusiveResource) {
 

@@ -68,6 +68,7 @@ class ZendDbPlatform extends AbstractPlatform implements Platform
         'Xi\Filelib\Folder\Folder' => array(
             'id' => 'id',
             'parent_id' => 'parent_id',
+            'url' => 'folderurl',
         ),
     );
 

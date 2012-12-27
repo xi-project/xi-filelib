@@ -17,6 +17,7 @@ use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FilelibException;
+use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
 
 class UploadFileCommand extends AbstractFileCommand
@@ -65,9 +66,10 @@ class UploadFileCommand extends AbstractFileCommand
         $hash = sha1_file($upload->getRealPath());
         $profileObj = $this->fileOperator->getProfile($this->profile);
 
-        $resources = $this->fileOperator->getBackend()->findResourcesByHash($hash);
-        if ($resources) {
+        $finder = new ResourceFinder(array('hash' => $hash));
+        $resources = $this->fileOperator->getBackend()->findByFinder($finder);
 
+        if ($resources) {
             foreach ($resources as $resource) {
                 if (!$resource->isExclusive()) {
                     $file->setResource($resource);

@@ -541,8 +541,8 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
             array(0, new FileFinder(array('folder_id' => '3', 'name' => 'repesorsa.lus'))),
             array(1, new FileFinder(array('folder_id' => '3', 'name' => 'repesorsa.png'))),
 
-            array(1, new FileFinder(array('url' => 'lussuttaja/tussin'))),
-            array(0, new FileFinder(array('url' => 'lussuttaja/banskun'))),
+            array(1, new FolderFinder(array('url' => 'lussuttaja/tussin'))),
+            array(0, new FolderFinder(array('url' => 'lussuttaja/ankan'))),
 
             array(0, new ResourceFinder(array('hash' => 'unexisting-hash'))),
             array(1, new ResourceFinder(array('hash' => 'hash-1'))),
