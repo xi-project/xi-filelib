@@ -12,7 +12,6 @@ use ArrayIterator;
 
 class IdentityMapTest extends TestCase
 {
-
     /**
      * @var IdentityMap
      */
@@ -105,7 +104,9 @@ class IdentityMapTest extends TestCase
         $im->addMany($iter);
     }
 
-
+    /**
+     * @test
+     */
     public function removeManyShouldDeleteAllObjects()
     {
         $array = array(
@@ -124,9 +125,7 @@ class IdentityMapTest extends TestCase
             ->with($this->isInstanceOf('Xi\Filelib\IdentityMap\Identifiable'));
 
         $im->removeMany($iter);
-
     }
-
 
     /**
      * @test
@@ -190,9 +189,7 @@ class IdentityMapTest extends TestCase
 
         $this->assertAttributeCount(0, 'objects', $this->im);
         $this->assertAttributeCount(0, 'objectIdentifiers', $this->im);
-
     }
-
 
     /**
      * @test
@@ -203,8 +200,5 @@ class IdentityMapTest extends TestCase
         $this->assertFalse($this->im->has($object));
         $ret = $this->im->remove($object);
         $this->assertFalse($ret);
-
     }
-
-
 }

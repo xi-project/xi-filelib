@@ -8,6 +8,7 @@
  */
 
 namespace Xi\Filelib\IdentityMap;
+
 use Iterator;
 
 /**
@@ -85,9 +86,6 @@ class IdentityMap
         }
     }
 
-
-
-
     /**
      * Removes an identifiable
      *
@@ -142,5 +140,4 @@ class IdentityMap
     {
         return get_class($object) . ' ' . $object->getId();
     }
-
 }

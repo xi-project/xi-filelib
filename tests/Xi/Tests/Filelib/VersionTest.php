@@ -36,5 +36,4 @@ class VersionTest extends TestCase
     {
         $this->assertEquals($expected, Version::compare($version));
     }
-
 }

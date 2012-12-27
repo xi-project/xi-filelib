@@ -7,7 +7,6 @@ use Xi\Filelib\Backend\Finder\Finder;
 
 abstract class TestCase extends XiTestCase
 {
-
     /**
      * @var Finder
      */
@@ -58,8 +57,5 @@ abstract class TestCase extends XiTestCase
         $obj = new $class($params);
 
         $this->assertEquals($params, $obj->getParameters());
-
     }
-
-
 }

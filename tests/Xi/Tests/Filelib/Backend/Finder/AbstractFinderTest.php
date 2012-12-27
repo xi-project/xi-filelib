@@ -8,7 +8,6 @@ use Xi\Filelib\Backend\Finder\Finder;
 
 class AbstractFinderTest extends TestCase
 {
-
     protected $finder;
 
     /**
@@ -17,9 +16,11 @@ class AbstractFinderTest extends TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Backend\Finder\AbstractFinder'));
-        $this->assertContains('Xi\Filelib\Backend\Finder\Finder', class_implements('Xi\Filelib\Backend\Finder\AbstractFinder'));
+        $this->assertContains(
+            'Xi\Filelib\Backend\Finder\Finder',
+            class_implements('Xi\Filelib\Backend\Finder\AbstractFinder')
+        );
     }
-
 
     public function setUp()
     {
@@ -59,6 +60,4 @@ class AbstractFinderTest extends TestCase
         $this->assertEquals($params, $this->finder->getParameters());
 
     }
-
-
 }

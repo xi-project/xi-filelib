@@ -16,5 +16,4 @@ use Xi\Filelib\Exception\FilelibException;
  */
 class FinderException extends \Exception implements FilelibException
 {
-
 }
