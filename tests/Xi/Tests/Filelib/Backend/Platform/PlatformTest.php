@@ -7,7 +7,7 @@ use Xi\Tests\Filelib\TestCase as FilelibTestCase;
 /**
  * @group backend
  */
-class BackendTest extends FilelibTestCase
+class PlatformTest extends FilelibTestCase
 {
     /**
      * @test

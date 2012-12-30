@@ -293,12 +293,7 @@ class ZendDbPlatform implements Platform
         $row->uuid          = $file->getUuid();
         $row->resource_id   = $file->getResource()->getId();
         $row->versions = serialize($file->getVersions());
-
-        try {
-            $row->save();
-        } catch (Zend_Db_Statement_Exception $e) {
-            $this->throwNonUniqueFileException($file, $folder);
-        }
+        $row->save();
 
         $file->setId((int) $row->id);
         $file->setFolderId($row->folder_id);
@@ -405,13 +400,6 @@ class ZendDbPlatform implements Platform
     {
         return $this->db->fetchOne("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
     }
-
-
-    public function assertValidIdentifier(Identifiable $identifiable)
-    {
-        return is_numeric($identifiable->getId());
-    }
-
 
     public function findByFinder(Finder $finder)
     {

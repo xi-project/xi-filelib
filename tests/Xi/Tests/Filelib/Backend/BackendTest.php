@@ -17,7 +17,6 @@ use ArrayIterator;
 
 class BackendTest extends TestCase
 {
-
     /**
      * @var Backend
      */
@@ -82,7 +81,6 @@ class BackendTest extends TestCase
     public function updateResourceShouldDelegateToPlatform()
     {
         $obj = Resource::create(array('id' => 1));
-        $this->platform->expects($this->once())->method('assertValidIdentifier')->with($obj);
         $this->platform->expects($this->once())->method('updateResource')->with($obj)->will($this->returnValue(true));
         $ret = $this->backend->updateResource($obj);
         $this->assertTrue($ret);
@@ -95,7 +93,6 @@ class BackendTest extends TestCase
     public function updateFolderShouldDelegateToPlatform()
     {
         $obj = Folder::create(array('id' => 1));
-        $this->platform->expects($this->once())->method('assertValidIdentifier')->with($obj);
         $this->platform->expects($this->once())->method('updateFolder')->with($obj)->will($this->returnValue(true));
         $ret = $this->backend->updateFolder($obj);
         $this->assertTrue($ret);
@@ -116,8 +113,6 @@ class BackendTest extends TestCase
             ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
             ->setMethods(array('findById'))
             ->getMock();
-
-        $this->platform->expects($this->once())->method('assertValidIdentifier')->with($file);
 
         $backend->expects($this->once())->method('findById')->with($file->getFolderId(), 'Xi\Filelib\Folder\Folder')
             ->will($this->returnValue(false));
@@ -143,8 +138,6 @@ class BackendTest extends TestCase
                         ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
                         ->setMethods(array('findById', 'updateResource'))
                         ->getMock();
-
-        $this->platform->expects($this->once())->method('assertValidIdentifier')->with($file);
 
         $backend->expects($this->once())->method('findById')->with($file->getFolderId(), 'Xi\Filelib\Folder\Folder')
                 ->will($this->returnValue($folder));

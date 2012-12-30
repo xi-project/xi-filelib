@@ -123,6 +123,4 @@ interface Platform
      */
     public function updateResource(Resource $resource);
 
-    public function assertValidIdentifier(Identifiable $object);
-
 }

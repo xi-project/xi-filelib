@@ -241,7 +241,6 @@ class DoctrineOrmPlatform implements Platform
         $this->em->flush();
 
         $folder->setId($folderEntity->getId());
-
         return $folder;
     }
 
@@ -375,12 +374,7 @@ class DoctrineOrmPlatform implements Platform
             }
 
             $em->persist($entity);
-
-            try {
-                $em->flush();
-            } catch (PDOException $e) {
-                $self->throwNonUniqueFileException($file, $folder);
-            }
+            $em->flush();
 
             $file->setId($entity->getId());
             $file->setFolderId($entity->getFolder()->getId());
@@ -482,11 +476,6 @@ class DoctrineOrmPlatform implements Platform
     public function getFolderReference($id)
     {
         return $this->em->getReference($this->folderEntityName, $id);
-    }
-
-    public function assertValidIdentifier(Identifiable $identifiable)
-    {
-        return is_numeric($identifiable->getId());
     }
 
     public function findByFinder(Finder $finder)

@@ -294,8 +294,6 @@ class MongoPlatformTest extends AbstractPlatformTestCase
         );
     }
 
-
-
     /**
      * @return array
      */
@@ -450,26 +448,6 @@ class MongoPlatformTest extends AbstractPlatformTestCase
     {
         return array(
             array('49a7011a05c677b9a9166106', '49a7011a05c677b9a9166101', '48a7011a05c677b9a9166101'),
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function invalidFolderIdProvider()
-    {
-        return array(
-            array(1, 'a string'),
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function invalidFileIdProvider()
-    {
-        return array(
-            array(1, 'a string'),
         );
     }
 

@@ -117,11 +117,7 @@ class MongoPlatform implements Platform
             'unique' => true,
         ));
 
-        try {
-            $this->getMongo()->files->insert($document, array('safe' => true));
-        } catch (MongoCursorException $e) {
-            $this->throwNonUniqueFileException($file, $folder);
-        }
+        $this->getMongo()->files->insert($document, array('safe' => true));
 
         $file->setId((string) $document['_id']);
         $file->setFolderId($folder->getId());
@@ -248,14 +244,6 @@ class MongoPlatform implements Platform
         return $ret;
     }
 
-    /**
-     * @see AbstractPlatform::isValidIdentifier
-     */
-    public function isValidIdentifier($id)
-    {
-        return is_string($id);
-    }
-
     public function createResource(Resource $resource)
     {
         $document = array(
@@ -323,12 +311,6 @@ class MongoPlatform implements Platform
 
         return $refs->count();
     }
-
-    public function assertValidIdentifier(Identifiable $identifiable)
-    {
-        return is_string($identifiable->getId());
-    }
-
 
     public function findByFinder(Finder $finder)
     {

@@ -280,26 +280,6 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
     /**
      * @return array
      */
-    public function invalidFolderIdProvider()
-    {
-        return array(
-            array('xoo', 'an integer'),
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function invalidFileIdProvider()
-    {
-        return array(
-            array('xoo', 'an integer'),
-        );
-    }
-
-    /**
-     * @return array
-     */
     public function notFoundFolderIdProvider()
     {
         return array(

@@ -201,7 +201,6 @@ class Backend
      */
     public function updateFolder(Folder $folder)
     {
-        $this->getPlatform()->assertValidIdentifier($folder);
         return $this->getPlatform()->updateFolder($folder);
     }
 
@@ -214,7 +213,6 @@ class Backend
      */
     public function updateFile(File $file)
     {
-        $this->getPlatform()->assertValidIdentifier($file);
         if (!$this->findById($file->getFolderId(), 'Xi\Filelib\Folder\Folder')) {
             throw new FolderNotFoundException(sprintf('Folder was not found with id "%s"', $file->getFolderId()));
         }
@@ -266,10 +264,8 @@ class Backend
      */
     public function updateResource(Resource $resource)
     {
-        $this->getPlatform()->assertValidIdentifier($resource);
         return $this->getPlatform()->updateResource($resource);
     }
-
 
     /**
      * Returns how many times a resource is referenced by files
