@@ -52,18 +52,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     }
 
     /**
-     *
-     * @test
-     */
-    public function generateUuidShouldGenerateUuid()
-    {
-        $this->setUpEmptyDataSet();
-        $uuid = $this->backend->generateUuid();
-        $this->assertRegExp("/^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/", $uuid);
-    }
-
-
-    /**
      * @test
      * @dataProvider referenceCountProvider
      * @param integer $numberOfReferences

@@ -13,7 +13,6 @@ use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
-
 use ArrayIterator;
 
 class BackendTest extends TestCase
@@ -223,25 +222,71 @@ class BackendTest extends TestCase
 
     }
 
+    /**
+     * @test
+     */
+    public function createFileShouldThrowExceptionWithNonUniqueFile()
+    {
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->setMethods(array('findByFinder'))
+            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
+            ->getMock();
+
+        $folder = Folder::create(array('id' => 1, 'name' => 'lussen'));
+        $file = File::create(array('id' => 1, 'name' => 'ankanlipaisija'));
+
+        $this->platform->expects($this->never())->method('createFile');
+
+        $finder = new FileFinder(array('folder_id' => $folder->getId(), 'name' => $file->getName()));
+
+        $nonUniqueFile = File::create(array('id' => 2, 'name' => 'ankanlipaisija'));
+        $backend
+            ->expects($this->once())
+            ->method('findByFinder')
+            ->with($this->equalTo($finder))
+            ->will($this->returnValue(new ArrayIterator(array($nonUniqueFile))));
+
+
+        $this->setExpectedException(
+            'Xi\Filelib\Exception\NonUniqueFileException',
+            'A file with the name "ankanlipaisija" already exists in folder "lussen"'
+        );
+
+        $ret = $backend->createFile($file, $folder);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
+    }
 
     /**
      * @test
      */
     public function createFileShouldDelegateToPlatformAndAddToIdentityMap()
     {
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->setMethods(array('findByFinder'))
+            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
+            ->getMock();
+
         $folder = Folder::create(array('id' => 1));
         $file = File::create(array('id' => 1));
 
         $this->platform->expects($this->once())->method('createFile')
             ->with($file, $folder)->will($this->returnArgument(0));
 
+        $finder = new FileFinder(array('folder_id' => $folder->getId(), 'name' => $file->getName()));
+
+        $backend
+            ->expects($this->once())
+            ->method('findByFinder')
+            ->with($this->equalTo($finder))
+            ->will($this->returnValue(new ArrayIterator(array())));
+
         $this->im->expects($this->once())->method('add')->with($file)->will($this->returnValue(true));
 
-        $ret = $this->backend->createFile($file, $folder);
+        $ret = $backend->createFile($file, $folder);
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-
     }
-
 
     /**
      * @test

@@ -21,7 +21,6 @@ use Xi\Filelib\IdentityMap\Identifiable;
 use Doctrine\DBAL\Statement;
 use PDO;
 use Iterator;
-
 use ArrayIterator;
 
 /**
@@ -32,7 +31,7 @@ use ArrayIterator;
  * @author   Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  * @author   pekkis
  */
-class DoctrineOrmPlatform extends AbstractPlatform
+class DoctrineOrmPlatform implements Platform
 {
     /**
      * File entity name

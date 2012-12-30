@@ -35,7 +35,7 @@ use ArrayIterator;
  * @category Xi
  * @package  Filelib
  */
-class MongoPlatform extends AbstractPlatform implements Platform
+class MongoPlatform implements Platform
 {
     /**
      * MongoDB reference

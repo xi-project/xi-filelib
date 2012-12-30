@@ -30,31 +30,17 @@ interface Platform
      */
     public function getNumberOfReferences(Resource $resource);
 
-
-    /**
-     * @param ArrayIterator $iter
-     * @return ArrayIterator
-     */
-    // public function exportResources(ArrayIterator $iter);
-
-    /**
-     * @param ArrayIterator $iter
-     * @return ArrayIterator
-     */
-    // public function exportFiles(ArrayIterator $iter);
-
-    /**
-     * @param ArrayIterator $iter
-     * @return ArrayIterator
-     */
-    // public function exportFolders(ArrayIterator $iter);
-
     /**
      * @param Finder $finder
      * @return array
      */
     public function findByFinder(Finder $finder);
 
+    /**
+     * @param array $ids
+     * @param $className
+     * @return ArrayIterator
+     */
     public function findByIds(array $ids, $className);
 
     /**
@@ -63,7 +49,7 @@ interface Platform
      * @param  File             $file
      * @param  Folder           $folder
      * @return File             Uploaded file
-     * @throws FilelibException If file could not be uploaded.
+     * @throws FilelibException If file could not be created.
      */
     public function createFile(File $file, Folder $folder);
 
@@ -138,13 +124,5 @@ interface Platform
     public function updateResource(Resource $resource);
 
     public function assertValidIdentifier(Identifiable $object);
-
-    /**
-     * Generates and returns an UUID
-     *
-     * @abstract
-     * @return string
-     */
-    public function generateUuid();
 
 }

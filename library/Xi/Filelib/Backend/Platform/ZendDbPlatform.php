@@ -33,7 +33,7 @@ use ArrayIterator;
  * @category Xi
  * @package  Filelib
  */
-class ZendDbPlatform extends AbstractPlatform implements Platform
+class ZendDbPlatform implements Platform
 {
     /**
      * @var Zend_Db_Adapter_Abstract

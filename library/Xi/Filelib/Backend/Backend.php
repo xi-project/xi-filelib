@@ -23,6 +23,7 @@ use Xi\Filelib\Exception\FolderNotEmptyException;
 use Xi\Filelib\Exception\ResourceReferencedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\ResourceEvent;
+use Xi\Filelib\Exception\NonUniqueFileException;
 use Closure;
 use ArrayIterator;
 
@@ -122,6 +123,20 @@ class Backend
      */
     public function createFile(File $file, Folder $folder)
     {
+        $finder = new FileFinder(
+            array(
+                'folder_id' => $folder->getId(),
+                'name' => $file->getName()
+            )
+        );
+        if ($this->findByFinder($finder)->count()) {
+            throw new NonUniqueFileException(sprintf(
+                'A file with the name "%s" already exists in folder "%s"',
+                $file->getName(),
+                $folder->getName()
+            ));
+        }
+
         return $this->getIdentityMapHelper()->tryAndAddToIdentityMap(function(Platform $platform, File $file, Folder $folder) {
             return $platform->createFile($file, $folder);
         }, $file, $folder);
