@@ -104,7 +104,6 @@ class Folder
         return $this->url;
     }
 
-
     /**
      * Sets uuid
      *
@@ -124,7 +123,6 @@ class Folder
     {
         return $this->uuid;
     }
-
 
     /**
      * Set parent
@@ -158,6 +156,4 @@ class Folder
     {
         return $this->parent;
     }
-
-
 }

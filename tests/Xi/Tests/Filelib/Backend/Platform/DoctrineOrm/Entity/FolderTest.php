@@ -43,7 +43,4 @@ class FolderTest extends \Xi\Tests\Filelib\TestCase
         $this->assertNull($folder->getParent());
 
     }
-
-
-
 }

@@ -51,6 +51,4 @@ class ResourceTest extends \Xi\Tests\Filelib\TestCase
         $this->assertSame($value, $resource->getDateCreated());
 
     }
-
-
 }

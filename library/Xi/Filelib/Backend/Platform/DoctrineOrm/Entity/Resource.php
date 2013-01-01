@@ -134,7 +134,6 @@ class Resource
         return $this->size;
     }
 
-
     /**
      * Returns exclusive
      *
@@ -192,5 +191,4 @@ class Resource
     {
         return $this->versions;
     }
-
 }

@@ -16,7 +16,6 @@ class FileTest extends \Xi\Tests\Filelib\TestCase
         $this->assertTrue(class_exists('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\File'));
     }
 
-
     /**
      * @test
      */
@@ -57,6 +56,4 @@ class FileTest extends \Xi\Tests\Filelib\TestCase
         $this->assertSame($value, $file->getFolder());
 
     }
-
-
 }

@@ -25,17 +25,17 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     /**
      * @return Platform
      */
-    protected abstract function setUpBackend();
+    abstract protected function setUpBackend();
 
     /**
      * Set up a test using an empty data set.
      */
-    protected abstract function setUpEmptyDataSet();
+    abstract protected function setUpEmptyDataSet();
 
     /**
      * Set up a test using a simple data set.
      */
-    protected abstract function setUpSimpleDataSet();
+    abstract protected function setUpSimpleDataSet();
 
     protected function setUp()
     {
@@ -135,7 +135,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      * @dataProvider updateResourceProvider
      * @param mixed $resourceId
      * @param mixed $versions
-
      */
     public function updateResourceShouldUpdateResource($resourceId, $versions)
     {
@@ -168,9 +167,11 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     {
         $this->setUpEmptyDataSet();
 
-        $resource = Resource::create(array(
-            'id' => $resourceId,
-        ));
+        $resource = Resource::create(
+            array(
+                'id' => $resourceId,
+            )
+        );
         $this->assertFalse($this->backend->updateResource($resource));
     }
 
@@ -230,11 +231,13 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     {
         $this->setUpEmptyDataSet();
 
-        $folder = Folder::create(array(
-            'id' => $folderId,
-            'parent_id' => null,
-            'name' => 'klus',
-        ));
+        $folder = Folder::create(
+            array(
+                'id' => $folderId,
+                'parent_id' => null,
+                'name' => 'klus',
+            )
+        );
 
         $this->assertFalse($this->backend->deleteFolder($folder));
     }
@@ -247,19 +250,22 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      * @param mixed $updatedParentFolderId
      * @group refactor
      */
-    public function updateFolderShouldUpdateFolder($folderId, $parentFolderId,
-                                                   $updatedParentFolderId
-    )
-    {
+    public function updateFolderShouldUpdateFolder(
+        $folderId,
+        $parentFolderId,
+        $updatedParentFolderId
+    ) {
         $this->setUpSimpleDataSet();
 
-        $data = Folder::create(array(
-            'id' => $folderId,
-            'parent_id' => $parentFolderId,
-            'url' => 'lussuttaja/tussin',
-            'name' => 'tussin',
-            'uuid' => 'uuid-f-' . $folderId,
-        ));
+        $data = Folder::create(
+            array(
+                'id' => $folderId,
+                'parent_id' => $parentFolderId,
+                'url' => 'lussuttaja/tussin',
+                'name' => 'tussin',
+                'uuid' => 'uuid-f-' . $folderId,
+            )
+        );
 
         $this->assertEquals($data, $this->findFolder($folderId));
 
@@ -286,13 +292,15 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     {
         $this->setUpSimpleDataSet();
 
-        $folder = Folder::create(array(
-            'id' => $folderId,
-            'parent_id' => null,
-            'url' => 'foo/bar',
-            'name' => 'xoo',
-            'uuid' => 'tussi-uuid',
-        ));
+        $folder = Folder::create(
+            array(
+                'id' => $folderId,
+                'parent_id' => null,
+                'url' => 'foo/bar',
+                'name' => 'xoo',
+                'uuid' => 'tussi-uuid',
+            )
+        );
 
         $this->assertTrue($this->backend->updateFolder($folder));
         $this->assertEquals($folder, $this->findFolder($folderId));
@@ -307,9 +315,11 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     {
         $this->setUpEmptyDataSet();
 
-        $folder = Folder::create(array(
-            'id' => $folderId,
-        ));
+        $folder = Folder::create(
+            array(
+                'id' => $folderId,
+            )
+        );
 
         $this->assertFalse($this->backend->updateFolder($folder));
     }

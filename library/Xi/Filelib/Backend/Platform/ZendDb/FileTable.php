@@ -32,6 +32,4 @@ class FileTable extends \Zend_Db_Table_Abstract
             'refColumns'        => 'id'
         ),
     );
-
-
 }

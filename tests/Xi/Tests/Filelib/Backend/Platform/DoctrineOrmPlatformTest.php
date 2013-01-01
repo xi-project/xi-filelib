@@ -51,14 +51,14 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
         $connectionOptions = PDO_DRIVER === 'sqlite'
             ? array(
                 'driver' => 'pdo_' . PDO_DRIVER,
-                'path'   => PDO_DBNAME,
+                'path' => PDO_DBNAME,
             )
             : array(
-                'driver'   => 'pdo_' . PDO_DRIVER,
-                'dbname'   => PDO_DBNAME,
-                'user'     => PDO_USERNAME,
+                'driver' => 'pdo_' . PDO_DRIVER,
+                'dbname' => PDO_DBNAME,
+                'user' => PDO_USERNAME,
                 'password' => PDO_PASSWORD,
-                'host'     => PDO_HOST,
+                'host' => PDO_HOST,
             );
 
         $em = EntityManager::create($connectionOptions, $config);
@@ -73,16 +73,20 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
     {
         $this->setUpEmptyDataSet();
 
-        $this->assertEquals('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\File',
-                            $this->backend->getFileEntityName());
+        $this->assertEquals(
+            'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\File',
+            $this->backend->getFileEntityName()
+        );
 
-        $this->assertEquals('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder',
-                            $this->backend->getFolderEntityName());
+        $this->assertEquals(
+            'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder',
+            $this->backend->getFolderEntityName()
+        );
 
-        $this->assertEquals('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource',
-                            $this->backend->getResourceEntityName());
-
-
+        $this->assertEquals(
+            'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource',
+            $this->backend->getResourceEntityName()
+        );
     }
 
     /**
@@ -94,16 +98,18 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
 
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
-           ->method('find')
-           ->will($this->throwException(new EntityNotFoundException()));
+            ->method('find')
+            ->will($this->throwException(new EntityNotFoundException()));
 
         $this->backend->setEntityManager($em);
 
-        $resource = Folder::create(array(
-            'id'        => 666,
-            'parent_id' => null,
-            'name'      => 'foo',
-        ));
+        $resource = Folder::create(
+            array(
+                'id' => 666,
+                'parent_id' => null,
+                'name' => 'foo',
+            )
+        );
 
         $this->assertFalse($this->backend->deleteFolder($resource));
     }
@@ -118,18 +124,15 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
 
         $em = $this->createEntityManagerMock();
         $em->expects($this->once())
-           ->method('find')
-           ->will($this->throwException(new EntityNotFoundException()));
+            ->method('find')
+            ->will($this->throwException(new EntityNotFoundException()));
 
         $this->backend->setEntityManager($em);
 
-        $resource = Resource::create(array(
-            'id'        => 1
-        ));
+        $resource = Resource::create(array('id' => 1));
 
         $this->assertFalse($this->backend->deleteResource($resource));
     }
-
 
 
     /**
@@ -140,13 +143,15 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
         $repository = $this->getMockAndDisableOriginalConstructor(
             'Doctrine\ORM\EntityRepository'
         );
-        $repository->expects($this->once())
-                   ->method('findBy')
-                   ->will($this->returnValue(array()));
+        $repository
+            ->expects($this->once())
+            ->method('findBy')
+            ->will($this->returnValue(array()));
 
-        $em->expects($this->once())
-           ->method('getRepository')
-           ->will($this->returnValue($repository));
+        $em
+            ->expects($this->once())
+            ->method('getRepository')
+            ->will($this->returnValue($repository));
     }
 
     /**
@@ -158,13 +163,17 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
 
         $fileEntityName = 'Foo\Bar';
 
-        $this->assertNotEquals($fileEntityName,
-                               $this->backend->getFileEntityName());
+        $this->assertNotEquals(
+            $fileEntityName,
+            $this->backend->getFileEntityName()
+        );
 
         $this->backend->setFileEntityName($fileEntityName);
 
-        $this->assertEquals($fileEntityName,
-                            $this->backend->getFileEntityName());
+        $this->assertEquals(
+            $fileEntityName,
+            $this->backend->getFileEntityName()
+        );
     }
 
 
@@ -177,13 +186,17 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
 
         $resEntityName = 'Foo\Bar';
 
-        $this->assertNotEquals($resEntityName,
-                               $this->backend->getResourceEntityName());
+        $this->assertNotEquals(
+            $resEntityName,
+            $this->backend->getResourceEntityName()
+        );
 
         $this->backend->setResourceEntityName($resEntityName);
 
-        $this->assertEquals($resEntityName,
-                            $this->backend->getResourceEntityName());
+        $this->assertEquals(
+            $resEntityName,
+            $this->backend->getResourceEntityName()
+        );
     }
 
 
@@ -196,13 +209,17 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
 
         $folderEntityName = 'Xoo\Bar';
 
-        $this->assertNotEquals($folderEntityName,
-                               $this->backend->getFolderEntityName());
+        $this->assertNotEquals(
+            $folderEntityName,
+            $this->backend->getFolderEntityName()
+        );
 
         $this->backend->setFolderEntityName($folderEntityName);
 
-        $this->assertEquals($folderEntityName,
-                            $this->backend->getFolderEntityName());
+        $this->assertEquals(
+            $folderEntityName,
+            $this->backend->getFolderEntityName()
+        );
     }
 
     /**

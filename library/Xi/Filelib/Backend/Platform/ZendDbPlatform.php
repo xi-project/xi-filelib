@@ -12,26 +12,23 @@ namespace Xi\Filelib\Backend\Platform;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Exception\NonUniqueFileException;
 use Xi\Filelib\Backend\Platform\ZendDb\FileTable;
 use Xi\Filelib\Backend\Platform\ZendDb\FolderTable;
 use Xi\Filelib\Backend\Platform\ZendDb\ResourceTable;
 use Zend_Db_Adapter_Abstract;
 use Zend_Db_Table_Abstract;
-use Zend_Db_Statement_Exception;
 use DateTime;
 use Xi\Filelib\Backend\Finder\Finder;
-use Xi\Filelib\IdentityMap\Identifiable;
 use Iterator;
 use ArrayIterator;
 
-
 /**
- * ZendDb backend for filelib
+ * ZendDb backend
  *
  * @author   pekkis
  * @category Xi
  * @package  Filelib
+ * @todo Move to Zend db bridge pack out of Filelib proper
  */
 class ZendDbPlatform implements Platform
 {
@@ -55,6 +52,9 @@ class ZendDbPlatform implements Platform
      */
     private $resourceTable;
 
+    /**
+     * @var array
+     */
     private $finderMap = array(
         'Xi\Filelib\File\Resource' => array(
             'id' => 'id',
@@ -72,6 +72,9 @@ class ZendDbPlatform implements Platform
         ),
     );
 
+    /**
+     * @var array
+     */
     private $classNameToResources;
 
     /**
@@ -83,9 +86,18 @@ class ZendDbPlatform implements Platform
     {
         $this->setDb($db);
         $this->classNameToResources = array(
-            'Xi\Filelib\File\Resource' => array('table' => array($this, 'getResourceTable'), 'exporter' => 'exportResources'),
-            'Xi\Filelib\File\File' => array('table' => array($this, 'getFileTable'), 'exporter' => 'exportFiles'),
-            'Xi\Filelib\Folder\Folder' => array('table' => array($this, 'getFolderTable'), 'exporter' => 'exportFolders'),
+            'Xi\Filelib\File\Resource' => array(
+                'table' => array($this, 'getResourceTable'),
+                'exporter' => 'exportResources'
+            ),
+            'Xi\Filelib\File\File' => array(
+                'table' => array($this, 'getFileTable'),
+                'exporter' => 'exportFiles'
+            ),
+            'Xi\Filelib\Folder\Folder' => array(
+                'table' => array($this, 'getFolderTable'),
+                'exporter' => 'exportFolders'
+            ),
         );
 
     }
@@ -161,7 +173,6 @@ class ZendDbPlatform implements Platform
         return $this->resourceTable;
     }
 
-
     /**
      * @param  Zend_Db_Table_Abstract $resourceTable
      * @return ZendDbPlatform
@@ -173,7 +184,7 @@ class ZendDbPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doCreateFolder
+     * @see Platform::createFolder
      */
     public function createFolder(Folder $folder)
     {
@@ -191,19 +202,17 @@ class ZendDbPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doDeleteFolder
+     * @see Platform::deleteFolder
      */
     public function deleteFolder(Folder $folder)
     {
         return (bool) $this->getFolderTable()->delete(
-            $this->getFolderTable()
-                 ->getAdapter()
-                 ->quoteInto("id = ?", $folder->getId())
+            $this->getFolderTable()->getAdapter()->quoteInto("id = ?", $folder->getId())
         );
     }
 
     /**
-     * @see AbstractPlatform::doUpdateFolder
+     * @see Platform::updateFolder
      */
     public function updateFolder(Folder $folder)
     {
@@ -215,14 +224,12 @@ class ZendDbPlatform implements Platform
                 'folderurl'  => $folder->getUrl(),
                 'uuid'       => $folder->getUuid(),
             ),
-            $this->getFolderTable()
-                 ->getAdapter()
-                 ->quoteInto('id = ?', $folder->getId())
+            $this->getFolderTable()->getAdapter()->quoteInto('id = ?', $folder->getId())
         );
     }
 
     /**
-     * @see AbstractPlatform::doUpdateResource
+     * @see Platform::updateResource
      */
     public function updateResource(Resource $resource)
     {
@@ -231,14 +238,12 @@ class ZendDbPlatform implements Platform
                 'versions' => serialize($resource->getVersions()),
                 'exclusive' => $resource->isExclusive() ? 1 : 0,
             ),
-            $this->getResourceTable()
-                 ->getAdapter()
-                 ->quoteInto('id = ?', $resource->getId())
+            $this->getResourceTable()->getAdapter()->quoteInto('id = ?', $resource->getId())
         );
     }
 
     /**
-     * @see AbstractPlatform::doUpdateFile
+     * @see Platform::updateFile
      */
     public function updateFile(File $file)
     {
@@ -256,14 +261,12 @@ class ZendDbPlatform implements Platform
                 'resource_id'   => $data['resource']->getId(),
                 'versions' => serialize($data['versions']),
             ),
-            $this->getFileTable()
-                 ->getAdapter()
-                 ->quoteInto('id = ?', $data['id'])
+            $this->getFileTable()->getAdapter()->quoteInto('id = ?', $data['id'])
         );
     }
 
     /**
-     * @see AbstractPlatform::doDeleteFile
+     * @see Platform::deleteFile
      */
     public function deleteFile(File $file)
     {
@@ -279,7 +282,7 @@ class ZendDbPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doUpload
+     * @see Platform::createFile
      */
     public function createFile(File $file, Folder $folder)
     {
@@ -299,66 +302,6 @@ class ZendDbPlatform implements Platform
         $file->setFolderId($row->folder_id);
 
         return $file;
-    }
-
-    protected function exportFiles(Iterator $iter)
-    {
-        $ret = new ArrayIterator(array());
-        foreach ($iter as $fileRow) {
-            $resource = $this->findByIds(array($fileRow['resource_id']), 'Xi\Filelib\File\Resource')->current();
-
-            $ret->append(File::create(array(
-                'id'            => $fileRow['id'],
-                'folder_id'     => $fileRow['folder_id'],
-                'name'          => $fileRow['filename'],
-                'profile'       => $fileRow['fileprofile'],
-                'link'          => $fileRow['filelink'],
-                'date_created' => new DateTime($fileRow['date_created']),
-                'status'        => (int) $fileRow['status'],
-                'uuid'          => $fileRow['uuid'],
-                'resource'      => $resource,
-                'versions'      => unserialize($fileRow['versions']),
-            )));
-        }
-        return $ret;
-    }
-
-
-    /**
-     * @see AbstractPlatform::exportFolder
-     */
-    protected function exportFolders(Iterator $iter)
-    {
-        $ret = new ArrayIterator(array());
-        foreach ($iter as $folder) {
-
-            $ret->append(Folder::create(array(
-                'id'        => (int) $folder['id'],
-                'parent_id' => $folder['parent_id'] ? (int) $folder['parent_id'] : null,
-                'name'      => $folder['foldername'],
-                'url'       => $folder['folderurl'],
-                'uuid'      => $folder['uuid'],
-            )));
-        }
-
-        return $ret;
-    }
-
-    protected function exportResources(Iterator $iter)
-    {
-        $ret = new ArrayIterator(array());
-        foreach ($iter as $row) {
-            $ret->append(Resource::create(array(
-                'id' => (int) $row['id'],
-                'hash' => $row['hash'],
-                'size' => (int) $row['filesize'],
-                'mimetype' => $row['mimetype'],
-                'date_created' => new DateTime($row['date_created']),
-                'versions' => unserialize($row['versions']),
-                'exclusive' => (bool) $row['exclusive'],
-            )));
-        }
-        return $ret;
     }
 
     /**
@@ -392,13 +335,17 @@ class ZendDbPlatform implements Platform
         return true;
     }
 
-
     /**
      * @see AbstractPlatform::doGetNumberOfReferences
      */
     public function getNumberOfReferences(Resource $resource)
     {
-        return $this->db->fetchOne("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
+        return $this->db->fetchOne(
+            "SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?",
+            array(
+                $resource->getId()
+            )
+        );
     }
 
     public function findByFinder(Finder $finder)
@@ -426,15 +373,6 @@ class ZendDbPlatform implements Platform
         return $ids;
     }
 
-    private function finderParametersToInternalParameters(Finder $finder)
-    {
-        $ret = array();
-        foreach ($finder->getParameters() as $key => $value) {
-            $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
-        }
-        return $ret;
-    }
-
     public function findByIds(array $ids, $className)
     {
         if (!$ids) {
@@ -451,5 +389,98 @@ class ZendDbPlatform implements Platform
         return $this->$exporter($rows);
     }
 
+    /**
+     * @param Finder $finder
+     * @return array
+     */
+    private function finderParametersToInternalParameters(Finder $finder)
+    {
+        $ret = array();
+        foreach ($finder->getParameters() as $key => $value) {
+            $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
+        }
+        return $ret;
+    }
 
+
+    /**
+     * @param Iterator $iter
+     * @return ArrayIterator
+     */
+    protected function exportFiles(Iterator $iter)
+    {
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $fileRow) {
+            $resource = $this->findByIds(array($fileRow['resource_id']), 'Xi\Filelib\File\Resource')->current();
+
+            $ret->append(
+                File::create(
+                    array(
+                        'id'            => $fileRow['id'],
+                        'folder_id'     => $fileRow['folder_id'],
+                        'name'          => $fileRow['filename'],
+                        'profile'       => $fileRow['fileprofile'],
+                        'link'          => $fileRow['filelink'],
+                        'date_created' => new DateTime($fileRow['date_created']),
+                        'status'        => (int) $fileRow['status'],
+                        'uuid'          => $fileRow['uuid'],
+                        'resource'      => $resource,
+                        'versions'      => unserialize($fileRow['versions']),
+                    )
+                )
+            );
+        }
+        return $ret;
+    }
+
+
+    /**
+     * @param Iterator $iter
+     * @return ArrayIterator
+     */
+    protected function exportFolders(Iterator $iter)
+    {
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $folder) {
+
+            $ret->append(
+                Folder::create(
+                    array(
+                        'id'        => (int) $folder['id'],
+                        'parent_id' => $folder['parent_id'] ? (int) $folder['parent_id'] : null,
+                        'name'      => $folder['foldername'],
+                        'url'       => $folder['folderurl'],
+                        'uuid'      => $folder['uuid'],
+                    )
+                )
+            );
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @param Iterator $iter
+     * @return ArrayIterator
+     */
+    protected function exportResources(Iterator $iter)
+    {
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $row) {
+            $ret->append(
+                Resource::create(
+                    array(
+                        'id' => (int) $row['id'],
+                        'hash' => $row['hash'],
+                        'size' => (int) $row['filesize'],
+                        'mimetype' => $row['mimetype'],
+                        'date_created' => new DateTime($row['date_created']),
+                        'versions' => unserialize($row['versions']),
+                        'exclusive' => (bool) $row['exclusive'],
+                    )
+                )
+            );
+        }
+        return $ret;
+    }
 }

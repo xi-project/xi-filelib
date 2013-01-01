@@ -14,7 +14,6 @@ use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Backend\Finder\Finder;
-use Xi\Filelib\IdentityMap\Identifiable;
 use ArrayIterator;
 
 /**
@@ -31,27 +30,21 @@ interface Platform
     public function getNumberOfReferences(Resource $resource);
 
     /**
+     * Finds and returns an array of object ids via finder
+     *
      * @param Finder $finder
      * @return array
      */
     public function findByFinder(Finder $finder);
 
     /**
+     * Finds and returns objects via ids and classnames
+     *
      * @param array $ids
      * @param $className
      * @return ArrayIterator
      */
     public function findByIds(array $ids, $className);
-
-    /**
-     * Creates a file
-     *
-     * @param  File             $file
-     * @param  Folder           $folder
-     * @return File             Uploaded file
-     * @throws FilelibException If file could not be created.
-     */
-    public function createFile(File $file, Folder $folder);
 
     /**
      * Creates a folder
@@ -72,6 +65,25 @@ interface Platform
     public function deleteFolder(Folder $folder);
 
     /**
+     * Updates a folder
+     *
+     * @param  Folder           $folder
+     * @return boolean          True if updated successfully.
+     * @throws FilelibException If folder could not be updated.
+     */
+    public function updateFolder(Folder $folder);
+
+    /**
+     * Creates a file
+     *
+     * @param  File             $file
+     * @param  Folder           $folder
+     * @return File             Uploaded file
+     * @throws FilelibException If file could not be created.
+     */
+    public function createFile(File $file, Folder $folder);
+
+    /**
      * Deletes a file
      *
      * @param  File             $file
@@ -79,15 +91,6 @@ interface Platform
      * @throws FilelibException If file could not be deleted.
      */
     public function deleteFile(File $file);
-
-    /**
-     * Updates a folder
-     *
-     * @param  Folder           $folder
-     * @return boolean          True if updated successfully.
-     * @throws FilelibException If folder coult not be updated.
-     */
-    public function updateFolder(Folder $folder);
 
     /**
      * Updates a file
@@ -98,12 +101,12 @@ interface Platform
      */
     public function updateFile(File $file);
 
-
     /**
      * Creates a resource
      *
      * @param Resource $resource
      * @return Resource
+     * @throws FilelibException If resource could not be created.
      */
     public function createResource(Resource $resource);
 
@@ -112,6 +115,7 @@ interface Platform
      *
      * @param Resource $resource
      * @return boolean
+     * @throws FilelibException If resource could not be deleted.
      */
     public function deleteResource(Resource $resource);
 
@@ -120,7 +124,7 @@ interface Platform
      *
      * @param Resource $resource
      * @return boolean
+     * @throws FilelibException If resource could not be updated.
      */
     public function updateResource(Resource $resource);
-
 }

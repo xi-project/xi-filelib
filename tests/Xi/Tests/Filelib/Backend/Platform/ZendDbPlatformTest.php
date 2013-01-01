@@ -36,12 +36,15 @@ class ZendDbPlatformTest extends RelationalDbTestCase
      */
     protected function setUpBackend()
     {
-        $db = Zend_Db::factory('pdo_' . PDO_DRIVER, array(
-            'host'     => PDO_HOST,
-            'dbname'   => PDO_DBNAME,
-            'username' => PDO_USERNAME,
-            'password' => PDO_PASSWORD,
-        ));
+        $db = Zend_Db::factory(
+            'pdo_' . PDO_DRIVER,
+            array(
+                'host'     => PDO_HOST,
+                'dbname'   => PDO_DBNAME,
+                'username' => PDO_USERNAME,
+                'password' => PDO_PASSWORD,
+            )
+        );
 
         return new ZendDbPlatform($db);
     }
@@ -88,9 +91,10 @@ class ZendDbPlatformTest extends RelationalDbTestCase
     {
         $this->setUpEmptyDataSet();
 
-        $resourceTable = $this->getMockBuilder('Xi\Filelib\Backend\Platform\ZendDb\ResourceTable')
-                              ->disableOriginalConstructor()
-                              ->getMock();
+        $resourceTable = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Platform\ZendDb\ResourceTable')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->assertInstanceOf('Zend_Db_Table_Abstract', $this->backend->getFolderTable());
         $this->assertNotSame($resourceTable, $this->backend->getResourceTable());

@@ -53,7 +53,7 @@ class BackendTest extends TestCase
     {
         $resource = Resource::create(array('id' => 1));
         $this->platform->expects($this->once())->method('getNumberOfReferences')->with($resource)
-                       ->will($this->returnValue(55));
+            ->will($this->returnValue(55));
         $ret = $this->backend->getNumberOfReferences($resource);
         $this->assertEquals(55, $ret);
     }
@@ -81,10 +81,15 @@ class BackendTest extends TestCase
     public function updateResourceShouldDelegateToPlatform()
     {
         $obj = Resource::create(array('id' => 1));
-        $this->platform->expects($this->once())->method('updateResource')->with($obj)->will($this->returnValue(true));
-        $ret = $this->backend->updateResource($obj);
-        $this->assertTrue($ret);
 
+        $this->platform
+            ->expects($this->once())
+            ->method('updateResource')
+            ->with($obj)
+            ->will($this->returnValue(true));
+
+        $ret = $this->backend->updateResource($obj);
+        $this->assertNull($ret);
     }
 
     /**
@@ -95,7 +100,7 @@ class BackendTest extends TestCase
         $obj = Folder::create(array('id' => 1));
         $this->platform->expects($this->once())->method('updateFolder')->with($obj)->will($this->returnValue(true));
         $ret = $this->backend->updateFolder($obj);
-        $this->assertTrue($ret);
+        $this->assertNull($ret);
     }
 
 
@@ -114,14 +119,16 @@ class BackendTest extends TestCase
             ->setMethods(array('findById'))
             ->getMock();
 
-        $backend->expects($this->once())->method('findById')->with($file->getFolderId(), 'Xi\Filelib\Folder\Folder')
+        $backend
+            ->expects($this->once())
+            ->method('findById')
+            ->with($file->getFolderId(), 'Xi\Filelib\Folder\Folder')
             ->will($this->returnValue(false));
 
         $backend->expects($this->never())->method('updateResource');
         $this->platform->expects($this->never())->method('updateFile');
 
-        $ret = $backend->updateFile($file);
-        $this->assertTrue($ret);
+        $backend->updateFile($file);
     }
 
 
@@ -135,18 +142,18 @@ class BackendTest extends TestCase
         $file = File::create(array('id' => 1, 'resource' => $resource, 'folder_id' => 666));
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
-                        ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-                        ->setMethods(array('findById', 'updateResource'))
-                        ->getMock();
+            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
+            ->setMethods(array('findById', 'updateResource'))
+            ->getMock();
 
         $backend->expects($this->once())->method('findById')->with($file->getFolderId(), 'Xi\Filelib\Folder\Folder')
-                ->will($this->returnValue($folder));
+            ->will($this->returnValue($folder));
 
         $backend->expects($this->once())->method('updateResource')->with($resource);
 
         $this->platform->expects($this->once())->method('updateFile')->with($file)->will($this->returnValue(true));
         $ret = $backend->updateFile($file);
-        $this->assertTrue($ret);
+        $this->assertNull($ret);
     }
 
     /**
@@ -162,8 +169,7 @@ class BackendTest extends TestCase
         $this->im->expects($this->once())->method('add')->with($obj)->will($this->returnValue(true));
 
         $ret = $this->backend->createResource($obj);
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
-
+        $this->assertNull($ret);
     }
 
     /**
@@ -184,12 +190,15 @@ class BackendTest extends TestCase
             ->setMethods(array('findById'))
             ->getMock();
 
-        $backend->expects($this->once())->method('findById')->with(66, 'Xi\Filelib\Folder\Folder')->will($this->returnValue($parent));
+        $backend
+            ->expects($this->once())
+            ->method('findById')
+            ->with(66, 'Xi\Filelib\Folder\Folder')
+            ->will($this->returnValue($parent));
 
         $ret = $backend->createFolder($obj);
 
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $ret);
-
+        $this->assertNull($ret);
     }
 
     /**
@@ -209,10 +218,13 @@ class BackendTest extends TestCase
             ->setMethods(array('findById'))
             ->getMock();
 
-        $backend->expects($this->once())->method('findById')->with(66, 'Xi\Filelib\Folder\Folder')->will($this->returnValue(false));
+        $backend
+            ->expects($this->once())
+            ->method('findById')
+            ->with(66, 'Xi\Filelib\Folder\Folder')
+            ->will($this->returnValue(false));
 
-        $ret = $backend->createFolder($obj);
-
+        $backend->createFolder($obj);
     }
 
     /**
@@ -247,7 +259,7 @@ class BackendTest extends TestCase
         );
 
         $ret = $backend->createFile($file, $folder);
-        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
+        $this->assertNull($ret);
     }
 
     /**
@@ -278,7 +290,7 @@ class BackendTest extends TestCase
         $this->im->expects($this->once())->method('add')->with($file)->will($this->returnValue(true));
 
         $ret = $backend->createFile($file, $folder);
-        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
+        $this->assertNull($ret);
     }
 
     /**
@@ -299,20 +311,25 @@ class BackendTest extends TestCase
             ->getMock();
 
         $self = $this;
-        $backend->expects($this->once())->method('findByFinder')->with($this->isInstanceOf('Xi\Filelib\Backend\Finder\FileFinder'))
-                ->will($this->returnCallback(function(FileFinder $finder) use ($self) {
-                    $expectedParams = array(
-                        'folder_id' => 1,
-                    );
-                    $self->assertEquals($expectedParams, $finder->getParameters());
-                    return new ArrayIterator(array());
-                }));
+        $backend
+            ->expects($this->once())
+            ->method('findByFinder')
+            ->with($this->isInstanceOf('Xi\Filelib\Backend\Finder\FileFinder'))
+            ->will(
+                $this->returnCallback(
+                    function (FileFinder $finder) use ($self) {
+                        $expectedParams = array(
+                            'folder_id' => 1,
+                        );
+                        $self->assertEquals($expectedParams, $finder->getParameters());
+                        return new ArrayIterator(array());
+                    }
+                )
+            );
 
 
         $ret = $backend->deleteFolder($obj);
-
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $ret);
-
+        $this->assertNull($ret);
     }
 
     /**
@@ -339,19 +356,24 @@ class BackendTest extends TestCase
             ->getMock();
 
         $self = $this;
-        $backend->expects($this->once())->method('findByFinder')->with($this->isInstanceOf('Xi\Filelib\Backend\Finder\FileFinder'))
-            ->will($this->returnCallback(function(FileFinder $finder) use ($self, $files) {
-            $expectedParams = array(
-                'folder_id' => 1,
+        $backend
+            ->expects($this->once())
+            ->method('findByFinder')
+            ->with($this->isInstanceOf('Xi\Filelib\Backend\Finder\FileFinder'))
+            ->will(
+                $this->returnCallback(
+                    function (FileFinder $finder) use ($self, $files) {
+                        $expectedParams = array(
+                            'folder_id' => 1,
+                        );
+                        $self->assertEquals($expectedParams, $finder->getParameters());
+                        return new ArrayIterator($files);
+                    }
+                )
             );
-            $self->assertEquals($expectedParams, $finder->getParameters());
-            return new ArrayIterator($files);
-        }));
 
         $ret = $backend->deleteFolder($obj);
-
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $ret);
-
+        $this->assertNull($ret);
     }
 
 
@@ -368,9 +390,7 @@ class BackendTest extends TestCase
         $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
 
         $ret = $this->backend->deleteFile($obj);
-
-        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-
+        $this->assertNull($ret);
     }
 
 
@@ -396,7 +416,6 @@ class BackendTest extends TestCase
             ->will($this->returnValue(6));
 
         $backend->deleteResource($obj);
-
     }
 
 
@@ -413,13 +432,10 @@ class BackendTest extends TestCase
         $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
 
         $this->ed->expects($this->once())->method('dispatch')
-             ->with('resource.delete', $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
+            ->with('resource.delete', $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
 
         $ret = $this->backend->deleteResource($obj);
-
-
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
-
+        $this->assertNull($ret);
     }
 
     /**
@@ -460,18 +476,29 @@ class BackendTest extends TestCase
         $backend->expects($this->any())->method('getIdentityMapHelper')->will($this->returnValue($helper));
 
         $platform = $this->platform;
-        $helper->expects($this->once())->method('tryManyFromIdentityMap')
-            ->with(array(1, 2, 3, 4, 5), $finder->getResultClass(), $this->isInstanceOf('Closure'))
-            ->will($this->returnCallback(function($ids, $class, $callback) use ($platform) {
-            return $callback($platform, array(2, 4));
-        }));
+        $helper
+            ->expects($this->once())
+            ->method('tryManyFromIdentityMap')
+            ->with(
+                array(1, 2, 3, 4, 5),
+                $finder->getResultClass(),
+                $this->isInstanceOf('Closure')
+            )
+            ->will(
+                $this->returnCallback(
+                    function ($ids, $class, $callback) use ($platform) {
+                        return $callback($platform, array(2, 4));
+                    }
+                )
+            );
 
         $ret = $backend->findByFinder($finder);
-
         $this->assertEquals('lus', $ret);
-
     }
 
+    /**
+     * @return array
+     */
     public function provideClassNames()
     {
         return array(
@@ -480,7 +507,6 @@ class BackendTest extends TestCase
             array('Xi\Filelib\Folder\Folder'),
         );
     }
-
 
     /**
      * @test
@@ -504,19 +530,23 @@ class BackendTest extends TestCase
         $backend->expects($this->any())->method('getIdentityMapHelper')->will($this->returnValue($helper));
 
         $platform = $this->platform;
-        $helper->expects($this->once())->method('tryOneFromIdentityMap')
-            ->with(1, $className, $this->isInstanceOf('Closure'))
-            ->will($this->returnCallback(function($id, $className, $callback) use ($platform) {
-            return $callback($platform, $id, $className);
-        }));
+        $helper
+            ->expects($this->once())->method('tryOneFromIdentityMap')
+            ->with(
+                1,
+                $className,
+                $this->isInstanceOf('Closure')
+            )
+            ->will(
+                $this->returnCallback(
+                    function ($id, $className, $callback) use ($platform) {
+                        return $callback($platform, $id, $className);
+                    }
+                )
+            );
 
         $ret = $backend->findById(1, $className);
 
         $this->assertEquals('lus', $ret);
     }
-
-
-
-
-
 }

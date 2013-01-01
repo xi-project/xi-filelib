@@ -1,7 +1,7 @@
 <?php
 
 namespace Xi\Tests\Filelib\Backend\Platform;
-use PHPUnit_Framework_TestCase;
+
 use Xi\Filelib\Backend\Platform\MongoPlatform;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
@@ -10,7 +10,6 @@ use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
 use Mongo;
-use MongoDB;
 use MongoId;
 use MongoDate;
 use MongoConnectionException;
@@ -87,10 +86,13 @@ class MongoPlatformTest extends AbstractPlatformTestCase
 
     private function setUpIndexes()
     {
-        $this->mongo->files->ensureIndex(array(
-            'folder_id' => 1,
-            'name'      => 1
-        ), array('unique' => true));
+        $this->mongo->files->ensureIndex(
+            array(
+                'folder_id' => 1,
+                'name'      => 1
+            ),
+            array('unique' => true)
+        );
 
         $this->mongo->folders->ensureIndex(
             array('name' => 1),
@@ -275,22 +277,27 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             array(0, new FileFinder(array('id' => 'xooxersson'))),
             array(1, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166101'))),
             array(2, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104'))),
-            array(1, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a9166110'))),
-            array(0, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a916611x'))),
-
+            array(
+                1,
+                new FileFinder(
+                    array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a9166110')
+                )
+            ),
+            array(
+                0,
+                new FileFinder(
+                    array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a916611x')
+                )
+            ),
             array(0, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166103', 'name' => 'repesorsa.lus'))),
             array(1, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166103', 'name' => 'repesorsa.png'))),
-
             array(1, new FolderFinder(array('url' => 'lussuttaja/tussin'))),
             array(0, new FolderFinder(array('url' => 'lussuttaja/ankan'))),
-
             array(1, new FolderFinder(array('parent_id' => null))),
             array(3, new FolderFinder(array('parent_id' => '49a7011a05c677b9a9166102'))),
-
             array(0, new ResourceFinder(array('hash' => 'unexisting-hash'))),
             array(1, new ResourceFinder(array('hash' => 'hash-1'))),
             array(2, new ResourceFinder(array('hash' => 'hash-2'))),
-
         );
     }
 
@@ -526,7 +533,10 @@ class MongoPlatformTest extends AbstractPlatformTestCase
     public function findResourceProvider()
     {
         return array(
-            array('48a7011a05c677b9a9166101', array('hash' => 'hash-1', 'versions' => array('tussi', 'watussi', 'pygmi'))),
+            array(
+                '48a7011a05c677b9a9166101',
+                array('hash' => 'hash-1', 'versions' => array('tussi', 'watussi', 'pygmi'))
+            ),
             array('48a7011a05c677b9a9166102', array('hash' => 'hash-2', 'versions' => array())),
             array('48a7011a05c677b9a9166103', array('hash' => 'hash-2', 'versions' => array('pygmi', 'tussi'))),
             array('48a7011a05c677b9a9166104', array('hash' => 'hash-3', 'versions' => array('watussi'))),
@@ -545,8 +555,4 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             )
         );
     }
-
-
-
-
 }

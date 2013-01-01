@@ -13,12 +13,8 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\EntityNotFoundException;
-use PDOException;
 use Xi\Filelib\Backend\Finder\Finder;
-use Xi\Filelib\IdentityMap\Identifiable;
-use Doctrine\DBAL\Statement;
 use PDO;
 use Iterator;
 use ArrayIterator;
@@ -34,34 +30,28 @@ use ArrayIterator;
 class DoctrineOrmPlatform implements Platform
 {
     /**
-     * File entity name
-     *
      * @var string
      */
     private $fileEntityName = 'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\File';
 
     /**
-     * Folder entity name
-     *
      * @var string
      */
     private $folderEntityName = 'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder';
 
     /**
-     * Resource entity name
-     *
      * @var string
      */
     private $resourceEntityName = 'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource';
 
-
     /**
-     * Entity manager
-     *
      * @var EntityManager
      */
     private $em;
 
+    /**
+     * @var array
+     */
     private $finderMap = array(
         'Xi\Filelib\File\Resource' => array(
             'id' => 'id',
@@ -79,34 +69,30 @@ class DoctrineOrmPlatform implements Platform
         ),
     );
 
-    private $classNameToResources;
+    private $classNameToResources = array(
+        'Xi\Filelib\File\Resource' => array(
+            'table' => 'xi_filelib_resource',
+            'exporter' => 'exportResources',
+            'getEntityName' => 'getResourceEntityName',
+        ),
+        'Xi\Filelib\File\File' => array(
+            'table' => 'xi_filelib_file',
+            'exporter' => 'exportFiles',
+            'getEntityName' => 'getFileEntityName',
+        ),
+        'Xi\Filelib\Folder\Folder' => array(
+            'table' => 'xi_filelib_folder',
+            'exporter' => 'exportFolders',
+            'getEntityName' => 'getFolderEntityName',
+        ),
+    );
 
     /**
-     * @param  EventDispatcherInterface $eventDispatcher
-     * @param  EntityManager    $em
-     * @return DoctrineOrmPlatform
+     * @param EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
         $this->setEntityManager($em);
-        $this->classNameToResources = array(
-            'Xi\Filelib\File\Resource' => array(
-                'table' => 'xi_filelib_resource',
-                'exporter' => 'exportResources',
-                'getEntityName' => 'getResourceEntityName',
-            ),
-            'Xi\Filelib\File\File' => array(
-                'table' => 'xi_filelib_file',
-                'exporter' => 'exportFiles',
-                'getEntityName' => 'getFileEntityName',
-            ),
-            'Xi\Filelib\Folder\Folder' => array(
-                'table' => 'xi_filelib_folder',
-                'exporter' => 'exportFolders',
-                'getEntityName' => 'getFolderEntityName',
-            ),
-        );
-
     }
 
     /**
@@ -189,9 +175,8 @@ class DoctrineOrmPlatform implements Platform
         return $this->resourceEntityName;
     }
 
-
     /**
-     * @see AbstractPlatform::doUpdateFile
+     * @see Platform::updateFile
      */
     public function updateFile(File $file)
     {
@@ -212,7 +197,7 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doDeleteFile
+     * @see Platform::deleteFile
      */
     public function deleteFile(File $file)
     {
@@ -227,7 +212,7 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doCreateFolder
+     * @see Platform::createFolder
      */
     public function createFolder(Folder $folder)
     {
@@ -245,7 +230,7 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doUpdateFolder
+     * @see Platform::updateFolder
      */
     public function updateFolder(Folder $folder)
     {
@@ -253,9 +238,9 @@ class DoctrineOrmPlatform implements Platform
             $folderRow = $this->getFolderReference($folder->getId());
 
             if ($folder->getParentId()) {
-                $folderRow->setParent($this->getFolderReference(
-                    $folder->getParentId()
-                ));
+                $folderRow->setParent(
+                    $this->getFolderReference($folder->getParentId())
+                );
             } else {
                 $folderRow->removeParent();
             }
@@ -273,7 +258,7 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doUpdateResource
+     * @see Platform::updateResource
      */
     public function updateResource(Resource $resource)
     {
@@ -290,13 +275,12 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doDeleteFolder
+     * @see Platform::deleteFolder
      */
     public function deleteFolder(Folder $folder)
     {
         try {
-            $folderEntity = $this->em->find($this->folderEntityName,
-                                            $folder->getId());
+            $folderEntity = $this->em->find($this->folderEntityName, $folder->getId());
 
             if (!$folderEntity) {
                 return false;
@@ -312,7 +296,7 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doDeleteResource
+     * @see Platform::deleteResource
      */
     public function deleteResource(Resource $resource)
     {
@@ -333,7 +317,7 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doCreateResource
+     * @see Platform::createResource
      */
     public function createResource(Resource $resource)
     {
@@ -350,150 +334,72 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * @see AbstractPlatform::doUpload
+     * @see Platform::createFile
      */
     public function createFile(File $file, Folder $folder)
     {
         $self = $this;
 
-        return $this->em->transactional(function(EntityManager $em) use ($self, $file, $folder) {
-            $fileEntityName = $self->getFileEntityName();
+        return $this->em->transactional(
+            function (EntityManager $em) use ($self, $file, $folder) {
+                $fileEntityName = $self->getFileEntityName();
 
-            $entity = new $fileEntityName;
-            $entity->setFolder($self->getFolderReference($folder->getId()));
-            $entity->setName($file->getName());
-            $entity->setProfile($file->getProfile());
-            $entity->setDateCreated($file->getDateCreated());
-            $entity->setStatus($file->getStatus());
-            $entity->setUuid($file->getUuid());
-            $entity->setVersions($file->getVersions());
+                $entity = new $fileEntityName;
+                $entity->setFolder($self->getFolderReference($folder->getId()));
+                $entity->setName($file->getName());
+                $entity->setProfile($file->getProfile());
+                $entity->setDateCreated($file->getDateCreated());
+                $entity->setStatus($file->getStatus());
+                $entity->setUuid($file->getUuid());
+                $entity->setVersions($file->getVersions());
 
-            $resource = $file->getResource();
-            if ($resource) {
-                $entity->setResource($em->getReference($self->getResourceEntityName(), $resource->getId()));
+                $resource = $file->getResource();
+                if ($resource) {
+                    $entity->setResource($em->getReference($self->getResourceEntityName(), $resource->getId()));
+                }
+
+                $em->persist($entity);
+                $em->flush();
+
+                $file->setId($entity->getId());
+                $file->setFolderId($entity->getFolder()->getId());
+
+                return $file;
             }
-
-            $em->persist($entity);
-            $em->flush();
-
-            $file->setId($entity->getId());
-            $file->setFolderId($entity->getFolder()->getId());
-
-            return $file;
-        });
+        );
     }
 
     /**
-     * @see AbstractPlatform::exportFolder
-     */
-    protected function exportFolders(Iterator $iter)
-    {
-        $ret = new ArrayIterator(array());
-        foreach ($iter as $folder) {
-            $ret->append(Folder::create(array(
-                'id'        => $folder->getId(),
-                'parent_id' => $folder->getParent() ? $folder->getParent()->getId() : null,
-                'name'      => $folder->getName(),
-                'url'       => $folder->getUrl(),
-                'uuid'      => $folder->getUuid(),
-            )));
-        }
-        return $ret;
-    }
-
-    /**
-     * @see AbstractPlatform::exportFiles
-     */
-    protected function exportFiles(Iterator $iter)
-    {
-        $ret = new ArrayIterator(array());
-        foreach ($iter as $file) {
-
-            $resource = $this->findByIds(array($file->getResource()->getId()), 'Xi\Filelib\File\Resource')->current();
-
-            $ret->append(File::create(array(
-                'id'            => $file->getId(),
-                'folder_id'     => $file->getFolder() ? $file->getFolder()->getId() : null,
-                'profile'       => $file->getProfile(),
-                'name'          => $file->getName(),
-                'link'          => $file->getLink(),
-                'date_created' => $file->getDateCreated(),
-                'status'        => $file->getStatus(),
-                'uuid'          => $file->getUuid(),
-                'resource' => $resource,
-                'versions' => $file->getVersions(),
-            )));
-        }
-        return $ret;
-
-
-    }
-
-    /**
-     * @see AbstractPlatform::exportResource
-     */
-    protected function exportResources(Iterator $iter)
-    {
-        $ret = new ArrayIterator(array());
-        foreach ($iter as $resource) {
-
-            $ret->append(Resource::create(array(
-                'id' => $resource->getId(),
-                'hash' => $resource->getHash(),
-                'date_created' => $resource->getDateCreated(),
-                'versions' => $resource->getVersions(),
-                'mimetype' => $resource->getMimetype(),
-                'size' => $resource->getSize(),
-                'exclusive' => $resource->getExclusive(),
-            )));
-        }
-        return $ret;
-    }
-
-    /**
-     * @see AbstractPlatform::doGetNumberOfReferences
+     * @see Platform::getNumberOfReferences
      */
     public function getNumberOfReferences(Resource $resource)
     {
-        return $this->em->getConnection()->fetchColumn("SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?", array($resource->getId()));
+        return $this->em
+            ->getConnection()
+            ->fetchColumn(
+                "SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?",
+                array(
+                    $resource->getId()
+                )
+            );
     }
 
     /**
-     * @param  File        $file
-     * @return object|null
+     * @see Platform::findByFinder
      */
-    private function getFileReference(File $file)
-    {
-        return $this->em->getReference($this->fileEntityName, $file->getId());
-    }
-
-    /**
-     * NOTE: Should be private!
-     *
-     * @param  integer     $id
-     * @return object|null
-     */
-    public function getFolderReference($id)
-    {
-        return $this->em->getReference($this->folderEntityName, $id);
-    }
-
     public function findByFinder(Finder $finder)
     {
         $resources = $this->classNameToResources[$finder->getResultClass()];
         $params = $this->finderParametersToInternalParameters($finder);
 
         $tableName = $resources['table'];
-
-
-
         $conn = $this->em->getConnection();
 
         $qb = $conn->createQueryBuilder();
         $qb->select("id")->from($tableName, 't');
 
         $bindParams = array();
-        foreach($params as $param => $value) {
+        foreach ($params as $param => $value) {
 
             if ($value === null) {
                 $qb->andWhere("t.{$param} IS NULL");
@@ -513,22 +419,18 @@ class DoctrineOrmPlatform implements Platform
 
         $ret = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $ret = array_map(function ($ret) {
-            return $ret['id'];
-        }, $ret);
-
-        return $ret;
+        return array_map(
+            function ($ret) {
+                return $ret['id'];
+            },
+            $ret
+        );
     }
 
-    private function finderParametersToInternalParameters(Finder $finder)
-    {
-        $ret = array();
-        foreach ($finder->getParameters() as $key => $value) {
-            $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
-        }
-        return $ret;
-    }
 
+    /**
+     * @see Platform::findByIds
+     */
     public function findByIds(array $ids, $className)
     {
         if (!$ids) {
@@ -536,27 +438,123 @@ class DoctrineOrmPlatform implements Platform
         }
 
         $resources = $this->classNameToResources[$className];
-
-        $table = $resources['table'];
-
-        $entityName = $this->$resources['getEntityName']();
-
         $repo = $this->em->getRepository($this->$resources['getEntityName']());
-
-
         $rows = $repo->findBy(
             array(
                 'id' => $ids
             )
         );
-
         $rows = new ArrayIterator($rows);
-
-        $exporter = $resources['exporter'];
-        return $this->$exporter($rows);
+        return $this->$resources['exporter']($rows);
     }
 
+    /**
+     * @param Iterator $iter
+     * @return ArrayIterator
+     */
+    protected function exportFolders(Iterator $iter)
+    {
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $folder) {
+            $ret->append(
+                Folder::create(
+                    array(
+                        'id' => $folder->getId(),
+                        'parent_id' => $folder->getParent() ? $folder->getParent()->getId() : null,
+                        'name' => $folder->getName(),
+                        'url' => $folder->getUrl(),
+                        'uuid' => $folder->getUuid(),
+                    )
+                )
+            );
+        }
+        return $ret;
+    }
 
+    /**
+     * @param Iterator $iter
+     * @return ArrayIterator
+     */
+    protected function exportFiles(Iterator $iter)
+    {
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $file) {
 
+            $resource = $this->findByIds(array($file->getResource()->getId()), 'Xi\Filelib\File\Resource')->current();
 
+            $ret->append(
+                File::create(
+                    array(
+                        'id' => $file->getId(),
+                        'folder_id' => $file->getFolder() ? $file->getFolder()->getId() : null,
+                        'profile' => $file->getProfile(),
+                        'name' => $file->getName(),
+                        'link' => $file->getLink(),
+                        'date_created' => $file->getDateCreated(),
+                        'status' => $file->getStatus(),
+                        'uuid' => $file->getUuid(),
+                        'resource' => $resource,
+                        'versions' => $file->getVersions(),
+                    )
+                )
+            );
+        }
+        return $ret;
+    }
+
+    /**
+     * @param Iterator $iter
+     * @return ArrayIterator
+     */
+    protected function exportResources(Iterator $iter)
+    {
+        $ret = new ArrayIterator(array());
+        foreach ($iter as $resource) {
+            $ret->append(
+                Resource::create(
+                    array(
+                        'id' => $resource->getId(),
+                        'hash' => $resource->getHash(),
+                        'date_created' => $resource->getDateCreated(),
+                        'versions' => $resource->getVersions(),
+                        'mimetype' => $resource->getMimetype(),
+                        'size' => $resource->getSize(),
+                        'exclusive' => $resource->getExclusive(),
+                    )
+                )
+            );
+        }
+        return $ret;
+    }
+
+    /**
+     * @param  File        $file
+     * @return object|null
+     */
+    protected function getFileReference(File $file)
+    {
+        return $this->em->getReference($this->fileEntityName, $file->getId());
+    }
+
+    /**
+     * @param  integer     $id
+     * @return object|null
+     */
+    protected function getFolderReference($id)
+    {
+        return $this->em->getReference($this->folderEntityName, $id);
+    }
+
+    /**
+     * @param Finder $finder
+     * @return array
+     */
+    protected function finderParametersToInternalParameters(Finder $finder)
+    {
+        $ret = array();
+        foreach ($finder->getParameters() as $key => $value) {
+            $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
+        }
+        return $ret;
+    }
 }

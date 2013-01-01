@@ -13,7 +13,6 @@ use ArrayIterator;
 
 class IdentityMapHelperTest extends TestCase
 {
-
     /**
      * @var IdentityMapHelper
      */
@@ -60,14 +59,21 @@ class IdentityMapHelperTest extends TestCase
     {
         $obj = Resource::create(array('id' => 1));
 
-        $this->im->expects($this->once())->method('get')->with(1, 'Xi\Filelib\File\Resource')
-             ->will($this->returnValue($obj));
+        $this->im
+            ->expects($this->once())
+            ->method('get')
+            ->with(1, 'Xi\Filelib\File\Resource')
+            ->will($this->returnValue($obj));
 
         $this->im->expects($this->never())->method('addMany');
 
-        $ret = $this->helper->tryOneFromIdentityMap(1, 'Xi\Filelib\File\Resource', function(Platform $platform, $id) {
-            $platform->findResourcesByIds($id);
-        });
+        $ret = $this->helper->tryOneFromIdentityMap(
+            1,
+            'Xi\Filelib\File\Resource',
+            function (Platform $platform, $id) {
+                $platform->findResourcesByIds($id);
+            }
+        );
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
     }
@@ -86,11 +92,17 @@ class IdentityMapHelperTest extends TestCase
         $this->im->expects($this->once())->method('addMany')->with($this->isInstanceOf('ArrayIterator'));
 
         $self = $this;
-        $ret = $this->helper->tryOneFromIdentityMap(1, 'Xi\Filelib\File\Resource', function(Platform $platform, $id) use ($self, $obj) {
-            $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
-            $self->assertInternalType('int', $id);
-            return new ArrayIterator(array($obj));
-        });
+        $ret = $this
+            ->helper
+            ->tryOneFromIdentityMap(
+                1,
+                'Xi\Filelib\File\Resource',
+                function (Platform $platform, $id) use ($self, $obj) {
+                    $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
+                    $self->assertInternalType('int', $id);
+                    return new ArrayIterator(array($obj));
+                }
+            );
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
     }
@@ -109,18 +121,26 @@ class IdentityMapHelperTest extends TestCase
             5 => Resource::create(array('id' => 5)),
         );
 
-        $this->im->expects($this->exactly(5))->method('get')->with($this->isType('int'), 'Xi\Filelib\File\Resource')
-            ->will($this->returnCallback(function($id, $class) use ($resources) { return $resources[$id]; }));
+        $this->im
+            ->expects($this->exactly(5))
+            ->method('get')
+            ->with($this->isType('int'), 'Xi\Filelib\File\Resource')
+            ->will(
+                $this->returnCallback(
+                    function ($id, $class) use ($resources) {
+                        return $resources[$id];
+                    }
+                )
+            );
 
         $self = $this;
         $ret = $this->helper->tryManyFromIdentityMap(
             array(1, 2, 3, 4, 5),
             'Xi\Filelib\File\Resource',
-            function(Platform $platform, array $ids) use ($self, $resources) {
+            function (Platform $platform, array $ids) use ($self, $resources) {
                 $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
                 $self->assertInternalType('array', $ids);
                 $self->assertEquals(array(1, 2, 3, 4, 5), $ids);
-
                 return new ArrayIterator($resources);
             }
         );
@@ -142,19 +162,24 @@ class IdentityMapHelperTest extends TestCase
             5 => Resource::create(array('id' => 5)),
         );
 
-        $this->im->expects($this->exactly(10))->method('get')->with($this->isType('int'), 'Xi\Filelib\File\Resource')
-            ->will($this->onConsecutiveCalls(
-            $resources[1],
-            false,
-            $resources[3],
-            false,
-            $resources[5],
-            $resources[1],
-            $resources[2],
-            $resources[3],
-            $resources[4],
-            false
-        ));
+        $this->im
+            ->expects($this->exactly(10))
+            ->method('get')
+            ->with($this->isType('int'), 'Xi\Filelib\File\Resource')
+            ->will(
+                $this->onConsecutiveCalls(
+                    $resources[1],
+                    false,
+                    $resources[3],
+                    false,
+                    $resources[5],
+                    $resources[1],
+                    $resources[2],
+                    $resources[3],
+                    $resources[4],
+                    false
+                )
+            );
 
         $this->im->expects($this->once())->method('addMany')->with($this->isInstanceOf('ArrayIterator'));
 
@@ -162,7 +187,7 @@ class IdentityMapHelperTest extends TestCase
         $ret = $this->helper->tryManyFromIdentityMap(
             array(1, 2, 3, 4, 5),
             'Xi\Filelib\File\Resource',
-            function(Platform $platform, array $ids) use ($self, $resources) {
+            function (Platform $platform, array $ids) use ($self, $resources) {
                 $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
                 $self->assertInternalType('array', $ids);
                 $self->assertEquals(array(2, 4), $ids);
@@ -185,11 +210,14 @@ class IdentityMapHelperTest extends TestCase
         $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
 
         $self = $this;
-        $ret = $this->helper->tryAndRemoveFromIdentityMap(function(Platform $platform, Identifiable $obj) use ($self) {
-            $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
-            $self->assertInstanceOf('Xi\Filelib\IdentityMap\Identifiable', $obj);
-            return $obj;
-        }, $obj);
+        $ret = $this->helper->tryAndRemoveFromIdentityMap(
+            function (Platform $platform, Identifiable $obj) use ($self) {
+                $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
+                $self->assertInstanceOf('Xi\Filelib\IdentityMap\Identifiable', $obj);
+                return $obj;
+            },
+            $obj
+        );
 
         $this->assertInstanceOf('Xi\Filelib\IdentityMap\Identifiable', $ret);
 
@@ -203,16 +231,19 @@ class IdentityMapHelperTest extends TestCase
         $obj = $this->getMock('Xi\Filelib\IdentityMap\Identifiable');
 
         $self = $this;
-        $ret = $this->helper->tryAndAddToIdentityMap(function(Platform $platform, Identifiable $obj, $luss, $xoo) use ($self) {
-            $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
-            $self->assertInstanceOf('Xi\Filelib\IdentityMap\Identifiable', $obj);
-            $self->assertEquals('luss', $luss);
-            $self->assertEquals('xoo', $xoo);
-            return $obj;
-        }, $obj, 'luss', 'xoo');
+        $ret = $this->helper->tryAndAddToIdentityMap(
+            function (Platform $platform, Identifiable $obj, $luss, $xoo) use ($self) {
+                $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
+                $self->assertInstanceOf('Xi\Filelib\IdentityMap\Identifiable', $obj);
+                $self->assertEquals('luss', $luss);
+                $self->assertEquals('xoo', $xoo);
+                return $obj;
+            },
+            $obj,
+            'luss',
+            'xoo'
+        );
 
         $this->assertSame($obj, $ret);
     }
-
-
 }

@@ -15,7 +15,7 @@ use Xi\Filelib\Backend\Platform\Platform;
 use ArrayIterator;
 
 /**
- * Identity map helper for backend
+ * Identity map backend helper
  */
 class IdentityMapHelper
 {
@@ -29,7 +29,10 @@ class IdentityMapHelper
      */
     private $identityMap;
 
-
+    /**
+     * @param IdentityMap $identityMap
+     * @param Platform $platform
+     */
     public function __construct(IdentityMap $identityMap, Platform $platform)
     {
         $this->identityMap = $identityMap;
@@ -52,19 +55,36 @@ class IdentityMapHelper
         return $this->identityMap;
     }
 
-    public function tryOneFromIdentityMap($id, $class, $callable)
+    /**
+     * Tries to fetch one from identity map. Delegates to callback if fails.
+     *
+     * @param $id
+     * @param $class
+     * @param $callback
+     * @return Identifiable|false
+     */
+    public function tryOneFromIdentityMap($id, $class, $callback)
     {
         if ($ret = $this->getIdentityMap()->get($id, $class)) {
             return $ret;
         }
 
-        $ret = $callable($this->getPlatform(), $id);
+        $ret = $callback($this->getPlatform(), $id);
 
         $this->getIdentityMap()->addMany($ret);
         return $ret->current();
     }
 
-    public function tryManyFromIdentityMap(array $ids, $class, $callable)
+    /**
+     * Tries to fetch many from identity map. Delegates to callback if fails.
+     *
+     * @param array $ids
+     * @param $class
+     * @param $callback
+     * @return ArrayIterator
+     * @todo Extract methods
+     */
+    public function tryManyFromIdentityMap(array $ids, $class, $callback)
     {
         $found = array();
         foreach ($ids as $id) {
@@ -78,7 +98,7 @@ class IdentityMapHelper
             return new ArrayIterator($found);
         }
 
-        $iter = $callable($this->getPlatform(), array_values($notFound));
+        $iter = $callback($this->getPlatform(), array_values($notFound));
         $this->getIdentityMap()->addMany($iter);
 
         $ret = array();
@@ -91,25 +111,33 @@ class IdentityMapHelper
 
     }
 
-    public function tryAndAddToIdentityMap($callable)
+    /**
+     * Tries callback with mixed arguments. Adds return value to identity map.
+     *
+     * @param $callback
+     * @return mixed
+     */
+    public function tryAndAddToIdentityMap($callback)
     {
         $args = func_get_args();
         array_shift($args);
         array_unshift($args, $this->getPlatform());
-        $ret = call_user_func_array($callable, $args);
+        $ret = call_user_func_array($callback, $args);
         $this->getIdentityMap()->add($ret);
         return $ret;
     }
 
-    public function tryAndRemoveFromIdentityMap($callable, Identifiable $identifiable)
+    /**
+     * Tries callback and removes from identity map.
+     *
+     * @param $callback
+     * @param Identifiable $identifiable
+     * @return mixed
+     */
+    public function tryAndRemoveFromIdentityMap($callback, Identifiable $identifiable)
     {
-        $ret = $callable($this->getPlatform(), $identifiable);
+        $ret = $callback($this->getPlatform(), $identifiable);
         $this->getIdentityMap()->remove($identifiable);
         return $ret;
     }
-
-
-
-
-
 }
