@@ -7,7 +7,6 @@ use Xi\Filelib\Event\FileCopyEvent;
 
 class FileCopyEventTest extends \Xi\Tests\Filelib\TestCase
 {
-
     /**
      * @test
      */
@@ -33,5 +32,4 @@ class FileCopyEventTest extends \Xi\Tests\Filelib\TestCase
         $target2 = $event->getTarget();
         $this->assertSame($target, $target2);
     }
-
 }

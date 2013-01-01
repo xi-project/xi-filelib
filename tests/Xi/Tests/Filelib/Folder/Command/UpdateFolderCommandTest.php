@@ -59,7 +59,18 @@ class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function updateShouldUpdateFoldersAndFilesRecursively()
     {
-        $filelib = $this->getFilelib();
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+            $this->equalTo('folder.update'),
+            $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
+        );
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
+
         $op = $this
             ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
             ->setConstructorArgs(array($filelib))
@@ -126,10 +137,17 @@ class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
             ->getMock();
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')->disableOriginalConstructor()->getMock();
+        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
+
         $filelib->setBackend($backend);
         $filelib->setFileOperator($fiop);
 
         $folder = Folder::create(array('id' => 1));
+
+        $backend
+            ->expects($this->once())
+            ->method('updateFolder')
+            ->with($folder);
 
         $command = new UpdateFolderCommand($op, $fiop, $folder);
         $command->execute();

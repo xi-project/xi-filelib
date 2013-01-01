@@ -12,10 +12,10 @@ namespace Xi\Filelib\Folder\Command;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Event\FolderEvent;
 
 class UpdateFolderCommand extends AbstractFolderCommand
 {
-
     /**
      *
      * @var FileOperator
@@ -28,14 +28,12 @@ class UpdateFolderCommand extends AbstractFolderCommand
      */
     private $folder;
 
-
     public function __construct(FolderOperator $folderOperator, FileOperator $fileOperator, Folder $folder)
     {
         parent::__construct($folderOperator);
         $this->fileOperator = $fileOperator;
         $this->folder = $folder;
     }
-
 
     public function execute()
     {
@@ -61,9 +59,12 @@ class UpdateFolderCommand extends AbstractFolderCommand
             $command->execute();
         }
 
+        $event = new FolderEvent($this->folder);
+        $this->folderOperator->getEventDispatcher()->dispatch(
+            'folder.update',
+            $event
+        );
     }
-
-
 
     public function unserialize($serialized)
     {
@@ -81,9 +82,4 @@ class UpdateFolderCommand extends AbstractFolderCommand
         ));
 
     }
-
-
-
-
-
 }

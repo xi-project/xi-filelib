@@ -59,12 +59,25 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function deleteShouldDeleteFoldersAndFilesRecursively()
     {
-        $filelib = $this->getFilelib();
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
         $op = $this
             ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
             ->setConstructorArgs(array($filelib))
             ->setMethods(array('createCommand', 'findSubFolders', 'findFiles'))
             ->getMock();
+
+
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+            $this->equalTo('folder.delete'),
+            $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
+        );
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
+
 
         $deleteCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\DeleteFolderCommand')
                               ->disableOriginalConstructor()
@@ -126,18 +139,19 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
                       ->getMock();
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')->disableOriginalConstructor()->getMock();
-        $filelib->setBackend($backend);
-        $filelib->setFileOperator($fiop);
+
+
+        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $folder = Folder::create(array('id' => 1));
 
+        $backend
+            ->expects($this->once())
+            ->method('deleteFolder')
+            ->with($folder);
+
         $command = new DeleteFolderCommand($op, $fiop, $folder);
         $command->execute();
-
     }
-
-
-
-
 }
 
