@@ -9,12 +9,14 @@
 
 namespace Xi\Filelib\IdentityMap;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Xi\Filelib\Event\IdentifiableEvent;
 use Iterator;
 
 /**
  * Identity map
  */
-class IdentityMap
+class IdentityMap implements EventSubscriberInterface
 {
     /**
      * @var array
@@ -25,6 +27,19 @@ class IdentityMap
      * @var array
      */
     private $objects = array();
+
+    /**
+     * @return array
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            'file.upload' => 'onCreate',
+            'file.delete' => 'onDelete',
+            'folder.delete' => 'onDelete',
+            'folder.create' => 'onCreate',
+        );
+    }
 
     /**
      * Returns whether identity map has an identifiable
@@ -120,6 +135,22 @@ class IdentityMap
         }
 
         return $this->objects[$identifier];
+    }
+
+    /**
+     * @param IdentifiableEvent $event
+     */
+    public function onCreate(IdentifiableEvent $event)
+    {
+        $this->add($event->getIdentifiable());
+    }
+
+    /**
+     * @param IdentifiableEvent $event
+     */
+    public function onDelete(IdentifiableEvent $event)
+    {
+        $this->remove($event->getIdentifiable());
     }
 
     /**

@@ -8,6 +8,8 @@ use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Event\FolderEvent;
 use ArrayIterator;
 
 class IdentityMapTest extends TestCase
@@ -32,6 +34,68 @@ class IdentityMapTest extends TestCase
             array(Resource::create(array('id' => 'xooxo'))),
             array(Folder::create(array('id' => 665))),
         );
+    }
+
+    /**
+     * @test
+     */
+    public function implementsEventSubscriberInterface()
+    {
+        $this->assertContains(
+            'Symfony\Component\EventDispatcher\EventSubscriberInterface',
+            class_implements('Xi\Filelib\IdentityMap\IdentityMap')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function subscribesToCorrectEvents()
+    {
+        $this->assertEquals(
+            array('file.upload', 'file.delete', 'folder.delete', 'folder.create'),
+            array_keys(IdentityMap::getSubscribedEvents())
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function onCreateAddsFile()
+    {
+        $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->setMethods(array('add', 'remove'))
+            ->getMock();
+
+        $file = File::create();
+        $event = new FileEvent($file);
+
+        $im
+            ->expects($this->once())
+            ->method('add')
+            ->with($file);
+
+        $im->onCreate($event);
+    }
+
+    /**
+     * @test
+     */
+    public function onDeleteRemovesFolder()
+    {
+        $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->setMethods(array('add', 'remove'))
+            ->getMock();
+
+        $folder = Folder::create();
+        $event = new FolderEvent($folder);
+
+        $im
+            ->expects($this->once())
+            ->method('remove')
+            ->with($folder);
+
+        $im->onDelete($event);
     }
 
     /**
