@@ -55,6 +55,16 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
     public function updateShouldDelegateCorrectlyWhenFileCanNotBePublished()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
+        $ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+            $this->equalTo('file.update'),
+            $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
+        );
+
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl', 'createCommand'))

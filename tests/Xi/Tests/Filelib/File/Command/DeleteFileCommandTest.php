@@ -68,11 +68,10 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
 
-        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-
-        $dispatcher
+        $ed
             ->expects($this->once())
             ->method('dispatch')
             ->with(
