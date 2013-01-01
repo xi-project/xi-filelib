@@ -12,7 +12,7 @@ namespace Xi\Filelib\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\Resource;
 
-class ResourceEvent extends Event
+class ResourceEvent extends Event implements IdentifiableEvent
 {
     /**
      * @var Resource
@@ -33,5 +33,14 @@ class ResourceEvent extends Event
     {
         return $this->resource;
     }
+
+    /**
+     * @return Resource
+     */
+    public function getIdentifiable()
+    {
+        return $this->getResource();
+    }
+
 
 }

@@ -16,6 +16,11 @@ class FolderEventTest extends \Xi\Tests\Filelib\TestCase
             'Symfony\Component\EventDispatcher\Event',
             class_parents('Xi\Filelib\Event\FolderEvent')
         );
+
+        $this->assertContains(
+            'Xi\Filelib\Event\IdentifiableEvent',
+            class_implements('Xi\Filelib\Event\FolderEvent')
+        );
     }
 
     /**
@@ -27,5 +32,8 @@ class FolderEventTest extends \Xi\Tests\Filelib\TestCase
         $event = new FolderEvent($folder);
         $folder2 = $event->getFolder();
         $this->assertSame($folder, $folder2);
+
+        $folder3 = $event->getIdentifiable();
+        $this->assertSame($folder, $folder3);
     }
 }

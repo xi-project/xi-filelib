@@ -12,7 +12,7 @@ namespace Xi\Filelib\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\Folder\Folder;
 
-class FolderEvent extends Event
+class FolderEvent extends Event implements IdentifiableEvent
 {
     /**
      * @var Folder
@@ -34,4 +34,11 @@ class FolderEvent extends Event
         return $this->folder;
     }
 
+    /**
+     * @return Folder
+     */
+    public function getIdentifiable()
+    {
+        return $this->getFolder();
+    }
 }

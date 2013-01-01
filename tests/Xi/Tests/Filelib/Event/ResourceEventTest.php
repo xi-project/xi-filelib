@@ -7,16 +7,24 @@ use Xi\Filelib\Event\ResourceEvent;
 
 class ResourceEventTest extends \Xi\Tests\Filelib\TestCase
 {
-    
+
     /**
      * @test
      */
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Event\ResourceEvent'));
-        $this->assertContains('Symfony\Component\EventDispatcher\Event', class_parents('Xi\Filelib\Event\ResourceEvent'));
+        $this->assertContains(
+            'Symfony\Component\EventDispatcher\Event',
+            class_parents('Xi\Filelib\Event\ResourceEvent')
+        );
+
+        $this->assertContains(
+            'Xi\Filelib\Event\IdentifiableEvent',
+            class_implements('Xi\Filelib\Event\ResourceEvent')
+        );
     }
-    
+
     /**
      * @test
      */
@@ -26,6 +34,9 @@ class ResourceEventTest extends \Xi\Tests\Filelib\TestCase
         $event = new ResourceEvent($resource);
         $resource2 = $event->getResource();
         $this->assertSame($resource, $resource2);
+
+        $resource3 = $event->getIdentifiable();
+        $this->assertSame($resource, $resource3);
     }
 
 }

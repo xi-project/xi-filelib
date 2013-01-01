@@ -12,7 +12,7 @@ namespace Xi\Filelib\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\File;
 
-class FileEvent extends Event
+class FileEvent extends Event implements IdentifiableEvent
 {
     /**
      * @var File
@@ -34,4 +34,11 @@ class FileEvent extends Event
         return $this->file;
     }
 
+    /**
+     * @return File
+     */
+    public function getIdentifiable()
+    {
+        return $this->getFile();
+    }
 }
