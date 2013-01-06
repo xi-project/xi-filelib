@@ -7,22 +7,14 @@ use Xi\Filelib\Event\FileEvent;
 
 class FileEventTest extends \Xi\Tests\Filelib\TestCase
 {
-
     /**
      * @test
      */
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Event\FileEvent'));
-        $this->assertContains(
-            'Symfony\Component\EventDispatcher\Event',
-            class_parents('Xi\Filelib\Event\FileEvent')
-        );
-
-        $this->assertContains(
-            'Xi\Filelib\Event\IdentifiableEvent',
-            class_implements('Xi\Filelib\Event\FileEvent')
-        );
+        $this->assertTrue(is_subclass_of('Xi\Filelib\Event\FileEvent', 'Symfony\Component\EventDispatcher\Event'));
+        $this->assertTrue(is_subclass_of('Xi\Filelib\Event\FileEvent', 'Xi\Filelib\Event\IdentifiableEvent'));
     }
 
     /**
@@ -39,9 +31,5 @@ class FileEventTest extends \Xi\Tests\Filelib\TestCase
 
         $file3 = $event->getIdentifiable();
         $this->assertSame($file, $file3);
-
     }
-
-
-
 }

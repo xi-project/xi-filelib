@@ -12,6 +12,9 @@ namespace Xi\Filelib\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\Plugin\Plugin;
 
+/**
+ * Plugin event
+ */
 class PluginEvent extends Event
 {
     /**
@@ -33,5 +36,4 @@ class PluginEvent extends Event
     {
         return $this->plugin;
     }
-
 }

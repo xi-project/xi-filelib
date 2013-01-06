@@ -12,6 +12,9 @@ namespace Xi\Filelib\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\FileLibrary;
 
+/**
+ * Filelib event
+ */
 class FilelibEvent extends Event
 {
     /**
@@ -33,5 +36,4 @@ class FilelibEvent extends Event
     {
         return $this->filelib;
     }
-
 }

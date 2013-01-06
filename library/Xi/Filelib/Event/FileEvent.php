@@ -9,19 +9,17 @@
 
 namespace Xi\Filelib\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Xi\Filelib\Event\IdentifiableEvent;
 use Xi\Filelib\File\File;
 
-class FileEvent extends Event implements IdentifiableEvent
+/**
+ * File event
+ */
+class FileEvent extends IdentifiableEvent
 {
-    /**
-     * @var File
-     */
-    private $file;
-
     public function __construct(File $file)
     {
-        $this->file = $file;
+        parent::__construct($file);
     }
 
     /**
@@ -31,14 +29,6 @@ class FileEvent extends Event implements IdentifiableEvent
      */
     public function getFile()
     {
-        return $this->file;
-    }
-
-    /**
-     * @return File
-     */
-    public function getIdentifiable()
-    {
-        return $this->getFile();
+        return $this->getIdentifiable();
     }
 }

@@ -12,6 +12,9 @@ namespace Xi\Filelib\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\File;
 
+/**
+ * File copy event
+ */
 class FileCopyEvent extends Event
 {
     /**
@@ -23,7 +26,6 @@ class FileCopyEvent extends Event
      * @var File
      */
     private $target;
-
 
     public function __construct(File $source, File $target)
     {
@@ -50,7 +52,4 @@ class FileCopyEvent extends Event
     {
         return $this->target;
     }
-
-
-
 }

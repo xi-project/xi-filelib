@@ -9,19 +9,16 @@
 
 namespace Xi\Filelib\Event;
 
-use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\Resource;
 
-class ResourceEvent extends Event implements IdentifiableEvent
+/**
+ * Resource event
+ */
+class ResourceEvent extends IdentifiableEvent
 {
-    /**
-     * @var Resource
-     */
-    private $resource;
-
     public function __construct(Resource $resource)
     {
-        $this->resource = $resource;
+        parent::__construct($resource);
     }
 
     /**
@@ -31,16 +28,6 @@ class ResourceEvent extends Event implements IdentifiableEvent
      */
     public function getResource()
     {
-        return $this->resource;
+        return $this->getIdentifiable();
     }
-
-    /**
-     * @return Resource
-     */
-    public function getIdentifiable()
-    {
-        return $this->getResource();
-    }
-
-
 }

@@ -9,19 +9,16 @@
 
 namespace Xi\Filelib\Event;
 
-use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\Folder\Folder;
 
-class FolderEvent extends Event implements IdentifiableEvent
+/**
+ * Folder event
+ */
+class FolderEvent extends IdentifiableEvent
 {
-    /**
-     * @var Folder
-     */
-    private $folder;
-
     public function __construct(Folder $folder)
     {
-        $this->folder = $folder;
+        parent::__construct($folder);
     }
 
     /**
@@ -31,14 +28,6 @@ class FolderEvent extends Event implements IdentifiableEvent
      */
     public function getFolder()
     {
-        return $this->folder;
-    }
-
-    /**
-     * @return Folder
-     */
-    public function getIdentifiable()
-    {
-        return $this->getFolder();
+        return $this->getIdentifiable();
     }
 }

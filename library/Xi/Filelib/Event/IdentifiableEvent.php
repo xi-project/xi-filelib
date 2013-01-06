@@ -10,11 +10,31 @@
 namespace Xi\Filelib\Event;
 
 use Xi\Filelib\IdentityMap\Identifiable;
+use Symfony\Component\EventDispatcher\Event;
 
-interface IdentifiableEvent
+/**
+ * Identifiable event
+ */
+class IdentifiableEvent extends Event
 {
+    /**
+     * @var Identifiable
+     */
+    private $identifiable;
+
+    /**
+     * @param Identifiable $identifiable
+     */
+    public function __construct(Identifiable $identifiable)
+    {
+        $this->identifiable = $identifiable;
+    }
+
     /**
      * @return Identifiable
      */
-    public function getIdentifiable();
+    public function getIdentifiable()
+    {
+        return $this->identifiable;
+    }
 }

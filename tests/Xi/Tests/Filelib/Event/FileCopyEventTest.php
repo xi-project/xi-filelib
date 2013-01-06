@@ -13,7 +13,10 @@ class FileCopyEventTest extends \Xi\Tests\Filelib\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Event\FileCopyEvent'));
-        $this->assertContains('Symfony\Component\EventDispatcher\Event', class_parents('Xi\Filelib\Event\FileCopyEvent'));
+        $this->assertContains(
+            'Symfony\Component\EventDispatcher\Event',
+            class_parents('Xi\Filelib\Event\FileCopyEvent')
+        );
     }
 
     /**

@@ -14,9 +14,11 @@ use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\Folder\Folder;
 
+/**
+ * File upload event
+ */
 class FileUploadEvent extends Event
 {
-
     /**
      * @var FileUpload
      */
@@ -77,5 +79,4 @@ class FileUploadEvent extends Event
     {
         return $this->folder;
     }
-
 }

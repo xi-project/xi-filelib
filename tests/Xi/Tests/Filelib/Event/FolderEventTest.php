@@ -12,15 +12,8 @@ class FolderEventTest extends \Xi\Tests\Filelib\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Event\FolderEvent'));
-        $this->assertContains(
-            'Symfony\Component\EventDispatcher\Event',
-            class_parents('Xi\Filelib\Event\FolderEvent')
-        );
-
-        $this->assertContains(
-            'Xi\Filelib\Event\IdentifiableEvent',
-            class_implements('Xi\Filelib\Event\FolderEvent')
-        );
+        $this->assertTrue(is_subclass_of('Xi\Filelib\Event\FolderEvent', 'Symfony\Component\EventDispatcher\Event'));
+        $this->assertTrue(is_subclass_of('Xi\Filelib\Event\FolderEvent', 'Xi\Filelib\Event\IdentifiableEvent'));
     }
 
     /**

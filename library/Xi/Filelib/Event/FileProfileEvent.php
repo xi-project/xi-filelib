@@ -12,6 +12,9 @@ namespace Xi\Filelib\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\FileProfile;
 
+/**
+ * File profile event
+ */
 class FileProfileEvent extends Event
 {
     /**
@@ -33,5 +36,4 @@ class FileProfileEvent extends Event
     {
         return $this->profile;
     }
-
 }
