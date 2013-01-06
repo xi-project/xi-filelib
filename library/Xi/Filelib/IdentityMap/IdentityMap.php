@@ -10,6 +10,7 @@
 namespace Xi\Filelib\IdentityMap;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\IdentifiableEvent;
 use Iterator;
 
@@ -19,6 +20,11 @@ use Iterator;
 class IdentityMap implements EventSubscriberInterface
 {
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * @var array
      */
     private $objectIdentifiers = array();
@@ -27,6 +33,12 @@ class IdentityMap implements EventSubscriberInterface
      * @var array
      */
     private $objects = array();
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $eventDispatcher->addSubscriber($this);
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
     /**
      * @return array
@@ -39,6 +51,14 @@ class IdentityMap implements EventSubscriberInterface
             'folder.delete' => 'onDelete',
             'folder.create' => 'onCreate',
         );
+    }
+
+    /**
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
     }
 
     /**
@@ -69,10 +89,13 @@ class IdentityMap implements EventSubscriberInterface
             throw new IdentityMapException("Trying to add a file without id to identity map");
         }
 
-        $identifier = $this->getIdentifierFromObject($object);
+        $this->dispatchEvent($object, 'before_add');
 
+        $identifier = $this->getIdentifierFromObject($object);
         $this->objectIdentifiers[spl_object_hash($object)] = $identifier;
         $this->objects[$identifier] = $object;
+
+        $this->dispatchEvent($object, 'after_add');
 
         return true;
     }
@@ -114,8 +137,13 @@ class IdentityMap implements EventSubscriberInterface
         if (!isset($this->objectIdentifiers[$splHash])) {
             return false;
         }
+
+        $this->dispatchEvent($object, 'before_remove');
+
         unset($this->objects[$this->objectIdentifiers[$splHash]]);
         unset($this->objectIdentifiers[$splHash]);
+
+        $this->dispatchEvent($object, 'after_remove');
         return true;
     }
 
@@ -170,5 +198,15 @@ class IdentityMap implements EventSubscriberInterface
     protected function getIdentifierFromObject(Identifiable $object)
     {
         return get_class($object) . ' ' . $object->getId();
+    }
+
+    /**
+     * @param Identifiable $object
+     * @param $eventName
+     */
+    protected function dispatchEvent(Identifiable $object, $eventName)
+    {
+        $event = new IdentifiableEvent($object);
+        $this->getEventDispatcher()->dispatch('identitymap.' . $eventName, $event);
     }
 }

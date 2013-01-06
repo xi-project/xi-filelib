@@ -19,9 +19,37 @@ class IdentityMapTest extends TestCase
      */
     protected $im;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $ed;
+
     public function setUp()
     {
-        $this->im = new IdentityMap();
+        $this->ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $this->im = new IdentityMap($this->ed);
+    }
+
+    /**
+     * @test
+     */
+    public function constructorSubscribesToEventzs()
+    {
+        $this->ed
+            ->expects($this->once())->method('addSubscriber')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\IdentityMap\IdentityMap')
+            );
+
+        $im = new IdentityMap($this->ed);
+    }
+
+    /**
+     * @test
+     */
+    public function getEventDispatcherReturnsEventDispatcher()
+    {
+        $this->assertSame($this->ed, $this->im->getEventDispatcher());
     }
 
     /**
@@ -65,6 +93,7 @@ class IdentityMapTest extends TestCase
     {
         $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
             ->setMethods(array('add', 'remove'))
+            ->disableOriginalConstructor()
             ->getMock();
 
         $file = File::create();
@@ -85,6 +114,7 @@ class IdentityMapTest extends TestCase
     {
         $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
             ->setMethods(array('add', 'remove'))
+            ->disableOriginalConstructor()
             ->getMock();
 
         $folder = Folder::create();
@@ -124,6 +154,10 @@ class IdentityMapTest extends TestCase
      */
     public function addShouldThrowExceptionWhenAddingObjectWithoutId()
     {
+        $this->ed
+            ->expects($this->never())
+            ->method('dispatch');
+
         $this->im->add(File::create());
     }
 
@@ -133,6 +167,10 @@ class IdentityMapTest extends TestCase
      */
     public function addingAnAlreadyExistingObjectShouldReturnFalse(Identifiable $object)
     {
+        $this->ed
+            ->expects($this->exactly(2))
+            ->method('dispatch');
+
         $this->assertFalse($this->im->has($object));
         $ret = $this->im->add($object);
 
@@ -157,13 +195,18 @@ class IdentityMapTest extends TestCase
         );
         $iter = new ArrayIterator($array);
 
-        $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
-                   ->setMethods(array('add'))
-                   ->getMock();
+        $im = $this
+            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->setMethods(array('add'))
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $im->expects($this->exactly(3))
+        $im
+            ->expects($this->exactly(3))
             ->method('add')
-            ->with($this->isInstanceOf('Xi\Filelib\IdentityMap\Identifiable'));
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\IdentityMap\Identifiable')
+            );
 
         $im->addMany($iter);
     }
@@ -180,11 +223,14 @@ class IdentityMapTest extends TestCase
         );
         $iter = new ArrayIterator($array);
 
-        $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+        $im = $this
+            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
             ->setMethods(array('remove'))
+            ->disableOriginalConstructor()
             ->getMock();
 
-        $im->expects($this->exactly(3))
+        $im
+            ->expects($this->exactly(3))
             ->method('remove')
             ->with($this->isInstanceOf('Xi\Filelib\IdentityMap\Identifiable'));
 
@@ -206,6 +252,22 @@ class IdentityMapTest extends TestCase
      */
     public function getShouldReturnSameInstanceWhenObjectIsFound(Identifiable $object)
     {
+        $this->ed
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with(
+                'identitymap.before_add',
+                $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
+            );
+
+        $this->ed
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                'identitymap.after_add',
+                $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
+            );
+
         $this->im->add($object);
         $this->assertSame($object, $this->im->get($object->getId(), get_class($object)));
     }
@@ -216,6 +278,22 @@ class IdentityMapTest extends TestCase
      */
     public function removeShouldRemoveObject(Identifiable $object)
     {
+        $this->ed
+            ->expects($this->at(2))
+            ->method('dispatch')
+            ->with(
+                'identitymap.before_remove',
+                $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
+            );
+
+        $this->ed
+            ->expects($this->at(3))
+            ->method('dispatch')
+            ->with(
+                'identitymap.after_remove',
+                $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
+            );
+
         $this->im->add($object);
         $this->assertTrue($this->im->has($object));
 

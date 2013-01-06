@@ -40,8 +40,14 @@ class BackendTest extends TestCase
     public function setUp()
     {
         $this->platform = $this->getMock('Xi\Filelib\Backend\Platform\Platform');
-        $this->im = $this->getMock('Xi\Filelib\IdentityMap\IdentityMap');
-        $this->ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+
+        $this->im = $this
+            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->ed = $this
+            ->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
         $this->backend = new Backend($this->ed, $this->platform, $this->im);
     }

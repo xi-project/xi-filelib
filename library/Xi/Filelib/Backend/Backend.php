@@ -229,6 +229,7 @@ class Backend
      *
      * @param Resource          $resource
      * @throws FilelibException If resource could not be deleted.
+     * @todo The event part seems misplaced here.
      */
     public function deleteResource(Resource $resource)
     {

@@ -31,7 +31,10 @@ class IdentityMapHelperTest extends TestCase
     public function setUp()
     {
         $this->platform = $this->getMock('Xi\Filelib\Backend\Platform\Platform');
-        $this->im = $this->getMock('Xi\Filelib\IdentityMap\IdentityMap');
+        $this->im = $this
+            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->helper = new IdentityMapHelper($this->im, $this->platform);
     }
