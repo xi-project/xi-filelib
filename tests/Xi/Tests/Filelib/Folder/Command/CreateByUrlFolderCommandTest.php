@@ -80,7 +80,7 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
             )
             ->will($this->returnCallback(function($className) use ($self) {
                 $command = $self->getMockBuilder($className)->disableOriginalConstructor()->getMock();
-                $command->expects($this->once())->method('execute');
+                $command->expects($self->once())->method('execute');
                 return $command;
             }));
 
