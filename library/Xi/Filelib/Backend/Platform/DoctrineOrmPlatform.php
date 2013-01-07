@@ -531,7 +531,7 @@ class DoctrineOrmPlatform implements Platform
      * @param  File        $file
      * @return object|null
      */
-    protected function getFileReference(File $file)
+    public function getFileReference(File $file)
     {
         return $this->em->getReference($this->fileEntityName, $file->getId());
     }
@@ -540,7 +540,7 @@ class DoctrineOrmPlatform implements Platform
      * @param  integer     $id
      * @return object|null
      */
-    protected function getFolderReference($id)
+    public function getFolderReference($id)
     {
         return $this->em->getReference($this->folderEntityName, $id);
     }
