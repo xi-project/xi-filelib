@@ -110,6 +110,7 @@ class IdentityMap implements EventSubscriberInterface
         foreach ($iterator as $object) {
             $this->add($object);
         }
+        $iterator->rewind();
     }
 
     /**
@@ -122,8 +123,8 @@ class IdentityMap implements EventSubscriberInterface
         foreach ($iterator as $object) {
             $this->remove($object);
         }
+        $iterator->rewind();
     }
-
     /**
      * Removes an identifiable
      *

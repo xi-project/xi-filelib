@@ -186,10 +186,11 @@ class IdentityMapTest extends TestCase
     /**
      * @test
      */
-    public function addManyShouldAddAllObjects()
+    public function addManyAddsAllObjectsAndRewindsIterator()
     {
+        $first = File::create(array('id' => 6));
         $array = array(
-            File::create(array('id' => 6)),
+            $first,
             Folder::create(array('id' => 6)),
             File::create(array('id' => 6)),
         );
@@ -209,15 +210,18 @@ class IdentityMapTest extends TestCase
             );
 
         $im->addMany($iter);
+
+        $this->assertSame($first, $iter->current());
     }
 
     /**
      * @test
      */
-    public function removeManyShouldDeleteAllObjects()
+    public function removeManyDeletesAllObjectsAndRewindsIterator()
     {
+        $first = File::create(array('id' => 6));
         $array = array(
-            File::create(array('id' => 6)),
+            $first,
             Folder::create(array('id' => 6)),
             File::create(array('id' => 6)),
         );
@@ -235,6 +239,7 @@ class IdentityMapTest extends TestCase
             ->with($this->isInstanceOf('Xi\Filelib\IdentityMap\Identifiable'));
 
         $im->removeMany($iter);
+        $this->assertSame($first, $iter->current());
     }
 
     /**
