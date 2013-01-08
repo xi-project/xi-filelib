@@ -268,7 +268,7 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $id = 1;
 
         $filelib = new FileLibrary();
-        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->setEventDispatcher($eventDispatcher);
         $op = new FileOperator($filelib);
 
@@ -282,8 +282,6 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
             ->will($this->returnValue($file));
 
         $filelib->setBackend($backend);
-
-        $eventDispatcher->expects($this->once())->method('dispatch')->with($this->equalTo('file.instantiate'));
 
         $ret = $op->find($id);
         $this->assertSame($file, $ret);
@@ -329,7 +327,7 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $id = 1;
 
         $filelib = new FileLibrary();
-        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->setEventDispatcher($eventDispatcher);
         $op = new FileOperator($filelib);
 
@@ -353,11 +351,6 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
                 $this->equalTo($finder)
             )
             ->will($this->returnValue(new ArrayIterator(array($file))));
-
-        $eventDispatcher
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with('file.instantiate');
 
         $ret = $op->findByFilename($folder, 'lussname');
         $this->assertSame($file, $ret);
@@ -399,9 +392,8 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
      */
     public function findAllShouldReturnAnArrayOfFileInstancesIfFilesAreFound()
     {
-
         $filelib = new FileLibrary();
-        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->setEventDispatcher($eventDispatcher);
 
         $op = new FileOperator($filelib);
@@ -423,11 +415,6 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
             $this->equalTo($finder)
         )
             ->will($this->returnValue($iter));
-
-        $eventDispatcher
-            ->expects($this->exactly(3))
-            ->method('dispatch')
-            ->with('file.instantiate');
 
         $files = $op->findAll();
 
@@ -619,37 +606,6 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $op = new FileOperator($filelib);
 
         $op->getFolderOperator();
-
-    }
-
-
-    /**
-     * @test
-     */
-    public function triggerEventShouldDelegateToGetInstanceAndTriggerCorrectEvent()
-    {
-
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                         ->setMethods(array('getInstance', 'getEventDispatcher'))
-                         ->disableOriginalConstructor()
-                         ->getMock();
-
-        $file = $this->getMock('Xi\Filelib\File\File');
-        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-
-        $op->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($eventDispatcher));
-
-        $eventDispatcher
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with(
-                'file.instantiate',
-                $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
-            );
-
-        $ret = $op->triggerEvent($file);
-
-        $this->assertNull($ret);
 
     }
 

@@ -166,8 +166,6 @@ class FileOperator extends AbstractOperator
         if (!$file) {
             return false;
         }
-
-        $this->triggerEvent($file);
         return $file;
     }
 
@@ -187,8 +185,6 @@ class FileOperator extends AbstractOperator
         if (!$file) {
             return false;
         }
-
-        $this->triggerEvent($file);
         return $file;
     }
 
@@ -200,9 +196,6 @@ class FileOperator extends AbstractOperator
     public function findAll()
     {
         $files = $this->getBackend()->findByFinder(new FileFinder());
-        foreach ($files as $file) {
-            $this->triggerEvent($file);
-        }
         return $files;
     }
 
@@ -349,20 +342,6 @@ class FileOperator extends AbstractOperator
     public function getFolderOperator()
     {
         return $this->getFilelib()->getFolderOperator();
-    }
-
-
-    /**
-     * Gets instance and triggers instantiate event
-     *
-     * @param array $file
-     */
-    public function triggerEvent(File $file)
-    {
-        // $file = $this->getInstance($file);
-        $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.instantiate', $event);
-        // return $file;
     }
 
     /**
