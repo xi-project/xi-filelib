@@ -88,10 +88,10 @@ class UploadFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $fileitem->expects($this->at(0))->method('setStatus')->with($this->equalTo(File::STATUS_RAW));
 
         $dispatcher->expects($this->at(0))->method('dispatch')
-                   ->with($this->equalTo('file.beforeUpload'), $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
+                   ->with($this->equalTo('xi_filelib.file.before_upload'), $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
 
         $dispatcher->expects($this->at(1))->method('dispatch')
-                   ->with($this->equalTo('file.upload'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+                   ->with($this->equalTo('xi_filelib.file.upload'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
 
         $folder = Folder::create(array('id' => 1));

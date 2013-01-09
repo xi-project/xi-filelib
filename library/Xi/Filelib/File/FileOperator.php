@@ -108,7 +108,7 @@ class FileOperator extends AbstractOperator
         $this->getEventDispatcher()->addSubscriber($profile);
 
         $event = new FileProfileEvent($profile);
-        $this->getEventDispatcher()->dispatch('fileprofile.add', $event);
+        $this->getEventDispatcher()->dispatch('xi_filelib.fileprofile.add', $event);
 
         return $this;
     }

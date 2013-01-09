@@ -61,7 +61,7 @@ class UpdateFolderCommand extends AbstractFolderCommand
 
         $event = new FolderEvent($this->folder);
         $this->folderOperator->getEventDispatcher()->dispatch(
-            'folder.update',
+            'xi_filelib.folder.update',
             $event
         );
     }

@@ -184,7 +184,7 @@ class FileOperatorTest extends \Xi\Tests\Filelib\TestCase
         $eventDispatcher->expects($this->exactly(2))->method('addSubscriber')->with($this->isInstanceOf('Xi\Filelib\File\FileProfile'));
 
         $eventDispatcher->expects($this->exactly(2))->method('dispatch')
-                        ->with($this->equalTo('fileprofile.add'), $this->isInstanceOf('Xi\Filelib\Event\FileProfileEvent'));
+                        ->with($this->equalTo('xi_filelib.fileprofile.add'), $this->isInstanceOf('Xi\Filelib\Event\FileProfileEvent'));
 
         $op->addProfile($profile);
         $this->assertCount(1, $op->getProfiles());

@@ -35,7 +35,7 @@ class PublishFileCommand extends AbstractFileCommand
             $this->fileOperator->getPublisher()->publish($this->file);
         }
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch('file.publish', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.publish', $event);
 
     }
 

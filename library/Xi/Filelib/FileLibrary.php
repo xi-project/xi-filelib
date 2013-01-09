@@ -340,7 +340,7 @@ class FileLibrary
         $this->getEventDispatcher()->addSubscriber($plugin);
 
         $event = new PluginEvent($plugin);
-        $this->getEventDispatcher()->dispatch('plugin.add', $event);
+        $this->getEventDispatcher()->dispatch('xi_filelib.plugin.add', $event);
 
         $plugin->init();
 
@@ -410,15 +410,5 @@ class FileLibrary
     public function getPlatform()
     {
         return $this->platform;
-    }
-
-    /**
-     * Triggers init event. Kind of a kludge until better rethought.
-     *
-     */
-    public function dispatchInitEvent()
-    {
-        $event = new FilelibEvent($this);
-        $this->getEventDispatcher()->dispatch('filelib.init', $event);
     }
 }

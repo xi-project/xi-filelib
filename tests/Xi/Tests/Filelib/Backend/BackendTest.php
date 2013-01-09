@@ -438,7 +438,7 @@ class BackendTest extends TestCase
         $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
 
         $this->ed->expects($this->once())->method('dispatch')
-            ->with('resource.delete', $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
+            ->with('xi_filelib.resource.delete', $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
 
         $ret = $this->backend->deleteResource($obj);
         $this->assertNull($ret);

@@ -185,7 +185,7 @@ class ChangeFormatPluginTest extends TestCase
     public function getSubscribedEventsShouldReturnCorrectEvents()
     {
         $events = ChangeFormatPlugin::getSubscribedEvents();
-        $this->assertArrayHasKey('fileprofile.add', $events);
-        $this->assertArrayHasKey('file.beforeUpload', $events);
+        $this->assertArrayHasKey('xi_filelib.fileprofile.add', $events);
+        $this->assertArrayHasKey('xi_filelib.file.before_upload', $events);
     }
 }

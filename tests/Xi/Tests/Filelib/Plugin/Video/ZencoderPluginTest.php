@@ -405,11 +405,11 @@ class ZencoderPluginTest extends \Xi\Tests\Filelib\TestCase
     public function getSubscribedEventsShouldReturnCorrectEvents()
     {
         $events = ZencoderPlugin::getSubscribedEvents();
-        $this->assertArrayHasKey('fileprofile.add', $events);
-        $this->assertArrayHasKey('file.afterUpload', $events);
-        $this->assertArrayHasKey('file.publish', $events);
-        $this->assertArrayHasKey('file.unpublish', $events);
-        $this->assertArrayHasKey('file.delete', $events);
-        $this->assertArrayHasKey('resource.delete', $events);
+        $this->assertArrayHasKey('xi_filelib.fileprofile.add', $events);
+        $this->assertArrayHasKey('xi_filelib.file.after_upload', $events);
+        $this->assertArrayHasKey('xi_filelib.file.publish', $events);
+        $this->assertArrayHasKey('xi_filelib.file.unpublish', $events);
+        $this->assertArrayHasKey('xi_filelib.file.delete', $events);
+        $this->assertArrayHasKey('xi_filelib.resource.delete', $events);
     }
 }

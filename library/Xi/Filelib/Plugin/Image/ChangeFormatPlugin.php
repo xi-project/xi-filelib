@@ -22,8 +22,8 @@ use Xi\Filelib\File\FileOperator;
 class ChangeFormatPlugin extends AbstractPlugin
 {
     protected static $subscribedEvents = array(
-        'fileprofile.add' => 'onFileProfileAdd',
-        'file.beforeUpload' => 'beforeUpload'
+        'xi_filelib.fileprofile.add' => 'onFileProfileAdd',
+        'xi_filelib.file.before_upload' => 'beforeUpload'
     );
 
     protected $imageMagickHelper;

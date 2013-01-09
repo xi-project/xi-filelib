@@ -66,7 +66,7 @@ class UpdateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-            $this->equalTo('folder.update'),
+            $this->equalTo('xi_filelib.folder.update'),
             $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
         );
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));

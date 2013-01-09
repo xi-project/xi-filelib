@@ -116,7 +116,7 @@ abstract class AbstractRenderer
     protected function dispatchTrackEvent(File $file)
     {
         $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('file.render', $event);
+        $this->getEventDispatcher()->dispatch('xi_filelib.file.render', $event);
     }
 
 

@@ -46,7 +46,7 @@ class CreateFolderCommand extends AbstractFolderCommand
 
         $event = new FolderEvent($folder);
         $this->folderOperator->getEventDispatcher()->dispatch(
-            'folder.create',
+            'xi_filelib.folder.create',
             $event
         );
         return $folder;
