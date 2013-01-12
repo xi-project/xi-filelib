@@ -94,7 +94,6 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 
     /**
      * @test
-     * @group lusso
      */
     public function createByUrlShouldCreateRecursivelyFromTheMiddleIfSomeFoldersExist()
     {
@@ -187,6 +186,5 @@ class CreateByUrlFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 
         return $op;
     }
-
 }
 

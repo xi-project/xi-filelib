@@ -58,9 +58,9 @@ class IdentityMapHelper
     /**
      * Tries to fetch one from identity map. Delegates to callback if fails.
      *
-     * @param $id
-     * @param $class
-     * @param $callback
+     * @param mixed $id
+     * @param string $class
+     * @param callable $callback
      * @return Identifiable|false
      */
     public function tryOneFromIdentityMap($id, $class, $callback)
@@ -79,8 +79,8 @@ class IdentityMapHelper
      * Tries to fetch many from identity map. Delegates to callback if fails.
      *
      * @param array $ids
-     * @param $class
-     * @param $callback
+     * @param string $class
+     * @param callable $callback
      * @return ArrayIterator
      * @todo Extract methods
      */
@@ -114,7 +114,7 @@ class IdentityMapHelper
     /**
      * Tries callback with mixed arguments. Adds return value to identity map.
      *
-     * @param $callback
+     * @param callable $callback
      * @return mixed
      */
     public function tryAndAddToIdentityMap($callback)
@@ -130,7 +130,7 @@ class IdentityMapHelper
     /**
      * Tries callback and removes from identity map.
      *
-     * @param $callback
+     * @param callable $callback
      * @param Identifiable $identifiable
      * @return mixed
      */
