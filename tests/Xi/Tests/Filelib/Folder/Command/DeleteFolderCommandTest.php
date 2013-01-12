@@ -8,6 +8,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Command\DeleteFolderCommand;
+use ArrayIterator;
 
 class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 {
@@ -58,91 +59,99 @@ class DeleteFolderCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function deleteShouldDeleteFoldersAndFilesRecursively()
     {
-        $filelib = new FileLibrary();
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
-         $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('createCommand'))
-                    ->getMock();
+        $op = $this
+            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
+            ->setConstructorArgs(array($filelib))
+            ->setMethods(array('createCommand', 'findSubFolders', 'findFiles'))
+            ->getMock();
 
-         $deleteCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\DeleteFolderCommand')
-                               ->disableOriginalConstructor()
-                               ->getMock();
 
-         $deleteFileCommand = $this->getMockBuilder('Xi\Filelib\File\Command\DeleteFileCommand')
-                               ->disableOriginalConstructor()
-                               ->getMock();
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+            $this->equalTo('folder.delete'),
+            $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
+        );
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
 
+
+        $deleteCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\DeleteFolderCommand')
+                              ->disableOriginalConstructor()
+                              ->getMock();
+
+        $deleteFileCommand = $this->getMockBuilder('Xi\Filelib\File\Command\DeleteFileCommand')
+                                  ->disableOriginalConstructor()
+                                  ->getMock();
 
         $deleteCommand->expects($this->exactly(3))->method('execute');
         $deleteFileCommand->expects($this->exactly(4))->method('execute');
 
+        $op->expects($this->exactly(1))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
+            ->will($this->returnCallback(function($folder) {
 
-        $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\DeleteFolderCommand'))
-                                       ->will($this->returnValue($deleteCommand));
-        $op->expects($this->at(1))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\DeleteFolderCommand'))
-                                       ->will($this->returnValue($deleteCommand));
-        $op->expects($this->at(2))->method('createCommand')->with($this->equalTo('Xi\Filelib\Folder\Command\DeleteFolderCommand'))
-                                       ->will($this->returnValue($deleteCommand));
+            if($folder->getId() == 1) {
+                return new ArrayIterator(array(
+                    Folder::create(array('id' => 2, 'parent_id' => 1)),
+                    Folder::create(array('id' => 3, 'parent_id' => 1)),
+                    Folder::create(array('id' => 4, 'parent_id' => 1)),
+                ));
+            }
+            return new ArrayIterator(array());
+        }));
 
-        $op->expects($this->at(3))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
-                                       ->will($this->returnValue($deleteFileCommand));
-        $op->expects($this->at(4))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
-                                       ->will($this->returnValue($deleteFileCommand));
+        $op->expects($this->exactly(1))->method('findFiles')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
+            ->will($this->returnCallback(function ($folder) {
 
-        $op->expects($this->at(5))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
-                                       ->will($this->returnValue($deleteFileCommand));
-        $op->expects($this->at(6))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\DeleteFileCommand'))
-                                       ->will($this->returnValue($deleteFileCommand));
+            if($folder->getId() == 1) {
+                return new ArrayIterator(array(
+                    Folder::create(array('id' => 1, 'name' => 'tohtori-vesala.avi')),
+                    Folder::create(array('id' => 2, 'name' => 'tohtori-vesala.png')),
+                    Folder::create(array('id' => 3, 'name' => 'tohtori-vesala.jpg')),
+                    Folder::create(array('id' => 4, 'name' => 'tohtori-vesala.bmp')),
+                ));
+            }
+            return new ArrayIterator(array());
+        }));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->exactly(1))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
+        $op
+            ->expects($this->any())
+            ->method('createCommand')
+            ->will(
+                $this->returnCallback(
+                    function ($className) use ($deleteCommand, $deleteFileCommand) {
 
-                    if($folder->getId() == 1) {
-                        return array(
-                            array('id' => 2, 'parent_id' => 1),
-                            array('id' => 3, 'parent_id' => 1),
-                            array('id' => 4, 'parent_id' => 1),
-                        );
+                        if ($className === 'Xi\Filelib\Folder\Command\DeleteFolderCommand') {
+                            return $deleteCommand;
+                        } elseif ($className == 'Xi\Filelib\File\Command\DeleteFileCommand') {
+                            return $deleteFileCommand;
+                        }
                     }
-                    return array();
-                 }));
-        $backend->expects($this->exactly(1))->method('findFilesIn')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
-                ->will($this->returnCallback(function($folder) {
-
-                    if($folder->getId() == 1) {
-                        return array(
-                            array('id' => 1, 'name' => 'tohtori-vesala.avi'),
-                            array('id' => 2, 'name' => 'tohtori-vesala.png'),
-                            array('id' => 3, 'name' => 'tohtori-vesala.jpg'),
-                            array('id' => 4, 'name' => 'tohtori-vesala.bmp'),
-                        );
-                    }
-                    return array();
-                 }));
-
-        $backend->expects($this->exactly(1))->method('deleteFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
+                )
+            );
 
         $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                       ->setMethods(array('delete'))
                       ->setConstructorArgs(array($filelib))
                       ->getMock();
 
+        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')->disableOriginalConstructor()->getMock();
 
-        $filelib->setBackend($backend);
-        $filelib->setFileOperator($fiop);
+
+        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $folder = Folder::create(array('id' => 1));
 
+        $backend
+            ->expects($this->once())
+            ->method('deleteFolder')
+            ->with($folder);
+
         $command = new DeleteFolderCommand($op, $fiop, $folder);
         $command->execute();
-
-
     }
-
-
-
-
 }
 

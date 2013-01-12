@@ -55,6 +55,16 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
     public function updateShouldDelegateCorrectlyWhenFileCanNotBePublished()
     {
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
+        $ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+            $this->equalTo('file.update'),
+            $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
+        );
+
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl', 'createCommand'))
@@ -91,7 +101,11 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $file->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $backend->expects($this->once())->method('updateFile')->with($this->equalTo($file));
 
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
@@ -165,7 +179,11 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $file->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
 
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $backend->expects($this->once())->method('updateFile')->with($this->equalTo($file));
 
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));

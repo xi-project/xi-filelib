@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib;
 
 use Xi\Filelib\Folder\FolderOperator;
@@ -16,38 +23,40 @@ use InvalidArgumentException;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Event\FilelibEvent;
 use Xi\Filelib\Queue\Queue;
+use Xi\Filelib\IdentityMap\IdentityMap;
+use Xi\Filelib\Backend\Platform\Platform;
 
 /**
- * Xi filelib
+ * File library
  *
  * @author pekkis
+ * @todo Refactor to configuration / contain common methods (getFile etc)
  *
  */
 class FileLibrary
 {
-
     /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
 
     /**
-     * @var Backend Backend
+     * @var Backend
      */
     private $backend;
 
     /**
-     * @var Storage Storage
+     * @var Storage
      */
     private $storage;
 
     /**
-     * @var Publisher Publisher
+     * @var Publisher
      */
     private $publisher;
 
     /**
-     * @var Acl Acl handler
+     * @var Acl
      */
     private $acl;
 
@@ -62,18 +71,24 @@ class FileLibrary
     private $folderOperator;
 
     /**
-     * Temporary directory
-     *
      * @var string
      */
     private $tempDir;
 
     /**
-     *
      * @var Queue
      */
     private $queue;
 
+    /**
+     * @var IdentityMap
+     */
+    private $identityMap;
+
+    /**
+     * @var Platform
+     */
+    private $platform;
 
 
     /**
@@ -81,8 +96,6 @@ class FileLibrary
      */
     public function getEventDispatcher()
     {
-
-
         if (!$this->eventDispatcher) {
             $this->eventDispatcher = new EventDispatcher();
         }
@@ -104,10 +117,12 @@ class FileLibrary
     public function setTempDir($tempDir)
     {
         if (!is_dir($tempDir) || !is_writable($tempDir)) {
-            throw new InvalidArgumentException(sprintf(
-                'Temp dir "%s" is not writable or does not exist',
-                $tempDir
-            ));
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Temp dir "%s" is not writable or does not exist',
+                    $tempDir
+                )
+            );
         }
         $this->tempDir = $tempDir;
     }
@@ -134,7 +149,7 @@ class FileLibrary
      */
     public function file()
     {
-        trigger_error( "Method is deprecated. use getFileOperator() instead.", E_USER_DEPRECATED);
+        trigger_error("Method is deprecated. use getFileOperator() instead.", E_USER_DEPRECATED);
         return $this->getFileOperator();
     }
 
@@ -146,7 +161,7 @@ class FileLibrary
      */
     public function folder()
     {
-        trigger_error( "Method is deprecated. use getFolderOperator() instead.", E_USER_DEPRECATED);
+        trigger_error("Method is deprecated. use getFolderOperator() instead.", E_USER_DEPRECATED);
         return $this->getFolderOperator();
     }
 
@@ -353,6 +368,49 @@ class FileLibrary
         return $this->queue;
     }
 
+    /**
+     * Sets platform
+     *
+     * @param Platform $platform
+     * @return FileLibrary
+     */
+    public function setPlatform(Platform $platform)
+    {
+        $this->platform = $platform;
+        return $this;
+    }
+
+    /**
+     * Returns identity map
+     *
+     * @return IdentityMap
+     */
+    public function getIdentityMap()
+    {
+        return $this->identityMap;
+    }
+
+    /**
+     * Sets identity map
+     *
+     * @param IdentityMap $identityMap
+     * @return FileLibrary
+     */
+    public function setIdentityMap(IdentityMap $identityMap)
+    {
+        $this->identityMap = $identityMap;
+        return $this;
+    }
+
+    /**
+     * Returns platform
+     *
+     * @return Platform
+     */
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
 
     /**
      * Triggers init event. Kind of a kludge until better rethought.
@@ -363,6 +421,4 @@ class FileLibrary
         $event = new FilelibEvent($this);
         $this->getEventDispatcher()->dispatch('filelib.init', $event);
     }
-
-
 }

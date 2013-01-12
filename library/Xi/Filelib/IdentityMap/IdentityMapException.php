@@ -16,5 +16,4 @@ use Xi\Filelib\Exception\FilelibException;
  */
 class IdentityMapException extends \Exception implements FilelibException
 {
-
 }

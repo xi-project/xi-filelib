@@ -11,10 +11,10 @@ namespace Xi\Filelib\File\Command;
 
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Event\FileEvent;
 
 class UpdateFileCommand extends AbstractFileCommand
 {
-
     /**
      *
      * @var File
@@ -44,6 +44,9 @@ class UpdateFileCommand extends AbstractFileCommand
             $command->execute();
 
         }
+
+        $event = new FileEvent($this->file);
+        $this->fileOperator->getEventDispatcher()->dispatch('file.update', $event);
 
         return $this->file;
     }

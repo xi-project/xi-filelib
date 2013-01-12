@@ -28,7 +28,6 @@ class FileLibraryTest extends TestCase
 
     }
 
-
     /**
      * @test
      */
@@ -71,13 +70,53 @@ class FileLibraryTest extends TestCase
     public function queueSetterAndGetterShouldWorkAsExpected()
     {
         $filelib = new FileLibrary();
-        $obj = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
+        $obj = $this->getMock('Xi\Filelib\Queue\Queue');
         $this->assertEquals(null, $filelib->getQueue());
         $this->assertSame($filelib, $filelib->setQueue($obj));
         $this->assertSame($obj, $filelib->getQueue());
     }
 
+    /**
+     * @test
+     */
+    public function platformSetterAndGetterShouldWorkAsExpected()
+    {
+        $filelib = new FileLibrary();
+        $obj = $this->getMock('Xi\Filelib\Backend\Platform\Platform');
+        $this->assertEquals(null, $filelib->getPlatform());
+        $this->assertSame($filelib, $filelib->setPlatform($obj));
+        $this->assertSame($obj, $filelib->getPlatform());
+    }
 
+    /**
+     * @test
+     */
+    public function backendSetterAndGetterShouldWorkAsExpected()
+    {
+        $filelib = new FileLibrary();
+        $obj = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->assertEquals(null, $filelib->getBackend());
+        $this->assertSame($filelib, $filelib->setBackend($obj));
+        $this->assertSame($obj, $filelib->getBackend());
+    }
+
+    /**
+     * @test
+     */
+    public function identityMapSetterAndGetterShouldWorkAsExpected()
+    {
+        $filelib = new FileLibrary();
+        $obj = $this
+            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->assertEquals(null, $filelib->getIdentityMap());
+        $this->assertSame($filelib, $filelib->setIdentityMap($obj));
+        $this->assertSame($obj, $filelib->getIdentityMap());
+    }
 
     /**
      * @test
@@ -86,7 +125,6 @@ class FileLibraryTest extends TestCase
     {
         $filelib = new FileLibrary();
         $obj = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        // @todo: maybe $obj->expects($this->once())->method('setFilelib')->with($this->isInstanceOf('Xi\Filelib\FileLibrary'));
         $this->assertEquals(null, $filelib->getAcl());
         $this->assertSame($filelib, $filelib->setAcl($obj));
         $this->assertSame($obj, $filelib->getAcl());
@@ -331,12 +369,15 @@ class FileLibraryTest extends TestCase
 
         $filelib->expects($this->once())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
-        $dispatcher->expects($this->once())->method('dispatch')->with($this->equalTo('filelib.init'), $this->isInstanceOf('Xi\Filelib\Event\FilelibEvent'));
+        $dispatcher
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                $this->equalTo('filelib.init'),
+                $this->isInstanceOf('Xi\Filelib\Event\FilelibEvent')
+            );
 
         $filelib->dispatchInitEvent();
 
     }
-
-
-
 }

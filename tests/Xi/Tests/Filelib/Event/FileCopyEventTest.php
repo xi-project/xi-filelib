@@ -7,14 +7,16 @@ use Xi\Filelib\Event\FileCopyEvent;
 
 class FileCopyEventTest extends \Xi\Tests\Filelib\TestCase
 {
-
     /**
      * @test
      */
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Event\FileCopyEvent'));
-        $this->assertContains('Symfony\Component\EventDispatcher\Event', class_parents('Xi\Filelib\Event\FileCopyEvent'));
+        $this->assertContains(
+            'Symfony\Component\EventDispatcher\Event',
+            class_parents('Xi\Filelib\Event\FileCopyEvent')
+        );
     }
 
     /**
@@ -33,5 +35,4 @@ class FileCopyEventTest extends \Xi\Tests\Filelib\TestCase
         $target2 = $event->getTarget();
         $this->assertSame($target, $target2);
     }
-
 }

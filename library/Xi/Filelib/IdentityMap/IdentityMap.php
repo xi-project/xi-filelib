@@ -9,11 +9,21 @@
 
 namespace Xi\Filelib\IdentityMap;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Event\IdentifiableEvent;
+use Iterator;
+
 /**
  * Identity map
  */
-class IdentityMap
+class IdentityMap implements EventSubscriberInterface
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     /**
      * @var array
      */
@@ -23,6 +33,33 @@ class IdentityMap
      * @var array
      */
     private $objects = array();
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $eventDispatcher->addSubscriber($this);
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            'file.upload' => 'onCreate',
+            'file.delete' => 'onDelete',
+            'folder.delete' => 'onDelete',
+            'folder.create' => 'onCreate',
+        );
+    }
+
+    /**
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
+    }
 
     /**
      * Returns whether identity map has an identifiable
@@ -52,14 +89,42 @@ class IdentityMap
             throw new IdentityMapException("Trying to add a file without id to identity map");
         }
 
-        $identifier = $this->getIdentifierFromObject($object);
+        $this->dispatchEvent($object, 'before_add');
 
+        $identifier = $this->getIdentifierFromObject($object);
         $this->objectIdentifiers[spl_object_hash($object)] = $identifier;
         $this->objects[$identifier] = $object;
+
+        $this->dispatchEvent($object, 'after_add');
 
         return true;
     }
 
+    /**
+     * Adds many identifiables to identity map
+     *
+     * @param Iterator $iterator
+     */
+    public function addMany(Iterator $iterator)
+    {
+        foreach ($iterator as $object) {
+            $this->add($object);
+        }
+        $iterator->rewind();
+    }
+
+    /**
+     * Removes many identifiables from identity map
+     *
+     * @param Iterator $iterator
+     */
+    public function removeMany(Iterator $iterator)
+    {
+        foreach ($iterator as $object) {
+            $this->remove($object);
+        }
+        $iterator->rewind();
+    }
     /**
      * Removes an identifiable
      *
@@ -73,8 +138,13 @@ class IdentityMap
         if (!isset($this->objectIdentifiers[$splHash])) {
             return false;
         }
+
+        $this->dispatchEvent($object, 'before_remove');
+
         unset($this->objects[$this->objectIdentifiers[$splHash]]);
         unset($this->objectIdentifiers[$splHash]);
+
+        $this->dispatchEvent($object, 'after_remove');
         return true;
     }
 
@@ -97,6 +167,22 @@ class IdentityMap
     }
 
     /**
+     * @param IdentifiableEvent $event
+     */
+    public function onCreate(IdentifiableEvent $event)
+    {
+        $this->add($event->getIdentifiable());
+    }
+
+    /**
+     * @param IdentifiableEvent $event
+     */
+    public function onDelete(IdentifiableEvent $event)
+    {
+        $this->remove($event->getIdentifiable());
+    }
+
+    /**
      * @param $id
      * @param $className
      * @return string
@@ -115,4 +201,13 @@ class IdentityMap
         return get_class($object) . ' ' . $object->getId();
     }
 
+    /**
+     * @param Identifiable $object
+     * @param $eventName
+     */
+    protected function dispatchEvent(Identifiable $object, $eventName)
+    {
+        $event = new IdentifiableEvent($object);
+        $this->getEventDispatcher()->dispatch('identitymap.' . $eventName, $event);
+    }
 }

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib;
 
 /**
@@ -13,7 +20,7 @@ final class Version
     /**
      * Current Xi Filelib version
      */
-    const VERSION = '0.7.0dev';
+    const VERSION = '0.8.0-dev';
 
     /**
      * Compares a Xi Filelib version with the current one.
@@ -29,5 +36,4 @@ final class Version
 
         return version_compare($version, $currentVersion);
     }
-
 }

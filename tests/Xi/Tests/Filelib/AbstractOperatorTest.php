@@ -322,6 +322,30 @@ class AbstractOperatorTest extends TestCase
 
     }
 
+    /**
+     * @test
+     */
+    public function createCommandCreatesCommandObject()
+    {
+        $mockClass = $this
+            ->getMockClass(
+                'Xi\Filelib\File\Command\AbstractFileCommand',
+                array('execute', 'serialize', 'unserialize')
+            );
+
+        $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+
+        $fileop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
+
+        $command = $op->createCommand(
+            $mockClass,
+            array($fileop)
+        );
+
+        $this->assertInstanceOf($mockClass, $command);
+    }
 
 
 

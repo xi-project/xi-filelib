@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib;
 
 /**
@@ -23,7 +30,7 @@ class Configurator
         if (!is_object($object)) {
             throw new \InvalidArgumentException("Non-object supplied as subject");
         }
-        
+
         if (!is_array($options)) {
             throw new \InvalidArgumentException("Non-array supplied as options");
         }
@@ -47,11 +54,11 @@ class Configurator
         if (!is_object($object)) {
             throw new \InvalidArgumentException("Non-object supplied as subject");
         }
-        
+
         if (!is_array($options)) {
             throw new \InvalidArgumentException("Non-array supplied as options");
         }
-        
+
         foreach ($options as $key => &$value) {
             if (is_array($value) && isset($value['class'])) {
                 $classified = new $value['class'];
