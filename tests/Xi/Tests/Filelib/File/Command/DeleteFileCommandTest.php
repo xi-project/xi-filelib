@@ -68,12 +68,16 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
     {
 
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
 
-        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-
-        $dispatcher->expects($this->at(0))->method('dispatch')
-                   ->with($this->equalTo('file.delete'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+        $ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                $this->equalTo('file.delete'),
+                $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
+            );
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
@@ -93,7 +97,10 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $file = File::create(array('id' => 1, 'profile' => 'lussen', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
         $backend->expects($this->once())->method('deleteFile')->with($this->equalTo($file));
 
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');

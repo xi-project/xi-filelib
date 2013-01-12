@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Acl;
 
 use Xi\Filelib\FileLibrary;
@@ -19,27 +26,27 @@ class SymfonyAcl implements Acl
      * @var FileLibrary
      */
     private $filelib;
-    
+
     /**
      * @var SecurityContextInterface
      */
     private $context;
-    
+
     /**
      *
      * @var AclProviderInterface
      */
     private $aclProvider;
-    
-    
+
+
     /**
      * Defines whether the ACL is strictly folder based.
      * If true, delegates all file queries to their folders.
-     * 
+     *
      * @var boolean
      */
     private $folderBased;
-            
+
     public function __construct(FileLibrary $filelib, SecurityContextInterface $context, AclProviderInterface $aclProvider, $folderBased = true)
     {
         $this->filelib = $filelib;
@@ -47,50 +54,50 @@ class SymfonyAcl implements Acl
         $this->aclProvider = $aclProvider;
         $this->folderBased = $folderBased;
     }
-    
+
     /**
      * Returns whether ACL is folder based
-     * 
+     *
      * @return boolean
      */
     public function isFolderBased()
     {
         return $this->folderBased;
     }
-    
-    
+
+
     /**
      * Returns filelib
-     * 
+     *
      * @return FileLibrary
      */
     public function getFilelib()
     {
         return $this->filelib;
     }
-    
+
     /**
      * Returns security context
-     * 
+     *
      * @return SecurityContext
      */
     public function getContext()
     {
         return $this->context;
     }
-    
-    
+
+
     public function getAclProvider()
     {
         return $this->aclProvider;
     }
-    
-    
+
+
     /**
      * Returns whether file is writable
-     * 
+     *
      * @param File $file
-     * @return boolean 
+     * @return boolean
      */
     public function isFileWritable(File $file)
     {
@@ -99,13 +106,13 @@ class SymfonyAcl implements Acl
         }
         return $this->getContext()->isGranted('EDIT', $file);
     }
-    
-    
+
+
     /**
      * Returns whether file is readable
-     * 
+     *
      * @param File $file
-     * @return boolean 
+     * @return boolean
      */
     public function isFileReadable(File $file)
     {
@@ -114,12 +121,12 @@ class SymfonyAcl implements Acl
         }
         return $this->getContext()->isGranted('VIEW', $file);
     }
-    
+
     /**
      * Returns whether file is readable by anonymous
-     * 
+     *
      * @param File $file
-     * @return boolean 
+     * @return boolean
      */
     public function isFileReadableByAnonymous(File $file)
     {
@@ -128,46 +135,46 @@ class SymfonyAcl implements Acl
         }
         return $this->anonymousAclQueryWith($file);
     }
-    
+
     /**
      * Returns whether folder is writable
-     * 
+     *
      * @param Folder $file
-     * @return boolean 
+     * @return boolean
      */
     public function isFolderWritable(Folder $folder)
     {
         return $this->getContext()->isGranted('EDIT', $folder);
     }
-    
-    
+
+
     /**
      * Returns whether folder is readable
-     * 
+     *
      * @param Folder $file
-     * @return boolean 
+     * @return boolean
      */
     public function isFolderReadable(Folder $folder)
     {
         return $this->getContext()->isGranted('VIEW', $folder);
     }
-    
+
     /**
      * Returns whether folder is readable by anonymous
-     * 
+     *
      * @param Folder $file
-     * @return boolean 
+     * @return boolean
      */
     public function isFolderReadableByAnonymous(Folder $folder)
     {
         return $this->anonymousAclQueryWith($folder);
     }
-    
+
     /**
      * Queries ACL with domain object
-     * 
+     *
      * @param type $domainObject
-     * 
+     *
      * @return boolean
      */
     public function anonymousAclQueryWith($domainObject)
@@ -181,12 +188,12 @@ class SymfonyAcl implements Acl
             return false;
         }
     }
-    
-    
- 
+
+
+
     /**
      * Returns file's folder
-     * 
+     *
      * @param File $file
      * @return Folder
      */
@@ -194,12 +201,12 @@ class SymfonyAcl implements Acl
     {
         return $this->getFilelib()->getFolderOperator()->find($file->getFolderId());
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
 }

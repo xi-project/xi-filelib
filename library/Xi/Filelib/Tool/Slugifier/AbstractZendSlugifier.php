@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Tool\Slugifier;
 
 use Xi\Filelib\Tool\Transliterator\Transliterator;
@@ -32,16 +39,16 @@ abstract class AbstractZendSlugifier implements Slugifier
     public function slugifyPath($path)
     {
         $path = explode('/', $path);
-        
+
         $ret = array();
         foreach ($path as $fragment) {
             $ret[] = $this->slugify($fragment);
-        }        
+        }
 
         return implode('/', $ret);
-        
+
     }
-    
+
     public function slugify($unslugged)
     {
         $slugged = $this->getTransliterator()->transliterate($unslugged);

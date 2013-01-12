@@ -32,7 +32,10 @@ class ResourceRefactorMigrationTest extends \Xi\Tests\Filelib\TestCase
         $foop = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
         $resource = $this->getMock('Xi\Filelib\File\Resource');
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $backend = $this->getMock('Xi\Filelib\Backend\Backend');
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
 
         $filelib->setFileOperator($fiop);

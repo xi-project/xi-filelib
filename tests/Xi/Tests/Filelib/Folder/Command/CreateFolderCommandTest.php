@@ -52,7 +52,18 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
      */
     public function commandShouldCreateFolder()
     {
-        $filelib = new FileLibrary();
+        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+
+        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+            $this->equalTo('folder.create'),
+            $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
+        );
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
+
         $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
                    ->setMethods(array('buildRoute', 'generateUuid'))
                    ->setConstructorArgs(array($filelib))
@@ -70,8 +81,18 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
 
         $op->expects($this->once())->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue('route'));
 
-        $backend = $this->getMockForAbstractClass('Xi\Filelib\Backend\Backend');
-        $backend->expects($this->once())->method('createFolder')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnArgument(0));
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
+
+        $backend
+            ->expects($this->once())
+            ->method('createFolder')
+            ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
+            ->will($this->returnArgument(0));
 
         $filelib->setBackend($backend);
 

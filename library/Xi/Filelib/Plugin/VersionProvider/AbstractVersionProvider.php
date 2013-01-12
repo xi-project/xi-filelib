@@ -48,17 +48,17 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     /**
      * @var Storage
      */
-    private $storage;
+    protected $storage;
 
     /**
      * @var Publisher
      */
-    private $publisher;
+    protected $publisher;
 
     /**
      * @var FileOperator
      */
-    private $fileOperator;
+    protected $fileOperator;
 
     /**
      * @param  Storage                 $storage

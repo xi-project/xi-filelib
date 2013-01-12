@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Acl;
 
 use Zend_Acl;
@@ -8,7 +15,7 @@ use Xi\Filelib\File\File;
 
 /**
  * ZendAcl delegates access control to Zend ACL
- * 
+ *
  * @author pekkis
  *
  */
@@ -19,20 +26,20 @@ class ZendAcl implements Acl
      * @var \Zend_Acl
      */
     private $acl;
-    
+
     /**
      * @var mixed
      */
     private $role;
-    
+
     /**
      * @var mixed
      */
     private $anonymousRole;
-    
+
     /**
      * Sets ACL
-     * 
+     *
      * @param \Zend_Acl $acl
      */
     public function setAcl(\Zend_Acl $acl)
@@ -43,7 +50,7 @@ class ZendAcl implements Acl
 
     /**
      * Returns ACL
-     * 
+     *
      * @return \Zend_Acl
      */
     public function getAcl()
@@ -53,7 +60,7 @@ class ZendAcl implements Acl
 
     /**
      * Sets current role
-     * 
+     *
      * @param mixed $role
      */
     public function setRole($role)
@@ -64,7 +71,7 @@ class ZendAcl implements Acl
 
     /**
      * Gets current role
-     * 
+     *
      * @return mixed
      */
     public function getRole()
@@ -74,7 +81,7 @@ class ZendAcl implements Acl
 
     /**
      * Sets anonymous role
-     * 
+     *
      * @param mixed $anonymousRole
      */
     public function setAnonymousRole($anonymousRole)
@@ -85,7 +92,7 @@ class ZendAcl implements Acl
 
     /**
      * Returns anonymous role
-     * 
+     *
      * @return mixed
      */
     public function getAnonymousRole()
@@ -94,7 +101,7 @@ class ZendAcl implements Acl
     }
 
 
-    
+
     public function isFileReadable(File $file)
     {
         $resourceName = $this->getResourceIdentifier($file);
@@ -112,7 +119,7 @@ class ZendAcl implements Acl
         $resourceName = $this->getResourceIdentifier($file);
         return $this->getAcl()->isAllowed($this->getAnonymousRole(), $resourceName, 'read');
     }
-    
+
 
     public function isFolderReadable(Folder $folder)
     {
@@ -131,7 +138,7 @@ class ZendAcl implements Acl
         $resourceName = $this->getResourceIdentifier($folder);
         return $this->getAcl()->isAllowed($this->getAnonymousRole(), $resourceName, 'read');
     }
-    
+
     public function getResourceIdentifier($resource)
     {
         if ($resource instanceof File) {
@@ -139,11 +146,11 @@ class ZendAcl implements Acl
         } elseif ($resource instanceof Folder) {
             return 'Xi_Filelib_Folder_' . $resource->getId();
         }
-        
+
         $class = get_class($resource);
         throw new \InvalidArgumentException("Resource of class '{$class}' not identified");
-        
+
     }
-    
-    
+
+
 }
