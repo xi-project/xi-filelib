@@ -186,6 +186,6 @@ class ChangeFormatPluginTest extends TestCase
     {
         $events = ChangeFormatPlugin::getSubscribedEvents();
         $this->assertArrayHasKey('xi_filelib.fileprofile.add', $events);
-        $this->assertArrayHasKey('xi_filelib.file.before_upload', $events);
+        $this->assertArrayHasKey('xi_filelib.file.before_create', $events);
     }
 }

@@ -46,7 +46,7 @@ class IdentityMap implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'xi_filelib.file.upload' => 'onCreate',
+            'xi_filelib.file.create' => 'onCreate',
             'xi_filelib.file.delete' => 'onDelete',
             'xi_filelib.folder.delete' => 'onDelete',
             'xi_filelib.folder.create' => 'onCreate',

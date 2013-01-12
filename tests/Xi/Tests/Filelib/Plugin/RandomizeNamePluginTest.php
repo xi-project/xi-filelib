@@ -166,6 +166,6 @@ class RandomizeNamePluginTest extends TestCase
     {
         $events = RandomizeNamePlugin::getSubscribedEvents();
         $this->assertArrayHasKey('xi_filelib.fileprofile.add', $events);
-        $this->assertArrayHasKey('xi_filelib.file.before_upload', $events);
+        $this->assertArrayHasKey('xi_filelib.file.before_create', $events);
     }
 }

@@ -33,7 +33,7 @@ class IdentityMapTest extends TestCase
     /**
      * @test
      */
-    public function constructorSubscribesToEventzs()
+    public function constructorSubscribesToEvents()
     {
         $this->ed
             ->expects($this->once())->method('addSubscriber')
@@ -82,7 +82,7 @@ class IdentityMapTest extends TestCase
     {
         $this->assertEquals(
             array(
-                'xi_filelib.file.upload',
+                'xi_filelib.file.create',
                 'xi_filelib.file.delete',
                 'xi_filelib.folder.delete',
                 'xi_filelib.folder.create'

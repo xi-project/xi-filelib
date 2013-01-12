@@ -23,7 +23,7 @@ class ChangeFormatPlugin extends AbstractPlugin
 {
     protected static $subscribedEvents = array(
         'xi_filelib.fileprofile.add' => 'onFileProfileAdd',
-        'xi_filelib.file.before_upload' => 'beforeUpload'
+        'xi_filelib.file.before_create' => 'beforeUpload'
     );
 
     protected $imageMagickHelper;
