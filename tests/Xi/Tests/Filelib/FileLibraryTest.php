@@ -295,7 +295,7 @@ class FileLibraryTest extends TestCase
 
         $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $eventDispatcher->expects($this->once())->method('dispatch')
-                        ->with($this->equalTo('plugin.add'), $this->isInstanceOf('Xi\Filelib\Event\PluginEvent'));
+                        ->with($this->equalTo('xi_filelib.plugin.add'), $this->isInstanceOf('Xi\Filelib\Event\PluginEvent'));
 
         $filelib->setEventDispatcher($eventDispatcher);
         $filelib->addPlugin($plugin);
@@ -351,33 +351,6 @@ class FileLibraryTest extends TestCase
         $dispatcher = $filelib->getEventDispatcher();
 
         $this->assertSame($mock, $dispatcher);
-
-    }
-
-
-
-    /**
-     * @test
-     */
-    public function dispatchInitEventShouldDelegateToEventDispatcherAndDispatchEvent()
-    {
-        $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')
-                        ->setMethods(array('getEventDispatcher'))
-                        ->getMock();
-
-        $dispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-
-        $filelib->expects($this->once())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-
-        $dispatcher
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with(
-                $this->equalTo('filelib.init'),
-                $this->isInstanceOf('Xi\Filelib\Event\FilelibEvent')
-            );
-
-        $filelib->dispatchInitEvent();
 
     }
 }

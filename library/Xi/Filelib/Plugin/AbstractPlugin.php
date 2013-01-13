@@ -28,7 +28,7 @@ abstract class AbstractPlugin implements Plugin
      * @var array Subscribed events
      */
     protected static $subscribedEvents = array(
-        'fileprofile.add' => 'onFileProfileAdd',
+        'xi_filelib.profile.add' => 'onFileProfileAdd',
     );
 
     /**

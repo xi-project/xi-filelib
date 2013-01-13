@@ -251,7 +251,7 @@ class Backend
         );
 
         $event = new ResourceEvent($resource);
-        $this->getEventDispatcher()->dispatch('resource.delete', $event);
+        $this->getEventDispatcher()->dispatch('xi_filelib.resource.delete', $event);
     }
 
     /**

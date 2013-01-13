@@ -46,10 +46,10 @@ class IdentityMap implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'file.upload' => 'onCreate',
-            'file.delete' => 'onDelete',
-            'folder.delete' => 'onDelete',
-            'folder.create' => 'onCreate',
+            'xi_filelib.file.create' => 'onCreate',
+            'xi_filelib.file.delete' => 'onDelete',
+            'xi_filelib.folder.delete' => 'onDelete',
+            'xi_filelib.folder.create' => 'onCreate',
         );
     }
 
@@ -208,6 +208,6 @@ class IdentityMap implements EventSubscriberInterface
     protected function dispatchEvent(Identifiable $object, $eventName)
     {
         $event = new IdentifiableEvent($object);
-        $this->getEventDispatcher()->dispatch('identitymap.' . $eventName, $event);
+        $this->getEventDispatcher()->dispatch('xi_filelib.identitymap.' . $eventName, $event);
     }
 }

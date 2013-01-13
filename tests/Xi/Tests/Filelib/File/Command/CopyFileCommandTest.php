@@ -235,7 +235,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
         }
 
         $eventDispatcher->expects($this->once())->method('dispatch')
-                        ->with($this->equalTo('file.copy'), $this->isInstanceOf('Xi\Filelib\Event\FileCopyEvent'));
+                        ->with($this->equalTo('xi_filelib.file.copy'), $this->isInstanceOf('Xi\Filelib\Event\FileCopyEvent'));
 
         $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
                                    ->disableOriginalConstructor()

@@ -46,7 +46,7 @@ class UpdateFileCommand extends AbstractFileCommand
         }
 
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch('file.update', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.update', $event);
 
         return $this->file;
     }

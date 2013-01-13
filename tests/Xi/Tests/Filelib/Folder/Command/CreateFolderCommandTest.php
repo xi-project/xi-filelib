@@ -59,7 +59,7 @@ class CreateFolderCommandTest extends \Xi\Tests\Filelib\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-            $this->equalTo('folder.create'),
+            $this->equalTo('xi_filelib.folder.create'),
             $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
         );
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));

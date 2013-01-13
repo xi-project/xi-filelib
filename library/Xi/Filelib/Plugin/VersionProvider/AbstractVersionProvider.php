@@ -27,12 +27,12 @@ use Xi\Filelib\Publisher\Publisher;
 abstract class AbstractVersionProvider extends AbstractPlugin implements VersionProvider
 {
     protected static $subscribedEvents = array(
-        'fileprofile.add' => 'onFileProfileAdd',
-        'file.afterUpload' => 'onAfterUpload',
-        'file.publish' => 'onPublish',
-        'file.unpublish' => 'onUnpublish',
-        'file.delete' => 'onFileDelete',
-        'resource.delete' => 'onResourceDelete',
+        'xi_filelib.profile.add' => 'onFileProfileAdd',
+        'xi_filelib.file.after_upload' => 'onAfterUpload',
+        'xi_filelib.file.publish' => 'onPublish',
+        'xi_filelib.file.unpublish' => 'onUnpublish',
+        'xi_filelib.file.delete' => 'onFileDelete',
+        'xi_filelib.resource.delete' => 'onResourceDelete',
     );
 
     /**
