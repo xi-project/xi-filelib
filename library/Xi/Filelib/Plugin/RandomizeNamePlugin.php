@@ -20,8 +20,8 @@ use Xi\Filelib\Event\FileUploadEvent;
 class RandomizeNamePlugin extends AbstractPlugin
 {
     protected static $subscribedEvents = array(
-        'fileprofile.add' => 'onFileProfileAdd',
-        'file.beforeUpload' => 'beforeUpload'
+        'xi_filelib.profile.add' => 'onFileProfileAdd',
+        'xi_filelib.file.before_create' => 'beforeUpload'
     );
 
     /**

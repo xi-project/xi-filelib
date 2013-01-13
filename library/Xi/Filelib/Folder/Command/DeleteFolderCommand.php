@@ -58,7 +58,7 @@ class DeleteFolderCommand extends AbstractFolderCommand
 
         $event = new FolderEvent($this->folder);
         $this->folderOperator->getEventDispatcher()->dispatch(
-            'folder.delete',
+            'xi_filelib.folder.delete',
             $event
         );
     }

@@ -60,7 +60,7 @@ class UnPublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
         $dispatcher->expects($this->once())->method('dispatch')
-                   ->with($this->equalTo('file.unpublish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+                   ->with($this->equalTo('xi_filelib.file.unpublish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))

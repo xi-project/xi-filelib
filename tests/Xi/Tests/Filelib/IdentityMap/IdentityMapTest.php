@@ -33,7 +33,7 @@ class IdentityMapTest extends TestCase
     /**
      * @test
      */
-    public function constructorSubscribesToEventzs()
+    public function constructorSubscribesToEvents()
     {
         $this->ed
             ->expects($this->once())->method('addSubscriber')
@@ -81,7 +81,12 @@ class IdentityMapTest extends TestCase
     public function subscribesToCorrectEvents()
     {
         $this->assertEquals(
-            array('file.upload', 'file.delete', 'folder.delete', 'folder.create'),
+            array(
+                'xi_filelib.file.create',
+                'xi_filelib.file.delete',
+                'xi_filelib.folder.delete',
+                'xi_filelib.folder.create'
+            ),
             array_keys(IdentityMap::getSubscribedEvents())
         );
     }
@@ -261,7 +266,7 @@ class IdentityMapTest extends TestCase
             ->expects($this->at(0))
             ->method('dispatch')
             ->with(
-                'identitymap.before_add',
+                'xi_filelib.identitymap.before_add',
                 $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
             );
 
@@ -269,7 +274,7 @@ class IdentityMapTest extends TestCase
             ->expects($this->at(1))
             ->method('dispatch')
             ->with(
-                'identitymap.after_add',
+                'xi_filelib.identitymap.after_add',
                 $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
             );
 
@@ -287,7 +292,7 @@ class IdentityMapTest extends TestCase
             ->expects($this->at(2))
             ->method('dispatch')
             ->with(
-                'identitymap.before_remove',
+                'xi_filelib.identitymap.before_remove',
                 $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
             );
 
@@ -295,7 +300,7 @@ class IdentityMapTest extends TestCase
             ->expects($this->at(3))
             ->method('dispatch')
             ->with(
-                'identitymap.after_remove',
+                'xi_filelib.identitymap.after_remove',
                 $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
             );
 

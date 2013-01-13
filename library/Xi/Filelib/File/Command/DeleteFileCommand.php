@@ -41,7 +41,7 @@ class DeleteFileCommand extends AbstractFileCommand
         }
 
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch('file.delete', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.delete', $event);
 
         return true;
     }

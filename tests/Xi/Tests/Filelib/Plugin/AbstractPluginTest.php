@@ -75,7 +75,7 @@ class AbstractPluginTest extends TestCase
     public function getSubscribedEventsShouldReturnEmptyArray()
     {
         $events = AbstractPlugin::getSubscribedEvents();
-        $this->assertArrayHasKey('fileprofile.add', $events);
+        $this->assertArrayHasKey('xi_filelib.profile.add', $events);
     }
 
     /**

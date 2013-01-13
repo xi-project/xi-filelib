@@ -149,7 +149,7 @@ class CopyFileCommand extends AbstractFileCommand
         $this->fileOperator->getBackend()->createFile($impostor, $this->folder);
 
         $event = new FileCopyEvent($this->file, $impostor);
-        $this->fileOperator->getEventDispatcher()->dispatch('file.copy', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.copy', $event);
 
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $impostor));
         return $command->execute();

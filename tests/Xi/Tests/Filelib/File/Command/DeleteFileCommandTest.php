@@ -75,7 +75,7 @@ class DeleteFileCommandTest extends \Xi\Tests\Filelib\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-                $this->equalTo('file.delete'),
+                $this->equalTo('xi_filelib.file.delete'),
                 $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
             );
 

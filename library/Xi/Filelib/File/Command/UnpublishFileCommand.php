@@ -33,7 +33,7 @@ class UnpublishFileCommand extends AbstractFileCommand
     {
         $this->fileOperator->getPublisher()->unpublish($this->file);
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch('file.unpublish', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.unpublish', $event);
     }
 
     public function unserialize($serialized)

@@ -159,7 +159,7 @@ class ZendRendererTest extends \Xi\Tests\Filelib\TestCase
 
 
         $this->eventDispatcher->expects($this->once())->method('dispatch')
-                        ->with('file.render', $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+                        ->with('xi_filelib.file.render', $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
         $this->profile->expects($this->atLeastOnce())->method('getAccessToOriginal')->will($this->returnValue(true));
 
