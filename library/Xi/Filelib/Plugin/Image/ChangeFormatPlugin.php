@@ -22,7 +22,7 @@ use Xi\Filelib\File\FileOperator;
 class ChangeFormatPlugin extends AbstractPlugin
 {
     protected static $subscribedEvents = array(
-        'xi_filelib.fileprofile.add' => 'onFileProfileAdd',
+        'xi_filelib.profile.add' => 'onFileProfileAdd',
         'xi_filelib.file.before_create' => 'beforeUpload'
     );
 

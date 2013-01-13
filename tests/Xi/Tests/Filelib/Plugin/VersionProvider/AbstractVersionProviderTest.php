@@ -572,7 +572,7 @@ class AbstractVersionProviderTest extends TestCase
     public function getSubscribedEventsShouldReturnCorrectEvents()
     {
         $events = AbstractVersionProvider::getSubscribedEvents();
-        $this->assertArrayHasKey('xi_filelib.fileprofile.add', $events);
+        $this->assertArrayHasKey('xi_filelib.profile.add', $events);
         $this->assertArrayHasKey('xi_filelib.file.after_upload', $events);
         $this->assertArrayHasKey('xi_filelib.file.publish', $events);
         $this->assertArrayHasKey('xi_filelib.file.unpublish', $events);
