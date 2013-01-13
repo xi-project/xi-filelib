@@ -39,20 +39,20 @@
     ],
 
     "require": {
-        "php": ">=5.3.3",
-        "symfony/event-dispatcher": ">=2.0.14, <=2.1.2"
+        "php": ">=5.3.10",
+        "symfony/event-dispatcher": ">=2.0.14"
     },
 
     "require-dev": {
-        "doctrine/orm": "2.2.2",
-        "doctrine/dbal": "2.2.2",
-        "doctrine/common": "2.2.2",
-        "symfony/http-foundation": "2.1.2",
-        "symfony/http-kernel": "2.1.2",
-        "symfony/process": "2.1.2",
-        "symfony/security": "2.1.2",
-        "videlalvaro/php-amqplib": ">=dev-master",
-        "zencoder/zencoder-php": "2.0.2",
+        "doctrine/orm": "2.2.*",
+        "doctrine/dbal": "2.2.*",
+        "doctrine/common": "2.2.*",
+        "symfony/http-foundation": "2.1.*",
+        "symfony/http-kernel": "2.1.*",
+        "symfony/process": "2.1.*",
+        "symfony/security": "2.1.*",
+        "videlalvaro/php-amqplib": ">=dev-master@dev",
+        "zencoder/zencoder-php": "2.0.2@dev",
         "zendframework/zendservice-amazon": "2.0.*",
         "zendframework/zend-i18n": "2.0.*",
         "zendframework/zend-filter": "2.0.*",
@@ -65,7 +65,7 @@
             "Xi\\Tests": "tests/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
 
     "extra": {
         "branch-alias": {
