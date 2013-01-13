@@ -29,7 +29,7 @@ class FileProfileTest extends \Xi\Tests\Filelib\TestCase
     public function classShouldSubscribeToCorrectEvents()
     {
         $events = FileProfile::getSubscribedEvents();
-        $this->assertArrayHasKey('plugin.add', $events);
+        $this->assertArrayHasKey('xi_filelib.plugin.add', $events);
     }
 
     /**

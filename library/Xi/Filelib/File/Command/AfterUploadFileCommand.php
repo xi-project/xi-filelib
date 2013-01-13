@@ -40,7 +40,7 @@ class AfterUploadFileCommand extends AbstractFileCommand
         $profileObj = $this->fileOperator->getProfile($file->getProfile());
 
         $event = new FileEvent($file);
-        $this->fileOperator->getEventDispatcher()->dispatch('file.afterUpload', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.after_upload', $event);
 
         // @todo: actual statuses
         $file->setStatus(File::STATUS_COMPLETED);

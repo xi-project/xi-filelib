@@ -65,7 +65,7 @@ class PublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
                    ->getMock();
 
         $dispatcher->expects($this->once())->method('dispatch')
-                   ->with($this->equalTo('file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+                   ->with($this->equalTo('xi_filelib.file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
@@ -98,7 +98,7 @@ class PublishFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
         $dispatcher->expects($this->once())->method('dispatch')
-                   ->with($this->equalTo('file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+                   ->with($this->equalTo('xi_filelib.file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))

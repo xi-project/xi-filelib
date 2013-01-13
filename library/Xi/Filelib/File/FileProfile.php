@@ -32,7 +32,7 @@ class FileProfile implements EventSubscriberInterface
      * @var array Subscribed events
      */
     static protected $subscribedEvents = array(
-        'plugin.add' => 'onPluginAdd'
+        'xi_filelib.plugin.add' => 'onPluginAdd'
     );
 
     /**

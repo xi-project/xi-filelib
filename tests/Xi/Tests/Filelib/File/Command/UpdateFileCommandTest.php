@@ -61,7 +61,7 @@ class UpdateFileCommandTest extends \Xi\Tests\Filelib\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-            $this->equalTo('file.update'),
+            $this->equalTo('xi_filelib.file.update'),
             $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
         );
 
