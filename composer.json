@@ -35,6 +35,10 @@
                     "reference": "v2.0.2"
                 }
             }
+        },
+        {
+            "type": "vcs",
+            "url": "git://github.com/peterhil/ZendService_Amazon.git"
         }
     ],
 
@@ -53,7 +57,7 @@
         "symfony/security": "2.1.2",
         "videlalvaro/php-amqplib": ">=dev-master",
         "zencoder/zencoder-php": "2.0.2",
-        "zendframework/zendservice-amazon": "2.0.*",
+        "zendframework/zendservice-amazon": "dev-fix-s3-client",
         "zendframework/zend-i18n": "2.0.*",
         "zendframework/zend-filter": "2.0.*",
         "zendframework/zend-servicemanager": "2.0.*"
