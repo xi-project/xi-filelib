@@ -7,7 +7,6 @@
     </testsuites>
 
     <php>
-        <includePath>.:./ZendFramework-1.11.11-minimal/library</includePath>
         <const name="PDO_DRIVER" value="sqlite" />
         <const name="PDO_HOST" value="" />
         <const name="PDO_DBNAME" value="./../xi_filelib_test" />

@@ -61,8 +61,7 @@
 
     "autoload": {
         "psr-0": {
-            "Xi\\Filelib": "library/",
-            "Xi\\Tests": "tests/"
+            "Xi\\Filelib": "library/"
         }
     },
     "minimum-stability": "stable",
