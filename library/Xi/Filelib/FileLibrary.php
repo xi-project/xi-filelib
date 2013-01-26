@@ -247,7 +247,6 @@ class FileLibrary
      */
     public function setPublisher(Publisher $publisher)
     {
-        $publisher->setFilelib($this);
         $this->publisher = $publisher;
         return $this;
     }
