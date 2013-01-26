@@ -15,41 +15,50 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Linker\Linker;
 use LogicException;
 use SplFileInfo;
-
+use Xi\Filelib\File\FileOperator;
 
 /**
- * Abstract filesystem publisher base class
- *
- * @author pekkis
- * @package Xi_Filelib
+ * Abstract filesystem publisher convenience class
  *
  */
 abstract class AbstractFilesystemPublisher extends AbstractPublisher
 {
     /**
+     * @var FileOperator
+     */
+    protected $fileOperator;
+
+    /**
      * @var integer Octal representation for directory permissions
      */
-    private $_directoryPermission = 0700;
+    private $directoryPermission = 0700;
 
     /**
      * @var integer Octal representation for file permissions
      */
-    private $_filePermission = 0600;
-
+    private $filePermission = 0600;
 
     /**
      * @var string Physical public root
      */
-    private $_publicRoot;
-
+    private $publicRoot;
 
     /**
      * Base url prepended to urls
      *
      * @var string
      */
-    private $_baseUrl = '';
+    private $baseUrl = '';
 
+    /**
+     * @param FileOperator $fileOperator
+     * @param array $options
+     */
+    public function __construct(FileOperator $fileOperator, $options = array())
+    {
+        parent::__construct($options);
+        $this->fileOperator = $fileOperator;
+    }
 
     /**
      * Sets base url
@@ -58,9 +67,8 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
      */
     public function setBaseUrl($baseUrl)
     {
-        $this->_baseUrl = $baseUrl;
+        $this->baseUrl = $baseUrl;
     }
-
 
     /**
      * Returns base url
@@ -69,16 +77,14 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
      */
     public function getBaseUrl()
     {
-        return $this->_baseUrl;
+        return $this->baseUrl;
     }
-
-
 
     /**
      * Sets public root
      *
      * @param string $publicRoot
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * AbstractFilesystemPublisher
      */
     public function setPublicRoot($publicRoot)
     {
@@ -92,10 +98,9 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
             throw new LogicException("Directory '{$publicRoot}' is not writeable");
         }
 
-        $this->_publicRoot = $dir->getRealPath();
+        $this->publicRoot = $dir->getRealPath();
         return $this;
     }
-
 
     /**
      * Returns public root
@@ -104,21 +109,20 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
      */
     public function getPublicRoot()
     {
-        return $this->_publicRoot;
+        return $this->publicRoot;
     }
 
     /**
      * Sets directory permission
      *
      * @param integer $directoryPermission
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * @return AbstractFilesystemPublisher
      */
     public function setDirectoryPermission($directoryPermission)
     {
-        $this->_directoryPermission = octdec($directoryPermission);
+        $this->directoryPermission = octdec($directoryPermission);
         return $this;
     }
-
 
     /**
      * Returns directory permission
@@ -127,18 +131,18 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
      */
     public function getDirectoryPermission()
     {
-        return $this->_directoryPermission;
+        return $this->directoryPermission;
     }
 
     /**
      * Sets file permission
      *
      * @param integer $filePermission
-     * @return \Xi\Filelib\FileLibrary Filelib
+     * AbstractFilesystemPublisher
      */
     public function setFilePermission($filePermission)
     {
-        $this->_filePermission = octdec($filePermission);
+        $this->filePermission = octdec($filePermission);
         return $this;
     }
 
@@ -149,38 +153,42 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
      */
     public function getFilePermission()
     {
-        return $this->_filePermission;
+        return $this->filePermission;
     }
 
     /**
-     * Returns file's linker
+     * Returns linker for a file
      *
      * @param File $file
      * @return Linker
      */
     public function getLinkerForFile(File $file)
     {
-        return $this->getFilelib()->getFileOperator()->getProfile($file->getProfile())->getLinker();
+        return $this->fileOperator->getProfile($file->getProfile())->getLinker();
     }
 
-
+    /**
+     * @param File $file
+     * @return string
+     */
     public function getUrl(File $file)
     {
         $url = $this->getBaseUrl() . '/' . $this->getLinkerForFile($file)->getLink($file);
         return $url;
     }
 
+    /**
+     * @param File $file
+     * @param string $version
+     * @param VersionProvider $versionProvider
+     * @return string
+     */
     public function getUrlVersion(File $file, $version, VersionProvider $versionProvider)
     {
-        $url = $this->getBaseUrl() . '/' . $this->getLinkerForFile($file)->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
+        $url = $this->getBaseUrl() . '/';
+        $url .= $this
+            ->getLinkerForFile($file)
+            ->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
         return $url;
     }
-
-
-
-
-
-
 }
-
-

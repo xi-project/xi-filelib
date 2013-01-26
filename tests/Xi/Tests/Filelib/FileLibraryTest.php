@@ -56,8 +56,7 @@ class FileLibraryTest extends TestCase
     public function publisherSetterAndGetterShouldWorkAsExpected()
     {
         $filelib = new FileLibrary();
-        $obj = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $obj->expects($this->once())->method('setFilelib')->with($this->isInstanceOf('Xi\Filelib\FileLibrary'));
+        $obj = $this->getMock('Xi\Filelib\Publisher\Publisher');
         $this->assertEquals(null, $filelib->getPublisher());
         $this->assertSame($filelib, $filelib->setPublisher($obj));
         $this->assertSame($obj, $filelib->getPublisher());
@@ -124,7 +123,7 @@ class FileLibraryTest extends TestCase
     public function aclSetterAndGetterShouldWorkAsExpected()
     {
         $filelib = new FileLibrary();
-        $obj = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
+        $obj = $this->getMock('Xi\Filelib\Acl\Acl');
         $this->assertEquals(null, $filelib->getAcl());
         $this->assertSame($filelib, $filelib->setAcl($obj));
         $this->assertSame($obj, $filelib->getAcl());
