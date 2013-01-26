@@ -6,7 +6,6 @@ use Xi\Tests\Filelib\TestCase;
 
 class PublisherTest extends TestCase
 {
-    
     /**
      * @test
      */
@@ -14,6 +13,4 @@ class PublisherTest extends TestCase
     {
         $this->assertTrue(interface_exists('Xi\Filelib\Publisher\Publisher'));
     }
-    
-    
 }

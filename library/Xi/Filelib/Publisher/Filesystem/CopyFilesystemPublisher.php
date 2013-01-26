@@ -12,6 +12,8 @@ namespace Xi\Filelib\Publisher\Filesystem;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\File\FileOperator;
 
 /**
  * Publishes files in a filesystem by retrieving them from storage and creating a copy
@@ -21,22 +23,36 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
  */
 class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Publisher
 {
+    /**
+     * @var Storage
+     */
+    private $storage;
+
+    /**
+     * @param Storage $storage
+     * @param FileOperator $fileOperator
+     * @param array $options
+     */
+    public function __construct(Storage $storage, FileOperator $fileOperator, $options = array())
+    {
+        parent::__construct($fileOperator, $options);
+        $this->storage = $storage;
+    }
 
     public function publish(File $file)
     {
-        $fl = $this->getFilelib();
         $linker = $this->getLinkerForFile($file);
 
         $link = $this->getPublicRoot() . '/' . $linker->getLink($file, true);
 
-        if(!is_file($link)) {
+        if (!is_file($link)) {
 
             $path = dirname($link);
-            if(!is_dir($path)) {
+            if (!is_dir($path)) {
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            $tmp = $this->getFilelib()->getStorage()->retrieve($file->getResource());
+            $tmp = $this->storage->retrieve($file->getResource());
 
             copy($tmp, $link);
             chmod($link, $this->getFilePermission());
@@ -46,23 +62,23 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
 
     public function publishVersion(File $file, $version, VersionProvider $versionProvider)
     {
-        $fl = $this->getFilelib();
         $linker = $this->getLinkerForFile($file);
 
-        $link = $this->getPublicRoot() . '/' . $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
+        $link = $this->getPublicRoot() . '/' .
+            $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
 
-        if(!is_file($link)) {
+        if (!is_file($link)) {
 
             $path = dirname($link);
 
-            if(!is_dir($path)) {
+            if (!is_dir($path)) {
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
             if ($versionProvider->areSharedVersionsAllowed()) {
-                $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version, null);
+                $tmp = $this->storage->retrieveVersion($file->getResource(), $version, null);
             } else {
-                $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file->getResource(), $version, $file);
+                $tmp = $this->storage->retrieveVersion($file->getResource(), $version, $file);
             }
 
             copy($tmp, $link);
@@ -75,7 +91,7 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
         $linker = $this->getLinkerForFile($file);
         $link = $this->getPublicRoot() . '/' . $linker->getLink($file);
 
-        if(is_file($link)) {
+        if (is_file($link)) {
             unlink($link);
         }
     }
@@ -83,11 +99,11 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
     public function unpublishVersion(File $file, $version, VersionProvider $versionProvider)
     {
         $linker = $this->getLinkerForFile($file);
-        $link = $this->getPublicRoot() . '/' . $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
+        $link = $this->getPublicRoot() . '/' .
+            $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
 
-        if(is_file($link)) {
+        if (is_file($link)) {
             unlink($link);
         }
     }
-
 }

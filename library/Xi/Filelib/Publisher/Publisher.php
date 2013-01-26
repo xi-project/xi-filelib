@@ -13,7 +13,6 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
-
 /**
  * Publisher interface
  *
@@ -22,7 +21,6 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
  */
 interface Publisher
 {
-
     /**
      * Publishes a file
      *
@@ -72,14 +70,4 @@ interface Publisher
      * @return string
      */
     public function getUrlVersion(File $file, $version, VersionProvider $versionProvider);
-
-
-    /**
-     * Sets filelib
-     * @param FileLibrary
-     * @return Publisher
-     */
-    public function setFilelib(FileLibrary $filelib);
-
-
 }

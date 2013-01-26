@@ -8,13 +8,12 @@ use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
 
 class SymlinkFilesystemPublisherTest extends TestCase
 {
-
     /**
      * @test
      */
     public function gettersAndSettersShouldWorkAsExpected()
     {
-        $publisher = new SymlinkFilesystemPublisher();
+        $publisher = new SymlinkFilesystemPublisher($this->storage, $this->fileOperator, array());
 
         $this->assertNull($publisher->getRelativePathToRoot());
         $relativePath = '../private';
@@ -22,32 +21,27 @@ class SymlinkFilesystemPublisherTest extends TestCase
         $this->assertEquals($relativePath, $publisher->getRelativePathToRoot());
     }
 
-
-
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function getRelativePathToShouldFailWhenRelativePathToRootIsMissing()
     {
-        $publisher = new SymlinkFilesystemPublisher();
+        $publisher = new SymlinkFilesystemPublisher($this->storage, $this->fileOperator, array());
         $file = File::create(array('id' => 1));
         $relativePath = $publisher->getRelativePathTo($file);
     }
 
-
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\FilelibException
      */
     public function getRelativePathToVersionShouldFailWhenRelativePathToRootIsMissing()
     {
-        $publisher = new SymlinkFilesystemPublisher();
+        $publisher = new SymlinkFilesystemPublisher($this->storage, $this->fileOperator, array());
         $file = File::create(array('id' => 1));
         $relativePath = $publisher->getRelativePathToVersion($file, $this->versionProvider, 'tussi');
     }
-
-
 
     public function provideDataForRelativePathTest()
     {
@@ -84,23 +78,23 @@ class SymlinkFilesystemPublisherTest extends TestCase
     public function getRelativePathToShouldReturnRelativePathToFile($file, $levelsDown, $expectedRelativePath)
     {
         $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
-        $storage->expects($this->any())->method('getRoot')->will($this->returnValue('/tussin/lussu'));
+        $storage
+            ->expects($this->any())
+            ->method('getRoot')
+            ->will($this->returnValue('/tussin/lussu'));
 
-        $storage->expects($this->once())->method('retrieve')
+        $storage
+            ->expects($this->once())->method('retrieve')
             ->with($file->getResource())
             ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
 
-        $this->filelib->setStorage($storage);
-
-        $publisher = new SymlinkFilesystemPublisher();
-        $publisher->setFilelib($this->filelib);
+        $publisher = new SymlinkFilesystemPublisher($storage, $this->fileOperator, array());
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->setRelativePathToRoot('../private');
 
         $expectedPath = str_repeat("../", $levelsDown) . $publisher->getRelativePathToRoot() . '/lussutustiedosto';
 
         $this->assertEquals($expectedPath, $publisher->getRelativePathTo($file, $levelsDown));
-
     }
 
 
@@ -108,42 +102,44 @@ class SymlinkFilesystemPublisherTest extends TestCase
      * @test
      * @dataProvider provideDataForRelativePathTest
      */
-    public function getRelativePathToVersionShouldReturnRelativePathToFile($file, $levelsDown, $versionProviderAllowsSharedResources)
-    {
+    public function getRelativePathToVersionShouldReturnRelativePathToFile(
+        $file,
+        $levelsDown,
+        $versionProviderAllowsSharedResources
+    ) {
         $storage = $this->getMock('Xi\Filelib\Storage\FilesystemStorage');
         $storage->expects($this->any())->method('getRoot')->will($this->returnValue('/tussin/lussu'));
 
-        $this->versionProvider->expects($this->atLeastOnce())
+        $this->versionProvider
+            ->expects($this->atLeastOnce())
             ->method('areSharedVersionsAllowed')
             ->will($this->returnValue($versionProviderAllowsSharedResources));
 
-        $publisher = new SymlinkFilesystemPublisher();
-        $publisher->setFilelib($this->filelib);
+        $publisher = new SymlinkFilesystemPublisher($storage, $this->fileOperator, array());
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->setRelativePathToRoot('../private');
 
         if ($versionProviderAllowsSharedResources) {
-            $storage->expects($this->once())->method('retrieveVersion')
+            $storage
+                ->expects($this->once())->method('retrieveVersion')
                 ->with($file->getResource(), 'tussi')
                 ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
         } else {
-            $storage->expects($this->once())->method('retrieveVersion')
+            $storage
+                ->expects($this->once())->method('retrieveVersion')
                 ->with($file->getResource(), 'tussi', $file)
                 ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
         }
 
-        $this->filelib->setStorage($storage);
-
         $ret = $publisher->getRelativePathToVersion($file, $this->versionProvider, 'tussi', $levelsDown);
 
         $expectedPath = str_repeat("../", $levelsDown) . $publisher->getRelativePathToRoot() . '/lussutustiedosto';
-
         $this->assertEquals($expectedPath, $ret);
-
     }
 
-
-
+    /**
+     * @return array
+     */
     public function provideDataForPublishingTests()
     {
         $files = array();
@@ -151,12 +147,20 @@ class SymlinkFilesystemPublisherTest extends TestCase
         for ($x = 1; $x <= 5; $x++) {
             $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
 
-            $file->expects($this->any())->method('getProfile')
-                    ->will($this->returnValue('profile'));
+            $file
+                ->expects($this->any())
+                ->method('getProfile')
+                ->will($this->returnValue('profile'));
 
-            $file->expects($this->any())->method('getResource')->will($this->returnValue(Resource::create(array('id' => $x))));
+            $file
+                ->expects($this->any())
+                ->method('getResource')
+                ->will($this->returnValue(Resource::create(array('id' => $x))));
 
-            $file->expects($this->any())->method('getId')->will($this->returnValue($x));
+            $file
+                ->expects($this->any())
+                ->method('getId')
+                ->will($this->returnValue($x));
 
             $files[$x-1] = $file;
         }
@@ -213,38 +217,32 @@ class SymlinkFilesystemPublisherTest extends TestCase
      * @test
      * @dataProvider provideDataForPublishingTests
      */
-    public function publishShouldPublishFileWithoutRelativePaths($file, $expectedPath, $expectedVersionPath, $expectedRealPath)
-    {
+    public function publishShouldPublishFileWithoutRelativePaths(
+        $file,
+        $expectedPath,
+        $expectedVersionPath,
+        $expectedRealPath
+    ) {
         $self = $this;
-        $this->storage->expects($this->atLeastOnce())->method('retrieve')
-             ->will($this->returnCallback(function(Resource $resource) use ($self) {
-                 return $self->resourcePaths[$resource->getId()];
-             }));
+        $this->storage
+            ->expects($this->atLeastOnce())
+            ->method('retrieve')
+            ->will(
+                $this->returnCallback(
+                    function (Resource $resource) use ($self) {
+                        return $self->resourcePaths[$resource->getId()];
+                    }
+                )
+            );
 
-        $this->filelib->setStorage($this->storage);
-
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
-                          ->setMethods(array('getLinkerForFile'))
-                          ->getMock();
-
-        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
-                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-                  ->will($this->returnValue($this->plinker));
-
-        $publisher->setFilelib($this->filelib);
+        $publisher = $this->getMockedPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
-        // $publisher->setRelativePathToRoot('../private');
-
         $publisher->publish($file);
 
         $sfi = new \SplFileInfo($expectedPath);
-
         $this->assertTrue($sfi->isLink(), "File '{$expectedPath}' is not a symbolic link");
-
         $this->assertTrue($sfi->isReadable(), "File '{$expectedPath}' is not a readable symbolic link");
-
         $this->assertEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
-
     }
 
 
@@ -252,46 +250,40 @@ class SymlinkFilesystemPublisherTest extends TestCase
      * @test
      * @dataProvider provideDataForPublishingTests
      */
-    public function publishShouldPublishFileVersionWithoutRelativePaths($file, $expectedPath, $expectedVersionPath, $expectedRealPath, $expectedRelativePath, $allowSharedVersions)
-    {
-        $this->versionProvider->expects($this->atLeastOnce())
+    public function publishShouldPublishFileVersionWithoutRelativePaths(
+        $file,
+        $expectedPath,
+        $expectedVersionPath,
+        $expectedRealPath,
+        $expectedRelativePath,
+        $allowSharedVersions
+    ) {
+        $this->versionProvider
+            ->expects($this->atLeastOnce())
             ->method('areSharedVersionsAllowed')
             ->will($this->returnValue($allowSharedVersions));
 
         if ($allowSharedVersions) {
-            $this->storage->expects($this->once())->method('retrieveVersion')
+            $this->storage
+                ->expects($this->once())->method('retrieveVersion')
                 ->with($file->getResource(), 'xooxer')
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         } else {
-            $this->storage->expects($this->once())->method('retrieveVersion')
+            $this->storage
+                ->expects($this->once())->method('retrieveVersion')
                 ->with($file->getResource(), 'xooxer', $file)
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 
-        $this->filelib->setStorage($this->storage);
-
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
-                          ->setMethods(array('getLinkerForFile'))
-                          ->getMock();
-
-        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
-                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-                  ->will($this->returnValue($this->plinker));
-
-        $publisher->setFilelib($this->filelib);
+        $publisher = $this->getMockedPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
-        // $publisher->setRelativePathToRoot('../private');
 
         $publisher->publishVersion($file, 'xooxer', $this->versionProvider);
 
         $sfi = new \SplFileInfo($expectedVersionPath);
-
         $this->assertTrue($sfi->isLink(), "File '{$expectedVersionPath}' is not a symbolic link");
-
         $this->assertTrue($sfi->isReadable(), "File '{$expectedVersionPath}' is not a readable symbolic link");
-
         $this->assertEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
-
     }
 
 
@@ -299,41 +291,40 @@ class SymlinkFilesystemPublisherTest extends TestCase
      * @test
      * @dataProvider provideDataForPublishingTests
      */
-    public function publishShouldPublishFileWithRelativePaths($file, $expectedPath, $expectedVersionPath, $expectedRealPath, $expectedRelativePath, $allowSharedVersions)
-    {
+    public function publishShouldPublishFileWithRelativePaths(
+        $file,
+        $expectedPath,
+        $expectedVersionPath,
+        $expectedRealPath,
+        $expectedRelativePath,
+        $allowSharedVersions
+    ) {
         $self = $this;
-        $this->storage->expects($this->atLeastOnce())->method('retrieve')
-            ->will($this->returnCallback(function(Resource $resource) use ($self) {
-            return $self->resourcePaths[$resource->getId()];
-        }));
+        $this->storage
+            ->expects($this->atLeastOnce())
+            ->method('retrieve')
+            ->will(
+                $this->returnCallback(
+                    function (Resource $resource) use ($self) {
+                        return $self->resourcePaths[$resource->getId()];
+                    }
+                )
+            );
 
-        $this->filelib->setStorage($this->storage);
-
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
-                          ->setMethods(array('getLinkerForFile'))
-                          ->getMock();
-
-        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
-                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-                  ->will($this->returnValue($this->plinker));
-
+        $publisher = $this->getMockedPublisher();
         $publisher->setRelativePathToRoot('../private');
-        $publisher->setFilelib($this->filelib);
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
-        // $publisher->setRelativePathToRoot('../private');
-
         $publisher->publish($file);
 
         $sfi = new \SplFileInfo($expectedPath);
-
         $this->assertTrue($sfi->isLink(), "File '{$expectedPath}' is not a symbolic link");
-
         $this->assertTrue($sfi->isReadable(), "File '{$expectedPath}' is not a readable symbolic link");
-
         $this->assertEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
-
-        $this->assertEquals($expectedRelativePath, $sfi->getLinkTarget(), "Relative path '{$expectedRelativePath}' points to wrong place");
-
+        $this->assertEquals(
+            $expectedRelativePath,
+            $sfi->getLinkTarget(),
+            "Relative path '{$expectedRelativePath}' points to wrong place"
+        );
     }
 
 
@@ -342,50 +333,46 @@ class SymlinkFilesystemPublisherTest extends TestCase
      * @test
      * @dataProvider provideDataForPublishingTests
      */
-    public function publishShouldPublishFileVersionWithRelativePaths($file, $expectedPath, $expectedVersionPath, $expectedRealPath, $expectedRelativePath, $allowSharedVersions)
-    {
-        $this->versionProvider->expects($this->atLeastOnce())
+    public function publishShouldPublishFileVersionWithRelativePaths(
+        $file,
+        $expectedPath,
+        $expectedVersionPath,
+        $expectedRealPath,
+        $expectedRelativePath,
+        $allowSharedVersions
+    ) {
+        $this->versionProvider
+            ->expects($this->atLeastOnce())
             ->method('areSharedVersionsAllowed')
             ->will($this->returnValue($allowSharedVersions));
 
         if ($allowSharedVersions) {
-            $this->storage->expects($this->once())->method('retrieveVersion')
+            $this->storage
+                ->expects($this->once())->method('retrieveVersion')
                 ->with($file->getResource(), 'xooxer')
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         } else {
-            $this->storage->expects($this->once())->method('retrieveVersion')
+            $this->storage
+                ->expects($this->once())->method('retrieveVersion')
                 ->with($file->getResource(), 'xooxer', $file)
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 
-        $this->filelib->setStorage($this->storage);
-
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
-                          ->setMethods(array('getLinkerForFile'))
-                          ->getMock();
-
-        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
-                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-                  ->will($this->returnValue($this->plinker));
-
-
-
-        $publisher->setFilelib($this->filelib);
+        $publisher = $this->getMockedPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->setRelativePathToRoot('../private');
 
         $publisher->publishVersion($file, $this->versionProvider->getIdentifier(), $this->versionProvider);
 
         $sfi = new \SplFileInfo($expectedVersionPath);
-
         $this->assertTrue($sfi->isLink(), "File '{$expectedVersionPath}' is not a symbolic link");
-
         $this->assertTrue($sfi->isReadable(), "File '{$expectedVersionPath}' is not a readable symbolic link");
-
         $this->assertEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
-
-        $this->assertEquals($expectedRelativePath, $sfi->getLinkTarget(), "Relative path '{$expectedRelativePath}' points to wrong place");
-
+        $this->assertEquals(
+            $expectedRelativePath,
+            $sfi->getLinkTarget(),
+            "Relative path '{$expectedRelativePath}' points to wrong place"
+        );
     }
 
 
@@ -402,26 +389,21 @@ class SymlinkFilesystemPublisherTest extends TestCase
      * @test
      * @dataProvider provideDataForPublishingTests
      */
-    public function unpublishShouldUnpublishFile($file, $expectedPath, $expectedVersionPath, $expectedRealPath, $expectedRelativePath)
-    {
+    public function unpublishShouldUnpublishFile(
+        $file,
+        $expectedPath,
+        $expectedVersionPath,
+        $expectedRealPath,
+        $expectedRelativePath
+    ) {
         $this->createLink($expectedRealPath, $expectedPath);
         $this->assertFileExists($expectedPath);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
-                          ->setMethods(array('getLinkerForFile'))
-                          ->getMock();
-
-        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
-                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-                  ->will($this->returnValue($this->plinker));
-
+        $publisher = $this->getMockedPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
-        $publisher->setFilelib($this->filelib);
-
         $publisher->unpublish($file);
 
         $this->assertFileNotExists($expectedPath);
-
     }
 
 
@@ -429,31 +411,39 @@ class SymlinkFilesystemPublisherTest extends TestCase
      * @test
      * @dataProvider provideDataForPublishingTests
      */
-    public function unpublishVersionShouldUnpublishFileVersion($file, $expectedPath, $expectedVersionPath, $expectedRealPath, $expectedRelativePath)
-    {
+    public function unpublishVersionShouldUnpublishFileVersion(
+        $file,
+        $expectedPath,
+        $expectedVersionPath,
+        $expectedRealPath,
+        $expectedRelativePath
+    ) {
         $this->createLink($expectedRealPath, $expectedVersionPath);
         $this->assertFileExists($expectedVersionPath);
 
-        $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
-                          ->setMethods(array('getLinkerForFile'))
-                          ->getMock();
-
-        $publisher->expects($this->atLeastOnce())->method('getLinkerForFile')
-                  ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-                  ->will($this->returnValue($this->plinker));
-
+        $publisher = $this->getMockedPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
-        $publisher->setFilelib($this->filelib);
-
         $publisher->unpublishVersion($file, $this->versionProvider->getIdentifier(), $this->versionProvider);
 
         $this->assertFileNotExists($expectedVersionPath);
-
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getMockedPublisher()
+    {
+        $publisher = $this
+            ->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
+            ->setMethods(array('getLinkerForFile'))
+            ->setConstructorArgs(array($this->storage, $this->fileOperator, array()))
+            ->getMock();
 
+        $publisher
+            ->expects($this->atLeastOnce())->method('getLinkerForFile')
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+            ->will($this->returnValue($this->plinker));
 
-
-
-
+        return $publisher;
+    }
 }
