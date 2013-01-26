@@ -39,8 +39,8 @@ abstract class AbstractRenderer
     /**
      * Returns url to a file
      *
-     * @param File $file
-     * @param type $options
+     * @param  File   $file
+     * @param  type   $options
      * @return string
      */
     public function getUrl(File $file, $options = array())
@@ -58,11 +58,10 @@ abstract class AbstractRenderer
         return $url;
     }
 
-
     /**
      * Merges default options with supplied options
      *
-     * @param array $options
+     * @param  array $options
      * @return array
      */
     public function mergeOptions(array $options)
@@ -118,6 +117,5 @@ abstract class AbstractRenderer
         $event = new FileEvent($file);
         $this->getEventDispatcher()->dispatch('xi_filelib.file.render', $event);
     }
-
 
 }

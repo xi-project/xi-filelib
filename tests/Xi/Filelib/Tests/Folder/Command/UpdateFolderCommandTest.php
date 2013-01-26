@@ -22,7 +22,6 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\UpdateFolderCommand'));
     }
 
-
     /**
      * @test
      */
@@ -91,20 +90,21 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $op->expects($this->exactly(1))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnCallback(function($folder) {
 
-            if($folder->getId() == 1) {
+            if ($folder->getId() == 1) {
                 return new ArrayIterator(array(
                     Folder::create(array('id' => 2, 'parent_id' => 1)),
                     Folder::create(array('id' => 3, 'parent_id' => 1)),
                     Folder::create(array('id' => 4, 'parent_id' => 1)),
                 ));
             }
+
             return new ArrayIterator(array());
         }));
 
         $op->expects($this->exactly(1))->method('findFiles')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnCallback(function ($folder) {
 
-            if($folder->getId() == 1) {
+            if ($folder->getId() == 1) {
                 return new ArrayIterator(array(
                     Folder::create(array('id' => 1, 'name' => 'tohtori-vesala.avi')),
                     Folder::create(array('id' => 2, 'name' => 'tohtori-vesala.png')),
@@ -112,6 +112,7 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
                     Folder::create(array('id' => 4, 'name' => 'tohtori-vesala.bmp')),
                 ));
             }
+
             return new ArrayIterator(array());
         }));
 
@@ -152,11 +153,6 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new UpdateFolderCommand($op, $fiop, $folder);
         $command->execute();
 
-
     }
 
-
-
-
 }
-

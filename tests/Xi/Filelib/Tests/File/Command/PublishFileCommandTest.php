@@ -19,7 +19,6 @@ class PublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\PublishFileCommand'));
     }
 
-
     /**
      * @test
      */
@@ -46,8 +45,6 @@ class PublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
     /**
      * @test
      */
@@ -67,7 +64,6 @@ class PublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $dispatcher->expects($this->once())->method('dispatch')
                    ->with($this->equalTo('xi_filelib.file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile->expects($this->atLeastOnce())->method('getPublishOriginal')->will($this->returnValue(true));
 
@@ -84,7 +80,6 @@ class PublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $command->execute();
 
     }
-
 
     /**
      * @test
@@ -118,8 +113,6 @@ class PublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new PublishFileCommand($op, $file);
         $command->execute();
 
-
     }
 
 }
-

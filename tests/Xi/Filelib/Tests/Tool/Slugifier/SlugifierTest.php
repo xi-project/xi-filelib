@@ -11,7 +11,7 @@ namespace Xi\Filelib\Tests\Tool\Slugifier;
 
 class SlugifierTest
 {
- 
+
     /**
      * @test
      */

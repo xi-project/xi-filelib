@@ -114,7 +114,6 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
         $this->assertFalse($this->backend->deleteFolder($resource));
     }
 
-
     /**
      * @test
      */
@@ -133,7 +132,6 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
 
         $this->assertFalse($this->backend->deleteResource($resource));
     }
-
 
     /**
      * @param EntityManager $em
@@ -176,7 +174,6 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
         );
     }
 
-
     /**
      * @test
      */
@@ -198,7 +195,6 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
             $this->backend->getResourceEntityName()
         );
     }
-
 
     /**
      * @test

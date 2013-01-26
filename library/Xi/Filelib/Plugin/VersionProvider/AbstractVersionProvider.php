@@ -158,6 +158,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
                 return true;
             }
         }
+
         return false;
     }
 
@@ -251,7 +252,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         $this->deleteFileVersions($file);
     }
 
-
     /**
      * Deletes resource versions
      *
@@ -293,6 +293,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         if ($count == count($this->getVersions())) {
             return true;
         }
+
         return false;
     }
 }

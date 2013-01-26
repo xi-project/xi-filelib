@@ -39,6 +39,7 @@ class GridFsStorageTest extends TestCase
         $this->mongo = $mongo->filelib_tests;
 
         $storage = new GridfsStorage($this->mongo, ROOT_TESTS . '/data/temp');
+
         return $storage;
     }
 
@@ -60,7 +61,6 @@ class GridFsStorageTest extends TestCase
         $this->storage->setPrefix('luss');
         $this->assertEquals('luss', $this->storage->getPrefix());
     }
-
 
     /**
      * @test

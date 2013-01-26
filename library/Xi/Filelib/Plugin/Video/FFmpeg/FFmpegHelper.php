@@ -46,7 +46,7 @@ class FFmpegHelper
 
     /**
      * Set the path of the command line command for ffmpeg
-     * @param string $command
+     * @param  string                   $command
      * @return FFmpegHelper
      * @throws InvalidArgumentException
      */
@@ -56,6 +56,7 @@ class FFmpegHelper
             throw new InvalidArgumentException('Command must not be empty.');
         }
         $this->command = $command;
+
         return $this;
     }
 
@@ -77,6 +78,7 @@ class FFmpegHelper
     public function setOptions($options)
     {
         $this->options = $options;
+
         return $this;
     }
 
@@ -98,6 +100,7 @@ class FFmpegHelper
     public function setInputs($inputs)
     {
         $this->inputs = $inputs;
+
         return $this;
     }
 
@@ -115,7 +118,7 @@ class FFmpegHelper
      * Filenames must not contain paths (slashes).
      * Number templated filenames (%d) are not supported at this time.
      *
-     * @param array $outputs
+     * @param  array                    $outputs
      * @return FFmpegHelper
      * @throws InvalidArgumentException
      */
@@ -132,6 +135,7 @@ class FFmpegHelper
             }
         }
         $this->outputs = $outputs;
+
         return $this;
     }
 
@@ -145,6 +149,7 @@ class FFmpegHelper
     public function execute($original, $outputDir)
     {
         $timeout = 3600; // 1 hour
+
         return $this->runProcess($this->getCommandLine($original, $outputDir), $timeout);
     }
 
@@ -202,7 +207,7 @@ class FFmpegHelper
     /**
      * Prepends the output directory to the output filenames
      *
-     * @param string $outputDir
+     * @param  string $outputDir
      * @return array
      */
     private function getProcessedOutputs($outputDir)
@@ -221,7 +226,7 @@ class FFmpegHelper
     /**
      * Return a map of output keys to their absolute paths in the $outputDir
      *
-     * @param string $outputDir
+     * @param  string $outputDir
      * @return array
      */
     public function getOutputPathnames($outputDir)
@@ -237,7 +242,7 @@ class FFmpegHelper
     /**
      * Generate command line options for ffmpeg from one $options array
      *
-     * @param array $options
+     * @param  array  $options
      * @return string
      */
     public static function shellArguments($options)
@@ -257,8 +262,8 @@ class FFmpegHelper
     /**
      * Generate command line options for one input (use $prefix "-i") or output file from $io array
      *
-     * @param array $io
-     * @param string $prefix
+     * @param  array  $io
+     * @param  string $prefix
      * @return string
      */
     public function shellArgumentsFor($io, $prefix = '')
@@ -269,7 +274,7 @@ class FFmpegHelper
     /**
      * Get the duration of a video using ffprobe
      *
-     * @param FileObject $file
+     * @param  FileObject $file
      * @return float
      */
     public function getDuration(FileObject $file)
@@ -280,7 +285,7 @@ class FFmpegHelper
     /**
      * Get information about video format and it's streams
      *
-     * @param FileObject $file
+     * @param  FileObject $file
      * @return stdClass
      */
     public function getVideoInfo(FileObject $file)
@@ -298,9 +303,9 @@ class FFmpegHelper
     /**
      * Run a command in subprocess using Symfony Process component.
      *
-     * @param string $cmd
-     * @param int $timeout Time limit for the command to run. Run forever with 0.
-     * @return string Command output
+     * @param  string           $cmd
+     * @param  int              $timeout Time limit for the command to run. Run forever with 0.
+     * @return string           Command output
      * @throws RuntimeException
      */
     private function runProcess($cmd, $timeout = 30)
@@ -312,6 +317,7 @@ class FFmpegHelper
         if (!$proc->isSuccessful()) {
             throw new RuntimeException($proc->getErrorOutput());
         }
+
         return $proc->getOutput();
     }
 }

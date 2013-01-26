@@ -35,10 +35,6 @@ class AbstractFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertSame($uuid, $command->getUuid());
 
-
     }
 
-
-
 }
-

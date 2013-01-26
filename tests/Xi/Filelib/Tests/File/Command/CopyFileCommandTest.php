@@ -47,7 +47,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\CopyFileCommand'));
     }
 
-
     public function provideNames()
     {
         return array(
@@ -117,7 +116,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals('uusi-uuid', $impostor->getUuid());
     }
 
-
     /**
      * @test
      */
@@ -183,7 +181,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
             array(false),
         );
     }
-
 
     /**
      * @test
@@ -278,4 +275,3 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     }
 
 }
-

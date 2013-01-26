@@ -8,9 +8,6 @@ use Xi\Filelib\Migration\ResourceRefactorMigration;
 class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
 {
 
-
-
-
     /**
      * @test
      */
@@ -19,7 +16,6 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $this->assertTrue(class_exists('Xi\Filelib\Migration\ResourceRefactorMigration'));
         $this->assertContains('Xi\Filelib\Command', class_implements('Xi\Filelib\Migration\ResourceRefactorMigration'));
     }
-
 
     /**
      * @test
@@ -45,7 +41,6 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
 
         $rootFolder = $this->getMock('Xi\Filelib\Folder\Folder');
         $childFolder = $this->getMock('Xi\Filelib\Folder\Folder');
-
 
         $rootFolder->expects($this->once())->method('setUuid')->with('uuid');
         $childFolder->expects($this->once())->method('setUuid')->with('uuid');
@@ -79,6 +74,5 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $migration = new ResourceRefactorMigration($filelib);
         $migration->execute();
     }
-
 
 }

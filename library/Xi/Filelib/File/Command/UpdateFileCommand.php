@@ -51,14 +51,12 @@ class UpdateFileCommand extends AbstractFileCommand
         return $this->file;
     }
 
-
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
         $this->uuid = $data['uuid'];
     }
-
 
     public function serialize()
     {

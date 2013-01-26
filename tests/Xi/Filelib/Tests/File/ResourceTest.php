@@ -16,7 +16,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(class_exists('Xi\Filelib\File\Resource'));
     }
 
-
     /**
      * @test
      */
@@ -61,7 +60,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     }
 
-
     public function fromArrayProvider()
     {
         return array(
@@ -104,15 +102,15 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'exclusive' => 'isExclusive',
         );
 
-        foreach($map as $key => $method) {
-            if(isset($data[$key])) {
+        foreach ($map as $key => $method) {
+            if (isset($data[$key])) {
                 $this->assertEquals($data[$key], $resource->$method());
             } else {
 
                 if ($key == 'versions') {
                     $this->assertEquals(array(), $resource->$method());
 
-                } elseif($key == 'exclusive') {
+                } elseif ($key == 'exclusive') {
                     $this->assertFalse($resource->$method());
                 } else {
                     $this->assertNull($resource->$method());
@@ -166,7 +164,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Xi\Filelib\File\Resource', Resource::create(array()));
     }
 
-
     /**
      * @test
      */
@@ -177,7 +174,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array('tussi', 'watussi', 'lussi'), $resource->getVersions());
     }
-
 
     /**
      * @test
@@ -190,7 +186,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('tussi', 'watussi'), $resource->getVersions());
     }
 
-
     /**
      * @test
      */
@@ -201,7 +196,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array('tussi'), $resource->getVersions());
     }
-
 
     /**
      * @test
@@ -214,6 +208,5 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($resource->hasVersion('watussi'));
         $this->assertFalse($resource->hasVersion('lussi'));
     }
-
 
 }

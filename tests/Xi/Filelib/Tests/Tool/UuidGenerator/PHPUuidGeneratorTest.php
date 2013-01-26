@@ -16,7 +16,6 @@ class PHPUuidGeneratorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Tool\UuidGenerator\UuidGenerator', class_implements('Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator'));
     }
 
-
     /**
      * @test
      */
@@ -28,4 +27,3 @@ class PHPUuidGeneratorTest extends \Xi\Filelib\Tests\TestCase
     }
 
 }
-

@@ -16,6 +16,7 @@ class TestCommand implements EnqueueableCommand
     public function execute()
     {
         $this->isExecuted = true;
+
         return 'lus';
     }
 

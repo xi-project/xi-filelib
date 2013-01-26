@@ -37,6 +37,7 @@ class Message
     public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
+
         return $this;
     }
 

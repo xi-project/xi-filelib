@@ -15,7 +15,6 @@ class ResourceTest extends \Xi\Filelib\Tests\TestCase
         $this->assertTrue(class_exists('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource'));
     }
 
-
     /**
      * @test
      */

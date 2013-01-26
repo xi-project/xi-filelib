@@ -12,7 +12,6 @@ class StupidTransliteratorTest extends TestCase
         return new StupidTransliterator();
     }
 
-
     /**
      * @test
      */

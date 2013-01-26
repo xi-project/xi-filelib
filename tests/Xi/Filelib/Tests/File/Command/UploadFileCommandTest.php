@@ -24,7 +24,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\UploadFileCommand'));
     }
 
-
     /**
      * @test
      * @expectedException Xi\Filelib\FilelibException
@@ -51,8 +50,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
     public function provideDataForUploadTest()
     {
         return array(
@@ -60,7 +57,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             array(true, true),
         );
     }
-
 
     /**
      * @test
@@ -92,7 +88,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $dispatcher->expects($this->at(1))->method('dispatch')
                    ->with($this->equalTo('xi_filelib.file.create'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
-
 
         $folder = Folder::create(array('id' => 1));
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
@@ -158,7 +153,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $ret = $command->execute();
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
     }
-
 
     /**
      * @test
@@ -228,7 +222,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $upload = new FileUpload($path);
         $hash = sha1_file($upload->getRealPath());
 
-
         $finder = new ResourceFinder(
             array(
                 'hash' => $hash,
@@ -246,7 +239,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
         $this->assertSame($hash, $ret->getHash());
     }
-
 
     /**
      * @test
@@ -306,8 +298,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame($hash, $ret->getHash());
     }
 
-
-
     /**
      * @test
      */
@@ -365,7 +355,4 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame('first-id', $ret->getId());
     }
 
-
-
 }
-

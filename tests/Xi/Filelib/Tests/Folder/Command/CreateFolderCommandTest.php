@@ -19,7 +19,6 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\CreateFolderCommand'));
     }
 
-
     /**
      * @test
      */
@@ -44,8 +43,6 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertAttributeNotEmpty('uuid', $command2);
 
     }
-
-
 
     /**
      * @test
@@ -103,8 +100,4 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
-
 }
-

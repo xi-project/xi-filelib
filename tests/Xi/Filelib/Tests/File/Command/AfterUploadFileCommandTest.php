@@ -20,8 +20,6 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\AfterUploadFileCommand'));
     }
 
-
-
     public function provideDataForUploadTest()
     {
         return array(
@@ -30,7 +28,6 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         );
     }
 
-
     /**
      * @test
      * @dataProvider provideDataForUploadTest
@@ -38,35 +35,26 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     public function commandShouldUploadAndDelegateCorrectly($expectedCallToPublish, $readableByAnonymous)
     {
 
-
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'createCommand'))
                    ->getMock();
 
-
-
         if ($expectedCallToPublish) {
-
 
             $publishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\PublishFileCommand')
                                    ->disableOriginalConstructor()
                                    ->getMock();
             $publishCommand->expects($this->once())->method('execute');
 
-
-
             $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\PublishFileCommand'))
                ->will($this->returnValue($publishCommand));
         }
-
-
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
 
@@ -103,15 +91,12 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
            ->with($this->equalTo('versioned'))
            ->will($this->returnValue($profile));
 
-
-
         $command = new AfterUploadFileCommand($op, $fileitem);
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
 
     }
-
 
     /**
      * @test
@@ -129,8 +114,6 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
                 $command = new AfterUploadFileCommand($op, $file);
 
-
-
         $serialized = serialize($command);
 
         $command2 = unserialize($serialized);
@@ -140,9 +123,4 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertAttributeNotEmpty('uuid', $command2);
     }
 
-
-
-
-
 }
-

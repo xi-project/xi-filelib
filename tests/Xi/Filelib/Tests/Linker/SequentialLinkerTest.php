@@ -25,7 +25,6 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
              ->will($this->returnCallback(function($id) {
 
                  if ($id == 1) {
-
                      return Folder::create(array(
                          'id' => 1,
                          'name' => 'root',
@@ -33,10 +32,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
                          'url' => ''
                      ));
 
-
-
-                 } elseif($id == 2) {
-
+                 } elseif ($id == 2) {
                      return Folder::create(array(
                          'id' => 2,
                          'name' => 'lussuttaja',
@@ -44,8 +40,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
                          'url' => '/lussuttaja'
                      ));
 
-                 } elseif($id == 3) {
-
+                 } elseif ($id == 3) {
                      return Folder::create(array(
                          'id' => 2,
                          'name' => 'tussin',
@@ -53,16 +48,13 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
                          'url' => '/lussuttaja/tussin'
                      ));
 
-
-                 } elseif($id == 4) {
-
+                 } elseif ($id == 4) {
                      return Folder::create(array(
                          'id' => 2,
                          'name' => 'banaanin',
                          'parent_id' => 2,
                          'url' => '/lussuttaja/banaanin'
                      ));
-
 
                  }
 

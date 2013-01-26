@@ -45,12 +45,13 @@ class Folder implements Identifiable
     /**
      * Sets id
      *
-     * @param type $id
+     * @param  type   $id
      * @return Folder
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -61,12 +62,13 @@ class Folder implements Identifiable
 
     /**
      *
-     * @param mixed $parentId
+     * @param  mixed  $parentId
      * @return Folder
      */
     public function setParentId($parentId)
     {
         $this->parentId = $parentId;
+
         return $this;
     }
 
@@ -77,12 +79,13 @@ class Folder implements Identifiable
 
     /**
      *
-     * @param string $name
+     * @param  string $name
      * @return Folder
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -93,21 +96,20 @@ class Folder implements Identifiable
 
     /**
      *
-     * @param string $url
+     * @param  string $url
      * @return Folder
      */
     public function setUrl($url)
     {
         $this->url = $url;
+
         return $this;
     }
-
 
     public function getUrl()
     {
         return $this->url;
     }
-
 
     /**
      * @return Folder
@@ -115,6 +117,7 @@ class Folder implements Identifiable
     public function setUuid($uuid)
     {
         $this->uuid = $uuid;
+
         return $this;
     }
 
@@ -126,7 +129,6 @@ class Folder implements Identifiable
     {
         return $this->uuid;
     }
-
 
     public function toArray()
     {
@@ -141,31 +143,30 @@ class Folder implements Identifiable
 
     /**
      *
-     * @param array $data
+     * @param  array  $data
      * @return Folder
      */
     public function fromArray(array $data)
     {
-        foreach(static::$map as $key => $method) {
-            if(isset($data[$key])) {
+        foreach (static::$map as $key => $method) {
+            if (isset($data[$key])) {
                 $this->$method($data[$key]);
             }
         }
+
         return $this;
     }
 
     /**
      *
-     * @param array $data
+     * @param  array  $data
      * @return Folder
      */
     public static function create(array $data = array())
     {
         $folder = new self();
+
         return $folder->fromArray($data);
     }
-
-
-
 
 }

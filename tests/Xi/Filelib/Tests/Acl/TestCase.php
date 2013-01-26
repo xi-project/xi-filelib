@@ -13,21 +13,14 @@
 class TestCase extends \Xi\Filelib\Tests\TestCase
 {
 
-
     public function setUp()
     {
         parent::setUp();
     }
-    
-    
+
     public function tearDown()
     {
         parent::tearDown();
     }
-   
-    
- 
-    
 
-    
 }

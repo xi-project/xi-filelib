@@ -12,7 +12,6 @@ class PeclAMQPQueueTest extends \Xi\Filelib\Tests\Queue\TestCase
         return new PeclAMQPQueue(RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_USERNAME, RABBITMQ_PASSWORD, RABBITMQ_VHOST, 'filelib_test_exchange', 'filelib_test_queue');
     }
 
-
     public function setUp()
     {
         // $this->markTestSkipped("Pecl AMQP has serious issues. Skip until it's better.");
@@ -29,4 +28,3 @@ class PeclAMQPQueueTest extends \Xi\Filelib\Tests\Queue\TestCase
     }
 
 }
-

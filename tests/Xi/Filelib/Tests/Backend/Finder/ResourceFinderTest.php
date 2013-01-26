@@ -23,7 +23,6 @@ class ResourceFinderTest extends TestCase
         );
     }
 
-
     public function getExpectedFields()
     {
         return array(

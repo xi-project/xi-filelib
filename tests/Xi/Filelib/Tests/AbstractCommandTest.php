@@ -33,6 +33,4 @@ class AbstractCommandTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
 }
-

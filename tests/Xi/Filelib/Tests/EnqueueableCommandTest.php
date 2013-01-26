@@ -17,4 +17,3 @@ class EnqueueableCommandTest extends \Xi\Filelib\Tests\TestCase
     }
 
 }
-

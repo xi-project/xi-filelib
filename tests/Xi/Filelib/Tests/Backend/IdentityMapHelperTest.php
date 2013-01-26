@@ -81,7 +81,6 @@ class IdentityMapHelperTest extends TestCase
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
     }
 
-
     /**
      * @test
      */
@@ -103,13 +102,13 @@ class IdentityMapHelperTest extends TestCase
                 function (Platform $platform, $id) use ($self, $obj) {
                     $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
                     $self->assertInternalType('int', $id);
+
                     return new ArrayIterator(array($obj));
                 }
             );
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
     }
-
 
     /**
      * @test
@@ -144,6 +143,7 @@ class IdentityMapHelperTest extends TestCase
                 $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
                 $self->assertInternalType('array', $ids);
                 $self->assertEquals(array(1, 2, 3, 4, 5), $ids);
+
                 return new ArrayIterator($resources);
             }
         );
@@ -203,7 +203,6 @@ class IdentityMapHelperTest extends TestCase
         $this->assertCount(4, $ret);
     }
 
-
     /**
      * @test
      */
@@ -217,6 +216,7 @@ class IdentityMapHelperTest extends TestCase
             function (Platform $platform, Identifiable $obj) use ($self) {
                 $self->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $platform);
                 $self->assertInstanceOf('Xi\Filelib\IdentityMap\Identifiable', $obj);
+
                 return $obj;
             },
             $obj
@@ -240,6 +240,7 @@ class IdentityMapHelperTest extends TestCase
                 $self->assertInstanceOf('Xi\Filelib\IdentityMap\Identifiable', $obj);
                 $self->assertEquals('luss', $luss);
                 $self->assertEquals('xoo', $xoo);
+
                 return $obj;
             },
             $obj,

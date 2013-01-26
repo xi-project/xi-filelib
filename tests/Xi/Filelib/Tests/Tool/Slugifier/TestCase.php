@@ -4,15 +4,14 @@ namespace Xi\Filelib\Tests\Tool\Slugifier;
 
 use \Xi\Filelib\Tool\Slugifier;
 
-class TestCase extends \Xi\Filelib\Tests\TestCase {
-    
+class TestCase extends \Xi\Filelib\Tests\TestCase
+{
     /**
      *
      * @var Slugifier
      */
     protected $slugifier;
-    
-    
+
     /**
      * @test
      */
@@ -30,6 +29,5 @@ class TestCase extends \Xi\Filelib\Tests\TestCase {
     {
         $this->assertEquals('suuren/ugrilaisen/kansan/sielu', $this->slugifier->slugifyPath('suuren/ugrilaisen/kansan/sielu'));
     }
-    
-    
+
 }

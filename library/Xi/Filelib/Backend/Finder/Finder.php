@@ -37,8 +37,8 @@ interface Finder
     /**
      * Adds a parameter
      *
-     * @param string $field
-     * @param mixed $value
+     * @param  string          $field
+     * @param  mixed           $value
      * @return Finder
      * @throws FinderException
      */

@@ -13,6 +13,4 @@ class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertTrue(interface_exists('Xi\Filelib\Queue\Processor\QueueProcessor'));
     }
 
-
 }
-

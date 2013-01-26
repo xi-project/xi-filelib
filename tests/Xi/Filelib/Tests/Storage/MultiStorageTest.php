@@ -101,7 +101,6 @@ class MultiStorageTest extends \Xi\Filelib\TestCase
 
     }
 
-
     /**
      * @test
      *
@@ -116,7 +115,6 @@ class MultiStorageTest extends \Xi\Filelib\TestCase
             $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
         }
     }
-
 
     /**
      * @test
@@ -163,8 +161,6 @@ class MultiStorageTest extends \Xi\Filelib\TestCase
         $this->storage->retrieveVersion($this->resource, $this->version);
     }
 
-
-
     /**
      * @test
      */
@@ -191,7 +187,6 @@ class MultiStorageTest extends \Xi\Filelib\TestCase
     {
         $this->storage->addStorage(new MultiStorage());
     }
-
 
     /**
      * @test

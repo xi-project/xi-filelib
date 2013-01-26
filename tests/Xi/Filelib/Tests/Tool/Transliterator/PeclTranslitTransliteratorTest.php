@@ -15,12 +15,10 @@ class PeclTranslitTransliteratorTest extends TestCase
 
     }
 
-
     public function getTransliteratorWithDefaultSettings()
     {
         return new PeclTranslitTransliterator();
     }
-
 
     /**
      * @test

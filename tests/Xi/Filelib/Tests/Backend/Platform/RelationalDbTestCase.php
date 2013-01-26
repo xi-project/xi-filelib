@@ -112,7 +112,6 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
         );
     }
 
-
     /**
      * @return array
      */
@@ -146,7 +145,6 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
             array(3),
         );
     }
-
 
     /**
      * @return array
@@ -341,7 +339,6 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
         );
     }
 
-
     /**
      * @return ArrayDataSet
      */
@@ -501,7 +498,6 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
         );
     }
 
-
     /**
      * @return array
      */
@@ -530,9 +526,6 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
 
         );
     }
-
-
-
 
     /**
      * @param string $dataSet

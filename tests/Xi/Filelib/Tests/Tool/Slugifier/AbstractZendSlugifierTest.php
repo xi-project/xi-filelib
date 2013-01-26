@@ -14,7 +14,6 @@ class AbstractZendSlugifierTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Tool\Slugifier\Slugifier', class_implements('Xi\Filelib\Tool\Slugifier\AbstractZendSlugifier'));
     }
 
-
     /**
      * @test
      */
@@ -28,7 +27,6 @@ class AbstractZendSlugifierTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertSame($trans, $slugifier->getTransliterator());
     }
-
 
     /**
      * @test

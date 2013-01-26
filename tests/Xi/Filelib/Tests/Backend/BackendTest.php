@@ -64,7 +64,6 @@ class BackendTest extends TestCase
         $this->assertEquals(55, $ret);
     }
 
-
     /**
      * @test
      */
@@ -109,7 +108,6 @@ class BackendTest extends TestCase
         $this->assertNull($ret);
     }
 
-
     /**
      * @test
      */
@@ -136,7 +134,6 @@ class BackendTest extends TestCase
 
         $backend->updateFile($file);
     }
-
 
     /**
      * @test
@@ -258,7 +255,6 @@ class BackendTest extends TestCase
             ->with($this->equalTo($finder))
             ->will($this->returnValue(new ArrayIterator(array($nonUniqueFile))));
 
-
         $this->setExpectedException(
             'Xi\Filelib\Exception\NonUniqueFileException',
             'A file with the name "ankanlipaisija" already exists in folder "lussen"'
@@ -328,11 +324,11 @@ class BackendTest extends TestCase
                             'folder_id' => 1,
                         );
                         $self->assertEquals($expectedParams, $finder->getParameters());
+
                         return new ArrayIterator(array());
                     }
                 )
             );
-
 
         $ret = $backend->deleteFolder($obj);
         $this->assertNull($ret);
@@ -373,6 +369,7 @@ class BackendTest extends TestCase
                             'folder_id' => 1,
                         );
                         $self->assertEquals($expectedParams, $finder->getParameters());
+
                         return new ArrayIterator($files);
                     }
                 )
@@ -381,7 +378,6 @@ class BackendTest extends TestCase
         $ret = $backend->deleteFolder($obj);
         $this->assertNull($ret);
     }
-
 
     /**
      * @test
@@ -398,7 +394,6 @@ class BackendTest extends TestCase
         $ret = $this->backend->deleteFile($obj);
         $this->assertNull($ret);
     }
-
 
     /**
      * @test
@@ -423,7 +418,6 @@ class BackendTest extends TestCase
 
         $backend->deleteResource($obj);
     }
-
 
     /**
      * @test

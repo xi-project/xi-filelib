@@ -78,11 +78,11 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
      */
     public function calculateDirectoryId($resource)
     {
-        if(!is_numeric($resource->getId())) {
+        if (!is_numeric($resource->getId())) {
             throw new FilelibException("Leveled directory id calculator requires numeric file ids ('{$resource->getId()}' was provided)");
         }
 
-        if($this->getDirectoryLevels() < 1) {
+        if ($this->getDirectoryLevels() < 1) {
             throw new FilelibException("Invalid number of directory levels ('{$this->getDirectoryLevels()}')");
         }
 

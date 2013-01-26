@@ -19,7 +19,6 @@ class AbstractQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Queue\Processor\QueueProcessor', class_implements('Xi\Filelib\Queue\Processor\AbstractQueueProcessor'));
     }
 
-
     /**
      * @test
      */
@@ -39,7 +38,6 @@ class AbstractQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
                           ->setMethods(array('process'))
                           ->setConstructorArgs(array($filelib))
                           ->getMockForAbstractClass();
-
 
         $this->assertSame($filelib, $processor->getFilelib());
         $this->assertSame($queue, $processor->getQueue());
@@ -79,8 +77,4 @@ class AbstractQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
-
 }
-

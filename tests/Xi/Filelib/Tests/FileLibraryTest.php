@@ -20,7 +20,6 @@ class FileLibraryTest extends TestCase
 
     }
 
-
     public function tearDown()
     {
         parent::tearDown();
@@ -49,7 +48,6 @@ class FileLibraryTest extends TestCase
         $this->assertSame($storage, $filelib->getStorage());
     }
 
-
     /**
      * @test
      */
@@ -61,7 +59,6 @@ class FileLibraryTest extends TestCase
         $this->assertSame($filelib, $filelib->setPublisher($obj));
         $this->assertSame($obj, $filelib->getPublisher());
     }
-
 
     /**
      * @test
@@ -255,8 +252,6 @@ class FileLibraryTest extends TestCase
         $filelib->setFileOperator($fop);
         $filelib->getProfiles();
 
-
-
     }
 
     /**
@@ -276,8 +271,6 @@ class FileLibraryTest extends TestCase
         $filelib->addProfile($profile);
 
     }
-
-
 
     /**
      * @test
@@ -300,7 +293,6 @@ class FileLibraryTest extends TestCase
         $filelib->addPlugin($plugin);
     }
 
-
     /**
      * @test
      */
@@ -321,8 +313,6 @@ class FileLibraryTest extends TestCase
         $filelib->addPlugin($plugin);
     }
 
-
-
     /**
      * @test
      */
@@ -334,7 +324,6 @@ class FileLibraryTest extends TestCase
         $this->assertInstanceOf('Symfony\Component\EventDispatcher\EventDispatcher', $dispatcher);
 
     }
-
 
     /**
      * @test

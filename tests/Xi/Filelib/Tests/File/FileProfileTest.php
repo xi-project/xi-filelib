@@ -11,7 +11,6 @@ use Xi\Filelib\Event\PluginEvent;
 class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 {
 
-
     /**
      * @test
      */
@@ -72,9 +71,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $profile->onPluginAdd($event);
     }
 
-
-
-
     /**
      * @test
      */
@@ -102,7 +98,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame($profile, $profile->setIdentifier($val));
         $this->assertEquals($val, $profile->getIdentifier());
 
-
         $val = true;
         $this->assertEquals(true, $profile->getAccessToOriginal());
         $this->assertSame($profile, $profile->setAccessToOriginal($val));
@@ -112,7 +107,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals(true, $profile->getPublishOriginal());
         $this->assertSame($profile, $profile->setPublishOriginal($val));
         $this->assertEquals($val, $profile->getPublishOriginal());
-
 
         /*
         $val = 666;
@@ -158,8 +152,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
     /**
      * @test
      * @expectedException InvalidArgumentException
@@ -200,8 +192,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains($mock2, $plugins);
     }
 
-
-
     /**
      * @test
      */
@@ -214,7 +204,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame($profile, $profile->addFileVersion('image', 'xooxer', $versionProvider));
 
     }
-
 
     /**
      * @test
@@ -314,8 +303,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
     /**
      * @return FileLibrary
      */
@@ -324,9 +311,9 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $filelib = new FileLibrary();
         $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
 
-
         $fiop->expects($this->any())->method('getType')->will($this->returnCallBack(function ($file) {
             $split = explode('/', $file->getMimetype());
+
             return $split[0];
         }));
 
@@ -334,7 +321,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
         return $filelib;
     }
-
 
     private function createProfileWithMockedVersions()
     {
@@ -396,8 +382,5 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals($expected, $profile->isSharedResourceAllowed($file));
     }
-
-
-
 
 }

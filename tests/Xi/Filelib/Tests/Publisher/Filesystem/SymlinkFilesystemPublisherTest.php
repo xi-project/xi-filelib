@@ -70,7 +70,6 @@ class SymlinkFilesystemPublisherTest extends TestCase
         );
     }
 
-
     /**
      * @test
      * @dataProvider provideDataForRelativePathTest
@@ -96,7 +95,6 @@ class SymlinkFilesystemPublisherTest extends TestCase
 
         $this->assertEquals($expectedPath, $publisher->getRelativePathTo($file, $levelsDown));
     }
-
 
     /**
      * @test
@@ -245,7 +243,6 @@ class SymlinkFilesystemPublisherTest extends TestCase
         $this->assertEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
     }
 
-
     /**
      * @test
      * @dataProvider provideDataForPublishingTests
@@ -286,7 +283,6 @@ class SymlinkFilesystemPublisherTest extends TestCase
         $this->assertEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
     }
 
-
     /**
      * @test
      * @dataProvider provideDataForPublishingTests
@@ -326,8 +322,6 @@ class SymlinkFilesystemPublisherTest extends TestCase
             "Relative path '{$expectedRelativePath}' points to wrong place"
         );
     }
-
-
 
     /**
      * @test
@@ -375,7 +369,6 @@ class SymlinkFilesystemPublisherTest extends TestCase
         );
     }
 
-
     private function createLink($target, $link)
     {
         if (!is_dir(dirname($link))) {
@@ -383,7 +376,6 @@ class SymlinkFilesystemPublisherTest extends TestCase
         }
         symlink($target, $link);
     }
-
 
     /**
      * @test
@@ -405,7 +397,6 @@ class SymlinkFilesystemPublisherTest extends TestCase
 
         $this->assertFileNotExists($expectedPath);
     }
-
 
     /**
      * @test

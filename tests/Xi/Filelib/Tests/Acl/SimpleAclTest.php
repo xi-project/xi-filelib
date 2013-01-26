@@ -11,19 +11,18 @@ use Xi\Filelib\Acl\SimpleAcl;
 
 class SimpleAclTest extends \Xi\Filelib\Tests\TestCase
 {
-    
+
     /**
      *
      * @var Acl
      */
     private $acl;
-    
 
     public function setUp()
     {
         $this->acl = new SimpleAcl(true);
     }
-   
+
     /**
      * @test
      */
@@ -33,10 +32,6 @@ class SimpleAclTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Acl\Acl', class_implements('Xi\Filelib\Acl\SimpleAcl'));
     }
 
-    
-    
-    
-    
     public function provideFolders()
     {
         return array(
@@ -63,15 +58,11 @@ class SimpleAclTest extends \Xi\Filelib\Tests\TestCase
                 true
             ),
         );
-        
+
     }
-    
-    
-    
-    
+
     public function provideFiles()
     {
-    
         return array(
             array(
                 array(
@@ -84,7 +75,7 @@ class SimpleAclTest extends \Xi\Filelib\Tests\TestCase
                 true,
                 true
             ),
-            
+
             array(
                 array(
                    'id' => 2,
@@ -108,74 +99,68 @@ class SimpleAclTest extends \Xi\Filelib\Tests\TestCase
                 true,
                 true
             ),
-            
+
         );
-        
+
     }
-    
-    
+
     /**
      * @test
      * @dataProvider provideFiles
      */
     public function isReadableShouldReturnExpectedResultsForFiles($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = File::create($res);        
+        $res = File::create($res);
         $this->assertEquals($readable, $this->acl->isFileReadable($res));
     }
-    
-    
+
     /**
      * @test
      * @dataProvider provideFolders
      */
     public function IsReadableShouldReturnExpectedResultForFolders($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = Folder::create($res);        
+        $res = Folder::create($res);
         $this->assertEquals($readable, $this->acl->isFolderReadable($res));
     }
 
-    
     /**
      * @test
      * @dataProvider provideFiles
      */
     public function isWritableShouldReturnExpectedResultsForFiles($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = File::create($res);        
+        $res = File::create($res);
         $this->assertEquals($writable, $this->acl->isFileWritable($res));
     }
-    
-    
+
     /**
      * @test
      * @dataProvider provideFolders
      */
     public function IsWritableShouldReturnExpectedResultForFolders($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = Folder::create($res);        
+        $res = Folder::create($res);
         $this->assertEquals($writable, $this->acl->isFolderWritable($res));
     }
-    
-    
+
     /**
      * @test
      * @dataProvider provideFiles
      */
     public function isAnonymousReadableShouldReturnExpectedResultsForFiles($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = File::create($res);        
+        $res = File::create($res);
         $this->assertEquals($readableByAnonymous, $this->acl->isFileReadableByAnonymous($res));
     }
-    
-    
+
     /**
      * @test
      * @dataProvider provideFolders
      */
     public function IsAnonymousReadableShouldReturnExpectedResultForFolders($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = Folder::create($res);        
+        $res = Folder::create($res);
         $this->assertEquals($readableByAnonymous, $this->acl->isFolderReadableByAnonymous($res));
     }
 
@@ -185,32 +170,30 @@ class SimpleAclTest extends \Xi\Filelib\Tests\TestCase
      */
     public function setReadableByAnonymousShouldReverseReadableByAnonymousResultsForFiles($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = File::create($res);        
-        
+        $res = File::create($res);
+
         $acl = new SimpleAcl(false);
-                
+
         $this->assertEquals(false, $acl->isFileReadableByAnonymous($res));
         $this->assertEquals($readable, $acl->isFileReadable($res));
         $this->assertEquals($writable, $acl->isFileWritable($res));
-        
+
     }
-    
+
     /**
      * @test
      * @dataProvider provideFolders
      */
     public function setReadableByAnonymousShouldReverseReadableByAnonymousResultsForFolders($res, $readable, $writable, $readableByAnonymous)
     {
-        $res = Folder::create($res);        
-        
+        $res = Folder::create($res);
+
         $acl = new SimpleAcl(false);
-                
+
         $this->assertEquals(false, $acl->isFolderReadableByAnonymous($res));
         $this->assertEquals($readable, $acl->isFolderReadable($res));
         $this->assertEquals($writable, $acl->isFolderWritable($res));
-        
+
     }
-    
-    
-    
+
 }

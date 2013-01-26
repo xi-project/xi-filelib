@@ -3,7 +3,6 @@
 namespace Xi\Filelib\Tests\Backend\Platform;
 
 use Xi\Filelib\Backend\Platform\MongoPlatform;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
@@ -24,7 +23,6 @@ class MongoPlatformTest extends AbstractPlatformTestCase
      * @var @MongoDB
      */
     protected $mongo;
-
 
     /**
      * Implements AbstractPlatformTest::setUpBackend
@@ -266,7 +264,6 @@ class MongoPlatformTest extends AbstractPlatformTestCase
         return $data;
     }
 
-
     /**
      * @return array
      */
@@ -468,7 +465,6 @@ class MongoPlatformTest extends AbstractPlatformTestCase
         );
     }
 
-
     public function nonExistingResourceIdProvider()
     {
         return array(
@@ -477,7 +473,6 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             array('locoposki'),
         );
     }
-
 
     /**
      * @return array
@@ -491,7 +486,6 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             array(2, '48a7011a05c677b9a9166104'),
         );
     }
-
 
     /**
      * @return array

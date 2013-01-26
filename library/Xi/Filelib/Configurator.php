@@ -18,7 +18,6 @@ namespace Xi\Filelib;
 class Configurator
 {
 
-
     /**
      * Sets object options via compatible setters.
      *
@@ -69,6 +68,4 @@ class Configurator
         self::setOptions($object, $options);
     }
 
-
 }
-

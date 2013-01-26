@@ -36,7 +36,4 @@ class AbstractFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
 }
-

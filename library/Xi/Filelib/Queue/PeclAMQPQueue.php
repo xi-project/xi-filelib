@@ -81,26 +81,20 @@ class PeclAMQPQueue implements Queue
         return $message;
     }
 
-
     public function purge()
     {
         return $this->queue->purge();
     }
-
 
     public function ack(Message $message)
     {
         $this->queue->ack($message->getIdentifier());
     }
 
-
-
     public function __destruct()
     {
 
         $this->conn->disconnect();
     }
-
-
 
 }

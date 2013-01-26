@@ -27,7 +27,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         );
     }
 
-
     /**
      * @dataProvider provideBasicStrings
      * @test
@@ -37,7 +36,5 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $transliterator = $this->getTransliteratorWithDefaultSettings();
         $this->assertEquals($transliterated, $transliterator->transliterate($untransliterated));
     }
-
-
 
 }

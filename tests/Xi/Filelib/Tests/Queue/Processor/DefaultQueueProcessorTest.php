@@ -166,7 +166,6 @@ class DefaultQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
 
         $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue($message));
 
-
         $processor->expects($this->once())->method('extractCommandFromMessage')
                   ->with($this->isInstanceOf('Xi\Filelib\Queue\Message'))
                   ->will($this->returnValue($command));

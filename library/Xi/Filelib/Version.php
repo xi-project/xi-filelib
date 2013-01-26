@@ -25,8 +25,8 @@ final class Version
     /**
      * Compares a Xi Filelib version with the current one.
      *
-     * @param string $version Xi Filelib version to compare.
-     * @return int Returns -1 if older, 0 if it is the same, 1 if version
+     * @param  string $version Xi Filelib version to compare.
+     * @return int    Returns -1 if older, 0 if it is the same, 1 if version
      *             passed as argument is newer.
      */
     public static function compare($version)

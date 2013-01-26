@@ -29,14 +29,12 @@ class DeleteFolderCommand extends AbstractFolderCommand
      */
     private $folder;
 
-
     public function __construct(FolderOperator $folderOperator, FileOperator $fileOperator, Folder $folder)
     {
         parent::__construct($folderOperator);
         $this->fileOperator = $fileOperator;
         $this->folder = $folder;
     }
-
 
     public function execute()
     {
@@ -70,7 +68,6 @@ class DeleteFolderCommand extends AbstractFolderCommand
         $this->uuid = $data['uuid'];
     }
 
-
     public function serialize()
     {
         return serialize(array(
@@ -78,6 +75,5 @@ class DeleteFolderCommand extends AbstractFolderCommand
             'uuid' => $this->uuid,
         ));
     }
-
 
 }

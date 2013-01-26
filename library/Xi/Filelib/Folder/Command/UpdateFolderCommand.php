@@ -73,7 +73,6 @@ class UpdateFolderCommand extends AbstractFolderCommand
         $this->uuid = $data['uuid'];
     }
 
-
     public function serialize()
     {
         return serialize(array(

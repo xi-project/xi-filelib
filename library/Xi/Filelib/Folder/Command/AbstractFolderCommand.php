@@ -37,5 +37,4 @@ abstract class AbstractFolderCommand extends AbstractCommand implements FolderCo
         return $this->folderOperator;
     }
 
-
 }

@@ -68,7 +68,7 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
     /**
      * Extracts a command from a message
      *
-     * @param Message $message
+     * @param  Message                  $message
      * @return Command
      * @throws InvalidArgumentException
      */
@@ -78,6 +78,7 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
         if (!$command instanceof Command) {
             throw new InvalidArgumentException("Queue processor expects commands wrapped in a message");
         }
+
         return $command;
     }
 }

@@ -19,7 +19,6 @@ class UnPublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\UnPublishFileCommand'));
     }
 
-
     /**
      * @test
      */
@@ -45,8 +44,6 @@ class UnPublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertAttributeNotEmpty('uuid', $command2);
 
     }
-
-
 
     /**
      * @test
@@ -79,7 +76,4 @@ class UnPublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
 }
-

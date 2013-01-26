@@ -19,7 +19,6 @@ class MessageTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals($body, $message->getBody());
     }
 
-
     /**
      * @test
      * @expectedException InvalidArgumentException
@@ -45,7 +44,5 @@ class MessageTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals($identifier, $message->getIdentifier());
 
     }
-
-
 
 }

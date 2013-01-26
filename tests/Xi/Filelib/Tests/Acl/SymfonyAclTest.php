@@ -47,7 +47,6 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
      */
     private $aclProvider;
 
-
     public function setUp()
     {
         $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
@@ -71,7 +70,6 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
 
     }
 
-
     /**
      * @test
      */
@@ -84,7 +82,6 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($acl->isFolderBased());
 
     }
-
 
     /**
      * @test
@@ -144,7 +141,6 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
 
     }
 
-
     /**
      * @test
      */
@@ -197,7 +193,6 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
 
     }
 
-
     /**
      * @test
      */
@@ -238,7 +233,6 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
         $ret = $acl->isFileReadableByAnonymous($file);
 
     }
-
 
     /**
      * @test
@@ -319,9 +313,6 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
 
     }
 
-
-
-
     /**
      * @xtest
      */
@@ -335,6 +326,5 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($ret);
     }
-
 
 }

@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Acl;
 
 class AclTest extends \Xi\Filelib\Tests\TestCase
 {
-    
+
     /**
      * @test
      */
@@ -12,6 +12,5 @@ class AclTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->assertTrue(interface_exists('Xi\Filelib\Acl\Acl'));
     }
-    
-    
+
 }

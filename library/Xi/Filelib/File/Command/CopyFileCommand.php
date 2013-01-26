@@ -48,7 +48,7 @@ class CopyFileCommand extends AbstractFileCommand
     /**
      * Generates name for a file copy
      *
-     * @param string $oldName
+     * @param  string                   $oldName
      * @return string
      * @throws InvalidArgumentException
      */
@@ -137,7 +137,6 @@ class CopyFileCommand extends AbstractFileCommand
         return $impostor;
     }
 
-
     public function execute()
     {
         if (!$this->fileOperator->getAcl()->isFolderWritable($this->folder)) {
@@ -152,9 +151,9 @@ class CopyFileCommand extends AbstractFileCommand
         $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.copy', $event);
 
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $impostor));
+
         return $command->execute();
     }
-
 
     public function unserialize($serialized)
     {
@@ -164,7 +163,6 @@ class CopyFileCommand extends AbstractFileCommand
         $this->uuid = $data['uuid'];
     }
 
-
     public function serialize()
     {
         return serialize(array(
@@ -173,7 +171,5 @@ class CopyFileCommand extends AbstractFileCommand
             'uuid' => $this->uuid,
         ));
     }
-
-
 
 }

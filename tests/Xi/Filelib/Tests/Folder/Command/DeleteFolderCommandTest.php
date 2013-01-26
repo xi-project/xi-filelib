@@ -22,7 +22,6 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\DeleteFolderCommand'));
     }
 
-
     /**
      * @test
      */
@@ -67,7 +66,6 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->setMethods(array('createCommand', 'findSubFolders', 'findFiles'))
             ->getMock();
 
-
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $ed
             ->expects($this->once())
@@ -77,7 +75,6 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
         );
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
-
 
         $deleteCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\DeleteFolderCommand')
                               ->disableOriginalConstructor()
@@ -93,20 +90,21 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $op->expects($this->exactly(1))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnCallback(function($folder) {
 
-            if($folder->getId() == 1) {
+            if ($folder->getId() == 1) {
                 return new ArrayIterator(array(
                     Folder::create(array('id' => 2, 'parent_id' => 1)),
                     Folder::create(array('id' => 3, 'parent_id' => 1)),
                     Folder::create(array('id' => 4, 'parent_id' => 1)),
                 ));
             }
+
             return new ArrayIterator(array());
         }));
 
         $op->expects($this->exactly(1))->method('findFiles')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnCallback(function ($folder) {
 
-            if($folder->getId() == 1) {
+            if ($folder->getId() == 1) {
                 return new ArrayIterator(array(
                     Folder::create(array('id' => 1, 'name' => 'tohtori-vesala.avi')),
                     Folder::create(array('id' => 2, 'name' => 'tohtori-vesala.png')),
@@ -114,6 +112,7 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
                     Folder::create(array('id' => 4, 'name' => 'tohtori-vesala.bmp')),
                 ));
             }
+
             return new ArrayIterator(array());
         }));
 
@@ -140,7 +139,6 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')->disableOriginalConstructor()->getMock();
 
-
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $folder = Folder::create(array('id' => 1));
@@ -154,4 +152,3 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $command->execute();
     }
 }
-

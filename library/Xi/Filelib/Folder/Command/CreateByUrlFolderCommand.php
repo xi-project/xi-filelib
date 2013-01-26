@@ -21,13 +21,11 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
      */
     private $url;
 
-
     public function __construct(FolderOperator $folderOperator, $url)
     {
         parent::__construct($folderOperator);
         $this->url = $url;
     }
-
 
     public function execute()
     {
@@ -69,14 +67,12 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
         return $created;
     }
 
-
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->url = $data['url'];
         $this->uuid = $data['uuid'];
     }
-
 
     public function serialize()
     {

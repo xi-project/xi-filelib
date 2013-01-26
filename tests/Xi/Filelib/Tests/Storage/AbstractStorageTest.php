@@ -104,5 +104,4 @@ class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
         $this->storage->deleteVersion($this->resource, 'version');
     }
 
-
 }

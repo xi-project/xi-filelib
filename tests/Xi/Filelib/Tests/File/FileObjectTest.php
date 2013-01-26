@@ -16,7 +16,6 @@ class FileObjectTest extends TestCase
         $this->assertEquals('Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver', get_class($resolver));
     }
 
-
     /**
      * @test
      */
@@ -32,7 +31,6 @@ class FileObjectTest extends TestCase
         FileObject::setMimeTypeResolver(new \Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver());
 
         $this->assertEquals('Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver', get_class(FileObject::getMimeTypeResolver()));
-
 
     }
 
@@ -59,10 +57,5 @@ class FileObjectTest extends TestCase
         FileObject::setMimeTypeResolver(new \Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver());
 
     }
-
-
-
-
-
 
 }

@@ -65,6 +65,7 @@ class FileObject extends SplFileObject
         if (!$this->mimeType) {
             $this->mimeType = self::getMimeTypeResolver()->resolveMimeType($this->getRealPath());
         }
+
         return $this->mimeType;
     }
 

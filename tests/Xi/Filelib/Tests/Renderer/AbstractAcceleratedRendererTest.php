@@ -38,7 +38,6 @@ class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->renderer->isAccelerationEnabled());
     }
 
-
     /**
      * @test
      */
@@ -60,7 +59,6 @@ class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('luss', $this->renderer->getStripPrefixFromAcceleratedPath());
     }
 
-
     /**
      * @test
      */
@@ -68,7 +66,6 @@ class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('', $this->renderer->getAddPrefixToAcceleratedPath());
     }
-
 
     /**
      * @test
@@ -81,9 +78,5 @@ class AbstractAcceleratedRendererTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame('luss', $this->renderer->getAddPrefixToAcceleratedPath());
     }
-
-
-
-
 
 }

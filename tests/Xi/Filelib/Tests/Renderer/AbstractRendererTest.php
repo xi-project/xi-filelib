@@ -30,7 +30,6 @@ class AbstractRendererTest extends \Xi\Filelib\Tests\TestCase
         $this->renderer->expects($this->any())->method('getPublisher')->will($this->returnValue($this->publisher));
     }
 
-
     /**
      * @test
      */
@@ -93,7 +92,6 @@ class AbstractRendererTest extends \Xi\Filelib\Tests\TestCase
         $acl = $renderer->getAcl();
     }
 
-
     /**
      * @test
      */
@@ -118,7 +116,6 @@ class AbstractRendererTest extends \Xi\Filelib\Tests\TestCase
         $this->renderer->getUrl($file, array('version' => 'original'));
     }
 
-
     /**
      * @test
      */
@@ -138,6 +135,4 @@ class AbstractRendererTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
 }
-

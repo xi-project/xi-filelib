@@ -12,6 +12,4 @@ class UuidGeneratorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertTrue(interface_exists('Xi\Filelib\Tool\UuidGenerator\UuidGenerator'));
     }
 
-
 }
-

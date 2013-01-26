@@ -18,7 +18,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(class_exists('Xi\Filelib\File\File'));
     }
 
-
     /**
      * @test
      */
@@ -37,7 +36,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $ret = $file->getSize();
 
     }
-
 
     /**
      * @test
@@ -130,7 +128,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
         );
 
-
     }
 
     /**
@@ -155,8 +152,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'versions' => 'getVersions'
         );
 
-        foreach($map as $key => $method) {
-            if(isset($data[$key])) {
+        foreach ($map as $key => $method) {
+            if (isset($data[$key])) {
                 $this->assertEquals($data[$key], $file->$method());
             } else {
 
@@ -200,7 +197,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'versions' => array('lussi', 'xussi')
         ));
 
-
         $file = new File();
         $this->assertEquals($file->toArray(), array(
             'id' => null,
@@ -214,7 +210,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'resource' => null,
             'versions' => array(),
         ));
-
 
     }
 
@@ -253,7 +248,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('tussi', 'watussi', 'lussi'), $file->getVersions());
     }
 
-
     /**
      * @test
      */
@@ -265,7 +259,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('tussi', 'watussi'), $file->getVersions());
     }
 
-
     /**
      * @test
      */
@@ -276,7 +269,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array('tussi'), $file->getVersions());
     }
-
 
     /**
      * @test

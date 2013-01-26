@@ -33,7 +33,6 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FolderOperator::COMMAND_CREATE));
     }
 
-
     public function provideCommandMethods()
     {
         return array(
@@ -47,7 +46,6 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
             array('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', 'createByUrl', FolderOperator::COMMAND_CREATE_BY_URL, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false),
         );
     }
-
 
     /**
      * @test
@@ -314,7 +312,6 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals('manatee', $folder->getName());
     }
 
-
     /**
      * @test
      */
@@ -425,7 +422,6 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
     }
 
-
     /**
      * @test
      * @expectedException Xi\Filelib\FilelibException
@@ -493,9 +489,6 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
     }
 
-
-
-
     public function provideDataForBuildRouteTest()
     {
         return array(
@@ -506,8 +499,6 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
             array('lussutus/bansku/tohtori vesala/lamantiini/puppe', 6),
         );
     }
-
-
 
     /**
      * @test
@@ -581,7 +572,5 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
 
         return $backend;
     }
-
-
 
 }

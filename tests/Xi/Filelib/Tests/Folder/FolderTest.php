@@ -14,7 +14,6 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
         $this->assertTrue(class_exists('Xi\Filelib\Folder\Folder'));
     }
 
-
         /**
      * @test
      */
@@ -51,7 +50,6 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
     public function fromArrayProvider()
     {
         return array(
@@ -72,7 +70,6 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
 
         );
 
-
     }
 
     /**
@@ -92,8 +89,8 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
             'uuid' => 'getUuid',
         );
 
-        foreach($map as $key => $method) {
-            if(isset($data[$key])) {
+        foreach ($map as $key => $method) {
+            if (isset($data[$key])) {
                 $this->assertEquals($data[$key], $folder->$method());
             } else {
                 $this->assertNull($folder->$method());
@@ -122,7 +119,6 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
             'uuid' => 'luss3r',
         ));
 
-
         $folder = new Folder();
         $this->assertEquals($folder->toArray(), array(
             'id' => null,
@@ -141,7 +137,5 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', Folder::create(array()));
     }
-
-
 
 }

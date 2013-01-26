@@ -20,7 +20,6 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\DeleteFileCommand'));
     }
 
-
     /**
      * @test
      */
@@ -58,8 +57,6 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
         );
     }
 
-
-
     /**
      * @test
      * @dataProvider provideForDeleteDelegation
@@ -91,7 +88,6 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
        $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UnpublishFileCommand'))
           ->will($this->returnValue($unpublishCommand));
-
 
         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
 
@@ -126,7 +122,4 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
 }
-

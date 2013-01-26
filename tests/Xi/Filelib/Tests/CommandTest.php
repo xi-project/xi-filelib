@@ -14,4 +14,3 @@ class CommandTest extends \Xi\Filelib\Tests\TestCase
     }
 
 }
-

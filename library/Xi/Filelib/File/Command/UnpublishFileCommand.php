@@ -22,7 +22,6 @@ class UnpublishFileCommand extends AbstractFileCommand
      */
     private $file;
 
-
     public function __construct(FileOperator $fileOperator, File $file)
     {
         parent::__construct($fileOperator);
@@ -43,7 +42,6 @@ class UnpublishFileCommand extends AbstractFileCommand
         $this->uuid = $data['uuid'];
     }
 
-
     public function serialize()
     {
         return serialize(array(
@@ -51,7 +49,5 @@ class UnpublishFileCommand extends AbstractFileCommand
            'uuid' => $this->uuid,
         ));
     }
-
-
 
 }

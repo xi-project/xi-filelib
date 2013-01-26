@@ -77,6 +77,7 @@ abstract class AbstractFinder implements Finder
         }
 
         $this->parameters[$field] = $value;
+
         return $this;
     }
 

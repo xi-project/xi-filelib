@@ -14,12 +14,10 @@ class IntlTransliteratorTest extends TestCase
         }
     }
 
-
     public function getTransliteratorWithDefaultSettings()
     {
         return new IntlTransliterator();
     }
-
 
     /**
      * @test

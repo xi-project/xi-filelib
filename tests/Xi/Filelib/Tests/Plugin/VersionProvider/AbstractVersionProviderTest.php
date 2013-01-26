@@ -122,9 +122,6 @@ class AbstractVersionProviderTest extends TestCase
 
     }
 
-
-
-
     /**
      * @test
      */
@@ -288,9 +285,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->onAfterUpload($event);
 
-
     }
-
 
     public function provideSharedVersionsAllowed()
     {

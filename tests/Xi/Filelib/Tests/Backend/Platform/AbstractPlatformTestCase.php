@@ -65,7 +65,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals($numberOfReferences, $this->backend->getNumberOfReferences($resource));
     }
 
-
     /**
      * @test
      */
@@ -87,7 +86,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 
         $this->assertNotNull($this->backend->createResource($resource)->getId());
     }
-
 
     /**
      * @test
@@ -157,7 +155,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $this->assertFalse($resource2->isExclusive());
     }
 
-
     /**
      * @test
      * @dataProvider nonExistingResourceIdProvider
@@ -174,7 +171,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         );
         $this->assertFalse($this->backend->updateResource($resource));
     }
-
 
     /**
      * @test
@@ -198,7 +194,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 
         $this->assertNotNull($this->backend->createFolder($folder)->getId());
     }
-
 
     /**
      * @test
@@ -440,7 +435,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals($fidata['versions'], $file->getVersions());
     }
 
-
     /**
      * @test
      * @group finder
@@ -477,6 +471,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     public function findResource($id)
     {
         $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\Resource');
+
         return $ret->current();
     }
 
@@ -487,6 +482,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     public function findFile($id)
     {
         $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\File');
+
         return $ret->current();
     }
 
@@ -497,6 +493,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     public function findFolder($id)
     {
         $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\Folder\Folder');
+
         return $ret->current();
     }
 }

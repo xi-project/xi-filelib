@@ -16,7 +16,6 @@ abstract class TestCase extends \Xi\Filelib\TestCase
 
     protected $message;
 
-
     public function setUp()
     {
         $this->message = new TestCommand();
@@ -24,9 +23,7 @@ abstract class TestCase extends \Xi\Filelib\TestCase
         $this->queue->purge();
     }
 
-
     abstract protected function getQueue();
-
 
     /**
      * @test
@@ -54,7 +51,6 @@ abstract class TestCase extends \Xi\Filelib\TestCase
         $this->assertNull($message);
     }
 
-
     /**
      * @test
      */
@@ -73,8 +69,6 @@ abstract class TestCase extends \Xi\Filelib\TestCase
         $this->assertNull($this->queue->dequeue());
 
     }
-
-
 
    /**
      * @test
@@ -103,12 +97,5 @@ abstract class TestCase extends \Xi\Filelib\TestCase
         $queue->ack($msg);
 
     }
-
-
-
-
-
-
-
 
 }

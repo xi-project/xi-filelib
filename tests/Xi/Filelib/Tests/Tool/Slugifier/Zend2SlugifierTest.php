@@ -21,7 +21,6 @@ class Zend2SlugifierTest extends TestCase
         $this->slugifier = new Zend2Slugifier($trans);
     }
 
-    
     /**
      * @test
      */
@@ -31,7 +30,7 @@ class Zend2SlugifierTest extends TestCase
         $this->assertContains('Xi\Filelib\Tool\Slugifier\AbstractZendSlugifier', class_parents('Xi\Filelib\Tool\Slugifier\Zend2Slugifier'));
         $this->assertContains('Xi\Filelib\Tool\Slugifier\Slugifier', class_implements('Xi\Filelib\Tool\Slugifier\Zend2Slugifier'));
     }
-    
+
    /**
      * @test
      */
@@ -40,14 +39,13 @@ class Zend2SlugifierTest extends TestCase
 
         $slugifier = new Zend2Slugifier($this->getMock('Xi\Filelib\Tool\Transliterator\Transliterator'));
         $filter = $slugifier->getFilter();
-        
-        $this->assertInstanceOf('Zend\Filter\FilterChain', $filter);
-        
-        $filter2 = $slugifier->getFilter();
-        
-        $this->assertSame($filter, $filter2);
-        
-    }
 
+        $this->assertInstanceOf('Zend\Filter\FilterChain', $filter);
+
+        $filter2 = $slugifier->getFilter();
+
+        $this->assertSame($filter, $filter2);
+
+    }
 
 }

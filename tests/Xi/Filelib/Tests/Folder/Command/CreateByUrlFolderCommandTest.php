@@ -6,8 +6,6 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\Command\CreateByUrlFolderCommand;
-use Xi\Filelib\Backend\Finder\FolderFinder;
-use ArrayIterator;
 
 class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -20,7 +18,6 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand'));
         $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand'));
     }
-
 
     /**
      * @test
@@ -48,8 +45,6 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertAttributeNotEmpty('uuid', $command2);
 
     }
-
-
 
     /**
      * @test
@@ -81,6 +76,7 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnCallback(function($className) use ($self) {
                 $command = $self->getMockBuilder($className)->disableOriginalConstructor()->getMock();
                 $command->expects($self->once())->method('execute');
+
                 return $command;
             }));
 
@@ -90,7 +86,6 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
         $this->assertEquals('2012', $folder->getName());
     }
-
 
     /**
      * @test
@@ -117,6 +112,7 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnCallback(function($className) use ($self) {
             $command = $self->getMockBuilder($className)->disableOriginalConstructor()->getMock();
             $command->expects($self->once())->method('execute');
+
             return $command;
         }));
 
@@ -141,7 +137,6 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals('2012', $folder->getName());
 
     }
-
 
         /**
      * @test
@@ -187,4 +182,3 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         return $op;
     }
 }
-

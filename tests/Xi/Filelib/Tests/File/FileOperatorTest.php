@@ -141,8 +141,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
     /**
      * @test
      */
@@ -222,7 +220,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $op->addProfile($profile2);
     }
 
-
     /**
      * @test
      * @expectedException \InvalidArgumentException
@@ -234,8 +231,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
        $prof = $op->getProfile('xooxer');
     }
-
-
 
     /**
      * @test
@@ -258,7 +253,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $file = $op->find($id);
         $this->assertEquals(false, $file);
     }
-
 
     /**
      * @test
@@ -318,7 +312,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertFalse($ret);
     }
 
-
     /**
      * @test
      */
@@ -356,7 +349,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame($file, $ret);
     }
 
-
       /**
      * @test
      */
@@ -385,7 +377,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $this->assertCount(0, $files);
 
     }
-
 
     /**
      * @test
@@ -420,7 +411,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertSame($iter, $files);
     }
-
 
     /**
      * @test
@@ -461,8 +451,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $op->setTypeResolver($typeResolver);
         $this->assertSame($typeResolver, $op->getTypeResolver());
     }
-
-
 
     /**
      * @test
@@ -508,7 +496,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
     /**
      * @test
      */
@@ -531,11 +518,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
-
-
-
-
     /**
      * @test
      */
@@ -548,10 +530,8 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
                    ->setMethods(array('getProfile'))
                    ->getMock();
 
-
         $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussi', 'tussi', 'jussi')));
-
 
         $profile1 = $this->getMock('Xi\Filelib\File\FileProfile');
         $profile1->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
@@ -575,7 +555,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $op->addPlugin($plugin);
 
     }
-
 
     /**
      * @test
@@ -624,7 +603,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
             array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', FileOperator::COMMAND_UPDATE, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false, false),
         );
 
-
     }
 
     /**
@@ -672,7 +650,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
     /**
      *
      */
@@ -685,7 +662,5 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
         return $backend;
     }
-
-
 
 }

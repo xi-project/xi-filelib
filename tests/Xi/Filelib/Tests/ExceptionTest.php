@@ -13,6 +13,5 @@ class ExceptionTest extends FilelibTestCase
     {
         $this->assertTrue(interface_exists('Xi\Filelib\Exception'));
     }
-    
-    
+
 }

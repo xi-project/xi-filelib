@@ -40,7 +40,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         $this->filelib->expects($this->any())->method('getEventDispatcher')
             ->will($this->returnValue($this->eventDispatcher));
 
-
     }
 
     private function getMockedRenderer($methods = array())
@@ -54,7 +53,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
 
         return $renderer;
     }
-
 
     /**
      * @test
@@ -84,8 +82,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         $this->assertNotEmpty($response->getContent());
 
     }
-
-
 
     /**
      * @test
@@ -134,9 +130,7 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals(file_get_contents($path), $response->getContent());
         $this->assertEquals('image/jpeg', $response->headers->get('Content-Type'));
 
-
     }
-
 
     /**
      * @test
@@ -171,8 +165,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals("attachment; filename=self-lusser.lus", $response->headers->get('Content-disposition'));
 
     }
-
-
 
     /**
      * @test
@@ -292,7 +284,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
-
     public function provideServersForAccelerationTest()
     {
         return array(
@@ -322,7 +313,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             ),
         );
     }
-
 
     /**
      * @dataProvider provideServersForAccelerationTest
@@ -372,7 +362,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         $this->assertArrayHasKey($expectedHeader, $response->headers->all());
 
         $this->assertEquals('/protected/files/data/self-lussing-manatee.jpg', $response->headers->get($expectedHeader));
-
 
     }
 
@@ -425,4 +414,3 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
     }
 
 }
-

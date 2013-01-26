@@ -96,6 +96,7 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     public function setSlugify($slugify)
     {
         $this->slugify = $slugify;
+
         return $this;
     }
 

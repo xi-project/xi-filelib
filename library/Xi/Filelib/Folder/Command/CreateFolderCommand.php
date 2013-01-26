@@ -29,13 +29,11 @@ class CreateFolderCommand extends AbstractFolderCommand
      */
     private $folder;
 
-
     public function __construct(FolderOperator $folderOperator, Folder $folder)
     {
         parent::__construct($folderOperator);
         $this->folder = $folder;
     }
-
 
     public function execute()
     {
@@ -49,9 +47,9 @@ class CreateFolderCommand extends AbstractFolderCommand
             'xi_filelib.folder.create',
             $event
         );
+
         return $folder;
     }
-
 
     public function unserialize($serialized)
     {
@@ -59,7 +57,6 @@ class CreateFolderCommand extends AbstractFolderCommand
         $this->folder = $data['folder'];
         $this->uuid = $data['uuid'];
     }
-
 
     public function serialize()
     {

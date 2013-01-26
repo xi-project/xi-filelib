@@ -110,12 +110,13 @@ class File implements Identifiable
     /**
      * Sets id
      *
-     * @param mixed $id
+     * @param  mixed $id
      * @return File
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -132,12 +133,13 @@ class File implements Identifiable
     /**
      * Sets folder id
      *
-     * @param mixed $folderId
+     * @param  mixed $folderId
      * @return File
      */
     public function setFolderId($folderId)
     {
         $this->folderId = $folderId;
+
         return $this;
     }
 
@@ -164,12 +166,13 @@ class File implements Identifiable
     /**
      * Sets profile name
      *
-     * @param string $profile
+     * @param  string $profile
      * @return File
      */
     public function setProfile($profile)
     {
         $this->profile = $profile;
+
         return $this;
     }
 
@@ -196,12 +199,13 @@ class File implements Identifiable
     /**
      * Sets name
      *
-     * @param string $name
+     * @param  string $name
      * @return File
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -218,12 +222,13 @@ class File implements Identifiable
     /**
      * Sets link
      *
-     * @param string $link
+     * @param  string $link
      * @return File
      */
     public function setLink($link)
     {
         $this->link = $link;
+
         return $this;
     }
 
@@ -250,24 +255,26 @@ class File implements Identifiable
     /**
      * Sets create date
      *
-     * @param DateTime $dateCreated
+     * @param  DateTime $dateCreated
      * @return File
      */
     public function setDateCreated(DateTime $dateCreated)
     {
         $this->dateCreated = $dateCreated;
+
         return $this;
     }
 
     /**
      * Sets status
      *
-     * @param integer $status
+     * @param  integer $status
      * @return File
      */
     public function setStatus($status)
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -287,6 +294,7 @@ class File implements Identifiable
     public function setUuid($uuid)
     {
         $this->uuid = $uuid;
+
         return $this;
     }
 
@@ -301,12 +309,13 @@ class File implements Identifiable
 
     /**
      *
-     * @param Resource $resource
+     * @param  Resource $resource
      * @return File
      */
     public function setResource(Resource $resource)
     {
         $this->resource = $resource;
+
         return $this;
     }
 
@@ -352,28 +361,30 @@ class File implements Identifiable
     /**
      * Sets data from array
      *
-     * @param array $data
+     * @param  array $data
      * @return File
      */
     public function fromArray(array $data)
     {
-        foreach(static::$map as $key => $method) {
-            if(isset($data[$key])) {
+        foreach (static::$map as $key => $method) {
+            if (isset($data[$key])) {
                 $this->$method($data[$key]);
             }
         }
+
         return $this;
     }
 
     /**
      * Creates an instance with data
      *
-     * @param array $data
-     * @return type File
+     * @param  array $data
+     * @return type  File
      */
     public static function create(array $data = array())
     {
         $file = new self();
+
         return $file->fromArray($data);
     }
 
@@ -385,18 +396,20 @@ class File implements Identifiable
         if (!$this->data) {
             $this->data = new ArrayObject();
         }
+
         return $this->data;
     }
 
     /**
      * Sets currently created versions
      *
-     * @param array $versions
+     * @param  array    $versions
      * @return Resource
      */
     public function setVersions(array $versions = array())
     {
         $this->versions = $versions;
+
         return $this;
     }
 
@@ -435,7 +448,7 @@ class File implements Identifiable
     /**
      * Returns whether resource has version
      *
-     * @param string $version
+     * @param  string  $version
      * @return boolean
      */
     public function hasVersion($version)

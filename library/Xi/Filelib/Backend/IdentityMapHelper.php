@@ -31,7 +31,7 @@ class IdentityMapHelper
 
     /**
      * @param IdentityMap $identityMap
-     * @param Platform $platform
+     * @param Platform    $platform
      */
     public function __construct(IdentityMap $identityMap, Platform $platform)
     {
@@ -58,9 +58,9 @@ class IdentityMapHelper
     /**
      * Tries to fetch one from identity map. Delegates to callback if fails.
      *
-     * @param mixed $id
-     * @param string $class
-     * @param callable $callback
+     * @param  mixed              $id
+     * @param  string             $class
+     * @param  callable           $callback
      * @return Identifiable|false
      */
     public function tryOneFromIdentityMap($id, $class, $callback)
@@ -72,15 +72,16 @@ class IdentityMapHelper
         $ret = $callback($this->getPlatform(), $id);
 
         $this->getIdentityMap()->addMany($ret);
+
         return $ret->current();
     }
 
     /**
      * Tries to fetch many from identity map. Delegates to callback if fails.
      *
-     * @param array $ids
-     * @param string $class
-     * @param callable $callback
+     * @param  array         $ids
+     * @param  string        $class
+     * @param  callable      $callback
      * @return ArrayIterator
      * @todo Extract methods
      */
@@ -107,6 +108,7 @@ class IdentityMapHelper
                 $ret[] = $obj;
             }
         }
+
         return new ArrayIterator($ret);
 
     }
@@ -114,7 +116,7 @@ class IdentityMapHelper
     /**
      * Tries callback with mixed arguments. Adds return value to identity map.
      *
-     * @param callable $callback
+     * @param  callable $callback
      * @return mixed
      */
     public function tryAndAddToIdentityMap($callback)
@@ -124,20 +126,22 @@ class IdentityMapHelper
         array_unshift($args, $this->getPlatform());
         $ret = call_user_func_array($callback, $args);
         $this->getIdentityMap()->add($ret);
+
         return $ret;
     }
 
     /**
      * Tries callback and removes from identity map.
      *
-     * @param callable $callback
-     * @param Identifiable $identifiable
+     * @param  callable     $callback
+     * @param  Identifiable $identifiable
      * @return mixed
      */
     public function tryAndRemoveFromIdentityMap($callback, Identifiable $identifiable)
     {
         $ret = $callback($this->getPlatform(), $identifiable);
         $this->getIdentityMap()->remove($identifiable);
+
         return $ret;
     }
 }

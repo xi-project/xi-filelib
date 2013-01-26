@@ -39,7 +39,6 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
              ->will($this->returnCallback(function($id) {
 
                  if ($id == 1) {
-
                      return Folder::create(array(
                          'id' => 1,
                          'name' => 'root',
@@ -47,10 +46,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                          'url' => ''
                      ));
 
-
-
-                 } elseif($id == 2) {
-
+                 } elseif ($id == 2) {
                      return Folder::create(array(
                          'id' => 2,
                          'name' => 'lussuttaja',
@@ -58,8 +54,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                          'url' => '/lussuttaja'
                      ));
 
-                 } elseif($id == 3) {
-
+                 } elseif ($id == 3) {
                      return Folder::create(array(
                          'id' => 2,
                          'name' => 'tussin',
@@ -67,9 +62,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                          'url' => '/lussuttaja/tussin'
                      ));
 
-
-                 } elseif($id == 4) {
-
+                 } elseif ($id == 4) {
                      return Folder::create(array(
                          'id' => 2,
                          'name' => 'banaanin',
@@ -77,8 +70,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                          'url' => '/lussuttaja/banaanin'
                      ));
 
-                 } elseif($id == 5) {
-
+                 } elseif ($id == 5) {
                      return Folder::create(array(
                          'id' => 5,
                          'name' => 'sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú',
@@ -212,7 +204,6 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
              $this->linker->getLink($file)
         );
     }
-
 
     /**
      * @test

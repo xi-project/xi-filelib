@@ -2,9 +2,7 @@
 
 namespace Xi\Filelib\Tests\Publisher\Filesystem;
 
-
 use Xi\Filelib\File\File;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher;
 use Xi\Filelib\Tests\TestCase;
 
@@ -65,7 +63,6 @@ class AbstractFilesystemPublisherTest extends TestCase
         $this->assertEquals($baseUrl, $publisher->getBaseUrl());
     }
 
-
     /**
      * @test
      */
@@ -98,7 +95,6 @@ class AbstractFilesystemPublisherTest extends TestCase
         $linker = $publisher->getLinkerForFile($file);
         $this->assertEquals('luss', $linker);
     }
-
 
     /**
      * @test
@@ -231,7 +227,6 @@ class AbstractFilesystemPublisherTest extends TestCase
         $this->setExpectedException('LogicException');
         $publisher->setPublicRoot($unexistingDir);
     }
-
 
     /**
      * @test

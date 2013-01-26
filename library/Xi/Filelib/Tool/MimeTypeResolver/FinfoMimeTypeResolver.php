@@ -18,10 +18,8 @@ class FinfoMimeTypeResolver implements MimeTypeResolver
     {
         $fileinfo = new finfo(FILEINFO_MIME_TYPE);
         $mimeType = $fileinfo->file($path);
+
         return $mimeType;
     }
 
-
-
 }
-

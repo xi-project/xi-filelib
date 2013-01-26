@@ -2,7 +2,6 @@
 
 namespace Xi\Filelib\Tests\Publisher\Filesystem;
 
-
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher;
@@ -87,7 +86,6 @@ class CopyFilesystemPublisherTest extends TestCase
 
     }
 
-
     /**
      * @test
      * @dataProvider provideDataForPublishingTests
@@ -116,7 +114,6 @@ class CopyFilesystemPublisherTest extends TestCase
         $this->assertTrue($sfi->isReadable(), "File '{$expectedPath}' is not a readable symbolic link");
         $this->assertFileEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
     }
-
 
     /**
      * @test
@@ -161,8 +158,6 @@ class CopyFilesystemPublisherTest extends TestCase
         $this->assertFileEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
     }
 
-
-
     private function createFile($target, $link)
     {
         if (!is_dir(dirname($link))) {
@@ -170,7 +165,6 @@ class CopyFilesystemPublisherTest extends TestCase
         }
         copy($target, $link);
     }
-
 
     /**
      * @test
@@ -192,7 +186,6 @@ class CopyFilesystemPublisherTest extends TestCase
         $this->assertFileNotExists($expectedPath);
     }
 
-
     /**
      * @test
      * @dataProvider provideDataForPublishingTests
@@ -212,8 +205,6 @@ class CopyFilesystemPublisherTest extends TestCase
         $publisher->unpublishVersion($file, $this->versionProvider->getIdentifier(), $this->versionProvider);
         $this->assertFileNotExists($expectedVersionPath);
     }
-
-
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject

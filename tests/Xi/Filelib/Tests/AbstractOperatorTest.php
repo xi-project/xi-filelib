@@ -33,7 +33,6 @@ class AbstractOperatorTest extends TestCase
 
     }
 
-
     /**
      * @test
      */
@@ -50,7 +49,6 @@ class AbstractOperatorTest extends TestCase
         $operator->getStorage();
 
     }
-
 
     /**
      * @test
@@ -69,7 +67,6 @@ class AbstractOperatorTest extends TestCase
 
     }
 
-
     /**
      * @test
      */
@@ -85,7 +82,6 @@ class AbstractOperatorTest extends TestCase
 
         $operator->getAcl();
     }
-
 
     /**
      * @test
@@ -103,7 +99,6 @@ class AbstractOperatorTest extends TestCase
         $operator->getEventDispatcher();
     }
 
-
     /**
      * @test
      */
@@ -119,7 +114,6 @@ class AbstractOperatorTest extends TestCase
 
         $operator->getQueue();
     }
-
 
     /**
      * @test
@@ -137,16 +131,15 @@ class AbstractOperatorTest extends TestCase
 
     }
 
-
     /**
      * @return FileLibrary
      */
     private function getMockedFilelib()
     {
         $mock = $this->getMock('Xi\Filelib\FileLibrary');
+
         return $mock;
     }
-
 
     /**
      * @test
@@ -163,7 +156,6 @@ class AbstractOperatorTest extends TestCase
         $op->getCommandStrategy('lussenhof');
 
     }
-
 
     /**
      * @test
@@ -245,8 +237,6 @@ class AbstractOperatorTest extends TestCase
                         ->disableOriginalConstructor()
                         ->getMock();
 
-
-
         $queue = $this->getMock('Xi\Filelib\Queue\Queue');
 
         $op->expects($this->once())->method('getCommandStrategy')
@@ -266,7 +256,6 @@ class AbstractOperatorTest extends TestCase
         $this->assertEquals('executed!!!', $ret);
 
     }
-
 
     public function provideCallbackStrategies()
     {
@@ -315,7 +304,6 @@ class AbstractOperatorTest extends TestCase
         $queue->expects($this->any())->method('enqueue')
             ->will($this->returnValue('originalValue'));
 
-
         $ret = $op->executeOrQueue($command, 'tussi', $callbacks);
 
         $this->assertEquals($expectedValue, $ret);
@@ -346,7 +334,5 @@ class AbstractOperatorTest extends TestCase
 
         $this->assertInstanceOf($mockClass, $command);
     }
-
-
 
 }

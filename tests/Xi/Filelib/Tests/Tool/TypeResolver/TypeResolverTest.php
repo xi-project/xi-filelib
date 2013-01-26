@@ -12,6 +12,4 @@ class TypeResolverTest extends \Xi\Filelib\Tests\TestCase
         $this->assertTrue(interface_exists('Xi\Filelib\Tool\TypeResolver\TypeResolver'));
     }
 
-
 }
-

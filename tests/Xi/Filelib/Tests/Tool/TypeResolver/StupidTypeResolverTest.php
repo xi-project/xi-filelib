@@ -16,7 +16,6 @@ class StupidTypeResolverTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Tool\TypeResolver\TypeResolver', class_implements('Xi\Filelib\Tool\TypeResolver\StupidTypeResolver'));
     }
 
-
     public function provideMimeTypes()
     {
         return array(
@@ -26,7 +25,6 @@ class StupidTypeResolverTest extends \Xi\Filelib\Tests\TestCase
             array('image', 'image/gif'),
         );
     }
-
 
     /**
      * @test
@@ -38,6 +36,4 @@ class StupidTypeResolverTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals($expected, $resolver->resolveType($mimeType));
     }
 
-
 }
-

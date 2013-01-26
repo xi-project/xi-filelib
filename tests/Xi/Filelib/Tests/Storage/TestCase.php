@@ -29,7 +29,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      * @abstract
      * @return Storage
      */
-    protected abstract function getStorage();
+    abstract protected function getStorage();
 
     public function setUp()
     {
@@ -45,7 +45,6 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->storage = $this->getStorage();
 
     }
-
 
     /**
      * @test
@@ -66,7 +65,6 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertFalse($this->storage->exists($this->resource));
 
     }
-
 
     /**
      * @test
@@ -99,8 +97,5 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version, $this->file));
 
     }
-
-
-
 
 }

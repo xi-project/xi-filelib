@@ -145,7 +145,6 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
             ->getMock();
     }
 
-
     public function tearDown()
     {
         $root = ROOT_TESTS . '/data/publisher/public';
