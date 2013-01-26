@@ -76,12 +76,13 @@ class Resource implements Identifiable
     /**
      * Sets id
      *
-     * @param mixed $id
+     * @param  mixed    $id
      * @return Resource
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -99,12 +100,13 @@ class Resource implements Identifiable
     /**
      * Sets create datetime
      *
-     * @param DateTime $dateCreated
+     * @param  DateTime $dateCreated
      * @return Resource
      */
     public function setDateCreated(DateTime $dateCreated)
     {
         $this->dateCreated = $dateCreated;
+
         return $this;
     }
 
@@ -119,12 +121,13 @@ class Resource implements Identifiable
     }
 
     /**
-     * @param string $hash
+     * @param  string   $hash
      * @return Resource
      */
     public function setHash($hash)
     {
         $this->hash = $hash;
+
         return $this;
     }
 
@@ -147,12 +150,13 @@ class Resource implements Identifiable
 
     /**
      *
-     * @param string $mimetype
+     * @param  string   $mimetype
      * @return Resource
      */
     public function setMimetype($mimetype)
     {
         $this->mimetype = $mimetype;
+
         return $this;
     }
 
@@ -167,12 +171,13 @@ class Resource implements Identifiable
 
     /**
      *
-     * @param integer $size
+     * @param  integer  $size
      * @return Resource
      */
     public function setSize($size)
     {
         $this->size = $size;
+
         return $this;
     }
 
@@ -189,24 +194,26 @@ class Resource implements Identifiable
     /**
      * Sets resource as exclusive or non exclusive
      *
-     * @param boolean $exclusive
+     * @param  boolean  $exclusive
      * @return Resource
      */
     public function setExclusive($exclusive)
     {
         $this->exclusive = $exclusive;
+
         return $this;
     }
 
     /**
      * Sets currently created versions
      *
-     * @param array $versions
+     * @param  array    $versions
      * @return Resource
      */
     public function setVersions(array $versions = array())
     {
         $this->versions = $versions;
+
         return $this;
     }
 
@@ -245,7 +252,7 @@ class Resource implements Identifiable
     /**
      * Returns whether resource has version
      *
-     * @param string $version
+     * @param  string  $version
      * @return boolean
      */
     public function hasVersion($version)
@@ -274,28 +281,30 @@ class Resource implements Identifiable
     /**
      * Sets data from array
      *
-     * @param array $data
+     * @param  array    $data
      * @return Resource
      */
     public function fromArray(array $data)
     {
-        foreach(static::$map as $key => $method) {
-            if(isset($data[$key])) {
+        foreach (static::$map as $key => $method) {
+            if (isset($data[$key])) {
                 $this->$method($data[$key]);
             }
         }
+
         return $this;
     }
 
     /**
      * Creates an instance with data
      *
-     * @param array $data
+     * @param  array    $data
      * @return Resource
      */
     public static function create(array $data = array())
     {
         $file = new self();
+
         return $file->fromArray($data);
     }
 }

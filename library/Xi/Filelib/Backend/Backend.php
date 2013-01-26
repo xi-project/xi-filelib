@@ -45,8 +45,8 @@ class Backend
 
     /**
      * @param EventDispatcherInterface $eventDispatcher
-     * @param Platform $platform
-     * @param IdentityMap $identityMap
+     * @param Platform                 $platform
+     * @param IdentityMap              $identityMap
      */
     public function __construct(EventDispatcherInterface $eventDispatcher, Platform $platform, IdentityMap $identityMap)
     {
@@ -82,12 +82,13 @@ class Backend
     /**
      * Finds objects via finder
      *
-     * @param Finder $finder
+     * @param  Finder        $finder
      * @return ArrayIterator
      */
     public function findByFinder(Finder $finder)
     {
         $resultClass = $finder->getResultClass();
+
         return $this->getIdentityMapHelper()->tryManyFromIdentityMap(
             $this->getPlatform()->findByFinder($finder),
             $finder->getResultClass(),
@@ -100,8 +101,8 @@ class Backend
     /**
      * Finds an object via id and class
      *
-     * @param mixed $id
-     * @param string $className
+     * @param  mixed              $id
+     * @param  string             $className
      * @return Identifiable|false
      */
     public function findById($id, $className)
@@ -175,7 +176,7 @@ class Backend
     /**
      * Creates a resource
      *
-     * @param Resource          $resource
+     * @param  Resource         $resource
      * @throws FilelibException If resource could not be created.
      */
     public function createResource(Resource $resource)
@@ -227,7 +228,7 @@ class Backend
     /**
      * Deletes a resource
      *
-     * @param Resource          $resource
+     * @param  Resource         $resource
      * @throws FilelibException If resource could not be deleted.
      * @todo The event part seems misplaced here.
      */
@@ -285,7 +286,7 @@ class Backend
     /**
      * Updates a resource
      *
-     * @param Resource           $resource
+     * @param  Resource         $resource
      * @throws FilelibException If resource could not be updated.
      */
     public function updateResource(Resource $resource)
@@ -296,7 +297,7 @@ class Backend
     /**
      * Returns how many times a resource is referenced by files
      *
-     * @param Resource $resource
+     * @param  Resource $resource
      * @return int
      */
     public function getNumberOfReferences(Resource $resource)

@@ -22,7 +22,6 @@ class AfterUploadFileCommand extends AbstractFileCommand
      */
     private $file;
 
-
     public function __construct(FileOperator $fileOperator, File $file)
     {
         parent::__construct($fileOperator);
@@ -49,17 +48,13 @@ class AfterUploadFileCommand extends AbstractFileCommand
 
         if ($this->fileOperator->getAcl()->isFileReadableByAnonymous($file)) {
 
-
             $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this->fileOperator, $this->file));
             $command->execute();
-
-
 
         }
 
         return $file;
     }
-
 
     public function unserialize($serialized)
     {
@@ -67,7 +62,6 @@ class AfterUploadFileCommand extends AbstractFileCommand
         $this->file = $data['file'];
         $this->uuid = $data['uuid'];
     }
-
 
     public function serialize()
     {

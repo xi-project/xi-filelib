@@ -71,12 +71,13 @@ class Resource
     /**
      * Set hash
      *
-     * @param  string             $hash
+     * @param  string   $hash
      * @return Resource
      */
     public function setHash($hash)
     {
         $this->hash = $hash;
+
         return $this;
     }
 
@@ -93,12 +94,13 @@ class Resource
     /**
      * Set mimetype
      *
-     * @param  string             $value
+     * @param  string $value
      * @return File
      */
     public function setMimetype($value)
     {
         $this->mimetype = $value;
+
         return $this;
     }
 
@@ -115,12 +117,13 @@ class Resource
     /**
      * Set size
      *
-     * @param  integer            $value
+     * @param  integer $value
      * @return File
      */
     public function setSize($value)
     {
         $this->size = $value;
+
         return $this;
     }
 
@@ -152,6 +155,7 @@ class Resource
     public function setExclusive($exclusive)
     {
         $this->exclusive = $exclusive;
+
         return $this;
     }
 
@@ -168,12 +172,13 @@ class Resource
     /**
      * Sets date uploaded
      *
-     * @param DateTime $dateUploaded
+     * @param  DateTime $dateUploaded
      * @return Resource
      */
     public function setDateCreated(DateTime $dateCreated)
     {
         $this->dateCreated = $dateCreated;
+
         return $this;
     }
 
@@ -184,6 +189,7 @@ class Resource
     public function setVersions(array $versions)
     {
         $this->versions = $versions;
+
         return $this;
     }
 

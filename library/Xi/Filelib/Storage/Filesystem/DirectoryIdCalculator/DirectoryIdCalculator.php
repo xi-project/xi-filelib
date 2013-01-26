@@ -14,7 +14,7 @@ interface DirectoryIdCalculator
     /**
      * Calculates directory id (path) for a file
      *
-     * @param object $resource
+     * @param  object $resource
      * @return string
      */
     public function calculateDirectoryId($resource);

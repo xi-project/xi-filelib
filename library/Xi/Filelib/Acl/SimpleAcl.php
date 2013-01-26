@@ -23,12 +23,10 @@ class SimpleAcl implements Acl
 
     private $isReadableByAnonymous = true;
 
-
     public function __construct($isReadableByAnonymous = true)
     {
         $this->isReadableByAnonymous = $isReadableByAnonymous;
     }
-
 
     /**
      * {@inheritdoc}
@@ -38,7 +36,6 @@ class SimpleAcl implements Acl
         return true;
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -46,7 +43,6 @@ class SimpleAcl implements Acl
     {
         return true;
     }
-
 
     /**
      * {@inheritdoc}
@@ -56,7 +52,6 @@ class SimpleAcl implements Acl
         return $this->isReadableByAnonymous;
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -64,7 +59,6 @@ class SimpleAcl implements Acl
     {
         return true;
     }
-
 
     /**
      * {@inheritdoc}
@@ -74,7 +68,6 @@ class SimpleAcl implements Acl
         return true;
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -82,8 +75,5 @@ class SimpleAcl implements Acl
     {
         return $this->isReadableByAnonymous;
     }
-
-
-
 
 }

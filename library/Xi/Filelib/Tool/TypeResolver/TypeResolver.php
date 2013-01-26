@@ -22,5 +22,4 @@ interface TypeResolver
      */
     public function resolveType($mimeType);
 
-
 }

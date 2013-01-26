@@ -123,6 +123,7 @@ class MongoPlatform implements Platform
 
         $file->setId((string) $document['_id']);
         $file->setFolderId($folder->getId());
+
         return $file;
     }
 
@@ -143,6 +144,7 @@ class MongoPlatform implements Platform
             );
 
         $folder->setId($document['_id']->__toString());
+
         return $folder;
     }
 
@@ -224,6 +226,7 @@ class MongoPlatform implements Platform
             $document,
             array('safe' => true)
         );
+
         return (bool) $ret['n'];
     }
 
@@ -252,6 +255,7 @@ class MongoPlatform implements Platform
 
         $this->getMongo()->resources->insert($document, array('safe' => true));
         $resource->setId((string) $document['_id']);
+
         return $resource;
     }
 
@@ -276,6 +280,7 @@ class MongoPlatform implements Platform
                     'resource_id' => $resource->getId(),
                 )
             );
+
         return $refs->count();
     }
 
@@ -291,6 +296,7 @@ class MongoPlatform implements Platform
         foreach ($cursor as $doc) {
             $ret[] = $doc['_id']->__toString();
         }
+
         return $ret;
     }
 
@@ -322,13 +328,12 @@ class MongoPlatform implements Platform
             $iter->append($doc);
         }
         $exporter = $resources['exporter'];
+
         return $this->$exporter($iter);
     }
 
-
-
     /**
-     * @param ArrayIterator $iter
+     * @param  ArrayIterator $iter
      * @return ArrayIterator
      */
     protected function exportFolders(ArrayIterator $iter)
@@ -348,11 +353,12 @@ class MongoPlatform implements Platform
                 )
             );
         }
+
         return $ret;
     }
 
     /**
-     * @param ArrayIterator $iter
+     * @param  ArrayIterator $iter
      * @return ArrayIterator
      */
     protected function exportFiles(ArrayIterator $iter)
@@ -382,11 +388,12 @@ class MongoPlatform implements Platform
                 )
             );
         }
+
         return $ret;
     }
 
     /**
-     * @param Identifiable $identifiable
+     * @param  Identifiable $identifiable
      * @return bool
      */
     protected function deleteIdentifiable(Identifiable $identifiable)
@@ -401,11 +408,12 @@ class MongoPlatform implements Platform
                 ),
                 array('safe' => true)
             );
+
         return (boolean) $ret['n'];
     }
 
     /**
-     * @param ArrayIterator $iter
+     * @param  ArrayIterator $iter
      * @return ArrayIterator
      */
     protected function exportResources(ArrayIterator $iter)
@@ -431,11 +439,12 @@ class MongoPlatform implements Platform
                 )
             );
         }
+
         return $ret;
     }
 
     /**
-     * @param Finder $finder
+     * @param  Finder $finder
      * @return array
      */
     protected function finderParametersToInternalParameters(Finder $finder)

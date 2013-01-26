@@ -15,7 +15,7 @@ interface Transliterator
     /**
      * Transliterates a given string
      *
-     * @param string $str
+     * @param  string $str
      * @return string
      */
     public function transliterate($str);

@@ -24,7 +24,7 @@ interface Platform
     /**
      * Returns how many times a resource is referenced by files
      *
-     * @param Resource $resource
+     * @param  Resource $resource
      * @return int
      */
     public function getNumberOfReferences(Resource $resource);
@@ -32,7 +32,7 @@ interface Platform
     /**
      * Finds and returns an array of object ids via finder
      *
-     * @param Finder $finder
+     * @param  Finder $finder
      * @return array
      */
     public function findByFinder(Finder $finder);
@@ -104,7 +104,7 @@ interface Platform
     /**
      * Creates a resource
      *
-     * @param Resource $resource
+     * @param  Resource         $resource
      * @return Resource
      * @throws FilelibException If resource could not be created.
      */
@@ -113,7 +113,7 @@ interface Platform
     /**
      * Deletes a resource
      *
-     * @param Resource $resource
+     * @param  Resource         $resource
      * @return boolean
      * @throws FilelibException If resource could not be deleted.
      */
@@ -122,7 +122,7 @@ interface Platform
     /**
      * Updates a resource
      *
-     * @param Resource $resource
+     * @param  Resource         $resource
      * @return boolean
      * @throws FilelibException If resource could not be updated.
      */

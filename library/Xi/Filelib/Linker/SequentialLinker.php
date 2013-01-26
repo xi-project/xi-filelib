@@ -41,6 +41,7 @@ class SequentialLinker extends AbstractLinker implements Linker
     public function setFilesPerDirectory($filesPerDirectory)
     {
         $this->filesPerDirectory = $filesPerDirectory;
+
         return $this;
     }
 
@@ -63,6 +64,7 @@ class SequentialLinker extends AbstractLinker implements Linker
     public function setDirectoryLevels($directoryLevels)
     {
         $this->directoryLevels = $directoryLevels;
+
         return $this;
     }
 
@@ -125,14 +127,13 @@ class SequentialLinker extends AbstractLinker implements Linker
 
     private function calculateDirectoryId(File $file)
     {
-        if(!is_numeric($file->getId())) {
+        if (!is_numeric($file->getId())) {
             throw new InvalidArgumentException("Leveled linker requires numeric file ids ('{$file->getId()}' was provided)");
         }
 
-        if($this->getDirectoryLevels() < 1) {
+        if ($this->getDirectoryLevels() < 1) {
             throw new InvalidArgumentException("Invalid number of directory levels ({$this->getDirectoryLevels()})");
         }
-
 
         $fileId = $file->getId();
 
@@ -142,13 +143,14 @@ class SequentialLinker extends AbstractLinker implements Linker
         $arr = array();
         $tmpfileid = $fileId - 1;
 
-        for($count = 1; $count <= $directoryLevels; ++$count) {
+        for ($count = 1; $count <= $directoryLevels; ++$count) {
             $lus = $tmpfileid / pow($filesPerDirectory, $directoryLevels - $count);
             $tmpfileid = $tmpfileid % pow($filesPerDirectory, $directoryLevels - $count);
             $arr[] = floor($lus) + 1;
         }
 
         $puuppa = array_pop($arr);
+
         return implode(DIRECTORY_SEPARATOR, $arr);
 
     }

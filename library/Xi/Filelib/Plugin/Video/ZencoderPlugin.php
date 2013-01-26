@@ -186,6 +186,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     public function setSleepyTime($sleepyTime)
     {
         $this->sleepyTime = $sleepyTime;
+
         return $this;
     }
 
@@ -276,23 +277,25 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     /**
      * Fetch all output versions from Zencoder
      *
-     * @param   Job     $job      Zencoder Job
-     * @return  array             Array of temporary filenames
+     * @param  Job   $job Zencoder Job
+     * @return array Array of temporary filenames
      */
-    protected function fetchOutputs(Job $job) {
+    protected function fetchOutputs(Job $job)
+    {
         $tmps = array();
         foreach ($this->getVersions() as $version) {
             $tmps[$version] = $this->fetchOutput($job, $version);
         }
+
         return $tmps;
     }
 
     /**
      * Fetch a single output version using Zencoder Job details
      *
-     * @param   Job     $job      Zencoder Job
-     * @param   string  $version  Version identifier
-     * @return  string            Temporary filename
+     * @param  Job    $job     Zencoder Job
+     * @param  string $version Version identifier
+     * @return string Temporary filename
      */
     protected function fetchOutput(Job $job, $version)
     {
@@ -301,6 +304,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         $details = $this->getService()->outputs->details($output->id);
 
         file_put_contents($tempnam, file_get_contents($details->url));
+
         return $tempnam;
     }
 
@@ -331,7 +335,8 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         return true;
     }
 
-    private function waitUntilJobFinished(Job $job) {
+    private function waitUntilJobFinished(Job $job)
+    {
         do {
             $done = 0;
             sleep($this->getSleepyTime());
@@ -349,14 +354,16 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     }
 
     /**
-     * @param Services_Zencoder_Exception $exception
+     * @param  Services_Zencoder_Exception $exception
      * @return string
      */
-    private function getZencoderErrors(Services_Zencoder_Exception $exception) {
+    private function getZencoderErrors(Services_Zencoder_Exception $exception)
+    {
         $msgs = [];
         foreach ($exception->getErrors() as $error) {
             $msgs[] = (string) $error;
         }
+
         return implode(". ", $msgs);
     }
 }

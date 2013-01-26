@@ -33,7 +33,7 @@ class Limiter
     /**
      * Accept a file type. A regex or an array of regexes to accept.
      *
-     * @param mixed $what
+     * @param  mixed                     $what
      * @return \Xi\Filelib\File\Uploader
      */
     public function accept($what)
@@ -57,7 +57,7 @@ class Limiter
     /**
      * Deny a file type. A regex or an array of regexes to deny.
      *
-     * @param mixed $what
+     * @param  mixed                     $what
      * @return \Xi\Filelib\File\Uploader
      */
     public function deny($what)
@@ -101,7 +101,7 @@ class Limiter
     /**
      * Returns whether a file upload may be uploaded
      *
-     * @param \Xi\Filelib\File\Upload\FileUpload $upload
+     * @param  \Xi\Filelib\File\Upload\FileUpload $upload
      * @return boolean
      */
     public function isAccepted(FileUpload $upload)
@@ -132,4 +132,3 @@ class Limiter
     }
 
 }
-

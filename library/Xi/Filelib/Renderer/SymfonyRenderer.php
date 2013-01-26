@@ -14,7 +14,6 @@ use Xi\Filelib\File\FileObject;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-
 class SymfonyRenderer extends AbstractAcceleratedRenderer implements AcceleratedRenderer
 {
 
@@ -43,7 +42,6 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
         return $this->request;
     }
 
-
     public function isAccelerationPossible()
     {
         // If we have no request as context we cannot accelerate
@@ -56,6 +54,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
         foreach (self::$serverSignatures as $signature => $header) {
             if (preg_match($signature, $serverSignature)) {
                 $this->setAccelerationHeader($header);
+
                 return true;
             }
         }
@@ -67,8 +66,8 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
     /**
      * Renders a file to a response
      *
-     * @param File $file File
-     * @param array $options Render options
+     * @param  File     $file    File
+     * @param  array    $options Render options
      * @return Response
      */
     public function render(File $file, array $options = array())
@@ -81,6 +80,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
 
             $response->setStatusCode(403);
             $response->setContent(Response::$statusTexts[$response->getStatusCode()]);
+
             return $response;
         }
 
@@ -93,6 +93,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
         // If not 200 swiftly exit here
         if ($response->getStatusCode() !== 200) {
             $response->setContent(Response::$statusTexts[$response->getStatusCode()]);
+
             return $response;
         }
 
@@ -105,6 +106,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
         }
 
         $this->setContent($response, $res);
+
         return $response;
     }
 
@@ -112,8 +114,8 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
      * Responds to a original file request and returns path to renderable
      * file if response is 200
      *
-     * @param File $file
-     * @param Response $response
+     * @param  File     $file
+     * @param  Response $response
      * @return string
      */
     private function respondToOriginal(File $file, Response $response)
@@ -121,6 +123,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
         $profile = $this->filelib->getFileOperator()->getProfile($file->getProfile());
         if (!$profile->getAccessToOriginal()) {
             $response->setStatusCode(403);
+
             return;
         }
 
@@ -133,7 +136,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
      * Responds to a version file request and returns path to renderable
      * file if response is 200
      *
-     * @param File $file
+     * @param File     $file
      * @param Response $response
      * @param string Version identifier
      * @return string
@@ -142,6 +145,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
     {
         if (!$this->filelib->getFileOperator()->hasVersion($file, $version)) {
             $response->setStatusCode(404);
+
             return;
         }
 
@@ -161,6 +165,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
 
         if ($this->isAccelerationEnabled() && $this->isAccelerationPossible()) {
             $this->accelerateResponse($response, $res);
+
             return;
         }
 
@@ -171,7 +176,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
     /**
      * Accelerates response
      *
-     * @param Response $response
+     * @param Response   $response
      * @param FileObject $res
      */
     private function accelerateResponse(Response $response, FileObject $res)
@@ -183,4 +188,3 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
     }
 
 }
-

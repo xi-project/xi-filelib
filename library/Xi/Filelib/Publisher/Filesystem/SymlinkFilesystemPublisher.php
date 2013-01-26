@@ -28,8 +28,8 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
 
     /**
      * @param FilesystemStorage $storage
-     * @param FileOperator $fileOperator
-     * @param array $options
+     * @param FileOperator      $fileOperator
+     * @param array             $options
      */
     public function __construct(FilesystemStorage $storage, FileOperator $fileOperator, $options = array())
     {
@@ -45,12 +45,13 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     /**
      * Sets path from public to private root
      *
-     * @param string $relativePathToRoot
+     * @param  string                     $relativePathToRoot
      * @return SymlinkFilesystemPublisher
      */
     public function setRelativePathToRoot($relativePathToRoot)
     {
         $this->relativePathToRoot = $relativePathToRoot;
+
         return $this;
     }
 
@@ -65,8 +66,8 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     }
 
     /**
-     * @param File $file
-     * @param int $levelsDown
+     * @param  File             $file
+     * @param  int              $levelsDown
      * @return string
      * @throws FilelibException
      */
@@ -87,10 +88,10 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     }
 
     /**
-     * @param File $file
+     * @param File            $file
      * @param VersionProvider $versionProvider
      * @param $version
-     * @param int $levelsDown
+     * @param  int              $levelsDown
      * @return string
      * @throws FilelibException
      */
@@ -156,8 +157,8 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     }
 
     /**
-     * @param File $file
-     * @param string $version
+     * @param File            $file
+     * @param string          $version
      * @param VersionProvider $versionProvider
      * @todo Refactor. Puuppa code smells.
      */
@@ -205,7 +206,6 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
             }
 
         }
-
 
     }
 

@@ -16,7 +16,7 @@ abstract class AbstractAcceleratedRenderer extends AbstractRenderer
      *
      * @var array
      */
-    static protected $serverSignatures = array(
+    protected static $serverSignatures = array(
         '[^nginx]' => 'x-accel-redirect',
         '[^Apache]' => 'x-sendfile',
         '[^lighttpd/(1\.5|2)]' => 'x-sendfile',
@@ -77,7 +77,6 @@ abstract class AbstractAcceleratedRenderer extends AbstractRenderer
         return $this->stripPrefixFromAcceleratedPath;
     }
 
-
     public function setAddPrefixToAcceleratedPath($addPrefix)
     {
         $this->addPrefixToAcceleratedPath = $addPrefix;
@@ -107,9 +106,5 @@ abstract class AbstractAcceleratedRenderer extends AbstractRenderer
     {
         return $this->accelerationHeader;
     }
-
-
-
-
 
 }

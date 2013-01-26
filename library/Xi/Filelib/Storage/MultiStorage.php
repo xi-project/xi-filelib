@@ -118,7 +118,6 @@ class MultiStorage implements Storage
         }
     }
 
-
     public function exists(Resource $resource)
     {
         return $this->getSessionStorage()->exists($resource);

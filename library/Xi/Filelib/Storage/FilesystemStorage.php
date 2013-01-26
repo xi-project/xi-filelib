@@ -104,18 +104,19 @@ class FilesystemStorage extends AbstractStorage implements Storage
     /**
      * Returns directory id for a file
      *
-     * @param Resource $resource
+     * @param  Resource $resource
      * @return string
      */
     public function getDirectoryId($resource)
     {
-        if(!$this->getCacheDirectoryIds()) {
+        if (!$this->getCacheDirectoryIds()) {
             return $this->getDirectoryIdCalculator()->calculateDirectoryId($resource);
         }
 
-        if(!isset($this->cache[$resource->getId()])) {
+        if (!isset($this->cache[$resource->getId()])) {
             $this->cache[$resource->getId()] = $this->getDirectoryIdCalculator()->calculateDirectoryId($resource);
         }
+
         return $this->cache[$resource->getId()];
     }
 
@@ -186,14 +187,13 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return $this->root;
     }
 
-
     private function getPathName(Resource $resource)
     {
         $dir = $this->getRoot() . '/' . $this->getDirectoryId($resource);
         $fileTarget = $dir . '/' . $resource->getId();
+
         return $fileTarget;
     }
-
 
     private function getVersionPathName(Resource $resource, $version, File $file = null)
     {
@@ -202,9 +202,9 @@ class FilesystemStorage extends AbstractStorage implements Storage
             $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file);
         }
         $path .= '/' . (($file) ? $file->getId() : $resource->getId());
+
         return $path;
     }
-
 
     protected function doStore(Resource $resource, $tempFile)
     {
@@ -268,7 +268,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
     {
         return file_exists($this->getPathName($resource));
     }
-
 
     public function versionExists(Resource $resource, $version, File $file = null)
     {

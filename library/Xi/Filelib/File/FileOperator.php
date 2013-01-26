@@ -20,7 +20,6 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileProfileEvent;
-use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\EnqueueableCommand;
 use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Command\UpdateFileCommand;
@@ -77,7 +76,7 @@ class FileOperator extends AbstractOperator
     /**
      * Returns a file
      *
-     * @param mixed $data Data as array or a file instance
+     * @param  mixed $data Data as array or a file instance
      * @return File
      */
     public function getInstance($data = array())
@@ -86,13 +85,14 @@ class FileOperator extends AbstractOperator
         if ($data) {
             $file->fromArray($data);
         }
+
         return $file;
     }
 
     /**
      * Adds a file profile
      *
-     * @param FileProfile $profile
+     * @param  FileProfile              $profile
      * @return FileLibrary
      * @throws InvalidArgumentException
      */
@@ -116,7 +116,7 @@ class FileOperator extends AbstractOperator
     /**
      * Returns a file profile
      *
-     * @param string $identifier File profile identifier
+     * @param  string                   $identifier File profile identifier
      * @throws InvalidArgumentException
      * @return FileProfile
      */
@@ -142,7 +142,7 @@ class FileOperator extends AbstractOperator
     /**
      * Updates a file
      *
-     * @param File $file
+     * @param  File         $file
      * @return FileOperator
      */
     public function update(File $file)
@@ -156,7 +156,7 @@ class FileOperator extends AbstractOperator
     /**
      * Finds a file
      *
-     * @param mixed $id File id
+     * @param  mixed      $id File id
      * @return File|false
      */
     public function find($id)
@@ -166,6 +166,7 @@ class FileOperator extends AbstractOperator
         if (!$file) {
             return false;
         }
+
         return $file;
     }
 
@@ -185,6 +186,7 @@ class FileOperator extends AbstractOperator
         if (!$file) {
             return false;
         }
+
         return $file;
     }
 
@@ -196,26 +198,28 @@ class FileOperator extends AbstractOperator
     public function findAll()
     {
         $files = $this->getBackend()->findByFinder(new FileFinder());
+
         return $files;
     }
 
     /**
      * Gets a new upload
      *
-     * @param string $path Path to upload file
+     * @param  string     $path Path to upload file
      * @return FileUpload
      */
     public function prepareUpload($path)
     {
         $upload = new FileUpload($path);
+
         return $upload;
     }
 
     /**
      * Uploads a file
      *
-     * @param mixed $upload Uploadable, path or object
-     * @param Folder $folder
+     * @param  mixed            $upload Uploadable, path or object
+     * @param  Folder           $folder
      * @return File
      * @throws FilelibException
      */
@@ -243,7 +247,7 @@ class FileOperator extends AbstractOperator
     /**
      * Copies a file to folder
      *
-     * @param File $file
+     * @param File   $file
      * @param Folder $folder
      */
     public function copy(File $file, Folder $folder)
@@ -258,8 +262,8 @@ class FileOperator extends AbstractOperator
     /**
      * Returns file type of a file
      *
-     * @param File File $file item
-     * @return string File type
+     * @param  File File $file item
+     * @return string    File type
      */
     public function getType(File $file)
     {
@@ -269,33 +273,35 @@ class FileOperator extends AbstractOperator
     /**
      * Returns whether a file has a certain version
      *
-     * @param File $file File item
-     * @param string $version Version
+     * @param  File    $file    File item
+     * @param  string  $version Version
      * @return boolean
      */
     public function hasVersion(File $file, $version)
     {
         $profile = $this->getProfile($file->getProfile());
+
         return $profile->fileHasVersion($file, $version);
     }
 
     /**
      * Returns version provider for a file/version
      *
-     * @param File $file File item
-     * @param string $version Version
+     * @param  File            $file    File item
+     * @param  string          $version Version
      * @return VersionProvider Provider
      */
     public function getVersionProvider(File $file, $version)
     {
         $profile = $this->getProfile($file->getProfile());
+
         return $profile->getVersionProvider($file, $version);
     }
 
     /**
      * Publishes a file
      *
-     * @param File $file
+     * @param  File  $file
      * @return mixed
      */
     public function publish(File $file)
@@ -309,7 +315,7 @@ class FileOperator extends AbstractOperator
     /**
      * Unpublishes a file
      *
-     * @param File $file
+     * @param  File  $file
      * @return mixed
      */
     public function unpublish(File $file)
@@ -325,7 +331,7 @@ class FileOperator extends AbstractOperator
      * Adds a plugin
      *
      * @param Plugin $plugin
-     * @param int $priority
+     * @param int    $priority
      */
     public function addPlugin(Plugin $plugin, $priority = 0)
     {
@@ -352,17 +358,19 @@ class FileOperator extends AbstractOperator
         if (!$this->typeResolver) {
             $this->typeResolver = new StupidTypeResolver();
         }
+
         return $this->typeResolver;
     }
 
     /**
      *
-     * @param TypeResolver $typeResolver
+     * @param  TypeResolver $typeResolver
      * @return FileOperator
      */
     public function setTypeResolver(TypeResolver $typeResolver)
     {
         $this->typeResolver = $typeResolver;
+
         return $this;
     }
 

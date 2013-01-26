@@ -54,8 +54,8 @@ class UploadFileCommand extends AbstractFileCommand
     }
 
     /**
-     * @param File $file
-     * @param FileUpload $upload
+     * @param  File       $file
+     * @param  FileUpload $upload
      * @return Resource
      * @todo This method (isSharedResource() particularly) has the smell of code.
      */
@@ -92,7 +92,6 @@ class UploadFileCommand extends AbstractFileCommand
             $this->fileOperator->getBackend()->createResource($resource);
             $file->setResource($resource);
 
-
             if (!$profileObj->isSharedResourceAllowed($file)) {
                 $resource->setExclusive(true);
             }
@@ -112,10 +111,6 @@ class UploadFileCommand extends AbstractFileCommand
             throw new FilelibException("Folder '{$folder->getId()}'not writable");
         }
 
-
-
-
-
         $profileObj = $this->fileOperator->getProfile($profile);
         $event = new FileUploadEvent($upload, $folder, $profileObj);
 
@@ -131,12 +126,8 @@ class UploadFileCommand extends AbstractFileCommand
             'uuid' => $this->getUuid(),
         ));
 
-
-
         // @todo: actual statuses
         $file->setStatus(File::STATUS_RAW);
-
-
 
         $resource = $this->getResource($file, $upload);
 
@@ -150,9 +141,9 @@ class UploadFileCommand extends AbstractFileCommand
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $file));
 
         $this->fileOperator->executeOrQueue($command, FileOperator::COMMAND_AFTERUPLOAD);
+
         return $file;
     }
-
 
     public function unserialize($serialized)
     {
@@ -171,7 +162,6 @@ class UploadFileCommand extends AbstractFileCommand
 
     }
 
-
     public function serialize()
     {
         $upload = $this->upload;
@@ -184,7 +174,6 @@ class UploadFileCommand extends AbstractFileCommand
             'realPath' => $upload->getRealPath(),
         );
 
-
         return serialize(array(
            'folder' => $this->folder,
            'profile' => $this->profile,
@@ -193,7 +182,5 @@ class UploadFileCommand extends AbstractFileCommand
         ));
 
     }
-
-
 
 }
