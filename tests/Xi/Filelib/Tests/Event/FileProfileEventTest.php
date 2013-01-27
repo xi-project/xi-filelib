@@ -24,7 +24,7 @@ class FileProfileEventTest extends \Xi\Filelib\Tests\TestCase
      */
     public function eventShouldInitializeCorrectly()
     {
-        $profile = $this->getMockForAbstractClass('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
         $event = new FileProfileEvent($profile);
 
         $profile2 = $event->getProfile();

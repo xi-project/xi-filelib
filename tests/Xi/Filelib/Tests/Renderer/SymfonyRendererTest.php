@@ -29,7 +29,7 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         $this->fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $this->filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($this->fiop));
 
-        $this->profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $this->profile = $this->getMockFileProfile();
         $this->fiop->expects($this->any())->method('getProfile')->will($this->returnValue($this->profile));
 
         $this->acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');

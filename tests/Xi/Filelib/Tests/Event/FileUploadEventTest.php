@@ -27,7 +27,7 @@ class FileUploadEventTest extends \Xi\Filelib\Tests\TestCase
     {
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
 
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $event = new FileUploadEvent($upload, $folder, $profile);
 
@@ -43,7 +43,7 @@ class FileUploadEventTest extends \Xi\Filelib\Tests\TestCase
     {
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
         $event = new FileUploadEvent($upload, $folder, $profile);
 
         $upload2 = $event->getFileUpload();

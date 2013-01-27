@@ -32,7 +32,7 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
             ->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->disableOriginalConstructor()
             ->getMock();
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
 
         $filelib->setFileOperator($fiop);
         $filelib->setFolderOperator($foop);

@@ -82,7 +82,7 @@ class ChangeFormatPluginTest extends TestCase
      */
     public function beforeUploadShouldExitEarlyIfPluginDoesntHaveProfile()
     {
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
 
         $event = $this->getMockBuilder('Xi\Filelib\Event\FileUploadEvent')
                       ->disableOriginalConstructor()
@@ -109,7 +109,7 @@ class ChangeFormatPluginTest extends TestCase
         $upload->expects($this->once())->method('getMimeType')->will($this->returnValue('video/lus'));
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
 
@@ -167,7 +167,7 @@ class ChangeFormatPluginTest extends TestCase
         $plugin->setTargetExtension('lus');
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
 
