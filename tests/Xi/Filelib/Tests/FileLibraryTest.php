@@ -3,7 +3,6 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -259,8 +258,7 @@ class FileLibraryTest extends TestCase
      */
     public function addProfileShouldDelegateToFileOperator()
     {
-
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
 
         $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $fop->expects($this->once())->method('addProfile')->with($this->equalTo($profile));
@@ -269,7 +267,6 @@ class FileLibraryTest extends TestCase
         $filelib->setFileOperator($fop);
 
         $filelib->addProfile($profile);
-
     }
 
     /**

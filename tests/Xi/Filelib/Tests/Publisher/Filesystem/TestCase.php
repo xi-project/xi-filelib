@@ -56,9 +56,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
                 )
             );
 
-        $profileObject = $this
-            ->getMockBuilder('Xi\Filelib\File\FileProfile')
-            ->getMock();
+        $profileObject = $this->getMockFileProfile();
 
         $profileObject
             ->expects($this->any())

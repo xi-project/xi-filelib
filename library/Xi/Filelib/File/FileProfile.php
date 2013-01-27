@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\File;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\Plugin\Plugin;
@@ -27,6 +26,10 @@ use InvalidArgumentException;
  */
 class FileProfile implements EventSubscriberInterface
 {
+    /**
+     * @var FileOperator
+     */
+    private $fileOperator;
 
     /**
      * @var array Subscribed events
@@ -34,11 +37,6 @@ class FileProfile implements EventSubscriberInterface
     protected static $subscribedEvents = array(
         'xi_filelib.plugin.add' => 'onPluginAdd'
     );
-
-    /**
-     * @var FileLibrary
-     */
-    private $filelib;
 
     /**
      * @var Linker
@@ -75,9 +73,15 @@ class FileProfile implements EventSubscriberInterface
      */
     private $publishOriginal = true;
 
-    public function __construct($options = array())
+    /**
+     * @param FileOperator $fileOperator
+     * @param array        $options
+     */
+    public function __construct(FileOperator $fileOperator, $options = array())
     {
         Configurator::setConstructorOptions($this, $options);
+
+        $this->fileOperator = $fileOperator;
     }
 
     /**
@@ -88,29 +92,6 @@ class FileProfile implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return static::$subscribedEvents;
-    }
-
-    /**
-     * Sets filelib
-     *
-     * @param FileLibrary $filelib
-     *
-     */
-    public function setFilelib(FileLibrary $filelib)
-    {
-        $this->filelib = $filelib;
-
-        return $this;
-    }
-
-    /**
-     * Returns filelib
-     *
-     * @return FileLibrary
-     */
-    public function getFilelib()
-    {
-        return $this->filelib;
     }
 
     /**
@@ -126,10 +107,10 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Sets linker
      *
-     * @param Linker
-     * @return FileLibrary
+     * @param  Linker      $linker
+     * @return FileProfile
      */
-    public function setLinker($linker)
+    public function setLinker(Linker $linker)
     {
         $this->linker = $linker;
 
@@ -189,7 +170,8 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Adds a plugin
      *
-     * @param  Plugin Plugin $plugin
+     * @param  Plugin      $plugin
+     * @param  integer     $priority
      * @return FileProfile
      */
     public function addPlugin(Plugin $plugin, $priority = 1000)
@@ -217,8 +199,11 @@ class FileProfile implements EventSubscriberInterface
      * @param  VersionProvider $versionProvider   Version provider
      * @return FileProfile
      */
-    public function addFileVersion($fileType, $versionIdentifier, VersionProvider $versionProvider)
-    {
+    public function addFileVersion(
+        $fileType,
+        $versionIdentifier,
+        VersionProvider $versionProvider
+    ) {
         $this->ensureFileVersionArrayExists($fileType);
         $this->fileVersions[$fileType][$versionIdentifier] = $versionProvider;
 
@@ -228,12 +213,12 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Returns all defined versions of a file
      *
-     * @param  File  $fileType File item
+     * @param  File  $file File item
      * @return array Array of provided versions
      */
     public function getFileVersions(File $file)
     {
-        $fileType = $this->getFilelib()->getFileOperator()->getType($file);
+        $fileType = $this->fileOperator->getType($file);
         $this->ensureFileVersionArrayExists($fileType);
 
         return array_keys($this->fileVersions[$fileType]);
@@ -254,9 +239,10 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Returns version provider for a file/version
      *
-     * @param  File            $file    File item
-     * @param  string          $version Version
-     * @return VersionProvider Provider
+     * @param  File                     $file    File item
+     * @param  string                   $version Version
+     * @return VersionProvider          Provider
+     * @throws InvalidArgumentException
      */
     public function getVersionProvider(File $file, $version)
     {
@@ -264,7 +250,7 @@ class FileProfile implements EventSubscriberInterface
             throw new InvalidArgumentException("File has no version '{$version}'");
         }
 
-        $filetype = $this->getFilelib()->getFileOperator()->getType($file);
+        $filetype = $this->fileOperator->getType($file);
 
         return $this->fileVersions[$filetype][$version];
     }
@@ -273,7 +259,7 @@ class FileProfile implements EventSubscriberInterface
      * Sets whether access to the original file is allowed
      *
      * @param  boolean     $accessToOriginal
-     * @return FileLibrary
+     * @return FileProfile
      */
     public function setAccessToOriginal($accessToOriginal)
     {
@@ -296,7 +282,7 @@ class FileProfile implements EventSubscriberInterface
      * Sets whether the original file is published
      *
      * @param  boolean     $publishOriginal
-     * @return FileLibrary
+     * @return FileProfile
      */
     public function setPublishOriginal($publishOriginal)
     {
@@ -323,6 +309,7 @@ class FileProfile implements EventSubscriberInterface
     public function onPluginAdd(PluginEvent $event)
     {
         $plugin = $event->getPlugin();
+
         if (in_array($this->getIdentifier(), $plugin->getProfiles())) {
             $this->addPlugin($plugin);
         }
@@ -344,15 +331,14 @@ class FileProfile implements EventSubscriberInterface
     public function isSharedResourceAllowed(File $file)
     {
         foreach ($this->getPlugins() as $plugin) {
-
-            if ($plugin instanceof VersionProvider) {
-                if ($plugin->providesFor($file) && !$plugin->isSharedResourceAllowed()) {
-                    return false;
-                }
+            if ($plugin instanceof VersionProvider
+                && $plugin->providesFor($file)
+                && !$plugin->isSharedResourceAllowed()
+            ) {
+                return false;
             }
         }
 
         return true;
     }
-
 }

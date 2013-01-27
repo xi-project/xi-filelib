@@ -103,7 +103,6 @@ class FileOperator extends AbstractOperator
             throw new InvalidArgumentException("Profile '{$identifier}' already exists");
         }
         $this->profiles[$identifier] = $profile;
-        $profile->setFilelib($this->getFilelib());
 
         $this->getEventDispatcher()->addSubscriber($profile);
 
