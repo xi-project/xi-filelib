@@ -54,13 +54,14 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
         if (!$this->helper) {
             $this->helper = new FFmpegHelper();
         }
+
         return $this->helper;
     }
 
     /**
      * Create image, audio and/or video versions using FFmpegHelper
      *
-     * @param File $file
+     * @param  File  $file
      * @return array
      */
     public function createVersions(File $file)

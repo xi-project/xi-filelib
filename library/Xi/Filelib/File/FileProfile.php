@@ -31,7 +31,7 @@ class FileProfile implements EventSubscriberInterface
     /**
      * @var array Subscribed events
      */
-    static protected $subscribedEvents = array(
+    protected static $subscribedEvents = array(
         'xi_filelib.plugin.add' => 'onPluginAdd'
     );
 
@@ -85,7 +85,7 @@ class FileProfile implements EventSubscriberInterface
      *
      * @return array
      */
-    static public function getSubscribedEvents()
+    public static function getSubscribedEvents()
     {
         return static::$subscribedEvents;
     }
@@ -99,6 +99,7 @@ class FileProfile implements EventSubscriberInterface
     public function setFilelib(FileLibrary $filelib)
     {
         $this->filelib = $filelib;
+
         return $this;
     }
 
@@ -138,12 +139,13 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Sets human readable identifier
      *
-     * @param string $description
+     * @param  string      $description
      * @return FileProfile
      */
     public function setDescription($description)
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -170,7 +172,7 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Sets identifier
      *
-     * @param string $identifier
+     * @param  string                   $identifier
      * @throws InvalidArgumentException
      * @return FileProfile
      */
@@ -180,18 +182,20 @@ class FileProfile implements EventSubscriberInterface
             throw new InvalidArgumentException("Invalid profile identifier '{$identifier}'");
         }
         $this->identifier = $identifier;
+
         return $this;
     }
 
     /**
      * Adds a plugin
      *
-     * @param Plugin Plugin $plugin
+     * @param  Plugin Plugin $plugin
      * @return FileProfile
      */
     public function addPlugin(Plugin $plugin, $priority = 1000)
     {
         $this->plugins[] = $plugin;
+
         return $this;
     }
 
@@ -208,36 +212,38 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Adds a file version
      *
-     * @param string $fileType string File type
-     * @param string $versionIdentifier Version identifier
-     * @param VersionProvider $versionProvider Version provider
+     * @param  string          $fileType          string File type
+     * @param  string          $versionIdentifier Version identifier
+     * @param  VersionProvider $versionProvider   Version provider
      * @return FileProfile
      */
     public function addFileVersion($fileType, $versionIdentifier, VersionProvider $versionProvider)
     {
         $this->ensureFileVersionArrayExists($fileType);
         $this->fileVersions[$fileType][$versionIdentifier] = $versionProvider;
+
         return $this;
     }
 
     /**
      * Returns all defined versions of a file
      *
-     * @param File $fileType File item
+     * @param  File  $fileType File item
      * @return array Array of provided versions
      */
     public function getFileVersions(File $file)
     {
         $fileType = $this->getFilelib()->getFileOperator()->getType($file);
         $this->ensureFileVersionArrayExists($fileType);
+
         return array_keys($this->fileVersions[$fileType]);
     }
 
     /**
      * Returns whether a file has a certain version
      *
-     * @param File $file File item
-     * @param string $version Version
+     * @param  File    $file    File item
+     * @param  string  $version Version
      * @return boolean
      */
     public function fileHasVersion(File $file, $version)
@@ -248,8 +254,8 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Returns version provider for a file/version
      *
-     * @param File $file File item
-     * @param string $version Version
+     * @param  File            $file    File item
+     * @param  string          $version Version
      * @return VersionProvider Provider
      */
     public function getVersionProvider(File $file, $version)
@@ -259,18 +265,20 @@ class FileProfile implements EventSubscriberInterface
         }
 
         $filetype = $this->getFilelib()->getFileOperator()->getType($file);
+
         return $this->fileVersions[$filetype][$version];
     }
 
     /**
      * Sets whether access to the original file is allowed
      *
-     * @param boolean $accessToOriginal
+     * @param  boolean     $accessToOriginal
      * @return FileLibrary
      */
     public function setAccessToOriginal($accessToOriginal)
     {
         $this->accessToOriginal = $accessToOriginal;
+
         return $this;
     }
 
@@ -287,12 +295,13 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Sets whether the original file is published
      *
-     * @param boolean $publishOriginal
+     * @param  boolean     $publishOriginal
      * @return FileLibrary
      */
     public function setPublishOriginal($publishOriginal)
     {
         $this->publishOriginal = $publishOriginal;
+
         return $this;
     }
 
@@ -329,7 +338,7 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Returns whether profile allows shared resources for a file
      *
-     * @param File $file
+     * @param  File    $file
      * @return boolean
      */
     public function isSharedResourceAllowed(File $file)
@@ -342,6 +351,7 @@ class FileProfile implements EventSubscriberInterface
                 }
             }
         }
+
         return true;
     }
 

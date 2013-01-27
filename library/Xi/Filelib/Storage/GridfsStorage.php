@@ -136,6 +136,7 @@ class GridfsStorage extends AbstractStorage implements Storage
     {
         $filename = $this->getFilename($resource);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
+
         return (bool) $file;
     }
 
@@ -144,6 +145,7 @@ class GridfsStorage extends AbstractStorage implements Storage
     {
         $filename = $this->getFilenameVersion($resource, $version, $file);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
+
         return (bool) $file;
     }
 
@@ -151,7 +153,7 @@ class GridfsStorage extends AbstractStorage implements Storage
     /**
      * Writes a mongo file to temporary file and registers it as an internal temp file
      *
-     * @param MongoGridFSFile $resource
+     * @param  MongoGridFSFile $resource
      * @return FileObject
      *
      */
@@ -194,6 +196,7 @@ class GridfsStorage extends AbstractStorage implements Storage
     {
         $filename = $this->getFilename($resource);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
+
         return $this->toTemp($file);
     }
 
@@ -201,6 +204,7 @@ class GridfsStorage extends AbstractStorage implements Storage
     {
         $filename = $this->getFilenameVersion($resource, $version, $file);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
+
         return $this->toTemp($file);
     }
 
@@ -227,6 +231,7 @@ class GridfsStorage extends AbstractStorage implements Storage
         if ($file) {
             $path = '/' . $file->getId();
         }
+
         return $path;
     }
 

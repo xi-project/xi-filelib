@@ -23,8 +23,8 @@ interface Storage
     /**
      * Stores an uploaded file
      *
-     * @param Resource $resource
-     * @param string $tempResource
+     * @param  Resource         $resource
+     * @param  string           $tempResource
      * @throws FilelibException
      */
     public function store(Resource $resource, $tempResource);
@@ -32,10 +32,10 @@ interface Storage
     /**
      * Stores a version of a file
      *
-     * @param Resource $resource
-     * @param string $version
-     * @param string $tempResource Resource to be stored
-     * @param null|File $file
+     * @param  Resource         $resource
+     * @param  string           $version
+     * @param  string           $tempResource Resource to be stored
+     * @param  null|File        $file
      * @throws FilelibException
      */
     public function storeVersion(Resource $resource, $version, $tempResource, File $file = null);
@@ -43,7 +43,7 @@ interface Storage
     /**
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
-     * @param Resource $resource
+     * @param  Resource         $resource
      * @return FileObject
      * @throws FilelibException
      */
@@ -52,9 +52,9 @@ interface Storage
     /**
      * Retrieves a version of a file and temporarily stores it somewhere so it can be read.
      *
-     * @param Resource $resource
-     * @param string $version
-     * @param null|File $file
+     * @param  Resource         $resource
+     * @param  string           $version
+     * @param  null|File        $file
      * @return FileObject
      * @throws FilelibException
      *
@@ -64,7 +64,7 @@ interface Storage
     /**
      * Deletes a file
      *
-     * @param Resource $resource
+     * @param  Resource         $resource
      * @return boolean
      * @throws FilelibException
      */
@@ -73,18 +73,17 @@ interface Storage
     /**
      * Deletes a version of a file
      *
-     * @param Resource $resource
-     * @param string $version
-     * @param null|File $file
+     * @param  Resource         $resource
+     * @param  string           $version
+     * @param  null|File        $file
      * @throws FilelibException
      */
     public function deleteVersion(Resource $resource, $version, File $file = null);
 
-
     /**
      * Returns whether stored file exists
      *
-     * @param Resource $resource
+     * @param  Resource $resource
      * @return boolean
      */
     public function exists(Resource $resource);
@@ -94,7 +93,7 @@ interface Storage
      *
      * @param Resource $resource
      * @param $version
-     * @param null|File $file
+     * @param  null|File $file
      * @return boolean
      */
     public function versionExists(Resource $resource, $version, File $file = null);

@@ -53,6 +53,7 @@ abstract class AbstractZendSlugifier implements Slugifier
     {
         $slugged = $this->getTransliterator()->transliterate($unslugged);
         $slugged = $this->getFilter()->filter($slugged);
+
         return $slugged;
     }
 }

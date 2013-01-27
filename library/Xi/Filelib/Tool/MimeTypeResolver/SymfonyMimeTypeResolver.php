@@ -29,14 +29,11 @@ class SymfonyMimeTypeResolver implements MimeTypeResolver
         return $this->mimeTypeGuesser;
     }
 
-
     public function resolveMimeType($path)
     {
         $mimeType = $this->getMimeTypeGuesser()->guess($path);
+
         return $mimeType;
     }
 
-
-
 }
-

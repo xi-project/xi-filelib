@@ -21,7 +21,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use InvalidArgumentException;
 use Xi\Filelib\Event\PluginEvent;
-use Xi\Filelib\Event\FilelibEvent;
 use Xi\Filelib\Queue\Queue;
 use Xi\Filelib\IdentityMap\IdentityMap;
 use Xi\Filelib\Backend\Platform\Platform;
@@ -90,7 +89,6 @@ class FileLibrary
      */
     private $platform;
 
-
     /**
      * @return EventDispatcherInterface
      */
@@ -99,13 +97,14 @@ class FileLibrary
         if (!$this->eventDispatcher) {
             $this->eventDispatcher = new EventDispatcher();
         }
+
         return $this->eventDispatcher;
     }
-
 
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
+
         return $this;
     }
 
@@ -150,6 +149,7 @@ class FileLibrary
     public function file()
     {
         trigger_error("Method is deprecated. use getFileOperator() instead.", E_USER_DEPRECATED);
+
         return $this->getFileOperator();
     }
 
@@ -162,30 +162,33 @@ class FileLibrary
     public function folder()
     {
         trigger_error("Method is deprecated. use getFolderOperator() instead.", E_USER_DEPRECATED);
+
         return $this->getFolderOperator();
     }
 
     /**
      * Sets file operator
      *
-     * @param FileOperator $fileOperator
+     * @param  FileOperator $fileOperator
      * @return FileLibrary
      */
     public function setFileOperator(FileOperator $fileOperator)
     {
         $this->fileOperator = $fileOperator;
+
         return $this;
     }
 
     /**
      * Sets folder operator
      *
-     * @param FolderOperator $fileOperator
+     * @param  FolderOperator $fileOperator
      * @return FileLibrary
      */
     public function setFolderOperator(FolderOperator $folderOperator)
     {
         $this->folderOperator = $folderOperator;
+
         return $this;
     }
 
@@ -199,6 +202,7 @@ class FileLibrary
         if (!$this->fileOperator) {
             $this->fileOperator = new FileOperator($this);
         }
+
         return $this->fileOperator;
     }
 
@@ -219,7 +223,7 @@ class FileLibrary
     /**
      * Sets storage
      *
-     * @param Storage $storage
+     * @param  Storage     $storage
      * @return FileLibrary
      */
     public function setStorage(Storage $storage)
@@ -242,12 +246,13 @@ class FileLibrary
     /**
      * Sets publisher
      *
-     * @param Publisher $publisher
+     * @param  Publisher   $publisher
      * @return FileLibrary
      */
     public function setPublisher(Publisher $publisher)
     {
         $this->publisher = $publisher;
+
         return $this;
     }
 
@@ -264,12 +269,13 @@ class FileLibrary
     /**
      * Sets backend
      *
-     * @param Backend $backend
+     * @param  Backend     $backend
      * @return FileLibrary
      */
     public function setBackend(Backend $backend)
     {
         $this->backend = $backend;
+
         return $this;
     }
 
@@ -286,12 +292,13 @@ class FileLibrary
     /**
      * Sets acl handler
      *
-     * @param Acl $acl
+     * @param  Acl         $acl
      * @return FileLibrary Filelib
      */
     public function setAcl(Acl $acl)
     {
         $this->acl = $acl;
+
         return $this;
     }
 
@@ -354,6 +361,7 @@ class FileLibrary
     public function setQueue(Queue $queue)
     {
         $this->queue = $queue;
+
         return $this;
     }
 
@@ -370,12 +378,13 @@ class FileLibrary
     /**
      * Sets platform
      *
-     * @param Platform $platform
+     * @param  Platform    $platform
      * @return FileLibrary
      */
     public function setPlatform(Platform $platform)
     {
         $this->platform = $platform;
+
         return $this;
     }
 
@@ -392,12 +401,13 @@ class FileLibrary
     /**
      * Sets identity map
      *
-     * @param IdentityMap $identityMap
+     * @param  IdentityMap $identityMap
      * @return FileLibrary
      */
     public function setIdentityMap(IdentityMap $identityMap)
     {
         $this->identityMap = $identityMap;
+
         return $this;
     }
 

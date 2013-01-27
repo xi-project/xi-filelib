@@ -52,7 +52,7 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
 
     /**
      * @param FileOperator $fileOperator
-     * @param array $options
+     * @param array        $options
      */
     public function __construct(FileOperator $fileOperator, $options = array())
     {
@@ -99,6 +99,7 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
         }
 
         $this->publicRoot = $dir->getRealPath();
+
         return $this;
     }
 
@@ -115,12 +116,13 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
     /**
      * Sets directory permission
      *
-     * @param integer $directoryPermission
+     * @param  integer                     $directoryPermission
      * @return AbstractFilesystemPublisher
      */
     public function setDirectoryPermission($directoryPermission)
     {
         $this->directoryPermission = octdec($directoryPermission);
+
         return $this;
     }
 
@@ -143,6 +145,7 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
     public function setFilePermission($filePermission)
     {
         $this->filePermission = octdec($filePermission);
+
         return $this;
     }
 
@@ -159,7 +162,7 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
     /**
      * Returns linker for a file
      *
-     * @param File $file
+     * @param  File   $file
      * @return Linker
      */
     public function getLinkerForFile(File $file)
@@ -168,19 +171,20 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
     }
 
     /**
-     * @param File $file
+     * @param  File   $file
      * @return string
      */
     public function getUrl(File $file)
     {
         $url = $this->getBaseUrl() . '/' . $this->getLinkerForFile($file)->getLink($file);
+
         return $url;
     }
 
     /**
-     * @param File $file
-     * @param string $version
-     * @param VersionProvider $versionProvider
+     * @param  File            $file
+     * @param  string          $version
+     * @param  VersionProvider $versionProvider
      * @return string
      */
     public function getUrlVersion(File $file, $version, VersionProvider $versionProvider)
@@ -189,6 +193,7 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
         $url .= $this
             ->getLinkerForFile($file)
             ->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
+
         return $url;
     }
 }

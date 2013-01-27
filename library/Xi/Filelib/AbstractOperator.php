@@ -92,7 +92,6 @@ abstract class AbstractOperator
         return $this->filelib;
     }
 
-
     /**
      * Returns Acl
      *
@@ -102,7 +101,6 @@ abstract class AbstractOperator
     {
         return $this->getFilelib()->getAcl();
     }
-
 
     /**
      * Returns Event dispatcher
@@ -124,14 +122,12 @@ abstract class AbstractOperator
         return $this->getFilelib()->getQueue();
     }
 
-
     private function assertCommandExists($command)
     {
         if (!isset($this->commandStrategies[$command])) {
             throw new \InvalidArgumentException("Command '{$command}' is not supported");
         }
     }
-
 
     private function assertStrategyExists($strategy)
     {
@@ -143,6 +139,7 @@ abstract class AbstractOperator
     public function getCommandStrategy($command)
     {
         $this->assertCommandExists($command);
+
         return $this->commandStrategies[$command];
     }
 
@@ -151,12 +148,14 @@ abstract class AbstractOperator
         $this->assertCommandExists($command);
         $this->assertStrategyExists($strategy);
         $this->commandStrategies[$command] = $strategy;
+
         return $this;
     }
 
     public function createCommand($commandClass, array $args = array())
     {
         $reflClass = new \ReflectionClass($commandClass);
+
         return $reflClass->newInstanceArgs($args);
     }
 
@@ -168,6 +167,7 @@ abstract class AbstractOperator
         } else {
             $ret = $commandObj->execute();
         }
+
         return $this->executeOrQueueHandleCallbacks($strategy, $callbacks, $ret);
     }
 
@@ -176,6 +176,7 @@ abstract class AbstractOperator
         if (isset($callbacks[$strategy])) {
             return $callbacks[$strategy]($this, $ret);
         }
+
         return $ret;
     }
 

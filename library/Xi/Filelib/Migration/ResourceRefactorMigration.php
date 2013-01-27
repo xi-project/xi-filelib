@@ -28,7 +28,6 @@ class ResourceRefactorMigration implements Command
         $this->filelib = $filelib;
     }
 
-
     /**
      * @see Command::execute
      */
@@ -68,6 +67,5 @@ class ResourceRefactorMigration implements Command
             $this->createUuidToFolder($subfolder);
         }
     }
-
 
 }

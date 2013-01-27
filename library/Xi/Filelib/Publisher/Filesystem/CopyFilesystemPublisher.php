@@ -29,9 +29,9 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
     private $storage;
 
     /**
-     * @param Storage $storage
+     * @param Storage      $storage
      * @param FileOperator $fileOperator
-     * @param array $options
+     * @param array        $options
      */
     public function __construct(Storage $storage, FileOperator $fileOperator, $options = array())
     {

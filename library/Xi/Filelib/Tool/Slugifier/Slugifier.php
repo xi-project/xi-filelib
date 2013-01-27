@@ -17,18 +17,18 @@ interface Slugifier
 
     /**
      * Slugifies a path
-     * 
-     * @param string $path
+     *
+     * @param  string $path
      * @return string
      */
     public function slugifyPath($path);
-    
+
     /**
      * Slugifies a word
-     * 
-     * @param string $unslugged
+     *
+     * @param  string $unslugged
      * @return string
      */
     public function slugify($unslugged);
-    
+
 }

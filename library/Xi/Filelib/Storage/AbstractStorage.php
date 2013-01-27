@@ -32,7 +32,6 @@ abstract class AbstractStorage implements Storage
         Configurator::setConstructorOptions($this, $options);
     }
 
-
     abstract protected function doRetrieve(Resource $resource);
 
     abstract protected function doRetrieveVersion(Resource $resource, $version, File $file = null);
@@ -50,6 +49,7 @@ abstract class AbstractStorage implements Storage
         if (!$this->exists($resource)) {
             throw new FileIOException("File for resource #{$resource->getId()} does not exist");
         }
+
         return $this->doRetrieve($resource);
     }
 
@@ -58,6 +58,7 @@ abstract class AbstractStorage implements Storage
         if (!$this->versionExists($resource, $version, $file)) {
             throw new FileIOException("File version '{$version}' for resource #{$resource->getId()} does not exist");
         }
+
         return $this->doRetrieveVersion($resource, $version, $file);
     }
 
@@ -66,6 +67,7 @@ abstract class AbstractStorage implements Storage
         if (!$this->exists($resource)) {
             throw new FileIOException("File for resource #{$resource->getId()} does not exist");
         }
+
         return $this->doDelete($resource);
     }
 
@@ -74,9 +76,9 @@ abstract class AbstractStorage implements Storage
         if (!$this->versionExists($resource, $version, $file)) {
             throw new FileIOException("File version '{$version}' for resource #{$resource->getId()} does not exist");
         }
+
         return $this->doDeleteVersion($resource, $version, $file);
     }
-
 
     public function store(Resource $resource, $tempFile)
     {

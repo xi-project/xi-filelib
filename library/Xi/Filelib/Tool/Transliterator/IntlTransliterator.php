@@ -24,6 +24,7 @@ class IntlTransliterator implements Transliterator
     {
         $rule = 'NFD; [:Nonspacing Mark:] Remove; NFC';
         $transliterator = InnerTransliterator::create($rule);
+
         return $transliterator->transliterate($str);
     }
 

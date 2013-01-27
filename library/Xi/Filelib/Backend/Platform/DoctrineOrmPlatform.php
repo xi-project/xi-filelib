@@ -226,6 +226,7 @@ class DoctrineOrmPlatform implements Platform
         $this->em->flush();
 
         $folder->setId($folderEntity->getId());
+
         return $folder;
     }
 
@@ -268,6 +269,7 @@ class DoctrineOrmPlatform implements Platform
             $resourceRow->setExclusive($resource->isExclusive());
             $resourceRow->setHash($resource->getHash());
             $this->em->flush();
+
             return true;
         } catch (EntityNotFoundException $e) {
             return false;
@@ -330,6 +332,7 @@ class DoctrineOrmPlatform implements Platform
         $this->em->persist($resourceRow);
         $this->em->flush();
         $resource->setId($resourceRow->getId());
+
         return $resource;
     }
 
@@ -427,7 +430,6 @@ class DoctrineOrmPlatform implements Platform
         );
     }
 
-
     /**
      * @see Platform::findByIds
      */
@@ -445,11 +447,12 @@ class DoctrineOrmPlatform implements Platform
             )
         );
         $rows = new ArrayIterator($rows);
+
         return $this->$resources['exporter']($rows);
     }
 
     /**
-     * @param Iterator $iter
+     * @param  Iterator      $iter
      * @return ArrayIterator
      */
     protected function exportFolders(Iterator $iter)
@@ -468,11 +471,12 @@ class DoctrineOrmPlatform implements Platform
                 )
             );
         }
+
         return $ret;
     }
 
     /**
-     * @param Iterator $iter
+     * @param  Iterator      $iter
      * @return ArrayIterator
      */
     protected function exportFiles(Iterator $iter)
@@ -499,11 +503,12 @@ class DoctrineOrmPlatform implements Platform
                 )
             );
         }
+
         return $ret;
     }
 
     /**
-     * @param Iterator $iter
+     * @param  Iterator      $iter
      * @return ArrayIterator
      */
     protected function exportResources(Iterator $iter)
@@ -524,6 +529,7 @@ class DoctrineOrmPlatform implements Platform
                 )
             );
         }
+
         return $ret;
     }
 
@@ -546,7 +552,7 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * @param Finder $finder
+     * @param  Finder $finder
      * @return array
      */
     protected function finderParametersToInternalParameters(Finder $finder)
@@ -555,6 +561,7 @@ class DoctrineOrmPlatform implements Platform
         foreach ($finder->getParameters() as $key => $value) {
             $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
         }
+
         return $ret;
     }
 }

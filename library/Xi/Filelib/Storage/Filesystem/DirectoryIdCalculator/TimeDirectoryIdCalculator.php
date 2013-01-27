@@ -46,7 +46,7 @@ class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     {
         $dt = $resource->getDateCreated();
 
-        if(!($dt instanceof DateTime)) {
+        if (!($dt instanceof DateTime)) {
             throw new FilelibException("Upload date not set in file");
         }
 

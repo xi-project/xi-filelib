@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Publisher;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
@@ -31,8 +30,8 @@ interface Publisher
     /**
      * Publishes a version of a file
      *
-     * @param File $file
-     * @param string $version
+     * @param File            $file
+     * @param string          $version
      * @param VersionProvider $versionProvider
      */
     public function publishVersion(File $file, $version, VersionProvider $versionProvider);
@@ -47,8 +46,8 @@ interface Publisher
     /**
      * Unpublishes a version of a file
      *
-     * @param File $file
-     * @param string $version
+     * @param File            $file
+     * @param string          $version
      * @param VersionProvider $versionProvider
      */
     public function unpublishVersion(File $file, $version, VersionProvider $versionProvider);
@@ -56,7 +55,7 @@ interface Publisher
     /**
      * Returns url to a file
      *
-     * @param File $file
+     * @param  File   $file
      * @return string
      */
     public function getUrl(File $file);
@@ -64,9 +63,9 @@ interface Publisher
     /**
      * Returns url to a version of a file
      *
-     * @param File $file
-     * @param string $version
-     * @param VersionProvider $version
+     * @param  File            $file
+     * @param  string          $version
+     * @param  VersionProvider $version
      * @return string
      */
     public function getUrlVersion(File $file, $version, VersionProvider $versionProvider);

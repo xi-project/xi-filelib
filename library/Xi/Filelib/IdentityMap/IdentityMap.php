@@ -64,7 +64,7 @@ class IdentityMap implements EventSubscriberInterface
     /**
      * Returns whether identity map has an identifiable
      *
-     * @param Identifiable $object
+     * @param  Identifiable $object
      * @return bool
      */
     public function has(Identifiable $object)
@@ -75,7 +75,7 @@ class IdentityMap implements EventSubscriberInterface
     /**
      * Adds an identifiable to identity map
      *
-     * @param Identifiable $object
+     * @param  Identifiable         $object
      * @throws IdentityMapException
      * @return bool
      */
@@ -128,7 +128,7 @@ class IdentityMap implements EventSubscriberInterface
     /**
      * Removes an identifiable
      *
-     * @param Identifiable $object
+     * @param  Identifiable $object
      * @return bool
      */
     public function remove(Identifiable $object)
@@ -145,14 +145,15 @@ class IdentityMap implements EventSubscriberInterface
         unset($this->objectIdentifiers[$splHash]);
 
         $this->dispatchEvent($object, 'after_remove');
+
         return true;
     }
 
     /**
      * Gets an identifiable by id and class name
      *
-     * @param mixed $id
-     * @param string $className
+     * @param  mixed              $id
+     * @param  string             $className
      * @return Identifiable|false
      */
     public function get($id, $className)
@@ -193,7 +194,7 @@ class IdentityMap implements EventSubscriberInterface
     }
 
     /**
-     * @param Identifiable $object
+     * @param  Identifiable $object
      * @return string
      */
     protected function getIdentifierFromObject(Identifiable $object)

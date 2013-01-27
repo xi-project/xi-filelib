@@ -85,7 +85,7 @@ class File
     /**
      * Set profile
      *
-     * @param  string             $value
+     * @param  string $value
      * @return File
      */
     public function setProfile($value)
@@ -108,7 +108,7 @@ class File
     /**
      * Set name
      *
-     * @param  string             $value
+     * @param  string $value
      * @return File
      */
     public function setName($value)
@@ -131,7 +131,7 @@ class File
     /**
      * Set link
      *
-     * @param  string             $value
+     * @param  string $value
      * @return File
      */
     public function setLink($value)
@@ -151,7 +151,6 @@ class File
         return $this->link;
     }
 
-
     /**
      * Set filelib folder
      *
@@ -161,6 +160,7 @@ class File
     public function setFolder(Folder $folder)
     {
         $this->folder = $folder;
+
         return $this;
     }
 
@@ -184,16 +184,16 @@ class File
         return $this->dateCreated;
     }
 
-
     /**
      * Sets date uploaded
      *
-     * @param DateTime $dateUploaded
+     * @param  DateTime $dateUploaded
      * @return File
      */
     public function setDateCreated(DateTime $dateUploaded)
     {
         $this->dateCreated = $dateUploaded;
+
         return $this;
     }
 
@@ -215,6 +215,7 @@ class File
     public function setStatus($status)
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -255,6 +256,7 @@ class File
     public function setResource(Resource $resource)
     {
         $this->resource = $resource;
+
         return $this;
     }
 
@@ -265,6 +267,7 @@ class File
     public function setVersions(array $versions)
     {
         $this->versions = $versions;
+
         return $this;
     }
 

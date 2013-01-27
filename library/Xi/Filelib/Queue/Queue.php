@@ -38,6 +38,4 @@ interface Queue
      */
     public function ack(Message $message);
 
-
 }
-

@@ -65,9 +65,9 @@ class PhpAMQPQueue implements Queue
             $ch->queue_bind($this->queue, $this->exchange, 'filelib');
             $this->channel = $ch;
         }
+
         return $this->channel;
     }
-
 
     public function enqueue(Enqueueable $enqueueable)
     {
@@ -75,7 +75,6 @@ class PhpAMQPQueue implements Queue
         $msg = new AMQPMessage($msg, array('content_type' => 'text/plain', 'delivery-mode' => 1));
         $this->getChannel()->basic_publish($msg, $this->exchange, 'filelib', false, false);
     }
-
 
     public function dequeue()
     {
@@ -87,15 +86,14 @@ class PhpAMQPQueue implements Queue
 
         $message = new Message($msg->body);
         $message->setIdentifier($msg->delivery_info['delivery_tag']);
+
         return $message;
     }
-
 
     public function purge()
     {
         return $this->getChannel()->queue_purge($this->queue);
     }
-
 
     public function ack(Message $message)
     {

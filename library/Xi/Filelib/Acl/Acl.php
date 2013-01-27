@@ -43,7 +43,6 @@ interface Acl
      */
     public function isFileReadableByAnonymous(File $file);
 
-
     /**
      * Returns whether a folder is readable
      *
