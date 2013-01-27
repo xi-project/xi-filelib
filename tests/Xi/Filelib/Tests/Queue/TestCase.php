@@ -6,7 +6,7 @@ use Xi\Filelib\Queue\Queue;
 use Xi\Filelib\Queue\Message;
 use Xi\Filelib\Tests\Queue\Processor\TestCommand;
 
-abstract class TestCase extends \Xi\Filelib\TestCase
+abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {
     /**
      *

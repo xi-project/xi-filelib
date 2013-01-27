@@ -64,8 +64,6 @@ class UnPublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
                    ->setMethods(array('publish', 'getProfile', 'getPublisher'))
                    ->getMock();
 
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
-
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
         $publisher->expects($this->once())->method('unpublish');
 

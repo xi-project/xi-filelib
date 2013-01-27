@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Configurator;
 
-class ConfiguratorTest extends \Xi\Filelib\TestCase
+class ConfiguratorTest extends \Xi\Filelib\Tests\TestCase
 {
 
     /**

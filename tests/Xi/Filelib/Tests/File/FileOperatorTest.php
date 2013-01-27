@@ -173,10 +173,10 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals(array(), $op->getProfiles());
 
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
         $profile->expects($this->any())->method('getIdentifier')->will($this->returnValue('xooxer'));
 
-        $profile2 = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile2 = $this->getMockFileProfile();
         $profile2->expects($this->any())->method('getIdentifier')->will($this->returnValue('lusser'));
 
         $eventDispatcher->expects($this->exactly(2))->method('addSubscriber')->with($this->isInstanceOf('Xi\Filelib\File\FileProfile'));
@@ -202,11 +202,11 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
     {
         $linker = $this->getMockForAbstractClass('Xi\Filelib\Linker\Linker');
 
-        $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile = $this->getMockFileProfile();
         $profile->expects($this->any())->method('getIdentifier')->will($this->returnValue('xooxer'));
         $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
-        $profile2 = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile2 = $this->getMockFileProfile();
         $profile2->expects($this->any())->method('getIdentifier')->will($this->returnValue('xooxer'));
         $profile2->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
@@ -487,7 +487,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
          $file = File::create(array('profile' => 'meisterlus'));
 
-         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+         $profile = $this->getMockFileProfile();
          $profile->expects($this->once())->method('fileHasVersion')->with($this->equalTo($file), $this->equalTo('kloo'));
 
          $op->expects($this->any())->method('getProfile')->with($this->equalTo('meisterlus'))->will($this->returnValue($profile));
@@ -509,7 +509,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
          $file = File::create(array('profile' => 'meisterlus'));
 
-         $profile = $this->getMock('Xi\Filelib\File\FileProfile');
+         $profile = $this->getMockFileProfile();
          $profile->expects($this->once())->method('getVersionProvider')->with($this->equalTo($file), $this->equalTo('kloo'));
 
          $op->expects($this->any())->method('getProfile')->with($this->equalTo('meisterlus'))->will($this->returnValue($profile));
@@ -533,13 +533,13 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussi', 'tussi', 'jussi')));
 
-        $profile1 = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile1 = $this->getMockFileProfile();
         $profile1->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
 
-        $profile2 = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile2 = $this->getMockFileProfile();
         $profile2->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
 
-        $profile3 = $this->getMock('Xi\Filelib\File\FileProfile');
+        $profile3 = $this->getMockFileProfile();
         $profile3->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
 
         $op->expects($this->exactly(3))->method('getProfile')

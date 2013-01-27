@@ -15,7 +15,7 @@ use \Xi\Filelib\File\Resource;
 /**
  * @group storage
  */
-class MultiStorageTest extends \Xi\Filelib\TestCase
+class MultiStorageTest extends \Xi\Filelib\Tests\TestCase
 {
     protected $storage;
 
