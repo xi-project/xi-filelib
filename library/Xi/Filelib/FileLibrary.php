@@ -80,14 +80,40 @@ class FileLibrary
     private $queue;
 
     /**
-     * @var IdentityMap
-     */
-    private $identityMap;
-
-    /**
      * @var Platform
      */
     private $platform;
+
+
+    public function __construct(
+        Storage $storage,
+        Platform $platform,
+        Publisher $publisher,
+        EventDispatcherInterface $eventDispatcher
+    ) {
+
+        $this->storage = $storage;
+        $this->platform = $platform;
+        $this->publisher = $publisher;
+        $this->eventDispatcher = $eventDispatcher;
+
+        $this->backend = new Backend(
+            $this->eventDispatcher,
+            $this->platform
+        );
+
+        /**
+         * @todo: Publisher must get it's dependencies somehow. It may and can not have a file operator
+         * in it's constructor. How does it get what it needs. Setter injection? Events? StorageLusserInterface?
+         * Some other automagics?
+         *
+         * Same goes with plugins etc.
+         *
+         */
+        $this->publisher->setDependencies($this);
+    }
+
+
 
     /**
      * @return EventDispatcherInterface
@@ -140,57 +166,6 @@ class FileLibrary
         return $this->tempDir;
     }
 
-    /**
-     * Shortcut to getFileOperator
-     *
-     * @return FileOperator
-     * @deprecated
-     */
-    public function file()
-    {
-        trigger_error("Method is deprecated. use getFileOperator() instead.", E_USER_DEPRECATED);
-
-        return $this->getFileOperator();
-    }
-
-    /**
-     * Shortcut to getFolderOperator
-     *
-     * @deprecated
-     * @return FolderOperator
-     */
-    public function folder()
-    {
-        trigger_error("Method is deprecated. use getFolderOperator() instead.", E_USER_DEPRECATED);
-
-        return $this->getFolderOperator();
-    }
-
-    /**
-     * Sets file operator
-     *
-     * @param  FileOperator $fileOperator
-     * @return FileLibrary
-     */
-    public function setFileOperator(FileOperator $fileOperator)
-    {
-        $this->fileOperator = $fileOperator;
-
-        return $this;
-    }
-
-    /**
-     * Sets folder operator
-     *
-     * @param  FolderOperator $fileOperator
-     * @return FileLibrary
-     */
-    public function setFolderOperator(FolderOperator $folderOperator)
-    {
-        $this->folderOperator = $folderOperator;
-
-        return $this;
-    }
 
     /**
      * Returns file operator
@@ -218,19 +193,6 @@ class FileLibrary
         }
 
         return $this->folderOperator;
-    }
-
-    /**
-     * Sets storage
-     *
-     * @param  Storage     $storage
-     * @return FileLibrary
-     */
-    public function setStorage(Storage $storage)
-    {
-        $this->storage = $storage;
-
-        return $this;
     }
 
     /**
@@ -309,6 +271,10 @@ class FileLibrary
      */
     public function getAcl()
     {
+        if (!$this->acl) {
+            $this->acl = new \Xi\Filelib\Acl\SimpleAcl(true);
+        }
+
         return $this->acl;
     }
 
@@ -373,42 +339,6 @@ class FileLibrary
     public function getQueue()
     {
         return $this->queue;
-    }
-
-    /**
-     * Sets platform
-     *
-     * @param  Platform    $platform
-     * @return FileLibrary
-     */
-    public function setPlatform(Platform $platform)
-    {
-        $this->platform = $platform;
-
-        return $this;
-    }
-
-    /**
-     * Returns identity map
-     *
-     * @return IdentityMap
-     */
-    public function getIdentityMap()
-    {
-        return $this->identityMap;
-    }
-
-    /**
-     * Sets identity map
-     *
-     * @param  IdentityMap $identityMap
-     * @return FileLibrary
-     */
-    public function setIdentityMap(IdentityMap $identityMap)
-    {
-        $this->identityMap = $identityMap;
-
-        return $this;
     }
 
     /**

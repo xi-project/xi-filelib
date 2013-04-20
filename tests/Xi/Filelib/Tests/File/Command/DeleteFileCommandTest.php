@@ -89,7 +89,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
        $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UnpublishFileCommand'))
           ->will($this->returnValue($unpublishCommand));
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
 
         $file = File::create(array('id' => 1, 'profile' => 'lussen', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
 

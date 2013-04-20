@@ -1,0 +1,235 @@
+[20-Apr-2013 09:25:29 UTC] PHP Catchable fatal error:  Argument 1 passed to Xi\Filelib\FileLibrary::__construct() must implement interface Xi\Filelib\Storage\Storage, instance of Xi\Filelib\Backend\Platform\MongoPlatform given, called in /wwwroot/xi-filelib/docs/examples/01-wiring.php on line 19 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php on line 94
+[20-Apr-2013 09:25:29 UTC] PHP Stack trace:
+[20-Apr-2013 09:25:29 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 09:25:29 UTC] PHP   2. Xi\Filelib\FileLibrary->__construct() /wwwroot/xi-filelib/docs/examples/01-wiring.php:19
+[20-Apr-2013 09:30:10 UTC] PHP Catchable fatal error:  Argument 1 passed to Xi\Filelib\AbstractOperator::__construct() must implement interface Xi\Filelib\Storage\Storage, instance of Xi\Filelib\FileLibrary given, called in /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php on line 180 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php on line 75
+[20-Apr-2013 09:30:10 UTC] PHP Stack trace:
+[20-Apr-2013 09:30:10 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 09:30:10 UTC] PHP   2. Xi\Filelib\FileLibrary->getFolderOperator() /wwwroot/xi-filelib/docs/examples/01-wiring.php:21
+[20-Apr-2013 09:30:10 UTC] PHP   3. Xi\Filelib\AbstractOperator->__construct() /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php:180
+[20-Apr-2013 09:31:49 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\FilelibException' with message 'Could not locate root folder' in /wwwroot/xi-filelib/library/Xi/Filelib/Folder/FolderOperator.php:134
+Stack trace:
+#0 /wwwroot/xi-filelib/docs/examples/01-wiring.php(21): Xi\Filelib\Folder\FolderOperator->findRoot()
+#1 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Folder/FolderOperator.php on line 134
+[20-Apr-2013 09:34:07 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\Exception\FolderNotFoundException' with message 'Parent folder was not found with id ""' in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:165
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/Folder/Command/CreateFolderCommand.php(43): Xi\Filelib\Backend\Backend->createFolder(Object(Xi\Filelib\Folder\Folder))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\Folder\Command\CreateFolderCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/Folder/FolderOperator.php(90): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\Folder\Command\CreateFolderCommand), 'create')
+#3 /wwwroot/xi-filelib/library/Xi/Filelib/Folder/FolderOperator.php(138): Xi\Filelib\Folder\FolderOperator->create(Object(Xi\Filelib\Folder\Folder))
+#4 /wwwroot/xi-filelib/docs/examples/01-wiring.php(21): Xi\Filelib\Folder\FolderOperator->findRoot()
+#5 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 165
+[20-Apr-2013 09:34:25 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\Exception\FolderNotFoundException' with message 'Parent folder was not found with id ""' in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:165
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/Folder/Command/CreateFolderCommand.php(43): Xi\Filelib\Backend\Backend->createFolder(Object(Xi\Filelib\Folder\Folder))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\Folder\Command\CreateFolderCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/Folder/FolderOperator.php(90): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\Folder\Command\CreateFolderCommand), 'create')
+#3 /wwwroot/xi-filelib/library/Xi/Filelib/Folder/FolderOperator.php(137): Xi\Filelib\Folder\FolderOperator->create(Object(Xi\Filelib\Folder\Folder))
+#4 /wwwroot/xi-filelib/docs/examples/01-wiring.php(21): Xi\Filelib\Folder\FolderOperator->findRoot()
+#5 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 165
+[20-Apr-2013 09:35:36 UTC] PHP Catchable fatal error:  Argument 1 passed to Xi\Filelib\Event\FolderEvent::__construct() must be an instance of Xi\Filelib\Folder\Folder, null given, called in /wwwroot/xi-filelib/library/Xi/Filelib/Folder/Command/CreateFolderCommand.php on line 45 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/Event/FolderEvent.php on line 19
+[20-Apr-2013 09:35:36 UTC] PHP Stack trace:
+[20-Apr-2013 09:35:36 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 09:35:36 UTC] PHP   2. Xi\Filelib\Folder\FolderOperator->findRoot() /wwwroot/xi-filelib/docs/examples/01-wiring.php:21
+[20-Apr-2013 09:35:36 UTC] PHP   3. Xi\Filelib\Folder\FolderOperator->create() /wwwroot/xi-filelib/library/Xi/Filelib/Folder/FolderOperator.php:137
+[20-Apr-2013 09:35:36 UTC] PHP   4. Xi\Filelib\AbstractOperator->executeOrQueue() /wwwroot/xi-filelib/library/Xi/Filelib/Folder/FolderOperator.php:90
+[20-Apr-2013 09:35:36 UTC] PHP   5. Xi\Filelib\Folder\Command\CreateFolderCommand->execute() /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php:168
+[20-Apr-2013 09:35:36 UTC] PHP   6. Xi\Filelib\Event\FolderEvent->__construct() /wwwroot/xi-filelib/library/Xi/Filelib/Folder/Command/CreateFolderCommand.php:45
+[20-Apr-2013 09:38:23 UTC] PHP Fatal error:  Call to a member function isFolderWritable() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php on line 110
+[20-Apr-2013 09:38:23 UTC] PHP Stack trace:
+[20-Apr-2013 09:38:23 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 09:38:23 UTC] PHP   2. Xi\Filelib\File\FileOperator->upload() /wwwroot/xi-filelib/docs/examples/01-wiring.php:22
+[20-Apr-2013 09:38:23 UTC] PHP   3. Xi\Filelib\AbstractOperator->executeOrQueue() /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php:230
+[20-Apr-2013 09:38:23 UTC] PHP   4. Xi\Filelib\File\Command\UploadFileCommand->execute() /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php:168
+[20-Apr-2013 09:39:19 UTC] PHP Fatal error:  Uncaught exception 'InvalidArgumentException' with message 'File profile 'default' not found' in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php:125
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php(114): Xi\Filelib\File\FileOperator->getProfile('default')
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\File\Command\UploadFileCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php(230): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\File\Command\UploadFileCommand), 'upload')
+#3 /wwwroot/xi-filelib/docs/examples/01-wiring.php(22): Xi\Filelib\File\FileOperator->upload('/wwwroot/xi-fil...', Object(Xi\Filelib\Folder\Folder))
+#4 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php on line 125
+[20-Apr-2013 09:45:04 UTC] PHP Warning:  Missing argument 1 for Xi\Filelib\File\FileProfile::__construct(), called in /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php on line 104 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileProfile.php on line 76
+[20-Apr-2013 09:45:04 UTC] PHP Stack trace:
+[20-Apr-2013 09:45:04 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 09:45:04 UTC] PHP   2. Xi\Filelib\FileLibrary->__construct() /wwwroot/xi-filelib/docs/examples/01-wiring.php:20
+[20-Apr-2013 09:45:04 UTC] PHP   3. Xi\Filelib\File\FileProfile->__construct() /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php:104
+[20-Apr-2013 09:45:04 UTC] PHP Catchable fatal error:  Argument 2 passed to Xi\Filelib\File\FileProfile::__construct() must be an instance of Xi\Filelib\Linker\Linker, none given, called in /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php on line 104 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileProfile.php on line 76
+[20-Apr-2013 09:45:04 UTC] PHP Stack trace:
+[20-Apr-2013 09:45:04 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 09:45:04 UTC] PHP   2. Xi\Filelib\FileLibrary->__construct() /wwwroot/xi-filelib/docs/examples/01-wiring.php:20
+[20-Apr-2013 09:45:04 UTC] PHP   3. Xi\Filelib\File\FileProfile->__construct() /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php:104
+[20-Apr-2013 09:45:47 UTC] PHP Warning:  Missing argument 1 for Xi\Filelib\File\FileProfile::__construct(), called in /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php on line 104 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileProfile.php on line 76
+[20-Apr-2013 09:45:47 UTC] PHP Stack trace:
+[20-Apr-2013 09:45:47 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 09:45:47 UTC] PHP   2. Xi\Filelib\FileLibrary->__construct() /wwwroot/xi-filelib/docs/examples/01-wiring.php:21
+[20-Apr-2013 09:45:47 UTC] PHP   3. Xi\Filelib\File\FileProfile->__construct() /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php:104
+[20-Apr-2013 09:45:47 UTC] PHP Catchable fatal error:  Argument 2 passed to Xi\Filelib\File\FileProfile::__construct() must be an instance of Xi\Filelib\Linker\Linker, none given, called in /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php on line 104 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileProfile.php on line 76
+[20-Apr-2013 09:45:47 UTC] PHP Stack trace:
+[20-Apr-2013 09:45:47 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 09:45:47 UTC] PHP   2. Xi\Filelib\FileLibrary->__construct() /wwwroot/xi-filelib/docs/examples/01-wiring.php:21
+[20-Apr-2013 09:45:47 UTC] PHP   3. Xi\Filelib\File\FileProfile->__construct() /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php:104
+[20-Apr-2013 09:47:23 UTC] PHP Fatal error:  Uncaught exception 'InvalidArgumentException' with message 'File profile 'default' not found' in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php:125
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php(114): Xi\Filelib\File\FileOperator->getProfile('default')
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\File\Command\UploadFileCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php(230): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\File\Command\UploadFileCommand), 'upload')
+#3 /wwwroot/xi-filelib/docs/examples/01-wiring.php(26): Xi\Filelib\File\FileOperator->upload('/wwwroot/xi-fil...', Object(Xi\Filelib\Folder\Folder))
+#4 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php on line 125
+[20-Apr-2013 09:47:54 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\FilelibException' with message 'Leveled directory id calculator requires numeric file ids ('5172644a2d07f2d325000001' was provided)' in /wwwroot/xi-filelib/library/Xi/Filelib/Storage/Filesystem/DirectoryIdCalculator/LeveledDirectoryIdCalculator.php:62
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php(79): Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator->calculateDirectoryId(Object(Xi\Filelib\File\Resource))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php(114): Xi\Filelib\Storage\FilesystemStorage->getDirectoryId(Object(Xi\Filelib\File\Resource))
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php(134): Xi\Filelib\Storage\FilesystemStorage->getPathName(Object(Xi\Filelib\File\Resource))
+#3 /wwwroot/xi-filelib/library/Xi/Filelib/Storage/AbstractStorage.php(77): Xi\Filelib\Storage\FilesystemStorage->doStore(Object(Xi\Filelib\File\Resource), '/wwwroot/xi-fil...')
+#4 /wwwroo in /wwwroot/xi-filelib/library/Xi/Filelib/Storage/AbstractStorage.php on line 79
+[20-Apr-2013 09:48:10 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\Exception\NonUniqueFileException' with message 'A file with the name "self-lussing-manatee.jpg" already exists in folder "root"' in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:138
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php(135): Xi\Filelib\Backend\Backend->createFile(Object(Xi\Filelib\File\File), Object(Xi\Filelib\Folder\Folder))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\File\Command\UploadFileCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php(230): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\File\Command\UploadFileCommand), 'upload')
+#3 /wwwroot/xi-filelib/docs/examples/01-wiring.php(26): Xi\Filelib\File\FileOperator->upload('/wwwroot/xi-fil...', Object(Xi\Filelib\Folder\Folder))
+#4 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 138
+[20-Apr-2013 09:49:07 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\FilelibException' with message 'Leveled directory id calculator requires numeric file ids ('517264932d07f24526000001' was provided)' in /wwwroot/xi-filelib/library/Xi/Filelib/Storage/Filesystem/DirectoryIdCalculator/LeveledDirectoryIdCalculator.php:62
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php(79): Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator->calculateDirectoryId(Object(Xi\Filelib\File\Resource))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php(114): Xi\Filelib\Storage\FilesystemStorage->getDirectoryId(Object(Xi\Filelib\File\Resource))
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php(134): Xi\Filelib\Storage\FilesystemStorage->getPathName(Object(Xi\Filelib\File\Resource))
+#3 /wwwroot/xi-filelib/library/Xi/Filelib/Storage/AbstractStorage.php(77): Xi\Filelib\Storage\FilesystemStorage->doStore(Object(Xi\Filelib\File\Resource), '/wwwroot/xi-fil...')
+#4 /wwwroo in /wwwroot/xi-filelib/library/Xi/Filelib/Storage/AbstractStorage.php on line 79
+[20-Apr-2013 14:50:01 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\Exception\NonUniqueFileException' with message 'A file with the name "self-lussing-manatee.jpg" already exists in folder "root"' in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:138
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php(135): Xi\Filelib\Backend\Backend->createFile(Object(Xi\Filelib\File\File), Object(Xi\Filelib\Folder\Folder))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\File\Command\UploadFileCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php(230): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\File\Command\UploadFileCommand), 'upload')
+#3 /wwwroot/xi-filelib/docs/examples/01-wiring.php(38): Xi\Filelib\File\FileOperator->upload('/wwwroot/xi-fil...', Object(Xi\Filelib\Folder\Folder))
+#4 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 138
+[20-Apr-2013 14:50:50 UTC] PHP Fatal error:  Uncaught exception 'PDOException' with message 'SQLSTATE[HY000] [2002] No such file or directory' in /wwwroot/xi-filelib/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php:36
+Stack trace:
+#0 /wwwroot/xi-filelib/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(36): PDO->__construct('mysql:dbname=fi...', 'root', 'g04753m135', Array)
+#1 /wwwroot/xi-filelib/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOMySql/Driver.php(47): Doctrine\DBAL\Driver\PDOConnection->__construct('mysql:dbname=fi...', 'root', 'g04753m135', Array)
+#2 /wwwroot/xi-filelib/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(350): Doctrine\DBAL\Driver\PDOMySql\Driver->connect(Array, 'root', 'g04753m135', Array)
+#3 /wwwroot/xi-filelib/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(595): Doctrine\DBAL\Connection->connect()
+#4 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Platform/DoctrineOrmPlatform.php(417): Doctrine\DBAL\Connection->prepare('SELECT id FROM ...')
+#5 /wwwroot/xi-filelib/library/Xi/Filelib in /wwwroot/xi-filelib/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php on line 36
+[20-Apr-2013 14:51:23 UTC] PHP Fatal error:  Uncaught exception 'Doctrine\ORM\Mapping\MappingException' with message 'Class "Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder" is not a valid entity or mapped super class.' in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/MappingException.php:216
+Stack trace:
+#0 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php(87): Doctrine\ORM\Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass('Xi\Filelib\Back...')
+#1 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php(113): Doctrine\ORM\Mapping\Driver\AnnotationDriver->loadMetadataForClass('Xi\Filelib\Back...', Object(Doctrine\ORM\Mapping\ClassMetadata))
+#2 /wwwroot/xi-filelib/vendor/doctrine/common/lib/Doctrine/Common/Persistence/Mapping/AbstractClassMetadataFactory.php(302): Doctrine\ORM\Mapping\ClassMetadataFactory->doLoadMetadata(Object(Doctrine\ORM\Mapping\ClassMetadata), NULL, false, Array)
+#3 /wwwroot/xi-filelib/vendor/doctrine/common/lib/Doctr in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/MappingException.php on line 216
+[20-Apr-2013 14:53:30 UTC] PHP Fatal error:  Uncaught exception 'Doctrine\ORM\Mapping\MappingException' with message 'Class "Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder" is not a valid entity or mapped super class.' in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/MappingException.php:216
+Stack trace:
+#0 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php(87): Doctrine\ORM\Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass('Xi\Filelib\Back...')
+#1 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php(113): Doctrine\ORM\Mapping\Driver\AnnotationDriver->loadMetadataForClass('Xi\Filelib\Back...', Object(Doctrine\ORM\Mapping\ClassMetadata))
+#2 /wwwroot/xi-filelib/vendor/doctrine/common/lib/Doctrine/Common/Persistence/Mapping/AbstractClassMetadataFactory.php(302): Doctrine\ORM\Mapping\ClassMetadataFactory->doLoadMetadata(Object(Doctrine\ORM\Mapping\ClassMetadata), NULL, false, Array)
+#3 /wwwroot/xi-filelib/vendor/doctrine/common/lib/Doctr in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/MappingException.php on line 216
+[20-Apr-2013 14:54:45 UTC] PHP Fatal error:  Uncaught exception 'Doctrine\ORM\Mapping\MappingException' with message 'Class "Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder" is not a valid entity or mapped super class.' in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/MappingException.php:216
+Stack trace:
+#0 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php(87): Doctrine\ORM\Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass('Xi\Filelib\Back...')
+#1 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php(113): Doctrine\ORM\Mapping\Driver\AnnotationDriver->loadMetadataForClass('Xi\Filelib\Back...', Object(Doctrine\ORM\Mapping\ClassMetadata))
+#2 /wwwroot/xi-filelib/vendor/doctrine/common/lib/Doctrine/Common/Persistence/Mapping/AbstractClassMetadataFactory.php(302): Doctrine\ORM\Mapping\ClassMetadataFactory->doLoadMetadata(Object(Doctrine\ORM\Mapping\ClassMetadata), NULL, false, Array)
+#3 /wwwroot/xi-filelib/vendor/doctrine/common/lib/Doctr in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/MappingException.php on line 216
+[20-Apr-2013 14:55:05 UTC] PHP Fatal error:  Uncaught exception 'Doctrine\ORM\Mapping\MappingException' with message 'Class "Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder" is not a valid entity or mapped super class.' in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/MappingException.php:216
+Stack trace:
+#0 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php(87): Doctrine\ORM\Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass('Xi\Filelib\Back...')
+#1 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php(113): Doctrine\ORM\Mapping\Driver\AnnotationDriver->loadMetadataForClass('Xi\Filelib\Back...', Object(Doctrine\ORM\Mapping\ClassMetadata))
+#2 /wwwroot/xi-filelib/vendor/doctrine/common/lib/Doctrine/Common/Persistence/Mapping/AbstractClassMetadataFactory.php(302): Doctrine\ORM\Mapping\ClassMetadataFactory->doLoadMetadata(Object(Doctrine\ORM\Mapping\ClassMetadata), NULL, false, Array)
+#3 /wwwroot/xi-filelib/vendor/doctrine/common/lib/Doctr in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/MappingException.php on line 216
+[20-Apr-2013 14:56:27 UTC] PHP Fatal error:  Uncaught exception 'Doctrine\ORM\ORMException' with message 'The identifier id is missing for a query of Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder' in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/ORMException.php:160
+Stack trace:
+#0 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/EntityManager.php(455): Doctrine\ORM\ORMException::missingIdentifierField('Xi\Filelib\Back...', 'id')
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Platform/DoctrineOrmPlatform.php(551): Doctrine\ORM\EntityManager->getReference('Xi\Filelib\Back...', NULL)
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Platform/DoctrineOrmPlatform.php(220): Xi\Filelib\Backend\Platform\DoctrineOrmPlatform->getFolderReference(NULL)
+#3 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php(174): Xi\Filelib\Backend\Platform\DoctrineOrmPlatform->createFolder(Object(Xi\Filelib\Folder\Folder))
+#4 [internal function]: Xi\Filelib\Backend\Backend->Xi\Filelib\Backend\{closure}(Object(Xi\Filelib\Backend\Platform\Doctrin in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/ORMException.php on line 160
+[20-Apr-2013 14:57:36 UTC] PHP Fatal error:  Uncaught exception 'Doctrine\ORM\ORMException' with message 'The identifier id is missing for a query of Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder' in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/ORMException.php:160
+Stack trace:
+#0 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/EntityManager.php(455): Doctrine\ORM\ORMException::missingIdentifierField('Xi\Filelib\Back...', 'id')
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Platform/DoctrineOrmPlatform.php(551): Doctrine\ORM\EntityManager->getReference('Xi\Filelib\Back...', NULL)
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Platform/DoctrineOrmPlatform.php(220): Xi\Filelib\Backend\Platform\DoctrineOrmPlatform->getFolderReference(NULL)
+#3 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php(174): Xi\Filelib\Backend\Platform\DoctrineOrmPlatform->createFolder(Object(Xi\Filelib\Folder\Folder))
+#4 [internal function]: Xi\Filelib\Backend\Backend->Xi\Filelib\Backend\{closure}(Object(Xi\Filelib\Backend\Platform\Doctrin in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/ORMException.php on line 160
+[20-Apr-2013 15:00:02 UTC] PHP Fatal error:  Uncaught exception 'Doctrine\ORM\ORMException' with message 'The identifier id is missing for a query of Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder' in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/ORMException.php:160
+Stack trace:
+#0 /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/EntityManager.php(455): Doctrine\ORM\ORMException::missingIdentifierField('Xi\Filelib\Back...', 'id')
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Platform/DoctrineOrmPlatform.php(553): Doctrine\ORM\EntityManager->getReference('Xi\Filelib\Back...', NULL)
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Platform/DoctrineOrmPlatform.php(220): Xi\Filelib\Backend\Platform\DoctrineOrmPlatform->getFolderReference(NULL)
+#3 /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php(174): Xi\Filelib\Backend\Platform\DoctrineOrmPlatform->createFolder(Object(Xi\Filelib\Folder\Folder))
+#4 [internal function]: Xi\Filelib\Backend\Backend->Xi\Filelib\Backend\{closure}(Object(Xi\Filelib\Backend\Platform\Doctrin in /wwwroot/xi-filelib/vendor/doctrine/orm/lib/Doctrine/ORM/ORMException.php on line 160
+[20-Apr-2013 15:02:50 UTC] PHP Fatal error:  Call to a member function publish() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/PublishFileCommand.php on line 35
+[20-Apr-2013 15:02:50 UTC] PHP Stack trace:
+[20-Apr-2013 15:02:50 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 15:02:50 UTC] PHP   2. Xi\Filelib\File\FileOperator->upload() /wwwroot/xi-filelib/docs/examples/01-wiring.php:41
+[20-Apr-2013 15:02:50 UTC] PHP   3. Xi\Filelib\AbstractOperator->executeOrQueue() /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php:230
+[20-Apr-2013 15:02:50 UTC] PHP   4. Xi\Filelib\File\Command\UploadFileCommand->execute() /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php:168
+[20-Apr-2013 15:02:50 UTC] PHP   5. Xi\Filelib\AbstractOperator->executeOrQueue() /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php:143
+[20-Apr-2013 15:02:50 UTC] PHP   6. Xi\Filelib\File\Command\AfterUploadFileCommand->execute() /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php:168
+[20-Apr-2013 15:02:50 UTC] PHP   7. Xi\Filelib\File\Command\PublishFileCommand->execute() /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/AfterUploadFileCommand.php:52
+[20-Apr-2013 15:17:33 UTC] PHP Fatal error:  Cannot use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher as SymlinkFilesystemPublisher because the name is already in use in /wwwroot/xi-filelib/docs/examples/01-wiring.php on line 15
+[20-Apr-2013 15:17:42 UTC] PHP Fatal error:  Call to a member function setDependencies() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php on line 105
+[20-Apr-2013 15:17:42 UTC] PHP Stack trace:
+[20-Apr-2013 15:17:42 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 15:17:42 UTC] PHP   2. Xi\Filelib\FileLibrary->__construct() /wwwroot/xi-filelib/docs/examples/01-wiring.php:37
+[20-Apr-2013 15:18:06 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\Exception\NonUniqueFileException' with message 'A file with the name "self-lussing-manatee.jpg" already exists in folder "root"' in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:138
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php(135): Xi\Filelib\Backend\Backend->createFile(Object(Xi\Filelib\File\File), Object(Xi\Filelib\Folder\Folder))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\File\Command\UploadFileCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php(230): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\File\Command\UploadFileCommand), 'upload')
+#3 /wwwroot/xi-filelib/docs/examples/01-wiring.php(42): Xi\Filelib\File\FileOperator->upload('/wwwroot/xi-fil...', Object(Xi\Filelib\Folder\Folder))
+#4 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 138
+[20-Apr-2013 15:31:14 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\File\FileProfile::getIdentifier() in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php on line 101
+[20-Apr-2013 15:31:14 UTC] PHP Stack trace:
+[20-Apr-2013 15:31:14 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 15:31:14 UTC] PHP   2. Xi\Filelib\FileLibrary->addProfile() /wwwroot/xi-filelib/docs/examples/01-wiring.php:41
+[20-Apr-2013 15:31:14 UTC] PHP   3. Xi\Filelib\File\FileOperator->addProfile() /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php:281
+[20-Apr-2013 15:31:57 UTC] PHP Fatal error:  Call to a member function getProfile() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Filesystem/AbstractFilesystemPublisher.php on line 176
+[20-Apr-2013 15:31:57 UTC] PHP Stack trace:
+[20-Apr-2013 15:31:57 UTC] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/01-wiring.php:0
+[20-Apr-2013 15:31:57 UTC] PHP   2. Xi\Filelib\File\FileOperator->upload() /wwwroot/xi-filelib/docs/examples/01-wiring.php:46
+[20-Apr-2013 15:31:57 UTC] PHP   3. Xi\Filelib\AbstractOperator->executeOrQueue() /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php:230
+[20-Apr-2013 15:31:57 UTC] PHP   4. Xi\Filelib\File\Command\UploadFileCommand->execute() /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php:168
+[20-Apr-2013 15:31:57 UTC] PHP   5. Xi\Filelib\AbstractOperator->executeOrQueue() /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php:143
+[20-Apr-2013 15:31:57 UTC] PHP   6. Xi\Filelib\File\Command\AfterUploadFileCommand->execute() /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php:168
+[20-Apr-2013 15:31:57 UTC] PHP   7. Xi\Filelib\File\Command\PublishFileCommand->execute() /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/AfterUploadFileCommand.php:52
+[20-Apr-2013 15:31:57 UTC] PHP   8. Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher->publish() /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/PublishFileCommand.php:35
+[20-Apr-2013 15:31:57 UTC] PHP   9. Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher->getLinkerForFile() /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Filesystem/SymlinkFilesystemPublisher.php:132
+[20-Apr-2013 15:33:17 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\Exception\NonUniqueFileException' with message 'A file with the name "self-lussing-manatee.jpg" already exists in folder "root"' in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:138
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php(135): Xi\Filelib\Backend\Backend->createFile(Object(Xi\Filelib\File\File), Object(Xi\Filelib\Folder\Folder))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\File\Command\UploadFileCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php(232): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\File\Command\UploadFileCommand), 'upload')
+#3 /wwwroot/xi-filelib/docs/examples/01-wiring.php(46): Xi\Filelib\File\FileOperator->upload('/wwwroot/xi-fil...', Object(Xi\Filelib\Folder\Folder))
+#4 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 138
+[20-Apr-2013 15:33:21 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\Exception\NonUniqueFileException' with message 'A file with the name "self-lussing-manatee.jpg" already exists in folder "root"' in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:138
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php(135): Xi\Filelib\Backend\Backend->createFile(Object(Xi\Filelib\File\File), Object(Xi\Filelib\Folder\Folder))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\File\Command\UploadFileCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php(232): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\File\Command\UploadFileCommand), 'upload')
+#3 /wwwroot/xi-filelib/docs/examples/01-wiring.php(46): Xi\Filelib\File\FileOperator->upload('/wwwroot/xi-fil...', Object(Xi\Filelib\Folder\Folder))
+#4 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 138
+[20-Apr-2013 15:33:21 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\Exception\NonUniqueFileException' with message 'A file with the name "self-lussing-manatee.jpg" already exists in folder "root"' in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:138
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php(135): Xi\Filelib\Backend\Backend->createFile(Object(Xi\Filelib\File\File), Object(Xi\Filelib\Folder\Folder))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\File\Command\UploadFileCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php(232): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\File\Command\UploadFileCommand), 'upload')
+#3 /wwwroot/xi-filelib/docs/examples/01-wiring.php(46): Xi\Filelib\File\FileOperator->upload('/wwwroot/xi-fil...', Object(Xi\Filelib\Folder\Folder))
+#4 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 138
+[20-Apr-2013 15:33:22 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\Exception\NonUniqueFileException' with message 'A file with the name "self-lussing-manatee.jpg" already exists in folder "root"' in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:138
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php(135): Xi\Filelib\Backend\Backend->createFile(Object(Xi\Filelib\File\File), Object(Xi\Filelib\Folder\Folder))
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php(168): Xi\Filelib\File\Command\UploadFileCommand->execute()
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php(232): Xi\Filelib\AbstractOperator->executeOrQueue(Object(Xi\Filelib\File\Command\UploadFileCommand), 'upload')
+#3 /wwwroot/xi-filelib/docs/examples/01-wiring.php(46): Xi\Filelib\File\FileOperator->upload('/wwwroot/xi-fil...', Object(Xi\Filelib\Folder\Folder))
+#4 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 138

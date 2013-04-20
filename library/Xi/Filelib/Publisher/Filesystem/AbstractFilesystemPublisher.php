@@ -50,13 +50,19 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
      */
     private $baseUrl = '';
 
-    /**
-     * @param FileOperator $fileOperator
-     * @param array        $options
-     */
-    public function __construct(FileOperator $fileOperator, $options = array())
+
+    public function __construct($root, $filePermission = 0600, $directoryPermission = 0700, $baseUrl = '')
     {
-        parent::__construct($options);
+        $this->publicRoot = $root;
+        $this->filePermission = $filePermission;
+        $this->directoryPermission = $directoryPermission;
+        $this->baseUrl = $baseUrl;
+    }
+
+
+
+    public function setFileOperator(FileOperator $fileOperator)
+    {
         $this->fileOperator = $fileOperator;
     }
 

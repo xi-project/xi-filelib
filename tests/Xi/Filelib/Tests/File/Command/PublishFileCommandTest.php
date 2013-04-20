@@ -64,7 +64,7 @@ class PublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $dispatcher->expects($this->once())->method('dispatch')
                    ->with($this->equalTo('xi_filelib.file.publish'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getPublishOriginal')->will($this->returnValue(true));
 
         $profile->expects($this->never())->method('getPlugins');
@@ -100,7 +100,7 @@ class PublishFileCommandTest extends \Xi\Filelib\Tests\TestCase
                    ->setMethods(array('unpublish', 'getProfile'))
                    ->getMock();
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getPublishOriginal')->will($this->returnValue(false));
 
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');

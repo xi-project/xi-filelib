@@ -17,28 +17,21 @@ use Xi\Filelib\FilelibException;
  */
 class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
 {
+    public function __construct($directoryLevels = 3, $filesPerDirectory = 500)
+    {
+        $this->directoryLevels = $directoryLevels;
+        $this->filesPerDirectory = $filesPerDirectory;
+    }
+
     /**
      * @var integer Files per directory
      */
-    private $filesPerDirectory = 500;
+    private $filesPerDirectory;
 
     /**
      * @var integer Levels in directory structure
      */
-    private $directoryLevels = 1;
-
-    /**
-     * Sets files per directory
-     *
-     * @param  integer                    $filesPerDirectory
-     * @return LeveledDirectoryCalculator
-     */
-    public function setFilesPerDirectory($filesPerDirectory)
-    {
-        $this->filesPerDirectory = $filesPerDirectory;
-
-        return $this;
-    }
+    private $directoryLevels;
 
     /**
      * Returns files per directory
@@ -48,19 +41,6 @@ class LeveledDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     public function getFilesPerDirectory()
     {
         return $this->filesPerDirectory;
-    }
-
-    /**
-     * Sets levels per directory hierarchy
-     *
-     * @param  integer                    $directoryLevels
-     * @return LeveledDirectoryCalculator
-     */
-    public function setDirectoryLevels($directoryLevels)
-    {
-        $this->directoryLevels = $directoryLevels;
-
-        return $this;
     }
 
     /**

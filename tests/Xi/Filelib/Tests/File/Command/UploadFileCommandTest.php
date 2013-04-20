@@ -92,7 +92,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $folder = Folder::create(array('id' => 1));
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
 
         $linker = $this->getMock('Xi\Filelib\Linker\Linker');
         $linker->expects($this->any())->method('getLink')->will($this->returnValue('maximuslincitus'));
@@ -206,7 +206,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
 
         $op->expects($this->any())->method('getProfile')
             ->with($this->equalTo('lussenhof'))
@@ -261,7 +261,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
 
         $op->expects($this->any())->method('getProfile')
             ->with($this->equalTo('lussenhof'))
@@ -311,7 +311,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
                     ->setMethods(array('getBackend', 'getProfile'))
                     ->getMock();
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
 
         $op->expects($this->any())->method('getProfile')
            ->with($this->equalTo('lussenhof'))

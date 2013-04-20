@@ -73,14 +73,18 @@ class FileProfile implements EventSubscriberInterface
      */
     private $publishOriginal = true;
 
-    /**
-     * @param FileOperator $fileOperator
-     * @param array        $options
-     */
-    public function __construct(FileOperator $fileOperator, $options = array())
+    public function __construct($identifier, Linker $linker, $accessToOriginal = true, $publishOriginal = true)
     {
-        Configurator::setConstructorOptions($this, $options);
+        if ($identifier === 'original') {
+            throw new InvalidArgumentException("Profile identifier can not be 'original'");
+        }
 
+        $this->identifier = $identifier;
+        $this->linker = $linker;
+    }
+
+    public function setFileOperator(FileOperator $fileOperator)
+    {
         $this->fileOperator = $fileOperator;
     }
 
@@ -105,66 +109,11 @@ class FileProfile implements EventSubscriberInterface
     }
 
     /**
-     * Sets linker
-     *
-     * @param  Linker      $linker
-     * @return FileProfile
-     */
-    public function setLinker(Linker $linker)
-    {
-        $this->linker = $linker;
-
-        return $this;
-    }
-
-    /**
-     * Sets human readable identifier
-     *
-     * @param  string      $description
-     * @return FileProfile
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Returns human readable identifier
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * Returns identifier
-     *
      * @return string
      */
     public function getIdentifier()
     {
         return $this->identifier;
-    }
-
-    /**
-     * Sets identifier
-     *
-     * @param  string                   $identifier
-     * @throws InvalidArgumentException
-     * @return FileProfile
-     */
-    public function setIdentifier($identifier)
-    {
-        if ($identifier === 'original') {
-            throw new InvalidArgumentException("Invalid profile identifier '{$identifier}'");
-        }
-        $this->identifier = $identifier;
-
-        return $this;
     }
 
     /**
@@ -177,7 +126,6 @@ class FileProfile implements EventSubscriberInterface
     public function addPlugin(Plugin $plugin, $priority = 1000)
     {
         $this->plugins[] = $plugin;
-
         return $this;
     }
 
@@ -256,19 +204,6 @@ class FileProfile implements EventSubscriberInterface
     }
 
     /**
-     * Sets whether access to the original file is allowed
-     *
-     * @param  boolean     $accessToOriginal
-     * @return FileProfile
-     */
-    public function setAccessToOriginal($accessToOriginal)
-    {
-        $this->accessToOriginal = $accessToOriginal;
-
-        return $this;
-    }
-
-    /**
      * Returns whether access to the original file is allowed
      *
      * @return boolean
@@ -276,19 +211,6 @@ class FileProfile implements EventSubscriberInterface
     public function getAccessToOriginal()
     {
         return $this->accessToOriginal;
-    }
-
-    /**
-     * Sets whether the original file is published
-     *
-     * @param  boolean     $publishOriginal
-     * @return FileProfile
-     */
-    public function setPublishOriginal($publishOriginal)
-    {
-        $this->publishOriginal = $publishOriginal;
-
-        return $this;
     }
 
     /**

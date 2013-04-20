@@ -98,6 +98,8 @@ class FileOperator extends AbstractOperator
      */
     public function addProfile(FileProfile $profile)
     {
+        $profile->setFileOperator($this);
+
         $identifier = $profile->getIdentifier();
         if (isset($this->profiles[$identifier])) {
             throw new InvalidArgumentException("Profile '{$identifier}' already exists");

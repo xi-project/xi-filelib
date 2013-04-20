@@ -15,6 +15,7 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\FilesystemStorage;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage
@@ -27,20 +28,26 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     private $storage;
 
     /**
-     * @param FilesystemStorage $storage
-     * @param FileOperator      $fileOperator
-     * @param array             $options
-     */
-    public function __construct(FilesystemStorage $storage, FileOperator $fileOperator, $options = array())
-    {
-        parent::__construct($fileOperator, $options);
-        $this->storage = $storage;
-    }
-
-    /**
      * @var string Relative path from publisher root to storage root
      */
     private $relativePathToRoot;
+
+    public function __construct(
+        $root,
+        $filePermission = 0600,
+        $directoryPermission = 0700,
+        $baseUrl = '',
+        $relativePathToRoot = null
+    ) {
+        parent::__construct($root, $filePermission, $directoryPermission, $baseUrl);
+        $this->relativePathToRoot = $relativePathToRoot;
+    }
+
+    public function setDependencies(FileLibrary $filelib)
+    {
+        $this->storage = $filelib->getStorage();
+    }
+
 
     /**
      * Sets path from public to private root

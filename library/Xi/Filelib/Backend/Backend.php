@@ -48,11 +48,13 @@ class Backend
      * @param Platform                 $platform
      * @param IdentityMap              $identityMap
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, Platform $platform, IdentityMap $identityMap)
-    {
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        Platform $platform
+    ) {
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
-        $this->identityMapHelper = new IdentityMapHelper($identityMap, $platform);
+        $this->identityMapHelper = new IdentityMapHelper(new IdentityMap($this->eventDispatcher), $platform);
     }
 
     /**
@@ -159,10 +161,12 @@ class Backend
      */
     public function createFolder(Folder $folder)
     {
-        if (!$this->findById($folder->getParentId(), 'Xi\Filelib\Folder\Folder')) {
-            throw new FolderNotFoundException(
-                sprintf('Parent folder was not found with id "%s"', $folder->getParentId())
-            );
+        if ($folder->getParentId() !== null) {
+            if (!$this->findById($folder->getParentId(), 'Xi\Filelib\Folder\Folder')) {
+                throw new FolderNotFoundException(
+                    sprintf('Parent folder was not found with id "%s"', $folder->getParentId())
+                );
+            }
         }
 
         $this->getIdentityMapHelper()->tryAndAddToIdentityMap(
@@ -171,6 +175,8 @@ class Backend
             },
             $folder
         );
+
+        return $folder;
     }
 
     /**

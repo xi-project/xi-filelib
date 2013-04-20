@@ -49,7 +49,7 @@ class RandomizeNamePluginTest extends TestCase
      */
     public function beforeUploadShouldExitEarlyIfPluginDoesntHaveProfile()
     {
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
 
         $event = $this->getMockBuilder('Xi\Filelib\Event\FileUploadEvent')
                       ->disableOriginalConstructor()
@@ -71,7 +71,7 @@ class RandomizeNamePluginTest extends TestCase
     {
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
 
@@ -104,7 +104,7 @@ class RandomizeNamePluginTest extends TestCase
         $upload->setOverrideFilename('tussinlussuttajankabaali');
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
 
@@ -147,7 +147,7 @@ class RandomizeNamePluginTest extends TestCase
 
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
 
