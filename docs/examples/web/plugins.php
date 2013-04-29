@@ -7,13 +7,15 @@ use Symfony\Component\HttpFoundation\Response;
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../bootstrap-plugins.php';
 
-$folder = $filelib->findRootFolder();
-// $folder = $filelib->getFolderOperator()->findRoot();
-
-$file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-02.jpg', $folder);
-// $file = $filelib->getFileOperator()->upload(__DIR__ . '/../manatees/manatus-02.jpg', $folder);
-
 $request = Request::createFromGlobals();
+
+if (!$request->get('id')) {
+    $folder = $filelib->findRootFolder();
+    $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-02.jpg', $folder);
+} else {
+    $file = $filelib->findFile($request->get('id'));
+}
+
 
 // $renderer = new SymfonyRenderer($filelib->getPuuppa(), $filelib->getLoso(), $filelib->getSitä(), $filelib->getTätä());
 $renderer = new SymfonyRenderer($filelib);
