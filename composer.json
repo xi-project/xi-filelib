@@ -44,9 +44,9 @@
     },
 
     "require-dev": {
-        "doctrine/orm": "2.3.*",
-        "doctrine/dbal": "2.3.*",
-        "doctrine/common": "2.3.*",
+        "doctrine/orm": ">=2.3.0",
+        "doctrine/dbal": ">=2.3.0",
+        "doctrine/common": ">=2.3.0",
         "symfony/http-foundation": "2.2.*",
         "symfony/http-kernel": "2.2.*",
         "symfony/process": "2.2.*",

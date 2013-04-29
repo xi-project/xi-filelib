@@ -43,7 +43,7 @@ class ImageMagickHelper
     public function setCommands(array $commands = array())
     {
         foreach ($commands as $command) {
-            $this->addCommand($this->createCommandFromArray($command));
+            $this->addCommand($command);
         }
     }
 

@@ -110,6 +110,7 @@ class FileLibrary
          * Same goes with plugins etc.
          *
          */
+
         $this->publisher->setDependencies($this);
     }
 
@@ -302,20 +303,18 @@ class FileLibrary
      * Adds a plugin
      *
      * @param  Plugin      $plugin
-     * @param  integer     $priority
      * @return FileLibrary
      *
-     * TODO: Priority is not used.
      */
-    public function addPlugin(Plugin $plugin, $priority = 1000)
+    public function addPlugin(Plugin $plugin, $profiles = array())
     {
-        $this->getEventDispatcher()->addSubscriber($plugin);
+        // @todo: think about dependency hell
+        $plugin->setProfiles($profiles);
+        $plugin->setDependencies($this);
 
+        $this->getEventDispatcher()->addSubscriber($plugin);
         $event = new PluginEvent($plugin);
         $this->getEventDispatcher()->dispatch('xi_filelib.plugin.add', $event);
-
-        $plugin->init();
-
         return $this;
     }
 
@@ -350,4 +349,24 @@ class FileLibrary
     {
         return $this->platform;
     }
+
+    /**
+     * Prototyping a general shortcut magic method. Is it bad?
+     *
+     * @param $method
+     * @param $args
+     * @return mixed
+     * @throws \Exception
+     */
+    public function __call($method, $args)
+    {
+        $matches = array();
+        if (preg_match("#^(.*?)(Folder|File)$#", $method, $matches)) {
+            $delegate = ($matches[2] == 'Folder') ? $this->getFolderOperator() : $this->getFileOperator();
+            return call_user_func_array(array($delegate, $matches[1]), $args);
+        }
+        throw new \Exception("Invalid method '{$method}'");
+    }
+
+
 }

@@ -18,6 +18,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Abstract convenience class for version provider plugins
@@ -67,15 +68,24 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      * @param  array                   $options
      * @return AbstractVersionProvider
      */
-    public function __construct(Storage $storage, Publisher $publisher,
-        FileOperator $fileOperator, array $options = array()
-    ) {
-        parent::__construct($options);
-
-        $this->storage = $storage;
-        $this->publisher = $publisher;
-        $this->fileOperator = $fileOperator;
+    public function __construct($identifier)
+    {
+        $this->identifier = $identifier;
     }
+
+    /**
+     * @param FileLibrary $filelib
+     */
+    public function setDependencies(FileLibrary $filelib)
+    {
+        $this->storage = $filelib->getStorage();
+        $this->publisher = $filelib->getPublisher();
+        $this->fileOperator = $filelib->getFileOperator();
+
+        $this->init();
+    }
+
+
 
     abstract public function createVersions(File $file);
 
@@ -100,19 +110,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     }
 
     /**
-     * Sets identifier
-     *
-     * @param  string          $identifier
-     * @return VersionProvider
-     */
-    public function setIdentifier($identifier)
-    {
-        $this->identifier = $identifier;
-
-        return $this;
-    }
-
-    /**
      * Returns identifier
      *
      * @return string
@@ -120,19 +117,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function getIdentifier()
     {
         return $this->identifier;
-    }
-
-    /**
-     * Sets file types for this version plugin.
-     *
-     * @param  array           $providesFor Array of file types
-     * @return VersionProvider
-     */
-    public function setProvidesFor(array $providesFor)
-    {
-        $this->providesFor = $providesFor;
-
-        return $this;
     }
 
     /**

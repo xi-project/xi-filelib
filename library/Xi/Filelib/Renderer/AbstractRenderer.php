@@ -12,11 +12,11 @@ namespace Xi\Filelib\Renderer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
-
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\FileLibrary;
 
 
 abstract class AbstractRenderer implements Renderer
@@ -63,17 +63,13 @@ abstract class AbstractRenderer implements Renderer
      * @param FileOperator $fileOperator
      */
     public function __construct(
-        Storage $storage,
-        Publisher $publisher,
-        Acl $acl,
-        EventDispatcherInterface $eventDispatcher,
-        FileOperator $fileOperator
+        FileLibrary $filelib
     ) {
-        $this->storage = $storage;
-        $this->publisher = $publisher;
-        $this->acl = $acl;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->fileOperator = $fileOperator;
+        $this->storage = $filelib->getStorage();
+        $this->publisher = $filelib->getPublisher();
+        $this->acl = $filelib->getAcl();
+        $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->fileOperator = $filelib->getFileOperator();
     }
 
     /**

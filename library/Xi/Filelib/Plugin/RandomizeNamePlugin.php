@@ -24,23 +24,19 @@ class RandomizeNamePlugin extends AbstractPlugin
         'xi_filelib.file.before_create' => 'beforeUpload'
     );
 
+
+    /**
+     * @param string $prefix
+     */
+    public function __construct($prefix = '')
+    {
+        $this->prefix = $prefix;
+    }
+
     /**
      * @var string Prefix (for uniqid)
      */
     protected $prefix = '';
-
-    /**
-     * Sets prefix
-     *
-     * @param  string              $prefix
-     * @return RandomizeNamePlugin
-     */
-    public function setPrefix($prefix)
-    {
-        $this->prefix = $prefix;
-
-        return $this;
-    }
 
     /**
      * Returns prefix

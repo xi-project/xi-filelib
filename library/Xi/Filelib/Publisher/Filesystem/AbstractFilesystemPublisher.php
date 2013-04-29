@@ -16,6 +16,7 @@ use Xi\Filelib\Linker\Linker;
 use LogicException;
 use SplFileInfo;
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Abstract filesystem publisher convenience class
@@ -59,11 +60,9 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
         $this->baseUrl = $baseUrl;
     }
 
-
-
-    public function setFileOperator(FileOperator $fileOperator)
+    public function setDependencies(FileLibrary $filelib)
     {
-        $this->fileOperator = $fileOperator;
+        $this->fileOperator = $filelib->getFileOperator();
     }
 
     /**

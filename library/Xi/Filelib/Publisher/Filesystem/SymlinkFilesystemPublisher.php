@@ -46,6 +46,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     public function setDependencies(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
+        parent::setDependencies($filelib);
     }
 
 
