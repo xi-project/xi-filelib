@@ -19,7 +19,7 @@ For MySQL
 
     mysql -uroot -p filelib_example < schema-mysql.sql
 
-2. Configure Filelib with directory paths for `private`, `public` and `temp`
+2. Configure Filelib with directory paths for `private` and `public`
    and make them writable by the web server.
 
 ```php
@@ -27,7 +27,6 @@ For MySQL
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\FilesystemStorage;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
 use Xi\Filelib\Backend\Platform\DoctrineOrmPlatform;
 use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
 
@@ -36,11 +35,10 @@ use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
  */
 
 $filelib = new FileLibrary(
-    new FilesystemStorage('/path/to/my/application/data/private', new LeveledDirectoryIdCalculator()),
+    new FilesystemStorage('/path/to/my/application/data/private'),
     new DoctrineOrmPlatform($entityManager),
-    new SymlinkFilesystemPublisher('/path/to/my/application/web/files', 0600, 0700, '/files')
+    new SymlinkFilesystemPublisher('/path/to/my/application/web/files', '/files')
 );
-$filelib->setTempDir('/path/to/my/application/data/temp');
 
 $file = $filelib->upload('/path/to/some/file.jpg');
 ```
