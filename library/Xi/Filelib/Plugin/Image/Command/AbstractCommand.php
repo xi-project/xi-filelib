@@ -19,11 +19,6 @@ use Xi\Filelib\Configurator;
  */
 abstract class AbstractCommand implements Command
 {
-    public function __construct($options = array())
-    {
-        Configurator::setConstructorOptions($this, $options);
-    }
-
     /**
      * Creates a new Imagick resource from path
      *
