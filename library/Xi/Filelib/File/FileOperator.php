@@ -21,11 +21,6 @@ use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\EnqueueableCommand;
-use Xi\Filelib\File\Command\UploadFileCommand;
-use Xi\Filelib\File\Command\UpdateFileCommand;
-use Xi\Filelib\File\Command\DeleteFileCommand;
-use Xi\Filelib\File\Command\PublishFileCommand;
-use Xi\Filelib\File\Command\UnpublishFileCommand;
 use Xi\Filelib\Tool\TypeResolver\TypeResolver;
 use Xi\Filelib\Tool\TypeResolver\StupidTypeResolver;
 use Xi\Filelib\Backend\Finder\FileFinder;
@@ -43,8 +38,6 @@ class FileOperator extends AbstractOperator
     const COMMAND_AFTERUPLOAD = 'after_upload';
     const COMMAND_UPDATE = 'update';
     const COMMAND_DELETE = 'delete';
-    const COMMAND_PUBLISH = 'publish';
-    const COMMAND_UNPUBLISH = 'unpublish';
     const COMMAND_COPY = 'copy';
 
     /**
@@ -57,8 +50,6 @@ class FileOperator extends AbstractOperator
         self::COMMAND_AFTERUPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
         self::COMMAND_UPDATE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
         self::COMMAND_DELETE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_PUBLISH => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UNPUBLISH => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
         self::COMMAND_COPY => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
     );
 
@@ -301,35 +292,6 @@ class FileOperator extends AbstractOperator
         $profile = $this->getProfile($file->getProfile());
 
         return $profile->getVersionProvider($file, $version);
-    }
-
-    /**
-     * Publishes a file
-     *
-     * @param  File  $file
-     * @return mixed
-     */
-    public function publish(File $file)
-    {
-        return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this, $file)),
-            self::COMMAND_PUBLISH
-        );
-    }
-
-    /**
-     * Unpublishes a file
-     *
-     * @param  File  $file
-     * @return mixed
-     */
-    public function unpublish(File $file)
-    {
-        return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this, $file)),
-            self::COMMAND_UNPUBLISH
-        );
-
     }
 
     /**

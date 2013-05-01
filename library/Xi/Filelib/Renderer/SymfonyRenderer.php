@@ -101,9 +101,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
             $response->headers->set('Content-disposition', "attachment; filename={$file->getName()}");
         }
 
-        if ($options['track'] == true) {
-                $this->dispatchTrackEvent($file);
-        }
+        $this->dispatchRenderEvent($file);
 
         $this->setContent($response, $res);
 

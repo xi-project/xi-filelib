@@ -1,9 +1,10 @@
 <?php
 
-use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Plugin\Image\Command\ExecuteMethodCommand;
 use Xi\Filelib\Plugin\Image\Command\WatermarkCommand;
+use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
+use Xi\Filelib\Plugin\AutomaticPublisherPlugin;
 
 // 03. Plugins
 
@@ -47,4 +48,16 @@ $filelib->addPlugin(
         )
     ),
     array('default')
+);
+
+$publisher = new SymlinkFilesystemPublisher(
+    $filelib,
+    realpath(__DIR__ . '/web/files'),
+    0600,
+    0700,
+    '/files'
+);
+
+$filelib->addPlugin(
+    new AutomaticPublisherPlugin($publisher)
 );

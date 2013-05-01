@@ -30,8 +30,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected static $subscribedEvents = array(
         'xi_filelib.profile.add' => 'onFileProfileAdd',
         'xi_filelib.file.after_upload' => 'onAfterUpload',
-        'xi_filelib.file.publish' => 'onPublish',
-        'xi_filelib.file.unpublish' => 'onUnpublish',
         'xi_filelib.file.delete' => 'onFileDelete',
         'xi_filelib.resource.delete' => 'onResourceDelete',
     );
@@ -50,11 +48,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      * @var Storage
      */
     protected $storage;
-
-    /**
-     * @var Publisher
-     */
-    protected $publisher;
 
     /**
      * @var FileOperator
@@ -79,13 +72,10 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function setDependencies(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
-        $this->publisher = $filelib->getPublisher();
         $this->fileOperator = $filelib->getFileOperator();
 
         $this->init();
     }
-
-
 
     abstract public function createVersions(File $file);
 
@@ -187,7 +177,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             unlink($tmp);
         }
     }
-
+    /*
     public function onPublish(FileEvent $event)
     {
         $file = $event->getFile();
@@ -221,6 +211,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             $this->getPublisher()->unpublishVersion($file, $version, $this);
         }
     }
+    */
 
     public function onFileDelete(FileEvent $event)
     {

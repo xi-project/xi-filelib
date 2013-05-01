@@ -9,16 +9,16 @@ require_once __DIR__ . '/../bootstrap-plugins.php';
 
 $request = Request::createFromGlobals();
 
+// $renderer = new SymfonyRenderer($filelib->getPuuppa(), $filelib->getLoso(), $filelib->getSitä(), $filelib->getTätä());
+$renderer = new SymfonyRenderer($filelib);
+
+
 if (!$request->get('id')) {
-    $folder = $filelib->findRootFolder();
-    $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-02.jpg', $folder);
+    $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-02.jpg');
 } else {
     $file = $filelib->findFile($request->get('id'));
 }
 
-
-// $renderer = new SymfonyRenderer($filelib->getPuuppa(), $filelib->getLoso(), $filelib->getSitä(), $filelib->getTätä());
-$renderer = new SymfonyRenderer($filelib);
 
 /*
 $renderer->setRequest($request);
@@ -47,15 +47,15 @@ ob_start();
 
     <h1>Original</h1>
 
-    <img src="<?php echo $renderer->getUrl($file, array('version' => 'original')); ?>" />
+    <img src="<?php echo $publisher->getUrl($file); ?>" />
 
     <h2>Thumbster</h2>
 
-    <img src="<?php echo $renderer->getUrl($file, array('version' => 'thumbster')); ?>" />
+    <img src="<?php echo $publisher->getUrlVersion($file, 'thumbster'); ?>" />
 
     <h2>Ribuls</h2>
 
-    <img src="<?php echo $renderer->getUrl($file, array('version' => 'ribuls')); ?>" />
+    <img src="<?php echo $publisher->getUrlVersion($file, 'ribuls'); ?>" />
 
     </body>
 

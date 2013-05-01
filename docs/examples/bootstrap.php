@@ -35,10 +35,10 @@ $entityManager = EntityManager::create($dbParams, $config);
 
 $filelib = new FileLibrary(
     new FilesystemStorage(realpath(__DIR__ . '/data/private')),
-    new DoctrineOrmPlatform($entityManager),
-    new SymlinkFilesystemPublisher(realpath(__DIR__ . '/web/files'), 0600, 0700, '/files'),
-    new EventDispatcher()
+    new DoctrineOrmPlatform($entityManager)
 );
+
+
 
 // Setting ACL is not mandatory. Simple is used by default.
 

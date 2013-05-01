@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Publisher\Filesystem;
 
-use Xi\Filelib\Publisher\AbstractPublisher;
+use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Linker\Linker;
@@ -22,7 +22,7 @@ use Xi\Filelib\FileLibrary;
  * Abstract filesystem publisher convenience class
  *
  */
-abstract class AbstractFilesystemPublisher extends AbstractPublisher
+abstract class AbstractFilesystemPublisher implements Publisher
 {
     /**
      * @var FileOperator
@@ -64,6 +64,18 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
     {
         $this->fileOperator = $filelib->getFileOperator();
     }
+
+    /**
+     * @param \Xi\Filelib\File\File $file
+     * @param $version
+     * @return \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+     */
+    protected function getVersionProvider(File $file, $version)
+    {
+        return $this->fileOperator->getVersionProvider($file, $version);
+    }
+
+
 
     /**
      * Sets base url
@@ -189,11 +201,12 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
     /**
      * @param  File            $file
      * @param  string          $version
-     * @param  VersionProvider $versionProvider
      * @return string
      */
-    public function getUrlVersion(File $file, $version, VersionProvider $versionProvider)
+    public function getUrlVersion(File $file, $version)
     {
+        $versionProvider = $this->getVersionProvider($file, $version);
+
         $url = $this->getBaseUrl() . '/';
         $url .= $this
             ->getLinkerForFile($file)

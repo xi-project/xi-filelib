@@ -43,15 +43,10 @@ class AfterUploadFileCommand extends AbstractFileCommand
 
         // @todo: actual statuses
         $file->setStatus(File::STATUS_COMPLETED);
+
+        // @todo: Why the fuck not use fileoperator's update command
         $file->setLink($profileObj->getLinker()->getLink($file, true));
         $this->fileOperator->getBackend()->updateFile($file);
-
-        if ($this->fileOperator->getAcl()->isFileReadableByAnonymous($file)) {
-
-            $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\PublishFileCommand', array($this->fileOperator, $this->file));
-            $command->execute();
-
-        }
 
         return $file;
     }

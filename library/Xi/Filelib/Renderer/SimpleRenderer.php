@@ -7,18 +7,6 @@ use Xi\Filelib\File\File;
 class SimpleRenderer extends AbstractRenderer
 {
     /**
-     * Returns url to a file
-     *
-     * @param  File   $file
-     * @param  type   $options
-     * @return string
-     */
-    public function getUrl(File $file, $options = array())
-    {
-        return '';
-    }
-
-    /**
      * Renders a file
      *
      * @param  File     $file    File
@@ -32,8 +20,11 @@ class SimpleRenderer extends AbstractRenderer
             $this->getStorage()->retrieve($file->getResource()) :
             $this->getStorage()->retrieveVersion($file->getResource(), $options['version']);
 
+        $this->dispatchRenderEvent($file);
+
         header("Content-Type: " . $file->getMimeType());
         echo $res->fpassthru();
+
     }
 
 

@@ -50,11 +50,6 @@ class FileLibrary
     private $storage;
 
     /**
-     * @var Publisher
-     */
-    private $publisher;
-
-    /**
      * @var Acl
      */
     private $acl;
@@ -88,30 +83,17 @@ class FileLibrary
     public function __construct(
         Storage $storage,
         Platform $platform,
-        Publisher $publisher,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher = null
     ) {
 
         $this->storage = $storage;
         $this->platform = $platform;
-        $this->publisher = $publisher;
         $this->eventDispatcher = $eventDispatcher;
 
         $this->backend = new Backend(
-            $this->eventDispatcher,
+            $this->getEventDispatcher(),
             $this->platform
         );
-
-        /**
-         * @todo: Publisher must get it's dependencies somehow. It may and can not have a file operator
-         * in it's constructor. How does it get what it needs. Setter injection? Events? StorageLusserInterface?
-         * Some other automagics?
-         *
-         * Same goes with plugins etc.
-         *
-         */
-
-        $this->publisher->setDependencies($this);
     }
 
 
@@ -204,29 +186,6 @@ class FileLibrary
     public function getStorage()
     {
         return $this->storage;
-    }
-
-    /**
-     * Sets publisher
-     *
-     * @param  Publisher   $publisher
-     * @return FileLibrary
-     */
-    public function setPublisher(Publisher $publisher)
-    {
-        $this->publisher = $publisher;
-
-        return $this;
-    }
-
-    /**
-     * Returns publisher
-     *
-     * @return Publisher
-     */
-    public function getPublisher()
-    {
-        return $this->publisher;
     }
 
     /**

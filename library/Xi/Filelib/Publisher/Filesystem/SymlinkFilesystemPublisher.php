@@ -33,6 +33,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     private $relativePathToRoot;
 
     public function __construct(
+        FileLibrary $filelib,
         $root,
         $filePermission = 0600,
         $directoryPermission = 0700,
@@ -41,6 +42,8 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     ) {
         parent::__construct($root, $filePermission, $directoryPermission, $baseUrl);
         $this->relativePathToRoot = $relativePathToRoot;
+
+        $this->setDependencies($filelib);
     }
 
     public function setDependencies(FileLibrary $filelib)
@@ -170,8 +173,10 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
      * @param VersionProvider $versionProvider
      * @todo Refactor. Puuppa code smells.
      */
-    public function publishVersion(File $file, $version, VersionProvider $versionProvider)
+    public function publishVersion(File $file, $version)
     {
+        $versionProvider = $this->getVersionProvider($file, $version);
+
         $linker = $this->getLinkerForFile($file);
 
         $link = $this->getPublicRoot() . '/' .
@@ -227,8 +232,10 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
         }
     }
 
-    public function unpublishVersion(File $file, $version, VersionProvider $versionProvider)
+    public function unpublishVersion(File $file, $version)
     {
+        $versionProvider = $this->getVersionProvider($file, $version);
+
         $linker = $this->getLinkerForFile($file);
         $link = $this->getPublicRoot() . '/' .
             $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
