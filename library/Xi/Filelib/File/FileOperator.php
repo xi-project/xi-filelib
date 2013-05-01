@@ -224,8 +224,12 @@ class FileOperator extends AbstractOperator
      * @return File
      * @throws FilelibException
      */
-    public function upload($upload, Folder $folder, $profile = 'default')
+    public function upload($upload, Folder $folder = null, $profile = 'default')
     {
+        if (!$folder) {
+            $folder = $this->getFolderOperator()->findRoot();
+        }
+
         return $this->executeOrQueue(
             $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile)),
             self::COMMAND_UPLOAD

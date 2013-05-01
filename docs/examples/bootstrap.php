@@ -4,13 +4,13 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\FilesystemStorage;
 use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
 use Xi\Filelib\Backend\Platform\DoctrineOrmPlatform;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 use Xi\Filelib\Acl\SimpleAcl;
 use Xi\Filelib\Linker\SequentialLinker;
 use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Plugin\RandomizeNamePlugin;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -34,12 +34,11 @@ $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null,
 $entityManager = EntityManager::create($dbParams, $config);
 
 $filelib = new FileLibrary(
-    new FilesystemStorage(realpath(__DIR__ . '/data/private'), new LeveledDirectoryIdCalculator()),
+    new FilesystemStorage(realpath(__DIR__ . '/data/private')),
     new DoctrineOrmPlatform($entityManager),
     new SymlinkFilesystemPublisher(realpath(__DIR__ . '/web/files'), 0600, 0700, '/files'),
     new EventDispatcher()
 );
-$filelib->setTempDir(__DIR__ . '/data/temp');
 
 // Setting ACL is not mandatory. Simple is used by default.
 
@@ -49,4 +48,4 @@ $filelib->setAcl(new SimpleAcl(true));
 
 $filelib->addProfile(new FileProfile('default', new SequentialLinker()));
 
-
+$filelib->addPlugin(new RandomizeNamePlugin(), array('default'));

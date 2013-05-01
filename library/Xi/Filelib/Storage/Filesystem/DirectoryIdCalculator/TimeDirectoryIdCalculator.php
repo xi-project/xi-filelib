@@ -11,23 +11,25 @@ namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use DateTime;
 use Xi\Filelib\FilelibException;
+use Xi\Filelib\IdentityMap\Identifiable;
 
-class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
+/**
+ * Calculates directory id by formatting an objects creation date
+ */
+class TimeDirectoryIdCalculator implements DirectoryIdCalculator
 {
+    /**
+     * @param string $format
+     */
+    public function __construct($format = 'Y/m/d')
+    {
+        $this->format = $format;
+    }
+
     /**
      * @var string
      */
     private $format = 'Y/m/d';
-
-    /**
-     * Sets directory creation format
-     *
-     * @param string $format
-     */
-    public function setFormat($format)
-    {
-        $this->format = $format;
-    }
 
     /**
      * Returns directory creation format
@@ -42,16 +44,10 @@ class TimeDirectoryIdCalculator extends AbstractDirectoryIdCalculator
     /**
      * @see DirectoryIdCalculator::calculateDirectoryId
      */
-    public function calculateDirectoryId($resource)
+    public function calculateDirectoryId($obj)
     {
-        $dt = $resource->getDateCreated();
-
-        if (!($dt instanceof DateTime)) {
-            throw new FilelibException("Upload date not set in file");
-        }
-
+        $dt = $obj->getDateCreated();
         $path = $dt->format($this->getFormat());
-
         return $path;
     }
 }

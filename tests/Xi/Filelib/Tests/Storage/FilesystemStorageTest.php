@@ -41,152 +41,40 @@ class FilesystemStorageTest extends TestCase
     protected function getStorage()
     {
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+
         $dc->expects($this->any())
              ->method('calculateDirectoryId')
              ->will($this->returnValue('1'));
 
-        $storage = new FilesystemStorage();
-        $storage->setDirectoryIdCalculator($dc);
-        $storage->setCacheDirectoryIds(false);
-        $storage->setRoot(ROOT_TESTS . '/data/files');
+        $storage = new FilesystemStorage(ROOT_TESTS . '/data/files', $dc);
 
         return $storage;
-
     }
 
     /**
      * @test
      */
-    public function filePermissionGetAndSetShouldWorkAsExpected()
+    public function defaultsShouldProvideSaneStorage()
     {
-        $this->assertEquals(0600, $this->storage->getFilePermission());
-        $this->storage->setFilePermission(755);
-        $this->assertEquals(0755, $this->storage->getFilePermission());
+        $root = ROOT_TESTS . '/data/files';
+
+        $storage = new FilesystemStorage($root);
+        $this->assertSame(0700, $storage->getDirectoryPermission());
+        $this->assertSame(0600, $storage->getFilePermission());
+        $this->assertInstanceOf(
+            'Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator',
+            $storage->getDirectoryIdCalculator()
+        );
+        $this->assertEquals($root, $storage->getRoot());
     }
 
     /**
      * @test
+     * @expectedException LogicException
      */
-    public function rootGetAndSetShouldWorkAsExpected()
+    public function rootMustBeWritableToInstantiate()
     {
-        $storage = new FilesystemStorage();
-        $this->assertNull($storage->getRoot());
-        $storage->setRoot(ROOT_TESTS . '/data');
-
-        $this->assertEquals(ROOT_TESTS . '/data', $storage->getRoot());
+        $root = ROOT_TESTS . '/data/illusive_directory';
+        $storage = new FilesystemStorage($root);
     }
-
-    /**
-     * @test
-     */
-    public function directoryPermissionGetAndSetShouldWorkAsExpected()
-    {
-        $this->assertEquals(0700, $this->storage->getDirectoryPermission());
-        $this->storage->setDirectoryPermission(755);
-        $this->assertEquals(0755, $this->storage->getDirectoryPermission());
-    }
-
-    /**
-     * @test
-     */
-    public function directoryCalculatorGetAndSetShouldWorkAsExpected()
-    {
-         $storage = new FilesystemStorage();
-
-         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
-         $dc->expects($this->any())
-             ->method('calculateDirectoryId')
-             ->will($this->returnValue('1'));
-
-         $this->assertNull($storage->getDirectoryIdCalculator());
-
-         $storage->setDirectoryIdCalculator($dc);
-
-         $this->assertEquals($dc, $storage->getDirectoryIdCalculator());
-    }
-
-    /**
-     * @test
-     */
-    public function directoryIdCalculationWithoutCachingShouldCallMethodEveryTime()
-    {
-        $dc = $this->getMock('Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
-        $dc->expects($this->exactly(3))
-             ->method('calculateDirectoryId')
-             ->will($this->returnValue('1'));
-
-        $this->storage->setDirectoryIdCalculator($dc);
-
-        $this->assertFalse($this->storage->getCacheDirectoryIds());
-
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
-
-    }
-
-    /**
-     * @test
-     */
-    public function directoryIdCalculationWithCachingShouldCallMethodOnlyOnce()
-    {
-        $dc = $this->getMock('Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
-        $dc->expects($this->exactly(1))
-             ->method('calculateDirectoryId')
-             ->will($this->returnValue('1'));
-
-        $this->storage->setDirectoryIdCalculator($dc);
-
-        $this->assertFalse($this->storage->getCacheDirectoryIds());
-        $this->storage->setCacheDirectoryIds(true);
-        $this->assertTrue($this->storage->getCacheDirectoryIds());
-
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
-        $this->assertEquals(1, $this->storage->getDirectoryId($this->resource));
-
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\Exception\FileIOException
-     */
-    public function storeShouldFailIfRootIsNotDefined()
-    {
-        $storage = new FilesystemStorage();
-        $storage->store($this->resource, $this->resourcePath);
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\Exception\FileIOException
-     */
-    public function storeShouldFailIfRootIsNotWritable()
-    {
-        $storage = new FilesystemStorage();
-        $storage->setRoot(ROOT_TESTS . '/data/illusive_directory');
-        $storage->store($this->resource, $this->resourcePath);
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\Exception\FileIOException
-     */
-    public function storeVersionShouldFailIfRootIsNotDefined()
-    {
-        $storage = new FilesystemStorage();
-        $storage->storeVersion($this->resource, $this->version, $this->resourcePath);
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\Exception\FileIOException
-     */
-    public function storeVersionShouldFailIfRootIsNotWritable()
-    {
-        $storage = new FilesystemStorage();
-        $storage->setRoot(ROOT_TESTS . '/data/illusive_directory');
-        $storage->storeVersion($this->resource, $this->version, $this->resourcePath);
-    }
-
 }

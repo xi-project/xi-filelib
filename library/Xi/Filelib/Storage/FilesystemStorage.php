@@ -17,6 +17,7 @@ use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
 use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 
 /**
  * Stores files in a filesystem
@@ -47,13 +48,17 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
     public function __construct(
         $root,
-        DirectoryIdCalculator $directoryIdCalculator,
-        $filePermission = 0700,
+        DirectoryIdCalculator $directoryIdCalculator = null,
+        $filePermission = 0600,
         $directoryPermission = 0700
     ) {
 
+        if (!is_dir($root) || !is_writable($root)) {
+            throw new \LogicException("Root directory '{$root}' is not writable");
+        }
+
         $this->root = $root;
-        $this->directoryIdCalculator = $directoryIdCalculator;
+        $this->directoryIdCalculator = $directoryIdCalculator ?: new TimeDirectoryIdCalculator();
         $this->filePermission = $filePermission;
         $this->directoryPermission = $directoryPermission;
     }
@@ -130,7 +135,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
     protected function doStore(Resource $resource, $tempFile)
     {
-        $this->assertRootExistsAndIsWritable();
         $pathName = $this->getPathName($resource);
 
         if (!is_dir(dirname($pathName))) {
@@ -143,7 +147,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
     protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
-        $this->assertRootExistsAndIsWritable();
         $pathName = $this->getVersionPathName($resource, $version, $file);
 
         if (!is_dir(dirname($pathName))) {
@@ -173,17 +176,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
     {
         $path = $this->getVersionPathName($resource, $version, $file);
         unlink($path);
-    }
-
-    public function assertRootExistsAndIsWritable()
-    {
-        if (!$root = $this->getRoot()) {
-            throw new \LogicException('Root must be defined');
-        }
-
-        if (!is_dir($root) || !is_writable($root)) {
-            throw new \LogicException('Defined root is not writable');
-        }
     }
 
     public function exists(Resource $resource)

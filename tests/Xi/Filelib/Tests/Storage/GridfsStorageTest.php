@@ -10,7 +10,6 @@
 namespace Xi\Filelib\Tests\Storage;
 
 use Mongo;
-use MongoDB;
 use MongoConnectionException;
 use Xi\Filelib\Storage\GridfsStorage;
 
@@ -37,7 +36,6 @@ class GridFsStorageTest extends TestCase
         }
 
         $this->mongo = $mongo->filelib_tests;
-
         $storage = new GridfsStorage($this->mongo, ROOT_TESTS . '/data/temp');
 
         return $storage;
@@ -55,11 +53,11 @@ class GridFsStorageTest extends TestCase
     /**
      * @test
      */
-    public function prefixSetAndGetShouldWorkAsExcpected()
+    public function defaultsShouldProvideSaneStorage()
     {
-        $this->assertEquals('xi_filelib', $this->storage->getPrefix());
-        $this->storage->setPrefix('luss');
-        $this->assertEquals('luss', $this->storage->getPrefix());
+        $storage = new GridfsStorage($this->getMockBuilder('MongoDB')->disableOriginalConstructor()->getMock());
+        $this->assertSame('xi_filelib', $storage->getPrefix());
+        $this->assertSame(sys_get_temp_dir(), $storage->getTempDir());
     }
 
     /**

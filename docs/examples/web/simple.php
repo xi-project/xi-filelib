@@ -2,10 +2,14 @@
 
 require_once __DIR__ . '/../bootstrap.php';
 
-// $folder = $filelib->findRootFolder();
-$folder = $filelib->getFolderOperator()->findRoot();
+use Xi\Filelib\Renderer\SimpleRenderer;
 
-// $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-02.jpg', $folder);
-$file = $filelib->getFileOperator()->upload(__DIR__ . '/../manatees/manatus-02.jpg', $folder);
+$file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-02.jpg');
 
-var_dump($file);
+
+$renderer = new SimpleRenderer($filelib);
+$renderer->render($file);
+
+// @todo: PHPRenderer
+// header("Content-Type: " . $file->getMimeType());
+// echo $filelib->getStorage()->retrieve($file->getResource())->fpassthru();

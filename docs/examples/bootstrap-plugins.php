@@ -7,8 +7,6 @@ use Xi\Filelib\Plugin\Image\Command\WatermarkCommand;
 
 // 03. Plugins
 
-$filelib->addPlugin(new RandomizeNamePlugin(), array('default'));
-
 // @todo: refactor to singular versionplugin with many versions
 
 $filelib->addPlugin(
