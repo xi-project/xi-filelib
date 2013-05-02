@@ -23,15 +23,6 @@ use Exception;
  */
 abstract class AbstractStorage implements Storage
 {
-    /**
-     * @param  array           $options
-     * @return AbstractStorage
-     */
-    public function __construct($options = array())
-    {
-        Configurator::setConstructorOptions($this, $options);
-    }
-
     abstract protected function doRetrieve(Resource $resource);
 
     abstract protected function doRetrieveVersion(Resource $resource, $version, File $file = null);

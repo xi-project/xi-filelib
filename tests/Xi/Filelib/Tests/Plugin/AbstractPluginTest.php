@@ -87,7 +87,7 @@ class AbstractPluginTest extends TestCase
                        ->setMethods(array('getProfiles'))
                        ->getMock();
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('lussen'));
         $profile->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
 
@@ -107,7 +107,7 @@ class AbstractPluginTest extends TestCase
                        ->setMethods(array('getProfiles'))
                        ->getMock();
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('lussentussen'));
         $profile->expects($this->never())->method('addPlugin');
 

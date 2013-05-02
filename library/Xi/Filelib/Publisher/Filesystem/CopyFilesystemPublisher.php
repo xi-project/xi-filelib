@@ -60,8 +60,10 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
         }
     }
 
-    public function publishVersion(File $file, $version, VersionProvider $versionProvider)
+    public function publishVersion(File $file, $version)
     {
+        $versionProvider = $this->getVersionProvider($file, $version);
+
         $linker = $this->getLinkerForFile($file);
 
         $link = $this->getPublicRoot() . '/' .
@@ -96,8 +98,10 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
         }
     }
 
-    public function unpublishVersion(File $file, $version, VersionProvider $versionProvider)
+    public function unpublishVersion(File $file, $version)
     {
+        $versionProvider = $this->getVersionProvider($file, $version);
+
         $linker = $this->getLinkerForFile($file);
         $link = $this->getPublicRoot() . '/' .
             $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));

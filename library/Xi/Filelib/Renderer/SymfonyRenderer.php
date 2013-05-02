@@ -101,9 +101,7 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
             $response->headers->set('Content-disposition', "attachment; filename={$file->getName()}");
         }
 
-        if ($options['track'] == true) {
-                $this->dispatchTrackEvent($file);
-        }
+        $this->dispatchRenderEvent($file);
 
         $this->setContent($response, $res);
 
@@ -120,10 +118,9 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
      */
     private function respondToOriginal(File $file, Response $response)
     {
-        $profile = $this->filelib->getFileOperator()->getProfile($file->getProfile());
+        $profile = $this->fileOperator->getProfile($file->getProfile());
         if (!$profile->getAccessToOriginal()) {
             $response->setStatusCode(403);
-
             return;
         }
 
@@ -143,13 +140,12 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
      */
     private function respondToVersion(File $file, Response $response, $version)
     {
-        if (!$this->filelib->getFileOperator()->hasVersion($file, $version)) {
+        if (!$this->fileOperator->hasVersion($file, $version)) {
             $response->setStatusCode(404);
-
             return;
         }
 
-        $provider = $this->filelib->getFileOperator()->getVersionProvider($file, $version);
+        $provider = $this->fileOperator->getVersionProvider($file, $version);
 
         $res = $this->getStorage()->retrieveVersion($file->getResource(), $version, $provider->areSharedVersionsAllowed() ? null : $file);
 

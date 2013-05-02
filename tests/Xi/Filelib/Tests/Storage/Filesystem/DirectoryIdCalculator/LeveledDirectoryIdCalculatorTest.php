@@ -18,99 +18,35 @@ use Xi\Filelib\File\Resource;
 class LeveledDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Resource
+     * @return array
      */
-    protected $resource;
-
-    /**
-     * @var LeveledDirectoryIdCalculator
-     */
-    protected $calc;
-
-    protected function setUp()
+    public function provideData()
     {
-        $this->calc = new LeveledDirectoryIdCalculator();
-        $this->resource = new Resource();
+        return array(
+            array('1', 1, 10, 1),
+            array('1', 1, 10, 10),
+            array('2', 1, 10, 11),
+            array('100', 1, 10, 1000),
+            array('101', 1, 10, 1001),
+            array('13', 1, 77, 1001),
+            array('1/1', 2, 100, 1),
+            array('1/2', 2, 100, 101),
+            array('11/1', 2, 100, 100001),
+            array('205/382', 2, 777, 123456789),
+            array('1/1/100/100/100', 5, 100, 100000000),
+        );
     }
 
     /**
      * @test
+     * @dataProvider provideData
      */
-    public function oneLeveled()
+    public function calculatorShouldCalculateCorrectly($expected, $directoryLevels, $filesPerDirectory, $resourceId)
     {
-        $this->calc->setDirectoryLevels(1);
-        $this->calc->setFilesPerDirectory(10);
+        $resource = Resource::create(array('id' => $resourceId));
+        $calculator = new LeveledDirectoryIdCalculator($directoryLevels, $filesPerDirectory);
 
-        $this->resource->setId(1);
-        $this->assertEquals('1', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(10);
-        $this->assertEquals('1', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(11);
-        $this->assertEquals('2', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(1000);
-        $this->assertEquals('100', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(1001);
-        $this->assertEquals('101', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->calc->setFilesPerDirectory(77);
-        $this->assertEquals('13', $this->calc->calculateDirectoryId($this->resource));
-    }
-
-    /**
-     * @test
-     */
-    public function twoLeveled()
-    {
-        $this->calc->setDirectoryLevels(2);
-        $this->calc->setFilesPerDirectory(100);
-
-        $this->resource->setId(1);
-        $this->assertEquals('1/1', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(100);
-        $this->assertEquals('1/1', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(101);
-        $this->assertEquals('1/2', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(100000);
-        $this->assertEquals('10/100', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(100001);
-        $this->assertEquals('11/1', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(123456789);
-        $this->calc->setFilesPerDirectory(777);
-
-        $this->assertEquals('205/382', $this->calc->calculateDirectoryId($this->resource));
-    }
-
-    /**
-     * @test
-     */
-    public function fiveLeveled()
-    {
-        $this->calc->setDirectoryLevels(5);
-        $this->calc->setFilesPerDirectory(100);
-
-        $this->resource->setId(1);
-        $this->assertEquals('1/1/1/1/1', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(101);
-        $this->assertEquals('1/1/1/1/2', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(100001);
-        $this->assertEquals('1/1/1/11/1', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(100000000);
-        $this->assertEquals('1/1/100/100/100', $this->calc->calculateDirectoryId($this->resource));
-
-        $this->resource->setId(100000001);
-        $this->assertEquals('1/2/1/1/1', $this->calc->calculateDirectoryId($this->resource));
+        $this->assertEquals($expected, $calculator->calculateDirectoryId($resource));
     }
 
     /**
@@ -119,18 +55,37 @@ class LeveledDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
      */
     public function throwsExceptionOnNonNumericFileId()
     {
-        $this->resource->setId('xoo');
-        $this->assertEquals('1/1/1/1/1', $this->calc->calculateDirectoryId($this->resource));
+        $resource = Resource::create(array('id' => 'xoo'));
+        $calc = new LeveledDirectoryIdCalculator();
+        $calc->calculateDirectoryId($resource);
     }
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
+     * @expectedException InvalidArgumentException
      */
-    public function throwsExceptionWithDirectoryLevelSmallerThanOne()
+    public function wontInstantiateWithInvalidDirectoryLevels()
     {
-        $this->resource->setId(1);
-        $this->calc->setDirectoryLevels(-1);
-        $this->calc->calculateDirectoryId($this->resource);
+        $calc = new LeveledDirectoryIdCalculator(0, 50);
     }
+
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     */
+    public function wontInstantiateWithInvalidFilesPerDirectory()
+    {
+        $calc = new LeveledDirectoryIdCalculator(5, 0);
+    }
+
+    /**
+     * @test
+     */
+    public function defaultSettingsShouldProduceSaneDirectoryIdInTheDistantFuture()
+    {
+        $resource = Resource::create(array('id' => 500066666));
+        $calc = new LeveledDirectoryIdCalculator();
+        $this->assertEquals('5/1/134', $calc->calculateDirectoryId($resource));
+    }
+
 }

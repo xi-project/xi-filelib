@@ -16,12 +16,13 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
+use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 
 /**
  * Stores files in a filesystem
  *
  * @author pekkis
- * @todo Fucktor caching to directoryIdCalculator
  */
 class FilesystemStorage extends AbstractStorage implements Storage
 {
@@ -45,50 +46,21 @@ class FilesystemStorage extends AbstractStorage implements Storage
      */
     private $directoryIdCalculator;
 
-    /**
-     * @var boolean Do we cache calculated directory ids?
-     */
-    private $cacheDirectoryIds = true;
+    public function __construct(
+        $root,
+        DirectoryIdCalculator $directoryIdCalculator = null,
+        $filePermission = 0600,
+        $directoryPermission = 0700
+    ) {
 
-    public function __construct($options = array())
-    {
-        Configurator::setConstructorOptions($this, $options);
-    }
+        if (!is_dir($root) || !is_writable($root)) {
+            throw new \LogicException("Root directory '{$root}' is not writable");
+        }
 
-    /**
-     * Sets caching of directory ids
-     *
-     * @param  boolean           $cacheDirectoryIds
-     * @return FilesystemStorage
-     */
-    public function setCacheDirectoryIds($cacheDirectoryIds)
-    {
-        $this->cacheDirectoryIds = $cacheDirectoryIds;
-
-        return $this;
-    }
-
-    /**
-     * Returns whether caching of ids is turned on
-     *
-     * @return boolean
-     */
-    public function getCacheDirectoryIds()
-    {
-        return $this->cacheDirectoryIds;
-    }
-
-    /**
-     * Sets directory id calculator
-     *
-     * @param  DirectoryIdCalculator $directoryIdCalculator
-     * @return FilesystemStorage
-     */
-    public function setDirectoryIdCalculator(DirectoryIdCalculator $directoryIdCalculator)
-    {
-        $this->directoryIdCalculator = $directoryIdCalculator;
-
-        return $this;
+        $this->root = $root;
+        $this->directoryIdCalculator = $directoryIdCalculator ?: new TimeDirectoryIdCalculator();
+        $this->filePermission = $filePermission;
+        $this->directoryPermission = $directoryPermission;
     }
 
     /**
@@ -107,30 +79,9 @@ class FilesystemStorage extends AbstractStorage implements Storage
      * @param  Resource $resource
      * @return string
      */
-    public function getDirectoryId($resource)
+    public function getDirectoryId(Identifiable $identifiable)
     {
-        if (!$this->getCacheDirectoryIds()) {
-            return $this->getDirectoryIdCalculator()->calculateDirectoryId($resource);
-        }
-
-        if (!isset($this->cache[$resource->getId()])) {
-            $this->cache[$resource->getId()] = $this->getDirectoryIdCalculator()->calculateDirectoryId($resource);
-        }
-
-        return $this->cache[$resource->getId()];
-    }
-
-    /**
-     * Sets directory permission
-     *
-     * @param  integer           $directoryPermission
-     * @return FilesystemStorage
-     */
-    public function setDirectoryPermission($directoryPermission)
-    {
-        $this->directoryPermission = octdec($directoryPermission);
-
-        return $this;
+        return $this->getDirectoryIdCalculator()->calculateDirectoryId($identifiable);
     }
 
     /**
@@ -144,19 +95,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
     }
 
     /**
-     * Sets file permission
-     *
-     * @param  integer           $filePermission
-     * @return FilesystemStorage
-     */
-    public function setFilePermission($filePermission)
-    {
-        $this->filePermission = octdec($filePermission);
-
-        return $this;
-    }
-
-    /**
      * Returns file permission
      *
      * @return integer
@@ -164,17 +102,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
     public function getFilePermission()
     {
         return $this->filePermission;
-    }
-
-    /**
-     * Sets root
-     *
-     * @param  string            $root
-     * @return FilesystemStorage
-     */
-    public function setRoot($root)
-    {
-        $this->root = $root;
     }
 
     /**
@@ -208,7 +135,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
     protected function doStore(Resource $resource, $tempFile)
     {
-        $this->assertRootExistsAndIsWritable();
         $pathName = $this->getPathName($resource);
 
         if (!is_dir(dirname($pathName))) {
@@ -221,7 +147,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
     protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
-        $this->assertRootExistsAndIsWritable();
         $pathName = $this->getVersionPathName($resource, $version, $file);
 
         if (!is_dir(dirname($pathName))) {
@@ -251,17 +176,6 @@ class FilesystemStorage extends AbstractStorage implements Storage
     {
         $path = $this->getVersionPathName($resource, $version, $file);
         unlink($path);
-    }
-
-    public function assertRootExistsAndIsWritable()
-    {
-        if (!$root = $this->getRoot()) {
-            throw new \LogicException('Root must be defined');
-        }
-
-        if (!is_dir($root) || !is_writable($root)) {
-            throw new \LogicException('Defined root is not writable');
-        }
     }
 
     public function exists(Resource $resource)

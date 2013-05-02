@@ -303,8 +303,7 @@ class Resource implements Identifiable
      */
     public static function create(array $data = array())
     {
-        $file = new self();
-
-        return $file->fromArray($data);
+        $resource = new self();
+        return $resource->fromArray($data);
     }
 }

@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Plugin;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Xi Filelib plugin interface
@@ -26,6 +27,8 @@ interface Plugin extends EventSubscriberInterface
      */
     public function getProfiles();
 
+    public function setProfiles(array $profiles);
+
     /**
      * Returns whether plugin has a certain profile
      *
@@ -34,8 +37,5 @@ interface Plugin extends EventSubscriberInterface
      */
     public function hasProfile($profile);
 
-    /**
-     * Runs when plugin is added.
-     */
-    public function init();
+    public function setDependencies(FileLibrary $filelib);
 }

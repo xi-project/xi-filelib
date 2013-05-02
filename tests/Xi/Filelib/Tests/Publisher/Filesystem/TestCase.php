@@ -56,7 +56,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
                 )
             );
 
-        $profileObject = $this->getMockFileProfile();
+        $profileObject = $this->getMockedFileProfile();
 
         $profileObject
             ->expects($this->any())

@@ -18,6 +18,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Abstract convenience class for version provider plugins
@@ -29,8 +30,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected static $subscribedEvents = array(
         'xi_filelib.profile.add' => 'onFileProfileAdd',
         'xi_filelib.file.after_upload' => 'onAfterUpload',
-        'xi_filelib.file.publish' => 'onPublish',
-        'xi_filelib.file.unpublish' => 'onUnpublish',
         'xi_filelib.file.delete' => 'onFileDelete',
         'xi_filelib.resource.delete' => 'onResourceDelete',
     );
@@ -51,11 +50,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected $storage;
 
     /**
-     * @var Publisher
-     */
-    protected $publisher;
-
-    /**
      * @var FileOperator
      */
     protected $fileOperator;
@@ -67,14 +61,20 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      * @param  array                   $options
      * @return AbstractVersionProvider
      */
-    public function __construct(Storage $storage, Publisher $publisher,
-        FileOperator $fileOperator, array $options = array()
-    ) {
-        parent::__construct($options);
+    public function __construct($identifier)
+    {
+        $this->identifier = $identifier;
+    }
 
-        $this->storage = $storage;
-        $this->publisher = $publisher;
-        $this->fileOperator = $fileOperator;
+    /**
+     * @param FileLibrary $filelib
+     */
+    public function setDependencies(FileLibrary $filelib)
+    {
+        $this->storage = $filelib->getStorage();
+        $this->fileOperator = $filelib->getFileOperator();
+
+        $this->init();
     }
 
     abstract public function createVersions(File $file);
@@ -100,19 +100,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     }
 
     /**
-     * Sets identifier
-     *
-     * @param  string          $identifier
-     * @return VersionProvider
-     */
-    public function setIdentifier($identifier)
-    {
-        $this->identifier = $identifier;
-
-        return $this;
-    }
-
-    /**
      * Returns identifier
      *
      * @return string
@@ -120,19 +107,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function getIdentifier()
     {
         return $this->identifier;
-    }
-
-    /**
-     * Sets file types for this version plugin.
-     *
-     * @param  array           $providesFor Array of file types
-     * @return VersionProvider
-     */
-    public function setProvidesFor(array $providesFor)
-    {
-        $this->providesFor = $providesFor;
-
-        return $this;
     }
 
     /**
@@ -203,7 +177,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             unlink($tmp);
         }
     }
-
+    /*
     public function onPublish(FileEvent $event)
     {
         $file = $event->getFile();
@@ -237,6 +211,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             $this->getPublisher()->unpublishVersion($file, $version, $this);
         }
     }
+    */
 
     public function onFileDelete(FileEvent $event)
     {

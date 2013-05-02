@@ -104,7 +104,7 @@ class CopyFilesystemPublisherTest extends TestCase
                 )
             );
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->publish($file);
 
@@ -146,7 +146,7 @@ class CopyFilesystemPublisherTest extends TestCase
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         // $publisher->setRelativePathToRoot('../private');
 
@@ -180,7 +180,7 @@ class CopyFilesystemPublisherTest extends TestCase
         $this->createFile($expectedRealPath, $expectedPath);
         $this->assertFileExists($expectedPath);
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->unpublish($file);
         $this->assertFileNotExists($expectedPath);
@@ -200,7 +200,7 @@ class CopyFilesystemPublisherTest extends TestCase
         $this->createFile($expectedRealPath, $expectedVersionPath);
         $this->assertFileExists($expectedVersionPath);
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->unpublishVersion($file, $this->versionProvider->getIdentifier(), $this->versionProvider);
         $this->assertFileNotExists($expectedVersionPath);
@@ -209,7 +209,7 @@ class CopyFilesystemPublisherTest extends TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getMockedPublisher()
+    protected function getMockPublisher()
     {
         $publisher = $this
             ->getMockBuilder('Xi\Filelib\Publisher\Filesystem\CopyFilesystemPublisher')

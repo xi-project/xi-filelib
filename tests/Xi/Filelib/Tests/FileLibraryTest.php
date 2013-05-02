@@ -258,7 +258,7 @@ class FileLibraryTest extends TestCase
      */
     public function addProfileShouldDelegateToFileOperator()
     {
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
 
         $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
         $fop->expects($this->once())->method('addProfile')->with($this->equalTo($profile));

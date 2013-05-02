@@ -130,6 +130,13 @@ class FolderOperator extends AbstractOperator
             new FolderFinder(array('parent_id' => null))
         )->current();
 
+
+        if (!$folder) {
+            $folder = new Folder();
+            $folder->setName('root');
+            $this->create($folder);
+        }
+
         if (!$folder) {
             throw new FilelibException('Could not locate root folder', 500);
         }

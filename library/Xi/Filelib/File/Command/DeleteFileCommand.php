@@ -30,9 +30,6 @@ class DeleteFileCommand extends AbstractFileCommand
 
     public function execute()
     {
-        $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\UnpublishFileCommand', array($this->fileOperator, $this->file));
-        $command->execute();
-
         $this->fileOperator->getBackend()->deleteFile($this->file);
 
         if ($this->file->getResource()->isExclusive()) {

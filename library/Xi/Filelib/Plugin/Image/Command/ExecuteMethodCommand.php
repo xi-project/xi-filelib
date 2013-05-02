@@ -14,8 +14,17 @@ use BadMethodCallException;
 
 class ExecuteMethodCommand extends AbstractCommand
 {
-    private $method;
+    private $method = null;
     private $parameters = array();
+
+
+    public function __construct($method = null, $parameters = array())
+    {
+        $this->method = $method;
+        $this->parameters = $parameters;
+    }
+
+
 
     public function setMethod($method)
     {

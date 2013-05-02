@@ -9,19 +9,20 @@
 
 namespace Xi\Filelib\Publisher\Filesystem;
 
-use Xi\Filelib\Publisher\AbstractPublisher;
+use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Linker\Linker;
 use LogicException;
 use SplFileInfo;
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Abstract filesystem publisher convenience class
  *
  */
-abstract class AbstractFilesystemPublisher extends AbstractPublisher
+abstract class AbstractFilesystemPublisher implements Publisher
 {
     /**
      * @var FileOperator
@@ -50,15 +51,31 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
      */
     private $baseUrl = '';
 
-    /**
-     * @param FileOperator $fileOperator
-     * @param array        $options
-     */
-    public function __construct(FileOperator $fileOperator, $options = array())
+
+    public function __construct($root, $filePermission = 0600, $directoryPermission = 0700, $baseUrl = '')
     {
-        parent::__construct($options);
-        $this->fileOperator = $fileOperator;
+        $this->publicRoot = $root;
+        $this->filePermission = $filePermission;
+        $this->directoryPermission = $directoryPermission;
+        $this->baseUrl = $baseUrl;
     }
+
+    public function setDependencies(FileLibrary $filelib)
+    {
+        $this->fileOperator = $filelib->getFileOperator();
+    }
+
+    /**
+     * @param \Xi\Filelib\File\File $file
+     * @param $version
+     * @return \Xi\Filelib\Plugin\VersionProvider\VersionProvider
+     */
+    protected function getVersionProvider(File $file, $version)
+    {
+        return $this->fileOperator->getVersionProvider($file, $version);
+    }
+
+
 
     /**
      * Sets base url
@@ -184,11 +201,12 @@ abstract class AbstractFilesystemPublisher extends AbstractPublisher
     /**
      * @param  File            $file
      * @param  string          $version
-     * @param  VersionProvider $versionProvider
      * @return string
      */
-    public function getUrlVersion(File $file, $version, VersionProvider $versionProvider)
+    public function getUrlVersion(File $file, $version)
     {
+        $versionProvider = $this->getVersionProvider($file, $version);
+
         $url = $this->getBaseUrl() . '/';
         $url .= $this
             ->getLinkerForFile($file)
