@@ -15,6 +15,7 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\FilesystemStorage;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage
@@ -27,20 +28,30 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     private $storage;
 
     /**
-     * @param FilesystemStorage $storage
-     * @param FileOperator      $fileOperator
-     * @param array             $options
-     */
-    public function __construct(FilesystemStorage $storage, FileOperator $fileOperator, $options = array())
-    {
-        parent::__construct($fileOperator, $options);
-        $this->storage = $storage;
-    }
-
-    /**
      * @var string Relative path from publisher root to storage root
      */
     private $relativePathToRoot;
+
+    public function __construct(
+        FileLibrary $filelib,
+        $root,
+        $filePermission = 0600,
+        $directoryPermission = 0700,
+        $baseUrl = '',
+        $relativePathToRoot = null
+    ) {
+        parent::__construct($root, $filePermission, $directoryPermission, $baseUrl);
+        $this->relativePathToRoot = $relativePathToRoot;
+
+        $this->setDependencies($filelib);
+    }
+
+    public function setDependencies(FileLibrary $filelib)
+    {
+        $this->storage = $filelib->getStorage();
+        parent::setDependencies($filelib);
+    }
+
 
     /**
      * Sets path from public to private root
@@ -162,8 +173,10 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
      * @param VersionProvider $versionProvider
      * @todo Refactor. Puuppa code smells.
      */
-    public function publishVersion(File $file, $version, VersionProvider $versionProvider)
+    public function publishVersion(File $file, $version)
     {
+        $versionProvider = $this->getVersionProvider($file, $version);
+
         $linker = $this->getLinkerForFile($file);
 
         $link = $this->getPublicRoot() . '/' .
@@ -219,8 +232,10 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
         }
     }
 
-    public function unpublishVersion(File $file, $version, VersionProvider $versionProvider)
+    public function unpublishVersion(File $file, $version)
     {
+        $versionProvider = $this->getVersionProvider($file, $version);
+
         $linker = $this->getLinkerForFile($file);
         $link = $this->getPublicRoot() . '/' .
             $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));

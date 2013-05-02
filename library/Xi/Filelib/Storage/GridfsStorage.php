@@ -36,11 +36,6 @@ class GridfsStorage extends AbstractStorage implements Storage
     private $mongo;
 
     /**
-     * @var string Collection name
-     */
-    private $collection;
-
-    /**
      * @var string GridFS prefix
      */
     private $prefix = 'xi_filelib';
@@ -60,11 +55,11 @@ class GridfsStorage extends AbstractStorage implements Storage
      * @param  string        $tempDir Temporary directory
      * @return GridfsStorage
      */
-    public function __construct(MongoDB $mongo, $tempDir, $options = array())
+    public function __construct(MongoDB $mongo, $prefix = 'xi_filelib', $tempDir = null)
     {
-        $this->setMongo($mongo);
-        $this->tempDir = $tempDir;
-        parent::__construct($options);
+        $this->mongo = $mongo;
+        $this->tempDir = $tempDir ?: sys_get_temp_dir();
+        $this->prefix = $prefix;
     }
 
     /**
@@ -78,21 +73,11 @@ class GridfsStorage extends AbstractStorage implements Storage
     }
 
     /**
-     * Sets mongo
-     *
-     * @param MongoDB $mongo
-     */
-    public function setMongo(MongoDB $mongo)
-    {
-        $this->mongo = $mongo;
-    }
-
-    /**
      * Returns mongo
      *
      * @return MongoDB
      */
-    public function getMongo()
+    protected function getMongo()
     {
         return $this->mongo;
     }
@@ -112,16 +97,6 @@ class GridfsStorage extends AbstractStorage implements Storage
     }
 
     /**
-     * Sets gridfs prefix
-     *
-     * @param string $prefix
-     */
-    public function setPrefix($prefix)
-    {
-        $this->prefix = $prefix;
-    }
-
-    /**
      * Returns gridfs prefix
      *
      * @return string
@@ -129,6 +104,14 @@ class GridfsStorage extends AbstractStorage implements Storage
     public function getPrefix()
     {
         return $this->prefix;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTempDir()
+    {
+        return $this->tempDir;
     }
 
 

@@ -217,7 +217,11 @@ class DoctrineOrmPlatform implements Platform
     public function createFolder(Folder $folder)
     {
         $folderEntity = new $this->folderEntityName();
-        $folderEntity->setParent($this->getFolderReference($folder->getParentId()));
+
+        if ($folder->getParentId()) {
+            $folderEntity->setParent($this->getFolderReference($folder->getParentId()));
+        }
+
         $folderEntity->setName($folder->getName());
         $folderEntity->setUrl($folder->getUrl());
         $folderEntity->setUuid($folder->getUuid());

@@ -18,23 +18,32 @@ use Xi\Filelib\File\Resource;
  */
 class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 {
-    protected $resource;
 
-    protected $calc;
-
-    protected function setUp()
+    /**
+     * @return array
+     */
+    public function provideData()
     {
-        $this->calc = new TimeDirectoryIdCalculator();
-        $this->resource = new Resource();
+        return array(
+            array('1980/01/01', 'Y/m/d', '1980-01-01'),
+            array('21/03/1978', 'd/m/Y', '1978-03-21'),
+            array('11/11/2030/10/30/35', 'm/d/Y/H/i/s', '2030-11-11 10:30:35')
+        );
     }
+
 
     /**
      * @test
+     * @dataProvider provideData
      */
-    public function differentFormatsShouldReturnCorrectResults()
+    public function calculateShouldCalculateCorrectly($expected, $format, $dateCreated)
     {
-        $this->calc->setFormat('Y/m/d');
+        $resource = Resource::create(array('date_created' => new DateTime($dateCreated)));
+        $calc = new TimeDirectoryIdCalculator($format);
+        $this->assertEquals($expected, $calc->calculateDirectoryId($resource));
 
+
+        /*
         $this->resource->setDateCreated(new DateTime('1980-01-01'));
         $this->assertEquals("1980/01/01", $this->calc->calculateDirectoryId($this->resource));
 
@@ -43,16 +52,16 @@ class TimeDirectoryIdCalculatorTest extends \PHPUnit_Framework_TestCase
 
         $this->calc->setFormat('m/d/Y/H/i/s');
         $this->assertEquals("11/11/2030/10/03/35", $this->calc->calculateDirectoryId($this->resource));
-
+        */
     }
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
-     *
      */
-    public function unsetDateCreatedShouldThrowException()
+    public function defaultSettingsShouldProduceSaneDirectoryId()
     {
-        $this->calc->calculateDirectoryId($this->resource);
+        $resource = Resource::create(array('date_created' => new DateTime('1978-03-21 03:03:03')));
+        $calc = new TimeDirectoryIdCalculator();
+        $this->assertEquals('1978/03/21', $calc->calculateDirectoryId($resource));
     }
 }

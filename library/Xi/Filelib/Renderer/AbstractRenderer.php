@@ -11,51 +11,56 @@ namespace Xi\Filelib\Renderer;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Acl\Acl;
+use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Event\FileEvent;
 
-abstract class AbstractRenderer
-{
 
+abstract class AbstractRenderer implements Renderer
+{
     /**
-     * @var Default options
+     * @var array Default options
      */
     private $defaultOptions = array(
         'download' => false,
         'version' => 'original',
-        'track' => false,
     );
 
     /**
-     * @var FileLibrary
+     * @var Storage
      */
-    protected $filelib;
-
-    public function __construct(FileLibrary $filelib)
-    {
-        $this->filelib = $filelib;
-    }
+    private $storage;
 
     /**
-     * Returns url to a file
-     *
-     * @param  File   $file
-     * @param  type   $options
-     * @return string
+     * @var Acl
      */
-    public function getUrl(File $file, $options = array())
-    {
-        $options = $this->mergeOptions($options);
+    private $acl;
 
-        if ($options['version'] === 'original') {
-            return $this->getPublisher()->getUrl($file);
-        }
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
-        // @todo: simplify. Publisher should need the string only!
-        $provider = $this->filelib->getFileOperator()->getVersionProvider($file, $options['version']);
-        $url = $this->getPublisher()->getUrlVersion($file, $options['version'], $provider);
+    /**
+     * @var FileOperator
+     */
+    protected $fileOperator;
 
-        return $url;
+    /**
+     * @param Storage $storage
+     * @param Acl $acl
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param FileOperator $fileOperator
+     */
+    public function __construct(
+        FileLibrary $filelib
+    ) {
+        $this->storage = $filelib->getStorage();
+        $this->acl = $filelib->getAcl();
+        $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->fileOperator = $filelib->getFileOperator();
     }
 
     /**
@@ -70,21 +75,11 @@ abstract class AbstractRenderer
     }
 
     /**
-     * Returns publisher
-     *
-     * @return Publisher
-     */
-    public function getPublisher()
-    {
-        return $this->filelib->getPublisher();
-    }
-
-    /**
      * @return EventDispatcherInterface
      */
-    public function getEventDispatcher()
+    protected function getEventDispatcher()
     {
-        return $this->filelib->getEventDispatcher();
+        return $this->eventDispatcher;
     }
 
     /**
@@ -92,9 +87,9 @@ abstract class AbstractRenderer
      *
      * @return Acl
      */
-    public function getAcl()
+    protected function getAcl()
     {
-        return $this->filelib->getAcl();
+        return $this->acl;
     }
 
     /**
@@ -102,20 +97,17 @@ abstract class AbstractRenderer
      *
      * @return Storage
      */
-    public function getStorage()
+    protected function getStorage()
     {
-        return $this->filelib->getStorage();
+        return $this->storage;
     }
 
     /**
-     * Dispatches track event
-     *
      * @param File $file
      */
-    protected function dispatchTrackEvent(File $file)
+    protected function dispatchRenderEvent(File $file)
     {
         $event = new FileEvent($file);
         $this->getEventDispatcher()->dispatch('xi_filelib.file.render', $event);
     }
-
 }

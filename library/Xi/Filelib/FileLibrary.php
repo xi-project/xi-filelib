@@ -50,11 +50,6 @@ class FileLibrary
     private $storage;
 
     /**
-     * @var Publisher
-     */
-    private $publisher;
-
-    /**
      * @var Acl
      */
     private $acl;
@@ -80,14 +75,28 @@ class FileLibrary
     private $queue;
 
     /**
-     * @var IdentityMap
-     */
-    private $identityMap;
-
-    /**
      * @var Platform
      */
     private $platform;
+
+
+    public function __construct(
+        Storage $storage,
+        Platform $platform,
+        EventDispatcherInterface $eventDispatcher = null
+    ) {
+
+        $this->storage = $storage;
+        $this->platform = $platform;
+        $this->eventDispatcher = $eventDispatcher;
+
+        $this->backend = new Backend(
+            $this->getEventDispatcher(),
+            $this->platform
+        );
+    }
+
+
 
     /**
      * @return EventDispatcherInterface
@@ -140,57 +149,6 @@ class FileLibrary
         return $this->tempDir;
     }
 
-    /**
-     * Shortcut to getFileOperator
-     *
-     * @return FileOperator
-     * @deprecated
-     */
-    public function file()
-    {
-        trigger_error("Method is deprecated. use getFileOperator() instead.", E_USER_DEPRECATED);
-
-        return $this->getFileOperator();
-    }
-
-    /**
-     * Shortcut to getFolderOperator
-     *
-     * @deprecated
-     * @return FolderOperator
-     */
-    public function folder()
-    {
-        trigger_error("Method is deprecated. use getFolderOperator() instead.", E_USER_DEPRECATED);
-
-        return $this->getFolderOperator();
-    }
-
-    /**
-     * Sets file operator
-     *
-     * @param  FileOperator $fileOperator
-     * @return FileLibrary
-     */
-    public function setFileOperator(FileOperator $fileOperator)
-    {
-        $this->fileOperator = $fileOperator;
-
-        return $this;
-    }
-
-    /**
-     * Sets folder operator
-     *
-     * @param  FolderOperator $fileOperator
-     * @return FileLibrary
-     */
-    public function setFolderOperator(FolderOperator $folderOperator)
-    {
-        $this->folderOperator = $folderOperator;
-
-        return $this;
-    }
 
     /**
      * Returns file operator
@@ -221,19 +179,6 @@ class FileLibrary
     }
 
     /**
-     * Sets storage
-     *
-     * @param  Storage     $storage
-     * @return FileLibrary
-     */
-    public function setStorage(Storage $storage)
-    {
-        $this->storage = $storage;
-
-        return $this;
-    }
-
-    /**
      * Returns storage
      *
      * @return Storage
@@ -241,29 +186,6 @@ class FileLibrary
     public function getStorage()
     {
         return $this->storage;
-    }
-
-    /**
-     * Sets publisher
-     *
-     * @param  Publisher   $publisher
-     * @return FileLibrary
-     */
-    public function setPublisher(Publisher $publisher)
-    {
-        $this->publisher = $publisher;
-
-        return $this;
-    }
-
-    /**
-     * Returns publisher
-     *
-     * @return Publisher
-     */
-    public function getPublisher()
-    {
-        return $this->publisher;
     }
 
     /**
@@ -309,6 +231,10 @@ class FileLibrary
      */
     public function getAcl()
     {
+        if (!$this->acl) {
+            $this->acl = new \Xi\Filelib\Acl\SimpleAcl(true);
+        }
+
         return $this->acl;
     }
 
@@ -336,20 +262,18 @@ class FileLibrary
      * Adds a plugin
      *
      * @param  Plugin      $plugin
-     * @param  integer     $priority
      * @return FileLibrary
      *
-     * TODO: Priority is not used.
      */
-    public function addPlugin(Plugin $plugin, $priority = 1000)
+    public function addPlugin(Plugin $plugin, $profiles = array())
     {
-        $this->getEventDispatcher()->addSubscriber($plugin);
+        // @todo: think about dependency hell
+        $plugin->setProfiles($profiles);
+        $plugin->setDependencies($this);
 
+        $this->getEventDispatcher()->addSubscriber($plugin);
         $event = new PluginEvent($plugin);
         $this->getEventDispatcher()->dispatch('xi_filelib.plugin.add', $event);
-
-        $plugin->init();
-
         return $this;
     }
 
@@ -376,42 +300,6 @@ class FileLibrary
     }
 
     /**
-     * Sets platform
-     *
-     * @param  Platform    $platform
-     * @return FileLibrary
-     */
-    public function setPlatform(Platform $platform)
-    {
-        $this->platform = $platform;
-
-        return $this;
-    }
-
-    /**
-     * Returns identity map
-     *
-     * @return IdentityMap
-     */
-    public function getIdentityMap()
-    {
-        return $this->identityMap;
-    }
-
-    /**
-     * Sets identity map
-     *
-     * @param  IdentityMap $identityMap
-     * @return FileLibrary
-     */
-    public function setIdentityMap(IdentityMap $identityMap)
-    {
-        $this->identityMap = $identityMap;
-
-        return $this;
-    }
-
-    /**
      * Returns platform
      *
      * @return Platform
@@ -420,4 +308,24 @@ class FileLibrary
     {
         return $this->platform;
     }
+
+    /**
+     * Prototyping a general shortcut magic method. Is it bad?
+     *
+     * @param $method
+     * @param $args
+     * @return mixed
+     * @throws \Exception
+     */
+    public function __call($method, $args)
+    {
+        $matches = array();
+        if (preg_match("#^(.*?)(Folder|File)$#", $method, $matches)) {
+            $delegate = ($matches[2] == 'Folder') ? $this->getFolderOperator() : $this->getFileOperator();
+            return call_user_func_array(array($delegate, $matches[1]), $args);
+        }
+        throw new \Exception("Invalid method '{$method}'");
+    }
+
+
 }

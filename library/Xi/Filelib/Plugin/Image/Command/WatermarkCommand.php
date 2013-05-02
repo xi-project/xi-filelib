@@ -21,19 +21,30 @@ class WatermarkCommand extends AbstractCommand
     /**
      * @var string Watermark image
      */
-    protected $watermarkImage = null;
+    protected $image = null;
 
     /**
      * @var string Watermark position
      */
-    protected $watermarkPosition = 'sw';
+    protected $position = 'sw';
 
     /**
      * @var integer Watermark padding
      */
-    protected $watermarkPadding = 0;
+    protected $padding = 0;
 
+    /**
+     * @var \Imagick
+     */
     protected $watermark;
+
+    public function __construct($image, $position, $padding)
+    {
+        $this->image = $image;
+        $this->setWatermarkPosition($position);
+        $this->padding = $padding;
+    }
+
 
     /**
      * Sets watermark image
@@ -43,7 +54,7 @@ class WatermarkCommand extends AbstractCommand
      */
     public function setWatermarkImage($image)
     {
-        $this->watermarkImage = $image;
+        $this->image = $image;
 
         return $this;
     }
@@ -55,7 +66,7 @@ class WatermarkCommand extends AbstractCommand
      */
     public function getWatermarkImage()
     {
-        return $this->watermarkImage;
+        return $this->image;
     }
 
     /**
@@ -77,7 +88,7 @@ class WatermarkCommand extends AbstractCommand
             ));
         }
 
-        $this->watermarkPosition = $position;
+        $this->position = $position;
 
         return $this;
     }
@@ -89,7 +100,7 @@ class WatermarkCommand extends AbstractCommand
      */
     public function getWatermarkPosition()
     {
-        return $this->watermarkPosition;
+        return $this->position;
     }
 
     /**
@@ -100,7 +111,7 @@ class WatermarkCommand extends AbstractCommand
      */
     public function setWatermarkPadding($padding)
     {
-        $this->watermarkPadding = $padding;
+        $this->padding = $padding;
 
         return $this;
     }
@@ -112,7 +123,7 @@ class WatermarkCommand extends AbstractCommand
      */
     public function getWatermarkPadding()
     {
-        return $this->watermarkPadding;
+        return $this->padding;
     }
 
     public function execute(Imagick $imagick)

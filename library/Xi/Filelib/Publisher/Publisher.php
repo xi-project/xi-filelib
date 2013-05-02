@@ -16,6 +16,7 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
  * Publisher interface
  *
  * @author pekkis
+ * @todo: Linkers must be moved inside publishing component
  *
  */
 interface Publisher
@@ -34,7 +35,7 @@ interface Publisher
      * @param string          $version
      * @param VersionProvider $versionProvider
      */
-    public function publishVersion(File $file, $version, VersionProvider $versionProvider);
+    public function publishVersion(File $file, $version);
 
     /**
      * Unpublishes a file
@@ -50,7 +51,7 @@ interface Publisher
      * @param string          $version
      * @param VersionProvider $versionProvider
      */
-    public function unpublishVersion(File $file, $version, VersionProvider $versionProvider);
+    public function unpublishVersion(File $file, $version);
 
     /**
      * Returns url to a file
@@ -68,5 +69,5 @@ interface Publisher
      * @param  VersionProvider $version
      * @return string
      */
-    public function getUrlVersion(File $file, $version, VersionProvider $versionProvider);
+    public function getUrlVersion(File $file, $version);
 }

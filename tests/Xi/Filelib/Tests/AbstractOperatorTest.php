@@ -132,16 +132,6 @@ class AbstractOperatorTest extends TestCase
     }
 
     /**
-     * @return FileLibrary
-     */
-    private function getMockedFilelib()
-    {
-        $mock = $this->getMock('Xi\Filelib\FileLibrary');
-
-        return $mock;
-    }
-
-    /**
      * @test
      * @expectedException InvalidArgumentException
      */

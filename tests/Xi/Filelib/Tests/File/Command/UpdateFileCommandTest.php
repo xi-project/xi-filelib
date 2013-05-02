@@ -84,7 +84,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $linker = $this->getMock('Xi\Filelib\Linker\Linker');
         $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
         $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
         $file = $this->getMockBuilder('Xi\Filelib\File\File')
@@ -158,7 +158,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $linker = $this->getMock('Xi\Filelib\Linker\Linker');
         $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
 
-        $profile = $this->getMockFileProfile();
+        $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getLinker')->will($this->returnValue($linker));
 
         $file = $this->getMockBuilder('Xi\Filelib\File\File')

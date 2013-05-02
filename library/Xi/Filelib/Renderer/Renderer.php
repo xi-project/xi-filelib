@@ -18,15 +18,6 @@ use Xi\Filelib\File\File;
  */
 interface Renderer
 {
-     /**
-     * Returns url to a file
-     *
-     * @param  File   $file
-     * @param  type   $options
-     * @return string
-     */
-    public function getUrl(File $file, $options = array());
-
     /**
      * Renders a file to a response
      *

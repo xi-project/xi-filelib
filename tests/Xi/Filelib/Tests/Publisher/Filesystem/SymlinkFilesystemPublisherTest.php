@@ -233,7 +233,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
                 )
             );
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->publish($file);
 
@@ -272,7 +272,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
 
         $publisher->publishVersion($file, 'xooxer', $this->versionProvider);
@@ -307,7 +307,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
                 )
             );
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setRelativePathToRoot('../private');
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->publish($file);
@@ -352,7 +352,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->setRelativePathToRoot('../private');
 
@@ -391,7 +391,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
         $this->createLink($expectedRealPath, $expectedPath);
         $this->assertFileExists($expectedPath);
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->unpublish($file);
 
@@ -412,7 +412,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
         $this->createLink($expectedRealPath, $expectedVersionPath);
         $this->assertFileExists($expectedVersionPath);
 
-        $publisher = $this->getMockedPublisher();
+        $publisher = $this->getMockPublisher();
         $publisher->setPublicRoot(ROOT_TESTS . '/data/publisher/public');
         $publisher->unpublishVersion($file, $this->versionProvider->getIdentifier(), $this->versionProvider);
 
@@ -422,7 +422,7 @@ class SymlinkFilesystemPublisherTest extends TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getMockedPublisher()
+    protected function getMockPublisher()
     {
         $publisher = $this
             ->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')

@@ -13,8 +13,6 @@ use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
-use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Publisher\Publisher;
 
 /**
  * Versions an image
@@ -38,23 +36,18 @@ class VersionPlugin extends AbstractVersionProvider
     /**
      * @var array
      */
-    private $options;
+    private $imageMagickConfig;
 
-    /**
-     * @param  Storage       $storage
-     * @param  Publisher     $publisher
-     * @param  FileOperator  $fileOperator
-     * @param  array         $options
-     * @param  string        $tempDir
-     * @return VersionPlugin
-     */
-    public function __construct(Storage $storage, Publisher $publisher,
-        FileOperator $fileOperator, $tempDir, array $options = array())
-    {
-        parent::__construct($storage, $publisher, $fileOperator, $options);
-
+    public function __construct(
+        $identifier,
+        $tempDir,
+        $extension,
+        $imageMagickOptions
+    ) {
+        parent::__construct($identifier);
         $this->tempDir = $tempDir;
-        $this->options = $options;
+        $this->extension = $extension;
+        $this->imageMagickOptions = $imageMagickOptions;
     }
 
     /**
@@ -67,7 +60,8 @@ class VersionPlugin extends AbstractVersionProvider
         if (!$this->imageMagickHelper) {
             $this->imageMagickHelper = new ImageMagickHelper();
 
-            Configurator::setOptions($this->imageMagickHelper, $this->options);
+            // @todo: Fucktor away
+            Configurator::setOptions($this->imageMagickHelper, $this->imageMagickOptions);
         }
 
         return $this->imageMagickHelper;

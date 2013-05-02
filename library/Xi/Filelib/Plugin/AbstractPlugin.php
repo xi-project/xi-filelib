@@ -11,6 +11,7 @@ namespace Xi\Filelib\Plugin;
 
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileProfileEvent;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Abstract plugin class provides empty convenience methods for all hooks.
@@ -41,24 +42,6 @@ abstract class AbstractPlugin implements Plugin
         return static::$subscribedEvents;
     }
 
-    public function __construct($options = array())
-    {
-        Configurator::setConstructorOptions($this, $options);
-    }
-
-    /**
-     * Sets the profiles attached to the plugin
-     *
-     * @param  array          $profiles
-     * @return AbstractPlugin
-     */
-    public function setProfiles(array $profiles)
-    {
-        $this->profiles = $profiles;
-
-        return $this;
-    }
-
     /**
      * Returns an array of profiles attached to the plugin
      *
@@ -80,8 +63,13 @@ abstract class AbstractPlugin implements Plugin
         return in_array($profile, $this->getProfiles());
     }
 
-    public function init()
-    { }
+    /**
+     * @param array $profiles
+     */
+    public function setProfiles(array $profiles)
+    {
+        $this->profiles = $profiles;
+    }
 
     public function onFileProfileAdd(FileProfileEvent $event)
     {
@@ -91,4 +79,11 @@ abstract class AbstractPlugin implements Plugin
             $profile->addPlugin($this);
         }
     }
+
+
+    public function setDependencies(FileLibrary $filelib)
+    {
+        // @todo: Empty method is stupid. Solve dependency hell.
+    }
+
 }
