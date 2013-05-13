@@ -56,7 +56,8 @@
         "zendframework/zendservice-amazon": "2.0.*",
         "zendframework/zend-i18n": "2.1.*",
         "zendframework/zend-filter": "2.1.*",
-        "zendframework/zend-servicemanager": "2.1.*"
+        "zendframework/zend-servicemanager": "2.1.*",
+        "xi/transliterator": "dev-master@dev"
     },
 
     "autoload": {

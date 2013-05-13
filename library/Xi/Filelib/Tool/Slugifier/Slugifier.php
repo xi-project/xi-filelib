@@ -30,5 +30,4 @@ interface Slugifier
      * @return string
      */
     public function slugify($unslugged);
-
 }

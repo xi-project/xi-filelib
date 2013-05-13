@@ -20,7 +20,9 @@ use Xi\Filelib\Folder\Folder;
  */
 class SimpleAcl implements Acl
 {
-
+    /**
+     * @var bool
+     */
     private $isReadableByAnonymous = true;
 
     public function __construct($isReadableByAnonymous = true)
