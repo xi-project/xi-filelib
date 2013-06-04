@@ -197,13 +197,12 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     public function createVersions(File $file, $sleepyTime = 5)
     {
-        $filelib = $this->getFilelib();
         $s3 = $this->getAwsService();
         $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
 
         $retrieved = $this->getStorage()->retrieve($file);
 
-        $s3->putFile($retrieved->getRealPath(), $awsPath);
+        $s3->putFileStream($retrieved->getRealPath(), $awsPath);
 
         $url = $s3->getEndpoint() . '/' . $awsPath;
 
