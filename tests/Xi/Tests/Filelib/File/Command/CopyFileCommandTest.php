@@ -167,11 +167,15 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
 
 
         $file = File::create(array('name' => 'tohtori-vesala.jpg'));
+        $returnFile = $this->getMockBuilder('Xi\Filelib\File\FileObject')
+                        ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
+                        ->getMock();
+        $returnFile->expects($this->once())->method('getRealPath')->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
         $backend->expects($this->once())->method('upload')->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
-        $storage->expects($this->once())->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\File'))->will($this->returnValue('xooxoo'));
-        $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->equalTo('xooxoo'));
+        $storage->expects($this->once())->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\File'))->will($this->returnValue($returnFile));
+        $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->equalTo(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
         $eventDispatcher->expects($this->once())->method('dispatch')
                         ->with($this->equalTo('file.copy'), $this->isInstanceOf('Xi\Filelib\Event\FileCopyEvent'));
