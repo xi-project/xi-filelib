@@ -160,6 +160,11 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->tempFiles[] = $fo;
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $tempFile
+     */
     public function store(File $file, $tempFile)
     {
         $filename = $this->getFilename($file);
@@ -167,6 +172,12 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $file->getId(), 'version' => 'original', 'mimetype' => $file->getMimetype()) ));
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $version
+     * @param string $tempFile
+     */
     public function storeVersion(File $file, $version, $tempFile)
     {
         $filename = $this->getFilenameVersion($file, $version);
@@ -174,6 +185,12 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $file->getId(), 'version' => $version, 'mimetype' => $file->getMimetype()) ));
     }
 
+    /**
+     *
+     * @param File $file
+     * @return FileObject
+     * @throws FilelibException
+     */
     public function retrieve(File $file)
     {
         $filename = $this->getFilename($file);
@@ -187,6 +204,13 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $this->toTemp($file);
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $version
+     * @return FileObject
+     * @throws FilelibException
+     */
     public function retrieveVersion(File $file, $version)
     {
         $filename = $this->getFilenameVersion($file, $version);
@@ -200,6 +224,10 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $this->toTemp($file);
     }
 
+    /**
+     *
+     * @param File $file
+     */
     public function delete(File $file)
     {
         $filename = $this->getFilename($file);
@@ -207,6 +235,11 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $version
+     */
     public function deleteVersion(File $file, $version)
     {
         $filename = $this->getFilenameVersion($file, $version);
@@ -214,11 +247,22 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
+    /**
+     *
+     * @param File $file
+     * @return string
+     */
     public function getFilename(File $file)
     {
         return $file->getFolderId() . '/' . $file->getId();
     }
 
+    /**
+     *
+     * @param \Xi\Filelib\File\File $file
+     * @param string $version
+     * @return string
+     */
     public function getFilenameVersion(File $file, $version)
     {
         return $file->getFolderId() . '/' . $file->getId() . '/' . $version;
