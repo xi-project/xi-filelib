@@ -101,12 +101,11 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
     }
 
     /**
-     * Responds to a original file request and returns path to renderable
-     * file if response is 200
+     * Responds to a original file request and returns Fileobject if response is 200
      *
      * @param File $file
      * @param Response $response
-     * @return string
+     * @return Fileobject
      */
     private function respondToOriginal(File $file, Response $response)
     {
@@ -122,13 +121,12 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
     }
 
     /**
-     * Responds to a version file request and returns path to renderable
-     * file if response is 200
+     * Responds to a version file request and returns Fileobject if response is 200
      *
      * @param File $file
      * @param Response $response
      * @param string Version identifier
-     * @return string
+     * @return Fileobject
      */
     private function respondToVersion(File $file, Response $response, $version)
     {

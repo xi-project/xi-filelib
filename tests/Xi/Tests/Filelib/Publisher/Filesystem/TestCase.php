@@ -72,20 +72,28 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
                     switch ($file->getId()) {
 
                         case 1:
-                            return ROOT_TESTS . '/data/publisher/private/1/1';
-
+                            $path = ROOT_TESTS . '/data/publisher/private/1/1';
+                            break;
                         case 2:
-                            return ROOT_TESTS . '/data/publisher/private/2/2/2';
-
+                            $path = ROOT_TESTS . '/data/publisher/private/2/2/2';
+                            break;
                         case 3:
-                            return ROOT_TESTS . '/data/publisher/private/3/3/3/3';
-
+                            $path = ROOT_TESTS . '/data/publisher/private/3/3/3/3';
+                            break;
                         case 4:
-                            return ROOT_TESTS . '/data/publisher/private/666/4';
+                            $path = ROOT_TESTS . '/data/publisher/private/666/4';
+                            break;
                         case 5:
-                            return ROOT_TESTS . '/data/publisher/private/1/5';
+                            $path = ROOT_TESTS . '/data/publisher/private/1/5';
+                            break;
                     }
 
+                    $returnFile = $this->getMockBuilder('Xi\Filelib\File\FileObject')
+                                    ->setConstructorArgs(array($path))
+                                    ->getMock();
+                    $returnFile->expects($this->once())->method('getPathname')->will($this->returnValue($path));
+
+                    return $returnFile;
         }));
 
         $storage->expects($this->any())->method('retrieveVersion')
@@ -94,21 +102,28 @@ class TestCase extends \Xi\Tests\Filelib\TestCase
                     switch ($file->getId()) {
 
                         case 1:
-                            return ROOT_TESTS . '/data/publisher/private/1/1';
-
+                            $path = ROOT_TESTS . '/data/publisher/private/1/1';
+                            break;
                         case 2:
-                            return ROOT_TESTS . '/data/publisher/private/2/2/2';
-
+                            $path = ROOT_TESTS . '/data/publisher/private/2/2/2';
+                            break;
                         case 3:
-                            return ROOT_TESTS . '/data/publisher/private/3/3/3/3';
-
+                            $path = ROOT_TESTS . '/data/publisher/private/3/3/3/3';
+                            break;
                         case 4:
-                            return ROOT_TESTS . '/data/publisher/private/666/4';
-
+                            $path = ROOT_TESTS . '/data/publisher/private/666/4';
+                            break;
                         case 5:
-                            return ROOT_TESTS . '/data/publisher/private/1/5';
+                            $path = ROOT_TESTS . '/data/publisher/private/1/5';
+                            break;
                     }
 
+                    $returnFile = $this->getMockBuilder('Xi\Filelib\File\FileObject')
+                                    ->setConstructorArgs(array($path))
+                                    ->getMock();
+                    $returnFile->expects($this->once())->method('getPathname')->will($this->returnValue($path));
+
+                    return $returnFile;
         }));
 
 

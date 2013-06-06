@@ -78,6 +78,11 @@ class MultiStorage extends AbstractStorage implements Storage
         return $this->storages[$this->getSessionStorageId()];
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $tempFile
+     */
     public function store(File $file, $tempFile)
     {
         foreach ($this->getStorages() as $storage) {
@@ -85,6 +90,12 @@ class MultiStorage extends AbstractStorage implements Storage
         }
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $version
+     * @param string $tempFile
+     */
     public function storeVersion(File $file, $version, $tempFile)
     {
         foreach ($this->getStorages() as $storage) {
@@ -92,16 +103,31 @@ class MultiStorage extends AbstractStorage implements Storage
         }
     }
 
+    /**
+     *
+     * @param File $file
+     * @return FileObject
+     */
     public function retrieve(File $file)
     {
         return $this->getSessionStorage()->retrieve($file);
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $version
+     * @return FileObject
+     */
     public function retrieveVersion(File $file, $version)
     {
         return $this->getSessionStorage()->retrieveVersion($file, $version);
     }
 
+    /**
+     *
+     * @param File $file
+     */
     public function delete(File $file)
     {
         foreach ($this->getStorages() as $storage) {
@@ -109,6 +135,11 @@ class MultiStorage extends AbstractStorage implements Storage
         }
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $version
+     */
     public function deleteVersion(File $file, $version)
     {
         foreach ($this->getStorages() as $storage) {

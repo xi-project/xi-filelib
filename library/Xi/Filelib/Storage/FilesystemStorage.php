@@ -187,6 +187,11 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return $this->root;
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $tempFile
+     */
     public function store(File $file, $tempFile)
     {
         $this->assertRootExistsAndIsWritable();
@@ -204,6 +209,12 @@ class FilesystemStorage extends AbstractStorage implements Storage
         chmod($fileTarget, $this->getFilePermission());
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $version
+     * @param string $tempFile
+     */
     public function storeVersion(File $file, $version, $tempFile)
     {
         $this->assertRootExistsAndIsWritable();
@@ -218,6 +229,12 @@ class FilesystemStorage extends AbstractStorage implements Storage
         copy($tempFile, $path . '/' . $file->getId());
     }
 
+    /**
+     *
+     * @param File $file
+     * @return FileObject
+     * @throws FilelibException
+     */
     public function retrieve(File $file)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $file->getId();
@@ -229,6 +246,13 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return new FileObject($path);
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $version
+     * @return FileObject
+     * @throws FilelibException
+     */
     public function retrieveVersion(File $file, $version)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version . '/' . $file->getId();
@@ -240,6 +264,10 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return new FileObject($path);
     }
 
+    /**
+     *
+     * @param File $file
+     */
     public function delete(File $file)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $file->getId();
@@ -249,6 +277,11 @@ class FilesystemStorage extends AbstractStorage implements Storage
         }
     }
 
+    /**
+     *
+     * @param File $file
+     * @param string $version
+     */
     public function deleteVersion(File $file, $version)
     {
         $path = $this->getRoot() . '/' . $this->getDirectoryId($file) . '/' . $version . '/' . $file->getId();
