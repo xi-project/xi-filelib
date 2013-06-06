@@ -105,7 +105,7 @@ class CopyFileCommand extends AbstractFileCommand implements Serializable
         $impostor = $this->getImpostor($this->file);
 
         $this->fileOperator->getBackend()->upload($impostor, $this->folder);
-        $this->fileOperator->getStorage()->store($impostor, $this->fileOperator->getStorage()->retrieve($this->file)->getRealPath());
+        $this->fileOperator->getStorage()->store($impostor, $this->fileOperator->getStorage()->retrieve($this->file)->getPathname());
 
         $event = new FileCopyEvent($this->file, $impostor);
         $this->fileOperator->getEventDispatcher()->dispatch('file.copy', $event);

@@ -29,7 +29,7 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            $tmp = $this->getFilelib()->getStorage()->retrieve($file);
+            $tmp = $this->getFilelib()->getStorage()->retrieve($file)->getPathname();
 
             copy($tmp, $link);
             chmod($link, $this->getFilePermission());
@@ -52,7 +52,7 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file, $version);
+            $tmp = $this->getFilelib()->getStorage()->retrieveVersion($file, $version)->getPathname();
             copy($tmp, $link);
             chmod($link, $this->getFilePermission());
         }

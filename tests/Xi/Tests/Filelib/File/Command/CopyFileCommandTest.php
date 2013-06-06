@@ -170,7 +170,7 @@ class CopyFileCommandTest extends \Xi\Tests\Filelib\TestCase
         $returnFile = $this->getMockBuilder('Xi\Filelib\File\FileObject')
                         ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
                         ->getMock();
-        $returnFile->expects($this->once())->method('getRealPath')->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
+        $returnFile->expects($this->once())->method('getPathname')->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
         $backend->expects($this->once())->method('upload')->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
