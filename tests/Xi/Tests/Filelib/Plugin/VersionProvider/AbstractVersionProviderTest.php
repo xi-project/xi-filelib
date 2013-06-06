@@ -64,7 +64,7 @@ class AbstractVersionProviderTest extends TestCase
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
-            ->setMethods(array('createVersions', 'deleteVersions', 'getStorage', 'getVersions', 'getExtensionFor'))
+            ->setMethods(array('createVersions', 'getStorage', 'getVersions', 'getExtensionFor'))
             ->getMockForAbstractClass();
 
         $plugin->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
@@ -464,7 +464,6 @@ class AbstractVersionProviderTest extends TestCase
                      $this->equalTo('xooxer')
               );
 
-
         $this->plugin->setProvidesFor(array('image', 'video'));
         $this->plugin->setProfiles(array('tussi', 'lussi'));
         $this->plugin->expects($this->atLeastOnce())->method('getVersions')
@@ -476,9 +475,7 @@ class AbstractVersionProviderTest extends TestCase
         $event = new FileEvent($file);
 
         $this->plugin->onDelete($event);
-
     }
-
 
     /**
      * @test
