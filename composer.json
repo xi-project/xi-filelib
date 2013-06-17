@@ -36,17 +36,17 @@
 
     "require": {
         "php": ">=5.3.0",
-        "symfony/event-dispatcher": "2.1.*"
+        "symfony/event-dispatcher": ">=2.0.14"
     },
 
     "require-dev": {
-        "doctrine/orm": "2.2.2",
-        "doctrine/dbal": "2.2.2",
-        "doctrine/common": "2.2.2",
-        "symfony/http-foundation": "2.1.*",
-        "symfony/http-kernel": "2.1.*",
-        "symfony/process": "2.1.*",
-        "symfony/security": "2.1.*",
+        "doctrine/orm": ">=2.3.0",
+        "doctrine/dbal": ">=2.3.0",
+        "doctrine/common": ">=2.3.0",
+        "symfony/http-foundation": ">=2.1.0",
+        "symfony/http-kernel": ">=2.1.0",
+        "symfony/process": ">=2.1.0",
+        "symfony/security": ">=2.1.0",
         "zendframework/zendservice-amazon": "2.0.*@dev",
         "zendframework/zend-i18n": "2.0.*",
         "zendframework/zend-filter": "2.0.*",
