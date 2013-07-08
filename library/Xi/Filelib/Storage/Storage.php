@@ -46,7 +46,7 @@ interface Storage
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
      * @param Resource $resource
-     * @return FileObject
+     * @return string
      * @throws FilelibException
      */
     public function retrieve(Resource $resource);
@@ -57,7 +57,7 @@ interface Storage
      * @param Resource $resource
      * @param string $version
      * @param null|File $file
-     * @return FileObject
+     * @return string
      * @throws FilelibException
      *
      */

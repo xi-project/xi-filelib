@@ -50,7 +50,12 @@ abstract class AbstractStorage implements Storage
         if (!$this->exists($resource)) {
             throw new FileIOException("File for resource #{$resource->getId()} does not exist");
         }
-        return $this->doRetrieve($resource);
+
+        $retrieved = $this->doRetrieve($resource);
+        if (!is_string($retrieved)) {
+            throw new \Exception("Fail at failing");
+        }
+        return $retrieved;
     }
 
     public function retrieveVersion(Resource $resource, $version, File $file = null)
@@ -58,7 +63,12 @@ abstract class AbstractStorage implements Storage
         if (!$this->versionExists($resource, $version, $file)) {
             throw new FileIOException("File version '{$version}' for resource #{$resource->getId()} does not exist");
         }
-        return $this->doRetrieveVersion($resource, $version, $file);
+
+        $retrieved = $this->doRetrieveVersion($resource, $version, $file);
+        if (!is_string($retrieved)) {
+            throw new \Exception("Fail at failing");
+        }
+        return $retrieved;
     }
 
     public function delete(Resource $resource)
@@ -80,6 +90,10 @@ abstract class AbstractStorage implements Storage
 
     public function store(Resource $resource, $tempFile)
     {
+        if (!is_string($tempFile)) {
+            throw new \InvalidArgumentException("Invalid tempfile in store()");
+        }
+
         try {
             return $this->doStore($resource, $tempFile);
         } catch (\Exception $e) {
@@ -89,6 +103,10 @@ abstract class AbstractStorage implements Storage
 
     public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
+        if (!is_string($tempFile)) {
+            throw new \InvalidArgumentException("Invalid tempfile in storeVersion()");
+        }
+
         try {
             return $this->doStoreVersion($resource, $version, $tempFile, $file);
         } catch (\Exception $e) {

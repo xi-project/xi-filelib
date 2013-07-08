@@ -114,10 +114,8 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
              ->will($this->returnValue(file_get_contents($this->filePath)));
 
         $retrieved = $this->storage->retrieve($this->resource);
-
-        $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
-
-        $this->assertFileEquals($this->filePath, $retrieved->getRealPath());
+        $this->assertInternalType('string', $retrieved);
+        $this->assertFileEquals($this->filePath, $retrieved);
     }
 
     /**
@@ -133,9 +131,8 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = $this->storage->retrieveVersion($this->resource, 'version');
 
-        $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
-
-        $this->assertFileEquals($this->filePath, $retrieved->getRealPath());
+        $this->assertInternalType('string', $retrieved);
+        $this->assertFileEquals($this->filePath, $retrieved);
     }
 
     /**
@@ -151,9 +148,8 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
 
         $retrieved = $this->storage->retrieveVersion($this->resource, 'version', $this->file);
 
-        $this->assertInstanceof('Xi\Filelib\File\FileObject', $retrieved);
-
-        $this->assertFileEquals($this->filePath, $retrieved->getRealPath());
+        $this->assertInternalType('string', $retrieved);
+        $this->assertFileEquals($this->filePath, $retrieved);
     }
 
 
@@ -208,7 +204,7 @@ class AmazonS3StorageTest extends \Xi\Tests\Filelib\TestCase
              ->with('bucket/123')
              ->will($this->returnValue(file_get_contents($this->filePath)));
 
-        $retrievedPath = $this->storage->retrieve($this->resource)->getRealPath();
+        $retrievedPath = $this->storage->retrieve($this->resource);
 
         $this->assertFileExists($retrievedPath);
         unset($this->storage);

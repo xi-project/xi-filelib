@@ -60,7 +60,7 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     public function __destruct()
     {
         foreach ($this->tempFiles as $tempFile) {
-            unlink($tempFile->getPathname());
+            unlink($tempFile);
         }
     }
 
@@ -131,17 +131,16 @@ class AmazonS3Storage extends AbstractStorage implements Storage
     {
         $tmp = tempnam($this->tempDir, 'filelib');
         file_put_contents($tmp, $file);
-        $fo = new FileObject($tmp);
-        $this->registerTempFile($fo);
-        return $fo;
+        $this->registerTempFile($tmp);
+        return $tmp;
     }
 
     /**
      * Registers an internal temp file
      *
-     * @param FileObject $fo
+     * @param string $fo
      */
-    private function registerTempFile(FileObject $fo)
+    private function registerTempFile($fo)
     {
         $this->tempFiles[] = $fo;
     }

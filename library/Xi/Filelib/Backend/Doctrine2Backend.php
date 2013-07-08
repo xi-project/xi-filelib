@@ -9,7 +9,7 @@ use Xi\Filelib\Exception\NonUniqueFileException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\EntityNotFoundException;
-use PDOException;
+use Doctrine\DBAL\DBALException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -447,7 +447,7 @@ class Doctrine2Backend extends AbstractBackend
 
             try {
                 $em->flush();
-            } catch (PDOException $e) {
+            } catch (\Exception $e) {
                 $self->throwNonUniqueFileException($file, $folder);
             }
 

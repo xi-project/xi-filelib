@@ -80,13 +80,11 @@ class GridFsStorageTest extends TestCase
 
         $retrieved = $this->storage->retrieve($this->resource);
 
-        $realPath = $retrieved->getPathname();
-
-        $this->assertFileExists($realPath);
+        $this->assertFileExists($retrieved);
 
         unset($this->storage);
 
-        $this->assertFileNotExists($realPath);
+        $this->assertFileNotExists($retrieved);
     }
 
 }
