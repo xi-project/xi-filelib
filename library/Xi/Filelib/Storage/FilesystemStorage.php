@@ -158,12 +158,12 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
     protected function doRetrieve(Resource $resource)
     {
-        return new FileObject($this->getPathName($resource));
+        return $this->getPathName($resource);
     }
 
     protected function doRetrieveVersion(Resource $resource, $version, File $file = null)
     {
-        return new FileObject($this->getVersionPathName($resource, $version, $file));
+        return $this->getVersionPathName($resource, $version, $file);
     }
 
     protected function doDelete(Resource $resource)

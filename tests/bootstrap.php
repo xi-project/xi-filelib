@@ -9,8 +9,9 @@ php composer.phar install --dev
 
 gc_enable();
 
-// Autoload test classes
 define('ROOT_TESTS', realpath(__DIR__));
+
+// Autoload test classes
 spl_autoload_register(function($class) {
     $filename = str_replace("\\", DIRECTORY_SEPARATOR, $class) . '.php';
     if (file_exists(ROOT_TESTS . DIRECTORY_SEPARATOR . $filename)) {
@@ -18,5 +19,3 @@ spl_autoload_register(function($class) {
     }
     return class_exists($class, false);
 });
-
-
