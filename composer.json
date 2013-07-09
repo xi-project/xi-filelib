@@ -56,7 +56,6 @@
         "zendframework/zend-i18n": "2.1.*",
         "zendframework/zend-filter": "2.1.*",
         "zendframework/zend-servicemanager": "2.1.*",
-        "digital-canvas/zend-framework": "1.12.*",
         "zencoder/zencoder-php": "2.1.x"
     },
 
