@@ -13,19 +13,20 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Folder\FolderOperator;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Acl\Model\AclProviderInterface;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 
+
 class SymfonyAcl implements Acl
 {
-
     /**
-     * @var FileLibrary
+     * @var FolderOperator
      */
-    private $filelib;
+    private $folderOperator;
 
     /**
      * @var SecurityContextInterface
@@ -46,9 +47,13 @@ class SymfonyAcl implements Acl
      */
     private $folderBased;
 
-    public function __construct(FileLibrary $filelib, SecurityContextInterface $context, AclProviderInterface $aclProvider, $folderBased = true)
-    {
-        $this->filelib = $filelib;
+    public function __construct(
+        FileLibrary $filelib,
+        SecurityContextInterface $context,
+        AclProviderInterface $aclProvider,
+        $folderBased = true
+    ) {
+        $this->folderOperator = $filelib->getFolderOperator();
         $this->context = $context;
         $this->aclProvider = $aclProvider;
         $this->folderBased = $folderBased;
@@ -65,31 +70,6 @@ class SymfonyAcl implements Acl
     }
 
     /**
-     * Returns filelib
-     *
-     * @return FileLibrary
-     */
-    public function getFilelib()
-    {
-        return $this->filelib;
-    }
-
-    /**
-     * Returns security context
-     *
-     * @return SecurityContext
-     */
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    public function getAclProvider()
-    {
-        return $this->aclProvider;
-    }
-
-    /**
      * Returns whether file is writable
      *
      * @param  File    $file
@@ -101,7 +81,7 @@ class SymfonyAcl implements Acl
             return $this->isFolderWritable($this->getFilesFolder($file));
         }
 
-        return $this->getContext()->isGranted('EDIT', $file);
+        return $this->context->isGranted('EDIT', $file);
     }
 
     /**
@@ -116,7 +96,7 @@ class SymfonyAcl implements Acl
             return $this->isFolderReadable($this->getFilesFolder($file));
         }
 
-        return $this->getContext()->isGranted('VIEW', $file);
+        return $this->context->isGranted('VIEW', $file);
     }
 
     /**
@@ -142,7 +122,7 @@ class SymfonyAcl implements Acl
      */
     public function isFolderWritable(Folder $folder)
     {
-        return $this->getContext()->isGranted('EDIT', $folder);
+        return $this->context->isGranted('EDIT', $folder);
     }
 
     /**
@@ -153,7 +133,7 @@ class SymfonyAcl implements Acl
      */
     public function isFolderReadable(Folder $folder)
     {
-        return $this->getContext()->isGranted('VIEW', $folder);
+        return $this->context->isGranted('VIEW', $folder);
     }
 
     /**
@@ -170,7 +150,7 @@ class SymfonyAcl implements Acl
     /**
      * Queries ACL with domain object
      *
-     * @param type $domainObject
+     * @param object $domainObject
      *
      * @return boolean
      */
@@ -178,7 +158,7 @@ class SymfonyAcl implements Acl
     {
         $oid = ObjectIdentity::fromDomainObject($domainObject);
         try {
-            $acl = $this->getAclProvider()->findAcl($oid);
+            $acl = $this->aclProvider->findAcl($oid);
             $roleIdentity = new RoleSecurityIdentity('IS_AUTHENTICATED_ANONYMOUSLY');
 
             return $acl->isGranted(array(MaskBuilder::MASK_VIEW), array($roleIdentity), false);
@@ -188,14 +168,14 @@ class SymfonyAcl implements Acl
     }
 
     /**
-     * Returns file's folder
+     * Returns a file's folder
      *
      * @param  File   $file
      * @return Folder
      */
     private function getFilesFolder(File $file)
     {
-        return $this->getFilelib()->getFolderOperator()->find($file->getFolderId());
+        return $this->folderOperator->find($file->getFolderId());
     }
 
 }

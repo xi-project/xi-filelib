@@ -15,7 +15,7 @@ use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
-class SymfonyAclTest extends \PHPUnit_Framework_TestCase
+class SymfonyAclTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
      *
@@ -49,25 +49,28 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
-        $foop = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
-        $this->fiop = $fiop;
-        $this->foop = $foop;
+        $this->fiop = $this->getMockedFileOperator();
+        $this->foop = $this->getMockedFolderOperator();
+        $this->filelib = $this->getMockedFilelib();
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
-        $filelib->expects($this->any())->method('getFolderOperator')->will($this->returnValue($foop));
-        $this->filelib = $filelib;
+        $this->filelib
+            ->expects($this->any())
+            ->method('getFileOperator')
+            ->will($this->returnValue($this->fiop));
+        $this
+            ->filelib->expects($this->any())
+            ->method('getFolderOperator')
+            ->will($this->returnValue($this->foop));
 
         $context = $this->getMockBuilder('Symfony\Component\Security\Core\SecurityContextInterface')
                         ->disableOriginalConstructor()
                         ->getMockForAbstractClass();
         $this->context = $context;
 
-        $this->aclProvider = $this->getMockBuilder('Symfony\Component\Security\Acl\Model\AclProviderInterface')
-                                  ->disableOriginalConstructor()
-                                  ->getMock();
-
+        $this->aclProvider = $this
+            ->getMockBuilder('Symfony\Component\Security\Acl\Model\AclProviderInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -95,29 +98,16 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function classShouldInstantiateCorrectly()
-    {
-        $acl = new SymfonyAcl($this->filelib, $this->context, $this->aclProvider);
-
-        $this->assertSame($this->filelib, $acl->getFilelib());
-        $this->assertSame($this->context, $acl->getContext());
-        $this->assertSame($this->aclProvider, $acl->getAclProvider());
-
-    }
-
-    /**
-     * @test
-     */
     public function isFileReadableShouldDelegateFileToSecurityContextWhenFolderBasedIsFalse()
     {
         $file = File::create(array('id' => 1));
 
-        $this->context->expects($this->once())->method('isGranted')
-                      ->with($this->equalTo('VIEW'), $this->equalTo($file));
+        $this->contextExpect($file, 'VIEW', true);
 
         $acl = new SymfonyAcl($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->isFileReadable($file);
+        $this->assertTrue($ret);
 
     }
 
@@ -129,15 +119,16 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
         $file = File::create(array('id' => 1, 'folder_id' => 1));
         $folder = Folder::create(array('id' => 1));
 
-        $this->foop->expects($this->once())->method('find')->with($this->equalTo(1))
-                   ->will($this->returnValue($folder));
+        $this->foop
+            ->expects($this->once())
+            ->method('find')->with($this->equalTo(1))
+            ->will($this->returnValue($folder));
 
-        $this->context->expects($this->once())->method('isGranted')
-                      ->with($this->equalTo('VIEW'), $this->equalTo($folder));
-
+        $this->contextExpect($folder, 'VIEW', false);
         $acl = new SymfonyAcl($this->filelib, $this->context, $this->aclProvider, true);
 
         $ret = $acl->isFileReadable($file);
+        $this->assertFalse($ret);
 
     }
 
@@ -148,13 +139,11 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
     {
         $file = File::create(array('id' => 1));
 
-        $this->context->expects($this->once())->method('isGranted')
-                      ->with($this->equalTo('EDIT'), $this->equalTo($file));
-
+        $this->contextExpect($file, 'EDIT', true);
         $acl = new SymfonyAcl($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->isFileWritable($file);
-
+        $this->assertTrue($ret);
     }
 
     /**
@@ -165,16 +154,18 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
         $file = File::create(array('id' => 1, 'folder_id' => 1));
         $folder = Folder::create(array('id' => 1));
 
-        $this->foop->expects($this->once())->method('find')->with($this->equalTo(1))
-                   ->will($this->returnValue($folder));
+        $this->foop
+            ->expects($this->once())
+            ->method('find')->with($this->equalTo(1))
+            ->will($this->returnValue($folder));
 
-        $this->context->expects($this->once())->method('isGranted')
-                      ->with($this->equalTo('EDIT'), $this->equalTo($folder));
+
+        $this->contextExpect($folder, 'EDIT', true);
 
         $acl = new SymfonyAcl($this->filelib, $this->context, $this->aclProvider, true);
 
         $ret = $acl->isFileWritable($file);
-
+        $this->assertTrue($ret);
     }
 
     /**
@@ -184,13 +175,12 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
     {
         $folder = Folder::create(array('id' => 1));
 
-        $this->context->expects($this->once())->method('isGranted')
-                      ->with($this->equalTo('VIEW'), $this->equalTo($folder));
+        $this->contextExpect($folder, 'VIEW', true);
 
         $acl = new SymfonyAcl($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->isFolderReadable($folder);
-
+        $this->assertTrue($ret);
     }
 
     /**
@@ -200,13 +190,12 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
     {
         $folder = Folder::create(array('id' => 1));
 
-        $this->context->expects($this->once())->method('isGranted')
-                      ->with($this->equalTo('EDIT'), $this->equalTo($folder));
+        $this->contextExpect($folder, 'EDIT', false);
 
         $acl = new SymfonyAcl($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->isFolderWritable($folder);
-
+        $this->assertFalse($ret);
     }
 
     /**
@@ -218,8 +207,11 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
 
         $folder = Folder::create(array('id' => 1));
 
-        $this->foop->expects($this->once())->method('find')->with($this->equalTo(1))
-                   ->will($this->returnValue($folder));
+        $this->foop
+            ->expects($this->once())
+            ->method('find')
+            ->with($this->equalTo(1))
+            ->will($this->returnValue($folder));
 
         $acl = $this->getMockBuilder('Xi\Filelib\Acl\SymfonyAcl')
                     ->setConstructorArgs(array($this->filelib, $this->context, $this->aclProvider, true))
@@ -326,5 +318,22 @@ class SymfonyAclTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($ret);
     }
+
+
+
+    /**
+     * @param $withWhat
+     * @param $permission
+     * @param $returnValue
+     */
+    protected function contextExpect($withWhat, $permission, $returnValue)
+    {
+        $this->context
+            ->expects($this->once())->method('isGranted')
+            ->with($this->equalTo($permission), $this->equalTo($withWhat))
+            ->will($this->returnValue($returnValue));
+    }
+
+
 
 }

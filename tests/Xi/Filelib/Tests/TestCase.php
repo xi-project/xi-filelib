@@ -39,7 +39,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     public function getMockedFolderOperator()
     {
         $folderop = $this
-            ->getMockBuilder('Xi\Filelib\Operator\FolderOperator')
+            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
             ->disableOriginalConstructor()
             ->getMock();
 
