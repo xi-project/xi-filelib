@@ -68,7 +68,7 @@ class GridfsStorage extends AbstractStorage implements Storage
     public function __destruct()
     {
         foreach ($this->tempFiles as $tempFile) {
-            unlink($tempFile->getPathname());
+            unlink($tempFile);
         }
     }
 
@@ -145,20 +145,17 @@ class GridfsStorage extends AbstractStorage implements Storage
         $tmp = tempnam($this->tempDir, 'filelib');
 
         $file->write($tmp);
+        $this->registerTempFile($tmp);
 
-        $fo = new FileObject($tmp);
-
-        $this->registerTempFile($fo);
-
-        return $fo;
+        return $tmp;
     }
 
     /**
      * Registers an internal temp file
      *
-     * @param FileObject $fo
+     * @param string $fo
      */
-    private function registerTempFile(FileObject $fo)
+    private function registerTempFile($fo)
     {
         $this->tempFiles[] = $fo;
     }

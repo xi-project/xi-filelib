@@ -57,9 +57,9 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertTrue($this->storage->exists($this->resource));
 
         $retrieved = $this->storage->retrieve($this->resource);
-        $this->assertInstanceof('\Xi\Filelib\File\FileObject', $retrieved);
+        $this->assertInternalType('string', $retrieved);
 
-        $this->assertFileEquals($this->resourcePath, $retrieved->getRealPath());
+        $this->assertFileEquals($this->resourcePath, $retrieved);
 
         $this->storage->delete($this->resource);
         $this->assertFalse($this->storage->exists($this->resource));
@@ -85,8 +85,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $retrieved = $this->storage->retrieveVersion($this->resource, $this->version);
         $retrieved2 = $this->storage->retrieveVersion($this->resource, $this->version, $this->file);
 
-        $this->assertFileEquals($this->resourceVersionPath, $retrieved->getRealPath());
-        $this->assertFileEquals($this->fileSpecificVersionPath, $retrieved2->getRealPath());
+        $this->assertFileEquals($this->resourceVersionPath, $retrieved);
+        $this->assertFileEquals($this->fileSpecificVersionPath, $retrieved2);
 
         $this->storage->deleteVersion($this->resource, $this->version);
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version));
@@ -97,5 +97,4 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version, $this->file));
 
     }
-
 }
