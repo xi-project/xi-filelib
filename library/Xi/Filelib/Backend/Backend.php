@@ -46,7 +46,6 @@ class Backend
     /**
      * @param EventDispatcherInterface $eventDispatcher
      * @param Platform                 $platform
-     * @param IdentityMap              $identityMap
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
@@ -175,8 +174,6 @@ class Backend
             },
             $folder
         );
-
-        return $folder;
     }
 
     /**
