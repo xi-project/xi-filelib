@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Tests\Backend;
 
 use Xi\Filelib\Backend\Backend;
+use Xi\Filelib\Backend\IdentityMapHelper;
 use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\IdentityMap\IdentityMap;
 use Xi\Filelib\File\Resource;
@@ -30,6 +31,11 @@ class BackendTest extends TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
+    private $imhelper;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $platform;
 
     /**
@@ -46,10 +52,12 @@ class BackendTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->imhelper = new IdentityMapHelper($this->im, $this->platform);
+
         $this->ed = $this
             ->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
-        $this->backend = new Backend($this->ed, $this->platform, $this->im);
+        $this->backend = new Backend($this->ed, $this->platform);
     }
 
     /**
@@ -171,7 +179,9 @@ class BackendTest extends TestCase
 
         $this->im->expects($this->once())->method('add')->with($obj)->will($this->returnValue(true));
 
-        $ret = $this->backend->createResource($obj);
+        $backend = $this->getMockedBackend();
+
+        $ret = $backend->createResource($obj);
         $this->assertNull($ret);
     }
 
@@ -188,10 +198,7 @@ class BackendTest extends TestCase
 
         $this->im->expects($this->once())->method('add')->with($obj)->will($this->returnValue(true));
 
-        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->setMethods(array('findById'))
-            ->getMock();
+        $backend = $this->getMockedBackend(array('findById'));
 
         $backend
             ->expects($this->once())
@@ -216,11 +223,7 @@ class BackendTest extends TestCase
         $this->platform->expects($this->never())->method('createFolder');
         $this->im->expects($this->never())->method('add');
 
-        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->setMethods(array('findById'))
-            ->getMock();
-
+        $backend = $this->getMockedBackend(array('findById'));
         $backend
             ->expects($this->once())
             ->method('findById')
@@ -235,11 +238,7 @@ class BackendTest extends TestCase
      */
     public function createFileShouldThrowExceptionWithNonUniqueFile()
     {
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->setMethods(array('findByFinder'))
-            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->getMock();
+        $backend = $this->getMockedBackend(array('findByFinder', 'getIdentityMapHelper'));
 
         $folder = Folder::create(array('id' => 1, 'name' => 'lussen'));
         $file = File::create(array('id' => 1, 'name' => 'ankanlipaisija'));
@@ -269,11 +268,7 @@ class BackendTest extends TestCase
      */
     public function createFileShouldDelegateToPlatformAndAddToIdentityMap()
     {
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->setMethods(array('findByFinder'))
-            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->getMock();
+        $backend = $this->getMockedBackend(array('findByFinder', 'getIdentityMapHelper'));
 
         $folder = Folder::create(array('id' => 1));
         $file = File::create(array('id' => 1));
@@ -307,10 +302,7 @@ class BackendTest extends TestCase
 
         $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
 
-        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->setMethods(array('findByFinder'))
-            ->getMock();
+        $backend = $this->getMockedBackend(array('findByFinder'));
 
         $self = $this;
         $backend
@@ -391,7 +383,9 @@ class BackendTest extends TestCase
 
         $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
 
-        $ret = $this->backend->deleteFile($obj);
+        $backend = $this->getMockedBackend();
+
+        $ret = $backend->deleteFile($obj);
         $this->assertNull($ret);
     }
 
@@ -408,10 +402,7 @@ class BackendTest extends TestCase
         $this->ed->expects($this->never())->method('dispatch');
         $this->im->expects($this->never())->method('remove');
 
-        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
-            ->setMethods(array('getNumberOfReferences'))
-            ->getMock();
+        $backend = $this->getMockedBackend(array('getNumberOfReferences'));
 
         $backend->expects($this->once())->method('getNumberOfReferences')->with($obj)
             ->will($this->returnValue(6));
@@ -434,7 +425,8 @@ class BackendTest extends TestCase
         $this->ed->expects($this->once())->method('dispatch')
             ->with('xi_filelib.resource.delete', $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
 
-        $ret = $this->backend->deleteResource($obj);
+        $backend = $this->getMockedBackend();
+        $ret = $backend->deleteResource($obj);
         $this->assertNull($ret);
     }
 
@@ -549,4 +541,29 @@ class BackendTest extends TestCase
 
         $this->assertEquals('lus', $ret);
     }
+
+
+    public function getMockedBackend($methods = array())
+    {
+        $methods = array_unique(
+            array_merge(
+                array('getIdentityMapHelper'),
+                $methods
+            )
+        );
+
+        $backend = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->setMethods($methods)
+            ->setConstructorArgs(array($this->ed, $this->platform))
+            ->getMock();
+
+        $backend
+            ->expects($this->any())
+            ->method('getIdentityMapHelper')
+            ->will($this->returnValue($this->imhelper));
+
+        return $backend;
+    }
+
 }

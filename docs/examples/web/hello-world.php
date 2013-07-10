@@ -33,20 +33,21 @@ $entityManager = EntityManager::create($dbParams, $config);
 
 $filelib = new FileLibrary(
     new FilesystemStorage(realpath(__DIR__ . '/../data/private'), new LeveledDirectoryIdCalculator()),
-    new DoctrineOrmPlatform($entityManager),
-    new SymlinkFilesystemPublisher(realpath(__DIR__ . '/../web/files'), 0600, 0700, '/files')
+    new DoctrineOrmPlatform($entityManager)
 );
+
+// new SymlinkFilesystemPublisher(realpath(__DIR__ . '/../web/files'), 0600, 0700, '/files')
 
 // Add a default profile with the simplest sequential linker possible
 
-// $filelib->addProfile(new FileProfile('default', new SequentialLinker()));
+$filelib->addProfile(new FileProfile('default', new SequentialLinker()));
 
-// $filelib->addPlugin(new RandomizeNamePlugin());
+$filelib->addPlugin(new RandomizeNamePlugin(), ['default']);
 
 $file = $filelib->upload(__DIR__ . '/../manatees/manatus-02.jpg');
 
 
 
 header("Content-Type: " . $file->getMimetype());
-echo $filelib->getStorage()->retrieve($file->getResource())->fpassthru();
+echo file_get_contents($filelib->getStorage()->retrieve($file->getResource()));
 

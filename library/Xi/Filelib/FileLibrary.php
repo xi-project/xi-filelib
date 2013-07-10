@@ -328,4 +328,11 @@ class FileLibrary
     }
 
 
+    public function upload($file, $folder = null, $profile = 'default')
+    {
+        return $this->getFileOperator()->upload($file, $folder, $profile);
+    }
+
+
+
 }
