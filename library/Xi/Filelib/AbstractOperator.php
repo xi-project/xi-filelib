@@ -13,7 +13,6 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\Command;
 use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
 use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
@@ -90,16 +89,6 @@ abstract class AbstractOperator
     public function getFilelib()
     {
         return $this->filelib;
-    }
-
-    /**
-     * Returns Acl
-     *
-     * @return Acl
-     */
-    public function getAcl()
-    {
-        return $this->getFilelib()->getAcl();
     }
 
     /**

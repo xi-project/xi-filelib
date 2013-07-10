@@ -29,7 +29,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('getAcl'))
+                    ->setMethods(array())
                     ->getMock();
 
         $file = File::create(array('id' => 1, 'profile' => 'versioned'));

@@ -14,8 +14,6 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Plugin\Plugin;
-use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -48,11 +46,6 @@ class FileLibrary
      * @var Storage
      */
     private $storage;
-
-    /**
-     * @var Acl
-     */
-    private $acl;
 
     /**
      * @var FileOperator
@@ -96,8 +89,6 @@ class FileLibrary
         );
     }
 
-
-
     /**
      * @return EventDispatcherInterface
      */
@@ -108,13 +99,6 @@ class FileLibrary
         }
 
         return $this->eventDispatcher;
-    }
-
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-
-        return $this;
     }
 
     /**
@@ -189,19 +173,6 @@ class FileLibrary
     }
 
     /**
-     * Sets backend
-     *
-     * @param  Backend     $backend
-     * @return FileLibrary
-     */
-    public function setBackend(Backend $backend)
-    {
-        $this->backend = $backend;
-
-        return $this;
-    }
-
-    /**
      * Returns backend
      *
      * @return Backend
@@ -209,33 +180,6 @@ class FileLibrary
     public function getBackend()
     {
         return $this->backend;
-    }
-
-    /**
-     * Sets acl handler
-     *
-     * @param  Acl         $acl
-     * @return FileLibrary Filelib
-     */
-    public function setAcl(Acl $acl)
-    {
-        $this->acl = $acl;
-
-        return $this;
-    }
-
-    /**
-     * Returns acl handler
-     *
-     * @return Acl
-     */
-    public function getAcl()
-    {
-        if (!$this->acl) {
-            $this->acl = new \Xi\Filelib\Acl\SimpleAcl(true);
-        }
-
-        return $this->acl;
     }
 
     /**
@@ -256,6 +200,15 @@ class FileLibrary
     public function getProfiles()
     {
         return $this->getFileOperator()->getProfiles();
+    }
+
+    /**
+     * @param $identifier
+     * @return FileProfile
+     */
+    public function getProfile($identifier)
+    {
+        return $this->getFileOperator()->getProfile($identifier);
     }
 
     /**
@@ -309,30 +262,8 @@ class FileLibrary
         return $this->platform;
     }
 
-    /**
-     * Prototyping a general shortcut magic method. Is it bad?
-     *
-     * @param $method
-     * @param $args
-     * @return mixed
-     * @throws \Exception
-     */
-    public function __call($method, $args)
-    {
-        $matches = array();
-        if (preg_match("#^(.*?)(Folder|File)$#", $method, $matches)) {
-            $delegate = ($matches[2] == 'Folder') ? $this->getFolderOperator() : $this->getFileOperator();
-            return call_user_func_array(array($delegate, $matches[1]), $args);
-        }
-        throw new \Exception("Invalid method '{$method}'");
-    }
-
-
     public function upload($file, $folder = null, $profile = 'default')
     {
         return $this->getFileOperator()->upload($file, $folder, $profile);
     }
-
-
-
 }

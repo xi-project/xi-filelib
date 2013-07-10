@@ -76,14 +76,6 @@ class SymfonyRenderer extends AbstractAcceleratedRenderer implements Accelerated
 
         $response = new Response();
 
-        if (!$this->getAcl()->isFileReadable($file)) {
-
-            $response->setStatusCode(403);
-            $response->setContent(Response::$statusTexts[$response->getStatusCode()]);
-
-            return $response;
-        }
-
         if ($options['version'] === 'original') {
             $res = $this->respondToOriginal($file, $response);
         } else {

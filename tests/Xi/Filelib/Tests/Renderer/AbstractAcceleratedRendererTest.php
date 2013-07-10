@@ -17,8 +17,6 @@ class AbstractAcceleratedRendererTest extends \Xi\Filelib\Tests\TestCase
 
     protected $fiop;
 
-    protected $acl;
-
     protected $storage;
 
     protected $ed;
@@ -27,7 +25,6 @@ class AbstractAcceleratedRendererTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->fiop = $this->getMockedFileOperator();
         $this->publisher = $this->getMockedPublisher();
-        $this->acl = $this->getMockedAcl();
         $this->ed = $this->getMockedEventDispatcher();
         $this->storage = $this->getMockedStorage();
 
@@ -37,7 +34,6 @@ class AbstractAcceleratedRendererTest extends \Xi\Filelib\Tests\TestCase
                 array(
                     $this->storage,
                     $this->publisher,
-                    $this->acl,
                     $this->ed,
                     $this->fiop,
                 )
