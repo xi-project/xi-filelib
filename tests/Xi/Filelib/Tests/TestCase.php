@@ -10,14 +10,17 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFilelib()
+    public function getMockedFilelib($methods = null)
     {
         $filelib = $this
             ->getMockBuilder('Xi\Filelib\FileLibrary')
-            ->disableOriginalConstructor()
-            ->getMock();
+            ->disableOriginalConstructor();
 
-        return $filelib;
+        if ($methods) {
+            $filelib->setMethods($methods);
+        }
+
+        return $filelib->getMock();
     }
 
     /**

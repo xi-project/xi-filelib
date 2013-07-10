@@ -42,7 +42,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'createCommand'))
+                   ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'createCommand'))
                    ->getMock();
 
         if ($expectedCallToPublish) {
@@ -80,10 +80,6 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->atLeastOnce())->method('isFileReadableByAnonymous')->with($this->isInstanceOf('Xi\Filelib\File\File'))->will($this->returnValue($readableByAnonymous));
-
-        $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $op->expects($this->atLeastOnce())
@@ -107,7 +103,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('getAcl'))
+                    ->setMethods(array())
                     ->getMock();
 
         $file = File::create(array('id' => 1, 'profile' => 'versioned'));

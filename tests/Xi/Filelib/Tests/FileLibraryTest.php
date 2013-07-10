@@ -3,12 +3,16 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\FileLibrary;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Xi\Filelib\File\FileProfile;
 
 class FileLibraryTest extends TestCase
 {
     private $dirname;
+
+    /**
+     * @var FileLibrary
+     */
+    private $filelib;
 
     public function setUp()
     {
@@ -37,36 +41,20 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function storageSetterAndGetterShouldWorkAsExpected()
+    public function storageGetterShouldWork()
     {
-        $filelib = new FileLibrary();
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-
-        $this->assertNull($filelib->getStorage());
-        $this->assertSame($filelib, $filelib->setStorage($storage));
-        $this->assertSame($storage, $filelib->getStorage());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $this->assertInstanceOf('Xi\Filelib\Storage\Storage', $filelib->getStorage());
     }
 
     /**
      * @test
      */
-    public function publisherSetterAndGetterShouldWorkAsExpected()
+    public function queueSetterAndGetterShouldWork()
     {
-        $filelib = new FileLibrary();
-        $obj = $this->getMock('Xi\Filelib\Publisher\Publisher');
-        $this->assertEquals(null, $filelib->getPublisher());
-        $this->assertSame($filelib, $filelib->setPublisher($obj));
-        $this->assertSame($obj, $filelib->getPublisher());
-    }
-
-    /**
-     * @test
-     */
-    public function queueSetterAndGetterShouldWorkAsExpected()
-    {
-        $filelib = new FileLibrary();
-        $obj = $this->getMock('Xi\Filelib\Queue\Queue');
-        $this->assertEquals(null, $filelib->getQueue());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $obj = $this->getMockedQueue();
+        $this->assertNull($filelib->getQueue());
         $this->assertSame($filelib, $filelib->setQueue($obj));
         $this->assertSame($obj, $filelib->getQueue());
     }
@@ -74,55 +62,19 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function platformSetterAndGetterShouldWorkAsExpected()
+    public function platformGetterShouldWork()
     {
-        $filelib = new FileLibrary();
-        $obj = $this->getMock('Xi\Filelib\Backend\Platform\Platform');
-        $this->assertEquals(null, $filelib->getPlatform());
-        $this->assertSame($filelib, $filelib->setPlatform($obj));
-        $this->assertSame($obj, $filelib->getPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $this->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $filelib->getPlatform());
     }
 
     /**
      * @test
      */
-    public function backendSetterAndGetterShouldWorkAsExpected()
+    public function backendGetterShouldWork()
     {
-        $filelib = new FileLibrary();
-        $obj = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->assertEquals(null, $filelib->getBackend());
-        $this->assertSame($filelib, $filelib->setBackend($obj));
-        $this->assertSame($obj, $filelib->getBackend());
-    }
-
-    /**
-     * @test
-     */
-    public function identityMapSetterAndGetterShouldWorkAsExpected()
-    {
-        $filelib = new FileLibrary();
-        $obj = $this
-            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->assertEquals(null, $filelib->getIdentityMap());
-        $this->assertSame($filelib, $filelib->setIdentityMap($obj));
-        $this->assertSame($obj, $filelib->getIdentityMap());
-    }
-
-    /**
-     * @test
-     */
-    public function aclSetterAndGetterShouldWorkAsExpected()
-    {
-        $filelib = new FileLibrary();
-        $obj = $this->getMock('Xi\Filelib\Acl\Acl');
-        $this->assertEquals(null, $filelib->getAcl());
-        $this->assertSame($filelib, $filelib->setAcl($obj));
-        $this->assertSame($obj, $filelib->getAcl());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $this->assertInstanceOf('Xi\Filelib\Backend\Backend', $filelib->getBackend());
     }
 
     /**
@@ -130,7 +82,7 @@ class FileLibraryTest extends TestCase
      */
     public function tempDirShouldDefaultToSystemTempDir()
     {
-        $filelib = new FileLibrary();
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
         $this->assertEquals(sys_get_temp_dir(), $filelib->getTempDir());
     }
 
@@ -139,7 +91,7 @@ class FileLibraryTest extends TestCase
      */
     public function setTempDirShouldFailWhenDirectoryDoesNotExists()
     {
-        $filelib = new FileLibrary();
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
 
         $this->setExpectedException(
             'InvalidArgumentException',
@@ -161,7 +113,7 @@ class FileLibraryTest extends TestCase
         $this->assertTrue(is_dir($this->dirname));
         $this->assertFalse(is_writable($this->dirname));
 
-        $filelib = new FileLibrary();
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
 
         $this->setExpectedException(
             'InvalidArgumentException',
@@ -176,136 +128,73 @@ class FileLibraryTest extends TestCase
 
     /**
      * @test
-     *
      */
-    public function fileShouldDelegateToGetFileOperator()
+    public function getFileOperatorShouldWork()
     {
-        $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')->setMethods(array('getFileOperator'))->getMock();
-        $filelib->expects($this->once())->method('getFileOperator');
-        @$filelib->file();
-    }
-
-    /**
-     * @test
-     *
-     */
-    public function folderShouldDelegateToGetFolderOperator()
-    {
-        $filelib = $this->getMockBuilder('Xi\Filelib\FileLibrary')->setMethods(array('getFolderOperator'))->getMock();
-        $filelib->expects($this->once())->method('getFolderOperator');
-        @$filelib->folder();
-    }
-
-    /**
-     * @test
-     */
-    public function getFileOperatorShouldDefaultToFileOperator()
-    {
-        $filelib = new FileLibrary();
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
         $fop = $filelib->getFileOperator();
 
-        $this->assertEquals('Xi\Filelib\File\FileOperator', get_class($fop));
+        $this->assertInstanceOf('Xi\Filelib\File\FileOperator', $fop);
     }
 
     /**
      * @test
      */
-    public function getFolderOperatorShouldDefaultToFolderOperator()
+    public function getFolderOperatorShouldWork()
     {
-        $filelib = new FileLibrary();
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
         $fop = $filelib->getFolderOperator();
-        $this->assertEquals('Xi\Filelib\Folder\FolderOperator', get_class($fop));
+
+        $this->assertInstanceOf('Xi\Filelib\Folder\FolderOperator', $fop);
     }
 
     /**
      * @test
      */
-    public function setFileOperatorShouldOverrideFileOperator()
+    public function addedProfileShouldBeReturned()
     {
-        $mock = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
-        $filelib = new FileLibrary();
-        $this->assertSame($filelib, $filelib->setFileOperator($mock));
-        $this->assertSame($mock, $filelib->getFileOperator());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+
+        $this->assertCount(0, $filelib->getProfiles());
+
+        try {
+            $profile = $filelib->getProfile('tussi');
+            $this->fail('should have thrown exception');
+        } catch (\InvalidArgumentException $e) {
+
+            $p = new FileProfile('tussi', $this->getMockedLinker());
+
+            $filelib->addProfile(
+                $p
+            );
+
+            $this->assertSame($p, $filelib->getProfile('tussi'));
+            $this->assertCount(1, $filelib->getProfiles());
+        }
     }
 
     /**
      * @test
      */
-    public function setFolderOperatorShouldOverrideFolderOperator()
+    public function addPluginShouldFirePluginAddEventAndAddPluginAsSubscriber()
     {
-        $mock = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
-        $filelib = new FileLibrary();
-        $this->assertSame($filelib, $filelib->setFolderOperator($mock));
-        $this->assertSame($mock, $filelib->getFolderOperator());
-    }
-
-    /**
-     * @test
-     */
-    public function getProfilesShouldDelegateToFileOperator()
-    {
-        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
-        $fop->expects($this->once())->method('getProfiles');
-
-        $filelib = new FileLibrary();
-        $filelib->setFileOperator($fop);
-        $filelib->getProfiles();
-
-    }
-
-    /**
-     * @test
-     */
-    public function addProfileShouldDelegateToFileOperator()
-    {
-        $profile = $this->getMockedFileProfile();
-
-        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
-        $fop->expects($this->once())->method('addProfile')->with($this->equalTo($profile));
-
-        $filelib = new FileLibrary();
-        $filelib->setFileOperator($fop);
-
-        $filelib->addProfile($profile);
-    }
-
-    /**
-     * @test
-     */
-    public function addPluginShouldFirePluginAddEvent()
-    {
-        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
+        $ed = $this->getMockedEventDispatcher();
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform(), $ed);
 
         $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        $plugin->expects($this->once())->method('init');
 
-        $filelib = new FileLibrary();
-        $filelib->setFileOperator($fop);
+        $ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                $this->equalTo('xi_filelib.plugin.add'),
+                $this->isInstanceOf('Xi\Filelib\Event\PluginEvent')
+            );
 
-        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $eventDispatcher->expects($this->once())->method('dispatch')
-                        ->with($this->equalTo('xi_filelib.plugin.add'), $this->isInstanceOf('Xi\Filelib\Event\PluginEvent'));
-
-        $filelib->setEventDispatcher($eventDispatcher);
-        $filelib->addPlugin($plugin);
-    }
-
-    /**
-     * @test
-     */
-    public function addPluginShouldAddPluginAsSubscriber()
-    {
-        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
-        $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-
-        $filelib = new FileLibrary();
-        $filelib->setFileOperator($fop);
-
-        $eventDispatcher = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $eventDispatcher->expects($this->once())->method('addSubscriber')
-                        ->with($this->equalTo($plugin));
-
-        $filelib->setEventDispatcher($eventDispatcher);
+        $ed
+            ->expects($this->once())
+            ->method('addSubscriber')
+            ->with($this->equalTo($plugin));
 
         $filelib->addPlugin($plugin);
     }
@@ -313,29 +202,36 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function getEventDispatcherShouldDefaultToSymfonyDefaultImplementation()
+    public function getEventDispatcherShouldWork()
     {
-        $filelib = new FileLibrary();
-        $dispatcher = $filelib->getEventDispatcher();
-
-        $this->assertInstanceOf('Symfony\Component\EventDispatcher\EventDispatcher', $dispatcher);
-
+        $ed = $this->getMockedEventDispatcher();
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform(), $ed);
+        $this->assertSame($ed, $filelib->getEventDispatcher());
     }
 
     /**
      * @test
      */
-    public function getEventDispatcherShouldObeySetter()
+    public function uploadShortcutShouldDelegate()
     {
-        $filelib = new FileLibrary();
+        $filelib = $this->getMockedFilelib(array('getFileOperator'));
+        $fop = $this->getMockedFileOperator();
 
-        $mock = $this->getMockForAbstractClass('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fop));
 
-        $this->assertSame($filelib, $filelib->setEventDispatcher($mock));
+        $folder = $this->getMockedFolder();
 
-        $dispatcher = $filelib->getEventDispatcher();
+        $fop
+            ->expects($this->once())
+            ->method('upload')
+            ->with('lussutus', $folder, 'tussi')
+            ->will($this->returnValue('xooxer'));
 
-        $this->assertSame($mock, $dispatcher);
-
+        $ret = $filelib->upload('lussutus', $folder, 'tussi');
+        $this->assertSame('xooxer', $ret);
     }
+
+
+
+
 }

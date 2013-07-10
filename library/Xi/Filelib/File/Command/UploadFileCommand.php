@@ -107,10 +107,6 @@ class UploadFileCommand extends AbstractFileCommand
         $folder = $this->folder;
         $profile = $this->profile;
 
-        if (!$this->fileOperator->getAcl()->isFolderWritable($folder)) {
-            throw new FilelibException("Folder '{$folder->getId()}'not writable");
-        }
-
         $profileObj = $this->fileOperator->getProfile($profile);
         $event = new FileUploadEvent($upload, $folder, $profileObj);
 

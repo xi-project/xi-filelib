@@ -70,22 +70,6 @@ class AbstractOperatorTest extends TestCase
     /**
      * @test
      */
-    public function getAclShouldDelegateToFilelib()
-    {
-        $filelib = $this->getMockedFilelib();
-        $filelib->expects($this->once())->method('getAcl');
-
-        $operator = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
-                         ->setMethods(array())
-                         ->setConstructorArgs(array($filelib))
-                         ->getMockForAbstractClass();
-
-        $operator->getAcl();
-    }
-
-    /**
-     * @test
-     */
     public function getEventDispatcherShouldDelegateToFilelib()
     {
         $filelib = $this->getMockedFilelib();

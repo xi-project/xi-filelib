@@ -139,10 +139,6 @@ class CopyFileCommand extends AbstractFileCommand
 
     public function execute()
     {
-        if (!$this->fileOperator->getAcl()->isFolderWritable($this->folder)) {
-            throw new FilelibException("Folder '{$this->folder->getId()}'not writable");
-        }
-
         $impostor = $this->getImpostor($this->file);
 
         $this->fileOperator->getBackend()->createFile($impostor, $this->folder);

@@ -24,32 +24,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\UploadFileCommand'));
     }
 
-    /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function commandShouldFailIfAclForbidsUploadToFolder()
-    {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getAcl'))
-                   ->getMock();
-
-        $folder = Folder::create(array('id' => 1));
-
-        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->atLeastOnce())->method('isFolderWritable')->with($this->equalTo($folder))->will($this->returnValue(false));
-
-        $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
-
-        $command = new UploadFileCommand($op, $path, $folder, 'versioned');
-        $command->execute();
-
-    }
-
     public function provideDataForUploadTest()
     {
         return array(
@@ -71,7 +45,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getAcl', 'getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'generateUuid', 'createCommand', 'executeOrQueue'))
+                   ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'generateUuid', 'createCommand', 'executeOrQueue'))
                    ->getMock();
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
@@ -112,10 +86,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
         $storage->expects($this->once())->method('store')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
 
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-        $acl->expects($this->atLeastOnce())->method('isFolderWritable')->with($this->equalTo($folder))->will($this->returnValue(true));
-
-        $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
         $op->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
@@ -163,7 +133,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('getAcl'))
+                    ->setMethods(array())
                     ->getMock();
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');

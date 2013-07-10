@@ -28,7 +28,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('getAcl'))
+                    ->setMethods(array())
                     ->getMock();
 
         $file = File::create(array('id' => 1, 'profile' => 'versioned'));
@@ -63,7 +63,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl', 'createCommand'))
+                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'createCommand'))
                    ->getMock();
 
        $unpublishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UnpublishFileCommand')
@@ -76,10 +76,6 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-
-        $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
         $linker = $this->getMock('Xi\Filelib\Linker\Linker');
         $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
@@ -110,10 +106,6 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
         // $op->expects($this->once())->method('unpublish')->with($this->isInstanceOf('Xi\Filelib\File\File'));
         // $op->expects($this->never())->method('publish');
 
-        $acl->expects($this->atLeastOnce())->method('isFileReadableByAnonymous')
-            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-            ->will($this->returnValue(false));
-
         $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussenhofer'))->will($this->returnValue($profile));
 
         $command = new UpdateFileCommand($op, $file);
@@ -129,7 +121,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $filelib = $this->getMock('Xi\Filelib\FileLibrary');
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'getAcl', 'createCommand'))
+                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'createCommand'))
                    ->getMock();
 
        $unpublishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UnpublishFileCommand')
@@ -150,10 +142,6 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-
-        $acl = $this->getMockForAbstractClass('Xi\Filelib\Acl\Acl');
-
-        $op->expects($this->any())->method('getAcl')->will($this->returnValue($acl));
 
         $linker = $this->getMock('Xi\Filelib\Linker\Linker');
         $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
@@ -184,10 +172,6 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
         $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
-
-        $acl->expects($this->atLeastOnce())->method('isFileReadableByAnonymous')
-            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
-            ->will($this->returnValue(true));
 
         $command = new UpdateFileCommand($op, $file);
         $command->execute();
