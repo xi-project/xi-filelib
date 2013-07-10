@@ -14,8 +14,6 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Plugin\Plugin;
-use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -48,11 +46,6 @@ class FileLibrary
      * @var Storage
      */
     private $storage;
-
-    /**
-     * @var Acl
-     */
-    private $acl;
 
     /**
      * @var FileOperator
@@ -209,33 +202,6 @@ class FileLibrary
     public function getBackend()
     {
         return $this->backend;
-    }
-
-    /**
-     * Sets acl handler
-     *
-     * @param  Acl         $acl
-     * @return FileLibrary Filelib
-     */
-    public function setAcl(Acl $acl)
-    {
-        $this->acl = $acl;
-
-        return $this;
-    }
-
-    /**
-     * Returns acl handler
-     *
-     * @return Acl
-     */
-    public function getAcl()
-    {
-        if (!$this->acl) {
-            $this->acl = new \Xi\Filelib\Acl\SimpleAcl(true);
-        }
-
-        return $this->acl;
     }
 
     /**

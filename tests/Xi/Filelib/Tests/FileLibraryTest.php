@@ -116,18 +116,6 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function aclSetterAndGetterShouldWorkAsExpected()
-    {
-        $filelib = new FileLibrary();
-        $obj = $this->getMock('Xi\Filelib\Acl\Acl');
-        $this->assertEquals(null, $filelib->getAcl());
-        $this->assertSame($filelib, $filelib->setAcl($obj));
-        $this->assertSame($obj, $filelib->getAcl());
-    }
-
-    /**
-     * @test
-     */
     public function tempDirShouldDefaultToSystemTempDir()
     {
         $filelib = new FileLibrary();

@@ -21,7 +21,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->disableOriginalConstructor()
-                    ->setMethods(array('getFolderOperator', 'getAcl', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
+                    ->setMethods(array('getFolderOperator', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
                     ->getMock();
 
         $this->fop = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
@@ -29,11 +29,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
                     ->setMethods(array())
                     ->getMock();
 
-        $this->acl = $this->getMock('Xi\Filelib\Acl\Acl');
-
         $this->op->expects($this->any())->method('getFolderOperator')->will($this->returnValue($this->fop));
-
-        $this->op->expects($this->any())->method('getAcl')->will($this->returnValue($this->acl));
 
         $this->folder = $this->getMock('Xi\Filelib\Folder\Folder');
     }
@@ -157,21 +153,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     }
 
     /**
-     * @test
-     * @expectedException Xi\Filelib\FilelibException
-     */
-    public function commandShouldthrowExceptionIfAclForbidsFolderWrite()
-    {
-        $this->acl->expects($this->once())->method('isFolderWritable')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue(false));
-
-        $file = File::create(array('name' => 'tohtori-vesala.jpg'));
-
-        $command = new CopyFileCommand($this->op, $file, $this->folder);
-        $command->execute();
-
-    }
-
-    /**
      * @return array
      */
     public function provideDataForCommandExecution()
@@ -186,10 +167,8 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
      * @test
      * @dataProvider provideDataForCommandExecution
      */
-    public function commandShouldExecuteWhenAclAllowsFolderWrite($exclusiveResource)
+    public function commandShouldExecute($exclusiveResource)
     {
-        $this->acl->expects($this->once())->method('isFolderWritable')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue(true));
-
         $backend = $this
             ->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->disableOriginalConstructor()
@@ -258,7 +237,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('getAcl'))
+                    ->setMethods(array())
                     ->getMock();
 
          $folder = $this->getMock('Xi\Filelib\Folder\Folder');

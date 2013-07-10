@@ -15,8 +15,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
 
     protected $fiop;
 
-    protected $acl;
-
     protected $profile;
 
     protected $storage;
@@ -36,7 +34,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             ->method('getProfile')
             ->will($this->returnValue($this->profile));
 
-        $this->acl = $this->getMockedAcl();
         $this->storage = $this
             ->getMockBuilder('Xi\Filelib\Storage\FilesystemStorage')
             ->disableOriginalConstructor()
@@ -51,7 +48,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         return new SymfonyRenderer(
             $this->storage,
             $this->publisher,
-            $this->acl,
             $this->eventDispatcher,
             $this->fiop
         );
@@ -67,53 +63,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             'Xi\Filelib\Renderer\AcceleratedRenderer',
             class_implements('Xi\Filelib\Renderer\SymfonyRenderer')
         );
-    }
-
-    /**
-     * @test
-     */
-    public function responseShouldBe403WhenAclForbidsRead()
-    {
-
-        $renderer = $this->getMockedRenderer();
-        $this->acl
-            ->expects($this->any())
-            ->method('fileIsReadable')
-            ->will($this->returnValue(false));
-
-        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
-
-        $response = $renderer->render($file);
-
-        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
-        $this->assertEquals(403, $response->getStatusCode());
-        $this->assertNotEmpty($response->getContent());
-    }
-
-    /**
-     * @test
-     */
-    public function responseShouldBe403WhenProfileForbidsReadOfOriginalFile()
-    {
-        $renderer = $this->getMockedRenderer();
-
-        $this->profile
-            ->expects($this->atLeastOnce())
-            ->method('getAccessToOriginal')
-            ->will($this->returnValue(false));
-
-        $this->acl
-            ->expects($this->any())
-            ->method('isFileReadable')
-            ->will($this->returnValue(true));
-
-        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
-
-        $response = $renderer->render($file);
-
-        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
-        $this->assertEquals(403, $response->getStatusCode());
-        $this->assertNotEmpty($response->getContent());
     }
 
     /**
@@ -135,11 +84,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('retrieve')
             ->will($this->returnValue($retrieved));
-
-        $this->acl
-            ->expects($this->any())
-            ->method('isFileReadable')
-            ->will($this->returnValue(true));
 
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
@@ -181,11 +125,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             ->method('retrieve')
             ->will($this->returnValue($retrieved));
 
-        $this->acl
-            ->expects($this->any())
-            ->method('isFileReadable')
-            ->will($this->returnValue(true));
-
         $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $response = $renderer->render($file, array('download' => true, 'track' => true));
@@ -210,11 +149,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->any())
             ->method('hasVersion')
             ->will($this->returnValue(false));
-
-        $this->acl
-            ->expects($this->any())
-            ->method('isFileReadable')
-            ->will($this->returnValue(true));
 
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
@@ -258,11 +192,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         $this->fiop
             ->expects($this->any())
             ->method('hasVersion')
-            ->will($this->returnValue(true));
-
-        $this->acl
-            ->expects($this->atLeastOnce())
-            ->method('isFileReadable')
             ->will($this->returnValue(true));
 
         $response = $renderer->render($file, array('version' => 'lussenhofer'));
@@ -399,11 +328,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             ->method('getRoot')
             ->will($this->returnValue(ROOT_TESTS));
 
-        $this->acl
-            ->expects($this->atLeastOnce())
-            ->method('isFileReadable')
-            ->will($this->returnValue(true));
-
         $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
         $renderer->setStripPrefixFromAcceleratedPath($this->storage->getRoot());
@@ -458,11 +382,6 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->any())
             ->method('getRoot')
             ->will($this->returnValue(ROOT_TESTS));
-
-        $this->acl
-            ->expects($this->any())
-            ->method('isFileReadable')
-            ->will($this->returnValue(true));
 
         $file = File::create(array('id' => 1, 'name' => 'self-lusser.lus', 'resource' => Resource::create()));
 
