@@ -10,17 +10,35 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFilelib($methods = null)
+    public function getMockedFilelib($methods = null, $fiop = null, $foop = null)
     {
         $filelib = $this
             ->getMockBuilder('Xi\Filelib\FileLibrary')
             ->disableOriginalConstructor();
 
-        if ($methods) {
-            $filelib->setMethods($methods);
+
+        if ($methods !== null) {
+            if ($fiop) {
+                $methods[] = 'getFileOperator';
+            }
+
+            if ($foop) {
+                $methods[] = 'getFolderOperator';
+            }
+            $filelib->setMethods(array_unique($methods));
         }
 
-        return $filelib->getMock();
+        $ret = $filelib->getMock();
+
+        if ($fiop) {
+            $ret->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
+        }
+
+        if ($foop) {
+            $ret->expects($this->any())->method('getFolderOperator')->will($this->returnValue($foop));
+        }
+
+        return $ret;
     }
 
     /**
