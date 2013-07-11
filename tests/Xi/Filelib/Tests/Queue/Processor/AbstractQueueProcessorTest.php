@@ -24,15 +24,11 @@ class AbstractQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
      */
     public function queueProcessorShouldInitializeProperly()
     {
-        $filelib = new FileLibrary();
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
 
-        $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-        $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
-        $foop = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
+        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
 
         $filelib->setQueue($queue);
-        $filelib->setFileOperator($fiop);
-        $filelib->setFolderOperator($foop);
 
         $processor = $this->getMockBuilder('Xi\Filelib\Queue\Processor\AbstractQueueProcessor')
                           ->setMethods(array('process'))
@@ -41,8 +37,8 @@ class AbstractQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertSame($filelib, $processor->getFilelib());
         $this->assertSame($queue, $processor->getQueue());
-        $this->assertSame($foop, $processor->getFolderOperator());
-        $this->assertSame($fiop, $processor->getFileOperator());
+        $this->assertSame($filelib->getFolderOperator(), $processor->getFolderOperator());
+        $this->assertSame($filelib->getFileOperator(), $processor->getFileOperator());
 
     }
 
