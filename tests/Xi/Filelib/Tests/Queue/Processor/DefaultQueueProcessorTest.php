@@ -9,6 +9,9 @@ use Xi\Filelib\Tests\Queue\Processor\TestCommand;
 
 class DefaultQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
 {
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     protected $queue;
 
     protected $fileOperator;
@@ -19,15 +22,12 @@ class DefaultQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $filelib = new FileLibrary();
+        $fiop = $this->getMockedFileOperator();
+        $foop = $this->getMockedFolderOperator();
+        $filelib = $this->getMockedFilelib(array(), $fiop, $foop);
 
-        $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
-        $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
-        $foop = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
-
+        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
         $filelib->setQueue($queue);
-        $filelib->setFileOperator($fiop);
-        $filelib->setFolderOperator($foop);
 
         $this->queue = $queue;
         $this->fileOperator = $fiop;
@@ -41,7 +41,10 @@ class DefaultQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExists()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Queue\Processor\DefaultQueueProcessor'));
-        $this->assertContains('Xi\Filelib\Queue\Processor\QueueProcessor', class_implements('Xi\Filelib\Queue\Processor\DefaultQueueProcessor'));
+        $this->assertContains(
+            'Xi\Filelib\Queue\Processor\QueueProcessor',
+            class_implements('Xi\Filelib\Queue\Processor\DefaultQueueProcessor')
+        );
     }
 
     /**
@@ -58,7 +61,7 @@ class DefaultQueueProcessorTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function processShouldThrowExceptionWhenSomethingOtherThanACommandIsDequeued()
     {
