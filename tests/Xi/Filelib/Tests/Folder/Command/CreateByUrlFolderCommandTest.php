@@ -24,14 +24,10 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = $this->getMockedFolderOperator();
+        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
 
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('createCommand'))
-                    ->getMock();
-
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
 
         $url = 'tussen/hofen/meister';
 

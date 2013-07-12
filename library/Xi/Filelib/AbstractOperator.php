@@ -12,8 +12,8 @@ namespace Xi\Filelib;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Command;
+use Xi\Filelib\Queue\Queue;
 use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
 use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -69,16 +69,6 @@ abstract class AbstractOperator
     public function getStorage()
     {
         return $this->getFilelib()->getStorage();
-    }
-
-    /**
-     * Returns publisher
-     *
-     * @return Publisher
-     */
-    public function getPublisher()
-    {
-        return $this->getFilelib()->getPublisher();
     }
 
     /**

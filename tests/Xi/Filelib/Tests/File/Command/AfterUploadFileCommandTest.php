@@ -20,41 +20,19 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\AfterUploadFileCommand'));
     }
 
-    public function provideDataForUploadTest()
-    {
-        return array(
-            array(false, false),
-            array(true, true),
-        );
-    }
-
     /**
      * @test
-     * @dataProvider provideDataForUploadTest
      */
-    public function commandShouldUploadAndDelegateCorrectly($expectedCallToPublish, $readableByAnonymous)
+    public function commandShouldUploadAndDelegateCorrectly()
     {
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
                    ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'createCommand'))
                    ->getMock();
-
-        if ($expectedCallToPublish) {
-
-            $publishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\PublishFileCommand')
-                                   ->disableOriginalConstructor()
-                                   ->getMock();
-            $publishCommand->expects($this->once())->method('execute');
-
-            $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\PublishFileCommand'))
-               ->will($this->returnValue($publishCommand));
-        }
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
 
@@ -99,17 +77,12 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array())
-                    ->getMock();
+        $op = $this->getMockedFileOperator();
+        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
 
         $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
-                $command = new AfterUploadFileCommand($op, $file);
-
+        $command = new AfterUploadFileCommand($op, $file);
         $serialized = serialize($command);
 
         $command2 = unserialize($serialized);

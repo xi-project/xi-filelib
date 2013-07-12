@@ -9,9 +9,9 @@
 
 namespace Xi\Filelib\File;
 
-use \SplFileObject;
-use \Xi\Filelib\Tool\MimeTypeResolver\MimeTypeResolver;
-use \Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver;
+use SplFileObject;
+use Xi\Filelib\Tool\MimeTypeResolver\MimeTypeResolver;
+use Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver;
 
 /**
  * Extends SplFileObject to offer mime type detection via Fileinfo.
@@ -27,14 +27,14 @@ class FileObject extends SplFileObject
     private $mimeType;
 
     /**
-     * @var TypeResolver
+     * @var MimeTypeResolver
      */
     private static $typeResolver;
 
     /**
      * Sets type resolver
      *
-     * @param TypeResolver $typeResolver
+     * @param MimeTypeResolver $typeResolver
      */
     public static function setMimeTypeResolver(MimeTypeResolver $typeResolver)
     {
@@ -44,7 +44,7 @@ class FileObject extends SplFileObject
     /**
      * Returns type resolver.
      *
-     * @return TypeResolver
+     * @return MimeTypeResolver
      */
     public static function getMimeTypeResolver()
     {

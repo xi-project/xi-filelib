@@ -21,7 +21,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
     protected function setUp()
     {
-        $this->fileOperator = $this->getFileOperatorMock();
+        $this->fileOperator = $this->getMockedFileOperator();
         $this->fileOperator->expects($this->any())
             ->method('getType')
             ->will(
@@ -34,9 +34,8 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
                 )
             );
 
-        $this->fileProfile = new FileProfile(
-            $this->fileOperator
-        );
+        $this->fileProfile = new FileProfile('lussen', $this->getMockedLinker());
+        $this->fileProfile->setFileOperator($this->fileOperator);
     }
 
     /**
@@ -64,8 +63,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function onPluginAddShouldAddPluginIfPluginHasProfile()
     {
-        $this->fileProfile->setIdentifier('lussen');
-
         $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->atLeastOnce())
             ->method('getProfiles')
@@ -81,56 +78,14 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function onPluginAddShouldNotAddPluginIfPluginDoesNotHaveProfile()
     {
-        $this->fileProfile->setIdentifier('non-existing-profile');
-
         $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->atLeastOnce())
             ->method('getProfiles')
-            ->will($this->returnValue(array('lussen', 'hofer')));
+            ->will($this->returnValue(array('tussen', 'hofer')));
 
         $this->fileProfile->onPluginAdd(new PluginEvent($plugin));
 
         $this->assertNotContains($plugin, $this->fileProfile->getPlugins());
-    }
-
-    /**
-     * @test
-     */
-    public function gettersAndSettersShouldWorkAsExpected()
-    {
-        $linker = $this->getMockForAbstractClass('Xi\Filelib\Linker\Linker');
-        $this->assertEquals(null, $this->fileProfile->getLinker());
-        $this->assertSame($this->fileProfile, $this->fileProfile->setLinker($linker));
-        $this->assertSame($linker, $this->fileProfile->getLinker());
-
-        $val = 'Descriptione';
-        $this->assertEquals(null, $this->fileProfile->getDescription());
-        $this->assertSame($this->fileProfile, $this->fileProfile->setDescription($val));
-        $this->assertEquals($val, $this->fileProfile->getDescription());
-
-        $val = 'Identifiere';
-        $this->assertEquals(null, $this->fileProfile->getIdentifier());
-        $this->assertSame($this->fileProfile, $this->fileProfile->setIdentifier($val));
-        $this->assertEquals($val, $this->fileProfile->getIdentifier());
-
-        $val = true;
-        $this->assertEquals(true, $this->fileProfile->getAccessToOriginal());
-        $this->assertSame($this->fileProfile, $this->fileProfile->setAccessToOriginal($val));
-        $this->assertEquals($val, $this->fileProfile->getAccessToOriginal());
-
-        $val = false;
-        $this->assertEquals(true, $this->fileProfile->getPublishOriginal());
-        $this->assertSame($this->fileProfile, $this->fileProfile->setPublishOriginal($val));
-        $this->assertEquals($val, $this->fileProfile->getPublishOriginal());
-    }
-
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function setIdentifierShouldFailWithOriginalAsIdentifier()
-    {
-         $this->fileProfile->setIdentifier('original');
     }
 
     /**

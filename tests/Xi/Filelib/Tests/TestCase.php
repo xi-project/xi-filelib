@@ -189,6 +189,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
         return $this->getMock('Xi\Filelib\File\File');
     }
 
-
-
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedResource()
+    {
+        return $this->getMock('Xi\Filelib\File\Resource');
+    }
 }

@@ -233,24 +233,19 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $op = $this->getMockedFileOperator();
+        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array())
-                    ->getMock();
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $file = $this->getMock('Xi\Filelib\File\File');
 
-         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-         $file = $this->getMock('Xi\Filelib\File\File');
+        $command = new CopyFileCommand($op, $file, $folder);
 
-         $command = new CopyFileCommand($op, $file, $folder);
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
 
-         $serialized = serialize($command);
-         $command2 = unserialize($serialized);
-
-         $this->assertAttributeEquals($file, 'file', $command2);
-         $this->assertAttributeEquals($folder, 'folder', $command2);
-         $this->assertAttributeNotEmpty('uuid', $command2);
+        $this->assertAttributeEquals($file, 'file', $command2);
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+        $this->assertAttributeNotEmpty('uuid', $command2);
     }
-
 }

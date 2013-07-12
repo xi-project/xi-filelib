@@ -17,7 +17,6 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\FileLibrary;
 
 /**
@@ -55,11 +54,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected $fileOperator;
 
     /**
-     * @param  Storage                 $storage
-     * @param  Publisher               $publisher
-     * @param  FileOperator            $fileOperator
-     * @param  array                   $options
-     * @return AbstractVersionProvider
+     * @param string $identifier
      */
     public function __construct($identifier)
     {
@@ -144,16 +139,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function getStorage()
     {
         return $this->storage;
-    }
-
-    /**
-     * Returns publisher
-     *
-     * @return Publisher
-     */
-    public function getPublisher()
-    {
-        return $this->publisher;
     }
 
     public function onAfterUpload(FileEvent $event)
