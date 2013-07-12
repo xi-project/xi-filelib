@@ -21,8 +21,6 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
     {
         $folder = new Folder();
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
         $val = 666;
         $this->assertEquals(null, $folder->getId());
         $this->assertSame($folder, $folder->setId($val));

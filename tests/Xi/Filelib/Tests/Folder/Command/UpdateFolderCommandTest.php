@@ -27,19 +27,11 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('createCommand'))
-                    ->getMock();
-
-        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array())
-                    ->getMock();
-
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $fop = $this->getMockedFileOperator();
+        $op = $this->getMockedFolderOperator();
+        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
+        $fop->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
+        $folder = $this->getMockedFolder();
 
         $command = new UpdateFolderCommand($op, $fop, $folder);
 
@@ -58,7 +50,7 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function updateShouldUpdateFoldersAndFilesRecursively()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
 
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $ed
@@ -139,9 +131,6 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')->disableOriginalConstructor()->getMock();
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-
-        $filelib->setBackend($backend);
-        $filelib->setFileOperator($fiop);
 
         $folder = Folder::create(array('id' => 1));
 

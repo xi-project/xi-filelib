@@ -25,12 +25,8 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array())
-                    ->getMock();
+        $op = $this->getMockedFileOperator();
+        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
 
         $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
@@ -43,7 +39,6 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertAttributeEquals(null, 'fileOperator', $command2);
         $this->assertAttributeEquals($file, 'file', $command2);
         $this->assertAttributeNotEmpty('uuid', $command2);
-
     }
 
     /**
@@ -63,8 +58,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function deleteShouldDelegateCorrectly($exclusiveResource)
     {
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
 
@@ -78,16 +72,8 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('unpublish', 'publish', 'getProfile', 'createCommand'))
+                   ->setMethods(array('getProfile', 'createCommand'))
                    ->getMock();
-
-       $unpublishCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UnpublishFileCommand')
-                                ->disableOriginalConstructor()
-                                ->getMock();
-       $unpublishCommand->expects($this->once())->method('execute');
-
-       $op->expects($this->once())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UnpublishFileCommand'))
-          ->will($this->returnValue($unpublishCommand));
 
         $profile = $this->getMockedFileProfile();
 
@@ -112,8 +98,6 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-        $publisher = $this->getMockForAbstractClass('Xi\Filelib\Publisher\Publisher');
-        $filelib->expects($this->any())->method('getPublisher')->will($this->returnValue($publisher));
 
         $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussen'))->will($this->returnValue($profile));
 

@@ -24,7 +24,7 @@ class FilelibEventTest extends \Xi\Filelib\Tests\TestCase
      */
     public function eventShouldInitializeCorrectly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
         $event = new FilelibEvent($filelib);
 
         $filelib2 = $event->getFilelib();

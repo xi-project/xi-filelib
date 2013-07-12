@@ -7,9 +7,8 @@ use DateTime;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 
-class FileTest extends \PHPUnit_Framework_TestCase
+class FileTest extends \Xi\Filelib\Tests\TestCase
 {
-
     /**
      * @test
      */
@@ -23,7 +22,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function getSizeAndGetMimeTypeShouldBeDelegatedToResource()
     {
-        $resource = $this->getMock('Xi\Filelib\File\Resource');
+        $resource = $this->getMockedResource();
 
         $file = File::create(array(
             'resource' => $resource,
@@ -43,8 +42,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function gettersAndSettersShouldWorkAsExpected()
     {
         $file = new File();
-
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
 
         $val = 666;
         $this->assertNull($file->getId());

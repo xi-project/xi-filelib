@@ -613,14 +613,6 @@ class AbstractVersionProviderTest extends TestCase
     /**
      * @test
      */
-    public function getsPublisher()
-    {
-        $this->assertSame($this->publisher, $this->plugin->getPublisher());
-    }
-
-    /**
-     * @test
-     */
     public function onDeleteResourceShouldDelegateToStorage()
     {
         $this->plugin->expects($this->atLeastOnce())->method('getVersions')
