@@ -53,23 +53,6 @@ class AbstractOperatorTest extends TestCase
     /**
      * @test
      */
-    public function getPublisherShouldDelegateToFilelib()
-    {
-        $filelib = $this->getMockedFilelib();
-        $filelib->expects($this->once())->method('getPublisher');
-
-        $operator = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
-                         ->setMethods(array())
-                         ->setConstructorArgs(array($filelib))
-                         ->getMockForAbstractClass();
-
-        $operator->getPublisher();
-
-    }
-
-    /**
-     * @test
-     */
     public function getEventDispatcherShouldDelegateToFilelib()
     {
         $filelib = $this->getMockedFilelib();
@@ -121,7 +104,7 @@ class AbstractOperatorTest extends TestCase
      */
     public function gettingInvalidCommandShouldThrowException()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
         $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
                          ->setMethods(array())
                          ->setConstructorArgs(array($filelib))
@@ -137,7 +120,7 @@ class AbstractOperatorTest extends TestCase
      */
     public function settingInvalidCommandShouldThrowException()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
 
         $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
                          ->setMethods(array())

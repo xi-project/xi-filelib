@@ -24,12 +24,8 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('createCommand'))
-                    ->getMock();
+        $op = $this->getMockedFolderOperator();
+        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
@@ -49,7 +45,8 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldCreateFolder()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
+
 
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $ed
@@ -90,8 +87,6 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('createFolder')
             ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnArgument(0));
-
-        $filelib->setBackend($backend);
 
         $command = new CreateFolderCommand($op, $folder);
 

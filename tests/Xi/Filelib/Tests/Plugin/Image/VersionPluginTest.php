@@ -163,8 +163,6 @@ class VersionPluginTest extends TestCase
         $events = VersionPlugin::getSubscribedEvents();
         $this->assertArrayHasKey('xi_filelib.profile.add', $events);
         $this->assertArrayHasKey('xi_filelib.file.after_upload', $events);
-        $this->assertArrayHasKey('xi_filelib.file.publish', $events);
-        $this->assertArrayHasKey('xi_filelib.file.unpublish', $events);
         $this->assertArrayHasKey('xi_filelib.file.delete', $events);
         $this->assertArrayHasKey('xi_filelib.resource.delete', $events);
     }

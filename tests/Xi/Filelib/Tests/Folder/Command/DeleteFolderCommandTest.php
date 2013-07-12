@@ -27,19 +27,12 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $fop = $this->getMockedFileOperator();
+        $op = $this->getMockedFolderOperator();
+        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
+        $fop->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
 
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array('createCommand'))
-                    ->getMock();
-
-        $fop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array())
-                    ->getMock();
-
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
 
         $command = new DeleteFolderCommand($op, $fop, $folder);
 
@@ -58,7 +51,7 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function deleteShouldDeleteFoldersAndFilesRecursively()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
 
         $op = $this
             ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')

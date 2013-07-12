@@ -38,14 +38,14 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldUploadAndDelegateCorrectly($expectedCallToPublish, $readableByAnonymous)
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'generateUuid', 'createCommand', 'executeOrQueue'))
+                   ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'getInstance', 'generateUuid', 'createCommand', 'executeOrQueue'))
                    ->getMock();
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
@@ -129,12 +129,8 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
-
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                    ->setConstructorArgs(array($filelib))
-                    ->setMethods(array())
-                    ->getMock();
+        $op = $this->getMockedFileOperator();
+        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
@@ -162,7 +158,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
@@ -217,7 +213,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
 
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
             ->setConstructorArgs(array($filelib))
@@ -274,7 +270,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     public function getResourceShouldReuseResourceIfProfileAllowsAndResourcesAreFound()
     {
         $file = File::create(array());
-        $filelib = $this->getMock('Xi\Filelib\FileLibrary');
+        $filelib = $this->getMockedFilelib();
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                     ->setConstructorArgs(array($filelib))
