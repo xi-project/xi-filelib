@@ -44,11 +44,6 @@ class FileProfile implements EventSubscriberInterface
     private $fileVersions = array();
 
     /**
-     * @var string Human readable identifier
-     */
-    private $description;
-
-    /**
      * @var string Machine readable identifier
      */
     private $identifier;
@@ -67,6 +62,11 @@ class FileProfile implements EventSubscriberInterface
      * @var boolean Publish original file
      */
     private $publishOriginal = true;
+
+    /**
+     * @var Linker
+     */
+    private $linker;
 
     public function __construct($identifier, Linker $linker, $accessToOriginal = true, $publishOriginal = true)
     {
