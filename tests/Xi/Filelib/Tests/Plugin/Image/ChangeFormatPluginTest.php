@@ -38,7 +38,6 @@ class ChangeFormatPluginTest extends TestCase
             ->getMock();
 
         $this->plugin = new ChangeFormatPlugin(
-            $this->fileOperator,
             ROOT_TESTS . '/data/temp'
         );
     }
@@ -156,10 +155,14 @@ class ChangeFormatPluginTest extends TestCase
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ChangeFormatPlugin')
                        ->setMethods(array('getImageMagickHelper'))
                        ->setConstructorArgs(array(
-                           $this->fileOperator,
                            ROOT_TESTS . '/data/temp'
                        ))
                        ->getMock();
+
+        $filelib = $this->getMockedFilelib();
+        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($this->fileOperator));
+        $plugin->setDependencies($filelib);
+
         $plugin->setProfiles(array('tussi'));
 
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));

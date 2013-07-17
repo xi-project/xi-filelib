@@ -96,80 +96,6 @@ class ImageMagickHelperTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     */
-    public function createCommandFromArrayShouldFailWithNonArray()
-    {
-        $arr = 'tussi';
-
-        $helper = new ImageMagickHelper();
-        $helper->createCommandFromArray($arr);
-    }
-
-    /**
-     * @test
-     * @expectedException \InvalidArgumentException
-     */
-    public function createCommandFromArrayShouldFailWithArrayWithNoTypeKey()
-    {
-        $arr = array(
-            'luus' => 'tus',
-        );
-
-        $helper = new ImageMagickHelper();
-        $helper->createCommandFromArray($arr);
-    }
-
-    /**
-     * @test
-     * @expectedException \InvalidArgumentException
-     */
-    public function createCommandFromArrayShouldFailWithArrayWithNonStringTypeKey()
-    {
-        $arr = array(
-            'luus' => 'tus',
-            'type' => 1,
-        );
-
-        $helper = new ImageMagickHelper();
-        $helper->createCommandFromArray($arr);
-    }
-
-    /**
-     * @test
-     * @expectedException \InvalidArgumentException
-     */
-    public function createCommandFromArrayShouldFailWithArrayWithInvalidClass()
-    {
-        $arr = array(
-            'luus' => 'tus',
-            'type' => 'Xi\Lussen\Tussen\Hofer\Slussen\Slurps',
-        );
-
-        $helper = new ImageMagickHelper();
-        $helper->createCommandFromArray($arr);
-    }
-
-    /**
-     * @test
-     */
-    public function createCommandFromArrayShouldPassWhenAllIsWell()
-    {
-        $mock = $this->getMockClass('Xi\Filelib\Plugin\Image\Command\WatermarkCommand');
-
-        $arr = array(
-            'luus' => 'tus',
-            'type' => $mock,
-        );
-
-        $helper = new ImageMagickHelper();
-        $command = $helper->createCommandFromArray($arr);
-
-        $this->assertInstanceOf($mock, $command);
-    }
-
-    /**
-     * @test
      */
     public function addCommandShouldAddCommand()
     {
@@ -177,7 +103,7 @@ class ImageMagickHelperTest extends TestCase
 
         $this->assertEquals(array(), $helper->getCommands());
 
-        $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\WatermarkCommand');
+        $mock = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')->disableOriginalConstructor()->getMock();
 
         $helper->addCommand($mock);
 
@@ -187,37 +113,11 @@ class ImageMagickHelperTest extends TestCase
 
         $this->assertSame($mock, array_pop($commands));
 
-        $mock2 = $this->getMock('Xi\Filelib\Plugin\Image\Command\WatermarkCommand');
+        $mock2 = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')->disableOriginalConstructor()->getMock();
 
         $helper->addCommand($mock2);
 
         $this->assertEquals(2, sizeof($helper->getCommands()));
-    }
-
-    /**
-     * @test
-     */
-    public function setCommandsShouldIterateAllCommands()
-    {
-        $helper = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ImageMagickHelper')
-                        ->setMethods(array('addCommand'))
-                        ->getMock();
-
-        $mock = $this->getMockClass('Xi\Filelib\Plugin\Image\Command\WatermarkCommand');
-
-        $arr = array(
-            array(
-               'luus' => 'tus',
-               'type' => $mock,
-            ),
-            array(
-               'luus' => 'tus',
-               'type' => $mock,
-            ),
-        );
-
-        $helper->expects($this->exactly(2))->method('addCommand')->with($this->isInstanceOf('Xi\Filelib\Plugin\Image\Command\Command'));
-        $helper->setCommands($arr);
     }
 
     /**
@@ -237,10 +137,10 @@ class ImageMagickHelperTest extends TestCase
         $imagick->expects($this->once())->method('setImageGreenPrimary')->with($this->equalTo(6), $this->equalTo(66));
         $imagick->expects($this->once())->method('setImageScene')->with($this->equalTo(4));
 
-        $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\WatermarkCommand');
+        $mock = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')->disableOriginalConstructor()->getMock();
         $mock->expects($this->once())->method('execute');
 
-        $mock2 = $this->getMock('Xi\Filelib\Plugin\Image\Command\WatermarkCommand');
+        $mock2 = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')->disableOriginalConstructor()->getMock();
         $mock2->expects($this->once())->method('execute');
 
         $helper->addCommand($mock);

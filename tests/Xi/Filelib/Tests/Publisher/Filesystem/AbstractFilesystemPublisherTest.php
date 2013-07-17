@@ -68,8 +68,16 @@ class AbstractFilesystemPublisherTest extends TestCase
      */
     public function getLinkerForFileShouldDelegateToOperator()
     {
-        $fileop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
+        $fileop = $this->getMockedFileOperator();
         $profile = $this->getMockedFileProfile();
+
+        $fileop
+            ->expects($this->once())
+            ->method('getProfile')
+            ->with($this->equalTo('lusmeister'))
+            ->will($this->returnValue($profile));
+
+        $filelib = $this->getMockedFilelib(null, $fileop);
 
         $publisher = $this
             ->getMockBuilder('Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher')
@@ -84,11 +92,9 @@ class AbstractFilesystemPublisherTest extends TestCase
             ->setConstructorArgs(array($fileop))
             ->getMock();
 
-        $fileop
-            ->expects($this->once())
-            ->method('getProfile')
-            ->with($this->equalTo('lusmeister'))
-            ->will($this->returnValue($profile));
+        $publisher->setDependencies($filelib);
+
+
         $profile->expects($this->once())->method('getLinker')->will($this->returnValue('luss'));
         $file = File::create(array('profile' => 'lusmeister'));
 

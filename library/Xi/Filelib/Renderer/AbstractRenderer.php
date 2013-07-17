@@ -16,7 +16,6 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Event\FileEvent;
 
-
 abstract class AbstractRenderer implements Renderer
 {
     /**

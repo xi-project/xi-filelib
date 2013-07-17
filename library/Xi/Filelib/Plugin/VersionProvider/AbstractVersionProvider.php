@@ -41,7 +41,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     /**
      * @var array Array of file types for which the plugin provides a version
      */
-    protected $providesFor = array();
+    protected $providesFor;
 
     /**
      * @var Storage
@@ -55,10 +55,12 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
     /**
      * @param string $identifier
+     * @param array $providesFor
      */
-    public function __construct($identifier)
+    public function __construct($identifier, $providesFor = array())
     {
         $this->identifier = $identifier;
+        $this->providesFor = $providesFor;
     }
 
     /**
@@ -68,7 +70,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     {
         $this->storage = $filelib->getStorage();
         $this->fileOperator = $filelib->getFileOperator();
-
         $this->init();
     }
 
@@ -79,10 +80,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function init()
     {
-        if (!$this->getIdentifier()) {
-            throw new FilelibException('Version plugin must have an identifier');
-        }
-
         foreach ($this->getProvidesFor() as $fileType) {
             foreach ($this->getProfiles() as $profile) {
                 $profile = $this->fileOperator->getProfile($profile);

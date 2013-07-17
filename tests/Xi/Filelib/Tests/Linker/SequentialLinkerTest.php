@@ -115,10 +115,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function linkerShouldCreateProperSequentialLinks($file, $levels, $fpd, $beautifurl)
     {
-        $linker = new SequentialLinker();
-        $linker->setDirectoryLevels($levels);
-        $linker->setFilesPerDirectory($fpd);
-
+        $linker = new SequentialLinker($levels, $fpd);
         $this->assertEquals($beautifurl[0], $linker->getLink($file, true));
     }
 
@@ -128,10 +125,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $levels, $fpd, $beautifurl)
     {
-
-        $linker = new SequentialLinker();
-        $linker->setDirectoryLevels($levels);
-        $linker->setFilesPerDirectory($fpd);
+        $linker = new SequentialLinker($levels, $fpd);
 
         $this->assertEquals(
             $beautifurl[1],
@@ -150,7 +144,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getDirectoryIdShouldThrowExceptionWithNonNumericFileIds()
     {
-        $linker = new SequentialLinker();
+        $linker = new SequentialLinker(3, 100);
         $file = File::create(array('id' => 'xoo-xoo'));
 
         $linker->getDirectoryId($file);
@@ -163,10 +157,8 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getDirectoryIdShouldThrowExceptionWhenDirectoryLevelsIsLessThanOne()
     {
-        $linker = new SequentialLinker();
+        $linker = new SequentialLinker(0, 100);
         $file = File::create(array('id' => 1));
-
-        $linker->setDirectoryLevels(0);
 
         $ret = $linker->getDirectoryId($file);
     }

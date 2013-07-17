@@ -13,6 +13,7 @@ use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Changes images' formats before uploading them.
@@ -51,12 +52,8 @@ class ChangeFormatPlugin extends AbstractPlugin
      * @param  array              $options
      * @return ChangeFormatPlugin
      */
-    public function __construct(FileOperator $fileOperator, $tempDir,
-        array $options = array()
-    ) {
-        parent::__construct($options);
-
-        $this->fileOperator = $fileOperator;
+    public function __construct($tempDir, array $options = array())
+    {
         $this->tempDir = $tempDir;
         $this->options = $options;
     }
@@ -131,4 +128,13 @@ class ChangeFormatPlugin extends AbstractPlugin
 
         return $nupload;
     }
+
+    /**
+     * @param FileLibrary $filelib
+     */
+    public function setDependencies(FileLibrary $filelib)
+    {
+        $this->fileOperator = $filelib->getFileOperator();
+    }
+
 }

@@ -39,11 +39,6 @@ class FileProfile implements EventSubscriberInterface
     );
 
     /**
-     * @var Linker
-     */
-    private $linker;
-
-    /**
      * @var array Versions for file types
      */
     private $fileVersions = array();

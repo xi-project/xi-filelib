@@ -19,8 +19,6 @@ use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
  */
 class VersionPlugin extends AbstractVersionProvider
 {
-    protected $providesFor = array('image');
-
     protected $imageMagickHelper;
 
     /**
@@ -42,9 +40,9 @@ class VersionPlugin extends AbstractVersionProvider
         $identifier,
         $tempDir,
         $extension,
-        $imageMagickOptions
+        $imageMagickOptions = array()
     ) {
-        parent::__construct($identifier);
+        parent::__construct($identifier, array('image'));
         $this->tempDir = $tempDir;
         $this->extension = $extension;
         $this->imageMagickOptions = $imageMagickOptions;
@@ -59,7 +57,6 @@ class VersionPlugin extends AbstractVersionProvider
     {
         if (!$this->imageMagickHelper) {
             $this->imageMagickHelper = new ImageMagickHelper();
-
             // @todo: Fucktor away
             Configurator::setOptions($this->imageMagickHelper, $this->imageMagickOptions);
         }
@@ -76,7 +73,7 @@ class VersionPlugin extends AbstractVersionProvider
     public function createVersions(File $file)
     {
         // Todo: optimize
-        $retrieved = $this->getStorage()->retrieve($file->getResource())->getPathname();
+        $retrieved = $this->getStorage()->retrieve($file->getResource());
         $img = $this->getImageMagickHelper()->createImagick($retrieved);
 
         $this->getImageMagickHelper()->execute($img);

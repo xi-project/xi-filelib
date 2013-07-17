@@ -55,10 +55,10 @@ class VersionPluginTest extends TestCase
             ->getMock();
 
         $this->plugin = new VersionPlugin(
-            $this->storage,
-            $this->publisher,
-            $this->fileOperator,
-            ROOT_TESTS . '/data/temp'
+            'xooxer',
+            ROOT_TESTS . '/data/temp',
+            'jpg',
+            array()
         );
     }
 
@@ -103,7 +103,6 @@ class VersionPluginTest extends TestCase
     public function getImageMagickHelperShouldReturnImageMagickHelper()
     {
         $helper = $this->plugin->getImageMagickHelper();
-
         $this->assertInstanceOf('Xi\Filelib\Plugin\Image\ImageMagickHelper', $helper);
         $this->assertSame($helper, $this->plugin->getImageMagickHelper());
     }
@@ -117,14 +116,13 @@ class VersionPluginTest extends TestCase
 
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
-        $fobject = $this->getMockBuilder('Xi\Filelib\File\FileObject')
-                        ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
-                        ->getMock();
-        $fobject->expects($this->once())->method('getPathName')->will($this->returnValue($retrievedPath));
+        $this->storage
+            ->expects($this->once())
+            ->method('retrieve')
+            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+            ->will($this->returnValue($retrievedPath));
 
-        $this->storage->expects($this->once())->method('retrieve')->with($this->isInstanceOf('Xi\Filelib\File\Resource'))->will($this->returnValue($fobject));
-
-        $helper = $this->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
+        $helper = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ImageMagickHelper')->disableOriginalConstructor()->getMock();
 
         $mock = $this->getMock('Imagick');
         $mock->expects($this->once())
@@ -137,12 +135,15 @@ class VersionPluginTest extends TestCase
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\VersionPlugin')
                        ->setMethods(array('getImageMagickHelper'))
                        ->setConstructorArgs(array(
-                           $this->storage,
-                           $this->publisher,
-                           $this->fileOperator,
-                           ROOT_TESTS . '/data/temp'
+                           'tussi',
+                           ROOT_TESTS . '/data/temp',
+                           'jpg'
                        ))
                        ->getMock();
+
+        $filelib = $this->getMockedFilelib();
+        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
+        $plugin->setDependencies($filelib);
 
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
 
@@ -172,8 +173,6 @@ class VersionPluginTest extends TestCase
      */
     public function getVersionsShouldReturnArrayOfOneContainingIdentifier()
     {
-         $this->plugin->setIdentifier('xooxer');
-
          $this->assertEquals(array('xooxer'), $this->plugin->getVersions());
     }
 
@@ -184,7 +183,7 @@ class VersionPluginTest extends TestCase
     {
         $extension = 'lus';
 
-        $this->assertNull($this->plugin->getExtension());
+        $this->assertSame('jpg', $this->plugin->getExtension());
         $this->assertSame($this->plugin, $this->plugin->setExtension($extension));
         $this->assertEquals($extension, $this->plugin->getExtension());
     }

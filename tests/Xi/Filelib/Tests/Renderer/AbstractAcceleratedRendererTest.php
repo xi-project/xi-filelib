@@ -24,18 +24,17 @@ class AbstractAcceleratedRendererTest extends \Xi\Filelib\Tests\TestCase
     public function setUp()
     {
         $this->fiop = $this->getMockedFileOperator();
-        $this->publisher = $this->getMockedPublisher();
         $this->ed = $this->getMockedEventDispatcher();
-        $this->storage = $this->getMockedStorage();
+        $this->storage = $this->getMockBuilder('Xi\Filelib\Storage\FilesystemStorage')->disableOriginalConstructor()->getMock();
+
+        $filelib = $this->getMockedFilelib(null, $this->fiop);
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($this->ed));
 
         $this->renderer = $this
             ->getMockBuilder('Xi\Filelib\Renderer\AbstractAcceleratedRenderer')
             ->setConstructorArgs(
                 array(
-                    $this->storage,
-                    $this->publisher,
-                    $this->ed,
-                    $this->fiop,
+                    $filelib
                 )
             )
             ->getMockForAbstractClass();
