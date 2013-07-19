@@ -34,7 +34,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
                 )
             );
 
-        $this->fileProfile = new FileProfile('lussen', $this->getMockedLinker());
+        $this->fileProfile = new FileProfile('lussen');
         $this->fileProfile->setFileOperator($this->fileOperator);
     }
 

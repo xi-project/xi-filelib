@@ -22,17 +22,10 @@ class RandomizeNamePluginTest extends TestCase
     /**
      * @test
      */
-    public function gettersAndSettersShouldWorkAsExpected()
+    public function gettersShouldWorkAsExpected()
     {
-        $plugin = new RandomizeNamePlugin();
-
-        $this->assertEquals('', $plugin->getPrefix());
-
-        $prefix = 'tussi';
-
-        $this->assertEquals($plugin, $plugin->setPrefix($prefix));
-
-        $this->assertEquals($prefix, $plugin->getPrefix());
+        $plugin = new RandomizeNamePlugin('xooxers');
+        $this->assertEquals('xooxers', $plugin->getPrefix());
     }
 
     public function provideOverrideFilenames()
@@ -141,8 +134,7 @@ class RandomizeNamePluginTest extends TestCase
      */
     public function beforeUploadShouldPrefixRandomizedName($prefix)
     {
-        $plugin = new RandomizeNamePlugin();
-        $plugin->setPrefix($prefix);
+        $plugin = new RandomizeNamePlugin($prefix);
         $plugin->setProfiles(array('tussi'));
 
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');

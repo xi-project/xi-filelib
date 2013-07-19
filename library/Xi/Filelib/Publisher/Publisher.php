@@ -1,73 +1,115 @@
 <?php
 
-/**
- * This file is part of the Xi Filelib package.
- *
- * For copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Xi\Filelib\Publisher;
 
+use Doctrine\Common\EventSubscriber;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\File\File;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
 /**
- * Publisher interface
+ * Class Publisher
  *
- * @author pekkis
- * @todo: Linkers must be moved inside publishing component
- *
+ * @todo: Event dispatching?
  */
-interface Publisher
+class Publisher implements EventSubscriberInterface
 {
+    private $fileOperator;
+
     /**
-     * Publishes a file
-     *
+     * @var Linker
+     */
+    private $linker;
+
+    /**
+     * @var PublisherAdapter
+     */
+    private $adapter;
+
+
+    public function __construct(FileLibrary $filelib, PublisherAdapter $adapter, Linker $linker)
+    {
+        $adapter->setDependencies($filelib);
+        $this->adapter = $adapter;
+
+        $this->linker = $linker;
+
+        $this->fileOperator = $filelib->getFileOperator();
+    }
+
+    /**
+     * @param File $file
+     * @return array
+     */
+    protected function getVersions(File $file)
+    {
+        return $this->fileOperator->getProfile($file->getProfile())->getFileVersions($file);
+    }
+
+    /**
+     * @param File $file
+     * @param string $version
+     * @return VersionProvider
+     */
+    protected function getVersionProvider(File $file, $version)
+    {
+        return $this->fileOperator->getVersionProvider($file, $version);
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            'xi_filelib.file.delete' => array('onDelete')
+        );
+    }
+
+    /**
      * @param File $file
      */
-    public function publish(File $file);
+    public function publish(File $file)
+    {
+        $this->adapter->publish($file, $this->linker);
+        foreach ($this->getVersions($file) as $version) {
+            $this->adapter->publishVersion($file, $this->getVersionProvider($file, $version), $this->linker);
+        }
+
+        $data = $file->getData();
+        $data['publisher.published'] = 1;
+    }
+
+
+    public function unpublish(File $file)
+    {
+        $this->adapter->unpublish($file, $this->linker);
+        foreach ($this->getVersions($file) as $version) {
+            $this->adapter->unPublishVersion($file, $this->getVersionProvider($file, $version), $this->linker);
+        }
+
+        $data = $file->getData();
+        $data['publisher.published'] = 0;
+    }
+
+
+    public function getUrl(File $file)
+    {
+        return $this->adapter->getUrl($file, $this->linker);
+    }
+
+    public function getUrlVersion(File $file, $version)
+    {
+        return $this->adapter->getUrl($file, $this->getVersionProvider($file, $version), $this->linker);
+    }
 
     /**
-     * Publishes a version of a file
-     *
-     * @param File            $file
-     * @param string          $version
-     * @param VersionProvider $versionProvider
+     * @param FileEvent $event
      */
-    public function publishVersion(File $file, $version);
-
-    /**
-     * Unpublishes a file
-     *
-     * @param File $file
-     */
-    public function unpublish(File $file);
-
-    /**
-     * Unpublishes a version of a file
-     *
-     * @param File            $file
-     * @param string          $version
-     * @param VersionProvider $versionProvider
-     */
-    public function unpublishVersion(File $file, $version);
-
-    /**
-     * Returns url to a file
-     *
-     * @param  File   $file
-     * @return string
-     */
-    public function getUrl(File $file);
-
-    /**
-     * Returns url to a version of a file
-     *
-     * @param  File            $file
-     * @param  string          $version
-     * @param  VersionProvider $version
-     * @return string
-     */
-    public function getUrlVersion(File $file, $version);
+    public function onDelete(FileEvent $event)
+    {
+        $file = $event->getFile();
+        $this->unpublish($file);
+    }
 }

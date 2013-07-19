@@ -130,7 +130,7 @@ class FolderOperator extends AbstractOperator
             new FolderFinder(array('parent_id' => null))
         )->current();
 
-
+        // @todo: remove side effect!!!
         if (!$folder) {
             $folder = new Folder();
             $folder->setName('root');

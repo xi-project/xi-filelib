@@ -38,8 +38,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     private $tempDir;
 
-    protected $providesFor = array('video');
-
     /**
      * @var array
      */
@@ -71,15 +69,13 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     private $sleepyTime = 5;
 
     public function __construct(
-        Storage $storage,
-        Publisher $publisher,
-        FileOperator $fileOperator,
+        $identifier,
         ZencoderService $zencoderService,
         AmazonService $amazonService,
         $tempDir,
         $options = array()
     ) {
-        parent::__construct($storage, $publisher, $fileOperator, $options);
+        parent::__construct($identifier, array('video'));
 
         $this->zencoderService = $zencoderService;
         $this->amazonService = $amazonService;
@@ -358,7 +354,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     private function getZencoderErrors(Services_Zencoder_Exception $exception)
     {
-        $msgs = [];
+        $msgs = array();
         foreach ($exception->getErrors() as $error) {
             $msgs[] = (string) $error;
         }

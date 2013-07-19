@@ -34,22 +34,20 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             ->method('getProfile')
             ->will($this->returnValue($this->profile));
 
-        $this->storage = $this
-            ->getMockBuilder('Xi\Filelib\Storage\FilesystemStorage')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->storage = $this->getMockBuilder('Xi\Filelib\Storage\FilesystemStorage')->disableOriginalConstructor()->getMock();
         $this->eventDispatcher = $this->getMockedEventDispatcher();
-        $this->publisher = $this->getMockedPublisher();
 
+        $filelib = $this->getMockedFilelib(null, $this->fiop);
+        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($this->eventDispatcher));
+        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
+
+        $this->filelib = $filelib;
     }
 
     private function getMockedRenderer($methods = array())
     {
         return new SymfonyRenderer(
-            $this->storage,
-            $this->publisher,
-            $this->eventDispatcher,
-            $this->fiop
+            $this->filelib
         );
     }
 

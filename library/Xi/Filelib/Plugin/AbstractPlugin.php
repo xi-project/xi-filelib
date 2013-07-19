@@ -69,6 +69,7 @@ abstract class AbstractPlugin implements Plugin
     public function setProfiles(array $profiles)
     {
         $this->profiles = $profiles;
+        return $this;
     }
 
     public function onFileProfileAdd(FileProfileEvent $event)
@@ -80,10 +81,9 @@ abstract class AbstractPlugin implements Plugin
         }
     }
 
-
     public function setDependencies(FileLibrary $filelib)
     {
-        // @todo: Empty method is stupid. Solve dependency hell.
+
     }
 
 }

@@ -7,14 +7,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Linker;
+namespace Xi\Filelib\Tests\Publisher\Linker;
 
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
-use Xi\Filelib\Linker\BeautifurlLinker;
-use Xi\Filelib\Tool\Slugifier\Zend2Slugifier;
-use Xi\Filelib\Tool\Transliterator\StupidTransliterator;
+use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
+
+use Xi\Transliterator\StupidTransliterator;
+use Xi\Filelib\Tool\Slugifier\ZendSlugifier;
 
 /**
  * @group linker
@@ -84,7 +85,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
              }));
 
         $trans = new StupidTransliterator();
-        $slugifier = new Zend2Slugifier($trans);
+        $slugifier = new ZendSlugifier($trans);
         $this->linker = new BeautifurlLinker($fo, $slugifier);
     }
 

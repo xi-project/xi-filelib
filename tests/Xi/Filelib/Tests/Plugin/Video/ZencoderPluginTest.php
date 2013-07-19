@@ -79,6 +79,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         );
 
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
+
         $this->amazonService = $this->getMockedAwsService();
 
         $this->zencoderService = $this->getMockBuilder('Services_Zencoder')
@@ -89,16 +90,17 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             ->getMock();
 
         $this->plugin = new ZencoderPlugin(
-            $this->storage,
-            $this->getMock('Xi\Filelib\Publisher\Publisher'),
-            $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                ->disableOriginalConstructor()
-                ->getMock(),
+            'xooxer',
             $this->zencoderService,
             $this->amazonService,
             ROOT_TESTS . '/data/temp',
             $this->config
         );
+
+
+        $filelib = $this->getMockedFilelib();
+        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
+        $this->plugin->setDependencies($filelib);
     }
 
     public function tearDown()
@@ -407,8 +409,6 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         $events = ZencoderPlugin::getSubscribedEvents();
         $this->assertArrayHasKey('xi_filelib.profile.add', $events);
         $this->assertArrayHasKey('xi_filelib.file.after_upload', $events);
-        $this->assertArrayHasKey('xi_filelib.file.publish', $events);
-        $this->assertArrayHasKey('xi_filelib.file.unpublish', $events);
         $this->assertArrayHasKey('xi_filelib.file.delete', $events);
         $this->assertArrayHasKey('xi_filelib.resource.delete', $events);
     }

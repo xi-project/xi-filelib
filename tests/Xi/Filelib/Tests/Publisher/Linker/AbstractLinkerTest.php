@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Linker;
+namespace Xi\Filelib\Tests\Publisher\Linker;
 
 use Xi\Filelib\Tests\TestCase;
 
@@ -22,8 +22,8 @@ class AbstractLinkerTest extends TestCase
     public function implementsLinker()
     {
         $this->assertContains(
-            'Xi\Filelib\Linker\Linker',
-            class_implements('Xi\Filelib\Linker\AbstractLinker')
+            'Xi\Filelib\Publisher\Linker',
+            class_implements('Xi\Filelib\Publisher\Linker\AbstractLinker')
         );
     }
 }

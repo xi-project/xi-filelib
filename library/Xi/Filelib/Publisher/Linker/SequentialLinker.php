@@ -7,12 +7,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Linker;
+namespace Xi\Filelib\Publisher\Linker;
 
-use Xi\Filelib\Linker\AbstractLinker;
-use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Exception\InvalidArgumentException;
+use Xi\Filelib\Publisher\Linker;
 
 /**
  * Sequential linker creates a sequential link with n levels of directories with m files per directory

@@ -44,19 +44,12 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $fileitem->expects($this->any())->method('getProfile')->will($this->returnValue('versioned'));
 
-        $fileitem->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
-
         $fileitem->expects($this->once())->method('setStatus')->with($this->equalTo(File::STATUS_COMPLETED));
 
         $dispatcher->expects($this->at(0))->method('dispatch')
                    ->with($this->equalTo('xi_filelib.file.after_upload'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
         $profile = $this->getMockedFileProfile();
-
-        $linker = $this->getMock('Xi\Filelib\Linker\Linker');
-        $linker->expects($this->any())->method('getLink')->will($this->returnValue('maximuslincitus'));
-
-        $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
