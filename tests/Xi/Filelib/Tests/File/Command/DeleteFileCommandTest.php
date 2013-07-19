@@ -7,6 +7,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\Command\DeleteFileCommand;
+use Xi\Filelib\Events;
 
 class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -66,7 +67,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-                $this->equalTo('xi_filelib.file.delete'),
+                $this->equalTo(Events::FILE_AFTER_DELETE),
                 $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
             );
 

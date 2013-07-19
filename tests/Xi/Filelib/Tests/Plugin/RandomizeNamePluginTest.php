@@ -13,6 +13,7 @@ use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\Events;
 
 /**
  * @group plugin
@@ -157,7 +158,7 @@ class RandomizeNamePluginTest extends TestCase
     public function getSubscribedEventsShouldReturnCorrectEvents()
     {
         $events = RandomizeNamePlugin::getSubscribedEvents();
-        $this->assertArrayHasKey('xi_filelib.profile.add', $events);
-        $this->assertArrayHasKey('xi_filelib.file.before_create', $events);
+        $this->assertArrayHasKey(Events::PROFILE_AFTER_ADD, $events);
+        $this->assertArrayHasKey(Events::FILE_BEFORE_CREATE, $events);
     }
 }

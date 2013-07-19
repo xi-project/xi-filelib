@@ -12,6 +12,7 @@ namespace Xi\Filelib\Tests\Plugin\Image;
 use Imagick;
 use Xi\Filelib\Plugin\Image\ChangeFormatPlugin;
 use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\Events;
 
 /**
  * @group plugin
@@ -188,7 +189,7 @@ class ChangeFormatPluginTest extends TestCase
     public function getSubscribedEventsShouldReturnCorrectEvents()
     {
         $events = ChangeFormatPlugin::getSubscribedEvents();
-        $this->assertArrayHasKey('xi_filelib.profile.add', $events);
-        $this->assertArrayHasKey('xi_filelib.file.before_create', $events);
+        $this->assertArrayHasKey(Events::PROFILE_AFTER_ADD, $events);
+        $this->assertArrayHasKey(Events::FILE_BEFORE_CREATE, $events);
     }
 }

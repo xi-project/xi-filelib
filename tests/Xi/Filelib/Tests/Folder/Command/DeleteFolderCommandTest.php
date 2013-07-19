@@ -9,6 +9,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Command\DeleteFolderCommand;
 use ArrayIterator;
+use Xi\Filelib\Events;
 
 class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -64,7 +65,7 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-            $this->equalTo('xi_filelib.folder.delete'),
+            $this->equalTo(Events::FOLDER_AFTER_DELETE),
             $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
         );
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));

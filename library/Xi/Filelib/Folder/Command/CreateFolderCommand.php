@@ -13,6 +13,7 @@ use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
+use Xi\Filelib\Events;
 
 class CreateFolderCommand extends AbstractFolderCommand
 {
@@ -44,7 +45,7 @@ class CreateFolderCommand extends AbstractFolderCommand
 
         $event = new FolderEvent($folder);
         $this->folderOperator->getEventDispatcher()->dispatch(
-            'xi_filelib.folder.create',
+            Events::FOLDER_AFTER_CREATE,
             $event
         );
 

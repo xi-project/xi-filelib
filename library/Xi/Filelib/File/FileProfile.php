@@ -16,6 +16,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Event\PluginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use InvalidArgumentException;
+use Xi\Filelib\Events;
 
 /**
  * File profile
@@ -34,7 +35,7 @@ class FileProfile implements EventSubscriberInterface
      * @var array Subscribed events
      */
     protected static $subscribedEvents = array(
-        'xi_filelib.plugin.add' => 'onPluginAdd'
+        Events::PLUGIN_AFTER_ADD => 'onPluginAdd'
     );
 
     /**

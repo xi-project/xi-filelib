@@ -18,6 +18,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Events;
 
 /**
  * Abstract convenience class for version provider plugins
@@ -27,10 +28,10 @@ use Xi\Filelib\FileLibrary;
 abstract class AbstractVersionProvider extends AbstractPlugin implements VersionProvider
 {
     protected static $subscribedEvents = array(
-        'xi_filelib.profile.add' => 'onFileProfileAdd',
-        'xi_filelib.file.after_upload' => 'onAfterUpload',
-        'xi_filelib.file.delete' => 'onFileDelete',
-        'xi_filelib.resource.delete' => 'onResourceDelete',
+        Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',
+        Events::FILE_AFTER_AFTERUPLOAD => 'onAfterUpload',
+        Events::FILE_AFTER_DELETE => 'onFileDelete',
+        Events::RESOURCE_AFTER_DELETE => 'onResourceDelete',
     );
 
     /**

@@ -6,6 +6,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Command\UpdateFileCommand;
+use Xi\Filelib\Events;
 
 class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -53,7 +54,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-            $this->equalTo('xi_filelib.file.update'),
+            $this->equalTo(Events::FILE_AFTER_UPDATE),
             $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
         );
 

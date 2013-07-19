@@ -6,6 +6,7 @@ use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Event\PluginEvent;
+use Xi\Filelib\Events;
 
 /**
  * @group file-profile
@@ -55,7 +56,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldSubscribeToCorrectEvents()
     {
         $events = FileProfile::getSubscribedEvents();
-        $this->assertArrayHasKey('xi_filelib.plugin.add', $events);
+        $this->assertArrayHasKey(Events::PLUGIN_AFTER_ADD, $events);
     }
 
     /**

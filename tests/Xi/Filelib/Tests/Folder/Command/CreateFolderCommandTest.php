@@ -6,6 +6,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\Command\CreateFolderCommand;
+use Xi\Filelib\Events;
 
 class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -53,7 +54,7 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-            $this->equalTo('xi_filelib.folder.create'),
+            $this->equalTo(Events::FOLDER_AFTER_CREATE),
             $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
         );
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));

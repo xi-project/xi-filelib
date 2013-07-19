@@ -13,6 +13,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\IdentifiableEvent;
 use Iterator;
+use Xi\Filelib\Events;
 
 /**
  * Identity map
@@ -46,10 +47,10 @@ class IdentityMap implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'xi_filelib.file.create' => 'onCreate',
-            'xi_filelib.file.delete' => 'onDelete',
-            'xi_filelib.folder.delete' => 'onDelete',
-            'xi_filelib.folder.create' => 'onCreate',
+            Events::FILE_AFTER_CREATE => 'onCreate',
+            Events::FILE_AFTER_DELETE => 'onDelete',
+            Events::FOLDER_AFTER_DELETE => 'onDelete',
+            Events::FOLDER_AFTER_CREATE => 'onCreate',
         );
     }
 

@@ -22,8 +22,8 @@ class AutomaticPublisherPlugin extends AbstractPlugin
      * @var array
      */
     protected static $subscribedEvents = array(
-        'xi_filelib.file.after_upload' => array('onAfterUpload', -10000),
-        'xi_filelib.file.copy' => array('onCopy', -10000),
+        Events::FILE_AFTER_AFTERUPLOAD => array('onAfterUpload', -10000),
+        Events::FILE_AFTER_COPY => array('onCopy', -10000),
     );
 
     /**

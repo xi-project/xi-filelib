@@ -12,6 +12,7 @@ namespace Xi\Filelib\Plugin;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Events;
 
 /**
  * Abstract plugin class provides empty convenience methods for all hooks.
@@ -29,7 +30,7 @@ abstract class AbstractPlugin implements Plugin
      * @var array Subscribed events
      */
     protected static $subscribedEvents = array(
-        'xi_filelib.profile.add' => 'onFileProfileAdd',
+        Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',
     );
 
     /**
