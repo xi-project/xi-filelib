@@ -62,7 +62,7 @@ class Publisher implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::FILE_AFTER_DELETE => array('onDelete')
+            Events::FILE_BEFORE_DELETE => array('onBeforeDelete')
         );
     }
 
@@ -78,6 +78,8 @@ class Publisher implements EventSubscriberInterface
 
         $data = $file->getData();
         $data['publisher.published'] = 1;
+
+        $this->fileOperator->update($file);
     }
 
 
@@ -90,6 +92,8 @@ class Publisher implements EventSubscriberInterface
 
         $data = $file->getData();
         $data['publisher.published'] = 0;
+
+        $this->fileOperator->update($file);
     }
 
 
@@ -106,7 +110,7 @@ class Publisher implements EventSubscriberInterface
     /**
      * @param FileEvent $event
      */
-    public function onDelete(FileEvent $event)
+    public function onBeforeDelete(FileEvent $event)
     {
         $file = $event->getFile();
         $this->unpublish($file);

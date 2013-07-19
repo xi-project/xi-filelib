@@ -131,38 +131,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function getInstanceShouldReturnAnInstanceOfFileWithNoData()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $file = $op->getInstance();
-        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-
-    }
-
-    /**
-     * @test
-     */
-    public function getInstanceShouldReturnAnInstanceOfFileWithData()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $data = array(
-            'name' => 'larva-consumes-newspaper.jpg',
-        );
-
-        $file = $op->getInstance($data);
-        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-
-        $this->assertEquals('larva-consumes-newspaper.jpg', $file->getName());
-
-    }
-
-    /**
-     * @test
-     */
     public function addProfileShouldAddProfile()
     {
         $filelib = $this->getMockedFilelib();

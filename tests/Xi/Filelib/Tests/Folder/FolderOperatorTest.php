@@ -267,36 +267,6 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function getInstanceShouldReturnAnInstanceOfFolderWithNoData()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FolderOperator($filelib);
-
-        $folder = $op->getInstance();
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-    }
-
-    /**
-     * @test
-     */
-    public function getInstanceShouldReturnAnInstanceOfFolderWithData()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FolderOperator($filelib);
-
-        $data = array(
-            'name' => 'manatee'
-        );
-
-        $folder = $op->getInstance($data);
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-
-        $this->assertEquals('manatee', $folder->getName());
-    }
-
-    /**
-     * @test
-     */
     public function findSubFoldersShouldReturnEmptyArrayIteratorWhenNoSubFoldersAreFound()
     {
         $backend = $this->getMockedBackend();

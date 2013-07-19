@@ -2,10 +2,10 @@
 
 namespace Xi\Filelib\Tests\File;
 
-use Xi\Filelib\FileLibrary;
 use DateTime;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
+use ArrayObject;
 
 class FileTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -183,7 +183,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'status' => 54,
             'uuid' => 'tussi-poski',
             'resource' => new Resource(),
-            'versions' => array('lussi', 'xussi')
+            'data' => new ArrayObject(array('versions' => array('lussi', 'xussi')))
         ));
 
         $file = new File();
@@ -196,8 +196,9 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'status' => null,
             'uuid' => null,
             'resource' => null,
-            'versions' => array(),
+            'data' => new ArrayObject(),
         ));
+
 
     }
 

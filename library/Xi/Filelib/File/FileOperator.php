@@ -66,22 +66,6 @@ class FileOperator extends AbstractOperator
     private $typeResolver;
 
     /**
-     * Returns a file
-     *
-     * @param  mixed $data Data as array or a file instance
-     * @return File
-     */
-    public function getInstance($data = array())
-    {
-        $file = new File();
-        if ($data) {
-            $file->fromArray($data);
-        }
-
-        return $file;
-    }
-
-    /**
      * Adds a file profile
      *
      * @param  FileProfile              $profile
