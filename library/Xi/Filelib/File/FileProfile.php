@@ -10,7 +10,6 @@
 namespace Xi\Filelib\File;
 
 use Xi\Filelib\Configurator;
-use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
@@ -63,19 +62,13 @@ class FileProfile implements EventSubscriberInterface
      */
     private $publishOriginal = true;
 
-    /**
-     * @var Linker
-     */
-    private $linker;
-
-    public function __construct($identifier, Linker $linker, $accessToOriginal = true, $publishOriginal = true)
+    public function __construct($identifier)
     {
         if ($identifier === 'original') {
             throw new InvalidArgumentException("Profile identifier can not be 'original'");
         }
 
         $this->identifier = $identifier;
-        $this->linker = $linker;
     }
 
     public function setFileOperator(FileOperator $fileOperator)
@@ -91,16 +84,6 @@ class FileProfile implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return static::$subscribedEvents;
-    }
-
-    /**
-     * Returns linker
-     *
-     * @return Linker
-     */
-    public function getLinker()
-    {
-        return $this->linker;
     }
 
     /**

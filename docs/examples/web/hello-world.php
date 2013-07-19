@@ -2,12 +2,10 @@
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\FilesystemStorage;
-use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
 use Xi\Filelib\Backend\Platform\DoctrineOrmPlatform;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
-use Xi\Filelib\Linker\SequentialLinker;
 use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 
@@ -28,19 +26,13 @@ $dbParams = array(
 $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, false);
 $entityManager = EntityManager::create($dbParams, $config);
 
-
-
-
 $filelib = new FileLibrary(
     new FilesystemStorage(realpath(__DIR__ . '/../data/private'), new LeveledDirectoryIdCalculator()),
     new DoctrineOrmPlatform($entityManager)
 );
 
-// new SymlinkFilesystemPublisher(realpath(__DIR__ . '/../web/files'), 0600, 0700, '/files')
-
-// Add a default profile with the simplest sequential linker possible
-
-$filelib->addProfile(new FileProfile('default', new SequentialLinker()));
+// Add a default profile
+$filelib->addProfile(new FileProfile('default'));
 
 $filelib->addPlugin(new RandomizeNamePlugin(), ['default']);
 

@@ -25,7 +25,6 @@ class File implements Identifiable
         'folder_id' => 'setFolderId',
         'profile' => 'setProfile',
         'name' => 'setName',
-        'link' => 'setLink',
         'date_created' => 'setDateCreated',
         'status' => 'setStatus',
         'uuid' => 'setUuid',
@@ -67,11 +66,6 @@ class File implements Identifiable
      * @var string
      */
     private $name;
-
-    /**
-     * @var string
-     */
-    private $link;
 
     /**
      * @var DateTime
@@ -220,29 +214,6 @@ class File implements Identifiable
     }
 
     /**
-     * Sets link
-     *
-     * @param  string $link
-     * @return File
-     */
-    public function setLink($link)
-    {
-        $this->link = $link;
-
-        return $this;
-    }
-
-    /**
-     * Returns link
-     *
-     * @return string
-     */
-    public function getLink()
-    {
-        return $this->link;
-    }
-
-    /**
      * Returns create date
      *
      * @return DateTime
@@ -349,7 +320,6 @@ class File implements Identifiable
             'folder_id' => $this->getFolderId(),
             'profile' => $this->getProfile(),
             'name' => $this->getName(),
-            'link' => $this->getLink(),
             'date_created' => $this->getDateCreated(),
             'status' => $this->getStatus(),
             'resource' => $this->getResource(),

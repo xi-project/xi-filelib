@@ -7,13 +7,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Publisher\Filesystem;
+namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Publisher\Linker;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Publishes files in a filesystem by retrieving them from storage and creating a copy
@@ -21,28 +23,20 @@ use Xi\Filelib\File\FileOperator;
  * @author pekkis
  *
  */
-class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Publisher
+class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter implements PublisherAdapter
 {
     /**
      * @var Storage
      */
     private $storage;
 
-    /**
-     * @param Storage      $storage
-     * @param FileOperator $fileOperator
-     * @param array        $options
-     */
-    public function __construct(Storage $storage, FileOperator $fileOperator, $options = array())
+    public function setDependencies(FileLibrary $filelib)
     {
-        parent::__construct($fileOperator, $options);
-        $this->storage = $storage;
+        $this->storage = $filelib->getStorage();
     }
 
-    public function publish(File $file)
+    public function publish(File $file, Linker $linker)
     {
-        $linker = $this->getLinkerForFile($file);
-
         $link = $this->getPublicRoot() . '/' . $linker->getLink($file, true);
 
         if (!is_file($link)) {
@@ -60,14 +54,10 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
         }
     }
 
-    public function publishVersion(File $file, $version)
+    public function publishVersion(File $file, VersionProvider $version, Linker $linker)
     {
-        $versionProvider = $this->getVersionProvider($file, $version);
-
-        $linker = $this->getLinkerForFile($file);
-
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
+            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
 
         if (!is_file($link)) {
 
@@ -77,10 +67,10 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            if ($versionProvider->areSharedVersionsAllowed()) {
-                $tmp = $this->storage->retrieveVersion($file->getResource(), $version, null);
+            if ($version->areSharedVersionsAllowed()) {
+                $tmp = $this->storage->retrieveVersion($file->getResource(), $version->getIdentifier(), null);
             } else {
-                $tmp = $this->storage->retrieveVersion($file->getResource(), $version, $file);
+                $tmp = $this->storage->retrieveVersion($file->getResource(), $version->getIdentifier(), $file);
             }
 
             copy($tmp, $link);
@@ -88,24 +78,18 @@ class CopyFilesystemPublisher extends AbstractFilesystemPublisher implements Pub
         }
     }
 
-    public function unpublish(File $file)
+    public function unpublish(File $file, Linker $linker)
     {
-        $linker = $this->getLinkerForFile($file);
         $link = $this->getPublicRoot() . '/' . $linker->getLink($file);
-
         if (is_file($link)) {
             unlink($link);
         }
     }
 
-    public function unpublishVersion(File $file, $version)
+    public function unpublishVersion(File $file, VersionProvider $version, Linker $linker)
     {
-        $versionProvider = $this->getVersionProvider($file, $version);
-
-        $linker = $this->getLinkerForFile($file);
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
-
+            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
         if (is_file($link)) {
             unlink($link);
         }

@@ -68,11 +68,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $profile = $this->getMockedFileProfile();
 
-        $linker = $this->getMock('Xi\Filelib\Linker\Linker');
-        $linker->expects($this->any())->method('getLink')->will($this->returnValue('maximuslincitus'));
-
-        $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
-
         $backend = $this
             ->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->disableOriginalConstructor()

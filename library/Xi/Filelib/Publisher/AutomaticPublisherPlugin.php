@@ -1,7 +1,8 @@
 <?php
 
-namespace Xi\Filelib\Plugin;
+namespace Xi\Filelib\Publisher;
 
+use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\FileLibrary;
@@ -22,7 +23,6 @@ class AutomaticPublisherPlugin extends AbstractPlugin
      */
     protected static $subscribedEvents = array(
         'xi_filelib.file.after_upload' => array('onAfterUpload', -10000),
-        'xi_filelib.file.delete' => array('onDelete', -10000),
         'xi_filelib.file.copy' => array('onCopy', -10000),
     );
 
@@ -57,19 +57,7 @@ class AutomaticPublisherPlugin extends AbstractPlugin
      */
     public function onAfterUpload(FileEvent $event)
     {
-        $this->publish($event->getFile());
-    }
-
-    /**
-     * @param FileEvent $event
-     */
-    public function onDelete(FileEvent $event)
-    {
-        $file = $event->getFile();
-        $this->publisher->unpublish($file);
-        foreach ($this->getVersions($file) as $version) {
-            $this->publisher->unPublishVersion($file, $version);
-        }
+        $this->publisher->publish($event->getFile());
     }
 
     /**
@@ -77,26 +65,7 @@ class AutomaticPublisherPlugin extends AbstractPlugin
      */
     public function onCopy(FileCopyEvent $event)
     {
-        $this->publish($event->getTarget());
+        $this->publisher->publish($event->getTarget());
     }
 
-    /**
-     * @param File $file
-     */
-    protected function publish(File $file)
-    {
-        $this->publisher->publish($file);
-        foreach ($this->getVersions($file) as $version) {
-            $this->publisher->publishVersion($file, $version);
-        }
-    }
-
-    /**
-     * @param File $file
-     * @return array
-     */
-    protected function getVersions(File $file)
-    {
-        return $this->fileOperator->getProfile($file->getProfile())->getFileVersions($file);
-    }
 }

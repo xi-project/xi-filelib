@@ -7,13 +7,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Linker;
+namespace Xi\Filelib\Publisher\Linker;
 
-use Xi\Filelib\Linker\AbstractLinker;
-use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\Publisher\Linker;
 
 /**
  * Creates beautifurls(tm) from the virtual directory structure and file names.

@@ -35,11 +35,6 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame($file, $file->setName($value));
         $this->assertEquals($value, $file->getName());
 
-        $value = 'linkster';
-        $this->assertNull($file->getLink());
-        $this->assertSame($file, $file->setLink($value));
-        $this->assertEquals($value, $file->getLink());
-
         $value = 52;
         $this->assertNull($file->getStatus());
         $this->assertSame($file, $file->setStatus($value));

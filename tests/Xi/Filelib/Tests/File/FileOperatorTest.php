@@ -199,10 +199,8 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
      */
     public function addProfileShouldFailWhenProfileAlreadyExists()
     {
-        $linker = $this->getMockedLinker();
-
-        $profile = new FileProfile('xooxer', $linker);
-        $profile2 = new FileProfile('xooxer', $linker);
+        $profile = new FileProfile('xooxer');
+        $profile2 = new FileProfile('xooxer');
 
         $filelib = $this->getMockedFilelib();
         $eventDispatcher = $this->getMockedEventDispatcher();

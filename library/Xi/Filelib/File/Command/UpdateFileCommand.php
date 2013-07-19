@@ -29,10 +29,6 @@ class UpdateFileCommand extends AbstractFileCommand
 
     public function execute()
     {
-        $linker = $this->fileOperator->getProfile($this->file->getProfile())->getLinker();
-
-        $this->file->setLink($linker->getLink($this->file, true));
-
         $this->fileOperator->getBackend()->updateFile($this->file);
 
         $event = new FileEvent($this->file);

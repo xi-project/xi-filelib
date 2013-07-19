@@ -7,12 +7,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Linker;
+namespace Xi\Filelib\Tests\Publisher\Linker;
 
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
-use Xi\Filelib\Linker\BeautifurlLinker;
+use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
 
 use Xi\Transliterator\StupidTransliterator;
 use Xi\Filelib\Tool\Slugifier\ZendSlugifier;

@@ -1,10 +1,10 @@
 <?php
 
-namespace Xi\Filelib\Tests\Publisher\Filesystem;
+namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
 
-class TestCase extends \Xi\Filelib\Tests\TestCase
+abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {
     protected $versionProvider;
 
@@ -18,6 +18,8 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
 
     protected $fileOperator;
 
+    protected $filelib;
+
     public $resourcePaths = array();
 
     public $linkPaths = array();
@@ -26,6 +28,9 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
+        chmod(ROOT_TESTS . '/data/publisher/unwritable_dir', 0444);
         parent::setUp();
 
         $this->resourcePaths = array(
@@ -44,7 +49,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
             5 => '',
         );
 
-        $linker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
+        $linker = $this->getMockedLinker();
         $linker
             ->expects($this->any())
             ->method('getLinkVersion')
@@ -56,30 +61,18 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
                 )
             );
 
-        $profileObject = $this->getMockedFileProfile();
-
-        $profileObject
-            ->expects($this->any())
-            ->method('getLinker')
-            ->will($this->returnValue($linker));
-
         $versionProvider = $this
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
             ->getMock();
-
         $versionProvider
             ->expects($this->any())
             ->method('getIdentifier')
             ->will($this->returnValue('xooxer'));
 
         $this->linker = $linker;
-        $this->profileObject = $profileObject;
         $this->versionProvider = $versionProvider;
 
-        $storage = $this
-            ->getMockBuilder('Xi\Filelib\Storage\FilesystemStorage')
-            ->getMock();
-
+        $storage = $this->getMockedStorage();
         $storage
             ->expects($this->any())
             ->method('getRoot')
@@ -110,7 +103,9 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $this->storage = $storage;
 
-        $plinker = $this->getMockBuilder('Xi\Filelib\Linker\Linker')->getMock();
+        $this->filelib = $this->getMockedFilelib(null, null, null, $storage);
+
+        $plinker = $this->getMockedLinker();
 
         $self = $this;
 
@@ -137,14 +132,15 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
             );
 
         $this->plinker = $plinker;
-
-        $this->fileOperator = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 
     public function tearDown()
     {
+        parent::tearDown();
+
+        chmod(ROOT_TESTS . '/data/publisher/unwritable_dir', 0755);
+        parent::tearDown();
+
         $root = ROOT_TESTS . '/data/publisher/public';
 
         $diter = new \RecursiveDirectoryIterator($root);
@@ -166,4 +162,14 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
             }
         }
     }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedStorage()
+    {
+        $ret = $this->getMockBuilder('Xi\Filelib\Storage\FilesystemStorage')->disableOriginalConstructor()->getMock();
+        return $ret;
+    }
+
 }

@@ -33,11 +33,6 @@ class VersionPluginTest extends TestCase
     private $storage;
 
     /**
-     * @var Publisher
-     */
-    private $publisher;
-
-    /**
      * @var FileOperator
      */
     private $fileOperator;
@@ -47,7 +42,6 @@ class VersionPluginTest extends TestCase
         parent::setUp();
 
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $this->publisher = $this->getMock('Xi\Filelib\Publisher\Publisher');
 
         $this->fileOperator = $this
             ->getMockBuilder('Xi\Filelib\File\FileOperator')

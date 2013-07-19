@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Linker\SequentialLinker;
+use Xi\Filelib\Publisher\Linker\SequentialLinker;
 
 /**
  * @group linker

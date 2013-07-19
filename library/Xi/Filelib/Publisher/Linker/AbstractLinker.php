@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Linker;
+namespace Xi\Filelib\Publisher\Linker;
 
-use Xi\Filelib\Linker\Linker;
 use Xi\Filelib\Configurator;
+use Xi\Filelib\Publisher\Linker;
 
 /**
  * An abstract linker class.

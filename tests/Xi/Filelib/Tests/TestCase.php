@@ -10,7 +10,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFilelib($methods = null, $fiop = null, $foop = null)
+    public function getMockedFilelib($methods = null, $fiop = null, $foop = null, $storage = null)
     {
         $filelib = $this
             ->getMockBuilder('Xi\Filelib\FileLibrary')
@@ -36,6 +36,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         if ($foop) {
             $ret->expects($this->any())->method('getFolderOperator')->will($this->returnValue($foop));
+        }
+
+        if ($storage) {
+            $ret->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
         }
 
         return $ret;
@@ -80,7 +84,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedLinker()
     {
-        return $this->getMock('Xi\Filelib\Linker\Linker');
+        return $this->getMock('Xi\Filelib\Publisher\Linker');
     }
 
     /**
@@ -196,4 +200,40 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         return $this->getMock('Xi\Filelib\File\Resource');
     }
+
+    public function assertClassExists($className)
+    {
+        $this->assertTrue(
+            class_exists($className),
+            "Class '{$className}' does not exist"
+        );
+    }
+
+    public function assertInterfaceExists($interfaceName)
+    {
+        $this->assertTrue(
+            interface_exists($interfaceName),
+            "Interface '{$interfaceName}' does not exist"
+        );
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedVersionProvider($identifier)
+    {
+        $versionProvider = $this
+            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
+            ->getMock();
+
+        $versionProvider
+            ->expects($this->any())->method('getIdentifier')
+            ->will($this->returnValue($identifier));
+
+        return $versionProvider;
+    }
+
+
+
+
 }

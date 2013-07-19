@@ -7,20 +7,21 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Publisher\Filesystem;
+namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 
-use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\FilesystemStorage;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Publisher\Linker;
 
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage
  */
-class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements Publisher
+class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter implements PublisherAdapter
 {
     /**
      * @var FilesystemStorage
@@ -33,37 +34,22 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     private $relativePathToRoot;
 
     public function __construct(
-        FileLibrary $filelib,
-        $root,
-        $filePermission = 0600,
-        $directoryPermission = 0700,
+        $publicRoot,
+        $filePermission = "600",
+        $directoryPermission = "700",
         $baseUrl = '',
         $relativePathToRoot = null
     ) {
-        parent::__construct($root, $filePermission, $directoryPermission, $baseUrl);
+        parent::__construct($publicRoot, $filePermission, $directoryPermission, $baseUrl);
         $this->relativePathToRoot = $relativePathToRoot;
-
-        $this->setDependencies($filelib);
     }
 
     public function setDependencies(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
-        parent::setDependencies($filelib);
-    }
-
-
-    /**
-     * Sets path from public to private root
-     *
-     * @param  string                     $relativePathToRoot
-     * @return SymlinkFilesystemPublisher
-     */
-    public function setRelativePathToRoot($relativePathToRoot)
-    {
-        $this->relativePathToRoot = $relativePathToRoot;
-
-        return $this;
+        if (!$this->storage instanceof FilesystemStorage) {
+            throw new \InvalidArgumentException("Invalid storage");
+        }
     }
 
     /**
@@ -101,12 +87,11 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
     /**
      * @param File            $file
      * @param VersionProvider $versionProvider
-     * @param $version
      * @param  int              $levelsDown
      * @return string
      * @throws FilelibException
      */
-    public function getRelativePathToVersion(File $file, VersionProvider $versionProvider, $version, $levelsDown = 0)
+    public function getRelativePathToVersion(File $file, VersionProvider $versionProvider, $levelsDown = 0)
     {
         $relativePath = $this->getRelativePathToRoot();
 
@@ -118,7 +103,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
 
         $retrieved = $this->storage->retrieveVersion(
             $file->getResource(),
-            $version,
+            $versionProvider->getIdentifier(),
             $versionProvider->areSharedVersionsAllowed() ? null : $file
         );
 
@@ -131,10 +116,8 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
      * @param File $file
      * @todo Extract methods. Puuppa code smells bad.
      */
-    public function publish(File $file)
+    public function publish(File $file, Linker $linker)
     {
-        $linker = $this->getLinkerForFile($file);
-
         $link = $this->getPublicRoot() . '/' . $linker->getLink($file, true);
 
         if (!is_link($link)) {
@@ -173,14 +156,10 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
      * @param VersionProvider $versionProvider
      * @todo Refactor. Puuppa code smells.
      */
-    public function publishVersion(File $file, $version)
+    public function publishVersion(File $file, VersionProvider $version, Linker $linker)
     {
-        $versionProvider = $this->getVersionProvider($file, $version);
-
-        $linker = $this->getLinkerForFile($file);
-
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
+            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
 
         if (!is_link($link)) {
 
@@ -200,7 +179,7 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
                     $depth = sizeof(explode(DIRECTORY_SEPARATOR, $path2));
                 }
 
-                $fp = $this->getRelativePathToVersion($file, $versionProvider, $version, $depth);
+                $fp = $this->getRelativePathToVersion($file, $version, $depth);
 
                 // Relative linking requires some movin'n groovin.
                 $oldCwd = getcwd();
@@ -211,8 +190,8 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
                 symlink(
                     $this->storage->retrieveVersion(
                         $file->getResource(),
-                        $version,
-                        $versionProvider->areSharedVersionsAllowed() ? null: $file
+                        $version->getIdentifier(),
+                        $version->areSharedVersionsAllowed() ? null: $file
                     ),
                     $link
                 );
@@ -222,24 +201,18 @@ class SymlinkFilesystemPublisher extends AbstractFilesystemPublisher implements 
 
     }
 
-    public function unpublish(File $file)
+    public function unpublish(File $file, Linker $linker)
     {
-        $linker = $this->getLinkerForFile($file);
         $link = $this->getPublicRoot() . '/' . $linker->getLink($file);
-
         if (is_link($link)) {
             unlink($link);
         }
     }
 
-    public function unpublishVersion(File $file, $version)
+    public function unpublishVersion(File $file, VersionProvider $version, Linker $linker)
     {
-        $versionProvider = $this->getVersionProvider($file, $version);
-
-        $linker = $this->getLinkerForFile($file);
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version, $versionProvider->getExtensionFor($version));
-
+            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
         if (is_link($link)) {
             unlink($link);
         }
