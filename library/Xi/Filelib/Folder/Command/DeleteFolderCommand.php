@@ -13,6 +13,7 @@ use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
+use Xi\Filelib\Events;
 
 class DeleteFolderCommand extends AbstractFolderCommand
 {
@@ -56,7 +57,7 @@ class DeleteFolderCommand extends AbstractFolderCommand
 
         $event = new FolderEvent($this->folder);
         $this->folderOperator->getEventDispatcher()->dispatch(
-            'xi_filelib.folder.delete',
+            Events::FOLDER_AFTER_DELETE,
             $event
         );
     }

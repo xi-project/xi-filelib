@@ -7,6 +7,7 @@ use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Renderer\SymfonyRenderer;
 use Symfony\Component\HttpFoundation\Request;
+use Xi\Filelib\Events;
 
 class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -108,7 +109,7 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-                'xi_filelib.file.render',
+                Events::FILE_AFTER_RENDER,
                 $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
             );
 

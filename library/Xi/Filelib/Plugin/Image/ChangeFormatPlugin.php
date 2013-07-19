@@ -14,6 +14,7 @@ use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Events;
 
 /**
  * Changes images' formats before uploading them.
@@ -23,8 +24,8 @@ use Xi\Filelib\FileLibrary;
 class ChangeFormatPlugin extends AbstractPlugin
 {
     protected static $subscribedEvents = array(
-        'xi_filelib.profile.add' => 'onFileProfileAdd',
-        'xi_filelib.file.before_create' => 'beforeUpload'
+        Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',
+        Events::FILE_BEFORE_CREATE => 'beforeUpload'
     );
 
     protected $imageMagickHelper;

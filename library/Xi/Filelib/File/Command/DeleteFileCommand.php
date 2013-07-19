@@ -12,6 +12,7 @@ namespace Xi\Filelib\File\Command;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Events;
 
 class DeleteFileCommand extends AbstractFileCommand
 {
@@ -38,7 +39,7 @@ class DeleteFileCommand extends AbstractFileCommand
         }
 
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.delete', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_DELETE, $event);
 
         return true;
     }

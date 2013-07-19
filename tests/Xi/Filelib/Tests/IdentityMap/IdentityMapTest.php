@@ -11,6 +11,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\FolderEvent;
 use ArrayIterator;
+use Xi\Filelib\Events;
 
 class IdentityMapTest extends TestCase
 {
@@ -82,10 +83,10 @@ class IdentityMapTest extends TestCase
     {
         $this->assertEquals(
             array(
-                'xi_filelib.file.create',
-                'xi_filelib.file.delete',
-                'xi_filelib.folder.delete',
-                'xi_filelib.folder.create'
+                Events::FILE_AFTER_CREATE,
+                Events::FILE_AFTER_DELETE,
+                Events::FOLDER_AFTER_DELETE,
+                Events::FOLDER_AFTER_CREATE
             ),
             array_keys(IdentityMap::getSubscribedEvents())
         );
@@ -266,7 +267,7 @@ class IdentityMapTest extends TestCase
             ->expects($this->at(0))
             ->method('dispatch')
             ->with(
-                'xi_filelib.identitymap.before_add',
+                Events::IDENTITYMAP_BEFORE_ADD,
                 $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
             );
 
@@ -274,7 +275,7 @@ class IdentityMapTest extends TestCase
             ->expects($this->at(1))
             ->method('dispatch')
             ->with(
-                'xi_filelib.identitymap.after_add',
+                Events::IDENTITYMAP_AFTER_ADD,
                 $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
             );
 
@@ -292,7 +293,7 @@ class IdentityMapTest extends TestCase
             ->expects($this->at(2))
             ->method('dispatch')
             ->with(
-                'xi_filelib.identitymap.before_remove',
+                Events::IDENTITYMAP_BEFORE_REMOVE,
                 $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
             );
 
@@ -300,7 +301,7 @@ class IdentityMapTest extends TestCase
             ->expects($this->at(3))
             ->method('dispatch')
             ->with(
-                'xi_filelib.identitymap.after_remove',
+                Events::IDENTITYMAP_AFTER_REMOVE,
                 $this->isInstanceOf('Xi\Filelib\Event\IdentifiableEvent')
             );
 

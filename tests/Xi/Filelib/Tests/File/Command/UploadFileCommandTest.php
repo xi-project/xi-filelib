@@ -11,6 +11,7 @@ use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use ArrayIterator;
+use Xi\Filelib\Events;
 
 class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -58,10 +59,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $fileitem->expects($this->at(0))->method('setStatus')->with($this->equalTo(File::STATUS_RAW));
 
         $dispatcher->expects($this->at(0))->method('dispatch')
-                   ->with($this->equalTo('xi_filelib.file.before_create'), $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
+                   ->with($this->equalTo(Events::FILE_BEFORE_CREATE), $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
 
         $dispatcher->expects($this->at(1))->method('dispatch')
-                   ->with($this->equalTo('xi_filelib.file.create'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+                   ->with($this->equalTo(Events::FILE_AFTER_CREATE), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
         $folder = Folder::create(array('id' => 1));
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';

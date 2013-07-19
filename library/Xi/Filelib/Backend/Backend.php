@@ -25,6 +25,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Exception\NonUniqueFileException;
 use ArrayIterator;
+use Xi\Filelib\Events;
 
 class Backend
 {
@@ -255,7 +256,7 @@ class Backend
         );
 
         $event = new ResourceEvent($resource);
-        $this->getEventDispatcher()->dispatch('xi_filelib.resource.delete', $event);
+        $this->getEventDispatcher()->dispatch(Events::RESOURCE_AFTER_DELETE, $event);
     }
 
     /**

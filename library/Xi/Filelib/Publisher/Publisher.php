@@ -2,14 +2,13 @@
 
 namespace Xi\Filelib\Publisher;
 
-use Doctrine\Common\EventSubscriber;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\File\File;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Events;
 
 /**
  * Class Publisher
@@ -63,7 +62,7 @@ class Publisher implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'xi_filelib.file.delete' => array('onDelete')
+            Events::FILE_AFTER_DELETE => array('onDelete')
         );
     }
 

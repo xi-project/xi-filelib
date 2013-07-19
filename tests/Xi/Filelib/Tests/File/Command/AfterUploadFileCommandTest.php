@@ -6,7 +6,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
-use Xi\Filelib\File\Command\PublishFileCommand;
+use Xi\Filelib\Events;
 
 class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -47,7 +47,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $fileitem->expects($this->once())->method('setStatus')->with($this->equalTo(File::STATUS_COMPLETED));
 
         $dispatcher->expects($this->at(0))->method('dispatch')
-                   ->with($this->equalTo('xi_filelib.file.after_upload'), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+                   ->with($this->equalTo(Events::FILE_AFTER_AFTERUPLOAD), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
         $profile = $this->getMockedFileProfile();
 

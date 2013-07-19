@@ -19,6 +19,7 @@ use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
+use Xi\Filelib\Events;
 
 class UploadFileCommand extends AbstractFileCommand
 {
@@ -110,7 +111,7 @@ class UploadFileCommand extends AbstractFileCommand
         $profileObj = $this->fileOperator->getProfile($profile);
         $event = new FileUploadEvent($upload, $folder, $profileObj);
 
-        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.before_create', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_CREATE, $event);
 
         $upload = $event->getFileUpload();
 
@@ -132,7 +133,7 @@ class UploadFileCommand extends AbstractFileCommand
         $this->fileOperator->getStorage()->store($resource, $upload->getRealPath());
 
         $event = new FileEvent($file);
-        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.create', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_CREATE, $event);
 
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $file));
 

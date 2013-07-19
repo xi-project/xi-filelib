@@ -13,6 +13,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
+use Xi\Filelib\Events;
 
 /**
  * @group plugin
@@ -407,9 +408,9 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     public function getSubscribedEventsShouldReturnCorrectEvents()
     {
         $events = ZencoderPlugin::getSubscribedEvents();
-        $this->assertArrayHasKey('xi_filelib.profile.add', $events);
-        $this->assertArrayHasKey('xi_filelib.file.after_upload', $events);
-        $this->assertArrayHasKey('xi_filelib.file.delete', $events);
-        $this->assertArrayHasKey('xi_filelib.resource.delete', $events);
+        $this->assertArrayHasKey(Events::PROFILE_AFTER_ADD, $events);
+        $this->assertArrayHasKey(Events::FILE_AFTER_AFTERUPLOAD, $events);
+        $this->assertArrayHasKey(Events::FILE_AFTER_DELETE, $events);
+        $this->assertArrayHasKey(Events::RESOURCE_AFTER_DELETE, $events);
     }
 }

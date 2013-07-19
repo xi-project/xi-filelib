@@ -226,7 +226,7 @@ class FileLibrary
 
         $this->getEventDispatcher()->addSubscriber($plugin);
         $event = new PluginEvent($plugin);
-        $this->getEventDispatcher()->dispatch('xi_filelib.plugin.add', $event);
+        $this->getEventDispatcher()->dispatch(Events::PLUGIN_AFTER_ADD, $event);
         return $this;
     }
 
