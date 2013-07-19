@@ -38,11 +38,6 @@ class File
     private $name;
 
     /**
-     * @ORM\Column(name="filelink", type="string", length=255, nullable=true, unique=true)
-     */
-    private $link;
-
-    /**
      * @ORM\Column(name="date_created", type="datetime")
      */
     private $dateCreated;
@@ -126,29 +121,6 @@ class File
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Set link
-     *
-     * @param  string $value
-     * @return File
-     */
-    public function setLink($value)
-    {
-        $this->link = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get link
-     *
-     * @return string
-     */
-    public function getLink()
-    {
-        return $this->link;
     }
 
     /**

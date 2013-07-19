@@ -22,25 +22,18 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
      */
     public function executeShouldMigrate()
     {
-        $filelib = new FileLibrary();
-
-        $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
-        $foop = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
-        $resource = $this->getMock('Xi\Filelib\File\Resource');
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $foop = $this->getMockedFolderOperator();
+        $fiop = $this->getMockedFileOperator();
+        $resource = $this->getMockedResource();
+        $storage = $this->getMockedStorage();
+        $backend = $this->getMockedBackend();
         $profile = $this->getMockedFileProfile();
+        $filelib = $this->getMockedFilelib(null, $fiop, $foop);
+        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
+        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
-        $filelib->setFileOperator($fiop);
-        $filelib->setFolderOperator($foop);
-        $filelib->setStorage($storage);
-        $filelib->setBackend($backend);
-
-        $rootFolder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $childFolder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $rootFolder = $this->getMockedFolder();
+        $childFolder = $this->getMockedFolder();
 
         $rootFolder->expects($this->once())->method('setUuid')->with('uuid');
         $childFolder->expects($this->once())->method('setUuid')->with('uuid');

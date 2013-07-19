@@ -2,13 +2,9 @@
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\FilesystemStorage;
-use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
 use Xi\Filelib\Backend\Platform\DoctrineOrmPlatform;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
-use Xi\Filelib\Acl\SimpleAcl;
-use Xi\Filelib\Linker\SequentialLinker;
 use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 
@@ -38,14 +34,7 @@ $filelib = new FileLibrary(
     new DoctrineOrmPlatform($entityManager)
 );
 
-
-
-// Setting ACL is not mandatory. Simple is used by default.
-
-$filelib->setAcl(new SimpleAcl(true));
-
 // Add a default profile with the simplest sequential linker possible
 
-$filelib->addProfile(new FileProfile('default', new SequentialLinker()));
-
+$filelib->addProfile(new FileProfile('default'));
 $filelib->addPlugin(new RandomizeNamePlugin(), array('default'));

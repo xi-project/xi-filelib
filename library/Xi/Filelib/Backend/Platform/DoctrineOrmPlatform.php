@@ -184,7 +184,6 @@ class DoctrineOrmPlatform implements Platform
         $entity->setFolder($this->getFolderReference($file->getFolderId()));
         $entity->setProfile($file->getProfile());
         $entity->setName($file->getName());
-        $entity->setLink($file->getLink());
         $entity->setDateCreated($file->getDateCreated());
         $entity->setStatus($file->getStatus());
         $entity->setUuid($file->getUuid());
@@ -497,7 +496,6 @@ class DoctrineOrmPlatform implements Platform
                         'folder_id' => $file->getFolder() ? $file->getFolder()->getId() : null,
                         'profile' => $file->getProfile(),
                         'name' => $file->getName(),
-                        'link' => $file->getLink(),
                         'date_created' => $file->getDateCreated(),
                         'status' => $file->getStatus(),
                         'uuid' => $file->getUuid(),

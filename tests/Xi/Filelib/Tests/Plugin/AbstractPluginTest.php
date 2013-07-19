@@ -38,8 +38,8 @@ class AbstractPluginTest extends TestCase
 
         $profiles = array('tussin', 'lussutus');
 
-        $this->assertEquals($plugin, $plugin->setProfiles($profiles));
-        $this->assertEquals($profiles, $plugin->getProfiles());
+        $this->assertSame($plugin, $plugin->setProfiles($profiles));
+        $this->assertSame($profiles, $plugin->getProfiles());
     }
 
     /**
@@ -55,18 +55,6 @@ class AbstractPluginTest extends TestCase
         $this->assertTrue($plugin->hasProfile('lussi'));
         $this->assertTrue($plugin->hasProfile('tussi'));
         $this->assertFalse($plugin->hasProfile('meisterhof'));
-    }
-
-    /**
-     * @test
-     */
-    public function emptyHooksShouldBeCallableAndReturnExpectedValues()
-    {
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')->setMethods(array())->getMockForAbstractClass();
-
-        $this->getMockForAbstractClass('Xi\Filelib\File\File');
-
-        $this->assertNull($plugin->init());
     }
 
     /**

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Linker;
+namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\File\File;
 

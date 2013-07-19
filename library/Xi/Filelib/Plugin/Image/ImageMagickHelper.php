@@ -103,31 +103,4 @@ class ImageMagickHelper
             );
         }
     }
-
-    /**
-     * Creates and returns a command from config array
-     *
-     * @param  array                     $arr Config array
-     * @return Command
-     * @throws \InvalidArgumentException
-     */
-    public function createCommandFromArray($arr)
-    {
-        if (!is_array($arr) || !isset($arr['type']) || !is_string($arr['type'])) {
-            throw new \InvalidArgumentException("Command class missing");
-        }
-
-        $className = $arr['type'];
-        unset($arr['type']);
-
-        if (!class_exists($className)) {
-            throw new \InvalidArgumentException(sprintf(
-                "Class '%s' does not exist", $className
-            ));
-        }
-
-        $command = new $className($arr);
-
-        return $command;
-    }
 }

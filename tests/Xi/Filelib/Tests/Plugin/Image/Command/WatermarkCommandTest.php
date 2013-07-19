@@ -12,34 +12,13 @@ namespace Xi\Filelib\Tests\Plugin\Image\Command;
 use Xi\Filelib\Tests\Plugin\Image\TestCase;
 use Xi\Filelib\Plugin\Image\Command\WatermarkCommand;
 use Imagick;
+use InvalidArgumentException;
 
 /**
  * @group plugin
  */
 class WatermarkCommandTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function gettersAndSettersShouldWorkAsExpected()
-    {
-        $command = new WatermarkCommand();
-
-        $watermarkPosition = 'ne';
-        $this->assertEquals('sw', $command->getWatermarkPosition());
-        $this->assertSame($command, $command->setWatermarkPosition($watermarkPosition));
-        $this->assertEquals($watermarkPosition, $command->getWatermarkPosition());
-
-        $watermarkImage = ROOT_TESTS . '/data/watermark.png';
-        $this->assertEquals(null, $command->getWatermarkImage());
-        $this->assertSame($command, $command->setWatermarkImage($watermarkImage));
-        $this->assertEquals($watermarkImage, $command->getWatermarkImage());
-
-        $watermarkPadding = 15;
-        $this->assertEquals(0, $command->getWatermarkPadding());
-        $this->assertSame($command, $command->setWatermarkPadding($watermarkPadding));
-        $this->assertEquals($watermarkPadding, $command->getWatermarkPadding());
-    }
 
     /**
      * @test
@@ -47,8 +26,7 @@ class WatermarkCommandTest extends TestCase
      */
     public function setWatermarkPositionShouldFailWithInvalidPosition()
     {
-        $command = new WatermarkCommand();
-        $command->setWatermarkPosition('lus');
+        $command = new WatermarkCommand('tussi', 'lus', 5);
     }
 
     /**
@@ -57,11 +35,7 @@ class WatermarkCommandTest extends TestCase
      */
     public function setWatermarkPositionShouldFailWithNonStringPosition()
     {
-        $command = new WatermarkCommand();
-
-        $command2 = new WatermarkCommand();
-
-        $command->setWatermarkPosition($command2);
+        $command = new WatermarkCommand('tussi', new \stdClass, 10);
     }
 
     public function provideDataForCoordinateCalculation()
@@ -112,13 +86,10 @@ class WatermarkCommandTest extends TestCase
 
         $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
                         ->setMethods(array('createImagick'))
+                        ->setConstructorArgs(array('tussi', $position, $padding))
                         ->getMock();
 
         $command->expects($this->any())->method('createImagick')->will($this->returnValue($watermark));
-
-        $command->setWatermarkPosition($position);
-        $command->setWatermarkPadding($padding);
-
         $ret = $command->calculateCoordinates($imagick);
 
         $this->assertEquals($expected, $ret);
@@ -135,6 +106,7 @@ class WatermarkCommandTest extends TestCase
 
         $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
                         ->setMethods(array('createImagick'))
+                        ->setConstructorArgs(array('tussi', 'se', 7))
                         ->getMock();
 
         $command->expects($this->once())->method('createImagick')->will($this->returnValue($watermark));
@@ -159,6 +131,7 @@ class WatermarkCommandTest extends TestCase
 
         $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
                         ->setMethods(array('createImagick'))
+                        ->setConstructorArgs(array('tussi', 'se', 7))
                         ->getMock();
 
         $command->expects($this->once())->method('createImagick')->will($this->returnCallback(function() use ($watermark) {
@@ -183,6 +156,7 @@ class WatermarkCommandTest extends TestCase
 
         $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
                         ->setMethods(array('createImagick'))
+                        ->setConstructorArgs(array('tussi', 'se', 7))
                         ->getMock();
 
         $command->destroyWatermarkResource();
@@ -194,8 +168,7 @@ class WatermarkCommandTest extends TestCase
      */
     public function executeShouldThrowExceptionWhenCreatingWatermarkResourceFails()
     {
-        $command = new WatermarkCommand();
-        $command->setWatermarkImage(ROOT_TESTS . '/data/illusive-manatee.jpg');
+        $command = new WatermarkCommand(ROOT_TESTS . '/data/illusive-manatee.jpg', 'sw', 3);
 
         $imagick = $this->getMockBuilder('\Imagick')
                         ->disableOriginalConstructor()
@@ -234,14 +207,12 @@ class WatermarkCommandTest extends TestCase
 
         $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
                         ->setMethods(array('createImagick'))
+                        ->setConstructorArgs(array('tussi', 'nw', 1))
                         ->getMock();
 
         $command->expects($this->any())->method('createImagick')->will($this->returnCallback(function() use ($watermark) {
             return $watermark;
         }));
-
-        $command->setWatermarkPosition('nw');
-        $command->setWatermarkPadding(1);
 
         $command->execute($imagick);
     }

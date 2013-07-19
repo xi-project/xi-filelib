@@ -427,7 +427,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($fodata['id'], $file->getFolderId());
         $this->assertEquals($fidata['profile'], $file->getProfile());
-        $this->assertEquals($fidata['link'], $file->getLink());
         $this->assertEquals($fidata['date_created'], $file->getDateCreated());
         $this->assertEquals($fidata['status'], $file->getStatus());
         $this->assertEquals($fidata['uuid'], $file->getUuid());

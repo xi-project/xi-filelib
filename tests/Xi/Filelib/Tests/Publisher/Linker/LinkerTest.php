@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Linker;
+namespace Xi\Filelib\Tests\Publisher\Linker;
 
 use Xi\Filelib\Tests\TestCase;
 
@@ -21,6 +21,6 @@ class LinkerTest extends TestCase
      */
     public function interfaceShouldExist()
     {
-        $this->assertTrue(interface_exists('Xi\Filelib\Linker\Linker'));
+        $this->assertTrue(interface_exists('Xi\Filelib\Publisher\Linker'));
     }
 }

@@ -44,7 +44,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function updateShouldDelegateCorrectlyWhenFileCanNotBePublished()
+    public function updateShouldDelegateCorrectly()
     {
         $filelib = $this->getMockedFilelib();
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
@@ -65,19 +65,10 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
-        $linker = $this->getMock('Xi\Filelib\Linker\Linker');
-        $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
-
         $profile = $this->getMockedFileProfile();
-        $profile->expects($this->any())->method('getLinker')->will($this->returnValue($linker));
 
-        $file = $this->getMockBuilder('Xi\Filelib\File\File')
-                     ->setMethods(array('setLink'))
-                     ->getMock();
-
+        $file = $this->getMockedFile();
         $file->setProfile('lussenhofer');
-
-        $file->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
 
         $backend = $this
             ->getMockBuilder('Xi\Filelib\Backend\Backend')
@@ -94,49 +85,4 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $command->execute();
 
     }
-
-    /**
-     * @test
-     */
-    public function updateShouldDelegateCorrectlyWhenFileCanBePublished()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getProfile', 'createCommand'))
-                   ->getMock();
-
-        $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
-
-        $linker = $this->getMock('Xi\Filelib\Linker\Linker');
-        $linker->expects($this->once())->method('getLink')->will($this->returnValue('maximuslincitus'));
-
-        $profile = $this->getMockedFileProfile();
-        $profile->expects($this->atLeastOnce())->method('getLinker')->will($this->returnValue($linker));
-
-        $file = $this->getMockBuilder('Xi\Filelib\File\File')
-                     ->setMethods(array('setLink'))
-                     ->getMock();
-
-        $file->setProfile('lussenhofer');
-
-        $file->expects($this->once())->method('setLink')->with($this->equalTo('maximuslincitus'));
-
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $backend->expects($this->once())->method('updateFile')->with($this->equalTo($file));
-
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-
-        $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussenhofer'))->will($this->returnValue($profile));
-
-        $command = new UpdateFileCommand($op, $file);
-        $command->execute();
-
-    }
-
 }

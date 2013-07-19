@@ -9,8 +9,8 @@ class PublisherTest extends TestCase
     /**
      * @test
      */
-    public function interfaceShouldExist()
+    public function classShouldExist()
     {
-        $this->assertTrue(interface_exists('Xi\Filelib\Publisher\Publisher'));
+        $this->assertClassExists('Xi\Filelib\Publisher\Publisher');
     }
 }

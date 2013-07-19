@@ -63,11 +63,6 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame($file, $file->setName($val));
         $this->assertEquals($val, $file->getName());
 
-        $val = 'linkster';
-        $this->assertNull($file->getLink());
-        $this->assertSame($file, $file->setLink($val));
-        $this->assertEquals($val, $file->getLink());
-
         $val = new DateTime('1978-01-02');
         $this->assertNull($file->getDateCreated());
         $this->assertSame($file, $file->setDateCreated($val));
@@ -141,7 +136,6 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'folder_id' => 'getFolderId',
             'profile' => 'getProfile',
             'name' => 'getName',
-            'link' => 'getLink',
             'date_created' => 'getDateCreated',
             'status' => 'getStatus',
             'resource' => 'getResource',
@@ -174,7 +168,6 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $file->setFolderId(655);
         $file->setProfile('unknown');
         $file->setName('kukkuu.png');
-        $file->setLink('linksor');
         $file->setDateCreated(new \DateTime('1978-03-21'));
         $file->setStatus(54);
         $file->setUuid('tussi-poski');
@@ -186,7 +179,6 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'folder_id' => 655,
             'profile' => 'unknown',
             'name' => 'kukkuu.png',
-            'link' => 'linksor',
             'date_created' => new \DateTime('1978-03-21'),
             'status' => 54,
             'uuid' => 'tussi-poski',
@@ -200,7 +192,6 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'folder_id' => null,
             'profile' => null,
             'name' => null,
-            'link' => null,
             'date_created' => null,
             'status' => null,
             'uuid' => null,
