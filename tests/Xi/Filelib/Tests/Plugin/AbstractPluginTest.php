@@ -12,6 +12,7 @@ namespace Xi\Filelib\Tests\Plugin;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Event\FileProfileEvent;
+use Xi\Filelib\Events;
 
 /**
  * @group plugin
@@ -63,7 +64,7 @@ class AbstractPluginTest extends TestCase
     public function getSubscribedEventsShouldReturnEmptyArray()
     {
         $events = AbstractPlugin::getSubscribedEvents();
-        $this->assertArrayHasKey('xi_filelib.profile.add', $events);
+        $this->assertArrayHasKey(Events::PROFILE_AFTER_ADD, $events);
     }
 
     /**

@@ -15,6 +15,7 @@ use Xi\Filelib\Backend\Finder\ResourceFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use ArrayIterator;
+use Xi\Filelib\Events;
 
 class BackendTest extends TestCase
 {
@@ -423,7 +424,7 @@ class BackendTest extends TestCase
         $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
 
         $this->ed->expects($this->once())->method('dispatch')
-            ->with('xi_filelib.resource.delete', $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
+            ->with(Events::RESOURCE_AFTER_DELETE, $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
 
         $backend = $this->getMockedBackend();
         $ret = $backend->deleteResource($obj);

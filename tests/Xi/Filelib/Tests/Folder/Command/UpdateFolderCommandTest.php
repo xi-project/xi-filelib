@@ -9,6 +9,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Command\UpdateFolderCommand;
 use ArrayIterator;
+use Xi\Filelib\Events;
 
 class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -57,7 +58,7 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-            $this->equalTo('xi_filelib.folder.update'),
+            $this->equalTo(Events::FOLDER_AFTER_UPDATE),
             $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
         );
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));

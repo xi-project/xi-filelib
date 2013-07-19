@@ -13,6 +13,7 @@ use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
+use Xi\Filelib\Events;
 
 class UpdateFolderCommand extends AbstractFolderCommand
 {
@@ -61,7 +62,7 @@ class UpdateFolderCommand extends AbstractFolderCommand
 
         $event = new FolderEvent($this->folder);
         $this->folderOperator->getEventDispatcher()->dispatch(
-            'xi_filelib.folder.update',
+            Events::FOLDER_AFTER_UPDATE,
             $event
         );
     }

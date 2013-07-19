@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Events;
 
 class FileLibraryTest extends TestCase
 {
@@ -187,7 +188,7 @@ class FileLibraryTest extends TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with(
-                $this->equalTo('xi_filelib.plugin.add'),
+                $this->equalTo(Events::PLUGIN_AFTER_ADD),
                 $this->isInstanceOf('Xi\Filelib\Event\PluginEvent')
             );
 

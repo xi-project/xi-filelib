@@ -12,6 +12,7 @@ namespace Xi\Filelib\File\Command;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Events;
 
 class AfterUploadFileCommand extends AbstractFileCommand
 {
@@ -39,7 +40,7 @@ class AfterUploadFileCommand extends AbstractFileCommand
         $profileObj = $this->fileOperator->getProfile($file->getProfile());
 
         $event = new FileEvent($file);
-        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.after_upload', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_AFTERUPLOAD, $event);
 
         // @todo: actual statuses
         $file->setStatus(File::STATUS_COMPLETED);

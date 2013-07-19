@@ -8,6 +8,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\CopyFileCommand;
+use Xi\Filelib\Events;
 
 class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -211,7 +212,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         }
 
         $eventDispatcher->expects($this->once())->method('dispatch')
-                        ->with($this->equalTo('xi_filelib.file.copy'), $this->isInstanceOf('Xi\Filelib\Event\FileCopyEvent'));
+                        ->with($this->equalTo(Events::FILE_AFTER_COPY), $this->isInstanceOf('Xi\Filelib\Event\FileCopyEvent'));
 
         $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
                                    ->disableOriginalConstructor()

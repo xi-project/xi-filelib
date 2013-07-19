@@ -15,6 +15,7 @@ use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Events;
 
 abstract class AbstractRenderer implements Renderer
 {
@@ -84,6 +85,6 @@ abstract class AbstractRenderer implements Renderer
     protected function dispatchRenderEvent(File $file)
     {
         $event = new FileEvent($file);
-        $this->getEventDispatcher()->dispatch('xi_filelib.file.render', $event);
+        $this->getEventDispatcher()->dispatch(Events::FILE_AFTER_RENDER, $event);
     }
 }

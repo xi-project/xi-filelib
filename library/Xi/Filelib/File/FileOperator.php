@@ -25,6 +25,7 @@ use Xi\Filelib\Tool\TypeResolver\TypeResolver;
 use Xi\Filelib\Tool\TypeResolver\StupidTypeResolver;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
+use Xi\Filelib\Events;
 
 /**
  * File operator
@@ -100,7 +101,7 @@ class FileOperator extends AbstractOperator
         $this->getEventDispatcher()->addSubscriber($profile);
 
         $event = new FileProfileEvent($profile);
-        $this->getEventDispatcher()->dispatch('xi_filelib.profile.add', $event);
+        $this->getEventDispatcher()->dispatch(Events::PROFILE_AFTER_ADD, $event);
 
         return $this;
     }

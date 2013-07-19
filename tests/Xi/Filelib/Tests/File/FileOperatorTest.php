@@ -19,6 +19,7 @@ use Xi\Filelib\EnqueueableCommand;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Events;
 
 class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -181,7 +182,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $eventDispatcher->expects($this->exactly(2))->method('addSubscriber')->with($this->isInstanceOf('Xi\Filelib\File\FileProfile'));
 
         $eventDispatcher->expects($this->exactly(2))->method('dispatch')
-                        ->with($this->equalTo('xi_filelib.profile.add'), $this->isInstanceOf('Xi\Filelib\Event\FileProfileEvent'));
+                        ->with($this->equalTo(Events::PROFILE_AFTER_ADD), $this->isInstanceOf('Xi\Filelib\Event\FileProfileEvent'));
 
         $op->addProfile($profile);
         $this->assertCount(1, $op->getProfiles());

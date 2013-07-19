@@ -13,10 +13,10 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
-use Xi\Filelib\FilelibException;
 use Xi\Filelib\Event\FileCopyEvent;
 use InvalidArgumentException;
 use DateTime;
+use Xi\Filelib\Events;
 
 class CopyFileCommand extends AbstractFileCommand
 {
@@ -144,7 +144,7 @@ class CopyFileCommand extends AbstractFileCommand
         $this->fileOperator->getBackend()->createFile($impostor, $this->folder);
 
         $event = new FileCopyEvent($this->file, $impostor);
-        $this->fileOperator->getEventDispatcher()->dispatch('xi_filelib.file.copy', $event);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_COPY, $event);
 
         $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $impostor));
 

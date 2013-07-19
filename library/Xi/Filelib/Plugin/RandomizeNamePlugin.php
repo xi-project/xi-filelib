@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Plugin;
 
 use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\Events;
 
 /**
  * Randomizes all uploads' file names before uploading. Ensures that same file
@@ -20,8 +21,8 @@ use Xi\Filelib\Event\FileUploadEvent;
 class RandomizeNamePlugin extends AbstractPlugin
 {
     protected static $subscribedEvents = array(
-        'xi_filelib.profile.add' => 'onFileProfileAdd',
-        'xi_filelib.file.before_create' => 'beforeUpload'
+        Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',
+        Events::FILE_BEFORE_CREATE => 'beforeUpload'
     );
 
 
