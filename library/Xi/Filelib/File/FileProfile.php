@@ -121,19 +121,15 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Adds a file version
      *
-     * @param  string          $fileType          string File type
      * @param  string          $versionIdentifier Version identifier
      * @param  VersionProvider $versionProvider   Version provider
      * @return FileProfile
      */
     public function addFileVersion(
-        $fileType,
         $versionIdentifier,
         VersionProvider $versionProvider
     ) {
-        $this->ensureFileVersionArrayExists($fileType);
-        $this->fileVersions[$fileType][$versionIdentifier] = $versionProvider;
-
+        $this->fileVersions[$versionIdentifier] = $versionProvider;
         return $this;
     }
 
@@ -145,10 +141,13 @@ class FileProfile implements EventSubscriberInterface
      */
     public function getFileVersions(File $file)
     {
-        $fileType = $this->fileOperator->getType($file);
-        $this->ensureFileVersionArrayExists($fileType);
-
-        return array_keys($this->fileVersions[$fileType]);
+        $ret = array();
+        foreach($this->fileVersions as $version => $versionProvider) {
+            if ($versionProvider->providesFor($file)) {
+                $ret[] = $version;
+            }
+        }
+        return $ret;
     }
 
     /**
@@ -176,10 +175,7 @@ class FileProfile implements EventSubscriberInterface
         if (!$this->fileHasVersion($file, $version)) {
             throw new InvalidArgumentException("File has no version '{$version}'");
         }
-
-        $filetype = $this->fileOperator->getType($file);
-
-        return $this->fileVersions[$filetype][$version];
+        return $this->fileVersions[$version];
     }
 
     /**
@@ -213,13 +209,6 @@ class FileProfile implements EventSubscriberInterface
 
         if (in_array($this->getIdentifier(), $plugin->getProfiles())) {
             $this->addPlugin($plugin);
-        }
-    }
-
-    private function ensureFileVersionArrayExists($fileType)
-    {
-        if (!isset($this->fileVersions[$fileType])) {
-            $this->fileVersions[$fileType] = array();
         }
     }
 

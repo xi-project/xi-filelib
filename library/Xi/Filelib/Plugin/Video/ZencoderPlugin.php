@@ -75,8 +75,13 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         $tempDir,
         $options = array()
     ) {
-        parent::__construct($identifier, array('video'));
-
+        parent::__construct(
+            $identifier,
+            function(File $file) {
+                // @todo: maybe some more complex mime type based checking
+                return (bool) preg_match("/^video/", $file->getMimetype());
+            }
+        );
         $this->zencoderService = $zencoderService;
         $this->amazonService = $amazonService;
         $this->tempDir = $tempDir;

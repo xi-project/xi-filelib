@@ -73,7 +73,7 @@ class VersionPluginTest extends TestCase
      */
     public function pluginShouldProvideForImage()
     {
-        $this->assertEquals(array('image'), $this->plugin->getProvidesFor());
+        $this->assertInstanceOf('Closure', $this->plugin->getProvidesFor());
     }
 
     /**

@@ -370,54 +370,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function typeResolverShouldDefaultToStupid()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $this->assertInstanceOf('Xi\Filelib\Tool\TypeResolver\StupidTypeResolver', $op->getTypeResolver());
-
-    }
-
-    /**
-     *  @test
-     */
-    public function typeResolverShouldRespectSetter()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $typeResolver = $this->getMock('Xi\Filelib\Tool\TypeResolver\TypeResolver');
-
-        $op->setTypeResolver($typeResolver);
-        $this->assertSame($typeResolver, $op->getTypeResolver());
-    }
-
-    /**
-     * @test
-     */
-    public function getTypeShouldDelegateToTypeResolver()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $typeResolver = $this->getMock('Xi\Filelib\Tool\TypeResolver\TypeResolver');
-        $typeResolver->expects($this->once())->method('resolveType')
-                     ->with($this->equalTo('application/lus'));
-
-        $file = File::create(array(
-            'name' => 'larvador.lus',
-            'resource' => Resource::create(array('mimetype' => 'application/lus'))
-        ));
-
-        $op->setTypeResolver($typeResolver);
-        $op->getType($file);
-
-    }
-
-    /**
-     * @test
-     */
     public function hasVersionShouldDelegateToProfile()
     {
         $filelib = $this->getMockedFilelib();

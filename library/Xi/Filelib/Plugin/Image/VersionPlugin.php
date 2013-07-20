@@ -42,7 +42,13 @@ class VersionPlugin extends AbstractVersionProvider
         $extension,
         $imageMagickOptions = array()
     ) {
-        parent::__construct($identifier, array('image'));
+        parent::__construct(
+            $identifier,
+            function(File $file) {
+                // @todo: maybe some more complex mime type based checking
+                return (bool) preg_match("/^image/", $file->getMimetype());
+            }
+        );
         $this->tempDir = $tempDir;
         $this->extension = $extension;
         $this->imageMagickOptions = $imageMagickOptions;
