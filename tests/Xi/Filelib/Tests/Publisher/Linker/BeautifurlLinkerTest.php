@@ -156,7 +156,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $versionProvider->expects($this->any())
                         ->method('getExtensionFor')
-                        ->with($this->equalTo('xoo'))
+                        ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->equalTo('xoo'))
                         ->will($this->returnValue('xoo'));
 
         $this->assertEquals(
@@ -164,7 +164,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
             $this->linker->getLinkVersion(
                 $file,
                 $versionProvider->getIdentifier(),
-                $versionProvider->getExtensionFor($versionProvider->getIdentifier())
+                $versionProvider->getExtensionFor($file, $versionProvider->getIdentifier())
             )
         );
     }

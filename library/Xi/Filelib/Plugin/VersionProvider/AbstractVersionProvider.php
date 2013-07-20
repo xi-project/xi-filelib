@@ -19,6 +19,8 @@ use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events;
+use Xi\Filelib\File\MimeType;
+use Xi\Filelib\File\FileObject;
 
 /**
  * Abstract convenience class for version provider plugins
@@ -135,6 +137,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
     public function onAfterUpload(FileEvent $event)
     {
+
         $file = $event->getFile();
 
         if (!$this->hasProfile($file->getProfile()) || !$this->providesFor($file) || $this->areVersionsCreated($file)) {
@@ -154,41 +157,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             unlink($tmp);
         }
     }
-    /*
-    public function onPublish(FileEvent $event)
-    {
-        $file = $event->getFile();
-
-        if (!$this->hasProfile($file->getProfile())) {
-            return;
-        }
-
-        if (!$this->providesFor($file)) {
-            return;
-        }
-
-        foreach ($this->getVersions() as $version) {
-            $this->getPublisher()->publishVersion($file, $version, $this);
-        }
-    }
-
-    public function onUnpublish(FileEvent $event)
-    {
-        $file = $event->getFile();
-
-        if (!$this->hasProfile($file->getProfile())) {
-            return;
-        }
-
-        if (!$this->providesFor($file)) {
-            return;
-        }
-
-        foreach ($this->getVersions() as $version) {
-            $this->getPublisher()->unpublishVersion($file, $version, $this);
-        }
-    }
-    */
 
     public function onFileDelete(FileEvent $event)
     {
@@ -248,4 +216,22 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
         return false;
     }
+
+    public function getExtensionFor(File $file, $version)
+    {
+        $retrieved = $this->storage->retrieveVersion(
+            $file->getResource(),
+            $version->getIdentifier(),
+            $this->areSharedVersionsAllowed() ? null : $file
+        );
+
+        $fileObj = new FileObject($retrieved);
+        $extensions = MimeType::mimeTypeToExtensions($fileObj->getMimeType());
+        if (!count($extensions)) {
+            throw new \RuntimeException("Failed to find an extension for mime type '{$fileObj->getMimeType()}'");
+        }
+
+        return array_shift($extensions);
+    }
+
 }

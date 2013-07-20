@@ -195,7 +195,7 @@ class VersionPluginTest extends TestCase
 
         $plugin->expects($this->once())->method('getExtension');
 
-        $plugin->getExtensionFor('xooxoo');
+        $plugin->getExtensionFor($this->getMockedFile(), 'xooxoo');
     }
 
     /**

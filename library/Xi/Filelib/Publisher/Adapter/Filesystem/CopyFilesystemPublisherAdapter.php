@@ -57,7 +57,7 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
     public function publishVersion(File $file, VersionProvider $version, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
+            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($file, $version));
 
         if (!is_file($link)) {
 
@@ -89,7 +89,7 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
     public function unpublishVersion(File $file, VersionProvider $version, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
+            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($file, $version));
         if (is_file($link)) {
             unlink($link);
         }

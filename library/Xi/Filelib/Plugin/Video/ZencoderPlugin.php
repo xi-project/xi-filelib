@@ -217,7 +217,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      *
      * @param string $version
      */
-    public function getExtensionFor($version)
+    public function getExtensionFor(File $file, $version)
     {
         return $this->outputs[$version]['extension'];
     }

@@ -25,36 +25,35 @@ class ImageMagickHelper
     protected $commands = array();
     protected $imageMagickOptions = array();
 
-    public function __construct($options = array())
+    public function __construct($commandDefinitions = array())
     {
-        Configurator::setConstructorOptions($this, $options);
+        foreach ($commandDefinitions as $key => $definition) {
+
+            if ($definition instanceof Command) {
+                $this->addCommand($definition);
+            } else {
+                $commandClass = (is_numeric($key)) ? 'Xi\Filelib\Plugin\Image\Command\ExecuteMethodCommand' : $key;
+                $reflClass = new \ReflectionClass($commandClass);
+                $command = $reflClass->newInstanceArgs($definition);
+                $this->addCommand($command);
+            }
+        }
     }
 
+    /**
+     * @param Command $command
+     */
     public function addCommand(Command $command)
     {
         $this->commands[] = $command;
     }
 
+    /**
+     * @return Command[]
+     */
     public function getCommands()
     {
         return $this->commands;
-    }
-
-    public function setCommands(array $commands = array())
-    {
-        foreach ($commands as $command) {
-            $this->addCommand($command);
-        }
-    }
-
-    /**
-     * Sets ImageMagick options
-     *
-     * @param array $imageMagickOptions
-     */
-    public function setImageMagickOptions(array $imageMagickOptions)
-    {
-        $this->imageMagickOptions = $imageMagickOptions;
     }
 
     /**
@@ -69,16 +68,6 @@ class ImageMagickHelper
 
     public function execute($img)
     {
-        foreach ($this->getImageMagickOptions() as $key => $value) {
-            if (!is_array($value)) {
-                $value = array($value);
-            }
-
-            $method = 'set' . $key;
-
-            call_user_func_array(array($img, $method), $value);
-        }
-
         foreach ($this->getCommands() as $command) {
             $command->execute($img);
         }

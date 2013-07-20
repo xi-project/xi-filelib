@@ -76,7 +76,7 @@ class FFmpegPlugin extends AbstractVersionProvider implements VersionProvider
     /**
      * @inheritDoc
      */
-    public function getExtensionFor($version)
+    public function getExtensionFor(File $file, $version)
     {
         return pathinfo($this->getHelper()->getOutputs()[$version]['filename'], PATHINFO_EXTENSION);
     }

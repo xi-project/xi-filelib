@@ -13,6 +13,7 @@ use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Versions an image
@@ -31,16 +32,10 @@ class VersionPlugin extends AbstractVersionProvider
      */
     private $tempDir;
 
-    /**
-     * @var array
-     */
-    private $imageMagickConfig;
-
     public function __construct(
         $identifier,
-        $tempDir,
-        $extension,
-        $imageMagickOptions = array()
+        $commandDefinitions = array(),
+        $extension = null
     ) {
         parent::__construct(
             $identifier,
@@ -49,9 +44,15 @@ class VersionPlugin extends AbstractVersionProvider
                 return (bool) preg_match("/^image/", $file->getMimetype());
             }
         );
-        $this->tempDir = $tempDir;
         $this->extension = $extension;
-        $this->imageMagickOptions = $imageMagickOptions;
+
+        $this->imageMagickHelper = new ImageMagickHelper($commandDefinitions);
+    }
+
+    public function setDependencies(FileLibrary $filelib)
+    {
+        parent::setDependencies($filelib);
+        $this->tempDir = $filelib->getTempDir();
     }
 
     /**
@@ -61,12 +62,6 @@ class VersionPlugin extends AbstractVersionProvider
      */
     public function getImageMagickHelper()
     {
-        if (!$this->imageMagickHelper) {
-            $this->imageMagickHelper = new ImageMagickHelper();
-            // @todo: Fucktor away
-            Configurator::setOptions($this->imageMagickHelper, $this->imageMagickOptions);
-        }
-
         return $this->imageMagickHelper;
     }
 
@@ -96,20 +91,6 @@ class VersionPlugin extends AbstractVersionProvider
     }
 
     /**
-     * Sets file extension
-     *
-     * @param  string          $extension File extension
-     * @return VersionProvider
-     */
-    public function setExtension($extension)
-    {
-        $extension = str_replace('.', '', $extension);
-        $this->extension = $extension;
-
-        return $this;
-    }
-
-    /**
      * Returns the plugins file extension
      *
      * @return string
@@ -119,17 +100,13 @@ class VersionPlugin extends AbstractVersionProvider
         return $this->extension;
     }
 
-    public function getExtensionFor($version)
+    public function getExtensionFor(File $file, $version)
     {
-        return $this->getExtension();
-    }
-
-    /**
-     * @return string
-     */
-    public function getTempDir()
-    {
-        return $this->tempDir;
+        // Hard coded extension (the old way)
+        if ($extension = $this->getExtension()) {
+            return $extension;
+        }
+        return parent::getExtensionFor($file, $version);
     }
 
     public function isSharedResourceAllowed()

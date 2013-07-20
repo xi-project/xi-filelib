@@ -145,8 +145,9 @@ class FFmpegPluginTest extends \Xi\Filelib\Tests\TestCase
      */
     public function testExtensionFor()
     {
-        $this->assertEquals('png', $this->plugin->getExtensionFor('still'));
-        $this->assertEquals('webm', $this->plugin->getExtensionFor('video'));
+        $file = $this->getMockedFile();
+        $this->assertEquals('png', $this->plugin->getExtensionFor($file, 'still'));
+        $this->assertEquals('webm', $this->plugin->getExtensionFor($file, 'video'));
     }
 
     /**

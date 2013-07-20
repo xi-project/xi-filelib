@@ -58,11 +58,6 @@ class FileProfile implements EventSubscriberInterface
      */
     private $accessToOriginal = true;
 
-    /**
-     * @var boolean Publish original file
-     */
-    private $publishOriginal = true;
-
     public function __construct($identifier)
     {
         if ($identifier === 'original') {
@@ -186,16 +181,6 @@ class FileProfile implements EventSubscriberInterface
     public function getAccessToOriginal()
     {
         return $this->accessToOriginal;
-    }
-
-    /**
-     * Returns whether the original file is published
-     *
-     * @return boolean
-     */
-    public function getPublishOriginal()
-    {
-        return $this->publishOriginal;
     }
 
     /**
