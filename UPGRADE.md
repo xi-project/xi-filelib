@@ -172,11 +172,13 @@ was changed. When I do an actual migration for an actual client code, I will wri
 
 ALTER TABLE xi_filelib_resource RENAME COLUMN versions TO data;
 ALTER TABLE xi_filelib_file RENAME COLUMN versions TO data;
+ALTER TABLE xi_filelib_file DROP COLUMN filelink;
 
 ### MySQL
 
 ALTER TABLE xi_filelib_resource CHANGE versions data longtext NOT NULL;
 ALTER TABLE xi_filelib_file CHANGE versions data longtext NOT NULL;
+ALTER TABLE xi_filelib_file DROP COLUMN filelink;
 
 ### MongoDB
 

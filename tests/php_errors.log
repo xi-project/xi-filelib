@@ -1,0 +1,990 @@
+[10-Jul-2013 18:04:48 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tool\Transliterator\StupidTransliterator' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Linker/BeautifurlLinkerTest.php on line 86
+[10-Jul-2013 18:04:48 UTC] PHP Stack trace:
+[10-Jul-2013 18:04:48 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[10-Jul-2013 18:04:48 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[10-Jul-2013 18:04:48 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[10-Jul-2013 18:04:48 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[10-Jul-2013 18:04:48 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[10-Jul-2013 18:04:48 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[10-Jul-2013 18:04:48 UTC] PHP   7. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[10-Jul-2013 18:04:48 UTC] PHP   8. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[10-Jul-2013 18:04:48 UTC] PHP   9. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[10-Jul-2013 18:04:48 UTC] PHP  10. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[10-Jul-2013 18:04:48 UTC] PHP  11. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[10-Jul-2013 18:04:48 UTC] PHP  12. Xi\Filelib\Tests\Linker\BeautifurlLinkerTest->setUp() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:821
+[11-Jul-2013 08:24:55 UTC] PHP Fatal error:  Call to a member function dequeue() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/Queue/Processor/DefaultQueueProcessor.php on line 30
+[11-Jul-2013 08:24:55 UTC] PHP Stack trace:
+[11-Jul-2013 08:24:55 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[11-Jul-2013 08:24:55 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[11-Jul-2013 08:24:55 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[11-Jul-2013 08:24:55 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[11-Jul-2013 08:24:55 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[11-Jul-2013 08:24:55 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[11-Jul-2013 08:24:55 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[11-Jul-2013 08:24:55 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[11-Jul-2013 08:24:55 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[11-Jul-2013 08:24:55 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[11-Jul-2013 08:24:55 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[11-Jul-2013 08:24:55 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[11-Jul-2013 08:24:55 UTC] PHP  13. Xi\Filelib\Tests\Queue\Processor\DefaultQueueProcessorTest->processReturnsFalseIfQueueIsEmpty() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[11-Jul-2013 08:24:55 UTC] PHP  14. Xi\Filelib\Queue\Processor\DefaultQueueProcessor->process() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Queue/Processor/DefaultQueueProcessorTest.php:59
+[11-Jul-2013 08:31:27 UTC] PHP Fatal error:  Undefined class constant 'COMMAND_PUBLISH' in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 598
+[11-Jul-2013 08:31:27 UTC] PHP Stack trace:
+[11-Jul-2013 08:31:27 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[11-Jul-2013 08:31:27 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[11-Jul-2013 08:31:27 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[11-Jul-2013 08:31:27 UTC] PHP   4. PHPUnit_TextUI_Command->handleArguments() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:138
+[11-Jul-2013 08:31:27 UTC] PHP   5. PHPUnit_Util_Configuration->getTestSuiteConfiguration() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:657
+[11-Jul-2013 08:31:27 UTC] PHP   6. PHPUnit_Util_Configuration->getTestSuite() /wwwroot/php/lib/php/PHPUnit/Util/Configuration.php:776
+[11-Jul-2013 08:31:27 UTC] PHP   7. PHPUnit_Framework_TestSuite->addTestFiles() /wwwroot/php/lib/php/PHPUnit/Util/Configuration.php:860
+[11-Jul-2013 08:31:27 UTC] PHP   8. PHPUnit_Framework_TestSuite->addTestFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:416
+[11-Jul-2013 08:31:27 UTC] PHP   9. PHPUnit_Framework_TestSuite->addTestSuite() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:389
+[11-Jul-2013 08:31:27 UTC] PHP  10. PHPUnit_Framework_TestSuite->__construct() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:315
+[11-Jul-2013 08:31:27 UTC] PHP  11. PHPUnit_Framework_TestSuite->addTestMethod() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:212
+[11-Jul-2013 08:31:27 UTC] PHP  12. PHPUnit_Framework_TestSuite::createTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:834
+[11-Jul-2013 08:31:27 UTC] PHP  13. PHPUnit_Util_Test::getProvidedData() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:481
+[11-Jul-2013 08:31:27 UTC] PHP  14. ReflectionMethod->invoke() /wwwroot/php/lib/php/PHPUnit/Util/Test.php:262
+[11-Jul-2013 08:31:27 UTC] PHP  15. Xi\Filelib\Tests\File\FileOperatorTest->provideCommandMethods() /wwwroot/php/lib/php/PHPUnit/Util/Test.php:262
+[11-Jul-2013 08:34:41 UTC] PHP Fatal error:  Undefined class constant 'COMMAND_PUBLISH' in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 598
+[11-Jul-2013 08:34:41 UTC] PHP Stack trace:
+[11-Jul-2013 08:34:41 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[11-Jul-2013 08:34:41 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[11-Jul-2013 08:34:41 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[11-Jul-2013 08:34:41 UTC] PHP   4. PHPUnit_TextUI_Command->handleArguments() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:138
+[11-Jul-2013 08:34:41 UTC] PHP   5. PHPUnit_Util_Configuration->getTestSuiteConfiguration() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:657
+[11-Jul-2013 08:34:41 UTC] PHP   6. PHPUnit_Util_Configuration->getTestSuite() /wwwroot/php/lib/php/PHPUnit/Util/Configuration.php:776
+[11-Jul-2013 08:34:41 UTC] PHP   7. PHPUnit_Framework_TestSuite->addTestFiles() /wwwroot/php/lib/php/PHPUnit/Util/Configuration.php:860
+[11-Jul-2013 08:34:41 UTC] PHP   8. PHPUnit_Framework_TestSuite->addTestFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:416
+[11-Jul-2013 08:34:41 UTC] PHP   9. PHPUnit_Framework_TestSuite->addTestSuite() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:389
+[11-Jul-2013 08:34:41 UTC] PHP  10. PHPUnit_Framework_TestSuite->__construct() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:315
+[11-Jul-2013 08:34:41 UTC] PHP  11. PHPUnit_Framework_TestSuite->addTestMethod() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:212
+[11-Jul-2013 08:34:41 UTC] PHP  12. PHPUnit_Framework_TestSuite::createTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:834
+[11-Jul-2013 08:34:41 UTC] PHP  13. PHPUnit_Util_Test::getProvidedData() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:481
+[11-Jul-2013 08:34:41 UTC] PHP  14. ReflectionMethod->invoke() /wwwroot/php/lib/php/PHPUnit/Util/Test.php:262
+[11-Jul-2013 08:34:41 UTC] PHP  15. Xi\Filelib\Tests\File\FileOperatorTest->provideCommandMethods() /wwwroot/php/lib/php/PHPUnit/Util/Test.php:262
+[11-Jul-2013 08:34:49 UTC] PHP Fatal error:  Undefined class constant 'COMMAND_PUBLISH' in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 598
+[11-Jul-2013 08:34:49 UTC] PHP Stack trace:
+[11-Jul-2013 08:34:49 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[11-Jul-2013 08:34:49 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[11-Jul-2013 08:34:49 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[11-Jul-2013 08:34:49 UTC] PHP   4. PHPUnit_TextUI_Command->handleArguments() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:138
+[11-Jul-2013 08:34:49 UTC] PHP   5. PHPUnit_Util_Configuration->getTestSuiteConfiguration() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:657
+[11-Jul-2013 08:34:49 UTC] PHP   6. PHPUnit_Util_Configuration->getTestSuite() /wwwroot/php/lib/php/PHPUnit/Util/Configuration.php:776
+[11-Jul-2013 08:34:49 UTC] PHP   7. PHPUnit_Framework_TestSuite->addTestFiles() /wwwroot/php/lib/php/PHPUnit/Util/Configuration.php:860
+[11-Jul-2013 08:34:49 UTC] PHP   8. PHPUnit_Framework_TestSuite->addTestFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:416
+[11-Jul-2013 08:34:49 UTC] PHP   9. PHPUnit_Framework_TestSuite->addTestSuite() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:389
+[11-Jul-2013 08:34:49 UTC] PHP  10. PHPUnit_Framework_TestSuite->__construct() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:315
+[11-Jul-2013 08:34:49 UTC] PHP  11. PHPUnit_Framework_TestSuite->addTestMethod() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:212
+[11-Jul-2013 08:34:49 UTC] PHP  12. PHPUnit_Framework_TestSuite::createTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:834
+[11-Jul-2013 08:34:49 UTC] PHP  13. PHPUnit_Util_Test::getProvidedData() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:481
+[11-Jul-2013 08:34:49 UTC] PHP  14. ReflectionMethod->invoke() /wwwroot/php/lib/php/PHPUnit/Util/Test.php:262
+[11-Jul-2013 08:34:49 UTC] PHP  15. Xi\Filelib\Tests\File\FileOperatorTest->provideCommandMethods() /wwwroot/php/lib/php/PHPUnit/Util/Test.php:262
+[11-Jul-2013 08:39:12 UTC] PHP Fatal error:  Undefined class constant 'COMMAND_PUBLISH' in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 596
+[11-Jul-2013 08:39:12 UTC] PHP Stack trace:
+[11-Jul-2013 08:39:12 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[11-Jul-2013 08:39:12 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[11-Jul-2013 08:39:12 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[11-Jul-2013 08:39:12 UTC] PHP   4. PHPUnit_TextUI_Command->handleArguments() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:138
+[11-Jul-2013 08:39:12 UTC] PHP   5. PHPUnit_Util_Configuration->getTestSuiteConfiguration() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:657
+[11-Jul-2013 08:39:12 UTC] PHP   6. PHPUnit_Util_Configuration->getTestSuite() /wwwroot/php/lib/php/PHPUnit/Util/Configuration.php:776
+[11-Jul-2013 08:39:12 UTC] PHP   7. PHPUnit_Framework_TestSuite->addTestFiles() /wwwroot/php/lib/php/PHPUnit/Util/Configuration.php:860
+[11-Jul-2013 08:39:12 UTC] PHP   8. PHPUnit_Framework_TestSuite->addTestFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:416
+[11-Jul-2013 08:39:12 UTC] PHP   9. PHPUnit_Framework_TestSuite->addTestSuite() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:389
+[11-Jul-2013 08:39:12 UTC] PHP  10. PHPUnit_Framework_TestSuite->__construct() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:315
+[11-Jul-2013 08:39:12 UTC] PHP  11. PHPUnit_Framework_TestSuite->addTestMethod() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:212
+[11-Jul-2013 08:39:12 UTC] PHP  12. PHPUnit_Framework_TestSuite::createTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:834
+[11-Jul-2013 08:39:12 UTC] PHP  13. PHPUnit_Util_Test::getProvidedData() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:481
+[11-Jul-2013 08:39:12 UTC] PHP  14. ReflectionMethod->invoke() /wwwroot/php/lib/php/PHPUnit/Util/Test.php:262
+[11-Jul-2013 08:39:12 UTC] PHP  15. Xi\Filelib\Tests\File\FileOperatorTest->provideCommandMethods() /wwwroot/php/lib/php/PHPUnit/Util/Test.php:262
+[11-Jul-2013 08:39:27 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_06ba5826::getPublisher() in /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php on line 81
+[11-Jul-2013 08:39:27 UTC] PHP Stack trace:
+[11-Jul-2013 08:39:27 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[11-Jul-2013 08:39:27 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[11-Jul-2013 08:39:27 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[11-Jul-2013 08:39:27 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[11-Jul-2013 08:39:27 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[11-Jul-2013 08:39:27 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[11-Jul-2013 08:39:27 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[11-Jul-2013 08:39:27 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[11-Jul-2013 08:39:27 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[11-Jul-2013 08:39:27 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[11-Jul-2013 08:39:27 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[11-Jul-2013 08:39:27 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[11-Jul-2013 08:39:27 UTC] PHP  13. Xi\Filelib\Tests\AbstractOperatorTest->getPublisherShouldDelegateToFilelib() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[11-Jul-2013 08:39:27 UTC] PHP  14. Xi\Filelib\AbstractOperator->getPublisher() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/AbstractOperatorTest.php:66
+[11-Jul-2013 09:30:10 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_2438d1c9::setBackend() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 246
+[11-Jul-2013 09:30:10 UTC] PHP Stack trace:
+[11-Jul-2013 09:30:10 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[11-Jul-2013 09:30:10 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[11-Jul-2013 09:30:10 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[11-Jul-2013 09:30:10 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[11-Jul-2013 09:30:10 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[11-Jul-2013 09:30:10 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[11-Jul-2013 09:30:10 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[11-Jul-2013 09:30:10 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[11-Jul-2013 09:30:10 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[11-Jul-2013 09:30:10 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[11-Jul-2013 09:30:10 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[11-Jul-2013 09:30:10 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[11-Jul-2013 09:30:10 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->findShouldReturnFalseIfFileIsNotFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[11-Jul-2013 09:31:05 UTC] PHP Fatal error:  Call to a member function findById() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php on line 156
+[11-Jul-2013 09:31:05 UTC] PHP Stack trace:
+[11-Jul-2013 09:31:05 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[11-Jul-2013 09:31:05 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[11-Jul-2013 09:31:05 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[11-Jul-2013 09:31:05 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[11-Jul-2013 09:31:05 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[11-Jul-2013 09:31:05 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[11-Jul-2013 09:31:05 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[11-Jul-2013 09:31:05 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[11-Jul-2013 09:31:05 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[11-Jul-2013 09:31:05 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[11-Jul-2013 09:31:05 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[11-Jul-2013 09:31:05 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[11-Jul-2013 09:31:05 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->findShouldReturnFalseIfFileIsNotFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[11-Jul-2013 09:31:05 UTC] PHP  14. Xi\Filelib\File\FileOperator->find() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php:246
+[12-Jul-2013 18:02:01 UTC] PHP Fatal error:  Call to a member function findById() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php on line 156
+[12-Jul-2013 18:02:01 UTC] PHP Stack trace:
+[12-Jul-2013 18:02:01 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:02:01 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:02:01 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:02:01 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:02:01 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:02:01 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:02:01 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:02:01 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:02:01 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:02:01 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:02:01 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:02:01 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:02:01 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->findShouldReturnFalseIfFileIsNotFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:02:01 UTC] PHP  14. Xi\Filelib\File\FileOperator->find() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php:247
+[12-Jul-2013 18:03:12 UTC] PHP Fatal error:  Call to a member function findById() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php on line 156
+[12-Jul-2013 18:03:12 UTC] PHP Stack trace:
+[12-Jul-2013 18:03:12 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:03:12 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:03:12 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:03:12 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:03:12 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:03:12 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:03:12 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:03:12 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:03:12 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:03:12 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:03:12 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:03:12 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:03:12 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->findShouldReturnFalseIfFileIsNotFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:03:12 UTC] PHP  14. Xi\Filelib\File\FileOperator->find() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php:247
+[12-Jul-2013 18:10:39 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_880614ff::setEventDispatcher() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 262
+[12-Jul-2013 18:10:39 UTC] PHP Stack trace:
+[12-Jul-2013 18:10:39 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:10:39 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:10:39 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:10:39 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:10:39 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:10:39 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:10:39 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:10:39 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:10:39 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:10:39 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:10:39 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:10:39 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:10:39 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->findShouldReturnFileInstanceIfFileIsFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:11:42 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_ee46b745::setBackend() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 271
+[12-Jul-2013 18:11:42 UTC] PHP Stack trace:
+[12-Jul-2013 18:11:42 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:11:42 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:11:42 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:11:42 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:11:42 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:11:42 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:11:42 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:11:42 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:11:42 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:11:42 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:11:42 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:11:42 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:11:42 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->findShouldReturnFileInstanceIfFileIsFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:12:21 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_1e7a67d9::setEventDispatcher() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 313
+[12-Jul-2013 18:12:21 UTC] PHP Stack trace:
+[12-Jul-2013 18:12:21 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:12:21 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:12:21 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:12:21 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:12:21 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:12:21 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:12:21 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:12:21 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:12:21 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:12:21 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:12:21 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:12:21 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:12:21 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->findByFilenameShouldReturnFileInstanceIfFileIsFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:12:58 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_85c958a9::setEventDispatcher() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 344
+[12-Jul-2013 18:12:58 UTC] PHP Stack trace:
+[12-Jul-2013 18:12:58 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:12:58 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:12:58 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:12:58 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:12:58 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:12:58 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:12:58 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:12:58 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:12:58 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:12:58 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:12:58 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:12:58 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:12:58 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->findAllShouldReturnEmptyIfNoFilesAreFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:14:35 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_f9b3ec60::setEventDispatcher() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 366
+[12-Jul-2013 18:14:35 UTC] PHP Stack trace:
+[12-Jul-2013 18:14:35 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:14:35 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:14:35 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:14:35 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:14:35 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:14:35 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:14:35 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:14:35 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:14:35 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:14:35 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:14:35 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:14:35 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:14:35 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->findAllShouldReturnAnArrayOfFileInstancesIfFilesAreFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:15:54 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\File\FileOperator::getMimeTypeResolver() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 411
+[12-Jul-2013 18:15:54 UTC] PHP Stack trace:
+[12-Jul-2013 18:15:54 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:15:54 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:15:54 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:15:54 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:15:54 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:15:54 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:15:54 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:15:54 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:15:54 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:15:54 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:15:54 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:15:54 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:15:54 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->typeResolverShouldDefaultToStupid() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:17:25 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\Tests\File\FileProfileTest::getFileOperatorMock() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileProfileTest.php on line 24
+[12-Jul-2013 18:17:25 UTC] PHP Stack trace:
+[12-Jul-2013 18:17:25 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:17:25 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:17:25 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:17:25 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:17:25 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:17:25 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:17:25 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:17:25 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:17:25 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:17:25 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:17:25 UTC] PHP  11. Xi\Filelib\Tests\File\FileProfileTest->setUp() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:821
+[12-Jul-2013 18:18:15 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\Tests\File\FileProfileTest::getFileOperatorMock() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileProfileTest.php on line 24
+[12-Jul-2013 18:18:15 UTC] PHP Stack trace:
+[12-Jul-2013 18:18:15 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:18:15 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:18:15 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:18:15 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:18:15 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:18:15 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:18:15 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:18:15 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:18:15 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:18:15 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:18:15 UTC] PHP  11. Xi\Filelib\Tests\File\FileProfileTest->setUp() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:821
+[12-Jul-2013 18:19:10 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\File\FileProfile::setIdentifier() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileProfileTest.php on line 65
+[12-Jul-2013 18:19:10 UTC] PHP Stack trace:
+[12-Jul-2013 18:19:10 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:19:10 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:19:10 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:19:10 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:19:10 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:19:10 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:19:10 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:19:10 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:19:10 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:19:10 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:19:10 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:19:10 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:19:10 UTC] PHP  13. Xi\Filelib\Tests\File\FileProfileTest->onPluginAddShouldAddPluginIfPluginHasProfile() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:22:07 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\File\FileProfile::setIdentifier() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileProfileTest.php on line 80
+[12-Jul-2013 18:22:07 UTC] PHP Stack trace:
+[12-Jul-2013 18:22:07 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:22:07 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:22:07 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:22:07 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:22:07 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:22:07 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:22:07 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:22:07 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:22:07 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:22:07 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:22:07 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:22:07 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:22:07 UTC] PHP  13. Xi\Filelib\Tests\File\FileProfileTest->onPluginAddShouldNotAddPluginIfPluginDoesNotHaveProfile() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:22:19 UTC] PHP Fatal error:  Call to a member function getType() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileProfile.php on line 169
+[12-Jul-2013 18:22:19 UTC] PHP Stack trace:
+[12-Jul-2013 18:22:19 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:22:19 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:22:19 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:22:19 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:22:19 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:22:19 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:22:19 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:22:19 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:22:19 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:22:19 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:22:19 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:22:19 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:22:19 UTC] PHP  13. Xi\Filelib\Tests\File\FileProfileTest->fileVersionsShouldRegisterCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:22:19 UTC] PHP  14. Xi\Filelib\File\FileProfile->getFileVersions() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileProfileTest.php:140
+[12-Jul-2013 18:26:54 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_68541d8b::setBackend() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Folder/Command/CreateFolderCommandTest.php on line 90
+[12-Jul-2013 18:26:54 UTC] PHP Stack trace:
+[12-Jul-2013 18:26:54 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:26:54 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:26:54 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:26:54 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:26:54 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:26:54 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:26:54 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:26:54 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:26:54 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:26:54 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:26:54 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:26:54 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:26:54 UTC] PHP  13. Xi\Filelib\Tests\Folder\Command\CreateFolderCommandTest->commandShouldCreateFolder() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:31:45 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_4fde9ae7::setBackend() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Folder/Command/UpdateFolderCommandTest.php on line 135
+[12-Jul-2013 18:31:45 UTC] PHP Stack trace:
+[12-Jul-2013 18:31:45 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:31:45 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:31:45 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:31:45 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:31:45 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:31:45 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:31:45 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:31:45 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:31:45 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:31:45 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:31:45 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:31:45 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:31:45 UTC] PHP  13. Xi\Filelib\Tests\Folder\Command\UpdateFolderCommandTest->updateShouldUpdateFoldersAndFilesRecursively() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:32:42 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_92547f1b::setBackend() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Folder/FolderOperatorTest.php on line 99
+[12-Jul-2013 18:32:42 UTC] PHP Stack trace:
+[12-Jul-2013 18:32:42 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:32:42 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:32:42 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:32:42 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:32:42 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:32:42 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:32:42 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:32:42 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:32:42 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:32:42 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:32:42 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:32:42 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:32:42 UTC] PHP  13. Xi\Filelib\Tests\Folder\FolderOperatorTest->findShouldReturnFalseIfFileIsNotFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:32:52 UTC] PHP Fatal error:  Call to a member function findById() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/Folder/FolderOperator.php on line 155
+[12-Jul-2013 18:32:52 UTC] PHP Stack trace:
+[12-Jul-2013 18:32:52 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:32:52 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:32:52 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:32:52 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:32:52 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:32:52 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:32:52 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:32:52 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:32:52 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:32:52 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:32:52 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:32:52 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:32:52 UTC] PHP  13. Xi\Filelib\Tests\Folder\FolderOperatorTest->findShouldReturnFalseIfFileIsNotFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:32:52 UTC] PHP  14. Xi\Filelib\Folder\FolderOperator->find() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Folder/FolderOperatorTest.php:106
+[12-Jul-2013 18:37:21 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_2622de18::setBackend() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Folder/FolderOperatorTest.php on line 236
+[12-Jul-2013 18:37:21 UTC] PHP Stack trace:
+[12-Jul-2013 18:37:21 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:37:21 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:37:21 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:37:21 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:37:21 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:37:21 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:37:21 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:37:21 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:37:21 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:37:21 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:37:21 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:37:21 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:37:21 UTC] PHP  13. Xi\Filelib\Tests\Folder\FolderOperatorTest->findParentFolderShouldReturnFalseWhenParentIsNotFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:37:31 UTC] PHP Fatal error:  Call to undefined method Mock_FileLibrary_35049ba7::setBackend() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Folder/FolderOperatorTest.php on line 261
+[12-Jul-2013 18:37:31 UTC] PHP Stack trace:
+[12-Jul-2013 18:37:31 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:37:31 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:37:31 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:37:31 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:37:31 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:37:31 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:37:31 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:37:31 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:37:31 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:37:31 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:37:31 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[12-Jul-2013 18:37:31 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:37:31 UTC] PHP  13. Xi\Filelib\Tests\Folder\FolderOperatorTest->findParentFolderShouldReturnFolderWhenParentIsFound() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[12-Jul-2013 18:42:39 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tool\Transliterator\StupidTransliterator' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Linker/BeautifurlLinkerTest.php on line 86
+[12-Jul-2013 18:42:39 UTC] PHP Stack trace:
+[12-Jul-2013 18:42:39 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[12-Jul-2013 18:42:39 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[12-Jul-2013 18:42:39 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[12-Jul-2013 18:42:39 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[12-Jul-2013 18:42:39 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[12-Jul-2013 18:42:39 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:42:39 UTC] PHP   7. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[12-Jul-2013 18:42:39 UTC] PHP   8. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[12-Jul-2013 18:42:39 UTC] PHP   9. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[12-Jul-2013 18:42:39 UTC] PHP  10. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[12-Jul-2013 18:42:39 UTC] PHP  11. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[12-Jul-2013 18:42:39 UTC] PHP  12. Xi\Filelib\Tests\Linker\BeautifurlLinkerTest->setUp() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:821
+[19-Jul-2013 09:23:59 UTC] PHP Fatal error:  Call to a member function getVersionProvider() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Filesystem/AbstractFilesystemPublisher.php on line 75
+[19-Jul-2013 09:23:59 UTC] PHP Stack trace:
+[19-Jul-2013 09:23:59 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 09:23:59 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 09:23:59 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 09:23:59 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 09:23:59 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 09:23:59 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 09:23:59 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 09:23:59 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 09:23:59 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 09:23:59 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 09:23:59 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 09:23:59 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 09:23:59 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Filesystem\AbstractFilesystemPublisherTest->getUrlVersionShouldReturnCorrectUrlVersion() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 09:23:59 UTC] PHP  14. Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher->getUrlVersion() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Filesystem/AbstractFilesystemPublisherTest.php:207
+[19-Jul-2013 09:23:59 UTC] PHP  15. Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisher->getVersionProvider() /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Filesystem/AbstractFilesystemPublisher.php:208
+[19-Jul-2013 09:46:17 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\File\File::getLink() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileTest.php on line 67
+[19-Jul-2013 09:46:17 UTC] PHP Stack trace:
+[19-Jul-2013 09:46:17 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 09:46:17 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 09:46:17 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 09:46:17 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 09:46:17 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 09:46:17 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 09:46:17 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 09:46:17 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 09:46:17 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 09:46:17 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 09:46:17 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 09:46:17 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 09:46:17 UTC] PHP  13. Xi\Filelib\Tests\File\FileTest->gettersAndSettersShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 09:48:40 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\File\File::getLink() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileTest.php on line 149
+[19-Jul-2013 09:48:40 UTC] PHP Stack trace:
+[19-Jul-2013 09:48:40 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 09:48:40 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 09:48:40 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 09:48:40 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 09:48:40 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 09:48:40 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 09:48:40 UTC] PHP   7. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 09:48:40 UTC] PHP   8. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 09:48:40 UTC] PHP   9. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 09:48:40 UTC] PHP  10. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 09:48:40 UTC] PHP  11. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 09:48:40 UTC] PHP  12. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 09:48:40 UTC] PHP  13. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 09:48:40 UTC] PHP  14. Xi\Filelib\Tests\File\FileTest->fromArrayShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 09:49:35 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\File\File::getLink() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileTest.php on line 149
+[19-Jul-2013 09:49:35 UTC] PHP Stack trace:
+[19-Jul-2013 09:49:35 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 09:49:35 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 09:49:35 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 09:49:35 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 09:49:35 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 09:49:35 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 09:49:35 UTC] PHP   7. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 09:49:35 UTC] PHP   8. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 09:49:35 UTC] PHP   9. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 09:49:35 UTC] PHP  10. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 09:49:35 UTC] PHP  11. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 09:49:35 UTC] PHP  12. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 09:49:35 UTC] PHP  13. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 09:49:35 UTC] PHP  14. Xi\Filelib\Tests\File\FileTest->fromArrayShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 11:29:54 UTC] PHP Fatal error:  Interface 'Xi\Filelib\Publisher\Linker\Linker' not found in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Linker/AbstractLinker.php on line 20
+[19-Jul-2013 11:29:54 UTC] PHP Stack trace:
+[19-Jul-2013 11:29:54 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 11:29:54 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 11:29:54 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 11:29:54 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 11:29:54 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 11:29:54 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 11:29:54 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 11:29:54 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 11:29:54 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 11:29:54 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 11:29:54 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 11:29:54 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 11:29:54 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Linker\AbstractLinkerTest->implementsLinker() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 11:29:54 UTC] PHP  14. class_implements() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Linker/AbstractLinkerTest.php:26
+[19-Jul-2013 11:29:54 UTC] PHP  15. Composer\Autoload\ClassLoader->loadClass() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Linker/AbstractLinkerTest.php:0
+[19-Jul-2013 11:29:54 UTC] PHP  16. include() /wwwroot/xi-filelib/vendor/composer/ClassLoader.php:185
+[19-Jul-2013 11:29:58 UTC] PHP Fatal error:  Interface 'Xi\Filelib\Publisher\Linker\Linker' not found in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Linker/AbstractLinker.php on line 20
+[19-Jul-2013 11:29:58 UTC] PHP Stack trace:
+[19-Jul-2013 11:29:58 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 11:29:58 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 11:29:58 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 11:29:58 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 11:29:58 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 11:29:58 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 11:29:58 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 11:29:58 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 11:29:58 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 11:29:58 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 11:29:58 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 11:29:58 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 11:29:58 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Linker\AbstractLinkerTest->implementsLinker() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 11:29:58 UTC] PHP  14. class_implements() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Linker/AbstractLinkerTest.php:26
+[19-Jul-2013 11:29:58 UTC] PHP  15. Composer\Autoload\ClassLoader->loadClass() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Linker/AbstractLinkerTest.php:0
+[19-Jul-2013 11:29:58 UTC] PHP  16. include() /wwwroot/xi-filelib/vendor/composer/ClassLoader.php:185
+[19-Jul-2013 11:31:20 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\Publisher\Filesystem\TestCase' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/CopyFilesystemPublisherTest.php on line 10
+[19-Jul-2013 11:31:20 UTC] PHP Stack trace:
+[19-Jul-2013 11:31:20 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 11:31:20 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 11:31:20 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 11:31:20 UTC] PHP   4. PHPUnit_Runner_BaseTestRunner->getTest() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:150
+[19-Jul-2013 11:31:20 UTC] PHP   5. PHPUnit_Framework_TestSuite->addTestFiles() /wwwroot/php/lib/php/PHPUnit/Runner/BaseTestRunner.php:96
+[19-Jul-2013 11:31:20 UTC] PHP   6. PHPUnit_Framework_TestSuite->addTestFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:416
+[19-Jul-2013 11:31:20 UTC] PHP   7. PHPUnit_Util_Fileloader::checkAndLoad() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:355
+[19-Jul-2013 11:31:20 UTC] PHP   8. PHPUnit_Util_Fileloader::load() /wwwroot/php/lib/php/PHPUnit/Util/Fileloader.php:76
+[19-Jul-2013 11:31:20 UTC] PHP   9. include_once() /wwwroot/php/lib/php/PHPUnit/Util/Fileloader.php:92
+[19-Jul-2013 11:35:23 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\Publisher\Filesystem\TestCase' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/CopyFilesystemPublisherTest.php on line 10
+[19-Jul-2013 11:35:23 UTC] PHP Stack trace:
+[19-Jul-2013 11:35:23 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 11:35:23 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 11:35:23 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 11:35:23 UTC] PHP   4. PHPUnit_Runner_BaseTestRunner->getTest() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:150
+[19-Jul-2013 11:35:23 UTC] PHP   5. PHPUnit_Framework_TestSuite->addTestFiles() /wwwroot/php/lib/php/PHPUnit/Runner/BaseTestRunner.php:96
+[19-Jul-2013 11:35:23 UTC] PHP   6. PHPUnit_Framework_TestSuite->addTestFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:416
+[19-Jul-2013 11:35:23 UTC] PHP   7. PHPUnit_Util_Fileloader::checkAndLoad() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:355
+[19-Jul-2013 11:35:23 UTC] PHP   8. PHPUnit_Util_Fileloader::load() /wwwroot/php/lib/php/PHPUnit/Util/Fileloader.php:76
+[19-Jul-2013 11:35:23 UTC] PHP   9. include_once() /wwwroot/php/lib/php/PHPUnit/Util/Fileloader.php:92
+[19-Jul-2013 13:22:44 UTC] PHP Fatal error:  Call to undefined method Mock_AbstractFilesystemPublisherAdapter_2ffb4c41::getDirectoryPermission() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/AbstractFilesystemPublisherAdapterTest.php on line 44
+[19-Jul-2013 13:22:44 UTC] PHP Stack trace:
+[19-Jul-2013 13:22:44 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 13:22:44 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 13:22:44 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 13:22:44 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 13:22:44 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 13:22:44 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 13:22:44 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 13:22:44 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 13:22:44 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 13:22:44 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 13:22:44 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 13:22:44 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:22:44 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Adapter\Filesystem\AbstractFilesystemPublisherAdapterTest->gettersAndSettersShouldWorkCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:23:31 UTC] PHP Fatal error:  Cannot redeclare class Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisherAdapter in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Adapter/Filesystem/AbstractFilesystemPublisherAdapter.php on line 26
+[19-Jul-2013 13:23:31 UTC] PHP Stack trace:
+[19-Jul-2013 13:23:31 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 13:23:31 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 13:23:31 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 13:23:31 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 13:23:31 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 13:23:31 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 13:23:31 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 13:23:31 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 13:23:31 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 13:23:31 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 13:23:31 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 13:23:31 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:23:31 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Adapter\Filesystem\AbstractFilesystemPublisherAdapterTest->gettersAndSettersShouldWorkCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:23:31 UTC] PHP  14. PHPUnit_Framework_MockObject_MockBuilder->getMock() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/AbstractFilesystemPublisherAdapterTest.php:42
+[19-Jul-2013 13:23:31 UTC] PHP  15. PHPUnit_Framework_TestCase->getMock() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/MockBuilder.php:130
+[19-Jul-2013 13:23:31 UTC] PHP  16. PHPUnit_Framework_MockObject_Generator::getMock() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:1311
+[19-Jul-2013 13:23:31 UTC] PHP  17. PHPUnit_Framework_MockObject_Generator::generate() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:207
+[19-Jul-2013 13:23:31 UTC] PHP  18. PHPUnit_Framework_MockObject_Generator::generateMock() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:400
+[19-Jul-2013 13:23:31 UTC] PHP  19. interface_exists() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:529
+[19-Jul-2013 13:23:31 UTC] PHP  20. Composer\Autoload\ClassLoader->loadClass() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:0
+[19-Jul-2013 13:23:31 UTC] PHP  21. include() /wwwroot/xi-filelib/vendor/composer/ClassLoader.php:185
+[19-Jul-2013 13:23:49 UTC] PHP Fatal error:  Cannot redeclare class Xi\Filelib\Publisher\Filesystem\AbstractFilesystemPublisherAdapter in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Adapter/Filesystem/AbstractFilesystemPublisherAdapter.php on line 26
+[19-Jul-2013 13:23:49 UTC] PHP Stack trace:
+[19-Jul-2013 13:23:49 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 13:23:49 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 13:23:49 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 13:23:49 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 13:23:49 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 13:23:49 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 13:23:49 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 13:23:49 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 13:23:49 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 13:23:49 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 13:23:49 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 13:23:49 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:23:49 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Adapter\Filesystem\AbstractFilesystemPublisherAdapterTest->gettersAndSettersShouldWorkCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:23:49 UTC] PHP  14. PHPUnit_Framework_MockObject_MockBuilder->getMock() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/AbstractFilesystemPublisherAdapterTest.php:42
+[19-Jul-2013 13:23:49 UTC] PHP  15. PHPUnit_Framework_TestCase->getMock() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/MockBuilder.php:130
+[19-Jul-2013 13:23:49 UTC] PHP  16. PHPUnit_Framework_MockObject_Generator::getMock() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:1311
+[19-Jul-2013 13:23:49 UTC] PHP  17. PHPUnit_Framework_MockObject_Generator::generate() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:207
+[19-Jul-2013 13:23:49 UTC] PHP  18. PHPUnit_Framework_MockObject_Generator::generateMock() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:400
+[19-Jul-2013 13:23:49 UTC] PHP  19. interface_exists() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:529
+[19-Jul-2013 13:23:49 UTC] PHP  20. Composer\Autoload\ClassLoader->loadClass() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:0
+[19-Jul-2013 13:23:49 UTC] PHP  21. include() /wwwroot/xi-filelib/vendor/composer/ClassLoader.php:185
+[19-Jul-2013 13:24:37 UTC] PHP Fatal error:  Class Mock_AbstractFilesystemPublisherAdapter_64563625 contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Xi\Filelib\Publisher\PublisherAdapter::setDependencies) in /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php(231) : eval()'d code on line 188
+[19-Jul-2013 13:24:37 UTC] PHP Stack trace:
+[19-Jul-2013 13:24:37 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 13:24:37 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 13:24:37 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 13:24:37 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 13:24:37 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 13:24:37 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 13:24:37 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 13:24:37 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 13:24:37 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 13:24:37 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 13:24:37 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 13:24:37 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:24:37 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Adapter\Filesystem\AbstractFilesystemPublisherAdapterTest->gettersAndSettersShouldWorkCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:24:37 UTC] PHP  14. PHPUnit_Framework_MockObject_MockBuilder->getMock() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/AbstractFilesystemPublisherAdapterTest.php:42
+[19-Jul-2013 13:24:37 UTC] PHP  15. PHPUnit_Framework_TestCase->getMock() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/MockBuilder.php:130
+[19-Jul-2013 13:24:37 UTC] PHP  16. PHPUnit_Framework_MockObject_Generator::getMock() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:1311
+[19-Jul-2013 13:24:37 UTC] PHP  17. PHPUnit_Framework_MockObject_Generator::getObject() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:216
+[19-Jul-2013 13:24:37 UTC] PHP  18. eval() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:231
+[19-Jul-2013 13:26:56 UTC] PHP Fatal error:  Class Mock_AbstractFilesystemPublisherAdapter_88258b0f contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Xi\Filelib\Publisher\PublisherAdapter::setDependencies) in /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php(231) : eval()'d code on line 166
+[19-Jul-2013 13:26:56 UTC] PHP Stack trace:
+[19-Jul-2013 13:26:56 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 13:26:56 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 13:26:56 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 13:26:56 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 13:26:56 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 13:26:56 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 13:26:56 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 13:26:56 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 13:26:56 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 13:26:56 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 13:26:56 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 13:26:56 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:26:56 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Adapter\Filesystem\AbstractFilesystemPublisherAdapterTest->getUrlShouldReturnCorrectUrl() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 13:26:56 UTC] PHP  14. PHPUnit_Framework_MockObject_MockBuilder->getMock() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/AbstractFilesystemPublisherAdapterTest.php:125
+[19-Jul-2013 13:26:56 UTC] PHP  15. PHPUnit_Framework_TestCase->getMock() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/MockBuilder.php:130
+[19-Jul-2013 13:26:56 UTC] PHP  16. PHPUnit_Framework_MockObject_Generator::getMock() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:1311
+[19-Jul-2013 13:26:56 UTC] PHP  17. PHPUnit_Framework_MockObject_Generator::getObject() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:216
+[19-Jul-2013 13:26:56 UTC] PHP  18. eval() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:231
+[19-Jul-2013 14:08:37 UTC] PHP Fatal error:  Class Xi\Filelib\Tests\Publisher\Adapter\Filesystem\CopyFilesystemPublisherAdapterTest contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Xi\Filelib\Tests\Publisher\Adapter\Filesystem\TestCase::getAdapter) in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/CopyFilesystemPublisherAdapterTest.php on line 10
+[19-Jul-2013 14:08:37 UTC] PHP Stack trace:
+[19-Jul-2013 14:08:37 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 14:08:37 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 14:08:37 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 14:08:37 UTC] PHP   4. PHPUnit_Runner_BaseTestRunner->getTest() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:150
+[19-Jul-2013 14:08:37 UTC] PHP   5. PHPUnit_Framework_TestSuite->addTestFiles() /wwwroot/php/lib/php/PHPUnit/Runner/BaseTestRunner.php:96
+[19-Jul-2013 14:08:37 UTC] PHP   6. PHPUnit_Framework_TestSuite->addTestFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:416
+[19-Jul-2013 14:08:37 UTC] PHP   7. PHPUnit_Util_Fileloader::checkAndLoad() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:355
+[19-Jul-2013 14:08:37 UTC] PHP   8. PHPUnit_Util_Fileloader::load() /wwwroot/php/lib/php/PHPUnit/Util/Fileloader.php:76
+[19-Jul-2013 14:08:37 UTC] PHP   9. include_once() /wwwroot/php/lib/php/PHPUnit/Util/Fileloader.php:92
+[19-Jul-2013 14:13:21 UTC] PHP Fatal error:  Call to a member function retrieve() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Adapter/Filesystem/CopyFilesystemPublisherAdapter.php on line 49
+[19-Jul-2013 14:13:21 UTC] PHP Stack trace:
+[19-Jul-2013 14:13:21 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 14:13:21 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 14:13:21 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 14:13:21 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 14:13:21 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 14:13:21 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 14:13:21 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 14:13:21 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 14:13:21 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 14:13:21 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 14:13:21 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 14:13:21 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 14:13:21 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Adapter\Filesystem\CopyFilesystemPublisherAdapterTest->publishShouldPublishFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 14:13:21 UTC] PHP  14. Xi\Filelib\Publisher\Adapter\Filesystem\CopyFilesystemPublisherAdapter->publish() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/CopyFilesystemPublisherAdapterTest.php:108
+[19-Jul-2013 14:16:16 UTC] PHP Fatal error:  Call to a member function retrieve() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Adapter/Filesystem/CopyFilesystemPublisherAdapter.php on line 49
+[19-Jul-2013 14:16:16 UTC] PHP Stack trace:
+[19-Jul-2013 14:16:16 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 14:16:16 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 14:16:16 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 14:16:16 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 14:16:16 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 14:16:16 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 14:16:16 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 14:16:16 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 14:16:16 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 14:16:16 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 14:16:16 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 14:16:16 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 14:16:16 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Adapter\Filesystem\CopyFilesystemPublisherAdapterTest->publishShouldPublishFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 14:16:16 UTC] PHP  14. Xi\Filelib\Publisher\Adapter\Filesystem\CopyFilesystemPublisherAdapter->publish() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/CopyFilesystemPublisherAdapterTest.php:108
+[19-Jul-2013 14:22:52 UTC] PHP Fatal error:  Class 'Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisherAdapter' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/SymlinkFilesystemPublisherAdapterTest.php on line 16
+[19-Jul-2013 14:22:52 UTC] PHP Stack trace:
+[19-Jul-2013 14:22:52 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 14:22:52 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 14:22:52 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 14:22:52 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 14:22:52 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 14:22:52 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 14:22:52 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 14:22:52 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 14:22:52 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 14:22:52 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 14:22:52 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 14:22:52 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 14:22:52 UTC] PHP  13. Xi\Filelib\Tests\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherTest->gettersAndSettersShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 14:31:12 UTC] PHP Fatal error:  Call to a member function retrieve() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Adapter/Filesystem/SymlinkFilesystemPublisherAdapter.php on line 80
+[19-Jul-2013 14:31:12 UTC] PHP Stack trace:
+[19-Jul-2013 14:31:12 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 14:31:12 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 14:31:12 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 14:31:12 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 14:31:12 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 14:31:12 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 14:31:12 UTC] PHP   7. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 14:31:12 UTC] PHP   8. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 14:31:12 UTC] PHP   9. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 14:31:12 UTC] PHP  10. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 14:31:12 UTC] PHP  11. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 14:31:12 UTC] PHP  12. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 14:31:12 UTC] PHP  13. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 14:31:12 UTC] PHP  14. Xi\Filelib\Tests\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapterTest->getRelativePathToShouldReturnRelativePathToFile() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 14:31:12 UTC] PHP  15. Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter->getRelativePathTo() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Publisher/Adapter/Filesystem/SymlinkFilesystemPublisherAdapterTest.php:114
+[19-Jul-2013 16:07:17 UTC] PHP Fatal error:  Class 'Xi\Filelib\Plugin\Image\Events' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/ChangeFormatPluginTest.php on line 41
+[19-Jul-2013 16:07:17 UTC] PHP Stack trace:
+[19-Jul-2013 16:07:17 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:07:17 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:07:17 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:07:17 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:07:17 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:07:17 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:07:17 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:07:17 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:07:17 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:07:17 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:07:17 UTC] PHP  11. Xi\Filelib\Tests\Plugin\Image\ChangeFormatPluginTest->setUp() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:821
+[19-Jul-2013 16:20:57 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\File\Command\Events' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/Command/AfterUploadFileCommandTest.php on line 50
+[19-Jul-2013 16:20:57 UTC] PHP Stack trace:
+[19-Jul-2013 16:20:57 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:20:57 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:20:57 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:20:57 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:20:57 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:20:57 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:20:57 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:20:57 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:20:57 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:20:57 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:20:57 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:20:57 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:20:57 UTC] PHP  13. Xi\Filelib\Tests\File\Command\AfterUploadFileCommandTest->commandShouldUploadAndDelegateCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:23:11 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\File\Events' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 184
+[19-Jul-2013 16:23:11 UTC] PHP Stack trace:
+[19-Jul-2013 16:23:11 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:23:11 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:23:11 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:23:11 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:23:11 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:23:11 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:23:11 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:23:11 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:23:11 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:23:11 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:23:11 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:23:11 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:23:11 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->addProfileShouldAddProfile() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:25:47 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\Backend\Events' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Backend/BackendTest.php on line 426
+[19-Jul-2013 16:25:47 UTC] PHP Stack trace:
+[19-Jul-2013 16:25:47 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:25:47 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:25:47 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:25:47 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:25:47 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:25:47 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:25:47 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:25:47 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:25:47 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:25:47 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:25:47 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:25:47 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:25:47 UTC] PHP  13. Xi\Filelib\Tests\Backend\BackendTest->deleteResourceShouldDelegateToPlatformAndRemoveFromIdentityMap() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:26:07 UTC] PHP Fatal error:  Class 'Xi\Filelib\Backend\Events' not found in /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php on line 258
+[19-Jul-2013 16:26:07 UTC] PHP Stack trace:
+[19-Jul-2013 16:26:07 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:26:07 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:26:07 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:26:07 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:26:07 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:26:07 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:26:07 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:26:07 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:26:07 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:26:07 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:26:07 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:26:07 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:26:07 UTC] PHP  13. Xi\Filelib\Tests\Backend\BackendTest->deleteResourceShouldDelegateToPlatformAndRemoveFromIdentityMap() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:26:07 UTC] PHP  14. Xi\Filelib\Backend\Backend->deleteResource() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Backend/BackendTest.php:430
+[19-Jul-2013 16:27:35 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\File\Command\Events' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/Command/DeleteFileCommandTest.php on line 69
+[19-Jul-2013 16:27:35 UTC] PHP Stack trace:
+[19-Jul-2013 16:27:35 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:27:35 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:27:35 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:27:35 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:27:35 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:27:35 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:27:35 UTC] PHP   7. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:27:35 UTC] PHP   8. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:27:35 UTC] PHP   9. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:27:35 UTC] PHP  10. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:27:35 UTC] PHP  11. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:27:35 UTC] PHP  12. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:27:35 UTC] PHP  13. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:27:35 UTC] PHP  14. Xi\Filelib\Tests\File\Command\DeleteFileCommandTest->deleteShouldDelegateCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:29:35 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\File\Events' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileOperatorTest.php on line 184
+[19-Jul-2013 16:29:35 UTC] PHP Stack trace:
+[19-Jul-2013 16:29:35 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:29:35 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:29:35 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:29:35 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:29:35 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:29:35 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:29:35 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:29:35 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:29:35 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:29:35 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:29:35 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:29:35 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:29:35 UTC] PHP  13. Xi\Filelib\Tests\File\FileOperatorTest->addProfileShouldAddProfile() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:32:00 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\Folder\Command\Events' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Folder/Command/CreateFolderCommandTest.php on line 56
+[19-Jul-2013 16:32:00 UTC] PHP Stack trace:
+[19-Jul-2013 16:32:00 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:32:00 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:32:00 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:32:00 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:32:00 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:32:00 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:32:00 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:32:00 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:32:00 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:32:00 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:32:00 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:32:00 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:32:00 UTC] PHP  13. Xi\Filelib\Tests\Folder\Command\CreateFolderCommandTest->commandShouldCreateFolder() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:34:48 UTC] PHP Fatal error:  Class 'Xi\Filelib\File\Command\Events' not found in /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/CopyFileCommand.php on line 147
+[19-Jul-2013 16:34:48 UTC] PHP Stack trace:
+[19-Jul-2013 16:34:48 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:34:48 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:34:48 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:34:48 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:34:48 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:34:48 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:34:48 UTC] PHP   7. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:34:48 UTC] PHP   8. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:34:48 UTC] PHP   9. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:34:48 UTC] PHP  10. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:34:48 UTC] PHP  11. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:34:48 UTC] PHP  12. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:34:48 UTC] PHP  13. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:34:48 UTC] PHP  14. Xi\Filelib\Tests\File\Command\CopyFileCommandTest->commandShouldExecute() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:34:48 UTC] PHP  15. Xi\Filelib\File\Command\CopyFileCommand->execute() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/Command/CopyFileCommandTest.php:226
+[19-Jul-2013 16:43:25 UTC] PHP Fatal error:  Class 'Xi\Filelib\File\Command\Events' not found in /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UpdateFileCommand.php on line 35
+[19-Jul-2013 16:43:25 UTC] PHP Stack trace:
+[19-Jul-2013 16:43:25 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:43:25 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:43:25 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:43:25 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:43:25 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:43:25 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:43:25 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:43:25 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:43:25 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:43:25 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:43:25 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:43:25 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:43:25 UTC] PHP  13. Xi\Filelib\Tests\File\Command\UpdateFileCommandTest->updateShouldDelegateCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:43:25 UTC] PHP  14. Xi\Filelib\File\Command\UpdateFileCommand->execute() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/Command/UpdateFileCommandTest.php:86
+[19-Jul-2013 16:54:06 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\Folder\Command\Events' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Folder/Command/DeleteFolderCommandTest.php on line 67
+[19-Jul-2013 16:54:06 UTC] PHP Stack trace:
+[19-Jul-2013 16:54:06 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:54:06 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:54:06 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:54:06 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:54:06 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:54:06 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:54:06 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:54:06 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:54:06 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:54:06 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:54:06 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:54:06 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:54:06 UTC] PHP  13. Xi\Filelib\Tests\Folder\Command\DeleteFolderCommandTest->deleteShouldDeleteFoldersAndFilesRecursively() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:54:42 UTC] PHP Fatal error:  Class 'Xi\Filelib\Plugin\Events' not found in /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php on line 237
+[19-Jul-2013 16:54:42 UTC] PHP Stack trace:
+[19-Jul-2013 16:54:42 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 16:54:42 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 16:54:42 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 16:54:42 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 16:54:42 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 16:54:42 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 16:54:42 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 16:54:42 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 16:54:42 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 16:54:42 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 16:54:42 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 16:54:42 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:54:42 UTC] PHP  13. Xi\Filelib\Tests\Plugin\AbstractPluginTest->gettersAndSettersShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 16:54:42 UTC] PHP  14. PHPUnit_Framework_MockObject_MockBuilder->getMockForAbstractClass() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/AbstractPluginTest.php:35
+[19-Jul-2013 16:54:42 UTC] PHP  15. PHPUnit_Framework_TestCase->getMockForAbstractClass() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/MockBuilder.php:149
+[19-Jul-2013 16:54:42 UTC] PHP  16. PHPUnit_Framework_MockObject_Generator::getMockForAbstractClass() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:1391
+[19-Jul-2013 16:54:42 UTC] PHP  17. PHPUnit_Framework_MockObject_Generator::getMock() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:304
+[19-Jul-2013 16:54:42 UTC] PHP  18. PHPUnit_Framework_MockObject_Generator::getObject() /wwwroot/php/lib/php/PHPUnit/Framework/MockObject/Generator.php:216
+[19-Jul-2013 18:15:38 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource::getVersions() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Backend/Platform/DoctrineOrm/Entity/ResourceTest.php on line 43
+[19-Jul-2013 18:15:38 UTC] PHP Stack trace:
+[19-Jul-2013 18:15:38 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 18:15:38 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 18:15:38 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 18:15:38 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 18:15:38 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 18:15:38 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 18:15:38 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 18:15:38 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 18:15:38 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 18:15:38 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 18:15:38 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 18:15:38 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 18:15:38 UTC] PHP  13. Xi\Filelib\Tests\Backend\Platform\DoctrineOrm\Entity\ResourceTest->gettersAndSettersShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 18:16:44 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource::getVersions() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Backend/Platform/DoctrineOrm/Entity/ResourceTest.php on line 43
+[19-Jul-2013 18:16:44 UTC] PHP Stack trace:
+[19-Jul-2013 18:16:44 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 18:16:44 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 18:16:44 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 18:16:44 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 18:16:44 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 18:16:44 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 18:16:44 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 18:16:44 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 18:16:44 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 18:16:44 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 18:16:44 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 18:16:44 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 18:16:44 UTC] PHP  13. Xi\Filelib\Tests\Backend\Platform\DoctrineOrm\Entity\ResourceTest->gettersAndSettersShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 18:18:42 UTC] PHP Fatal error:  Call to undefined method Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource::getVersions() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Backend/Platform/DoctrineOrm/Entity/ResourceTest.php on line 43
+[19-Jul-2013 18:18:42 UTC] PHP Stack trace:
+[19-Jul-2013 18:18:42 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 18:18:42 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 18:18:42 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 18:18:42 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 18:18:42 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 18:18:42 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 18:18:42 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 18:18:42 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 18:18:42 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 18:18:42 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 18:18:42 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 18:18:42 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 18:18:42 UTC] PHP  13. Xi\Filelib\Tests\Backend\Platform\DoctrineOrm\Entity\ResourceTest->gettersAndSettersShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 18:46:07 UTC] PHP Fatal error:  Class 'Xi\Filelib\Tests\File\ArrayObject' not found in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/File/FileTest.php on line 186
+[19-Jul-2013 18:46:07 UTC] PHP Stack trace:
+[19-Jul-2013 18:46:07 UTC] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[19-Jul-2013 18:46:07 UTC] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[19-Jul-2013 18:46:07 UTC] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[19-Jul-2013 18:46:07 UTC] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[19-Jul-2013 18:46:07 UTC] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[19-Jul-2013 18:46:07 UTC] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[19-Jul-2013 18:46:07 UTC] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[19-Jul-2013 18:46:07 UTC] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[19-Jul-2013 18:46:07 UTC] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[19-Jul-2013 18:46:07 UTC] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[19-Jul-2013 18:46:07 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[19-Jul-2013 18:46:07 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[19-Jul-2013 18:46:07 UTC] PHP  13. Xi\Filelib\Tests\File\FileTest->toArrayShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
