@@ -57,6 +57,11 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected $fileOperator;
 
     /**
+     * @var array
+     */
+    protected $extensionReplacements = array('jpeg' => 'jpg');
+
+    /**
      * @param string $identifier
      * @param callable $providesFor
      */
@@ -231,7 +236,25 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             throw new \RuntimeException("Failed to find an extension for mime type '{$fileObj->getMimeType()}'");
         }
 
-        return array_shift($extensions);
+        $ret = array_shift($extensions);
+        return $this->doExtensionReplacement($ret);
     }
+
+    /**
+     * Apache parsings produce some unwanted results (jpeg). Switcheroo those
+     *
+     * @param string $extension
+     * @return string
+     * @todo allow user to edit / add his own replacements
+     *
+     */
+    protected function doExtensionReplacement($extension)
+    {
+        if (isset($this->extensionReplacements[$extension])) {
+            return $this->extensionReplacements[$extension];
+        }
+        return $extension;
+    }
+
 
 }

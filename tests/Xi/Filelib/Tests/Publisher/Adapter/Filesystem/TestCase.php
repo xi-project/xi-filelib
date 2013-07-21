@@ -52,7 +52,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $linker = $this->getMockedLinker();
         $linker
             ->expects($this->any())
-            ->method('getLinkVersion')
+            ->method('getLink')
             ->will(
                 $this->returnCallback(
                     function ($file, $version) {
@@ -111,7 +111,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $plinker
             ->expects($this->any())
-            ->method('getLinkVersion')
+            ->method('getLink')
             ->will(
                 $this->returnCallback(
                     function ($file, $version) use ($self) {

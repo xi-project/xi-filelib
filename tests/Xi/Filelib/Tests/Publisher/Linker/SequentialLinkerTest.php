@@ -113,23 +113,13 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
      * @test
      * @dataProvider provideFiles
      */
-    public function linkerShouldCreateProperSequentialLinks($file, $levels, $fpd, $beautifurl)
-    {
-        $linker = new SequentialLinker($levels, $fpd);
-        $this->assertEquals($beautifurl[0], $linker->getLink($file, true));
-    }
-
-    /**
-     * @test
-     * @dataProvider provideFiles
-     */
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $levels, $fpd, $beautifurl)
     {
         $linker = new SequentialLinker($levels, $fpd);
 
         $this->assertEquals(
             $beautifurl[1],
-            $linker->getLinkVersion(
+            $linker->getLink(
                 $file,
                 $this->versionProvider->getIdentifier(),
                 $this->versionProvider->getExtensionFor($file, $this->versionProvider->getIdentifier())

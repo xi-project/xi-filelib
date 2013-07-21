@@ -16,6 +16,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileCopyEvent;
+use Xi\Filelib\Events;
 
 /**
  * Automatically publishes all files

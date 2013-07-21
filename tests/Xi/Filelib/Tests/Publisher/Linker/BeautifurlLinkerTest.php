@@ -132,18 +132,6 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      * @test
      * @dataProvider provideFiles
      */
-    public function linkerShouldCreateProperBeautifurlLinks($file, $beautifurl)
-    {
-        $this->linker->setExcludeRoot(true);
-        $this->linker->setSlugify(true);
-
-        $this->assertEquals($beautifurl[0], $this->linker->getLink($file, true));
-    }
-
-    /**
-     * @test
-     * @dataProvider provideFiles
-     */
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $beautifurl)
     {
         $this->linker->setExcludeRoot(true);
@@ -161,7 +149,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals(
             $beautifurl[1],
-            $this->linker->getLinkVersion(
+            $this->linker->getLink(
                 $file,
                 $versionProvider->getIdentifier(),
                 $versionProvider->getExtensionFor($file, $versionProvider->getIdentifier())
@@ -181,10 +169,10 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
         ));
 
         $this->linker->setExcludeRoot(false);
-        $this->assertEquals('root/lussuttaja/lamantiini.lus', $this->linker->getLink($file));
+        $this->assertEquals('root/lussuttaja/lamantiini-loso.lus', $this->linker->getLink($file, 'loso', 'lus'));
 
         $this->linker->setExcludeRoot(true);
-        $this->assertEquals('lussuttaja/lamantiini.lus', $this->linker->getLink($file));
+        $this->assertEquals('lussuttaja/lamantiini-loso.lus', $this->linker->getLink($file, 'loso', 'lus'));
     }
 
     /**
@@ -201,8 +189,8 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
         ));
 
         $this->assertEquals(
-            'root/lussuttaja/banaanin/sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú/lamantiini.lus',
-             $this->linker->getLink($file)
+            'root/lussuttaja/banaanin/sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú/lamantiini-loso.lus',
+             $this->linker->getLink($file, 'loso', 'lus')
         );
     }
 

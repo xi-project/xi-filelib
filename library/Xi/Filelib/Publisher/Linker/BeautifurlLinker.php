@@ -69,7 +69,7 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     /**
      * Returns whether the root folder is to be excluded from beautifurls.
      *
-     * @return unknown_type
+     * @return string
      */
     public function getExcludeRoot()
     {
@@ -117,9 +117,9 @@ class BeautifurlLinker extends AbstractLinker implements Linker
      * @param  string $extension Extension
      * @return string Versioned link
      */
-    public function getLinkVersion(File $file, $version, $extension)
+    public function getLink(File $file, $version, $extension)
     {
-        $link = $this->getLink($file);
+        $link = $this->getBaseLink($file);
         $pinfo = pathinfo($link);
         $link = ($pinfo['dirname'] === '.' ? '' : $pinfo['dirname'] . '/') . $pinfo['filename'] . '-' . $version;
 
@@ -134,7 +134,7 @@ class BeautifurlLinker extends AbstractLinker implements Linker
      * @param  File   $file
      * @return string Link
      */
-    public function getLink(File $file)
+    protected function getBaseLink(File $file)
     {
         $folders = array();
         $folders[] = $folder = $this->folderOperator->find($file->getFolderId());

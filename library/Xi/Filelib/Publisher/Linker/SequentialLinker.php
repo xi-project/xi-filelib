@@ -78,10 +78,10 @@ class SequentialLinker extends AbstractLinker implements Linker
      * @param  string $extension Extension
      * @return string Versioned link
      */
-    public function getLinkVersion(File $file, $version, $extension)
+    public function getLink(File $file, $version, $extension)
     {
 
-        $link = $this->getLink($file);
+        $link = $this->getBaseLink($file);
         $pinfo = pathinfo($link);
         $link = $pinfo['dirname'] . '/' . $pinfo['filename'] . '-' . $version;
         $link .= '.' . $extension;
@@ -95,7 +95,7 @@ class SequentialLinker extends AbstractLinker implements Linker
      * @param  File   $file
      * @return string Link
      */
-    public function getLink(File $file)
+    protected function getBaseLink(File $file)
     {
         $url = array();
         $url[] = $this->getDirectoryId($file);

@@ -60,37 +60,12 @@ class AbstractFilesystemPublisherAdapterTest extends TestCase
     /**
      * @test
      */
-    public function getUrlShouldReturnCorrectUrl()
-    {
-
-        $linker = $this->getMockedLinker();
-        $linker
-            ->expects($this->once())
-            ->method('getLink')
-            ->will($this->returnValue('tussin/lussun/tussi.jpg'));
-
-        $file = $this->getMockedFile();
-        $file->expects($this->any())->method('getId')->will($this->returnValue(1));
-
-        $publisher = $this->getMockedAdapter(
-            ROOT_TESTS . '/data/publisher/public', "777", "666", 'http://diktaattoriporssi.com'
-        );
-
-        $this->assertEquals(
-            'http://diktaattoriporssi.com/tussin/lussun/tussi.jpg',
-            $publisher->getUrl($file, $linker)
-        );
-    }
-
-    /**
-     * @test
-     */
     public function getUrlVersionShouldReturnCorrectUrlVersion()
     {
         $linker = $this->getMockedLinker();
         $linker
             ->expects($this->once())
-            ->method('getLinkVersion')
+            ->method('getLink')
             ->will(
                 $this->returnCallback(
                     function ($file, $version, $extension) {
@@ -129,8 +104,6 @@ class AbstractFilesystemPublisherAdapterTest extends TestCase
                 array(
                     'publish',
                     'unpublish',
-                    'publishVersion',
-                    'unpublishVersion',
                     'getLinkerForFile',
                     'setDependencies'
                 )

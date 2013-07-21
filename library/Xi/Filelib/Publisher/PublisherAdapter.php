@@ -23,12 +23,12 @@ use Xi\Filelib\FileLibrary;
 interface PublisherAdapter
 {
     /**
-     * Publishes a file
-     *
      * @param File $file
+     * @param VersionProvider $version
+     * @param Linker $linker
      * @return bool
      */
-    public function publish(File $file, Linker $linker);
+    public function publish(File $file, VersionProvider $version, Linker $linker);
 
     /**
      * @param File $file
@@ -36,31 +36,7 @@ interface PublisherAdapter
      * @param Linker $linker
      * @return bool
      */
-    public function publishVersion(File $file, VersionProvider $version, Linker $linker);
-
-    /**
-     * Unpublishes a file
-     *
-     * @param File $file
-     * @return bool
-     */
-    public function unpublish(File $file, Linker $linker);
-
-    /**
-     * @param File $file
-     * @param VersionProvider $version
-     * @param Linker $linker
-     * @return bool
-     */
-    public function unpublishVersion(File $file, VersionProvider $version, Linker $linker);
-
-    /**
-     * Returns url to a file
-     *
-     * @param  File   $file
-     * @return string
-     */
-    public function getUrl(File $file, Linker $linker);
+    public function unpublish(File $file, VersionProvider $version, Linker $linker);
 
     /**
      * @param File $file

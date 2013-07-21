@@ -78,9 +78,8 @@ class Publisher implements EventSubscriberInterface
      */
     public function publish(File $file)
     {
-        // $this->adapter->publish($file, $this->linker);
         foreach ($this->getVersions($file) as $version) {
-            $this->adapter->publishVersion($file, $this->getVersionProvider($file, $version), $this->linker);
+            $this->adapter->publish($file, $this->getVersionProvider($file, $version), $this->linker);
         }
 
         $data = $file->getData();
@@ -92,21 +91,14 @@ class Publisher implements EventSubscriberInterface
 
     public function unpublish(File $file)
     {
-        // $this->adapter->unpublish($file, $this->linker);
         foreach ($this->getVersions($file) as $version) {
-            $this->adapter->unPublishVersion($file, $this->getVersionProvider($file, $version), $this->linker);
+            $this->adapter->unpublish($file, $this->getVersionProvider($file, $version), $this->linker);
         }
 
         $data = $file->getData();
         $data['publisher.published'] = 0;
 
         $this->fileOperator->update($file);
-    }
-
-
-    public function getUrl(File $file)
-    {
-        return $this->adapter->getUrl($file, $this->linker);
     }
 
     public function getUrlVersion(File $file, $version)
