@@ -22,7 +22,9 @@ use Xi\Filelib\Tool\Slugifier\ZendSlugifier;
  */
 class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 {
-    private $linker;
+    private $filelib;
+
+    private $slugifier;
 
     public function setUp()
     {
@@ -34,8 +36,8 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
             $this->markTestSkipped('Intl extension must be loaded');
         }
 
-        $fo = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
-        $fo->expects($this->any())
+        $foop = $this->getMockedFolderOperator();
+        $foop->expects($this->any())
              ->method('find')
              ->will($this->returnCallback(function($id) {
 
@@ -84,9 +86,9 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
              }));
 
-        $trans = new StupidTransliterator();
-        $slugifier = new ZendSlugifier($trans);
-        $this->linker = new BeautifurlLinker($fo, $slugifier);
+        $this->filelib = $this->getMockedFilelib(null, null, $foop);
+        $this->slugifier = new ZendSlugifier(new StupidTransliterator());
+
     }
 
     public function provideFiles()
@@ -134,8 +136,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $beautifurl)
     {
-        $this->linker->setExcludeRoot(true);
-        $this->linker->setSlugify(true);
+        $linker = new BeautifurlLinker($this->filelib, $this->slugifier, true);
 
         $versionProvider = $this->getMock('\Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $versionProvider->expects($this->any())
@@ -149,7 +150,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals(
             $beautifurl[1],
-            $this->linker->getLink(
+            $linker->getLink(
                 $file,
                 $versionProvider->getIdentifier(),
                 $versionProvider->getExtensionFor($file, $versionProvider->getIdentifier())
@@ -168,19 +169,19 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
             'resource' => Resource::create(array('id' => 1)),
         ));
 
-        $this->linker->setExcludeRoot(false);
-        $this->assertEquals('root/lussuttaja/lamantiini-loso.lus', $this->linker->getLink($file, 'loso', 'lus'));
+        $linker = new BeautifurlLinker($this->filelib, $this->slugifier, false);
+        $this->assertEquals('root/lussuttaja/lamantiini-loso.lus', $linker->getLink($file, 'loso', 'lus'));
 
-        $this->linker->setExcludeRoot(true);
-        $this->assertEquals('lussuttaja/lamantiini-loso.lus', $this->linker->getLink($file, 'loso', 'lus'));
+        $linker = new BeautifurlLinker($this->filelib, $this->slugifier, true);
+        $this->assertEquals('lussuttaja/lamantiini-loso.lus', $linker->getLink($file, 'loso', 'lus'));
     }
 
     /**
      * @test
      */
-    public function linkerShouldNotSlugifyWhenSlugifyIsSetToFalse()
+    public function linkerShouldNotSlugifyWhenTheresNoSlugifier()
     {
-        $this->linker->setSlugify(false);
+        $linker = new BeautifurlLinker($this->filelib, null, false);
 
         $file = File::create(array(
             'name' => 'lamantiini.lus',
@@ -190,28 +191,17 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals(
             'root/lussuttaja/banaanin/sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú/lamantiini-loso.lus',
-             $this->linker->getLink($file, 'loso', 'lus')
+             $linker->getLink($file, 'loso', 'lus')
         );
     }
 
     /**
      * @test
      */
-    public function excludeRootSetterAndGetterShouldWorkAsExpected()
+    public function excludeRootGetterShouldWork()
     {
-         $this->assertFalse($this->linker->getExcludeRoot());
-         $this->assertSame($this->linker, $this->linker->setExcludeRoot(true));
-         $this->assertTrue($this->linker->getExcludeRoot());
-    }
-
-    /**
-     * @test
-     */
-    public function slugifyRootSetterAndGetterShouldWorkAsExpected()
-    {
-         $this->assertTrue($this->linker->getSlugify());
-         $this->assertSame($this->linker, $this->linker->setSlugify(false));
-         $this->assertFalse($this->linker->getSlugify());
+        $linker = new BeautifurlLinker($this->filelib, null, false);
+        $this->assertFalse($linker->getExcludeRoot());
     }
 
     /**
@@ -219,31 +209,8 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getSlugifierShouldReturnSlugifier()
     {
-        $mockSlugifier = $this->getMock('Xi\Filelib\Tool\Slugifier\Slugifier');
-        $mockOperator = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();;
-
-        $linker = new BeautifurlLinker($mockOperator, $mockSlugifier);
-
+        $linker = new BeautifurlLinker($this->filelib, $this->slugifier, false);
         $slugifier = $linker->getSlugifier();
-
-        $this->assertSame($mockSlugifier, $slugifier);
-    }
-
-    /**
-     * @test
-     */
-    public function takesOptionalOptionsInConstructor()
-    {
-        $linker = new BeautifurlLinker(
-            $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock(),
-            $this->getMock('Xi\Filelib\Tool\Slugifier\Slugifier'),
-            array(
-                'slugify'        => false,
-                'excludeRoot'    => true,
-            )
-        );
-
-        $this->assertFalse($linker->getSlugify());
-        $this->assertTrue($linker->getExcludeRoot());
+        $this->assertSame($this->slugifier, $slugifier);
     }
 }

@@ -13,6 +13,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Publisher\Linker;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Creates beautifurls(tm) from the virtual directory structure and file names.
@@ -42,28 +43,16 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     private $folderOperator;
 
     /**
-     * @param  FolderOperator   $folderOperator
-     * @param  array            $options
-     * @return BeautifurlLinker
+     * @param FileLibrary $filelib
+     * @param Slugifier $slugifier
+     * @param bool $excludeRoot
      */
-    public function __construct(FolderOperator $folderOperator, Slugifier $slugifier, array $options = array())
-    {
-        parent::__construct($options);
-        $this->slugifier = $slugifier;
-        $this->folderOperator = $folderOperator;
-    }
-
-    /**
-     * Sets whether the root folder is excluded from beautifurls.
-     *
-     * @param  boolean          $excludeRoot
-     * @return BeautifurlLinker
-     */
-    public function setExcludeRoot($excludeRoot)
+    public function __construct(FileLibrary $filelib, Slugifier $slugifier = null, $excludeRoot = true)
     {
         $this->excludeRoot = $excludeRoot;
+        $this->slugifier = $slugifier;
 
-        return $this;
+        $this->folderOperator = $filelib->getFolderOperator();
     }
 
     /**
@@ -84,29 +73,6 @@ class BeautifurlLinker extends AbstractLinker implements Linker
     public function getSlugifier()
     {
         return $this->slugifier;
-    }
-
-    /**
-     * Enables or disables slugifying
-     *
-     * @param  boolean          $slugify
-     * @return BeautifurlLinker
-     */
-    public function setSlugify($slugify)
-    {
-        $this->slugify = $slugify;
-
-        return $this;
-    }
-
-    /**
-     * Returns whether slugifying is enabled
-     *
-     * @return boolean
-     */
-    public function getSlugify()
-    {
-        return $this->slugify;
     }
 
     /**
@@ -150,8 +116,7 @@ class BeautifurlLinker extends AbstractLinker implements Linker
             $beautifurl[] = $folder->getName();
         }
 
-        if ($this->getSlugify()) {
-            $slugifier = $this->getSlugifier();
+        if ($slugifier = $this->getSlugifier()) {
             array_walk($beautifurl, function(&$frag) use ($slugifier) {
                 $frag = $slugifier->slugify($frag);
             });

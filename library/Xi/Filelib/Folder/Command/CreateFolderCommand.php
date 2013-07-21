@@ -41,15 +41,15 @@ class CreateFolderCommand extends AbstractFolderCommand
         $route = $this->folderOperator->buildRoute($this->folder);
         $this->folder->setUrl($route);
         $this->folder->setUuid($this->getUuid());
-        $folder = $this->folderOperator->getBackend()->createFolder($this->folder);
+        $this->folderOperator->getBackend()->createFolder($this->folder);
 
-        $event = new FolderEvent($folder);
+        $event = new FolderEvent($this->folder);
         $this->folderOperator->getEventDispatcher()->dispatch(
             Events::FOLDER_AFTER_CREATE,
             $event
         );
 
-        return $folder;
+        return $this->folder;
     }
 
     public function unserialize($serialized)
