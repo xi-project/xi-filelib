@@ -39,7 +39,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         );
 
         $file = File::create(array('id' => 1));
-        $publisher->getRelativePathToVersion($file, $this->versionProvider, 'tussi');
+        $publisher->getRelativePathToVersion($file, $this->version, $this->versionProvider, 'tussi');
     }
 
     public function provideDataForRelativePathTest()
@@ -110,7 +110,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
                 ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
         }
 
-        $ret = $publisher->getRelativePathToVersion($file, $this->versionProvider, $levelsDown);
+        $ret = $publisher->getRelativePathToVersion($file, $this->version, $this->versionProvider, $levelsDown);
 
         $expectedPath = str_repeat("../", $levelsDown) . $publisher->getRelativePathToRoot() . '/lussutustiedosto';
         $this->assertEquals($expectedPath, $ret);
@@ -229,7 +229,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         );
         $publisher->setDependencies($this->filelib);
 
-        $publisher->publish($file, $this->versionProvider, $this->plinker);
+        $publisher->publish($file, $this->version, $this->versionProvider, $this->plinker);
 
         $sfi = new \SplFileInfo($expectedVersionPath);
         $this->assertTrue($sfi->isLink(), "File '{$expectedVersionPath}' is not a symbolic link");
@@ -275,7 +275,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         );
         $publisher->setDependencies($this->filelib);
 
-        $publisher->publish($file, $this->versionProvider, $this->plinker);
+        $publisher->publish($file, $this->version, $this->versionProvider, $this->plinker);
 
         $sfi = new \SplFileInfo($expectedVersionPath);
         $this->assertTrue($sfi->isLink(), "File '{$expectedVersionPath}' is not a symbolic link");
@@ -319,7 +319,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         );
         $publisher->setDependencies($this->filelib);
 
-        $publisher->unpublish($file, $this->versionProvider, $this->plinker);
+        $publisher->unpublish($file, $this->version, $this->versionProvider, $this->plinker);
 
         $this->assertFileNotExists($expectedVersionPath);
     }

@@ -67,10 +67,11 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $versionProvider
             ->expects($this->any())
             ->method('getIdentifier')
-            ->will($this->returnValue('xooxer'));
+            ->will($this->returnValue('lusser'));
 
         $this->linker = $linker;
         $this->versionProvider = $versionProvider;
+        $this->version = 'xooxer';
 
         $storage = $this->getMockedStorage();
         $storage

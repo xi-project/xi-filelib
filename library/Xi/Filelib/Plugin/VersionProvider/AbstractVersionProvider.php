@@ -226,7 +226,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     {
         $retrieved = $this->storage->retrieveVersion(
             $file->getResource(),
-            $version->getIdentifier(),
+            $version,
             $this->areSharedVersionsAllowed() ? null : $file
         );
 
@@ -255,6 +255,4 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
         return $extension;
     }
-
-
 }

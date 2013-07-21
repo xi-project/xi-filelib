@@ -35,10 +35,14 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
         $this->storage = $filelib->getStorage();
     }
 
-    public function publish(File $file, VersionProvider $version, Linker $linker)
+    public function publish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLink($file, $version->getIdentifier(), $version->getExtensionFor($file, $version));
+            $linker->getLink(
+                $file,
+                $version,
+                $versionProvider->getExtensionFor($file, $version)
+            );
 
         if (!is_file($link)) {
 
@@ -48,10 +52,10 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            if ($version->areSharedVersionsAllowed()) {
-                $tmp = $this->storage->retrieveVersion($file->getResource(), $version->getIdentifier(), null);
+            if ($versionProvider->areSharedVersionsAllowed()) {
+                $tmp = $this->storage->retrieveVersion($file->getResource(), $version, null);
             } else {
-                $tmp = $this->storage->retrieveVersion($file->getResource(), $version->getIdentifier(), $file);
+                $tmp = $this->storage->retrieveVersion($file->getResource(), $version, $file);
             }
 
             copy($tmp, $link);
@@ -59,10 +63,14 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
         }
     }
 
-    public function unpublish(File $file, VersionProvider $version, Linker $linker)
+    public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLink($file, $version->getIdentifier(), $version->getExtensionFor($file, $version));
+            $linker->getLink(
+                $file,
+                $version,
+                $versionProvider->getExtensionFor($file, $version)
+            );
         if (is_file($link)) {
             unlink($link);
         }

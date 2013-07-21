@@ -119,7 +119,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
 
         $publisher = new CopyFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
         $publisher->setDependencies($this->filelib);
-        $publisher->publish($file, $this->versionProvider, $this->plinker);
+        $publisher->publish($file, $this->version, $this->versionProvider, $this->plinker);
 
         $sfi = new \SplFileInfo($expectedVersionPath);
         $this->assertFalse($sfi->isLink(), "File '{$expectedVersionPath}' is a symbolic link");
@@ -152,7 +152,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
         $publisher = new CopyFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
         $publisher->setDependencies($this->filelib);
 
-        $publisher->unpublish($file, $this->versionProvider, $this->plinker);
+        $publisher->unpublish($file, $this->version, $this->versionProvider, $this->plinker);
         $this->assertFileNotExists($expectedVersionPath);
     }
 

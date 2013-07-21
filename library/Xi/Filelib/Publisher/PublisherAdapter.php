@@ -24,11 +24,12 @@ interface PublisherAdapter
 {
     /**
      * @param File $file
+     * @param string $version
      * @param VersionProvider $version
      * @param Linker $linker
      * @return bool
      */
-    public function publish(File $file, VersionProvider $version, Linker $linker);
+    public function publish(File $file, $version, VersionProvider $versionProvider, Linker $linker);
 
     /**
      * @param File $file
@@ -36,7 +37,7 @@ interface PublisherAdapter
      * @param Linker $linker
      * @return bool
      */
-    public function unpublish(File $file, VersionProvider $version, Linker $linker);
+    public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker);
 
     /**
      * @param File $file
@@ -44,7 +45,11 @@ interface PublisherAdapter
      * @param Linker $linker
      * @return string
      */
-    public function getUrlVersion(File $file, VersionProvider $version, Linker $linker);
+    public function getUrlVersion(File $file, $version, VersionProvider $versionProvider, Linker $linker);
 
+    /**
+     * @param FileLibrary $filelib
+     * @return PublisherAdapter
+     */
     public function setDependencies(FileLibrary $filelib);
 }

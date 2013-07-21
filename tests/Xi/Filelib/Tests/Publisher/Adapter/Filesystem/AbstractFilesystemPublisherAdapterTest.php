@@ -85,7 +85,7 @@ class AbstractFilesystemPublisherAdapterTest extends TestCase
 
         $this->assertEquals(
             'http://diktaattoriporssi.com/tussin/lussun/tussi-xooxer.jpg',
-            $publisher->getUrlVersion($file, $versionProvider, $linker)
+            $publisher->getUrlVersion($file, 'xooxer', $versionProvider, $linker)
         );
     }
 
