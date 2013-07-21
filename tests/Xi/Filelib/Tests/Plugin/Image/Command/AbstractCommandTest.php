@@ -18,29 +18,6 @@ class AbstractCommandTest extends TestCase
 {
     /**
      * @test
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function constructorShouldFailWithNonArrayOptions()
-    {
-        $options = 'lussuti';
-
-        $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\AbstractCommand')
-             ->setConstructorArgs($options);
-    }
-
-    /**
-     * @test
-     */
-    public function constructorShouldPassWithArrayOptions()
-    {
-        $options = array('lussen' => 'hofer', 'tussen' => 'lussen');
-
-        $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\AbstractCommand')
-             ->setConstructorArgs($options);
-    }
-
-    /**
-     * @test
      */
     public function createImagickShouldReturnNewImagickObject()
     {

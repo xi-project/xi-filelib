@@ -988,3 +988,140 @@
 [19-Jul-2013 18:46:07 UTC] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
 [19-Jul-2013 18:46:07 UTC] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
 [19-Jul-2013 18:46:07 UTC] PHP  13. Xi\Filelib\Tests\File\FileTest->toArrayShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP Fatal error:  Call to undefined method Xi\Filelib\Plugin\Image\Command\ExecuteMethodCommand::setMethod() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/Command/ExecuteMethodCommandTest.php on line 30
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP Stack trace:
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:11:09 Europe/Helsinki] PHP  13. Xi\Filelib\Tests\Plugin\Image\Command\ExecuteMethodCommandTest->gettersAndSettersShouldWorkAsExpected() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP Fatal error:  Call to undefined method Xi\Filelib\Plugin\Image\ImageMagickHelper::setImageMagickOptions() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/ImageMagickHelperTest.php on line 132
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP Stack trace:
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:16:15 Europe/Helsinki] PHP  13. Xi\Filelib\Tests\Plugin\Image\ImageMagickHelperTest->executeShouldExecuteAllOptionsAndCommandsCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP Fatal error:  Call to undefined method Xi\Filelib\Plugin\Image\ImageMagickHelper::setImageMagickOptions() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/ImageMagickHelperTest.php on line 132
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP Stack trace:
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:17:53 Europe/Helsinki] PHP  13. Xi\Filelib\Tests\Plugin\Image\ImageMagickHelperTest->executeShouldExecuteAllOptionsAndCommandsCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP Fatal error:  Call to undefined method Xi\Filelib\Plugin\Image\ImageMagickHelper::setImageMagickOptions() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/ImageMagickHelperTest.php on line 132
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP Stack trace:
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:19:13 Europe/Helsinki] PHP  13. Xi\Filelib\Tests\Plugin\Image\ImageMagickHelperTest->executeShouldExecuteAllOptionsAndCommandsCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP Fatal error:  Call to undefined method Xi\Filelib\Plugin\Image\ImageMagickHelper::setImageMagickOptions() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/ImageMagickHelperTest.php on line 111
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP Stack trace:
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:19:49 Europe/Helsinki] PHP  13. Xi\Filelib\Tests\Plugin\Image\ImageMagickHelperTest->executeShouldExecuteAllOptionsAndCommandsCorrectly() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP Fatal error:  Call to undefined method Xi\Filelib\Plugin\Image\VersionPlugin::setExtension() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/VersionPluginTest.php on line 181
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP Stack trace:
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:38:15 Europe/Helsinki] PHP  13. Xi\Filelib\Tests\Plugin\Image\VersionPluginTest->gettersAndSettersShouldWork() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP Fatal error:  Call to a member function retrieveVersion() on a non-object in /wwwroot/xi-filelib/library/Xi/Filelib/Plugin/VersionProvider/AbstractVersionProvider.php on line 222
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP Stack trace:
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP  13. Xi\Filelib\Tests\Plugin\Image\VersionPluginTest->getExtensionForShouldDelegateToGetExtension() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP  14. Xi\Filelib\Plugin\Image\VersionPlugin->getExtensionFor() /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/VersionPluginTest.php:194
+[21-Jul-2013 12:38:33 Europe/Helsinki] PHP  15. Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider->getExtensionFor() /wwwroot/xi-filelib/library/Xi/Filelib/Plugin/Image/VersionPlugin.php:109
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP Fatal error:  Call to undefined method Xi\Filelib\Plugin\Image\VersionPlugin::getTempDir() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/VersionPluginTest.php on line 204
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP Stack trace:
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:40:35 Europe/Helsinki] PHP  13. Xi\Filelib\Tests\Plugin\Image\VersionPluginTest->getsTempDir() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP Fatal error:  Call to undefined method Xi\Filelib\Tests\Plugin\Image\VersionPluginTest::return() in /wwwroot/xi-filelib/tests/Xi/Filelib/Tests/Plugin/Image/VersionPluginTest.php on line 205
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP Stack trace:
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP   1. {main}() /wwwroot/php/bin/phpunit:0
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP   2. PHPUnit_TextUI_Command::main() /wwwroot/php/bin/phpunit:46
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP   3. PHPUnit_TextUI_Command->run() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:129
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP   4. PHPUnit_TextUI_TestRunner->doRun() /wwwroot/php/lib/php/PHPUnit/TextUI/Command.php:176
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP   5. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/TextUI/TestRunner.php:346
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP   6. PHPUnit_Framework_TestSuite->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:705
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP   7. PHPUnit_Framework_TestSuite->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:745
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP   8. PHPUnit_Framework_TestCase->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestSuite.php:775
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP   9. PHPUnit_Framework_TestResult->run() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:769
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP  10. PHPUnit_Framework_TestCase->runBare() /wwwroot/php/lib/php/PHPUnit/Framework/TestResult.php:648
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP  11. PHPUnit_Framework_TestCase->runTest() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:824
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP  12. ReflectionMethod->invokeArgs() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969
+[21-Jul-2013 12:43:37 Europe/Helsinki] PHP  13. Xi\Filelib\Tests\Plugin\Image\VersionPluginTest->injectsTempDirFromFilelib() /wwwroot/php/lib/php/PHPUnit/Framework/TestCase.php:969

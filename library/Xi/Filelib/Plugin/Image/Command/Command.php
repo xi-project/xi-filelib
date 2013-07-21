@@ -30,6 +30,7 @@ interface Command
      *
      * @param  string  $path Image path
      * @return Imagick
+     * @todo This is not necessary
      */
     public function createImagick($path);
 }

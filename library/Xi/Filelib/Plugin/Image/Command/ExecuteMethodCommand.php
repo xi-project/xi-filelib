@@ -18,7 +18,7 @@ class ExecuteMethodCommand extends AbstractCommand
     private $parameters = array();
 
 
-    public function __construct($method = null, $parameters = array())
+    public function __construct($method, $parameters = array())
     {
         $this->method = $method;
 

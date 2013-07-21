@@ -10,12 +10,18 @@
 namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Mirrors the original file as a version
  */
 class OriginalVersionPlugin extends AbstractVersionProvider
 {
+    /**
+     * @var string
+     */
+    private $tempDir;
+
     public function __construct(
         $identifier
     ) {
@@ -27,6 +33,12 @@ class OriginalVersionPlugin extends AbstractVersionProvider
         );
     }
 
+    public function setDependencies(FileLibrary $filelib)
+    {
+        parent::setDependencies($filelib);
+        $this->tempDir = $filelib->getTempDir();
+    }
+
     /**
      * Creates and stores version
      *
@@ -35,8 +47,13 @@ class OriginalVersionPlugin extends AbstractVersionProvider
      */
     public function createVersions(File $file)
     {
+        $retrieved = $this->getStorage()->retrieve($file->getResource());
+        $tmp = $this->tempDir . '/' . uniqid('', true);
+
+        copy($retrieved, $tmp);
+
         return array(
-            $this->getIdentifier() => $this->getStorage()->retrieve($file->getResource())
+            $this->getIdentifier() => $tmp,
         );
     }
 
