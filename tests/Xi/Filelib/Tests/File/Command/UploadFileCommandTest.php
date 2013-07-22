@@ -46,17 +46,13 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'getInstance', 'generateUuid', 'createCommand', 'executeOrQueue'))
+                   ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'generateUuid', 'createCommand', 'executeOrQueue'))
                    ->getMock();
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
 
         $op->expects($this->once())->method('generateUuid')
            ->will($this->returnValue('uusi-uuid'));
-
-        $op->expects($this->atLeastOnce())->method('getInstance')->will($this->returnValue($fileitem));
-
-        $fileitem->expects($this->at(0))->method('setStatus')->with($this->equalTo(File::STATUS_RAW));
 
         $dispatcher->expects($this->at(0))->method('dispatch')
                    ->with($this->equalTo(Events::FILE_BEFORE_CREATE), $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));

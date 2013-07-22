@@ -19,6 +19,8 @@ use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events;
+use Xi\Filelib\File\MimeType;
+use Xi\Filelib\File\FileObject;
 
 /**
  * Abstract convenience class for version provider plugins
@@ -55,10 +57,15 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected $fileOperator;
 
     /**
-     * @param string $identifier
-     * @param array $providesFor
+     * @var array
      */
-    public function __construct($identifier, $providesFor = array())
+    protected $extensionReplacements = array('jpeg' => 'jpg');
+
+    /**
+     * @param string $identifier
+     * @param callable $providesFor
+     */
+    public function __construct($identifier, $providesFor)
     {
         $this->identifier = $identifier;
         $this->providesFor = $providesFor;
@@ -81,13 +88,10 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function init()
     {
-        foreach ($this->getProvidesFor() as $fileType) {
-            foreach ($this->getProfiles() as $profile) {
-                $profile = $this->fileOperator->getProfile($profile);
-
-                foreach ($this->getVersions() as $version) {
-                    $profile->addFileVersion($fileType, $version, $this);
-                }
+        foreach ($this->getProfiles() as $profile) {
+            $profile = $this->fileOperator->getProfile($profile);
+            foreach ($this->getVersions() as $version) {
+                $profile->addFileVersion($version, $this);
             }
         }
     }
@@ -120,13 +124,10 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function providesFor(File $file)
     {
-        if (in_array($this->fileOperator->getType($file), $this->getProvidesFor())) {
-            if (in_array($file->getProfile(), $this->getProfiles())) {
-                return true;
-            }
+        if (!in_array($file->getProfile(), $this->getProfiles())) {
+            return false;
         }
-
-        return false;
+        return call_user_func($this->providesFor, $file);
     }
 
     /**
@@ -141,6 +142,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
     public function onAfterUpload(FileEvent $event)
     {
+
         $file = $event->getFile();
 
         if (!$this->hasProfile($file->getProfile()) || !$this->providesFor($file) || $this->areVersionsCreated($file)) {
@@ -160,41 +162,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             unlink($tmp);
         }
     }
-    /*
-    public function onPublish(FileEvent $event)
-    {
-        $file = $event->getFile();
-
-        if (!$this->hasProfile($file->getProfile())) {
-            return;
-        }
-
-        if (!$this->providesFor($file)) {
-            return;
-        }
-
-        foreach ($this->getVersions() as $version) {
-            $this->getPublisher()->publishVersion($file, $version, $this);
-        }
-    }
-
-    public function onUnpublish(FileEvent $event)
-    {
-        $file = $event->getFile();
-
-        if (!$this->hasProfile($file->getProfile())) {
-            return;
-        }
-
-        if (!$this->providesFor($file)) {
-            return;
-        }
-
-        foreach ($this->getVersions() as $version) {
-            $this->getPublisher()->unpublishVersion($file, $version, $this);
-        }
-    }
-    */
 
     public function onFileDelete(FileEvent $event)
     {
@@ -253,5 +220,39 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
 
         return false;
+    }
+
+    public function getExtensionFor(File $file, $version)
+    {
+        $retrieved = $this->storage->retrieveVersion(
+            $file->getResource(),
+            $version,
+            $this->areSharedVersionsAllowed() ? null : $file
+        );
+
+        $fileObj = new FileObject($retrieved);
+        $extensions = MimeType::mimeTypeToExtensions($fileObj->getMimeType());
+        if (!count($extensions)) {
+            throw new \RuntimeException("Failed to find an extension for mime type '{$fileObj->getMimeType()}'");
+        }
+
+        $ret = array_shift($extensions);
+        return $this->doExtensionReplacement($ret);
+    }
+
+    /**
+     * Apache parsings produce some unwanted results (jpeg). Switcheroo those
+     *
+     * @param string $extension
+     * @return string
+     * @todo allow user to edit / add his own replacements
+     *
+     */
+    protected function doExtensionReplacement($extension)
+    {
+        if (isset($this->extensionReplacements[$extension])) {
+            return $this->extensionReplacements[$extension];
+        }
+        return $extension;
     }
 }

@@ -11,6 +11,7 @@ namespace Xi\Filelib\File;
 
 use DateTime;
 use Xi\Filelib\IdentityMap\Identifiable;
+use ArrayObject;
 
 /**
  * Resource
@@ -26,10 +27,11 @@ class Resource implements Identifiable
         'id' => 'setId',
         'hash' => 'setHash',
         'date_created' => 'setDateCreated',
-        'versions' => 'setVersions',
+        'data' => 'setData',
         'mimetype' => 'setMimetype',
         'size' => 'setSize',
         'exclusive' => 'setExclusive',
+        'versions' => 'setVersions',
     );
 
     /**
@@ -68,10 +70,35 @@ class Resource implements Identifiable
     private $size;
 
     /**
-     *
-     * @var array
+     * @var ArrayObject
      */
-    private $versions = array();
+    private $data;
+
+    /**
+     * @return ArrayObject
+     */
+    public function getData()
+    {
+        if (!$this->data) {
+            $this->data = new ArrayObject();
+        }
+
+        if (is_array($this->data)) {
+            $this->data = new ArrayObject($this->data);
+        }
+
+        return $this->data;
+    }
+
+    public function setData($data)
+    {
+        if (is_array($data)) {
+            $data = new ArrayObject($data);
+        }
+
+        $this->data = $data;
+        return $this;
+    }
 
     /**
      * Sets id
@@ -205,62 +232,6 @@ class Resource implements Identifiable
     }
 
     /**
-     * Sets currently created versions
-     *
-     * @param  array    $versions
-     * @return Resource
-     */
-    public function setVersions(array $versions = array())
-    {
-        $this->versions = $versions;
-
-        return $this;
-    }
-
-    /**
-     * Returns currently created versions
-     *
-     * @return array
-     */
-    public function getVersions()
-    {
-        return $this->versions;
-    }
-
-    /**
-     * Adds a version
-     *
-     * @param string $version
-     */
-    public function addVersion($version)
-    {
-        if (!in_array($version, $this->versions)) {
-            $this->versions[] = $version;
-        }
-    }
-
-    /**
-     * Removes a version
-     *
-     * @param string $version
-     */
-    public function removeVersion($version)
-    {
-        $this->versions = array_diff($this->versions, array($version));
-    }
-
-    /**
-     * Returns whether resource has version
-     *
-     * @param  string  $version
-     * @return boolean
-     */
-    public function hasVersion($version)
-    {
-        return in_array($version, $this->versions);
-    }
-
-    /**
      * Returns the resource as array
      *
      * @return array
@@ -271,7 +242,7 @@ class Resource implements Identifiable
             'id' => $this->getId(),
             'hash' => $this->getHash(),
             'date_created' => $this->getDateCreated(),
-            'versions' => $this->getVersions(),
+            'data' => $this->getData(),
             'mimetype' => $this->getMimetype(),
             'size' => $this->getSize(),
             'exclusive' => $this->isExclusive(),
@@ -306,4 +277,72 @@ class Resource implements Identifiable
         $resource = new self();
         return $resource->fromArray($data);
     }
+
+
+    /**
+     * Sets currently created versions
+     *
+     * @param  array    $versions
+     * @return Resource
+     */
+    public function setVersions(array $versions = array())
+    {
+        $data = $this->getData();
+        $data['versions'] = $versions;
+
+        return $this;
+    }
+
+    /**
+     * Returns currently created versions
+     *
+     * @return array
+     */
+    public function getVersions()
+    {
+        $data = $this->getData();
+        if (!isset($data['versions'])) {
+            $data['versions'] = array();
+        }
+        return $data['versions'];
+    }
+
+    /**
+     * Adds version
+     *
+     * @param string $version
+     */
+    public function addVersion($version)
+    {
+        $versions = $this->getVersions();
+        if (!in_array($version, $versions)) {
+            array_push($versions, $version);
+            $this->setVersions($versions);
+        }
+    }
+
+    /**
+     * Removes a version
+     *
+     * @param string $version
+     */
+    public function removeVersion($version)
+    {
+        $versions = $this->getVersions();
+        $versions = array_diff($versions, array($version));
+        $this->setVersions($versions);
+    }
+
+    /**
+     * Returns whether resource has version
+     *
+     * @param  string  $version
+     * @return boolean
+     */
+    public function hasVersion($version)
+    {
+        return in_array($version, $this->getVersions());
+    }
+
+
 }

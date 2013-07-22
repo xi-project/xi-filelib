@@ -13,21 +13,21 @@
 
 Calls `ffmpeg` with the specified configuration upon video
 upload.
- 
+
 Uses Symfony
-[Process](http://symfony.com/doc/current/components/process.html) 
-component to call command line utilities `ffmpeg` and `ffprobe`  
+[Process](http://symfony.com/doc/current/components/process.html)
+component to call command line utilities `ffmpeg` and `ffprobe`
 with the options configured in Filelib configuration upon a video upload.
 
 The plugin uses FFmpegHelper class, which maps the Filelib
-configuration options  
+configuration options
 to POSIX style command line arguments for `ffmpeg` and `ffprobe`.
 
 
 ### Requirements
 
 [FFmpeg](http://ffmpeg.org/download.html) version 0.9 or newer. Older
-ones are missing the JSON output from `ffprobe`.  
+ones are missing the JSON output from `ffprobe`.
 You need to install [FFmpeg with LGPL license](http://ffmpeg.org/legal.html), for it to be compatible with the [Filelib's BSD license](https://github.com/xi-project/xi-filelib/blob/master/LICENSE).
 
 On Mac OS X you do this easily with MacPorts:
@@ -47,7 +47,6 @@ Example:
                 identifier: video
                 description: 'Video'
                 accessToOriginal: false
-                publishOriginal: false
                 linker:
                     type: Xi\Filelib\Linker\SequentialLinker # Can use other types of linkers too
                     options:
@@ -94,7 +93,7 @@ Example:
                             s: '240x135'
                             vframes: 1
 
-To create the output `1080p_still` for an uploaded video called `Manatees.mp4`,  
+To create the output `1080p_still` for an uploaded video called `Manatees.mp4`,
 the above example will call `ffmpeg` with the following options:
 
     ffmpeg -y -loglevel 'warning' -ss '00:00:01.000' -r 1 -vframes 1 -i 'Manatees.mp4' \
@@ -103,7 +102,7 @@ the above example will call `ffmpeg` with the following options:
 
 ### Limitations
 
-Only saves *one* output file per configured output.  
+Only saves *one* output file per configured output.
 In other words, the numbered output files are not supported for now.
 
 
@@ -118,8 +117,8 @@ In other words, the numbered output files are not supported for now.
 - [Amazon S3](http://aws.amazon.com/s3/) account and the
   [ZendService\Amazon](https://github.com/zendframework/ZendService_Amazon)
   component, which has been broken since Zend 2.0.0-beta versions, but the version
-  2.0.3 will be fixed.  
-  Meanwhile, see [my branch](https://github.com/peterhil/ZendService_Amazon/tree/fix-s3-client) for the fixes. 
+  2.0.3 will be fixed.
+  Meanwhile, see [my branch](https://github.com/peterhil/ZendService_Amazon/tree/fix-s3-client) for the fixes.
   On Filelib version 0.7, the older [version 1.1.2
   of the Zend Service Amazon S3](http://framework.zend.com/manual/1.12/en/zend.service.amazon.html) used to work.
 

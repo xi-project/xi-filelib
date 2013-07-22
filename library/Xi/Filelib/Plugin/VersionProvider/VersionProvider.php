@@ -24,7 +24,7 @@ interface VersionProvider extends Plugin
      *
      * @param string $version
      */
-    public function getExtensionFor($version);
+    public function getExtensionFor(File $file, $version);
 
     /**
      * Returns file types which the version plugin provides version for.

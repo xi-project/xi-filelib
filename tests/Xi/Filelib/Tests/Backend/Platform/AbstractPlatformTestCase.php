@@ -350,7 +350,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
             'status' => 666,
             'uuid' => 'uuid-535',
             'resource' => $this->findResource($resourceId),
-            'versions' => array('lussi', 'watussi', 'klussi'),
+            'data' => array('versions' => array('lussi', 'watussi', 'klussi')),
         );
         $file = File::create($data);
 

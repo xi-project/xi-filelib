@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests\File;
 
 use Xi\Filelib\File\Resource;
 use DateTime;
+use ArrayObject;
 
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
@@ -138,7 +139,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'id' => 655,
             'hash' => 'hashisen-kone',
             'date_created' => new \DateTime('1978-03-21'),
-            'versions' => array('kraa', 'xoo'),
+            'data' => new ArrayObject(array('versions' => array('kraa', 'xoo'))),
             'size' => 5678,
             'mimetype' => 'video/lus',
             'exclusive' => true,
@@ -149,7 +150,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'id' => null,
             'hash' => null,
             'date_created' => null,
-            'versions' => array(),
+            'data' => new ArrayObject(array()),
             'size' => null,
             'mimetype' => null,
             'exclusive' => false,

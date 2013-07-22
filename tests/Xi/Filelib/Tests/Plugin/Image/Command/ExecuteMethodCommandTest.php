@@ -21,19 +21,20 @@ class ExecuteMethodCommandTest extends TestCase
     /**
      * @test
      */
-    public function gettersAndSettersShouldWorkAsExpected()
+    public function gettersShouldWorkAsExpected()
     {
-        $command = new ExecuteMethodCommand();
+        $command = new ExecuteMethodCommand('lussenhof');
 
-        $method = 'lussenhof';
-        $this->assertEquals(null, $command->getMethod());
-        $this->assertSame($command, $command->setMethod($method));
-        $this->assertEquals($method, $command->getMethod());
-
-        $arguments = array('hofen', 'lusser');
+        $this->assertSame('lussenhof', $command->getMethod());
         $this->assertEquals(array(), $command->getParameters());
-        $this->assertSame($command, $command->setParameters($arguments));
-        $this->assertEquals($arguments, $command->getParameters());
+
+        $command = new ExecuteMethodCommand('cronsumera', 'mera');
+        $this->assertSame('cronsumera', $command->getMethod());
+        $this->assertEquals(array('mera'), $command->getParameters());
+
+        $command = new ExecuteMethodCommand('cronsumera', array('mera', 'banana'));
+        $this->assertSame('cronsumera', $command->getMethod());
+        $this->assertEquals(array('mera', 'banana'), $command->getParameters());
     }
 
     /**
@@ -42,14 +43,9 @@ class ExecuteMethodCommandTest extends TestCase
      */
     public function executeShouldFailWhenMethodIsNotCallable()
     {
-        $command = new ExecuteMethodCommand();
-        $command->setMethod('cropThumbnailImagee');
-        $command->setParameters(array('sometimes', 'a banana'));
+        $command = new ExecuteMethodCommand('cropThumbnailImagee', array('sometimes', 'a banana'));
 
-        $imagick = $this->getMockBuilder('\Imagick')->disableOriginalConstructor()
-                        ->setMethods(array('cropThumbnailImage'))
-                        ->getMock();
-        $imagick->expects($this->never())->method('cropThumbnailImage');
+        $imagick = $this->getMockedImagick();
 
         $command->execute($imagick);
     }
@@ -59,17 +55,26 @@ class ExecuteMethodCommandTest extends TestCase
      */
     public function executeShouldExecuteImagemagicksMethodWhenMethodIsCallable()
     {
-        $command = new ExecuteMethodCommand();
-        $command->setMethod('cropThumbnailImage');
-        $command->setParameters(array('sometimes', 'a banana'));
+        $command = new ExecuteMethodCommand('cropThumbnailImage', array('sometimes', 'a banana'));
 
-        $imagick = $this->getMockBuilder('\Imagick')->disableOriginalConstructor()
-                        ->setMethods(array('cropThumbnailImage'))
-                        ->getMock();
+        $imagick = $this->getMockedImagick();
+
         $imagick->expects($this->once())
                 ->method('cropThumbnailImage')
-                ->with($this->equalTo('sometimes'), $this->equalTo('a banana'));
+                ->with('sometimes', 'a banana');
 
         $command->execute($imagick);
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedImagick()
+    {
+        $imagick = $this->getMockBuilder('\Imagick')->disableOriginalConstructor()
+            ->setMethods(array('cropThumbnailImage'))
+            ->getMock();
+
+        return $imagick;
     }
 }

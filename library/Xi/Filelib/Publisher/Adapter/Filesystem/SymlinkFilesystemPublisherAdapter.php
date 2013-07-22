@@ -63,35 +63,13 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
     }
 
     /**
-     * @param  File             $file
-     * @param  int              $levelsDown
-     * @return string
-     * @throws FilelibException
-     */
-    public function getRelativePathTo(File $file, $levelsDown = 0)
-    {
-        $relativePath = $this->getRelativePathToRoot();
-
-        if (!$relativePath) {
-            throw new FilelibException('Relative path must be set!');
-        }
-        $relativePath = str_repeat("../", $levelsDown) . $relativePath;
-
-        $retrieved = $this->storage->retrieve($file->getResource());
-
-        $path = preg_replace("[^{$this->storage->getRoot()}]", $relativePath, $retrieved);
-
-        return $path;
-    }
-
-    /**
      * @param File            $file
      * @param VersionProvider $versionProvider
      * @param  int              $levelsDown
      * @return string
      * @throws FilelibException
      */
-    public function getRelativePathToVersion(File $file, VersionProvider $versionProvider, $levelsDown = 0)
+    public function getRelativePathToVersion(File $file, $version, VersionProvider $versionProvider, $levelsDown = 0)
     {
         $relativePath = $this->getRelativePathToRoot();
 
@@ -103,7 +81,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
 
         $retrieved = $this->storage->retrieveVersion(
             $file->getResource(),
-            $versionProvider->getIdentifier(),
+            $version,
             $versionProvider->areSharedVersionsAllowed() ? null : $file
         );
 
@@ -113,53 +91,19 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
     }
 
     /**
-     * @param File $file
-     * @todo Extract methods. Puuppa code smells bad.
-     */
-    public function publish(File $file, Linker $linker)
-    {
-        $link = $this->getPublicRoot() . '/' . $linker->getLink($file, true);
-
-        if (!is_link($link)) {
-            $path = dirname($link);
-
-            if (!is_dir($path)) {
-                mkdir($path, $this->getDirectoryPermission(), true);
-            }
-
-            if ($this->getRelativePathToRoot()) {
-
-                $path2 = substr($path, strlen($this->getPublicRoot()) + 1);
-
-                // If the link goes to the root dir, $path2 is false and fuxors the depth without a check.
-                if ($path2 === false) {
-                    $depth = 0;
-                } else {
-                    $depth = sizeof(explode(DIRECTORY_SEPARATOR, $path2));
-                }
-
-                // Relative linking requires some movin'n groovin.
-                $oldCwd = getcwd();
-                chdir($path);
-                symlink($this->getRelativePathTo($file, $depth), $link);
-                chdir($oldCwd);
-            } else {
-                symlink($this->storage->retrieve($file->getResource()), $link);
-            }
-        }
-
-    }
-
-    /**
      * @param File            $file
      * @param string          $version
      * @param VersionProvider $versionProvider
      * @todo Refactor. Puuppa code smells.
      */
-    public function publishVersion(File $file, VersionProvider $version, Linker $linker)
+    public function publish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
+            $linker->getLink(
+                $file,
+                $version,
+                $versionProvider->getExtensionFor($file, $version)
+            );
 
         if (!is_link($link)) {
 
@@ -179,7 +123,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
                     $depth = sizeof(explode(DIRECTORY_SEPARATOR, $path2));
                 }
 
-                $fp = $this->getRelativePathToVersion($file, $version, $depth);
+                $fp = $this->getRelativePathToVersion($file, $version, $versionProvider, $depth);
 
                 // Relative linking requires some movin'n groovin.
                 $oldCwd = getcwd();
@@ -190,8 +134,8 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
                 symlink(
                     $this->storage->retrieveVersion(
                         $file->getResource(),
-                        $version->getIdentifier(),
-                        $version->areSharedVersionsAllowed() ? null: $file
+                        $version,
+                        $versionProvider->areSharedVersionsAllowed() ? null: $file
                     ),
                     $link
                 );
@@ -201,18 +145,10 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
 
     }
 
-    public function unpublish(File $file, Linker $linker)
-    {
-        $link = $this->getPublicRoot() . '/' . $linker->getLink($file);
-        if (is_link($link)) {
-            unlink($link);
-        }
-    }
-
-    public function unpublishVersion(File $file, VersionProvider $version, Linker $linker)
+    public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
+            $linker->getLink($file, $version, $versionProvider->getExtensionFor($file, $version));
         if (is_link($link)) {
             unlink($link);
         }

@@ -52,7 +52,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $linker = $this->getMockedLinker();
         $linker
             ->expects($this->any())
-            ->method('getLinkVersion')
+            ->method('getLink')
             ->will(
                 $this->returnCallback(
                     function ($file, $version) {
@@ -67,10 +67,11 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $versionProvider
             ->expects($this->any())
             ->method('getIdentifier')
-            ->will($this->returnValue('xooxer'));
+            ->will($this->returnValue('lusser'));
 
         $this->linker = $linker;
         $this->versionProvider = $versionProvider;
+        $this->version = 'xooxer';
 
         $storage = $this->getMockedStorage();
         $storage
@@ -111,7 +112,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $plinker
             ->expects($this->any())
-            ->method('getLinkVersion')
+            ->method('getLink')
             ->will(
                 $this->returnCallback(
                     function ($file, $version) use ($self) {

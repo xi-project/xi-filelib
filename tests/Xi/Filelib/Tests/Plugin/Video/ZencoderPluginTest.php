@@ -196,8 +196,10 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->plugin->setOutputs($outputs);
 
-        $this->assertEquals('lussen', $this->plugin->getExtensionFor('pygmi'));
-        $this->assertEquals('dorfer', $this->plugin->getExtensionFor('watussi'));
+        $file = $this->getMockedFile();
+
+        $this->assertEquals('lussen', $this->plugin->getExtensionFor($file, 'pygmi'));
+        $this->assertEquals('dorfer', $this->plugin->getExtensionFor($file, 'watussi'));
     }
 
     /**
@@ -229,14 +231,6 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->assertTrue(class_exists('Xi\Filelib\Plugin\Video\ZencoderPlugin'));
         $this->assertArrayHasKey('Xi\Filelib\Plugin\AbstractPlugin', class_parents('Xi\Filelib\Plugin\Video\ZencoderPlugin'));
-    }
-
-    /**
-     * @test
-     */
-    public function pluginShouldProvideForVideo()
-    {
-        $this->assertEquals(array('video'), $this->plugin->getProvidesFor());
     }
 
     /**

@@ -131,38 +131,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function getInstanceShouldReturnAnInstanceOfFileWithNoData()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $file = $op->getInstance();
-        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-
-    }
-
-    /**
-     * @test
-     */
-    public function getInstanceShouldReturnAnInstanceOfFileWithData()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $data = array(
-            'name' => 'larva-consumes-newspaper.jpg',
-        );
-
-        $file = $op->getInstance($data);
-        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-
-        $this->assertEquals('larva-consumes-newspaper.jpg', $file->getName());
-
-    }
-
-    /**
-     * @test
-     */
     public function addProfileShouldAddProfile()
     {
         $filelib = $this->getMockedFilelib();
@@ -396,54 +364,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $upload = $op->prepareUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
 
         $this->assertInstanceOf('Xi\Filelib\File\Upload\FileUpload', $upload);
-
-    }
-
-    /**
-     * @test
-     */
-    public function typeResolverShouldDefaultToStupid()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $this->assertInstanceOf('Xi\Filelib\Tool\TypeResolver\StupidTypeResolver', $op->getTypeResolver());
-
-    }
-
-    /**
-     *  @test
-     */
-    public function typeResolverShouldRespectSetter()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $typeResolver = $this->getMock('Xi\Filelib\Tool\TypeResolver\TypeResolver');
-
-        $op->setTypeResolver($typeResolver);
-        $this->assertSame($typeResolver, $op->getTypeResolver());
-    }
-
-    /**
-     * @test
-     */
-    public function getTypeShouldDelegateToTypeResolver()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $typeResolver = $this->getMock('Xi\Filelib\Tool\TypeResolver\TypeResolver');
-        $typeResolver->expects($this->once())->method('resolveType')
-                     ->with($this->equalTo('application/lus'));
-
-        $file = File::create(array(
-            'name' => 'larvador.lus',
-            'resource' => Resource::create(array('mimetype' => 'application/lus'))
-        ));
-
-        $op->setTypeResolver($typeResolver);
-        $op->getType($file);
 
     }
 

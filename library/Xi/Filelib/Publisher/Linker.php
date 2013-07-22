@@ -27,13 +27,5 @@ interface Linker
      * @param  string $extension Extension
      * @return string Versioned link
      */
-    public function getLinkVersion(File $file, $version, $extension);
-
-    /**
-     * Returns a link for a file
-     *
-     * @param  File   $file
-     * @return string Link
-     */
-    public function getLink(File $file);
+    public function getLink(File $file, $version, $extension);
 }

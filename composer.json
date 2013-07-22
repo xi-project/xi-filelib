@@ -40,7 +40,9 @@
 
     "require": {
         "php": ">=5.3.10",
-        "symfony/event-dispatcher": ">=2.0.14"
+        "symfony/event-dispatcher": ">=2.0.14",
+        "dflydev/apache-mime-types": "1.0.*",
+        "rhumsaa/uuid": "2.3.*"
     },
 
     "require-dev": {

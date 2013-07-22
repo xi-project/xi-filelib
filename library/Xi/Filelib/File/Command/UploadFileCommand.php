@@ -64,6 +64,7 @@ class UploadFileCommand extends AbstractFileCommand
     {
         $file = clone $file;
 
+
         $hash = sha1_file($upload->getRealPath());
         $profileObj = $this->fileOperator->getProfile($this->profile);
 
@@ -89,6 +90,7 @@ class UploadFileCommand extends AbstractFileCommand
             $resource->setHash($hash);
             $resource->setSize($upload->getSize());
             $resource->setMimetype($upload->getMimeType());
+            $resource->setVersions(array());
 
             $this->fileOperator->getBackend()->createResource($resource);
             $file->setResource($resource);
@@ -115,12 +117,13 @@ class UploadFileCommand extends AbstractFileCommand
 
         $upload = $event->getFileUpload();
 
-        $file = $this->fileOperator->getInstance(array(
+        $file = File::create(array(
             'folder_id' => $folder->getId(),
             'name' => $upload->getUploadFilename(),
             'profile' => $profile,
             'date_created' => $upload->getDateUploaded(),
             'uuid' => $this->getUuid(),
+            'versions' => array()
         ));
 
         // @todo: actual statuses

@@ -7,6 +7,7 @@ class Events
     const FILE_BEFORE_CREATE = 'xi_filelib.file.before_create';
     const FILE_AFTER_CREATE = 'xi_filelib.file.after_create';
     const FILE_AFTER_AFTERUPLOAD = 'xi_filelib.file.after_upload';
+    const FILE_BEFORE_DELETE = 'xi_filelib.file.before_delete';
     const FILE_AFTER_DELETE = 'xi_filelib.file.after_delete';
     const FILE_AFTER_COPY = 'xi_filelib.file.after_copy';
     const FILE_AFTER_UPDATE = 'xi_filelib.file.after_update';

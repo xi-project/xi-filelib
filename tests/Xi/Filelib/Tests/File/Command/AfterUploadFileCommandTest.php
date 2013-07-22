@@ -31,7 +31,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
                    ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'publish', 'getInstance', 'createCommand'))
+                   ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'publish', 'createCommand'))
                    ->getMock();
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');

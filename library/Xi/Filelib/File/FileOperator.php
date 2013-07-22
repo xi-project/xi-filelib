@@ -66,22 +66,6 @@ class FileOperator extends AbstractOperator
     private $typeResolver;
 
     /**
-     * Returns a file
-     *
-     * @param  mixed $data Data as array or a file instance
-     * @return File
-     */
-    public function getInstance($data = array())
-    {
-        $file = new File();
-        if ($data) {
-            $file->fromArray($data);
-        }
-
-        return $file;
-    }
-
-    /**
      * Adds a file profile
      *
      * @param  FileProfile              $profile
@@ -257,17 +241,6 @@ class FileOperator extends AbstractOperator
     }
 
     /**
-     * Returns file type of a file
-     *
-     * @param  File File $file item
-     * @return string    File type
-     */
-    public function getType(File $file)
-    {
-        return $this->getTypeResolver()->resolveType($file->getMimeType());
-    }
-
-    /**
      * Returns whether a file has a certain version
      *
      * @param  File    $file    File item
@@ -317,29 +290,4 @@ class FileOperator extends AbstractOperator
     {
         return $this->getFilelib()->getFolderOperator();
     }
-
-    /**
-     * @return TypeResolver
-     */
-    public function getTypeResolver()
-    {
-        if (!$this->typeResolver) {
-            $this->typeResolver = new StupidTypeResolver();
-        }
-
-        return $this->typeResolver;
-    }
-
-    /**
-     *
-     * @param  TypeResolver $typeResolver
-     * @return FileOperator
-     */
-    public function setTypeResolver(TypeResolver $typeResolver)
-    {
-        $this->typeResolver = $typeResolver;
-
-        return $this;
-    }
-
 }

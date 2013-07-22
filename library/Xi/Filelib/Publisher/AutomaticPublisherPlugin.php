@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\Plugin\AbstractPlugin;
@@ -9,6 +16,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileCopyEvent;
+use Xi\Filelib\Events;
 
 /**
  * Automatically publishes all files

@@ -38,13 +38,13 @@ class SchemaGenerator
     public function generate()
     {
         AnnotationRegistry::registerFile(
-            ROOT_TESTS . '/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php'
+            __DIR__ . '/../vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php'
         );
 
         $driver = new AnnotationDriver(
             new CachedReader(new AnnotationReader(), new ArrayCache()),
             array(
-                ROOT_TESTS . '/../library/Xi/Filelib/Backend/DoctrineOrm/Entity',
+                __DIR__ . '/../library/Xi/Filelib/Backend/Platform/DoctrineOrm/Entity',
             )
         );
 
@@ -77,6 +77,9 @@ EOT;
 
 $options['driver'] = 'pdo_' . $argv[1];
 $options['host'] = '127.0.0.1';
+// $options['username'] = 'michalis-rakintzis';
+// $options['password'] = 'sagapo';
+// $options['dbname'] = 'dbname';
 
 $generator = new SchemaGenerator($options);
 

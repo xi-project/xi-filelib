@@ -90,34 +90,6 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
      * @test
      * @dataProvider provideDataForPublishingTests
      */
-    public function publishShouldPublishFile($file, $expectedPath, $expectedVersionPath, $expectedRealPath)
-    {
-        $self = $this;
-        $this->storage
-            ->expects($this->atLeastOnce())
-            ->method('retrieve')
-            ->will(
-                $this->returnCallback(
-                    function (Resource $resource) use ($self) {
-                        return $self->resourcePaths[$resource->getId()];
-                    }
-                )
-            );
-
-        $publisher = new CopyFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
-        $publisher->setDependencies($this->filelib);
-        $publisher->publish($file, $this->plinker);
-        $sfi = new \SplFileInfo($expectedPath);
-
-        $this->assertFalse($sfi->isLink(), "File '{$expectedPath}' is a symbolic link");
-        $this->assertTrue($sfi->isReadable(), "File '{$expectedPath}' is not a readable symbolic link");
-        $this->assertFileEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
-    }
-
-    /**
-     * @test
-     * @dataProvider provideDataForPublishingTests
-     */
     public function publishShouldPublishFileVersion(
         $file,
         $expectedPath,
@@ -147,7 +119,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
 
         $publisher = new CopyFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
         $publisher->setDependencies($this->filelib);
-        $publisher->publishVersion($file, $this->versionProvider, $this->plinker);
+        $publisher->publish($file, $this->version, $this->versionProvider, $this->plinker);
 
         $sfi = new \SplFileInfo($expectedVersionPath);
         $this->assertFalse($sfi->isLink(), "File '{$expectedVersionPath}' is a symbolic link");
@@ -167,28 +139,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
      * @test
      * @dataProvider provideDataForPublishingTests
      */
-    public function unpublishShouldUnpublishFile(
-        $file,
-        $expectedPath,
-        $expectedVersionPath,
-        $expectedRealPath,
-        $expectedRelativePath
-    ) {
-        $this->createFile($expectedRealPath, $expectedPath);
-        $this->assertFileExists($expectedPath);
-
-        $publisher = new CopyFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
-        $publisher->setDependencies($this->filelib);
-
-        $publisher->unpublish($file, $this->plinker);
-        $this->assertFileNotExists($expectedPath);
-    }
-
-    /**
-     * @test
-     * @dataProvider provideDataForPublishingTests
-     */
-    public function unpublishVersionShouldUnpublishFileVersion(
+    public function unpublishShouldUnpublishFileVersion(
         $file,
         $expectedPath,
         $expectedVersionPath,
@@ -201,7 +152,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
         $publisher = new CopyFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
         $publisher->setDependencies($this->filelib);
 
-        $publisher->unpublishVersion($file, $this->versionProvider, $this->plinker);
+        $publisher->unpublish($file, $this->version, $this->versionProvider, $this->plinker);
         $this->assertFileNotExists($expectedVersionPath);
     }
 

@@ -107,7 +107,6 @@ class ChangeFormatPlugin extends AbstractPlugin
         $upload = $event->getFileUpload();
 
         $mimetype = $upload->getMimeType();
-        // @todo: use filebankstas type detection
         if (!preg_match("/^image/", $mimetype)) {
             return;
         }

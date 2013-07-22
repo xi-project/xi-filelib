@@ -56,9 +56,9 @@ class Resource
     private $files;
 
     /**
-     * @ORM\Column(name="versions", type="array")
+     * @ORM\Column(name="data", type="json_array")
      */
-    private $versions = array();
+    private $data = array();
 
     /**
      * Get id
@@ -183,18 +183,20 @@ class Resource
     }
 
     /**
-     *
-     * @param array $versions
+     * @param array $data
+     * @return $this
      */
-    public function setVersions(array $versions)
+    public function setData(array $data)
     {
-        $this->versions = $versions;
-
+        $this->data = $data;
         return $this;
     }
 
-    public function getVersions()
+    /**
+     * @return array
+     */
+    public function getData()
     {
-        return $this->versions;
+        return $this->data;
     }
 }

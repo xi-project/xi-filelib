@@ -106,7 +106,7 @@ class MongoPlatform implements Platform
             'date_created'  => new MongoDate($file->getDateCreated()->getTimestamp()),
             'uuid'          => $file->getUuid(),
             'resource_id'   => $file->getResource()->getId(),
-            'versions'      => $file->getVersions(),
+            'data'      => $file->getData()->getArrayCopy(),
         );
 
         $this->getMongo()->files->ensureIndex(
@@ -240,7 +240,7 @@ class MongoPlatform implements Platform
             'mimetype' => $resource->getMimetype(),
             'size' => $resource->getSize(),
             'date_created' => new MongoDate($resource->getDateCreated()->getTimestamp()),
-            'versions' => $resource->getVersions(),
+            'data' => $resource->getData(),
             'exclusive' => $resource->isExclusive(),
         );
 
@@ -383,7 +383,7 @@ class MongoPlatform implements Platform
                         )->setTimezone($date->getTimezone()),
                         'uuid'          => $file['uuid'],
                         'resource'      => $resource,
-                        'versions'      => $file['versions'],
+                        'data'      => $file['data'],
                     )
                 )
             );
@@ -433,7 +433,7 @@ class MongoPlatform implements Platform
                             'U',
                             $resource['date_created']->sec
                         )->setTimezone($date->getTimezone()),
-                        'versions' => $resource['versions'],
+                        'data' => $resource['data'],
                         'exclusive' => $resource['exclusive'],
                     )
                 )
