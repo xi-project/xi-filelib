@@ -291,7 +291,7 @@ class MongoPlatformTest extends AbstractPlatformTestCase
     {
         return array(
             array(5, new FileFinder()),
-            array(0, new FileFinder(array('id' => 'xooxersson'))),
+            array(0, new FileFinder(array('id' => '49a7011a05c677b9a91661dd'))),
             array(1, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166101'))),
             array(2, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104'))),
             array(
@@ -303,7 +303,7 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             array(
                 0,
                 new FileFinder(
-                    array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a916611x')
+                    array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a916611a')
                 )
             ),
             array(0, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166103', 'name' => 'repesorsa.lus'))),
@@ -489,8 +489,8 @@ class MongoPlatformTest extends AbstractPlatformTestCase
     {
         return array(
             array('48a7011a05c677b9a9166166'),
-            array('tussidentifier'),
-            array('locoposki'),
+            array('48a7011a05c677b9a9166177'),
+            array('48a7011a05c677b9a9166188'),
         );
     }
 
