@@ -26,13 +26,27 @@ class JsonPlatformTest extends AbstractPlatformTestCase
         return new JsonPlatform(ROOT_TESTS . '/data/temp/json-platform.json');
     }
 
-    protected function tearDown()
+    public function setUp()
     {
+        parent::setUp();
+
+        if (is_file(ROOT_TESTS . '/data/temp/json-platform.json')) {
+            unlink(ROOT_TESTS . '/data/temp/json-platform.json');
+        }
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+
         if (is_file(ROOT_TESTS . '/data/temp/json-platform.json')) {
             unlink(ROOT_TESTS . '/data/temp/json-platform.json');
         }
 
-        parent::tearDown();
+        if (is_file(ROOT_TESTS . '/data/temp/temp.json')) {
+            unlink(ROOT_TESTS . '/data/temp/temp.json');
+        }
+
     }
 
     /**
@@ -56,7 +70,6 @@ class JsonPlatformTest extends AbstractPlatformTestCase
     {
         file_put_contents(ROOT_TESTS . '/data/temp/json-platform.json', json_encode($this->getData()));
     }
-
 
     /**
      * @return array
@@ -233,7 +246,14 @@ class JsonPlatformTest extends AbstractPlatformTestCase
             ),
         );
 
-        return $data;
+
+        $ret = array();
+        foreach (array('resources', 'folders', 'files') as $what) {
+            foreach ($data[$what] as $res) {
+                $ret[$what][$res['id']] = $res;
+            }
+        }
+        return $ret;
     }
 
     /**
@@ -521,4 +541,25 @@ class JsonPlatformTest extends AbstractPlatformTestCase
             )
         );
     }
+
+    /**
+     * @test
+     */
+    public function destructorShouldSaveState()
+    {
+        $file = ROOT_TESTS . '/data/temp/temp.json';
+        $this->assertFileNotExists($file);
+
+        $platform = new JsonPlatform($file);
+        $this->assertFileNotExists($file);
+
+        $platform->findByFinder(new FileFinder());
+
+        $this->assertFileNotExists($file);
+        unset($platform);
+
+        $this->assertFileExists($file);
+
+    }
+
 }

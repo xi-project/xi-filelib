@@ -25,6 +25,8 @@ use DateTime;
  */
 class JsonPlatform implements Platform
 {
+    private $init = false;
+
     private $json;
 
     private $file;
@@ -61,20 +63,32 @@ class JsonPlatform implements Platform
     public function __construct($file)
     {
         $this->file = $file;
-
-        if (!is_file($this->file)) {
-            $this->json = array(
-                'resources' => array(),
-                'files' => array(),
-                'folders' => array(),
-            );
-        } else {
-            $this->json = json_decode(file_get_contents($this->file));
-        }
-
-
-
     }
+
+
+    public function __destruct()
+    {
+        file_put_contents($this->file, json_encode($this->json, JSON_PRETTY_PRINT));
+    }
+
+
+    private function init()
+    {
+        if (!$this->init) {
+            if (!is_file($this->file)) {
+                $this->json = array(
+                    'resources' => array(),
+                    'files' => array(),
+                    'folders' => array(),
+                );
+            } else {
+                $this->json = json_decode(file_get_contents($this->file), true);
+            }
+
+            $this->init = true;
+        }
+    }
+
 
     protected function createId()
     {
@@ -82,14 +96,36 @@ class JsonPlatform implements Platform
     }
 
 
-    protected function set($what, $id, $doc)
+    private function remove($what, $id)
     {
-        if ($doc === null) {
+        $this->init();
+
+        if (isset($this->json[$what][$id])) {
             unset($this->json[$what][$id]);
+            return true;
         }
+        return false;
+    }
+
+    private function create($what, $id, $doc)
+    {
+        $this->init();
 
         $this->json[$what][$id] = $doc;
     }
+
+    private function update($what, $id, $doc)
+    {
+        $this->init();
+
+        if (!isset($this->json[$what][$id])) {
+            return false;
+        }
+
+        $this->json[$what][$id] = $doc;
+        return true;
+    }
+
 
 
     /**
@@ -102,14 +138,14 @@ class JsonPlatform implements Platform
             'name'          => $file->getName(),
             'profile'       => $file->getProfile(),
             'status'        => $file->getStatus(),
-            'date_created'  => $file->getDateCreated()->getTimestamp(),
+            'date_created'  => $file->getDateCreated()->format('Y-m-d H:i:s'),
             'uuid'          => $file->getUuid(),
             'resource_id'   => $file->getResource()->getId(),
             'data'      => $file->getData()->getArrayCopy(),
         );
 
         $document['id'] = $this->createId();
-        $this->set('files', $document['id'], $document);
+        $this->create('files', $document['id'], $document);
 
         $file->setId($document['id']);
         $file->setFolderId($folder->getId());
@@ -124,7 +160,7 @@ class JsonPlatform implements Platform
     {
         $document = $folder->toArray();
         $document['id'] = $this->createId();
-        $this->set('folders', $document['id'], $document);
+        $this->create('folders', $document['id'], $document);
         $folder->setId($document['id']);
 
         return $folder;
@@ -135,7 +171,8 @@ class JsonPlatform implements Platform
      */
     public function deleteFolder(Folder $folder)
     {
-        $this->set('folders', $folder->getId(), null);
+        return $this->remove('folders', $folder->getId());
+
     }
 
     /**
@@ -143,7 +180,7 @@ class JsonPlatform implements Platform
      */
     public function deleteFile(File $file)
     {
-        $this->set('files', $file->getId(), null);
+        return $this->remove('files', $file->getId());
     }
 
     /**
@@ -152,8 +189,7 @@ class JsonPlatform implements Platform
     public function updateFolder(Folder $folder)
     {
         $document = $folder->toArray();
-        $this->set('folders', $folder->getId(), $document);
-        return true;
+        return $this->update('folders', $folder->getId(), $document);
     }
 
     public function updateResource(Resource $resource)
@@ -161,11 +197,10 @@ class JsonPlatform implements Platform
         $document = $resource->toArray();
 
         if ($document['date_created']) {
-            $document['date_created'] = $document['date_created']->getTimestamp();
+            $document['date_created'] = $document['date_created']->format('Y-m-d H:i:s');
         }
 
-        $this->set('resources', $resource->getId(), $document);
-        return true;
+        return $this->update('resources', $resource->getId(), $document);
     }
 
     /**
@@ -175,8 +210,11 @@ class JsonPlatform implements Platform
     {
         $document = $file->toArray();
         $document['resource_id'] = $file->getResource()->getId();
-        $document['date_created'] = $document['date_created']->getTimestamp();
+        $document['date_created'] = $document['date_created']->format('Y-m-d H:i:s');
         unset($document['resource']);
+
+        $this->update('files', $file->getId(), $document);
+
         return true;
     }
 
@@ -189,13 +227,13 @@ class JsonPlatform implements Platform
             'hash' => $resource->getHash(),
             'mimetype' => $resource->getMimetype(),
             'size' => $resource->getSize(),
-            'date_created' => $resource->getDateCreated()->getTimestamp(),
+            'date_created' => $resource->getDateCreated()->format('Y-m-d H:i:s'),
             'data' => $resource->getData(),
             'exclusive' => $resource->isExclusive(),
         );
 
         $document['id'] = $this->createId();
-        $this->set('resources', $document['id'], $document);
+        $this->create('resources', $document['id'], $document);
 
         $resource->setId($document['id']);
         return $resource;
@@ -206,8 +244,7 @@ class JsonPlatform implements Platform
      */
     public function deleteResource(Resource $resource)
     {
-        $this->set('resources', $resource->getId(), null);
-        return true;
+        return $this->remove('resources', $resource->getId());
     }
 
     /**
@@ -215,8 +252,10 @@ class JsonPlatform implements Platform
      */
     public function getNumberOfReferences(Resource $resource)
     {
+        $this->init();
+
         $count = 0;
-        foreach ($this->json->files as $file) {
+        foreach ($this->json['files'] as $file) {
             if ($file['resource_id'] == $resource->getId()) {
                 $count = $count + 1;
             }
@@ -229,10 +268,11 @@ class JsonPlatform implements Platform
      */
     public function findByFinder(Finder $finder)
     {
+        $this->init();
         $resources = $this->classNameToResources[$finder->getResultClass()];
         $params = $this->finderParametersToInternalParameters($finder);
 
-        $all = $this->json->$resources['collection'];
+        $all = $this->json[$resources['collection']];
 
         $ret = array();
         foreach ($all as $obj) {
@@ -262,9 +302,11 @@ class JsonPlatform implements Platform
             return new ArrayIterator(array());
         }
 
+        $this->init();
+
         $resources = $this->classNameToResources[$className];
 
-        $all = $this->json->$resources['collection'];
+        $all = $this->json[$resources['collection']];
 
         $iter = new ArrayIterator(array());
 
@@ -324,9 +366,8 @@ class JsonPlatform implements Platform
                         'link'          => isset($file['link']) ? $file['link'] : null,
                         'status'        => $file['status'],
                         'date_created'  => DateTime::createFromFormat(
-                            'U',
-                            $file['date_created']->sec
-                        )->setTimezone($date->getTimezone()),
+                            'Y-m-d H:i:s',
+                            $file['date_created'])->setTimezone($date->getTimezone()),
                         'uuid'          => $file['uuid'],
                         'resource'      => $resource,
                         'data'      => $file['data'],
@@ -356,8 +397,8 @@ class JsonPlatform implements Platform
                         'mimetype' => $resource['mimetype'],
                         'size' => $resource['size'],
                         'date_created' => DateTime::createFromFormat(
-                            'U',
-                            $resource['date_created']->sec
+                            'Y-m-d H:i:s',
+                            $resource['date_created']
                         )->setTimezone($date->getTimezone()),
                         'data' => $resource['data'],
                         'exclusive' => $resource['exclusive'],
