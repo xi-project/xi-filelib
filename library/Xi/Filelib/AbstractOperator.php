@@ -14,9 +14,8 @@ use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Command;
 use Xi\Filelib\Queue\Queue;
-use Xi\Filelib\Tool\UuidGenerator\UuidGenerator;
-use Xi\Filelib\Tool\UuidGenerator\PHPUuidGenerator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Rhumsaa\Uuid\Uuid;
 
 /**
  * Abstract convenience class for operators
@@ -39,12 +38,6 @@ abstract class AbstractOperator
      * @var array
      */
     protected $commandStrategies = array();
-
-    /**
-     *
-     * @var UuidGenerator
-     */
-    protected $uuidGenerator;
 
     public function __construct(FileLibrary $filelib)
     {
@@ -166,18 +159,6 @@ abstract class AbstractOperator
      */
     public function generateUuid()
     {
-        return $this->getUuidGenerator()->v4();
-    }
-
-    /**
-     * @return UuidGenerator
-     */
-    protected function getUuidGenerator()
-    {
-        if (!$this->uuidGenerator) {
-            $this->uuidGenerator = new PHPUuidGenerator();
-        }
-
-        return $this->uuidGenerator;
+        return Uuid::uuid4()->toString();
     }
 }

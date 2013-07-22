@@ -9,8 +9,8 @@
 
 namespace Xi\Filelib\Tests\Plugin\Image;
 
-use Imagick;
 use Xi\Filelib\Plugin\Image\ImageMagickHelper;
+use Xi\Filelib\Plugin\Image\Command\ExecuteMethodCommand;
 
 /**
  * @group plugin
@@ -23,27 +23,6 @@ class ImageMagickHelperTest extends TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Plugin\Image\ImageMagickHelper'));
-    }
-
-    /**
-     * @test
-     * @expectedException \InvalidArgumentException
-     */
-    public function constructorShouldFailWithNonArrayOptions()
-    {
-        $options = 'lussuti';
-
-        new ImageMagickHelper($options);
-    }
-
-    /**
-     * @test
-     */
-    public function constructorShouldPassWithArrayOptions()
-    {
-        $options = array('lussen' => 'hofer', 'tussen' => 'lussen');
-
-        new ImageMagickHelper($options);
     }
 
     /**
@@ -81,19 +60,6 @@ class ImageMagickHelperTest extends TestCase
         $this->assertInstanceOf('Imagick', $imagick);
     }
 
-    /*
-     * @test
-     */
-    public function gettersAndSettersShouldWorkAsExpected()
-    {
-        $helper = new ImageMagickHelper();
-
-        $options = array('lussen' => 'tussen', 'kraa' => 'fuu');
-        $this->assertEquals(array(), $helper->getImageMagickOptions());
-        $this->assertSame($helper, $helper->setImageMagickOptions($options));
-        $this->assertEquals($options, $helper->getImageMagickOptions());
-    }
-
     /**
      * @test
      */
@@ -103,7 +69,7 @@ class ImageMagickHelperTest extends TestCase
 
         $this->assertEquals(array(), $helper->getCommands());
 
-        $mock = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
 
         $helper->addCommand($mock);
 
@@ -113,8 +79,7 @@ class ImageMagickHelperTest extends TestCase
 
         $this->assertSame($mock, array_pop($commands));
 
-        $mock2 = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')->disableOriginalConstructor()->getMock();
-
+        $mock2 = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
         $helper->addCommand($mock2);
 
         $this->assertEquals(2, sizeof($helper->getCommands()));
@@ -123,29 +88,38 @@ class ImageMagickHelperTest extends TestCase
     /**
      * @test
      */
-    public function executeShouldExecuteAllOptionsAndCommandsCorrectly()
+    public function executeShouldExecuteAllAddedCommands()
     {
         $helper = new ImageMagickHelper();
 
-        $imagick = $this->getMock('Imagick');
-
-        $helper->setImageMagickOptions(array(
-            'ImageGreenPrimary' => array(6, 66),
-            'ImageScene' => 4
-        ));
-
-        $imagick->expects($this->once())->method('setImageGreenPrimary')->with($this->equalTo(6), $this->equalTo(66));
-        $imagick->expects($this->once())->method('setImageScene')->with($this->equalTo(4));
-
-        $mock = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
         $mock->expects($this->once())->method('execute');
 
-        $mock2 = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')->disableOriginalConstructor()->getMock();
+        $mock2 = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
         $mock2->expects($this->once())->method('execute');
 
         $helper->addCommand($mock);
         $helper->addCommand($mock2);
 
+        $imagick = $this->getMock('\Imagick');
         $helper->execute($imagick);
     }
+
+    /**
+     * @test
+     */
+    public function instantiationShouldParseCommandDefinitions()
+    {
+        $helper = new ImageMagickHelper(
+            array(
+                array('setImageGreenPrimary', array(6, 66)),
+                array('setImageScene', 4),
+                'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array('lussen', 'se', 5),
+                new ExecuteMethodCommand('lussen', 'le tusse'),
+            )
+        );
+
+        $this->assertCount(4, $helper->getCommands());
+    }
+
 }

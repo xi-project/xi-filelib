@@ -39,10 +39,10 @@ class ResourceTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame($resource, $resource->setHash($value));
         $this->assertEquals($value, $resource->getHash());
 
-        $value = array('xoo', 'xer');
-        $this->assertEquals(array(), $resource->getVersions());
-        $this->assertSame($resource, $resource->setVersions($value));
-        $this->assertEquals($value, $resource->getVersions());
+        $value = array('xoo' => 'lus', 'lord' => 'xenu');
+        $this->assertEquals(array(), $resource->getData());
+        $this->assertSame($resource, $resource->setData($value));
+        $this->assertEquals($value, $resource->getData());
 
         $value = new DateTime('2011-04-05');
         $this->assertNull($resource->getDateCreated());

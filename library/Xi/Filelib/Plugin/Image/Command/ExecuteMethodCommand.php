@@ -18,31 +18,20 @@ class ExecuteMethodCommand extends AbstractCommand
     private $parameters = array();
 
 
-    public function __construct($method = null, $parameters = array())
+    public function __construct($method, $parameters = array())
     {
         $this->method = $method;
+
+        if (!is_array($parameters)) {
+            $parameters = array($parameters);
+        }
+
         $this->parameters = $parameters;
-    }
-
-
-
-    public function setMethod($method)
-    {
-        $this->method = $method;
-
-        return $this;
     }
 
     public function getMethod()
     {
         return $this->method;
-    }
-
-    public function setParameters(array $parameters)
-    {
-        $this->parameters = $parameters;
-
-        return $this;
     }
 
     public function getParameters()

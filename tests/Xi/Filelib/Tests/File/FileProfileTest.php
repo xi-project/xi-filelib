@@ -7,6 +7,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
 /**
  * @group file-profile
@@ -23,18 +24,6 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
     protected function setUp()
     {
         $this->fileOperator = $this->getMockedFileOperator();
-        $this->fileOperator->expects($this->any())
-            ->method('getType')
-            ->will(
-                $this->returnCallBack(
-                    function (File $file) {
-                        $split = explode('/', $file->getMimetype());
-
-                        return $split[0];
-                    }
-                )
-            );
-
         $this->fileProfile = new FileProfile('lussen');
         $this->fileProfile->setFileOperator($this->fileOperator);
     }
@@ -125,7 +114,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertSame(
             $this->fileProfile,
-            $this->fileProfile->addFileVersion('image', 'xooxer', $versionProvider)
+            $this->fileProfile->addFileVersion('xooxer', $versionProvider)
         );
     }
 
@@ -137,9 +126,10 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->addMockedVersionsToFileProfile();
 
         $file = File::create(array(
-            'resource' => Resource::create(array('mimetype' => 'image/lus'))
+            'resource' => Resource::create(array('mimetype' => 'image/png'))
         ));
         $versionProviders = $this->fileProfile->getFileVersions($file);
+
         $this->assertCount(2, $versionProviders);
         $this->assertContains('globalizer', $versionProviders);
         $this->assertContains('imagenizer', $versionProviders);
@@ -156,18 +146,19 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
             'resource' => Resource::create(array('mimetype' => 'soo/soo'))
         ));
         $versionProviders = $this->fileProfile->getFileVersions($file);
-        $this->assertCount(0, $versionProviders);
+        $this->assertCount(1, $versionProviders);
     }
 
     public function provideFilesForHasVersionTest()
     {
         return array(
             array(true, 'globalizer', 'image/lus'),
-            array(true, 'imagenizer', 'image/lus'),
+            array(false, 'imagenizer', 'image/lus'),
+            array(true, 'imagenizer', 'image/png'),
             array(false, 'videonizer', 'image/lus'),
             array(false, 'videonizer', 'xoo/lus'),
-            array(true, 'videonizer', 'video/lux'),
-            array(false, 'globalizer', 'tussen/hof'),
+            array(false, 'videonizer', 'video/lux'),
+            array(true, 'globalizer', 'tussen/hof'),
             array(true, 'globalizer', 'video/avi'),
         );
     }
@@ -193,12 +184,9 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getVersionProviderShouldFailWithNonExistingVersion()
     {
-        $this->addMockedVersionsToFileProfile();
-
         $file = File::create(array(
             'resource' => Resource::create(array('mimetype' => 'xoo/lus'))
         ));
-
         $this->fileProfile->getVersionProvider($file, 'globalizer');
     }
 
@@ -238,11 +226,10 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $globalProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(true));
         $globalProvider->expects($this->any())->method('providesFor')->will($this->returnCallback(function(File $file) { return true; }));
 
-        $this->fileProfile->addFileVersion('image', 'imagenizer', $imageProvider);
-        $this->fileProfile->addFileVersion('video', 'videonizer', $videoProvider);
+        $this->fileProfile->addFileVersion('imagenizer', $imageProvider);
+        $this->fileProfile->addFileVersion('videonizer', $videoProvider);
 
-        $this->fileProfile->addFileVersion('image', 'globalizer', $globalProvider);
-        $this->fileProfile->addFileVersion('video', 'globalizer', $globalProvider);
+        $this->fileProfile->addFileVersion('globalizer', $globalProvider);
 
         $this->fileProfile->addPlugin($imageProvider);
         $this->fileProfile->addPlugin($videoProvider);

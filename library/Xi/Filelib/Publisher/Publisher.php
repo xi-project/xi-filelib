@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\FileLibrary;
@@ -62,7 +69,7 @@ class Publisher implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::FILE_AFTER_DELETE => array('onDelete')
+            Events::FILE_BEFORE_DELETE => array('onBeforeDelete')
         );
     }
 
@@ -71,42 +78,38 @@ class Publisher implements EventSubscriberInterface
      */
     public function publish(File $file)
     {
-        $this->adapter->publish($file, $this->linker);
         foreach ($this->getVersions($file) as $version) {
-            $this->adapter->publishVersion($file, $this->getVersionProvider($file, $version), $this->linker);
+            $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
         }
 
         $data = $file->getData();
         $data['publisher.published'] = 1;
+
+        $this->fileOperator->update($file);
     }
 
 
     public function unpublish(File $file)
     {
-        $this->adapter->unpublish($file, $this->linker);
         foreach ($this->getVersions($file) as $version) {
-            $this->adapter->unPublishVersion($file, $this->getVersionProvider($file, $version), $this->linker);
+            $this->adapter->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
         }
 
         $data = $file->getData();
         $data['publisher.published'] = 0;
-    }
 
-
-    public function getUrl(File $file)
-    {
-        return $this->adapter->getUrl($file, $this->linker);
+        $this->fileOperator->update($file);
     }
 
     public function getUrlVersion(File $file, $version)
     {
-        return $this->adapter->getUrl($file, $this->getVersionProvider($file, $version), $this->linker);
+        return $this->adapter->getUrlVersion($file, $version, $this->getVersionProvider($file, $version), $this->linker);
     }
 
     /**
      * @param FileEvent $event
      */
-    public function onDelete(FileEvent $event)
+    public function onBeforeDelete(FileEvent $event)
     {
         $file = $event->getFile();
         $this->unpublish($file);

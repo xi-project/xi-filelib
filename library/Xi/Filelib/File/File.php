@@ -30,12 +30,8 @@ class File implements Identifiable
         'uuid' => 'setUuid',
         'resource' => 'setResource',
         'versions' => 'setVersions',
+        'data' => 'setData'
     );
-
-    /**
-     * @var FileLibrary Filelib
-     */
-    private $filelib;
 
     /**
      * @var mixed
@@ -50,17 +46,7 @@ class File implements Identifiable
     /**
      * @var string
      */
-    private $mimetype;
-
-    /**
-     * @var string
-     */
     private $profile;
-
-    /**
-     * @var integer
-     */
-    private $size;
 
     /**
      * @var string
@@ -76,12 +62,6 @@ class File implements Identifiable
      * @var integer
      */
     private $status;
-
-    /**
-     *
-     * @var array
-     */
-    private $versions = array();
 
     /**
      *
@@ -293,7 +273,7 @@ class File implements Identifiable
     /**
      * Returns resource or null if file doesn't have one
      *
-     * @return Resource|null
+     * @return Resource
      */
     public function getResource()
     {
@@ -324,7 +304,7 @@ class File implements Identifiable
             'status' => $this->getStatus(),
             'resource' => $this->getResource(),
             'uuid' => $this->getUuid(),
-            'versions' => $this->getVersions(),
+            'data' => $this->getData(),
         );
     }
 
@@ -367,8 +347,22 @@ class File implements Identifiable
             $this->data = new ArrayObject();
         }
 
+        if (is_array($this->data)) {
+            $this->data = new ArrayObject($this->data);
+        }
+
         return $this->data;
     }
+
+    public function setData($data)
+    {
+        if (is_array($data)) {
+            $data = new ArrayObject($data);
+        }
+        $this->data = $data;
+        return $this;
+    }
+
 
     /**
      * Sets currently created versions
@@ -378,7 +372,8 @@ class File implements Identifiable
      */
     public function setVersions(array $versions = array())
     {
-        $this->versions = $versions;
+        $data = $this->getData();
+        $data['versions'] = $versions;
 
         return $this;
     }
@@ -390,7 +385,11 @@ class File implements Identifiable
      */
     public function getVersions()
     {
-        return $this->versions;
+        $data = $this->getData();
+        if (!isset($data['versions'])) {
+            $data['versions'] = array();
+        }
+        return $data['versions'];
     }
 
     /**
@@ -400,8 +399,10 @@ class File implements Identifiable
      */
     public function addVersion($version)
     {
-        if (!in_array($version, $this->versions)) {
-            array_push($this->versions, $version);
+        $versions = $this->getVersions();
+        if (!in_array($version, $versions)) {
+            array_push($versions, $version);
+            $this->setVersions($versions);
         }
     }
 
@@ -412,7 +413,9 @@ class File implements Identifiable
      */
     public function removeVersion($version)
     {
-        $this->versions = array_diff($this->versions, array($version));
+        $versions = $this->getVersions();
+        $versions = array_diff($versions, array($version));
+        $this->setVersions($versions);
     }
 
     /**
@@ -423,7 +426,6 @@ class File implements Identifiable
      */
     public function hasVersion($version)
     {
-        return in_array($version, $this->versions);
+        return in_array($version, $this->getVersions());
     }
-
 }

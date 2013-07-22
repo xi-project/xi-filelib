@@ -35,29 +35,14 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
         $this->storage = $filelib->getStorage();
     }
 
-    public function publish(File $file, Linker $linker)
-    {
-        $link = $this->getPublicRoot() . '/' . $linker->getLink($file, true);
-
-        if (!is_file($link)) {
-
-            $path = dirname($link);
-            if (!is_dir($path)) {
-                mkdir($path, $this->getDirectoryPermission(), true);
-            }
-
-            $tmp = $this->storage->retrieve($file->getResource());
-
-            copy($tmp, $link);
-            chmod($link, $this->getFilePermission());
-
-        }
-    }
-
-    public function publishVersion(File $file, VersionProvider $version, Linker $linker)
+    public function publish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
+            $linker->getLink(
+                $file,
+                $version,
+                $versionProvider->getExtensionFor($file, $version)
+            );
 
         if (!is_file($link)) {
 
@@ -67,10 +52,10 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            if ($version->areSharedVersionsAllowed()) {
-                $tmp = $this->storage->retrieveVersion($file->getResource(), $version->getIdentifier(), null);
+            if ($versionProvider->areSharedVersionsAllowed()) {
+                $tmp = $this->storage->retrieveVersion($file->getResource(), $version, null);
             } else {
-                $tmp = $this->storage->retrieveVersion($file->getResource(), $version->getIdentifier(), $file);
+                $tmp = $this->storage->retrieveVersion($file->getResource(), $version, $file);
             }
 
             copy($tmp, $link);
@@ -78,18 +63,14 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
         }
     }
 
-    public function unpublish(File $file, Linker $linker)
-    {
-        $link = $this->getPublicRoot() . '/' . $linker->getLink($file);
-        if (is_file($link)) {
-            unlink($link);
-        }
-    }
-
-    public function unpublishVersion(File $file, VersionProvider $version, Linker $linker)
+    public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLinkVersion($file, $version->getIdentifier(), $version->getExtensionFor($version));
+            $linker->getLink(
+                $file,
+                $version,
+                $versionProvider->getExtensionFor($file, $version)
+            );
         if (is_file($link)) {
             unlink($link);
         }

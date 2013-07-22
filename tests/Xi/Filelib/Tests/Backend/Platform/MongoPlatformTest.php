@@ -110,7 +110,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     '_id' => new MongoId('48a7011a05c677b9a9166101'),
                     'hash' => 'hash-1',
                     'date_created' => new DateTime('1978-03-21 06:06:06'),
-                    'versions' => array('tussi', 'watussi', 'pygmi'),
+                    'data' => array(
+                        'versions' => array('tussi', 'watussi', 'pygmi'),
+                    ),
                     'mimetype' => 'image/png',
                     'size' => 10000,
                     'exclusive' => true,
@@ -119,7 +121,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     '_id' => new MongoId('48a7011a05c677b9a9166102'),
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1988-03-21 06:06:06'),
-                    'versions' => array(),
+                    'data' => array(
+                        'versions' => array(),
+                    ),
                     'mimetype' => 'image/png',
                     'size' => 20000,
                     'exclusive' => true,
@@ -128,7 +132,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     '_id' => new MongoId('48a7011a05c677b9a9166103'),
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1998-03-21 06:06:06'),
-                    'versions' => array('pygmi', 'tussi'),
+                    'data' => array(
+                        'versions' => array('pygmi', 'tussi'),
+                    ),
                     'mimetype' => 'image/png',
                     'size' => 30000,
                     'exclusive' => true,
@@ -137,7 +143,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     '_id' => new MongoId('48a7011a05c677b9a9166104'),
                     'hash' => 'hash-3',
                     'date_created' => new DateTime('2008-03-21 06:06:06'),
-                    'versions' => array('watussi'),
+                    'data' => array(
+                        'versions' => array('watussi'),
+                    ),
                     'mimetype' => 'image/jpg',
                     'size' => 40000,
                     'exclusive' => true,
@@ -146,7 +154,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     '_id' => new MongoId('48a7011a05c677b9a9166105'),
                     'hash' => 'hash-5',
                     'date_created' => new DateTime('2009-03-21 06:06:06'),
-                    'versions' => array('watussi', 'loso'),
+                    'data' => array(
+                        'versions' => array('watussi', 'loso'),
+                    ),
                     'mimetype' => 'video/xxx',
                     'size' => 50000,
                     'exclusive' => true,
@@ -200,7 +210,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'status'        => 1,
                     'uuid'          => 'uuid-1',
                     'resource_id'   => '48a7011a05c677b9a9166101',
-                    'versions' => array(),
+                    'data' => array(
+                        'versions' => array(),
+                    ),
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166107'),
@@ -212,7 +224,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'status'        => 2,
                     'uuid'          => 'uuid-2',
                     'resource_id'   => '48a7011a05c677b9a9166102',
-                    'versions' => array(),
+                    'data' => array(
+                        'versions' => array(),
+                    ),
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166108'),
@@ -224,7 +238,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'status'        => 4,
                     'uuid'          => 'uuid-3',
                     'resource_id'   => '48a7011a05c677b9a9166103',
-                    'versions' => array(),
+                    'data' => array(
+                        'versions' => array(),
+                    ),
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166109'),
@@ -236,7 +252,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'status'        => 8,
                     'uuid'          => 'uuid-4',
                     'resource_id'   => '48a7011a05c677b9a9166104',
-                    'versions' => array(),
+                    'data' => array(
+                        'versions' => array(),
+                    ),
                 ),
                 array(
                     '_id'           => new MongoId('49a7011a05c677b9a9166110'),
@@ -248,7 +266,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'status'        => 16,
                     'uuid'          => 'uuid-5',
                     'resource_id'   => '48a7011a05c677b9a9166104',
-                    'versions' => array('kliussi', 'watussi'),
+                    'data' => array(
+                        'versions' => array('kliussi', 'watussi'),
+                    ),
                 ),
             ),
         );

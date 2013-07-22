@@ -162,3 +162,24 @@ The start of the sequence must be at least MAX(id) FROM xi_filelib_resource + 1
 ### Enjoy the results
 
 Everything should work now!!!
+
+## From version 0.7.x to version 0.8.x
+
+This upgrade is going to be fun as we did a major refactoring round. The whole structure of Filelib
+was changed. When I do an actual migration for an actual client code, I will write this guide. :)
+
+### PostgreSQL
+
+ALTER TABLE xi_filelib_resource RENAME COLUMN versions TO data;
+ALTER TABLE xi_filelib_file RENAME COLUMN versions TO data;
+ALTER TABLE xi_filelib_file DROP COLUMN filelink;
+
+### MySQL
+
+ALTER TABLE xi_filelib_resource CHANGE versions data longtext NOT NULL;
+ALTER TABLE xi_filelib_file CHANGE versions data longtext NOT NULL;
+ALTER TABLE xi_filelib_file DROP COLUMN filelink;
+
+### MongoDB
+
+

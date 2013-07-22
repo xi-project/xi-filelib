@@ -62,21 +62,6 @@ class FolderOperator extends AbstractOperator
     }
 
     /**
-     * Returns an instance of the currently set folder class
-     *
-     * @param array $data Data
-     */
-    public function getInstance(array $data = array())
-    {
-        $folder = new Folder();
-        if ($data) {
-            $folder->fromArray($data);
-        }
-
-        return $folder;
-    }
-
-    /**
      * Creates a folder
      *
      * @param Folder $folder

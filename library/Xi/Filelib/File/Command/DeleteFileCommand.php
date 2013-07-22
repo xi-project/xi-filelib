@@ -31,6 +31,9 @@ class DeleteFileCommand extends AbstractFileCommand
 
     public function execute()
     {
+        $event = new FileEvent($this->file);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_DELETE, $event);
+
         $this->fileOperator->getBackend()->deleteFile($this->file);
 
         if ($this->file->getResource()->isExclusive()) {

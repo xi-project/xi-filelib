@@ -188,7 +188,7 @@ class DoctrineOrmPlatform implements Platform
         $entity->setStatus($file->getStatus());
         $entity->setUuid($file->getUuid());
         $entity->setResource($this->em->getReference($this->getResourceEntityName(), $file->getResource()->getId()));
-        $entity->setVersions($file->getVersions());
+        $entity->setData($file->getData()->getArrayCopy());
 
         $this->em->flush();
 
@@ -268,7 +268,7 @@ class DoctrineOrmPlatform implements Platform
     {
         try {
             $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
-            $resourceRow->setVersions($resource->getVersions());
+            $resourceRow->setData($resource->getData()->getArrayCopy());
             $resourceRow->setExclusive($resource->isExclusive());
             $resourceRow->setHash($resource->getHash());
             $this->em->flush();
@@ -357,7 +357,7 @@ class DoctrineOrmPlatform implements Platform
                 $entity->setDateCreated($file->getDateCreated());
                 $entity->setStatus($file->getStatus());
                 $entity->setUuid($file->getUuid());
-                $entity->setVersions($file->getVersions());
+                $entity->setData($file->getData()->getArrayCopy());
 
                 $resource = $file->getResource();
                 if ($resource) {
@@ -500,7 +500,7 @@ class DoctrineOrmPlatform implements Platform
                         'status' => $file->getStatus(),
                         'uuid' => $file->getUuid(),
                         'resource' => $resource,
-                        'versions' => $file->getVersions(),
+                        'data' => $file->getData(),
                     )
                 )
             );
@@ -523,7 +523,7 @@ class DoctrineOrmPlatform implements Platform
                         'id' => $resource->getId(),
                         'hash' => $resource->getHash(),
                         'date_created' => $resource->getDateCreated(),
-                        'versions' => $resource->getVersions(),
+                        'data' => $resource->getData(),
                         'mimetype' => $resource->getMimetype(),
                         'size' => $resource->getSize(),
                         'exclusive' => $resource->getExclusive(),

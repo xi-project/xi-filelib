@@ -51,9 +51,8 @@ class VersionPluginTest extends TestCase
 
         $this->plugin = new VersionPlugin(
             'xooxer',
-            ROOT_TESTS . '/data/temp',
-            'jpg',
-            array()
+            array(),
+            'jpg'
         );
     }
 
@@ -73,7 +72,7 @@ class VersionPluginTest extends TestCase
      */
     public function pluginShouldProvideForImage()
     {
-        $this->assertEquals(array('image'), $this->plugin->getProvidesFor());
+        $this->assertInstanceOf('Closure', $this->plugin->getProvidesFor());
     }
 
     /**
@@ -131,13 +130,14 @@ class VersionPluginTest extends TestCase
                        ->setMethods(array('getImageMagickHelper'))
                        ->setConstructorArgs(array(
                            'tussi',
-                           ROOT_TESTS . '/data/temp',
+                           array(),
                            'jpg'
                        ))
                        ->getMock();
 
         $filelib = $this->getMockedFilelib();
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
+        $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
         $plugin->setDependencies($filelib);
 
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
@@ -177,10 +177,7 @@ class VersionPluginTest extends TestCase
     public function gettersAndSettersShouldWork()
     {
         $extension = 'lus';
-
         $this->assertSame('jpg', $this->plugin->getExtension());
-        $this->assertSame($this->plugin, $this->plugin->setExtension($extension));
-        $this->assertEquals($extension, $this->plugin->getExtension());
     }
 
     /**
@@ -193,16 +190,19 @@ class VersionPluginTest extends TestCase
                        ->disableOriginalConstructor()
                        ->getMock();
 
-        $plugin->expects($this->once())->method('getExtension');
+        $plugin->expects($this->once())->method('getExtension')->will($this->returnValue('lus'));
 
-        $plugin->getExtensionFor('xooxoo');
+        $ret = $plugin->getExtensionFor($this->getMockedFile(), 'xooxoo');
+
+        $this->assertSame('lus', $ret);
     }
 
     /**
      * @test
      */
-    public function getsTempDir()
+    public function injectsTempDirFromFilelib()
     {
-        $this->assertEquals(ROOT_TESTS . '/data/temp', $this->plugin->getTempDir());
+        $filelib = $this->getMockedFilelib();
+        $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue('lussutushovi'));
     }
 }
