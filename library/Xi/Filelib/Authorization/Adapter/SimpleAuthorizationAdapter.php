@@ -24,39 +24,69 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
     /**
      * @var bool
      */
-    private $folderReadableByAnonymous = true;
+    private $folderReadableByAnonymous;
 
    /**
     * @var bool
     */
-    private $fileReadableByAnonymous = true;
+    private $fileReadableByAnonymous;
 
     /**
      * @var bool
      */
-    private $fileReadable = true;
+    private $fileReadable;
 
     /**
      * @var bool
      */
-    private $fileWritable = true;
+    private $fileWritable;
 
     /**
      * @var bool
      */
-    private $folderReadable = true;
+    private $folderReadable;
 
     /**
      * @var bool
      */
-    private $folderWritable = true;
+    private $folderWritable;
+
+
+    public function __construct()
+    {
+        $this->fileReadable = function (File $file) {
+            return true;
+        };
+
+        $this->fileReadableByAnonymous = function (File $file) {
+            return true;
+        };
+
+        $this->fileWritable = function (File $file) {
+            return true;
+        };
+
+        $this->folderReadableByAnonymous = function (Folder $folder) {
+            return true;
+        };
+
+        $this->folderReadable = function (Folder $folder) {
+            return true;
+        };
+
+        $this->folderWritable = function (Folder $folder) {
+            return true;
+        };
+
+    }
+
 
     /**
      * {@inheritdoc}
      */
     public function isFileReadable(File $file)
     {
-        return $this->fileReadable;
+        return call_user_func($this->fileReadable, $file);
     }
 
     /**
@@ -64,7 +94,7 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
      */
     public function isFileWritable(File $file)
     {
-        return $this->fileWritable;
+        return call_user_func($this->fileWritable, $file);
     }
 
     /**
@@ -72,7 +102,7 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
      */
     public function isFileReadableByAnonymous(File $file)
     {
-        return $this->fileReadableByAnonymous;
+        return call_user_func($this->fileReadableByAnonymous, $file);
     }
 
     /**
@@ -80,7 +110,7 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
      */
     public function isFolderReadable(Folder $file)
     {
-        return $this->folderReadable;
+        return call_user_func($this->folderReadable, $file);
     }
 
     /**
@@ -88,7 +118,7 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
      */
     public function isFolderWritable(Folder $file)
     {
-        return $this->folderWritable;
+        return call_user_func($this->folderWritable, $file);
     }
 
     /**
@@ -96,72 +126,84 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
      */
     public function isFolderReadableByAnonymous(Folder $file)
     {
-        return $this->folderReadableByAnonymous;
+        return call_user_func($this->folderReadableByAnonymous, $file);
     }
 
     /**
-     * @param bool $value
+     * @param mixed $value
      * @return $this
      */
     public function setFolderReadableByAnonymous($value)
     {
-        $this->folderReadableByAnonymous = $value;
+        $this->folderReadableByAnonymous = $this->wrap($value);
 
         return $this;
     }
 
     /**
-     * @param bool $value
+     * @param mixed $value
      * @return $this
      */
     public function setFileReadableByAnonymous($value)
     {
-        $this->fileReadableByAnonymous = $value;
+        $this->fileReadableByAnonymous = $this->wrap($value);
 
         return $this;
     }
 
     /**
-     * @param bool $value
+     * @param mixed $value
      * @return $this
      */
     public function setFileReadable($value)
     {
-        $this->fileReadable = $value;
+        $this->fileReadable = $this->wrap($value);
 
         return $this;
     }
 
     /**
-     * @param bool $value
+     * @param mixed $value
      * @return $this
      */
     public function setFileWritable($value)
     {
-        $this->fileWritable = $value;
+        $this->fileWritable = $this->wrap($value);
 
         return $this;
     }
 
     /**
-     * @param bool $value
+     * @param mixed $value
      * @return $this
      */
     public function setFolderReadable($value)
     {
-        $this->folderReadable = $value;
+        $this->folderReadable = $this->wrap($value);
 
         return $this;
     }
 
     /**
-     * @param bool $value
+     * @param mixed $value
      * @return $this
      */
     public function setFolderWritable($value)
     {
-        $this->folderWritable = $value;
+        $this->folderWritable = $this->wrap($value);
 
         return $this;
     }
+
+
+    private function wrap($value)
+    {
+        if (!is_callable($value)) {
+            return function () use ($value) {
+                return $value;
+            };
+        }
+        return $value;
+    }
+
 }

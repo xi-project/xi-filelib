@@ -28,7 +28,7 @@ class SimpleAuthorizationAdapterTest extends \Xi\Filelib\Tests\TestCase
      * @test
      * @dataProvider provideMethods
      */
-    public function shouldBeConfigurable($method)
+    public function shouldBeSimplyConfigurable($method)
     {
         $setter = 'set' . ucfirst($method);
         $getter = 'is' . ucfirst($method);
@@ -47,6 +47,26 @@ class SimpleAuthorizationAdapterTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
+    /**
+     * @test
+     */
+    public function shouldBeConfigurableWithAClosure()
+    {
+        $file1 = $this->getMockedFile();
+        $file2 = $this->getMockedFile();
+
+        $func = function(File $file) use ($file1, $file2) {
+            if ($file === $file1) {
+                return true;
+            }
+            return false;
+        };
 
 
+        $acl = new SimpleAuthorizationAdapter();
+        $acl->setFileReadableByAnonymous($func);
+
+        $this->assertTrue($acl->isFileReadableByAnonymous($file1));
+        $this->assertFalse($acl->isFileReadableByAnonymous($file2));
+    }
 }
