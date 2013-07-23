@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Acl;
+namespace Xi\Filelib\Authorization;
 
 use Xi\Filelib\Exception\FilelibException;
 

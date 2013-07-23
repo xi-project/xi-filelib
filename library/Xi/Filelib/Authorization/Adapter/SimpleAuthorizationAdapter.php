@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Acl\Adapter;
+namespace Xi\Filelib\Authorization\Adapter;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Acl\AclAdapter;
+use Xi\Filelib\Authorization\AuthorizationAdapter;
 
 /**
  * Simple ACL for development / testing / simplest of actual use cases
@@ -19,7 +19,7 @@ use Xi\Filelib\Acl\AclAdapter;
  * @author pekkis
  *
  */
-class SimpleAclAdapter implements AclAdapter
+class SimpleAuthorizationAdapter implements AuthorizationAdapter
 {
     /**
      * @var bool

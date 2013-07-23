@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Tests\Acl;
+namespace Xi\Filelib\Tests\Authorization;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
@@ -9,12 +9,12 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Acl\Model\AclProviderInterface;
-use Xi\Filelib\Acl\Adapter\SymfonyAclAdapter;
+use Xi\Filelib\Authorization\Adapter\SymfonyAuthorizationAdapter;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
-class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
+class SymfonyAuthorizationAdapterTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
      *
@@ -71,10 +71,10 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
      */
     public function isFolderBasedShouldRespectConstructorArgument()
     {
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, false);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, false);
         $this->assertFalse($acl->isFolderBased());
 
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, true);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, true);
         $this->assertTrue($acl->isFolderBased());
 
     }
@@ -84,7 +84,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertImplements('Xi\Filelib\Acl\AclAdapter', 'Xi\Filelib\Acl\Adapter\SymfonyAclAdapter');
+        $this->assertImplements('Xi\Filelib\Authorization\AuthorizationAdapter', 'Xi\Filelib\Authorization\Adapter\SymfonyAuthorizationAdapter');
     }
 
     /**
@@ -96,7 +96,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
 
         $this->contextExpect($file, 'VIEW', true);
 
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, false);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->isFileReadable($file);
         $this->assertTrue($ret);
@@ -117,7 +117,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnValue($folder));
 
         $this->contextExpect($folder, 'VIEW', false);
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, true);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, true);
 
         $ret = $acl->isFileReadable($file);
         $this->assertFalse($ret);
@@ -132,7 +132,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
         $file = File::create(array('id' => 1));
 
         $this->contextExpect($file, 'EDIT', true);
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, false);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->isFileWritable($file);
         $this->assertTrue($ret);
@@ -154,7 +154,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
 
         $this->contextExpect($folder, 'EDIT', true);
 
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, true);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, true);
 
         $ret = $acl->isFileWritable($file);
         $this->assertTrue($ret);
@@ -169,7 +169,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
 
         $this->contextExpect($folder, 'VIEW', true);
 
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, false);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->isFolderReadable($folder);
         $this->assertTrue($ret);
@@ -184,7 +184,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
 
         $this->contextExpect($folder, 'EDIT', false);
 
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, false);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->isFolderWritable($folder);
         $this->assertFalse($ret);
@@ -205,7 +205,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
             ->with($this->equalTo(1))
             ->will($this->returnValue($folder));
 
-        $acl = $this->getMockBuilder('Xi\Filelib\Acl\Adapter\SymfonyAclAdapter')
+        $acl = $this->getMockBuilder('Xi\Filelib\Authorization\Adapter\SymfonyAuthorizationAdapter')
                     ->setConstructorArgs(array($this->filelib, $this->context, $this->aclProvider, true))
                     ->setMethods(array('isFolderReadableByAnonymous'))
                     ->getMock();
@@ -225,7 +225,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array('id' => 1, 'folder_id' => 1));
 
-        $acl = $this->getMockBuilder('Xi\Filelib\Acl\Adapter\SymfonyAclAdapter')
+        $acl = $this->getMockBuilder('Xi\Filelib\Authorization\Adapter\SymfonyAuthorizationAdapter')
                     ->setConstructorArgs(array($this->filelib, $this->context, $this->aclProvider, false))
                     ->setMethods(array('anonymousAclQueryWith'))
                     ->getMock();
@@ -244,7 +244,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
     {
         $folder = Folder::create(array('id' => 1));
 
-        $acl = $this->getMockBuilder('Xi\Filelib\Acl\Adapter\SymfonyAclAdapter')
+        $acl = $this->getMockBuilder('Xi\Filelib\Authorization\Adapter\SymfonyAuthorizationAdapter')
                     ->setConstructorArgs(array($this->filelib, $this->context, $this->aclProvider, false))
                     ->setMethods(array('anonymousAclQueryWith'))
                     ->getMock();
@@ -266,7 +266,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
                           ->with($this->isInstanceOf('Symfony\Component\Security\Acl\Domain\ObjectIdentity'))
                           ->will($this->throwException(new AclNotFoundException('Xooxoo')));
 
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, false);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->anonymousAclQueryWith($file);
 
@@ -291,7 +291,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
                           ->with($this->isInstanceOf('Symfony\Component\Security\Acl\Domain\ObjectIdentity'))
                           ->will($this->returnValue($acl));
 
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, false);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->anonymousAclQueryWith($file);
 
@@ -304,7 +304,7 @@ class SymfonyAclAdapterTest extends \Xi\Filelib\Tests\TestCase
     {
         $folder = Folder::create(array('id' => 1));
 
-        $acl = new SymfonyAclAdapter($this->filelib, $this->context, $this->aclProvider, false);
+        $acl = new SymfonyAuthorizationAdapter($this->filelib, $this->context, $this->aclProvider, false);
 
         $ret = $acl->isFolderReadableByAnonymous($folder);
 

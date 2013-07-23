@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Acl;
+namespace Xi\Filelib\Authorization;
 
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\FolderEvent;
@@ -11,13 +11,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\Publisher\Events as PublisherEvents;
 use Xi\Filelib\Event\FileUploadEvent;
-use Xi\Filelib\Acl\AccessDeniedException;
+use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\Event\IdentifiableEvent;
 
-class AclPlugin extends AbstractPlugin
+class AuthorizationPlugin extends AbstractPlugin
 {
     /**
-     * @var AclAdapter
+     * @var AuthorizationAdapter
      */
     private $adapter;
 
@@ -41,7 +41,7 @@ class AclPlugin extends AbstractPlugin
      */
     private $eventDispatcher;
 
-    public function __construct(AclAdapter $adapter)
+    public function __construct(AuthorizationAdapter $adapter)
     {
         $this->adapter = $adapter;
     }

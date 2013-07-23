@@ -1,14 +1,14 @@
 <?php
 
-namespace Xi\Filelib\Tests\Acl;
+namespace Xi\Filelib\Tests\Authorization;
 
 use \PHPUnit_Framework_TestCase as TestCase;
 
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Acl\Adapter\SimpleAclAdapter;
+use Xi\Filelib\Authorization\Adapter\SimpleAuthorizationAdapter;
 
-class SimpleAclAdapterTest extends \Xi\Filelib\Tests\TestCase
+class SimpleAuthorizationAdapterTest extends \Xi\Filelib\Tests\TestCase
 {
 
     public function provideMethods()
@@ -39,7 +39,7 @@ class SimpleAclAdapterTest extends \Xi\Filelib\Tests\TestCase
             $identifiable = $this->getMockedFolder();
         }
 
-        $acl = new SimpleAclAdapter();
+        $acl = new SimpleAuthorizationAdapter();
         $this->assertTrue($acl->$getter($identifiable));
 
         $this->assertSame($acl, $acl->$setter(false));

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Acl;
+namespace Xi\Filelib\Authorization;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
@@ -16,7 +16,7 @@ use Xi\Filelib\Folder\Folder;
  * ACL adapter interface
  *
  */
-interface AclAdapter
+interface AuthorizationAdapter
 {
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Acl;
+namespace Xi\Filelib\Authorization;
 
 class Events
 {
