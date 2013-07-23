@@ -60,8 +60,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     {
         $this->setUpSimpleDataSet();
         $resource = Resource::create(array('id' => $resourceId));
-
-        $this->setUpSimpleDataSet();
         $this->assertEquals($numberOfReferences, $this->backend->getNumberOfReferences($resource));
     }
 

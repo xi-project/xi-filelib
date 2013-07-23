@@ -8,7 +8,8 @@ use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
-use Mongo;
+use MongoClient;
+use MongoDB;
 use MongoId;
 use MongoDate;
 use MongoConnectionException;
@@ -20,7 +21,7 @@ use MongoConnectionException;
 class MongoPlatformTest extends AbstractPlatformTestCase
 {
     /**
-     * @var @MongoDB
+     * @var MongoDB
      */
     protected $mongo;
 
@@ -36,9 +37,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
         }
 
         try {
-            $mongo = new Mongo(MONGO_DNS, array('connect' => true));
+            $mongo = new MongoClient(MONGO_DNS);
         } catch (MongoConnectionException $e) {
-            $this->markTestSkipped('Can not connect to MongoDB.');
+            return $this->markTestSkipped('Can not connect to MongoDB.');
         }
 
         // TODO: Fix hard coded db name.
