@@ -105,7 +105,7 @@ class AbstractFilesystemPublisherAdapterTest extends TestCase
                     'publish',
                     'unpublish',
                     'getLinkerForFile',
-                    'setDependencies'
+                    'attachTo'
                 )
             )
             ->setConstructorArgs(array($publicRoot, $filePermission, $directoryPermission, $baseUrl))

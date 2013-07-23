@@ -101,7 +101,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $filelib = $this->getMockedFilelib();
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
-        $this->plugin->setDependencies($filelib);
+        $this->plugin->attachTo($filelib);
     }
 
     public function tearDown()

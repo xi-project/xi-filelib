@@ -61,13 +61,17 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->getMock();
 
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+
         $ed
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('dispatch')
-            ->with(
-            $this->equalTo(Events::FOLDER_AFTER_DELETE),
-            $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
-        );
+            ->with(Events::FOLDER_BEFORE_DELETE,  $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
+
+        $ed
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(Events::FOLDER_AFTER_DELETE,  $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
+
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
 
         $deleteCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\DeleteFolderCommand')

@@ -15,6 +15,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
@@ -110,9 +111,11 @@ class UploadFileCommand extends AbstractFileCommand
         $folder = $this->folder;
         $profile = $this->profile;
 
+        $event = new FolderEvent($folder);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
+
         $profileObj = $this->fileOperator->getProfile($profile);
         $event = new FileUploadEvent($upload, $folder, $profileObj);
-
         $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_CREATE, $event);
 
         $upload = $event->getFileUpload();

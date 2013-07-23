@@ -96,7 +96,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
             '',
             '../private'
         );
-        $publisher->setDependencies($filelib);
+        $publisher->attachTo($filelib);
 
         if ($versionProviderAllowsSharedResources) {
             $storage
@@ -227,7 +227,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
             "700",
             ''
         );
-        $publisher->setDependencies($this->filelib);
+        $publisher->attachTo($this->filelib);
 
         $publisher->publish($file, $this->version, $this->versionProvider, $this->plinker);
 
@@ -273,7 +273,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
             '',
             '../private'
         );
-        $publisher->setDependencies($this->filelib);
+        $publisher->attachTo($this->filelib);
 
         $publisher->publish($file, $this->version, $this->versionProvider, $this->plinker);
 
@@ -317,7 +317,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
             '',
             '../private'
         );
-        $publisher->setDependencies($this->filelib);
+        $publisher->attachTo($this->filelib);
 
         $publisher->unpublish($file, $this->version, $this->versionProvider, $this->plinker);
 
@@ -340,7 +340,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
             ->with($this->isInstanceOf('Xi\Filelib\File\File'))
             ->will($this->returnValue($this->plinker));
 
-        $publisher->setDependencies($this->filelib);
+        $publisher->attachTo($this->filelib);
 
         return $publisher;
     }

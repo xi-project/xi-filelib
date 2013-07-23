@@ -13,13 +13,10 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 
 /**
- * Interface for building an ACL implementation for Filelib
- *
- * @author pekkis
- * @package Xi_Filelib
+ * ACL adapter interface
  *
  */
-interface Acl
+interface AclAdapter
 {
 
     /**
@@ -63,5 +60,4 @@ interface Acl
      * @param Folder $folder
      */
     public function isFolderReadableByAnonymous(Folder $folder);
-
 }

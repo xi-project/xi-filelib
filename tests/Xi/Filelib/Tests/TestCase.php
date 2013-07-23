@@ -217,6 +217,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function assertImplements($implemented, $implementor)
+    {
+        $this->assertContains(
+            $implemented,
+            class_implements($implementor),
+            "Class '{$implementor}' doesnt implement '{$implemented}'"
+        );
+    }
+
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */

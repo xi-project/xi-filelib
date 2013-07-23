@@ -17,6 +17,7 @@ use Xi\Filelib\Event\FileCopyEvent;
 use InvalidArgumentException;
 use DateTime;
 use Xi\Filelib\Events;
+use Xi\Filelib\Event\FolderEvent;
 
 class CopyFileCommand extends AbstractFileCommand
 {
@@ -140,6 +141,12 @@ class CopyFileCommand extends AbstractFileCommand
     public function execute()
     {
         $impostor = $this->getImpostor($this->file);
+
+        $event = new FileCopyEvent($this->file, $impostor);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_COPY, $event);
+
+        $event = new FolderEvent($this->folder);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
 
         $this->fileOperator->getBackend()->createFile($impostor, $this->folder);
 

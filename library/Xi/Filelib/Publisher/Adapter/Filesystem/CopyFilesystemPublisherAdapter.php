@@ -30,7 +30,7 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
      */
     private $storage;
 
-    public function setDependencies(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
     }
