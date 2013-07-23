@@ -32,7 +32,7 @@ before_script:
   - sh -c "cd translit-0.6.1 && phpize && ./configure --with-imagick=/usr/local && make && sudo make install"
   - echo "extension=translit.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
-script: cd tests && phpunit --configuration travis/$DB.travis.xml
+script: cd tests && phpunit -v --configuration travis/$DB.travis.xml
 
 notifications:
   irc: "irc.freenode.net#xi-project"
