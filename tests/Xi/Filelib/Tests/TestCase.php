@@ -90,14 +90,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedAcl()
-    {
-        return $this->getMock('Xi\Filelib\Acl\Acl');
-    }
-
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
     public function getMockedQueue()
     {
         return $this->getMock('Xi\Filelib\Queue\Queue');
