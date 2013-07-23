@@ -85,6 +85,6 @@ abstract class AbstractPlugin implements Plugin
 
     public function attachTo(FileLibrary $filelib)
     {
-        
+
     }
 }
