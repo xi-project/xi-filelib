@@ -69,8 +69,7 @@ class JsonPlatform implements Platform
     public function __destruct()
     {
         // Suckety suck! PHP 5.3 does not have pretty print. Rejoice!
-        $options = constant('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT: 0;
-
+        $options = defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT: 0;
         file_put_contents($this->file, json_encode($this->json, $options));
     }
 
