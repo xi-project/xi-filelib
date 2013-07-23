@@ -9,7 +9,8 @@
 
 namespace Xi\Filelib\Tests\Storage;
 
-use Mongo;
+use MongoClient;
+use MongoDB;
 use MongoConnectionException;
 use Xi\Filelib\Storage\GridfsStorage;
 
@@ -19,7 +20,7 @@ use Xi\Filelib\Storage\GridfsStorage;
 class GridFsStorageTest extends TestCase
 {
     /**
-     * @var MondoDB
+     * @var MongoDB
      */
     protected $mongo;
 
@@ -30,9 +31,9 @@ class GridFsStorageTest extends TestCase
         }
 
         try {
-            $mongo = new Mongo(MONGO_DNS, array('connect' => true));
+            $mongo = new MongoClient(MONGO_DNS);
         } catch (MongoConnectionException $e) {
-            $this->markTestSkipped('Can not connect to MongoDB.');
+            return $this->markTestSkipped('Can not connect to MongoDB.');
         }
 
         $this->mongo = $mongo->filelib_tests;

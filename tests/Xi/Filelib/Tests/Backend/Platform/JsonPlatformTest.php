@@ -2,63 +2,51 @@
 
 namespace Xi\Filelib\Tests\Backend\Platform;
 
-use Xi\Filelib\Backend\Platform\MongoPlatform;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
-use MongoClient;
-use MongoDB;
-use MongoId;
-use MongoDate;
-use MongoConnectionException;
+use Xi\Filelib\Backend\Platform\JsonPlatform;
 
 /**
  * @group backend
  * @group mongo
  */
-class MongoPlatformTest extends AbstractPlatformTestCase
+class JsonPlatformTest extends AbstractPlatformTestCase
 {
-    /**
-     * @var MongoDB
-     */
-    protected $mongo;
 
     /**
      * Implements AbstractPlatformTest::setUpBackend
      *
-     * @return MongoPlatform
+     * @return JsonPlatform
      */
     protected function setUpBackend()
     {
-        if (!extension_loaded('mongo')) {
-            $this->markTestSkipped('MongoDB extension is not loaded.');
-        }
-
-        try {
-            $mongo = new MongoClient(MONGO_DNS);
-        } catch (MongoConnectionException $e) {
-            return $this->markTestSkipped('Can not connect to MongoDB.');
-        }
-
-        // TODO: Fix hard coded db name.
-        $this->mongo = $mongo->filelib_tests;
-
-        return new MongoPlatform($this->mongo);
+        return new JsonPlatform(ROOT_TESTS . '/data/temp/json-platform.json');
     }
 
-    protected function tearDown()
+    public function setUp()
     {
-        if (extension_loaded('mongo') && $this->mongo) {
-            foreach ($this->mongo->listCollections() as $collection) {
-                $collection->drop();
-            }
+        parent::setUp();
+
+        if (is_file(ROOT_TESTS . '/data/temp/json-platform.json')) {
+            unlink(ROOT_TESTS . '/data/temp/json-platform.json');
+        }
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+
+        if (is_file(ROOT_TESTS . '/data/temp/json-platform.json')) {
+            unlink(ROOT_TESTS . '/data/temp/json-platform.json');
         }
 
-        $this->mongo = null;
+        if (is_file(ROOT_TESTS . '/data/temp/temp.json')) {
+            unlink(ROOT_TESTS . '/data/temp/temp.json');
+        }
 
-        parent::tearDown();
     }
 
     /**
@@ -66,7 +54,13 @@ class MongoPlatformTest extends AbstractPlatformTestCase
      */
     protected function setUpEmptyDataSet()
     {
-        $this->setUpIndexes();
+        $json = array(
+            'resources' => array(),
+            'files' => array(),
+            'folders' => array()
+        );
+
+        file_put_contents(ROOT_TESTS . '/data/temp/json-platform.json', json_encode($json));
     }
 
     /**
@@ -74,29 +68,7 @@ class MongoPlatformTest extends AbstractPlatformTestCase
      */
     protected function setUpSimpleDataSet()
     {
-        $this->setUpIndexes();
-
-        foreach ($this->getData() as $coll => $objects) {
-            foreach ($objects as $obj) {
-                $this->mongo->$coll->insert($obj);
-            }
-        }
-    }
-
-    private function setUpIndexes()
-    {
-        $this->mongo->files->ensureIndex(
-            array(
-                'folder_id' => 1,
-                'name'      => 1
-            ),
-            array('unique' => true)
-        );
-
-        $this->mongo->folders->ensureIndex(
-            array('name' => 1),
-            array('unique' => true)
-        );
+        file_put_contents(ROOT_TESTS . '/data/temp/json-platform.json', json_encode($this->getData()));
     }
 
     /**
@@ -108,9 +80,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
 
             'resources' => array(
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166101'),
+                    'id' => '48a7011a05c677b9a9166101',
                     'hash' => 'hash-1',
-                    'date_created' => new DateTime('1978-03-21 06:06:06'),
+                    'date_created' => '1978-03-21 06:06:06',
                     'data' => array(
                         'versions' => array('tussi', 'watussi', 'pygmi'),
                     ),
@@ -119,9 +91,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'exclusive' => true,
                 ),
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166102'),
+                    'id' => '48a7011a05c677b9a9166102',
                     'hash' => 'hash-2',
-                    'date_created' => new DateTime('1988-03-21 06:06:06'),
+                    'date_created' => '1988-03-21 06:06:06',
                     'data' => array(
                         'versions' => array(),
                     ),
@@ -130,9 +102,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'exclusive' => true,
                 ),
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166103'),
+                    'id' => '48a7011a05c677b9a9166103',
                     'hash' => 'hash-2',
-                    'date_created' => new DateTime('1998-03-21 06:06:06'),
+                    'date_created' => '1998-03-21 06:06:06',
                     'data' => array(
                         'versions' => array('pygmi', 'tussi'),
                     ),
@@ -141,9 +113,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'exclusive' => true,
                 ),
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166104'),
+                    'id' => '48a7011a05c677b9a9166104',
                     'hash' => 'hash-3',
-                    'date_created' => new DateTime('2008-03-21 06:06:06'),
+                    'date_created' => '2008-03-21 06:06:06',
                     'data' => array(
                         'versions' => array('watussi'),
                     ),
@@ -152,9 +124,9 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'exclusive' => true,
                 ),
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166105'),
+                    'id' => '48a7011a05c677b9a9166105',
                     'hash' => 'hash-5',
-                    'date_created' => new DateTime('2009-03-21 06:06:06'),
+                    'date_created' => '2009-03-21 06:06:06',
                     'data' => array(
                         'versions' => array('watussi', 'loso'),
                     ),
@@ -165,35 +137,35 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             ),
             'folders' => array(
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166101'),
+                    'id'       => '49a7011a05c677b9a9166101',
                     'parent_id' => null,
                     'url'       => '',
                     'name'      => 'root',
                     'uuid'      => 'uuid-f-49a7011a05c677b9a9166101',
                 ),
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166102'),
+                    'id'       => '49a7011a05c677b9a9166102',
                     'parent_id' => '49a7011a05c677b9a9166101',
                     'url'       => 'lussuttaja',
                     'name'      => 'lussuttaja',
                     'uuid'      => 'uuid-f-49a7011a05c677b9a9166102',
                 ),
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166103'),
+                    'id'       => '49a7011a05c677b9a9166103',
                     'parent_id' => '49a7011a05c677b9a9166102',
                     'url'       => 'lussuttaja/tussin',
                     'name'      => 'tussin',
                     'uuid'      => 'uuid-f-49a7011a05c677b9a9166103',
                 ),
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166104'),
+                    'id'       => '49a7011a05c677b9a9166104',
                     'parent_id' => '49a7011a05c677b9a9166102',
                     'url'       => 'lussuttaja/banskun',
                     'name'      => 'banskun',
                     'uuid'      => 'uuid-f-49a7011a05c677b9a9166104',
                 ),
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166105'),
+                    'id'       => '49a7011a05c677b9a9166105',
                     'parent_id' => '49a7011a05c677b9a9166102',
                     'url'       => 'lussuttaja/tiedoton-kansio',
                     'name'      => 'tiedoton-kansio',
@@ -202,12 +174,12 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             ),
             'files' => array(
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166106'),
+                    'id'           => '49a7011a05c677b9a9166106',
                     'folder_id'     => '49a7011a05c677b9a9166101',
                     'profile'       => 'versioned',
                     'name'          => 'tohtori-vesala.png',
                     'link'          => 'tohtori-vesala.png',
-                    'date_created' => new DateTime('2011-01-01 16:16:16'),
+                    'date_created' => '2011-01-01 16:16:16',
                     'status'        => 1,
                     'uuid'          => 'uuid-1',
                     'resource_id'   => '48a7011a05c677b9a9166101',
@@ -216,12 +188,12 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     ),
                 ),
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166107'),
+                    'id'           => '49a7011a05c677b9a9166107',
                     'folder_id'     => '49a7011a05c677b9a9166102',
                     'profile'       => 'versioned',
                     'name'          => 'akuankka.png',
                     'link'          => 'lussuttaja/akuankka.png',
-                    'date_created' => new DateTime('2011-01-01 15:15:15'),
+                    'date_created' => '2011-01-01 15:15:15',
                     'status'        => 2,
                     'uuid'          => 'uuid-2',
                     'resource_id'   => '48a7011a05c677b9a9166102',
@@ -230,12 +202,12 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     ),
                 ),
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166108'),
+                    'id'           => '49a7011a05c677b9a9166108',
                     'folder_id'     => '49a7011a05c677b9a9166103',
                     'profile'       => 'default',
                     'name'          => 'repesorsa.png',
                     'link'          => 'lussuttaja/tussin/repesorsa.png',
-                    'date_created' => new DateTime('2011-01-01 15:15:15'),
+                    'date_created' => '2011-01-01 15:15:15',
                     'status'        => 4,
                     'uuid'          => 'uuid-3',
                     'resource_id'   => '48a7011a05c677b9a9166103',
@@ -244,12 +216,12 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     ),
                 ),
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166109'),
+                    'id'           => '49a7011a05c677b9a9166109',
                     'folder_id'     => '49a7011a05c677b9a9166104',
                     'profile'       => 'default',
                     'name'          => 'megatussi.png',
                     'link'          => 'lussuttaja/banskun/megatussi.png',
-                    'date_created' => new DateTime('2011-01-02 15:15:15'),
+                    'date_created' => '2011-01-02 15:15:15',
                     'status'        => 8,
                     'uuid'          => 'uuid-4',
                     'resource_id'   => '48a7011a05c677b9a9166104',
@@ -258,12 +230,12 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     ),
                 ),
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166110'),
+                    'id'           => '49a7011a05c677b9a9166110',
                     'folder_id'     => '49a7011a05c677b9a9166104',
                     'profile'       => 'default',
                     'name'          => 'megatussi2.png',
                     'link'          => 'lussuttaja/banskun/megatussi2.png',
-                    'date_created' => new DateTime('2011-01-03 15:15:15'),
+                    'date_created' => '2011-01-03 15:15:15',
                     'status'        => 16,
                     'uuid'          => 'uuid-5',
                     'resource_id'   => '48a7011a05c677b9a9166104',
@@ -274,15 +246,14 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             ),
         );
 
-        foreach ($data['files'] as &$file) {
-            $file['date_created'] = new MongoDate($file['date_created']->getTimeStamp());
-        }
 
-        foreach ($data['resources'] as &$resource) {
-            $resource['date_created'] = new MongoDate($resource['date_created']->getTimeStamp());
+        $ret = array();
+        foreach (array('resources', 'folders', 'files') as $what) {
+            foreach ($data[$what] as $res) {
+                $ret[$what][$res['id']] = $res;
+            }
         }
-
-        return $data;
+        return $ret;
     }
 
     /**
@@ -292,7 +263,7 @@ class MongoPlatformTest extends AbstractPlatformTestCase
     {
         return array(
             array(5, new FileFinder()),
-            array(0, new FileFinder(array('id' => '49a7011a05c677b9a91661dd'))),
+            array(0, new FileFinder(array('id' => 'xooxersson'))),
             array(1, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166101'))),
             array(2, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166104'))),
             array(
@@ -304,7 +275,7 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             array(
                 0,
                 new FileFinder(
-                    array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a916611a')
+                    array('folder_id' => '49a7011a05c677b9a9166104', 'id' => '49a7011a05c677b9a916611x')
                 )
             ),
             array(0, new FileFinder(array('folder_id' => '49a7011a05c677b9a9166103', 'name' => 'repesorsa.lus'))),
@@ -490,8 +461,8 @@ class MongoPlatformTest extends AbstractPlatformTestCase
     {
         return array(
             array('48a7011a05c677b9a9166166'),
-            array('48a7011a05c677b9a9166177'),
-            array('48a7011a05c677b9a9166188'),
+            array('tussidentifier'),
+            array('locoposki'),
         );
     }
 
@@ -570,4 +541,25 @@ class MongoPlatformTest extends AbstractPlatformTestCase
             )
         );
     }
+
+    /**
+     * @test
+     */
+    public function destructorShouldSaveState()
+    {
+        $file = ROOT_TESTS . '/data/temp/temp.json';
+        $this->assertFileNotExists($file);
+
+        $platform = new JsonPlatform($file);
+        $this->assertFileNotExists($file);
+
+        $platform->findByFinder(new FileFinder());
+
+        $this->assertFileNotExists($file);
+        unset($platform);
+
+        $this->assertFileExists($file);
+
+    }
+
 }
