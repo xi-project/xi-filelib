@@ -2,8 +2,6 @@
 
 namespace Xi\Filelib\Tests\Authorization;
 
-use \PHPUnit_Framework_TestCase as TestCase;
-
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Authorization\Adapter\SimpleAuthorizationAdapter;

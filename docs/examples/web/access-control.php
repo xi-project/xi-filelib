@@ -9,17 +9,17 @@ use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Folder\Folder;
 
-use Xi\Filelib\Acl\Adapter\SimpleAclAdapter;
-use Xi\Filelib\Acl\AclPlugin;
-use Xi\Filelib\Acl\AccessDeniedException;
+use Xi\Filelib\Authorization\Adapter\SimpleAuthorizationAdapter;
+use Xi\Filelib\Authorization\AuthorizationPlugin;
+use Xi\Filelib\Authorization\AccessDeniedException;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-$aclAdapter = new SimpleAclAdapter();
-$aclPlugin = new AclPlugin($aclAdapter);
-$filelib->addPlugin($aclPlugin, array('default'));
+$AuthorizationAdapter = new SimpleAuthorizationAdapter();
+$AuthorizationPlugin = new AuthorizationPlugin($AuthorizationAdapter);
+$filelib->addPlugin($AuthorizationPlugin, array('default'));
 
-$aclAdapter
+$AuthorizationAdapter
     ->setFolderWritable(true)
     ->setFileReadableByAnonymous(true);
 
