@@ -19,13 +19,6 @@ use Xi\Filelib\Events;
 
 abstract class AbstractRenderer implements Renderer
 {
-    /**
-     * @var array Default options
-     */
-    private $defaultOptions = array(
-        'download' => false,
-        'version' => 'original',
-    );
 
     /**
      * @var Storage
@@ -50,16 +43,6 @@ abstract class AbstractRenderer implements Renderer
         $this->fileOperator = $filelib->getFileOperator();
     }
 
-    /**
-     * Merges default options with supplied options
-     *
-     * @param  array $options
-     * @return array
-     */
-    public function mergeOptions(array $options)
-    {
-        return array_merge($this->defaultOptions, $options);
-    }
 
     /**
      * @return EventDispatcherInterface
