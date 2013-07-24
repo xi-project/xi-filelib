@@ -12,7 +12,6 @@ namespace Xi\Filelib\Plugin\Image\Command;
 use Imagick;
 use ImagickException;
 use InvalidArgumentException;
-use Xi\Filelib\Configurator;
 
 /**
  * @author pekkis
