@@ -138,7 +138,7 @@ class VersionPluginTest extends TestCase
         $filelib = $this->getMockedFilelib();
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
-        $plugin->setDependencies($filelib);
+        $plugin->attachTo($filelib);
 
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
 

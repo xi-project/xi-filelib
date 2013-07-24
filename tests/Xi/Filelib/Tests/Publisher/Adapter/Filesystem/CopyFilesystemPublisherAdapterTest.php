@@ -118,7 +118,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
         }
 
         $publisher = new CopyFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
-        $publisher->setDependencies($this->filelib);
+        $publisher->attachTo($this->filelib);
         $publisher->publish($file, $this->version, $this->versionProvider, $this->plinker);
 
         $sfi = new \SplFileInfo($expectedVersionPath);
@@ -150,7 +150,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
         $this->assertFileExists($expectedVersionPath);
 
         $publisher = new CopyFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
-        $publisher->setDependencies($this->filelib);
+        $publisher->attachTo($this->filelib);
 
         $publisher->unpublish($file, $this->version, $this->versionProvider, $this->plinker);
         $this->assertFileNotExists($expectedVersionPath);

@@ -33,9 +33,9 @@ class OriginalVersionPlugin extends AbstractVersionProvider
         );
     }
 
-    public function setDependencies(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
-        parent::setDependencies($filelib);
+        parent::attachTo($filelib);
         $this->tempDir = $filelib->getTempDir();
     }
 

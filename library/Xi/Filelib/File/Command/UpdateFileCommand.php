@@ -30,6 +30,9 @@ class UpdateFileCommand extends AbstractFileCommand
 
     public function execute()
     {
+        $event = new FileEvent($this->file);
+        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_UPDATE, $event);
+
         $this->fileOperator->getBackend()->updateFile($this->file);
 
         $event = new FileEvent($this->file);

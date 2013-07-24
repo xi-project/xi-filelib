@@ -55,7 +55,7 @@ class AutomaticPublisherPlugin extends AbstractPlugin
     /**
      * @param FileLibrary $filelib
      */
-    public function setDependencies(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
         $this->fileOperator = $filelib->getFileOperator();
     }

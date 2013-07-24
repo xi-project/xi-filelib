@@ -11,6 +11,7 @@ namespace Xi\Filelib\Plugin;
 
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Randomizes all uploads' file names before uploading. Ensures that same file
@@ -69,5 +70,10 @@ class RandomizeNamePlugin extends AbstractPlugin
         $upload->setOverrideFilename($newname);
 
         return $upload;
+    }
+
+    public function attachTo(FileLibrary $filelib)
+    {
+
     }
 }

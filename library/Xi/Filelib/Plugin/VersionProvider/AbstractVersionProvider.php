@@ -74,7 +74,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     /**
      * @param FileLibrary $filelib
      */
-    public function setDependencies(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
         $this->fileOperator = $filelib->getFileOperator();

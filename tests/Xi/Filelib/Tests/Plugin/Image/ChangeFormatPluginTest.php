@@ -162,7 +162,7 @@ class ChangeFormatPluginTest extends TestCase
 
         $filelib = $this->getMockedFilelib();
         $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($this->fileOperator));
-        $plugin->setDependencies($filelib);
+        $plugin->attachTo($filelib);
 
         $plugin->setProfiles(array('tussi'));
 

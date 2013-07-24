@@ -44,7 +44,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
         $this->relativePathToRoot = $relativePathToRoot;
     }
 
-    public function setDependencies(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
         if (!$this->storage instanceof FilesystemStorage) {

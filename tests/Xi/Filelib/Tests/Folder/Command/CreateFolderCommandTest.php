@@ -50,31 +50,48 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 
 
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+
         $ed
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('dispatch')
-            ->with(
-            $this->equalTo(Events::FOLDER_AFTER_CREATE),
-            $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
-        );
+            ->with(Events::FOLDER_BEFORE_WRITE_TO, $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
+
+        $ed
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(Events::FOLDER_BEFORE_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
+
+        $ed
+            ->expects($this->at(2))
+            ->method('dispatch')
+            ->with(Events::FOLDER_AFTER_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
+
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
 
         $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                   ->setMethods(array('buildRoute', 'generateUuid'))
+                   ->setMethods(array('buildRoute', 'generateUuid', 'find'))
                    ->setConstructorArgs(array($filelib))
                    ->getMock();
 
         $op->expects($this->once())->method('generateUuid')
            ->will($this->returnValue('uusi-uuid'));
 
-        $folder = $this->getMockBuilder('Xi\Filelib\Folder\Folder')
-                       ->disableOriginalConstructor()
-                       ->setMethods(array('setUrl'))
-                       ->getMock();
+        $op->expects($this->once())->method('find')->with('lusser')->will($this->returnValue($this->getMockedFolder()));
 
+
+        $folder = $this
+            ->getMockBuilder('Xi\Filelib\Folder\Folder')
+            ->disableOriginalConstructor()
+            ->setMethods(array('setUrl', 'getParentId'))
+            ->getMock();
         $folder->expects($this->once())->method('setUrl')->with($this->equalTo('route'));
+        $folder->expects($this->any())->method('getParentId')->will($this->returnValue('lusser'));
 
-        $op->expects($this->once())->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))->will($this->returnValue('route'));
+        $op
+            ->expects($this->once())
+            ->method('buildRoute')
+            ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
+            ->will($this->returnValue('route'));
 
         $backend = $this
             ->getMockBuilder('Xi\Filelib\Backend\Backend')

@@ -54,11 +54,20 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $op->expects($this->once())->method('generateUuid')
            ->will($this->returnValue('uusi-uuid'));
 
-        $dispatcher->expects($this->at(0))->method('dispatch')
-                   ->with($this->equalTo(Events::FILE_BEFORE_CREATE), $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
+        $dispatcher
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with(Events::FOLDER_BEFORE_WRITE_TO, $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
 
-        $dispatcher->expects($this->at(1))->method('dispatch')
-                   ->with($this->equalTo(Events::FILE_AFTER_CREATE), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+        $dispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(Events::FILE_BEFORE_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
+
+        $dispatcher
+            ->expects($this->at(2))
+            ->method('dispatch')
+            ->with(Events::FILE_AFTER_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
         $folder = Folder::create(array('id' => 1));
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';

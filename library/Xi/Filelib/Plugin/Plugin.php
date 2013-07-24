@@ -37,5 +37,5 @@ interface Plugin extends EventSubscriberInterface
      */
     public function hasProfile($profile);
 
-    public function setDependencies(FileLibrary $filelib);
+    public function attachTo(FileLibrary $filelib);
 }

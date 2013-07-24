@@ -29,9 +29,7 @@ abstract class AbstractPlugin implements Plugin
     /**
      * @var array Subscribed events
      */
-    protected static $subscribedEvents = array(
-        Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',
-    );
+    protected static $subscribedEvents = array();
 
     /**
      * Returns an array of subscribed events
@@ -40,7 +38,10 @@ abstract class AbstractPlugin implements Plugin
      */
     public static function getSubscribedEvents()
     {
-        return static::$subscribedEvents;
+        return array_merge(
+            static::$subscribedEvents,
+            array(Events::PROFILE_AFTER_ADD => 'onFileProfileAdd')
+        );
     }
 
     /**
@@ -82,9 +83,8 @@ abstract class AbstractPlugin implements Plugin
         }
     }
 
-    public function setDependencies(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
 
     }
-
 }

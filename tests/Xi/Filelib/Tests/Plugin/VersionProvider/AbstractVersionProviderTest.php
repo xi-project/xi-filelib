@@ -154,7 +154,7 @@ class AbstractVersionProviderTest extends TestCase
                          }
                      }));
 
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
     }
 
     public function provideFilesForProvidesForMatching()
@@ -174,7 +174,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function providesForShouldMatchAgainstFileProfileCorrectly($expected, $file)
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
 
         $file = $file + array(
             'resource' => Resource::create($file),
@@ -193,7 +193,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function afterUploadShouldDoNothingWhenPluginDoesNotProvide()
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
         $this->plugin->expects($this->never())->method('createVersions');
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
@@ -212,7 +212,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function afterUploadShouldDoNothingWhenVersionAlreadyExists()
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
 
         $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
             ->will($this->returnValue(true));
@@ -250,7 +250,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function afterUploadShouldCreateAndStoreVersionsWhenAllIsProper($sharedVersionsAllowed)
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
 
         $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
             ->will($this->returnValue($sharedVersionsAllowed));
@@ -293,7 +293,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function afterUploadShouldExitEarlyWhenPluginDoesntHaveProfile()
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
 
         $this->plugin->expects($this->never())->method('createVersions');
 
@@ -317,7 +317,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function onFileDeleteShouldDoNothingWhenPluginDoesNotProvide()
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
 
         $this->storage->expects($this->never())->method('deleteVersions');
 
@@ -337,7 +337,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function onFileDeleteShouldExitEarlyWhenPluginDoesntHaveProfile()
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
 
         $this->storage->expects($this->never())->method('deleteVersions');
 
@@ -358,7 +358,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function onFileDeleteShouldDeleteWhenPluginProvides()
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
 
         $this->storage->expects($this->once())->method('deleteVersion')
              ->with(
@@ -408,7 +408,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function deleteVersionShouldDelegateToStorage()
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
 
         $file = File::create(array('id' => 666, 'resource' => Resource::create()));
 
@@ -437,7 +437,7 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function onDeleteResourceShouldDelegateToStorage()
     {
-        $this->plugin->setDependencies($this->filelib);
+        $this->plugin->attachTo($this->filelib);
 
         $this->plugin->expects($this->atLeastOnce())->method('getVersions')
              ->will($this->returnValue(array('xooxer', 'lusser')));

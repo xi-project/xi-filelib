@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Acl;
+namespace Xi\Filelib\Authorization\Adapter;
 
+use Xi\Filelib\Authorization\AuthorizationAdapter;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Acl\Acl;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\FolderOperator;
@@ -21,7 +21,7 @@ use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 
 
-class SymfonyAcl implements Acl
+class SymfonyAuthorizationAdapter implements AuthorizationAdapter
 {
     /**
      * @var FolderOperator
