@@ -9,14 +9,23 @@
 
 namespace Xi\Filelib\Renderer;
 
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Renderer\AcceleratedRendererAdapter;
+use Xi\Filelib\File\FileObject;
+
 class AcceleratedRenderer extends Renderer
 {
+    /**
+     * @var AcceleratedRendererAdapter
+     */
+    protected $adapter;
+
     /**
      * Server signature regexes and their headers
      *
      * @var array
      */
-    protected static $serverSignatures = array(
+    protected $serverSignatures = array(
         '[^nginx]' => 'x-accel-redirect',
         '[^Apache]' => 'x-sendfile',
         '[^lighttpd/(1\.5|2)]' => 'x-sendfile',
@@ -27,26 +36,34 @@ class AcceleratedRenderer extends Renderer
     /**
      * @var string
      */
-    private $accelerationHeader;
+    private $stripPrefixFromPath = '';
 
     /**
      * @var string
      */
-    private $stripPrefixFromAcceleratedPath = '';
-
-    /**
-     * @var string
-     */
-    private $addPrefixToAcceleratedPath = '';
+    private $addPrefixToPath = '';
 
     /**
      * @var boolean
      */
-    private $accelerationEnabled = false;
+    private $accelerationEnabled = true;
 
-    /**
+    private $header;
+
+    public function __construct(
+        FileLibrary $filelib,
+        AcceleratedRendererAdapter $adapter,
+        $stripPrefixFromPath = '',
+        $addPrefixToPath = ''
+    ) {
+        parent::__construct($filelib, $adapter);
+        $this->stripPrefixFromPath = $stripPrefixFromPath;
+        $this->addPrefixToPath = $addPrefixToPath;
+    }
+
+        /**
      *
-     * @return boolean Returns whether response can be accelerated
+     * @return boolean Returns whether response can be
      */
     public function isAccelerationEnabled()
     {
@@ -63,48 +80,56 @@ class AcceleratedRenderer extends Renderer
         $this->accelerationEnabled = $flag;
     }
 
+    public function stripPrefixFromPath($stripPrefix)
+    {
+        $this->stripPrefixFromPath = $stripPrefix;
+    }
+
+    public function addPrefixToPath($addPrefix)
+    {
+        $this->addPrefixToPath = $addPrefix;
+    }
+
+
+    public function canAccelerate()
+    {
+        if (!$this->isAccelerationEnabled() || !$this->adapter->canAccelerate()) {
+            return false;
+        }
+
+        $serverSignature = $this->adapter->getServerSignature();
+
+        foreach ($this->serverSignatures as $signature => $header) {
+            if (preg_match($signature, $serverSignature)) {
+                $this->header = $header;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    protected function injectContentToResponse(FileObject $file, Response $response)
+    {
+        if (!$this->canAccelerate()) {
+
+            parent::injectContentToResponse($file, $response);
+            return;
+        }
+
+        $path = preg_replace("[^{$this->stripPrefixFromPath}]", '', $file->getRealPath());
+        $path = $this->addPrefixToPath . $path;
+
+        $response->setHeader($this->header, $path);
+    }
+
     /**
-     *
-     * @param string $stripPrefix
-     */
-    public function setStripPrefixFromAcceleratedPath($stripPrefix)
-    {
-        $this->stripPrefixFromAcceleratedPath = $stripPrefix;
-    }
-
-    public function getStripPrefixFromAcceleratedPath()
-    {
-        return $this->stripPrefixFromAcceleratedPath;
-    }
-
-    public function setAddPrefixToAcceleratedPath($addPrefix)
-    {
-        $this->addPrefixToAcceleratedPath = $addPrefix;
-    }
-
-    public function getAddPrefixToAcceleratedPath()
-    {
-        return $this->addPrefixToAcceleratedPath;
-    }
-
-    /**
-     * Sets acceleration header name
-     *
-     * @param string $header
-     */
-    protected function setAccelerationHeader($header)
-    {
-        $this->accelerationHeader = $header;
-    }
-
-    /**
-     * Returns acceleration header name
-     *
      * @return string
      */
-    protected function getAccelerationHeader()
+    private function getServerSignature()
     {
-        return $this->accelerationHeader;
+        return $this->adapter->getServerSignature();
     }
 
 }

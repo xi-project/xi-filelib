@@ -17,7 +17,6 @@ use Xi\Filelib\Events;
 
 class CreateFolderCommand extends AbstractFolderCommand
 {
-
     /**
      *
      * @var FileOperator
@@ -38,9 +37,11 @@ class CreateFolderCommand extends AbstractFolderCommand
 
     public function execute()
     {
-        $parentFolder = $this->folderOperator->find($this->folder->getParentId());
-        $event = new FolderEvent($parentFolder);
-        $this->folderOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
+        if ($this->folder->getParentId()) {
+            $parentFolder = $this->folderOperator->find($this->folder->getParentId());
+            $event = new FolderEvent($parentFolder);
+            $this->folderOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
+        }
 
         $route = $this->folderOperator->buildRoute($this->folder);
         $this->folder->setUrl($route);

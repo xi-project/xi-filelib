@@ -14,17 +14,23 @@ use Xi\Filelib\File\FileObject;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Xi\Filelib\Renderer\AcceleratedRendererAdapter;
-use Xi\Filelib\Renderer\RendererAdapter;
 
 use Xi\Filelib\Renderer\Response as InternalResponse;
 
-class SymfonyRendererAdapter implements RendererAdapter
+class SymfonyRendererAdapter implements AcceleratedRendererAdapter
 {
-
     /**
      * @var Request
      */
     private $request;
+
+    /**
+     * @param Request $request
+     */
+    public function __construct(Request $request = null)
+    {
+        $this->request = $request;
+    }
 
     /**
      * Sets request context
@@ -46,81 +52,35 @@ class SymfonyRendererAdapter implements RendererAdapter
         return $this->request;
     }
 
-    public function isAccelerationPossible()
+    public function canAccelerate()
     {
         // If we have no request as context we cannot accelerate
-        if (!$request = $this->getRequest()) {
+        if (!$this->getRequest()) {
             return false;
         }
-
-        $serverSignature = $request->server->get('SERVER_SOFTWARE');
-
-        foreach (self::$serverSignatures as $signature => $header) {
-            if (preg_match($signature, $serverSignature)) {
-                $this->setAccelerationHeader($header);
-
-                return true;
-            }
-        }
-
-        return false;
-
+        return true;
     }
-
-
-    /**
-     * Sets content to response
-     */
-    private function setContent(Response $response, FileObject $res)
-    {
-        $response->headers->set('Content-Type', $res->getMimetype());
-
-        if ($this->isAccelerationEnabled() && $this->isAccelerationPossible()) {
-            $this->accelerateResponse($response, $res);
-
-            return;
-        }
-
-        $content = file_get_contents($res->getPathname());
-        $response->setContent($content);
-    }
-
-    /**
-     * Accelerates response
-     *
-     * @param Response   $response
-     * @param FileObject $res
-     */
-    private function accelerateResponse(Response $response, FileObject $res)
-    {
-        $path = preg_replace("[^{$this->getStripPrefixFromAcceleratedPath()}]", '', $res->getRealPath());
-        $path = $this->getAddPrefixToAcceleratedPath() . $path;
-
-        $response->headers->set($this->getAccelerationHeader(), $path);
-    }
-
-
 
     public function returnResponse(InternalResponse $iResponse)
     {
         $response = new Response(
-            '',
             $iResponse->getContent(),
-            $iResponse->getStatusCode()
+            $iResponse->getStatusCode(),
+            $iResponse->getHeaders()
         );
-
-        foreach ($iResponse->getHeaders() as $key => $value) {
-            $response->headers->set($key, $value);
-        }
 
         if ($response->getStatusCode() !== 200) {
             $response->setContent(Response::$statusTexts[$response->getStatusCode()]);
             return $response;
         }
-
-        $response->headers->set('tussi', 'magic marker');
-
         return $response;
     }
 
+    public function getServerSignature()
+    {
+        if (!$this->getRequest()) {
+            return null;
+        }
+        return $this->getRequest()->server->get('SERVER_SOFTWARE');
+    }
 }

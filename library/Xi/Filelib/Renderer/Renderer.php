@@ -8,6 +8,8 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\Storage;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Event\FileEvent;
 
 class Renderer
 {
@@ -21,7 +23,7 @@ class Renderer
     /**
      * @var RendererAdapter
      */
-    private $adapter;
+    protected $adapter;
 
     /**
      * @var FileOperator
@@ -33,11 +35,17 @@ class Renderer
      */
     private $storage;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     public function __construct(FileLibrary $filelib, RendererAdapter $adapter)
     {
         $this->adapter = $adapter;
         $this->fileOperator = $filelib->getFileOperator();
         $this->storage = $filelib->getStorage();
+        $this->eventDispatcher = $filelib->getEventDispatcher();
     }
 
     /**
@@ -60,6 +68,18 @@ class Renderer
             }
         }
 
+        // Supports authorization component
+        try {
+
+            $event = new FileEvent($file);
+            $this->eventDispatcher->dispatch(Events::RENDERER_BEFORE_RENDER, $event);
+
+        } catch (AccessDeniedException $e) {
+            return $this->adapter->returnResponse($response->setStatusCode(403));
+        }
+
+
+
         $options = $this->mergeOptions($options);
 
         if (!$this->fileOperator->hasVersion($file, $version)) {
@@ -70,14 +90,10 @@ class Renderer
             $response->setHeader('Content-disposition', "attachment; filename={$file->getName()}");
         }
 
-        $storage = $this->storage;
-
-        $retrieved = new FileObject($storage->retrieveVersion($file->getResource(), $version));
+        $retrieved = new FileObject($this->retrieve($file, $version));
         $response->setHeader('Content-Type', $retrieved->getMimetype());
-        $response->setContent(function () use ($retrieved) {
-            return $retrieved->fpassthru();
-        });
 
+        $this->injectContentToResponse($retrieved, $response);
         return $this->adapter->returnResponse($response);
     }
 
@@ -93,24 +109,18 @@ class Renderer
         return array_merge($this->defaultOptions, $options);
     }
 
-
-    /**
-     * Responds to a version file request and returns path to renderable
-     * file if response is 200
-     *
-     * @param File     $file
-     * @param Response $response
-     * @param string Version identifier
-     * @return string
-     */
-    private function respondToVersion(File $file, Response $response, $version)
+    private function retrieve(File $file, $version)
     {
         $provider = $this->fileOperator->getVersionProvider($file, $version);
-
-        $res = $this->getStorage()->retrieveVersion($file->getResource(), $version, $provider->areSharedVersionsAllowed() ? null : $file);
-
+        $res = $this->storage->retrieveVersion($file->getResource(), $version, $provider->areSharedVersionsAllowed() ? null : $file);
         return $res;
     }
 
+    protected function injectContentToResponse(FileObject $file, Response $response)
+    {
+        $response->setContent(function () use ($file) {
+            return file_get_contents($file->getRealPath());
+        });
+    }
 
 }
