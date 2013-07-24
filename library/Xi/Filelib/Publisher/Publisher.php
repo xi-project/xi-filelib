@@ -13,9 +13,10 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Events;
+use Xi\Filelib\Events as CoreEvents;
 
 /**
  * Class Publisher
@@ -36,15 +37,20 @@ class Publisher implements EventSubscriberInterface
      */
     private $adapter;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     public function __construct(FileLibrary $filelib, PublisherAdapter $adapter, Linker $linker)
     {
-        $adapter->setDependencies($filelib);
+        $adapter->attachTo($filelib);
         $this->adapter = $adapter;
 
         $this->linker = $linker;
 
         $this->fileOperator = $filelib->getFileOperator();
+        $this->eventDispatcher = $filelib->getEventDispatcher();
     }
 
     /**
@@ -69,7 +75,7 @@ class Publisher implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::FILE_BEFORE_DELETE => array('onBeforeDelete')
+            CoreEvents::FILE_BEFORE_DELETE => array('onBeforeDelete')
         );
     }
 
@@ -78,6 +84,9 @@ class Publisher implements EventSubscriberInterface
      */
     public function publish(File $file)
     {
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_PUBLISH, $event);
+
         foreach ($this->getVersions($file) as $version) {
             $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
         }
@@ -86,11 +95,17 @@ class Publisher implements EventSubscriberInterface
         $data['publisher.published'] = 1;
 
         $this->fileOperator->update($file);
+
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_PUBLISH, $event);
     }
 
 
     public function unpublish(File $file)
     {
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UNPUBLISH, $event);
+
         foreach ($this->getVersions($file) as $version) {
             $this->adapter->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
         }
@@ -99,6 +114,9 @@ class Publisher implements EventSubscriberInterface
         $data['publisher.published'] = 0;
 
         $this->fileOperator->update($file);
+
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
     }
 
     public function getUrlVersion(File $file, $version)

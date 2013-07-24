@@ -97,7 +97,6 @@ class FileLibrary
         if (!$this->eventDispatcher) {
             $this->eventDispatcher = new EventDispatcher();
         }
-
         return $this->eventDispatcher;
     }
 
@@ -222,7 +221,7 @@ class FileLibrary
     {
         // @todo: think about dependency hell
         $plugin->setProfiles($profiles);
-        $plugin->setDependencies($this);
+        $plugin->attachTo($this);
 
         $this->getEventDispatcher()->addSubscriber($plugin);
         $event = new PluginEvent($plugin);

@@ -211,15 +211,31 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
             $backend->expects($this->never())->method('createResource');
         }
 
-        $eventDispatcher->expects($this->once())->method('dispatch')
-                        ->with($this->equalTo(Events::FILE_AFTER_COPY), $this->isInstanceOf('Xi\Filelib\Event\FileCopyEvent'));
+        $eventDispatcher
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with(Events::FILE_BEFORE_COPY, $this->isInstanceOf('Xi\Filelib\Event\FileCopyEvent'));
 
-        $afterUploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
-                                   ->disableOriginalConstructor()
-                                   ->getMock();
+        $eventDispatcher
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(Events::FOLDER_BEFORE_WRITE_TO, $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
 
-        $this->op->expects($this->any())->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))
-                 ->will($this->returnValue($afterUploadCommand));
+        $eventDispatcher
+            ->expects($this->at(2))
+            ->method('dispatch')
+            ->with(Events::FILE_AFTER_COPY, $this->isInstanceOf('Xi\Filelib\Event\FileCopyEvent'));
+
+        $afterUploadCommand = $this
+            ->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->op
+            ->expects($this->any())
+            ->method('createCommand')
+            ->with($this->equalTo('Xi\Filelib\File\Command\AfterUploadFileCommand'))
+            ->will($this->returnValue($afterUploadCommand));
 
         $afterUploadCommand->expects($this->once())->method('execute')->will($this->returnValue($file));
 

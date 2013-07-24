@@ -7,19 +7,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Acl;
+namespace Xi\Filelib\Authorization;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 
 /**
- * Interface for building an ACL implementation for Filelib
- *
- * @author pekkis
- * @package Xi_Filelib
+ * ACL adapter interface
  *
  */
-interface Acl
+interface AuthorizationAdapter
 {
 
     /**
@@ -63,5 +60,4 @@ interface Acl
      * @param Folder $folder
      */
     public function isFolderReadableByAnonymous(Folder $folder);
-
 }

@@ -49,9 +49,9 @@ class VersionPlugin extends AbstractVersionProvider
         $this->imageMagickHelper = new ImageMagickHelper($commandDefinitions);
     }
 
-    public function setDependencies(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
-        parent::setDependencies($filelib);
+        parent::attachTo($filelib);
         $this->tempDir = $filelib->getTempDir();
     }
 

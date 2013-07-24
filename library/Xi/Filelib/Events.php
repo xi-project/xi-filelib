@@ -6,17 +6,32 @@ class Events
 {
     const FILE_BEFORE_CREATE = 'xi_filelib.file.before_create';
     const FILE_AFTER_CREATE = 'xi_filelib.file.after_create';
+
     const FILE_AFTER_AFTERUPLOAD = 'xi_filelib.file.after_upload';
+
     const FILE_BEFORE_DELETE = 'xi_filelib.file.before_delete';
     const FILE_AFTER_DELETE = 'xi_filelib.file.after_delete';
+
+    const FILE_BEFORE_COPY = 'xi_filelib.file.before_copy';
     const FILE_AFTER_COPY = 'xi_filelib.file.after_copy';
+
+    const FILE_BEFORE_UPDATE = 'xi_filelib.file.before_update';
     const FILE_AFTER_UPDATE = 'xi_filelib.file.after_update';
+
     const FILE_AFTER_RENDER = 'xi_filelib.file.after_render';
 
+    const RESOURCE_BEFORE_DELETE = 'xi_filelib.resource.before_delete';
     const RESOURCE_AFTER_DELETE = 'xi_filelib.resource.after_delete';
 
+    const FOLDER_BEFORE_WRITE_TO = 'xi_filelib.folder.before_write_to';
+
+    const FOLDER_BEFORE_DELETE = 'xi_filelib.folder.before_delete';
     const FOLDER_AFTER_DELETE = 'xi_filelib.folder.after_delete';
+
+    const FOLDER_BEFORE_CREATE = 'xi_filelib.folder.before_create';
     const FOLDER_AFTER_CREATE = 'xi_filelib.folder.after_create';
+
+    const FOLDER_BEFORE_UPDATE = 'xi_filelib.folder.before_update';
     const FOLDER_AFTER_UPDATE = 'xi_filelib.folder.after_update';
 
     const PROFILE_AFTER_ADD = 'xi_filelib.profile.after_add';

@@ -51,5 +51,5 @@ interface PublisherAdapter
      * @param FileLibrary $filelib
      * @return PublisherAdapter
      */
-    public function setDependencies(FileLibrary $filelib);
+    public function attachTo(FileLibrary $filelib);
 }

@@ -50,8 +50,17 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $filelib = $this->getMockedFilelib();
         $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
+
         $ed
-            ->expects($this->once())
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with(
+                $this->equalTo(Events::FILE_BEFORE_UPDATE),
+                $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
+            );
+
+        $ed
+            ->expects($this->at(1))
             ->method('dispatch')
             ->with(
             $this->equalTo(Events::FILE_AFTER_UPDATE),

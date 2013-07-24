@@ -39,6 +39,9 @@ class DeleteFolderCommand extends AbstractFolderCommand
 
     public function execute()
     {
+        $event = new FolderEvent($this->folder);
+        $this->folderOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_DELETE, $event);
+
         foreach ($this->folderOperator->findSubFolders($this->folder) as $childFolder) {
             $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\DeleteFolderCommand', array(
                 $this->folderOperator, $this->fileOperator, $childFolder
