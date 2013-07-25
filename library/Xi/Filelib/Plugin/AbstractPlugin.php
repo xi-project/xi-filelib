@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Plugin;
 
-use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events;

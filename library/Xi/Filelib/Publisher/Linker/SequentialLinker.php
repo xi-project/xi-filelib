@@ -19,7 +19,7 @@ use Xi\Filelib\Publisher\Linker;
  * @author pekkis
  * @author Petri Mahanen
  */
-class SequentialLinker extends AbstractLinker implements Linker
+class SequentialLinker implements Linker
 {
     /**
      * @var integer Files per directory

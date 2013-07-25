@@ -10,7 +10,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFilelib($methods = null, $fiop = null, $foop = null, $storage = null)
+    public function getMockedFilelib($methods = null, $fiop = null, $foop = null, $storage = null, $ed = null)
     {
         $filelib = $this
             ->getMockBuilder('Xi\Filelib\FileLibrary')
@@ -40,6 +40,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         if ($storage) {
             $ret->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
+        }
+
+        if ($ed) {
+            $ret->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
         }
 
         return $ret;

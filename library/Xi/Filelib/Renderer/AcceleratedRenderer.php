@@ -9,32 +9,118 @@
 
 namespace Xi\Filelib\Renderer;
 
-/**
- * Interface for accelerated renderers
- *
- * @author pekkis
- */
-interface AcceleratedRenderer extends Renderer
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Renderer\AcceleratedRendererAdapter;
+use Xi\Filelib\File\FileObject;
+
+class AcceleratedRenderer extends Renderer
 {
     /**
-     * Enables / disables acceleration
-     *
-     * @param $enable boolean
+     * @var AcceleratedRendererAdapter
      */
-    public function enableAcceleration($enable);
+    protected $adapter;
 
     /**
-     * Returns whether acceleration is enabled
+     * Server signature regexes and their headers
      *
-     * @return boolean
+     * @var array
      */
-    public function isAccelerationEnabled();
+    protected $serverSignatures = array(
+        '[^nginx]' => 'x-accel-redirect',
+        '[^Apache]' => 'x-sendfile',
+        '[^lighttpd/(1\.5|2)]' => 'x-sendfile',
+        '[^lighttpd/1.4]' => 'x-lighttpd-send-file',
+        '[^Cherokee]' => 'x-sendfile',
+    );
 
     /**
-     * Returns whether acceleration is possible
-     *
-     * @return
+     * @var string
      */
-    public function isAccelerationPossible();
+    private $stripPrefixFromPath = '';
 
+    /**
+     * @var string
+     */
+    private $addPrefixToPath = '';
+
+    /**
+     * @var boolean
+     */
+    private $accelerationEnabled = false;
+
+    private $header;
+
+    public function __construct(
+        FileLibrary $filelib,
+        AcceleratedRendererAdapter $adapter,
+        $stripPrefixFromPath = '',
+        $addPrefixToPath = ''
+    ) {
+        parent::__construct($filelib, $adapter);
+        $this->stripPrefixFromPath = $stripPrefixFromPath;
+        $this->addPrefixToPath = $addPrefixToPath;
+    }
+
+        /**
+     *
+     * @return boolean Returns whether response can be
+     */
+    public function isAccelerationEnabled()
+    {
+        return $this->accelerationEnabled;
+    }
+
+    /**
+     * Enables or disables acceleration
+     *
+     * @param boolean $flag
+     */
+    public function enableAcceleration($flag)
+    {
+        $this->accelerationEnabled = $flag;
+    }
+
+    public function stripPrefixFromPath($stripPrefix)
+    {
+        $this->stripPrefixFromPath = $stripPrefix;
+    }
+
+    public function addPrefixToPath($addPrefix)
+    {
+        $this->addPrefixToPath = $addPrefix;
+    }
+
+
+    public function canAccelerate()
+    {
+        if (!$this->isAccelerationEnabled() || !$this->adapter->canAccelerate()) {
+            return false;
+        }
+
+        $serverSignature = $this->adapter->getServerSignature();
+
+        foreach ($this->serverSignatures as $signature => $header) {
+            if (preg_match($signature, $serverSignature)) {
+                $this->header = $header;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    protected function injectContentToResponse(FileObject $file, Response $response)
+    {
+        if (!$this->canAccelerate()) {
+
+            parent::injectContentToResponse($file, $response);
+            return;
+        }
+
+        $path = preg_replace("[^{$this->stripPrefixFromPath}]", '', $file->getRealPath());
+        $path = $this->addPrefixToPath . $path;
+
+        $response->setHeader($this->header, $path);
+    }
 }

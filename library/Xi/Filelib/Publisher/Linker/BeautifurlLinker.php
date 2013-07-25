@@ -20,7 +20,7 @@ use Xi\Filelib\FileLibrary;
  *
  * @author pekkis
  */
-class BeautifurlLinker extends AbstractLinker implements Linker
+class BeautifurlLinker implements Linker
 {
     /**
      * @var boolean Exclude root folder from beautifurls or not

@@ -13,6 +13,7 @@ use Xi\Filelib\Publisher\Events as PublisherEvents;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\Event\IdentifiableEvent;
+use Xi\Filelib\Renderer\Events as RendererEvents;
 
 class AuthorizationPlugin extends AbstractPlugin
 {
@@ -29,11 +30,10 @@ class AuthorizationPlugin extends AbstractPlugin
         CoreEvents::FOLDER_BEFORE_WRITE_TO => 'checkFolderWrite',
         CoreEvents::FOLDER_BEFORE_DELETE => 'checkFolderWrite',
         CoreEvents::FOLDER_BEFORE_UPDATE => 'checkFolderWrite',
-
         CoreEvents::FILE_BEFORE_DELETE => 'checkFileWrite',
         CoreEvents::FILE_BEFORE_UPDATE => 'checkFileWrite',
-
         PublisherEvents::FILE_BEFORE_PUBLISH => 'checkFileAnonymousRead',
+        RendererEvents::RENDERER_BEFORE_RENDER => 'checkFileRead',
     );
 
     /**
