@@ -46,7 +46,7 @@ class AcceleratedRenderer extends Renderer
     /**
      * @var boolean
      */
-    private $accelerationEnabled = true;
+    private $accelerationEnabled = false;
 
     private $header;
 
@@ -123,13 +123,4 @@ class AcceleratedRenderer extends Renderer
 
         $response->setHeader($this->header, $path);
     }
-
-    /**
-     * @return string
-     */
-    private function getServerSignature()
-    {
-        return $this->adapter->getServerSignature();
-    }
-
 }

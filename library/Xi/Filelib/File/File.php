@@ -329,7 +329,7 @@ class File implements Identifiable
      * Creates an instance with data
      *
      * @param  array $data
-     * @return type  File
+     * @return File
      */
     public static function create(array $data = array())
     {

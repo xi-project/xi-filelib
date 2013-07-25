@@ -14,9 +14,7 @@ class Response
 
     public function __construct()
     {
-        $this->content = function () {
-            return '';
-        };
+        $this->setContent('');
     }
 
     public function setHeader($key, $value)
@@ -35,11 +33,12 @@ class Response
     public function setContent($content)
     {
         if (!is_callable($content)) {
-            throw new \InvalidArgumentException('Content must be a callable');
+            $this->content = function () use ($content) {
+                return $content;
+            };
+        } else {
+            $this->content = $content;
         }
-
-        $this->content = $content;
-
         return $this;
     }
 

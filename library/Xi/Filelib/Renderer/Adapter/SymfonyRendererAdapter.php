@@ -14,7 +14,6 @@ use Xi\Filelib\File\FileObject;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Xi\Filelib\Renderer\AcceleratedRendererAdapter;
-
 use Xi\Filelib\Renderer\Response as InternalResponse;
 
 class SymfonyRendererAdapter implements AcceleratedRendererAdapter
@@ -61,6 +60,10 @@ class SymfonyRendererAdapter implements AcceleratedRendererAdapter
         return true;
     }
 
+    /**
+     * @param InternalResponse $iResponse
+     * @return Response
+     */
     public function returnResponse(InternalResponse $iResponse)
     {
         $response = new Response(
@@ -83,4 +86,5 @@ class SymfonyRendererAdapter implements AcceleratedRendererAdapter
         }
         return $this->getRequest()->server->get('SERVER_SOFTWARE');
     }
+
 }

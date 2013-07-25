@@ -112,7 +112,14 @@ class Renderer
     private function retrieve(File $file, $version)
     {
         $provider = $this->fileOperator->getVersionProvider($file, $version);
-        $res = $this->storage->retrieveVersion($file->getResource(), $version, $provider->areSharedVersionsAllowed() ? null : $file);
+
+        if ($provider->areSharedVersionsAllowed()) {
+            $res = $this->storage->retrieveVersion($file->getResource(), $version);
+        } else {
+            $res = $this->storage->retrieveVersion($file->getResource(), $version, $file);
+        }
+
+
         return $res;
     }
 

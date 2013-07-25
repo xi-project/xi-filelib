@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Xi\Filelib\Renderer\Adapter\SimpleRendererAdapter;
 
 // Set this to true to enable acceleration
-$enableAcceleration = false;
+$enableAcceleration = true;
 
 $id = $_GET['id'];
 $version = $_GET['version'];
@@ -18,12 +18,9 @@ $download = isset($_GET['download']) ? $_GET['download'] : false;
 $symfonyRendererAdapter = new SymfonyRendererAdapter();
 $symfonyRendererAdapter->setRequest(Request::createFromGlobals());
 
-$simpleRendererAdapter = new SimpleRendererAdapter();
-
 $renderer = new AcceleratedRenderer(
     $filelib,
-    // $symfonyRendererAdapter,
-    $simpleRendererAdapter,
+    $symfonyRendererAdapter,
     realpath(__DIR__ . '/../data/private'),
     '/protected'
 );
