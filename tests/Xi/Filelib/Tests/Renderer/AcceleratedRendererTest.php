@@ -97,7 +97,7 @@ class AcceleratedRendererTest extends RendererTest
            array(false, false, true, 'KobroServer 1.0.0', false),
            array(true, true, false, 'nginx/1.3.9', false),
            array(true, true, true, 'lusso/1.3.9', false),
-           array(true, true, true, 'nginx/1.3.9', true, 'x-accel-redirect', '', '', '/wwwroot/xi-filelib/tests/data'),
+           array(true, true, true, 'nginx/1.3.9', true, 'x-accel-redirect', '', '',  ROOT_TESTS . '/data'),
            array(true, true, true, 'nginx/1.3.9', true, 'x-accel-redirect',  ROOT_TESTS . '/data', '/lusso', '/lusso'),
            array(true, true, true, 'Apache', true, 'x-sendfile', ROOT_TESTS . '/data', '/tussi', '/tussi'),
        );
