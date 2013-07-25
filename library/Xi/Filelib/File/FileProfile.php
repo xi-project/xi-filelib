@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\File;
 
-use Xi\Filelib\Configurator;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
