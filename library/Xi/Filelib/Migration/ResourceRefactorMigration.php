@@ -23,7 +23,7 @@ class ResourceRefactorMigration implements Command
      */
     private $filelib;
 
-    public function __construct(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
         $this->filelib = $filelib;
     }

@@ -42,13 +42,9 @@ class UploadFileCommand extends AbstractFileCommand
      */
     private $profile;
 
-    public function __construct(FileOperator $fileOperator, $upload, Folder $folder, $profile = 'default')
+    public function __construct($upload, Folder $folder, $profile = 'default')
     {
-        parent::__construct($fileOperator);
-
-        if (!$upload instanceof FileUpload) {
-            $upload = $fileOperator->prepareUpload($upload);
-        }
+        parent::__construct();
 
         $this->upload = $upload;
         $this->folder = $folder;
@@ -107,6 +103,10 @@ class UploadFileCommand extends AbstractFileCommand
 
     public function execute()
     {
+        if (!$this->upload instanceof FileUpload) {
+            $this->upload = $this->fileOperator->prepareUpload($this->upload);
+        }
+
         $upload = $this->upload;
         $folder = $this->folder;
         $profile = $this->profile;
@@ -141,7 +141,7 @@ class UploadFileCommand extends AbstractFileCommand
         $event = new FileEvent($file);
         $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_CREATE, $event);
 
-        $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $file));
+        $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($file));
 
         $this->fileOperator->executeOrQueue($command, FileOperator::COMMAND_AFTERUPLOAD);
 

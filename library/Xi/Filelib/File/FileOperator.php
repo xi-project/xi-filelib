@@ -125,7 +125,7 @@ class FileOperator extends AbstractOperator
     public function update(File $file)
     {
         return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array($this, $file)),
+            $this->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array($file)),
             self::COMMAND_UPDATE
         );
     }
@@ -207,7 +207,7 @@ class FileOperator extends AbstractOperator
         }
 
         return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($this, $upload, $folder, $profile)),
+            $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($upload, $folder, $profile)),
             self::COMMAND_UPLOAD
         );
     }
@@ -220,7 +220,7 @@ class FileOperator extends AbstractOperator
     public function delete(File $file)
     {
         return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array($this, $file)),
+            $this->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array($file)),
             self::COMMAND_DELETE
         );
     }
@@ -234,7 +234,7 @@ class FileOperator extends AbstractOperator
     public function copy(File $file, Folder $folder)
     {
         return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\CopyFileCommand', array($this, $file, $folder)),
+            $this->createCommand('Xi\Filelib\File\Command\CopyFileCommand', array($file, $folder)),
             self::COMMAND_COPY
         );
 

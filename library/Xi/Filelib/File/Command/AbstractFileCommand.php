@@ -11,21 +11,15 @@ namespace Xi\Filelib\File\Command;
 
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\AbstractCommand;
+use Xi\Filelib\FileLibrary;
 
 abstract class AbstractFileCommand extends AbstractCommand implements FileCommand
 {
-
     /**
      *
      * @var FileOperator
      */
     protected $fileOperator;
-
-    public function __construct(FileOperator $fileOperator)
-    {
-        parent::__construct($fileOperator->generateUuid());
-        $this->fileOperator = $fileOperator;
-    }
 
     /**
      * Returns fileoperator
@@ -37,4 +31,8 @@ abstract class AbstractFileCommand extends AbstractCommand implements FileComman
         return $this->fileOperator;
     }
 
+    public function attachTo(FileLibrary $filelib)
+    {
+        $this->fileOperator = $filelib->getFileOperator();
+    }
 }

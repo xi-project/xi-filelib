@@ -29,9 +29,9 @@ class CreateFolderCommand extends AbstractFolderCommand
      */
     private $folder;
 
-    public function __construct(FolderOperator $folderOperator, Folder $folder)
+    public function __construct(Folder $folder)
     {
-        parent::__construct($folderOperator);
+        parent::__construct();
         $this->folder = $folder;
     }
 

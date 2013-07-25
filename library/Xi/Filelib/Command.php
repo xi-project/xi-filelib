@@ -9,7 +9,12 @@
 
 namespace Xi\Filelib;
 
+use Xi\Filelib\FileLibrary;
+
 interface Command
 {
     public function execute();
+
+    public function attachTo(FileLibrary $filelib);
+
 }

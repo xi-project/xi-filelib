@@ -11,20 +11,19 @@ namespace Xi\Filelib\Folder\Command;
 
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\AbstractCommand;
+use Xi\Filelib\FileLibrary;
 
 abstract class AbstractFolderCommand extends AbstractCommand implements FolderCommand
 {
-
     /**
      *
      * @var FolderOperator
      */
     protected $folderOperator;
 
-    public function __construct(FolderOperator $folderOperator)
+    public function __construct()
     {
-        parent::__construct($folderOperator->generateUuid());
-        $this->folderOperator = $folderOperator;
+        parent::__construct();
     }
 
     /**
@@ -35,6 +34,11 @@ abstract class AbstractFolderCommand extends AbstractCommand implements FolderCo
     public function getFolderOperator()
     {
         return $this->folderOperator;
+    }
+
+    public function attachTo(FileLibrary $filelib)
+    {
+        $this->folderOperator = $filelib->getFolderOperator();
     }
 
 }

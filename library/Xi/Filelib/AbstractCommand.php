@@ -9,6 +9,8 @@
 
 namespace Xi\Filelib;
 
+use Rhumsaa\Uuid\Uuid;
+
 abstract class AbstractCommand implements Command
 {
     /**
@@ -19,9 +21,9 @@ abstract class AbstractCommand implements Command
     /**
      * @param string $uuid
      */
-    public function __construct($uuid)
+    public function __construct()
     {
-        $this->uuid = $uuid;
+        $this->uuid = Uuid::uuid4()->toString();
     }
 
     /**

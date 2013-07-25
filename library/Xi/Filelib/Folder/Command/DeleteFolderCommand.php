@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Folder\Command;
 
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
@@ -30,10 +31,9 @@ class DeleteFolderCommand extends AbstractFolderCommand
      */
     private $folder;
 
-    public function __construct(FolderOperator $folderOperator, FileOperator $fileOperator, Folder $folder)
+    public function __construct(Folder $folder)
     {
-        parent::__construct($folderOperator);
-        $this->fileOperator = $fileOperator;
+        parent::__construct();
         $this->folder = $folder;
     }
 
@@ -44,14 +44,14 @@ class DeleteFolderCommand extends AbstractFolderCommand
 
         foreach ($this->folderOperator->findSubFolders($this->folder) as $childFolder) {
             $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\DeleteFolderCommand', array(
-                $this->folderOperator, $this->fileOperator, $childFolder
+                $childFolder
             ));
             $command->execute();
         }
 
         foreach ($this->folderOperator->findFiles($this->folder) as $file) {
             $command = $this->folderOperator->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array(
-                $this->fileOperator, $file
+                $file
             ));
             $command->execute();
         }
@@ -78,6 +78,12 @@ class DeleteFolderCommand extends AbstractFolderCommand
             'folder' => $this->folder,
             'uuid' => $this->uuid,
         ));
+    }
+
+    public function attachTo(FileLibrary $filelib)
+    {
+        parent::attachTo($filelib);
+        $this->fileOperator = $filelib->getFileOperator();
     }
 
 }

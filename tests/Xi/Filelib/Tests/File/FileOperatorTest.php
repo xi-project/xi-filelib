@@ -82,7 +82,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $op->expects($this->never())->method('getQueue');
 
         $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
-                               ->setConstructorArgs(array($op, $upload, $folder, $profile))
+                               ->setConstructorArgs(array($upload, $folder, $profile))
                                ->setMethods(array('execute'))
                                ->getMock();
 
@@ -114,7 +114,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $op->expects($this->atLeastOnce())->method('getQueue')->will($this->returnValue($queue));
 
         $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
-                               ->setConstructorArgs(array($op, $upload, $folder, $profile))
+                               ->setConstructorArgs(array($upload, $folder, $profile))
                                ->setMethods(array('execute'))
                                ->getMock();
 

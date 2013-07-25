@@ -10,8 +10,8 @@
 namespace Xi\Filelib\Queue\Processor;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\FileLibrary\File\FileOperator;
-use Xi\Filelib\FileLibrary\Folder\FolderOperator;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Queue\Queue;
 use Xi\Filelib\Command;
 use ReflectionObject;
@@ -30,18 +30,6 @@ abstract class AbstractQueueProcessor implements QueueProcessor
 
     /**
      *
-     * @var FileOperator
-     */
-    protected $fileOperator;
-
-    /**
-     *
-     * @var FolderOperator
-     */
-    protected $folderOperator;
-
-    /**
-     *
      * @var Queue
      */
     protected $queue;
@@ -49,8 +37,6 @@ abstract class AbstractQueueProcessor implements QueueProcessor
     public function __construct(FileLibrary $filelib)
     {
         $this->filelib = $filelib;
-        $this->fileOperator = $filelib->getFileOperator();
-        $this->folderOperator = $filelib->getFolderOperator();
         $this->queue = $filelib->getQueue();
     }
 
@@ -65,55 +51,11 @@ abstract class AbstractQueueProcessor implements QueueProcessor
 
     /**
      *
-     * @return FileOperator
-     */
-    public function getFileOperator()
-    {
-        return $this->fileOperator;
-    }
-
-    /**
-     *
-     * @return FolderOperator
-     */
-    public function getFolderOperator()
-    {
-        return $this->folderOperator;
-    }
-
-    /**
-     *
      * @return Queue
      */
     public function getQueue()
     {
         return $this->queue;
-    }
-
-    /**
-     * Injects dependencies to commands via black reflection magic. You know,
-     * dependencies can not be transferred via network.
-     *
-     * @param Command $command
-     */
-    public function injectOperators(Command $command)
-    {
-        $refl = new ReflectionObject($command);
-
-        if ($refl->hasProperty('fileOperator')) {
-
-            $prop = $refl->getProperty('fileOperator');
-            $prop->setAccessible(true);
-            $prop->setValue($command, $this->getFileOperator());
-            $prop->setAccessible(false);
-        }
-
-        if ($refl->hasProperty('folderOperator')) {
-            $prop = $refl->getProperty('folderOperator');
-            $prop->setAccessible(true);
-            $prop->setValue($command, $this->getFolderOperator());
-            $prop->setAccessible(false);
-        }
     }
 
 }

@@ -36,7 +36,7 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
         $command = $this->extractCommandFromMessage($message);
 
         $this->processMessage($message, function(DefaultQueueProcessor $processor) use ($command) {
-            $processor->injectOperators($command);
+            $command->attachTo($this->filelib);
             $command->execute();
         });
 
@@ -78,6 +78,7 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
         if (!$command instanceof Command) {
             throw new InvalidArgumentException("Queue processor expects commands wrapped in a message");
         }
+
 
         return $command;
     }
