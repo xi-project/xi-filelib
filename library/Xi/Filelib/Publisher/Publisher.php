@@ -119,6 +119,16 @@ class Publisher implements EventSubscriberInterface
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
     }
 
+    public function isPublished(File $file)
+    {
+        $data = $file->getData();
+        if (isset($data['publisher.published']) && $data['publisher.published'] == 1) {
+            return true;
+        }
+        return false;
+    }
+
+
     public function getUrlVersion(File $file, $version)
     {
         return $this->adapter->getUrlVersion($file, $version, $this->getVersionProvider($file, $version), $this->linker);

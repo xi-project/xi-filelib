@@ -51,4 +51,16 @@ class ExecuteMethodCommand extends AbstractCommand
 
         call_user_func_array($callable, $this->getParameters());
     }
+
+
+    public function setMethod($method)
+    {
+        $this->method = $method;
+    }
+
+    public function setParameters($parameters)
+    {
+        $this->parameters = $parameters;
+    }
+
 }

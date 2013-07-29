@@ -53,39 +53,10 @@ class ChangeFormatPlugin extends AbstractPlugin
      * @param  array              $options
      * @return ChangeFormatPlugin
      */
-    public function __construct($tempDir, array $options = array())
-    {
-        $this->tempDir = $tempDir;
-        $this->options = $options;
-    }
-
-    /**
-     * Returns ImageMagick helper
-     *
-     * @return ImageMagickHelper
-     */
-    public function getImageMagickHelper()
-    {
-        if (!$this->imageMagickHelper) {
-            $this->imageMagickHelper = new ImageMagickHelper();
-
-            Configurator::setOptions($this->imageMagickHelper, $this->options);
-        }
-
-        return $this->imageMagickHelper;
-    }
-
-    /**
-     * Sets target file's extension
-     *
-     * @param  string             $targetExtension
-     * @return ChangeFormatPlugin
-     */
-    public function setTargetExtension($targetExtension)
+    public function __construct($targetExtension, array $commandDefinitions = array())
     {
         $this->targetExtension = $targetExtension;
-
-        return $this;
+        $this->imageMagickHelper = new ImageMagickHelper($commandDefinitions);
     }
 
     /**
@@ -111,8 +82,8 @@ class ChangeFormatPlugin extends AbstractPlugin
             return;
         }
 
-        $img = $this->getImageMagickHelper()->createImagick($upload->getRealPath());
-        $this->getImageMagickHelper()->execute($img);
+        $img = $this->imageMagickHelper->createImagick($upload->getRealPath());
+        $this->imageMagickHelper->execute($img);
 
         $tempnam = $this->tempDir . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);
@@ -135,6 +106,7 @@ class ChangeFormatPlugin extends AbstractPlugin
     public function attachTo(FileLibrary $filelib)
     {
         $this->fileOperator = $filelib->getFileOperator();
+        $this->tempDir = $filelib->getTempDir();
     }
 
 }

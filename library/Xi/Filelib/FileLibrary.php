@@ -72,6 +72,8 @@ class FileLibrary
      */
     private $platform;
 
+    private $plugins;
+
 
     public function __construct(
         Storage $storage,
@@ -87,6 +89,8 @@ class FileLibrary
             $this->getEventDispatcher(),
             $this->platform
         );
+
+        $this->addProfile(new FileProfile('default'));
     }
 
     /**
@@ -219,6 +223,8 @@ class FileLibrary
      */
     public function addPlugin(Plugin $plugin, $profiles = array())
     {
+        $this->plugins[] = $plugin;
+
         // @todo: think about dependency hell
         $plugin->setProfiles($profiles);
         $plugin->attachTo($this);

@@ -96,16 +96,6 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * Sets the fully qualified file entity classname
-     *
-     * @param string $fileEntityName
-     */
-    public function setFileEntityName($fileEntityName)
-    {
-        $this->fileEntityName = $fileEntityName;
-    }
-
-    /**
      * Returns the fully qualified file entity classname
      *
      * @return string
@@ -136,16 +126,6 @@ class DoctrineOrmPlatform implements Platform
     }
 
     /**
-     * Sets the fully qualified folder entity classname
-     *
-     * @param string $folderEntityName
-     */
-    public function setFolderEntityName($folderEntityName)
-    {
-        $this->folderEntityName = $folderEntityName;
-    }
-
-    /**
      * Returns the fully qualified folder entity classname
      *
      * @return string
@@ -153,16 +133,6 @@ class DoctrineOrmPlatform implements Platform
     public function getFolderEntityName()
     {
         return $this->folderEntityName;
-    }
-
-    /**
-     * Sets the fully qualified resource entity classname
-     *
-     * @param string $resourceEntityName
-     */
-    public function setResourceEntityName($resourceEntityName)
-    {
-        $this->resourceEntityName = $resourceEntityName;
     }
 
     /**

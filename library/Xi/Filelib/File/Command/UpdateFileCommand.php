@@ -55,5 +55,4 @@ class UpdateFileCommand extends AbstractFileCommand
            'uuid' => $this->uuid,
         ));
     }
-
 }

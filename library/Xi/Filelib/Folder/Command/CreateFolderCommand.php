@@ -18,13 +18,6 @@ use Xi\Filelib\Events;
 class CreateFolderCommand extends AbstractFolderCommand
 {
     /**
-     *
-     * @var FileOperator
-     */
-    private $fileOperator;
-
-    /**
-     *
      * @var Folder
      */
     private $folder;
