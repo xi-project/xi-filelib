@@ -156,7 +156,7 @@ class FileLibraryTest extends TestCase
     {
         $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
 
-        $this->assertCount(0, $filelib->getProfiles());
+        $this->assertCount(1, $filelib->getProfiles());
 
         try {
             $profile = $filelib->getProfile('tussi');
@@ -170,7 +170,7 @@ class FileLibraryTest extends TestCase
             );
 
             $this->assertSame($p, $filelib->getProfile('tussi'));
-            $this->assertCount(1, $filelib->getProfiles());
+            $this->assertCount(2, $filelib->getProfiles());
         }
     }
 

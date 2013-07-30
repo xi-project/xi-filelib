@@ -9,10 +9,7 @@
 
 namespace Xi\Filelib;
 
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Attacher;
-
-interface Command extends Attacher
+interface Attacher
 {
-    public function execute();
+    public function attachTo(FileLibrary $filelib);
 }

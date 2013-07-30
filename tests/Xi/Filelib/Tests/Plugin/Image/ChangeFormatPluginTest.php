@@ -38,9 +38,18 @@ class ChangeFormatPluginTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $filelib = $this->getMockedFilelib(null, $this->fileOperator);
+        $filelib
+            ->expects($this->once())
+            ->method('getTempDir')
+            ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
+
         $this->plugin = new ChangeFormatPlugin(
-            ROOT_TESTS . '/data/temp'
+            'lus',
+            array()
         );
+
+        $this->plugin->attachTo($filelib);
     }
 
     /**
@@ -57,13 +66,9 @@ class ChangeFormatPluginTest extends TestCase
     /**
      * @test
      */
-    public function gettersAndSettersShouldWorkAsExpected()
+    public function gettersShouldWorkAsExpected()
     {
-        $ext = 'jpg';
-
-        $this->assertEquals(null, $this->plugin->getTargetExtension());
-        $this->assertSame($this->plugin, $this->plugin->setTargetExtension($ext));
-        $this->assertEquals($ext, $this->plugin->getTargetExtension());
+        $this->assertEquals('lus', $this->plugin->getTargetExtension());
     }
 
     /**
@@ -72,7 +77,6 @@ class ChangeFormatPluginTest extends TestCase
     public function getImageMagickHelperShouldReturnImageMagickHelper()
     {
         $helper = $this->plugin->getImageMagickHelper();
-
         $this->assertInstanceOf('Xi\Filelib\Plugin\Image\ImageMagickHelper', $helper);
         $this->assertSame($helper, $this->plugin->getImageMagickHelper());
     }
@@ -156,19 +160,21 @@ class ChangeFormatPluginTest extends TestCase
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ChangeFormatPlugin')
                        ->setMethods(array('getImageMagickHelper'))
                        ->setConstructorArgs(array(
-                           ROOT_TESTS . '/data/temp'
+                           'lus'
                        ))
                        ->getMock();
 
-        $filelib = $this->getMockedFilelib();
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($this->fileOperator));
+        $filelib = $this->getMockedFilelib(null, $this->fileOperator);
+        $filelib
+            ->expects($this->once())
+            ->method('getTempDir')
+            ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
+
         $plugin->attachTo($filelib);
 
         $plugin->setProfiles(array('tussi'));
 
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
-
-        $plugin->setTargetExtension('lus');
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $profile = $this->getMockedFileProfile();

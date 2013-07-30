@@ -92,7 +92,7 @@ class DoctrineOrmPlatform implements Platform
      */
     public function __construct(EntityManager $em)
     {
-        $this->setEntityManager($em);
+        $this->em = $em;
     }
 
     /**
@@ -103,16 +103,6 @@ class DoctrineOrmPlatform implements Platform
     public function getFileEntityName()
     {
         return $this->fileEntityName;
-    }
-
-    /**
-     * Sets the entity manager
-     *
-     * @param EntityManager $em
-     */
-    public function setEntityManager(EntityManager $em)
-    {
-        $this->em = $em;
     }
 
     /**

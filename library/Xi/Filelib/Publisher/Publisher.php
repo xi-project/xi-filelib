@@ -42,15 +42,18 @@ class Publisher implements EventSubscriberInterface
      */
     private $eventDispatcher;
 
-    public function __construct(FileLibrary $filelib, PublisherAdapter $adapter, Linker $linker)
+    public function __construct(PublisherAdapter $adapter, Linker $linker)
     {
-        $adapter->attachTo($filelib);
         $this->adapter = $adapter;
-
         $this->linker = $linker;
+    }
 
+    public function attachTo(FileLibrary $filelib)
+    {
         $this->fileOperator = $filelib->getFileOperator();
         $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->adapter->attachTo($filelib);
+        $this->linker->attachTo($filelib);
     }
 
     /**

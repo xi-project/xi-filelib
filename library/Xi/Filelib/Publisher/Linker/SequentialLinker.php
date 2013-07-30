@@ -11,6 +11,7 @@ namespace Xi\Filelib\Publisher\Linker;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Exception\InvalidArgumentException;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Linker;
 
 /**
@@ -133,6 +134,11 @@ class SequentialLinker implements Linker
         $puuppa = array_pop($arr);
 
         return implode(DIRECTORY_SEPARATOR, $arr);
+
+    }
+
+    public function attachTo(FileLibrary $filelib)
+    {
 
     }
 }

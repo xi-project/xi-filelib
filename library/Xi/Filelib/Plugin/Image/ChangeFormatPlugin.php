@@ -60,6 +60,16 @@ class ChangeFormatPlugin extends AbstractPlugin
     }
 
     /**
+     * Returns ImageMagick helper
+     *
+     * @return ImageMagickHelper
+     */
+    public function getImageMagickHelper()
+    {
+        return $this->imageMagickHelper;
+    }
+
+    /**
      * Returns target file extension
      *
      * @return string
@@ -82,8 +92,9 @@ class ChangeFormatPlugin extends AbstractPlugin
             return;
         }
 
-        $img = $this->imageMagickHelper->createImagick($upload->getRealPath());
-        $this->imageMagickHelper->execute($img);
+        $img = $this->getImageMagickHelper()->createImagick($upload->getRealPath());
+        $this->getImageMagickHelper()->execute($img);
+
 
         $tempnam = $this->tempDir . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);

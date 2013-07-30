@@ -136,7 +136,8 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $beautifurl)
     {
-        $linker = new BeautifurlLinker($this->filelib, $this->slugifier, true);
+        $linker = new BeautifurlLinker($this->slugifier, true);
+        $linker->attachTo($this->filelib);
 
         $versionProvider = $this->getMock('\Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $versionProvider->expects($this->any())
@@ -169,10 +170,14 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
             'resource' => Resource::create(array('id' => 1)),
         ));
 
-        $linker = new BeautifurlLinker($this->filelib, $this->slugifier, false);
+        $linker = new BeautifurlLinker($this->slugifier, false);
+        $linker->attachTo($this->filelib);
+
         $this->assertEquals('root/lussuttaja/lamantiini-loso.lus', $linker->getLink($file, 'loso', 'lus'));
 
-        $linker = new BeautifurlLinker($this->filelib, $this->slugifier, true);
+        $linker = new BeautifurlLinker($this->slugifier, true);
+        $linker->attachTo($this->filelib);
+
         $this->assertEquals('lussuttaja/lamantiini-loso.lus', $linker->getLink($file, 'loso', 'lus'));
     }
 
@@ -181,7 +186,8 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function linkerShouldNotSlugifyWhenTheresNoSlugifier()
     {
-        $linker = new BeautifurlLinker($this->filelib, null, false);
+        $linker = new BeautifurlLinker(null, false);
+        $linker->attachTo($this->filelib);
 
         $file = File::create(array(
             'name' => 'lamantiini.lus',
@@ -200,7 +206,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function excludeRootGetterShouldWork()
     {
-        $linker = new BeautifurlLinker($this->filelib, null, false);
+        $linker = new BeautifurlLinker(null, false);
         $this->assertFalse($linker->getExcludeRoot());
     }
 
@@ -209,7 +215,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getSlugifierShouldReturnSlugifier()
     {
-        $linker = new BeautifurlLinker($this->filelib, $this->slugifier, false);
+        $linker = new BeautifurlLinker($this->slugifier, false);
         $slugifier = $linker->getSlugifier();
         $this->assertSame($this->slugifier, $slugifier);
     }
