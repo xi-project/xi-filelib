@@ -35,8 +35,9 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
 
         $command = $this->extractCommandFromMessage($message);
 
-        $this->processMessage($message, function(DefaultQueueProcessor $processor) use ($command) {
-            $command->attachTo($this->filelib);
+        $filelib = $this->filelib;
+        $this->processMessage($message, function (DefaultQueueProcessor $processor) use ($command, $filelib) {
+            $command->attachTo($filelib);
             $command->execute();
         });
 
