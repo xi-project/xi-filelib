@@ -12,6 +12,7 @@ namespace Xi\Filelib\Plugin\Video;
 use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
+use Xi\Filelib\FileLibrary;
 use ZendService\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
@@ -69,9 +70,10 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function __construct(
         $identifier,
-        ZencoderService $zencoderService,
-        AmazonService $amazonService,
-        $tempDir,
+        $zencoderKey,
+        $s3Key,
+        $s3SecretKey,
+        $s3Bucket,
         $options = array()
     ) {
         parent::__construct(
@@ -81,12 +83,21 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
                 return (bool) preg_match("/^video/", $file->getMimetype());
             }
         );
-        $this->zencoderService = $zencoderService;
-        $this->amazonService = $amazonService;
-        $this->tempDir = $tempDir;
+
+        $this->setApiKey($zencoderKey);
+        $this->setAwsKey($s3Key);
+        $this->setAwsSecretKey($s3SecretKey);
+        $this->setAwsBucket($s3Bucket);
 
         Configurator::setOptions($this, $options);
     }
+
+    public function attachTo(FileLibrary $filelib)
+    {
+        parent::attachTo($filelib);
+        $this->tempDir = $filelib->getTempDir();
+    }
+
 
     /**
      * @param  string         $awsKey

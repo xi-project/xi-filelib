@@ -11,12 +11,13 @@ namespace Xi\Filelib\Authorization;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Attacher;
 
 /**
  * ACL adapter interface
  *
  */
-interface AuthorizationAdapter
+interface AuthorizationAdapter extends Attacher
 {
 
     /**

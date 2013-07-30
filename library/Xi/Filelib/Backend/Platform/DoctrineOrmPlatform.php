@@ -150,8 +150,7 @@ class DoctrineOrmPlatform implements Platform
         $entity->setResource($this->em->getReference($this->getResourceEntityName(), $file->getResource()->getId()));
         $entity->setData($file->getData()->getArrayCopy());
 
-        $this->em->flush();
-
+        $this->em->flush($entity);
         return true;
     }
 
@@ -165,7 +164,7 @@ class DoctrineOrmPlatform implements Platform
         }
 
         $this->em->remove($entity);
-        $this->em->flush();
+        $this->em->flush($entity);
 
         return true;
     }
@@ -186,7 +185,7 @@ class DoctrineOrmPlatform implements Platform
         $folderEntity->setUuid($folder->getUuid());
 
         $this->em->persist($folderEntity);
-        $this->em->flush();
+        $this->em->flush($folderEntity);
 
         $folder->setId($folderEntity->getId());
 
@@ -213,7 +212,7 @@ class DoctrineOrmPlatform implements Platform
             $folderRow->setUrl($folder->getUrl());
             $folderRow->setUuid($folder->getUuid());
 
-            $this->em->flush();
+            $this->em->flush($folderRow);
 
             return true;
         } catch (EntityNotFoundException $e) {
@@ -231,7 +230,7 @@ class DoctrineOrmPlatform implements Platform
             $resourceRow->setData($resource->getData()->getArrayCopy());
             $resourceRow->setExclusive($resource->isExclusive());
             $resourceRow->setHash($resource->getHash());
-            $this->em->flush();
+            $this->em->flush($resourceRow);
 
             return true;
         } catch (EntityNotFoundException $e) {
@@ -252,7 +251,7 @@ class DoctrineOrmPlatform implements Platform
             }
 
             $this->em->remove($folderEntity);
-            $this->em->flush();
+            $this->em->flush($folderEntity);
 
             return true;
         } catch (EntityNotFoundException $e) {
@@ -273,7 +272,7 @@ class DoctrineOrmPlatform implements Platform
             }
 
             $this->em->remove($entity);
-            $this->em->flush();
+            $this->em->flush($entity);
 
             return true;
         } catch (EntityNotFoundException $e) {
@@ -293,7 +292,7 @@ class DoctrineOrmPlatform implements Platform
         $resourceRow->setSize($resource->getSize());
         $resourceRow->setExclusive($resource->isExclusive());
         $this->em->persist($resourceRow);
-        $this->em->flush();
+        $this->em->flush($resourceRow);
         $resource->setId($resourceRow->getId());
 
         return $resource;
@@ -325,7 +324,7 @@ class DoctrineOrmPlatform implements Platform
                 }
 
                 $em->persist($entity);
-                $em->flush();
+                $em->flush($entity);
 
                 $file->setId($entity->getId());
                 $file->setFolderId($entity->getFolder()->getId());

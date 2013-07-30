@@ -20,7 +20,6 @@ use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 
-
 class SymfonyAuthorizationAdapter implements AuthorizationAdapter
 {
     /**
@@ -48,16 +47,21 @@ class SymfonyAuthorizationAdapter implements AuthorizationAdapter
     private $folderBased;
 
     public function __construct(
-        FileLibrary $filelib,
         SecurityContextInterface $context,
         AclProviderInterface $aclProvider,
         $folderBased = true
     ) {
-        $this->folderOperator = $filelib->getFolderOperator();
+
         $this->context = $context;
         $this->aclProvider = $aclProvider;
         $this->folderBased = $folderBased;
     }
+
+    public function attachTo(FileLibrary $filelib)
+    {
+        $this->folderOperator = $filelib->getFolderOperator();
+    }
+
 
     /**
      * Returns whether ACL is folder based

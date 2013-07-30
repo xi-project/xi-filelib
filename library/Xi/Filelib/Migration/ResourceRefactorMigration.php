@@ -42,6 +42,7 @@ class ResourceRefactorMigration implements Command
             $file->setUuid($this->filelib->getFileOperator()->generateUuid());
             $this->filelib->getFileOperator()->update($file);
 
+
             $resource = $file->getResource();
             $retrieved = $this->filelib->getStorage()->retrieve($resource);
             $resource->setHash(sha1_file($retrieved));
