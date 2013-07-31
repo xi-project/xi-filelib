@@ -225,8 +225,17 @@ class FileLibrary
     {
         $this->plugins[] = $plugin;
 
-        // @todo: think about dependency hell
-        $plugin->setProfiles($profiles);
+        if (!$profiles) {
+            $resolverFunc = function ($profile) {
+                return true;
+            };
+        } else {
+            $resolverFunc = function ($profile) use ($profiles) {
+                return (bool) in_array($profile, $profiles);
+            };
+        }
+
+        $plugin->setHasProfileResolver($resolverFunc);
         $plugin->attachTo($this);
 
         $this->getEventDispatcher()->addSubscriber($plugin);

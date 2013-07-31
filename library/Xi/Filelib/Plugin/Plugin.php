@@ -21,13 +21,10 @@ use Xi\Filelib\Attacher;
 interface Plugin extends EventSubscriberInterface, Attacher
 {
     /**
-     * Returns an array of profiles
-     *
-     * @return array
+     * @param callable $resolverFunc
+     * @return Plugin
      */
-    public function getProfiles();
-
-    public function setProfiles(array $profiles);
+    public function setHasProfileResolver($resolverFunc);
 
     /**
      * Returns whether plugin has a certain profile
