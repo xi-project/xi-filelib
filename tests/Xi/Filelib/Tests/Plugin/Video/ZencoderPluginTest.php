@@ -92,15 +92,15 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->plugin = new ZencoderPlugin(
             'xooxer',
-            $this->zencoderService,
-            $this->amazonService,
-            ROOT_TESTS . '/data/temp',
-            $this->config
+            'api key',
+            'aws key',
+            'aws secret key',
+            'aws bucket',
+            $this->config['outputs']
         );
 
 
-        $filelib = $this->getMockedFilelib();
-        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
+        $filelib = $this->getMockedFilelib(null, null, null, $this->storage);
         $this->plugin->attachTo($filelib);
     }
 
@@ -126,25 +126,13 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
      */
     public function settersAndGettersShouldWorkAsExpected()
     {
-        $val = 'xooxer';
         $this->assertEquals('api key', $this->plugin->getApiKey());
-        $this->assertSame($this->plugin, $this->plugin->setApiKey($val));
-        $this->assertEquals($val, $this->plugin->getApiKey());
 
-        $val = 'xooxer2';
         $this->assertEquals('aws key', $this->plugin->getAwsKey());
-        $this->assertSame($this->plugin, $this->plugin->setAwsKey($val));
-        $this->assertEquals($val, $this->plugin->getAwsKey());
 
-        $val = 'xooxer3';
         $this->assertEquals('aws secret key', $this->plugin->getAwsSecretKey());
-        $this->assertSame($this->plugin, $this->plugin->setAwsSecretKey($val));
-        $this->assertEquals($val, $this->plugin->getAwsSecretKey());
 
-        $val = 'xooxer4';
         $this->assertEquals('aws bucket', $this->plugin->getAwsBucket());
-        $this->assertSame($this->plugin, $this->plugin->setAwsBucket($val));
-        $this->assertEquals($val, $this->plugin->getAwsBucket());
 
         $val = 1;
         $this->assertEquals(5, $this->plugin->getSleepyTime());
@@ -239,6 +227,8 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     public function createVersionsShouldCreateVersions()
     {
         $this->setupStubsForZencoderService();
+        $this->plugin->setAwsService($this->amazonService);
+        $this->plugin->setService($this->zencoderService);
 
         $this->amazonService
             ->expects($this->at(0))
@@ -343,6 +333,9 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
      */
     public function createVersionsShouldThrowExceptionOnZencoderError()
     {
+        $this->plugin->setAwsService($this->amazonService);
+        $this->plugin->setService($this->zencoderService);
+
         $this->zencoderService->jobs->expects($this->once())->method('create')
             ->will($this->throwException(
                 new ZencoderException(
