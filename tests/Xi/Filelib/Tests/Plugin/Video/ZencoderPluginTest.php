@@ -100,7 +100,8 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         );
 
 
-        $filelib = $this->getMockedFilelib(null, null, null, $this->storage);
+        $fiop = $this->getMockedFileOperator(array('default'));
+        $filelib = $this->getMockedFilelib(null, $fiop, null, $this->storage);
         $this->plugin->attachTo($filelib);
     }
 

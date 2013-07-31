@@ -56,16 +56,17 @@ abstract class AbstractPlugin implements Plugin
      */
     public function hasProfile($profile)
     {
-        $resolverFunc = $this->resolverFunc;
-        return $resolverFunc($profile);
-
+        if (!$this->resolverFunc) {
+            return false;
+        }
+        return call_user_func($this->resolverFunc, $profile);
     }
 
     public function onFileProfileAdd(FileProfileEvent $event)
     {
         $profile = $event->getProfile();
 
-        if (in_array($profile->getIdentifier(), $this->getProfiles())) {
+        if ($this->hasProfile($profile->getIdentifier())) {
             $profile->addPlugin($this);
         }
     }
@@ -75,7 +76,6 @@ abstract class AbstractPlugin implements Plugin
 
     }
 
-
     public function setHasProfileResolver($resolverFunc)
     {
         if (!is_callable($resolverFunc)) {
@@ -83,7 +83,17 @@ abstract class AbstractPlugin implements Plugin
         }
 
         $this->resolverFunc = $resolverFunc;
-
     }
 
+    /**
+     * @param array $profiles
+     */
+    public function setProfiles(array $profiles)
+    {
+        $this->setHasProfileResolver(
+            function ($profile) use ($profiles) {
+                return (bool) in_array($profile, $profiles);
+            }
+        );
+    }
 }

@@ -88,10 +88,12 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function init()
     {
-        foreach ($this->getProfiles() as $profile) {
-            $profile = $this->fileOperator->getProfile($profile);
-            foreach ($this->getVersions() as $version) {
-                $profile->addFileVersion($version, $this);
+        foreach ($this->fileOperator->getProfiles() as $profile) {
+
+            if ($this->hasProfile($profile->getIdentifier())) {
+                foreach ($this->getVersions() as $version) {
+                    $profile->addFileVersion($version, $this);
+                }
             }
         }
     }
@@ -124,7 +126,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function providesFor(File $file)
     {
-        if (!in_array($file->getProfile(), $this->getProfiles())) {
+        if (!$this->hasProfile($file->getProfile())) {
             return false;
         }
         return call_user_func($this->providesFor, $file);

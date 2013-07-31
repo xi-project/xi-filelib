@@ -44,10 +44,7 @@ class VersionPluginTest extends TestCase
 
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
 
-        $this->fileOperator = $this
-            ->getMockBuilder('Xi\Filelib\File\FileOperator')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->fileOperator = $this->getMockedFileOperator(array('default'));
 
         $this->plugin = new VersionPlugin(
             'xooxer',
@@ -135,7 +132,7 @@ class VersionPluginTest extends TestCase
                        ))
                        ->getMock();
 
-        $filelib = $this->getMockedFilelib();
+        $filelib = $this->getMockedFilelib(null, $this->fileOperator);
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
         $plugin->attachTo($filelib);

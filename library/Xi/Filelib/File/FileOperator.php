@@ -269,20 +269,6 @@ class FileOperator extends AbstractOperator
     }
 
     /**
-     * Adds a plugin
-     *
-     * @param Plugin $plugin
-     * @param int    $priority
-     */
-    public function addPlugin(Plugin $plugin, $priority = 0)
-    {
-        foreach ($plugin->getProfiles() as $profileIdentifier) {
-            $profile = $this->getProfile($profileIdentifier);
-            $profile->addPlugin($plugin, $priority);
-        }
-    }
-
-    /**
      *
      * @return FolderOperator
      */
