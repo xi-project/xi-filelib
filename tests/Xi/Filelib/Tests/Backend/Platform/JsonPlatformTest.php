@@ -541,25 +541,4 @@ class JsonPlatformTest extends AbstractPlatformTestCase
             )
         );
     }
-
-    /**
-     * @test
-     */
-    public function destructorShouldSaveState()
-    {
-        $file = ROOT_TESTS . '/data/temp/temp.json';
-        $this->assertFileNotExists($file);
-
-        $platform = new JsonPlatform($file);
-        $this->assertFileNotExists($file);
-
-        $platform->findByFinder(new FileFinder());
-
-        $this->assertFileNotExists($file);
-        unset($platform);
-
-        $this->assertFileExists($file);
-
-    }
-
 }

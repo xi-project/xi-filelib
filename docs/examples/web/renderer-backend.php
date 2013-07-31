@@ -27,11 +27,4 @@ $renderer = new AcceleratedRenderer(
 $renderer->enableAcceleration($enableAcceleration);
 
 $symfonyResponse = $renderer->render($id, $version, array('download' => $download));
-
-// echo $symfonyResponse;
-// die();
-
-
 $symfonyResponse->send();
-
-die();

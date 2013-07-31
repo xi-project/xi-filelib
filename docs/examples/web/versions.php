@@ -2,7 +2,7 @@
 
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
-use Xi\Filelib\Publisher\Linker\SequentialLinker;
+use Xi\Filelib\Publisher\Linker\CreationTimeLinker;
 
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
@@ -10,10 +10,10 @@ use Xi\Filelib\Plugin\Image\VersionPlugin;
 require_once __DIR__ . '/../bootstrap.php';
 
 $publisher = new Publisher(
-    $filelib,
     new SymlinkFilesystemPublisherAdapter(__DIR__ . '/files', '600', '700', 'files'),
-    new SequentialLinker()
+    new CreationTimeLinker()
 );
+$publisher->attachTo($filelib);
 
 /*
 thumb:

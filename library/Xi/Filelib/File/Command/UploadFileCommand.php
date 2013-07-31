@@ -167,13 +167,16 @@ class UploadFileCommand extends AbstractFileCommand
 
     public function serialize()
     {
+        if (!$this->upload instanceof FileUpload) {
+            $this->upload = $this->fileOperator->prepareUpload($this->upload);
+        }
+
         $upload = $this->upload;
 
         $uploadArr = array(
             'overrideBasename' => $upload->getOverrideBasename(),
             'overrideFilename' => $upload->getOverrideFilename(),
             'temporary' => $upload->isTemporary(),
-            // 'dateUploaded' => $upload->getDateUploaded(),
             'realPath' => $upload->getRealPath(),
         );
 

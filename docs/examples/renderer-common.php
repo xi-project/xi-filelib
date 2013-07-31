@@ -20,16 +20,15 @@ $AuthorizationAdapter
     ->setFileReadable(true);
 
 $publisher = new Publisher(
-    $filelib,
     new SymlinkFilesystemPublisherAdapter(__DIR__ . '/web/files', '600', '700', 'files'),
     new BeautifurlLinker(
-        $filelib,
         new ZendSlugifier(new IntlTransliterator())
     )
 );
+$publisher->attachTo($filelib);
 
 $originalPlugin = new OriginalVersionPlugin('original');
-$filelib->addPlugin($originalPlugin, array('default'));
+$filelib->addPlugin($originalPlugin);
 
 $versionPlugin = new VersionPlugin(
     'cinemascope',
@@ -42,4 +41,4 @@ $versionPlugin = new VersionPlugin(
         'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(__DIR__ . '/watermark.png', 'se', 10),
     )
 );
-$filelib->addPlugin($versionPlugin, array('default'));
+$filelib->addPlugin($versionPlugin);
