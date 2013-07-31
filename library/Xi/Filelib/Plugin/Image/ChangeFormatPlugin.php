@@ -10,7 +10,6 @@
 namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\Plugin\AbstractPlugin;
-use Xi\Filelib\Configurator;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\FileLibrary;
@@ -41,11 +40,6 @@ class ChangeFormatPlugin extends AbstractPlugin
      * @var string
      */
     private $tempDir;
-
-    /**
-     * @var array
-     */
-    private $options;
 
     /**
      * @param  FileOperator       $fileOperator
