@@ -52,7 +52,7 @@ class CreationTimeLinker implements Linker
     public function getLink(File $file, $version, $extension)
     {
         return $file->getDateCreated()->format($this->getFormat())
-            . '/' . $file->getName() . '-' . $version . $extension;
+            . '/' . $file->getName() . '-' . $version . '.' . $extension;
     }
 
     public function attachTo(FileLibrary $filelib)

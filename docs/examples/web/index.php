@@ -5,7 +5,6 @@
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
         <link href="filelib.css" rel="stylesheet">
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-
     </head>
 
     <html>
@@ -56,11 +55,24 @@
 
                     <h2>Advanced examples</h2>
 
+                    <p>
+                        Copy <code>../constants.example.php</code> to <code>../constants.php</code>
+                        and configure.
+                    </p>
+
                     <dt><a href="async.php">Asynchronous processing</a></dt>
                     <dd>
                         Some operations, like creating a version of a 2 gigabyte video or batch creating 10.000
                         images at the same time, are expensive and should not keep the user waiting longer than
                         necessary. Filelib supports asynchronous operation via message queues.
+                        <span class="label label-info">RabbitMQ</span>
+                    </dd>
+
+                    <dt><a href="zencoder.php">Videos</a></dt>
+
+                    <dd>
+                        Web video can easily be created with the Zencoder plugin.
+                        <span class="label label-info">RabbitMQ</span> <span class="label label-info">Zencoder</span>
                     </dd>
 
                 </dl>

@@ -218,7 +218,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
         $retrieved = $this->getStorage()->retrieve($file->getResource());
 
-        $s3->putFile($retrieved->getRealPath(), $awsPath);
+        $s3->putFile($retrieved, $awsPath);
 
         $url = $s3->getEndpoint() . '/' . $awsPath;
 

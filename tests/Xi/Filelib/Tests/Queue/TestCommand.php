@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Tests\Queue\Processor;
+namespace Xi\Filelib\Tests\Queue;
 
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
