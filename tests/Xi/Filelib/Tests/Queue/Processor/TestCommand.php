@@ -2,6 +2,8 @@
 
 namespace Xi\Filelib\Tests\Queue\Processor;
 
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Xi\Filelib\EnqueueableCommand;
 use Xi\Filelib\FileLibrary;
 
@@ -40,6 +42,17 @@ class TestCommand implements EnqueueableCommand
     public function attachTo(FileLibrary $filelib)
     {
 
+    }
+
+
+    public function setOutput(OutputInterface $output)
+    {
+        $this->output = $output;
+    }
+
+    public function getOutput()
+    {
+        return new NullOutput();
     }
 
 }

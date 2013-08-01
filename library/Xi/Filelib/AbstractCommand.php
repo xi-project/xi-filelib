@@ -10,6 +10,8 @@
 namespace Xi\Filelib;
 
 use Rhumsaa\Uuid\Uuid;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractCommand implements Command
 {
@@ -17,6 +19,8 @@ abstract class AbstractCommand implements Command
      * @var string
      */
     protected $uuid;
+
+    protected $output;
 
     /**
      * @param string $uuid
@@ -40,5 +44,27 @@ abstract class AbstractCommand implements Command
     public function getEnqueueReturnValue()
     {
         return $this->getUuid();
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @return Command
+     */
+    public function setOutput(OutputInterface $output)
+    {
+        $this->output = $output;
+        return $this;
+    }
+
+    /**
+     * @return OutputInterface
+     */
+    public function getOutput()
+    {
+        if (!$this->output) {
+            $this->output = new NullOutput();
+        }
+
+        return $this->output;
     }
 }

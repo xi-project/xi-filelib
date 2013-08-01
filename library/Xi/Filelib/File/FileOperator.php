@@ -60,12 +60,6 @@ class FileOperator extends AbstractOperator
     private $profiles = array();
 
     /**
-     *
-     * @var type TypeResolver
-     */
-    private $typeResolver;
-
-    /**
      * Adds a file profile
      *
      * @param  FileProfile              $profile
@@ -134,7 +128,7 @@ class FileOperator extends AbstractOperator
      * Finds a file
      *
      * @param  mixed      $id File id
-     * @return File|false
+     * @return File
      */
     public function find($id)
     {
@@ -152,7 +146,7 @@ class FileOperator extends AbstractOperator
      *
      * @param Folder $folder
      * @param $filename
-     * @return File|false
+     * @return File
      */
     public function findByFilename(Folder $folder, $filename)
     {
@@ -250,7 +244,6 @@ class FileOperator extends AbstractOperator
     public function hasVersion(File $file, $version)
     {
         $profile = $this->getProfile($file->getProfile());
-
         return $profile->fileHasVersion($file, $version);
     }
 
