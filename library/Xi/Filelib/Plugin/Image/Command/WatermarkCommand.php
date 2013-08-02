@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Plugin\Image\Command;
 
 use Imagick;
+use Xi\Filelib\InvalidArgumentException;
 
 /**
  * Watermarks an image version
@@ -74,16 +75,16 @@ class WatermarkCommand extends AbstractCommand
      *
      * @param  string                    $position
      * @return WatermarkCommand
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setWatermarkPosition($position)
     {
         if (!is_string($position)) {
-            throw new \InvalidArgumentException("Non-string watermark position");
+            throw new InvalidArgumentException("Non-string watermark position");
         }
 
         if (!in_array($position, array('nw', 'ne', 'sw', 'se'))) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 "Invalid watermark position '%s'", $position
             ));
         }

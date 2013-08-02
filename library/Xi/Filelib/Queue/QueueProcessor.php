@@ -11,7 +11,7 @@ namespace Xi\Filelib\Queue;
 
 use Symfony\Component\Console\Output\NullOutput;
 use Xi\Filelib\Command;
-use InvalidArgumentException;
+use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\FolderOperator;
