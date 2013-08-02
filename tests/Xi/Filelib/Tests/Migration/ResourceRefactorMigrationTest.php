@@ -65,6 +65,11 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $backend->expects($this->once())->method('updateResource')->with($resource);
 
         $migration = new ResourceRefactorMigration($filelib);
+
+        $filelib = $this->getMockedFilelib(null, $fiop, $foop, $storage);
+        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
+
+        $migration->attachTo($filelib);
         $migration->execute();
     }
 

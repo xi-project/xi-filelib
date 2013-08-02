@@ -24,14 +24,11 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $op = $this->getMockedFolderOperator();
-        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
-
         $folder = $this->getMockedFolder();
 
         $url = 'tussen/hofen/meister';
 
-        $command = new CreateByUrlFolderCommand($op, $url);
+        $command = new CreateByUrlFolderCommand($url);
 
         $serialized = serialize($command);
         $command2 = unserialize($serialized);
@@ -76,7 +73,8 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
                 return $command;
             }));
 
-        $command = new CreateByUrlFolderCommand($op, 'tussin/lussutus/festivaali/2012');
+        $command = new CreateByUrlFolderCommand('tussin/lussutus/festivaali/2012');
+        $command->attachTo($this->getMockedFilelib(null, null, $op));
         $folder = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
@@ -126,7 +124,8 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 
         }));
 
-        $command = new CreateByUrlFolderCommand($op, 'tussin/lussutus/festivaali/2012');
+        $command = new CreateByUrlFolderCommand('tussin/lussutus/festivaali/2012');
+        $command->attachTo($this->getMockedFilelib(null, null, $op));
         $folder = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
@@ -156,7 +155,8 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->with('tussin/lussutus/festivaali/2010')
             ->will($this->returnValue(Folder::create(array('id' => 666))));
 
-        $command = new CreateByUrlFolderCommand($op, 'tussin/lussutus/festivaali/2010');
+        $command = new CreateByUrlFolderCommand('tussin/lussutus/festivaali/2010');
+        $command->attachTo($this->getMockedFilelib(null, null, $op));
         $folder = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);

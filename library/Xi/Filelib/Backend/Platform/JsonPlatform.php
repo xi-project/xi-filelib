@@ -68,11 +68,15 @@ class JsonPlatform implements Platform
 
     public function __destruct()
     {
+        $this->flush();
+    }
+
+    private function flush()
+    {
         // Suckety suck! PHP 5.3 does not have pretty print. Rejoice!
         $options = defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT: 0;
         file_put_contents($this->file, json_encode($this->json, $options));
     }
-
 
     private function init()
     {
@@ -83,6 +87,7 @@ class JsonPlatform implements Platform
                     'files' => array(),
                     'folders' => array(),
                 );
+                $this->flush();
             } else {
                 $this->json = json_decode(file_get_contents($this->file), true);
             }
@@ -104,6 +109,7 @@ class JsonPlatform implements Platform
 
         if (isset($this->json[$what][$id])) {
             unset($this->json[$what][$id]);
+            $this->flush();
             return true;
         }
         return false;
@@ -114,6 +120,7 @@ class JsonPlatform implements Platform
         $this->init();
 
         $this->json[$what][$id] = $doc;
+        $this->flush();
     }
 
     private function update($what, $id, $doc)
@@ -125,6 +132,7 @@ class JsonPlatform implements Platform
         }
 
         $this->json[$what][$id] = $doc;
+        $this->flush();
         return true;
     }
 

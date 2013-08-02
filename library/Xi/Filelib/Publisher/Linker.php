@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Attacher;
 
 /**
  * Linker interface
@@ -17,7 +18,7 @@ use Xi\Filelib\File\File;
  * @author pekkis
  * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  */
-interface Linker
+interface Linker extends Attacher
 {
     /**
      * Returns link for a version of a file

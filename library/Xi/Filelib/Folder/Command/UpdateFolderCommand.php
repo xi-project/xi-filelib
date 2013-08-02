@@ -14,6 +14,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\FileLibrary;
 
 class UpdateFolderCommand extends AbstractFolderCommand
 {
@@ -29,10 +30,9 @@ class UpdateFolderCommand extends AbstractFolderCommand
      */
     private $folder;
 
-    public function __construct(FolderOperator $folderOperator, FileOperator $fileOperator, Folder $folder)
+    public function __construct(Folder $folder)
     {
-        parent::__construct($folderOperator);
-        $this->fileOperator = $fileOperator;
+        parent::__construct();
         $this->folder = $folder;
     }
 
@@ -45,7 +45,6 @@ class UpdateFolderCommand extends AbstractFolderCommand
 
         foreach ($this->folderOperator->findFiles($this->folder) as $file) {
             $command = $this->folderOperator->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array(
-                $this->fileOperator,
                 $file
             ));
             $command->execute();
@@ -53,8 +52,6 @@ class UpdateFolderCommand extends AbstractFolderCommand
 
         foreach ($this->folderOperator->findSubFolders($this->folder) as $subFolder) {
             $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\UpdateFolderCommand', array(
-                $this->folderOperator,
-                $this->fileOperator,
                 $subFolder
             ));
             $command->execute();
@@ -81,5 +78,11 @@ class UpdateFolderCommand extends AbstractFolderCommand
             'uuid' => $this->uuid,
         ));
 
+    }
+
+    public function attachTo(FileLibrary $filelib)
+    {
+        parent::attachTo($filelib);
+        $this->fileOperator = $filelib->getFileOperator();
     }
 }

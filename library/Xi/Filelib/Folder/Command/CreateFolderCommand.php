@@ -18,20 +18,13 @@ use Xi\Filelib\Events;
 class CreateFolderCommand extends AbstractFolderCommand
 {
     /**
-     *
-     * @var FileOperator
-     */
-    private $fileOperator;
-
-    /**
-     *
      * @var Folder
      */
     private $folder;
 
-    public function __construct(FolderOperator $folderOperator, Folder $folder)
+    public function __construct(Folder $folder)
     {
-        parent::__construct($folderOperator);
+        parent::__construct();
         $this->folder = $folder;
     }
 

@@ -19,21 +19,13 @@ class AbstractFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldInitializeProperly()
     {
-        $uuid = 'tussi-id';
-
-        $fileOperator = $this->getMockBuilder('Xi\Filelib\File\FileOperator')->disableOriginalConstructor()->getMock();
-
-        $fileOperator->expects($this->once())->method('generateUuid')
-                     ->will($this->returnValue($uuid));
-
         $command = $this->getMockBuilder('Xi\Filelib\File\Command\AbstractFileCommand')
                         ->setMethods(array('execute'))
-                        ->setConstructorArgs(array($fileOperator))
+                        ->setConstructorArgs(array())
                         ->getMockForAbstractClass();
 
-        $this->assertSame($fileOperator, $command->getFileOperator());
-
-        $this->assertSame($uuid, $command->getUuid());
+        $this->assertSame(null, $command->getFileOperator());
+        $this->assertUuid($command->getUuid());
 
     }
 

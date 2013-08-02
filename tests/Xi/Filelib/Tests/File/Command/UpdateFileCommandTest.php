@@ -25,12 +25,9 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $op = $this->getMockedFileOperator();
-        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
-
         $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
-        $command = new UpdateFileCommand($op, $file);
+        $command = new UpdateFileCommand($file);
 
         $serialized = serialize($command);
 
@@ -91,7 +88,8 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussenhofer'))->will($this->returnValue($profile));
 
-        $command = new UpdateFileCommand($op, $file);
+        $command = new UpdateFileCommand( $file);
+        $command->attachTo($this->getMockedFilelib(null, $op));
         $command->execute();
 
     }

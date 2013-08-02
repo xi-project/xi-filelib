@@ -26,12 +26,9 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $op = $this->getMockedFileOperator();
-        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
-
         $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
-        $command = new DeleteFileCommand($op, $file);
+        $command = new DeleteFileCommand($file);
 
         $serialized = serialize($command);
 
@@ -107,10 +104,10 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
 
-
         $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussen'))->will($this->returnValue($profile));
 
-        $command = new DeleteFileCommand($op, $file);
+        $command = new DeleteFileCommand($file);
+        $command->attachTo($this->getMockedFilelib(null, $op));
         $command->execute();
 
     }

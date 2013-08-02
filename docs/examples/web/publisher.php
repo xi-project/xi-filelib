@@ -2,16 +2,16 @@
 
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
-use Xi\Filelib\Publisher\Linker\SequentialLinker;
+use Xi\Filelib\Publisher\Linker\CreationTimeLinker;
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 
 require_once __DIR__ . '/../bootstrap.php';
 
 $publisher = new Publisher(
-    $filelib,
     new SymlinkFilesystemPublisherAdapter(__DIR__ . '/files', '600', '700', 'files'),
-    new SequentialLinker()
+    new CreationTimeLinker()
 );
+$publisher->attachTo($filelib);
 
 $originalPlugin = new OriginalVersionPlugin('original');
 $filelib->addPlugin($originalPlugin, array('default'));
@@ -23,13 +23,21 @@ $publisher->publish($file);
 
 <html>
     <head>
-        <title>Mighty manatee</title>
+        <title>Filelib Examples</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link href="filelib.css" rel="stylesheet">
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     </head>
     <body>
-        <h1>You just published a picture of a manatee</h1>
 
-        <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
-        </p>
+        <div class="container">
+
+            <h1>You just published a picture of a manatee</h1>
+
+            <p>
+                <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
+            </p>
+
+        </div>
     </body>
 </html>

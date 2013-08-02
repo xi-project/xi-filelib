@@ -9,21 +9,21 @@
 
 namespace Xi\Filelib\Migration;
 
-use Xi\Filelib\Command;
+use Xi\Filelib\AbstractCommand;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\Folder;
 
 /**
  * Migration command to be run after resourcification (v0.7.0)
  */
-class ResourceRefactorMigration implements Command
+class ResourceRefactorMigration extends AbstractCommand
 {
     /**
      * @var FileLibrary
      */
     private $filelib;
 
-    public function __construct(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
         $this->filelib = $filelib;
     }
@@ -37,16 +37,26 @@ class ResourceRefactorMigration implements Command
 
         foreach ($files as $file) {
 
+            $this->getOutput()->writeln("Processing file #{$file->getId()}");
+
             $profile = $this->filelib->getFileOperator()->getProfile($file->getProfile());
 
             $file->setUuid($this->filelib->getFileOperator()->generateUuid());
             $this->filelib->getFileOperator()->update($file);
 
             $resource = $file->getResource();
-            $retrieved = $this->filelib->getStorage()->retrieve($resource);
-            $resource->setHash(sha1_file($retrieved));
-            $resource->setVersions($profile->getFileVersions($file));
-            $this->filelib->getBackend()->updateResource($resource);
+
+
+
+            try {
+                $this->getOutput()->writeln("Setting hash for resource #{$resource->getId()}");
+                $retrieved = $this->filelib->getStorage()->retrieve($resource);
+                $resource->setHash(sha1_file($retrieved));
+                $resource->setVersions($profile->getFileVersions($file));
+                $this->filelib->getBackend()->updateResource($resource);
+            } catch (\Exception $e) {
+                $this->getOutput()->writeln("Failed to set hash for resource #{$resource->getId()}");
+            }
 
         }
 
@@ -60,6 +70,8 @@ class ResourceRefactorMigration implements Command
      */
     private function createUuidToFolder(Folder $folder)
     {
+        $this->getOutput()->writeln("Processing folder #{$folder->getId()}");
+
         $folder->setUuid($this->filelib->getFolderOperator()->generateUuid());
         $this->filelib->getFolderOperator()->update($folder);
 

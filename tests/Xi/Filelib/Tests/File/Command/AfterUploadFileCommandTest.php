@@ -58,7 +58,9 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
            ->with($this->equalTo('versioned'))
            ->will($this->returnValue($profile));
 
-        $command = new AfterUploadFileCommand($op, $fileitem);
+        $command = new AfterUploadFileCommand($fileitem);
+        $command->attachTo($this->getMockedFilelib(null, $op));
+
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
@@ -70,12 +72,9 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $op = $this->getMockedFileOperator();
-        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
-
         $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
-        $command = new AfterUploadFileCommand($op, $file);
+        $command = new AfterUploadFileCommand($file);
         $serialized = serialize($command);
 
         $command2 = unserialize($serialized);

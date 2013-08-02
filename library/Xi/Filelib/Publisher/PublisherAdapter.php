@@ -12,7 +12,7 @@ namespace Xi\Filelib\Publisher;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Linker;
-use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Attacher;
 
 /**
  * Publisher adapter interface
@@ -20,7 +20,7 @@ use Xi\Filelib\FileLibrary;
  * @author pekkis
  *
  */
-interface PublisherAdapter
+interface PublisherAdapter extends Attacher
 {
     /**
      * @param File $file
@@ -46,10 +46,4 @@ interface PublisherAdapter
      * @return string
      */
     public function getUrlVersion(File $file, $version, VersionProvider $versionProvider, Linker $linker);
-
-    /**
-     * @param FileLibrary $filelib
-     * @return PublisherAdapter
-     */
-    public function attachTo(FileLibrary $filelib);
 }

@@ -82,7 +82,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $op->expects($this->never())->method('getQueue');
 
         $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
-                               ->setConstructorArgs(array($op, $upload, $folder, $profile))
+                               ->setConstructorArgs(array($upload, $folder, $profile))
                                ->setMethods(array('execute'))
                                ->getMock();
 
@@ -114,7 +114,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $op->expects($this->atLeastOnce())->method('getQueue')->will($this->returnValue($queue));
 
         $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
-                               ->setConstructorArgs(array($op, $upload, $folder, $profile))
+                               ->setConstructorArgs(array($upload, $folder, $profile))
                                ->setMethods(array('execute'))
                                ->getMock();
 
@@ -408,44 +408,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
          $op->expects($this->any())->method('getProfile')->with($this->equalTo('meisterlus'))->will($this->returnValue($profile));
 
          $vp = $op->getVersionProvider($file, 'kloo');
-
-    }
-
-    /**
-     * @test
-     */
-    public function addProfileShouldDelegateToProfile()
-    {
-
-        $filelib = $this->getMockedFilelib();
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getProfile'))
-                   ->getMock();
-
-        $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussi', 'tussi', 'jussi')));
-
-        $profile1 = $this->getMockedFileProfile();
-        $profile1->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
-
-        $profile2 = $this->getMockedFileProfile();
-        $profile2->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
-
-        $profile3 = $this->getMockedFileProfile();
-        $profile3->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
-
-        $op->expects($this->exactly(3))->method('getProfile')
-           ->with($this->logicalOr($this->equalTo('lussi'), $this->equalTo('tussi'), $this->equalTo('jussi')))
-           ->will($this->returnValueMap(
-                array(
-                    array('tussi', $profile1),
-                    array('lussi', $profile2),
-                    array('jussi', $profile3),
-                )
-            ));
-
-        $op->addPlugin($plugin);
 
     }
 

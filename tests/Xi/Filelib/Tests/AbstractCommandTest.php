@@ -21,15 +21,16 @@ class AbstractCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldInitializeCorrectly()
     {
-        $uuid = 'tussen-hof';
-
         $command = $this->getMockBuilder('Xi\Filelib\AbstractCommand')
                         ->setMethods(array('execute'))
-                        ->setConstructorArgs(array($uuid))
+                        ->setConstructorArgs(array())
                         ->getMockForAbstractClass();
 
-        $this->assertEquals($uuid, $command->getEnqueueReturnValue());
-        $this->assertEquals($uuid, $command->getUuid());
+        $uuid = $command->getUuid();
+        $this->assertUuid($uuid);
+
+        $this->assertSame($uuid, $command->getEnqueueReturnValue());
+
 
     }
 

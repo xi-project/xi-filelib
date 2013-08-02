@@ -46,6 +46,21 @@ class ImageMagickHelper
         return $this->commands;
     }
 
+    /**
+     * @param $key
+     * @return Command
+     */
+    public function getCommand($key)
+    {
+        return $this->commands[$key];
+    }
+
+    public function setCommand($key, $command)
+    {
+        $this->commands[$key] = $command;
+    }
+
+
     public function execute($img)
     {
         foreach ($this->getCommands() as $command) {

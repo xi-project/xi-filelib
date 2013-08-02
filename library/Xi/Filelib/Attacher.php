@@ -7,11 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Queue\Processor;
+namespace Xi\Filelib;
 
-interface QueueProcessor
+interface Attacher
 {
-
-    public function process();
-
+    public function attachTo(FileLibrary $filelib);
 }

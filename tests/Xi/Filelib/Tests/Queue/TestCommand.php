@@ -1,16 +1,14 @@
 <?php
 
-namespace Xi\Filelib\Tests\Queue\Processor;
+namespace Xi\Filelib\Tests\Queue;
 
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Xi\Filelib\EnqueueableCommand;
+use Xi\Filelib\FileLibrary;
 
 class TestCommand implements EnqueueableCommand
 {
-
-    private $fileOperator;
-
-    private $folderOperator;
-
     private $isExecuted = false;
 
     public function execute()
@@ -39,6 +37,22 @@ class TestCommand implements EnqueueableCommand
     {
         $unserialized = unserialize($serialized);
         $this->isExecuted = $unserialized;
+    }
+
+    public function attachTo(FileLibrary $filelib)
+    {
+
+    }
+
+
+    public function setOutput(OutputInterface $output)
+    {
+        $this->output = $output;
+    }
+
+    public function getOutput()
+    {
+        return new NullOutput();
     }
 
 }

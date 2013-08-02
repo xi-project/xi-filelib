@@ -15,25 +15,27 @@ use Xi\Filelib\Authorization\AccessDeniedException;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-$AuthorizationAdapter = new SimpleAuthorizationAdapter();
-$AuthorizationPlugin = new AuthorizationPlugin($AuthorizationAdapter);
-$filelib->addPlugin($AuthorizationPlugin, array('default'));
+$writable = (isset($_GET['writable'])) ? $_GET['writable'] : false;
+$publishable = (isset($_GET['publishable'])) ? $_GET['publishable'] : false;
 
-$AuthorizationAdapter
-    ->setFolderWritable(true)
-    ->setFileReadableByAnonymous(true);
+$authorizationAdapter = new SimpleAuthorizationAdapter();
+$authorizationPlugin = new AuthorizationPlugin($authorizationAdapter);
+$filelib->addPlugin($authorizationPlugin, array('default'));
+
+$authorizationAdapter
+    ->setFolderWritable($writable)
+    ->setFileReadableByAnonymous($publishable);
 
 $publisher = new Publisher(
-    $filelib,
     new SymlinkFilesystemPublisherAdapter(__DIR__ . '/files', '600', '700', 'files'),
     new BeautifurlLinker(
-        $filelib,
         new ZendSlugifier(new IntlTransliterator())
     )
 );
+$publisher->attachTo($filelib);
 
 $originalPlugin = new OriginalVersionPlugin('original');
-$filelib->addPlugin($originalPlugin, array('default'));
+$filelib->addPlugin($originalPlugin);
 
 $versionPlugin = new VersionPlugin(
     'cinemascope',
@@ -46,7 +48,7 @@ $versionPlugin = new VersionPlugin(
         'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(__DIR__ . '/../watermark.png', 'se', 10),
     )
 );
-$filelib->addPlugin($versionPlugin, array('default'));
+$filelib->addPlugin($versionPlugin);
 
 $folder = $filelib->getFolderOperator()->createByUrl('pictures/of/very beaütiful manatees');
 

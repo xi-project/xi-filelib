@@ -33,15 +33,9 @@ class CopyFileCommand extends AbstractFileCommand
      */
     private $folder;
 
-    /**
-     *
-     * @var string
-     */
-    private $profile;
-
-    public function __construct(FileOperator $fileOperator, File $file, Folder $folder)
+    public function __construct(File $file, Folder $folder)
     {
-        parent::__construct($fileOperator);
+        parent::__construct();
         $this->file = $file;
         $this->folder = $folder;
     }
@@ -153,7 +147,7 @@ class CopyFileCommand extends AbstractFileCommand
         $event = new FileCopyEvent($this->file, $impostor);
         $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_COPY, $event);
 
-        $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($this->fileOperator, $impostor));
+        $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($impostor));
 
         return $command->execute();
     }
