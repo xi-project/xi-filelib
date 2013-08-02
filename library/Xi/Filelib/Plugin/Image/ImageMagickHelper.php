@@ -11,7 +11,7 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Imagick;
 use ImagickException;
-use InvalidArgumentException;
+use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Plugin\Image\Command\Command;
 
 /**

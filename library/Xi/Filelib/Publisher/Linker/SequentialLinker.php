@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Publisher\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Exception\InvalidArgumentException;
+use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Linker;
 

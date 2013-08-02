@@ -17,10 +17,8 @@ use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\File\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use InvalidArgumentException;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Queue\Queue;
-use Xi\Filelib\IdentityMap\IdentityMap;
 use Xi\Filelib\Backend\Platform\Platform;
 
 /**

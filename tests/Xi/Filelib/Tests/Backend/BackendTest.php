@@ -122,7 +122,7 @@ class BackendTest extends TestCase
      */
     public function updateFileShouldThrowExceptionWhenFolderIsNotFound()
     {
-        $this->setExpectedException('Xi\Filelib\Exception\FolderNotFoundException');
+        $this->setExpectedException('Xi\Filelib\Backend\FolderNotFoundException');
 
         $resource = Resource::create(array('id' => 2));
         $file = File::create(array('id' => 1, 'resource' => $resource, 'folder_id' => 666));
@@ -217,7 +217,7 @@ class BackendTest extends TestCase
      */
     public function createFolderShouldThrowExceptionWhenParentFolderIsNotFound()
     {
-        $this->setExpectedException('Xi\Filelib\Exception\FolderNotFoundException');
+        $this->setExpectedException('Xi\Filelib\Backend\FolderNotFoundException');
 
         $obj = Folder::create(array('id' => 1, 'parent_id' => 66));
 
@@ -256,7 +256,7 @@ class BackendTest extends TestCase
             ->will($this->returnValue(new ArrayIterator(array($nonUniqueFile))));
 
         $this->setExpectedException(
-            'Xi\Filelib\Exception\NonUniqueFileException',
+            'Xi\Filelib\Backend\NonUniqueFileException',
             'A file with the name "ankanlipaisija" already exists in folder "lussen"'
         );
 
@@ -332,7 +332,7 @@ class BackendTest extends TestCase
      */
     public function deleteFolderShouldThrowExceptionWhenFolderContainsFiles()
     {
-        $this->setExpectedException('Xi\Filelib\Exception\FolderNotEmptyException');
+        $this->setExpectedException('Xi\Filelib\Backend\FolderNotEmptyException');
 
         $files = array(
             File::create(array('id' => 1)),
@@ -395,7 +395,7 @@ class BackendTest extends TestCase
      */
     public function deleteResourceShouldThrowExceptionWhenItHasReferences()
     {
-        $this->setExpectedException('Xi\Filelib\Exception\ResourceReferencedException');
+        $this->setExpectedException('Xi\Filelib\Backend\ResourceReferencedException');
 
         $obj = Resource::create(array('id' => 1));
 

@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Folder;
 
 use Xi\Filelib\AbstractOperator;
-use Xi\Filelib\FilelibException;
+use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\EnqueueableCommand;
@@ -123,7 +123,7 @@ class FolderOperator extends AbstractOperator
         }
 
         if (!$folder) {
-            throw new FilelibException('Could not locate root folder', 500);
+            throw new RuntimeException('Could not locate root folder', 500);
         }
 
         return $folder;

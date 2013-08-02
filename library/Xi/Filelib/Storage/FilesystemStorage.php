@@ -17,6 +17,7 @@ use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
 use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\LogicException;
 
 /**
  * Stores files in a filesystem
@@ -53,7 +54,7 @@ class FilesystemStorage extends AbstractStorage implements Storage
     ) {
 
         if (!is_dir($root) || !is_writable($root)) {
-            throw new \LogicException("Root directory '{$root}' is not writable");
+            throw new LogicException("Root directory '{$root}' is not writable");
         }
 
         $this->root = $root;

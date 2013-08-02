@@ -14,7 +14,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Event\FileCopyEvent;
-use InvalidArgumentException;
+use Xi\Filelib\InvalidArgumentException;
 use DateTime;
 use Xi\Filelib\Events;
 use Xi\Filelib\Event\FolderEvent;

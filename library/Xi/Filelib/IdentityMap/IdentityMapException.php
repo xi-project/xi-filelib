@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\IdentityMap;
 
-use Xi\Filelib\Exception\FilelibException;
+use Xi\Filelib\FilelibException;
 
 /**
  * Identity map exception

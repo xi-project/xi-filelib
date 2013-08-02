@@ -17,6 +17,8 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\FilesystemStorage;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Linker;
+use Xi\Filelib\LogicException;
+use Xi\Filelib\InvalidArgumentException;
 
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage
@@ -48,7 +50,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
     {
         $this->storage = $filelib->getStorage();
         if (!$this->storage instanceof FilesystemStorage) {
-            throw new \InvalidArgumentException("Invalid storage");
+            throw new InvalidArgumentException("Invalid storage");
         }
     }
 
@@ -74,7 +76,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
         $relativePath = $this->getRelativePathToRoot();
 
         if (!$relativePath) {
-            throw new FilelibException('Relative path must be set!');
+            throw new LogicException('Relative path must be set!');
         }
 
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;

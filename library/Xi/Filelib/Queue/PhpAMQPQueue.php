@@ -63,7 +63,7 @@ class PhpAMQPQueue implements Queue
 
             $ch->queue_declare($this->queue, false, true, false, false);
             $ch->exchange_declare($this->exchange, 'direct', false, true, false);
-            $ch->queue_bind($this->queue, $this->exchange, 'filelib');
+            $ch->queue_bind($this->queue, $this->exchange, 'xi_filelib');
             $this->channel = $ch;
         }
 
@@ -74,7 +74,7 @@ class PhpAMQPQueue implements Queue
     {
         $msg = serialize($enqueueable);
         $msg = new AMQPMessage($msg, array('content_type' => 'text/plain', 'delivery-mode' => 1));
-        $this->getChannel()->basic_publish($msg, $this->exchange, 'filelib', false, false);
+        $this->getChannel()->basic_publish($msg, $this->exchange, 'xi_filelib', false, false);
     }
 
     public function dequeue()

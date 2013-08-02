@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Storage;
 
 use Xi\Filelib\Storage\MultiStorage;
-use \Xi\Filelib\File\Resource;
+use Xi\Filelib\File\Resource;
 
 /**
  * @group storage
@@ -134,7 +134,7 @@ class MultiStorageTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\LogicException
      */
     public function whenNoStoragesGetSessionStorageShouldThrowException()
     {
@@ -181,7 +181,7 @@ class MultiStorageTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
+     * @expectedException Xi\Filelib\InvalidArgumentException
      */
     public function addStorageShouldThrowExceptionWhenAddingMultiStorage()
     {

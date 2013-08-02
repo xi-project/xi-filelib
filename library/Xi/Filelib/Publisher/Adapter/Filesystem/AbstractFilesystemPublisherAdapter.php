@@ -13,7 +13,7 @@ use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\Linker;
-use LogicException;
+use Xi\Filelib\LogicException;
 use SplFileInfo;
 
 

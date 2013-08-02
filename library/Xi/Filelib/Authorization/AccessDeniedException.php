@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Authorization;
 
-use Xi\Filelib\Exception\FilelibException;
+use Xi\Filelib\FilelibException;
 
 class AccessDeniedException extends \Exception implements FilelibException
 {

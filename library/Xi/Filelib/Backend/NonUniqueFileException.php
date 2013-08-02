@@ -7,7 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Exception;
+namespace Xi\Filelib\Backend;
+
+use Xi\Filelib\FilelibException;
 
 class NonUniqueFileException extends \Exception implements FilelibException
 {

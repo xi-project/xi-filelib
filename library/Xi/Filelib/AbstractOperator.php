@@ -12,7 +12,7 @@ namespace Xi\Filelib;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\Command;
+use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Queue\Queue;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Rhumsaa\Uuid\Uuid;
@@ -97,14 +97,14 @@ abstract class AbstractOperator
     private function assertCommandExists($command)
     {
         if (!isset($this->commandStrategies[$command])) {
-            throw new \InvalidArgumentException("Command '{$command}' is not supported");
+            throw new InvalidArgumentException("Command '{$command}' is not supported");
         }
     }
 
     private function assertStrategyExists($strategy)
     {
         if (!in_array($strategy, array(EnqueueableCommand::STRATEGY_ASYNCHRONOUS, EnqueueableCommand::STRATEGY_SYNCHRONOUS))) {
-            throw new \InvalidArgumentException("Invalid command strategy '{$strategy}'");
+            throw new InvalidArgumentException("Invalid command strategy '{$strategy}'");
         }
     }
 

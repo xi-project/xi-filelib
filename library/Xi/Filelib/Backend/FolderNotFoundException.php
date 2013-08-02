@@ -7,9 +7,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Exception;
+namespace Xi\Filelib\Backend;
 
-class InvalidArgumentException extends \InvalidArgumentException implements FilelibException
+use Xi\Filelib\FilelibException;
+
+class FolderNotFoundException extends \Exception implements FilelibException
 {
-
 }

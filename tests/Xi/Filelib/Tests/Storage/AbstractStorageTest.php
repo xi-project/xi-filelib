@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Storage;
 
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Exception\FileIOException;
+use Xi\Filelib\Storage\FileIOException;
 
 class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -62,7 +62,7 @@ class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
 
             $this->fail("Did not throw an exception");
 
-        } catch (FileIoException $e) {
+        } catch (FileIOException $e) {
             $this->assertSame($this->exception, $e->getPrevious());
         }
 
@@ -70,7 +70,7 @@ class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\Exception\FileIOException
+     * @expectedException Xi\Filelib\Storage\FileIOException
      */
     public function retrieveShouldThrowExceptionIfFileIsNotFound()
     {
@@ -79,7 +79,7 @@ class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\Exception\FileIOException
+     * @expectedException Xi\Filelib\Storage\FileIOException
      */
     public function retrieveVersionsShouldThrowExceptionIfFileIsNotFound()
     {
@@ -88,7 +88,7 @@ class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\Exception\FileIOException
+     * @expectedException Xi\Filelib\Storage\FileIOException
      */
     public function deleteShouldThrowExceptionIfFileIsNotFound()
     {
@@ -97,7 +97,7 @@ class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\Exception\FileIOException
+     * @expectedException Xi\Filelib\Storage\FileIOException
      */
     public function deleteVersionsShouldThrowExceptionIfFileIsNotFound()
     {
