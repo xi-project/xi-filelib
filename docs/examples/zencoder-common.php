@@ -4,7 +4,7 @@ use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
 use Xi\Filelib\Publisher\Linker\CreationTimeLinker;
-
+use Xi\Filelib\Publisher\AutomaticPublisherPlugin;
 
 $zencoderPlugin = new ZencoderPlugin(
     'zencoder',
@@ -58,3 +58,7 @@ $publisher = new Publisher(
     new CreationTimeLinker()
 );
 $publisher->attachTo($filelib);
+
+$automaticPublisherPlugin = new AutomaticPublisherPlugin($publisher);
+$filelib->addPlugin($automaticPublisherPlugin);
+

@@ -12,10 +12,8 @@ namespace Xi\Filelib\Publisher;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\Events;
 
 /**
@@ -27,22 +25,17 @@ use Xi\Filelib\Events;
 class AutomaticPublisherPlugin extends AbstractPlugin
 {
     /**
-     * @var array
-     */
-    protected static $subscribedEvents = array(
-        Events::FILE_AFTER_AFTERUPLOAD => array('onAfterUpload', -10000),
-        Events::FILE_AFTER_COPY => array('onCopy', -10000),
-    );
-
-    /**
      * @var Publisher
      */
     private $publisher;
 
     /**
-     * @var FileOperator
+     * @var array
      */
-    private $fileOperator;
+    protected static $subscribedEvents = array(
+        Events::FILE_AFTER_AFTERUPLOAD => 'doPublish',
+        Events::FILE_BEFORE_DELETE => 'doUnpublish'
+    );
 
     /**
      * @param Publisher $publisher
@@ -53,17 +46,9 @@ class AutomaticPublisherPlugin extends AbstractPlugin
     }
 
     /**
-     * @param FileLibrary $filelib
-     */
-    public function attachTo(FileLibrary $filelib)
-    {
-        $this->fileOperator = $filelib->getFileOperator();
-    }
-
-    /**
      * @param FileEvent $event
      */
-    public function onAfterUpload(FileEvent $event)
+    public function doPublish(FileEvent $event)
     {
         $this->publisher->publish($event->getFile());
     }
@@ -71,8 +56,8 @@ class AutomaticPublisherPlugin extends AbstractPlugin
     /**
      * @param FileCopyEvent $event
      */
-    public function onCopy(FileCopyEvent $event)
+    public function doUnpublish(FileEvent $event)
     {
-        $this->publisher->publish($event->getTarget());
+        $this->publisher->unpublish($event->getFile());
     }
 }

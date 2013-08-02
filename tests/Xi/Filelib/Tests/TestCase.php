@@ -133,7 +133,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedPublisher()
     {
-        return $this->getMock('Xi\Filelib\Publisher\Publisher');
+        return $this->getMockBuilder('Xi\Filelib\Publisher\Publisher')->disableOriginalConstructor()->getMock();
     }
 
     /**

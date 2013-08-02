@@ -16,14 +16,6 @@ $id = $_GET['id'];
 
 $file = $filelib->getFileOperator()->find($id);
 
-if ($file->getStatus() == File::STATUS_COMPLETED) {
-
-    if (!$publisher->isPublished($file)) {
-        $publisher->publish($file);
-    }
-}
-
-
 ?>
 
 <html>
