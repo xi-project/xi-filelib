@@ -12,8 +12,8 @@ namespace Xi\Filelib\Storage;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Exception\FileIOException;
 use Exception;
+use Xi\Filelib\InvalidArgumentException;
 
 /**
  * Abstract storage convenience base class with common methods implemented
@@ -41,9 +41,6 @@ abstract class AbstractStorage implements Storage
         }
 
         $retrieved = $this->doRetrieve($resource);
-        if (!is_string($retrieved)) {
-            throw new \Exception("Fail at failing");
-        }
         return $retrieved;
     }
 
@@ -54,9 +51,6 @@ abstract class AbstractStorage implements Storage
         }
 
         $retrieved = $this->doRetrieveVersion($resource, $version, $file);
-        if (!is_string($retrieved)) {
-            throw new \Exception("Fail at failing");
-        }
         return $retrieved;
     }
 
@@ -81,7 +75,7 @@ abstract class AbstractStorage implements Storage
     public function store(Resource $resource, $tempFile)
     {
         if (!is_string($tempFile)) {
-            throw new \InvalidArgumentException("Invalid tempfile in store()");
+            throw new InvalidArgumentException("Invalid tempfile in store()");
         }
 
         try {
@@ -94,7 +88,7 @@ abstract class AbstractStorage implements Storage
     public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
         if (!is_string($tempFile)) {
-            throw new \InvalidArgumentException("Invalid tempfile in storeVersion()");
+            throw new InvalidArgumentException("Invalid tempfile in storeVersion()");
         }
 
         try {

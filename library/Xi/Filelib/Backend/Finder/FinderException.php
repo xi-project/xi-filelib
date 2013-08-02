@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Backend\Finder;
 
-use Xi\Filelib\Exception\FilelibException;
+use Xi\Filelib\FilelibException;
 
 /**
  * Generic finder exception

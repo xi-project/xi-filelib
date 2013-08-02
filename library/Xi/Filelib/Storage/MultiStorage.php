@@ -9,10 +9,11 @@
 
 namespace Xi\Filelib\Storage;
 
-use Xi\Filelib\FilelibException;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
+use Xi\Filelib\LogicException;
+use Xi\Filelib\InvalidArgumentException;
 
 class MultiStorage implements Storage
 {
@@ -29,7 +30,7 @@ class MultiStorage implements Storage
     public function addStorage(Storage $storage)
     {
         if ($storage instanceof MultiStorage) {
-            throw new FilelibException('MultiStorage cannot contain a MultiStorage');
+            throw new InvalidArgumentException('MultiStorage cannot contain a MultiStorage');
         }
 
         $this->storages[] = $storage;
@@ -67,7 +68,7 @@ class MultiStorage implements Storage
     public function getSessionStorage()
     {
         if (!$this->storages) {
-            throw new FilelibException('MultiStorage has no inner storages. Can not get session storage.');
+            throw new LogicException('MultiStorage has no inner storages. Can not get session storage.');
         }
 
         $sessionStorageId = $this->getSessionStorageId();

@@ -12,6 +12,7 @@ namespace Xi\Filelib\Plugin;
 use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events;
+use Xi\Filelib\InvalidArgumentException;
 
 /**
  * Abstract plugin class provides empty convenience methods for all hooks.
@@ -79,7 +80,7 @@ abstract class AbstractPlugin implements Plugin
     public function setHasProfileResolver($resolverFunc)
     {
         if (!is_callable($resolverFunc)) {
-            throw new \InvalidArgumentException("Resolver must be a callable");
+            throw new InvalidArgumentException("Resolver must be a callable");
         }
 
         $this->resolverFunc = $resolverFunc;

@@ -11,7 +11,7 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\FilelibException;
+use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileEvent;
@@ -235,7 +235,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         $fileObj = new FileObject($retrieved);
         $extensions = MimeType::mimeTypeToExtensions($fileObj->getMimeType());
         if (!count($extensions)) {
-            throw new \RuntimeException("Failed to find an extension for mime type '{$fileObj->getMimeType()}'");
+            throw new RuntimeException("Failed to find an extension for mime type '{$fileObj->getMimeType()}'");
         }
 
         $ret = array_shift($extensions);

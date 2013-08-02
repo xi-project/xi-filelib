@@ -15,10 +15,10 @@ use Services_Zencoder_Job as Job;
 use Xi\Filelib\FileLibrary;
 use ZendService\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\File\File;
-use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\RuntimeException;
 
 class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 {
@@ -241,7 +241,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             return $outputs;
 
         } catch (Services_Zencoder_Exception $e) {
-            throw new FilelibException(
+            throw new RuntimeException(
                 "Zencoder service responded with errors: " . $this->getZencoderErrors($e), 500, $e
             );
         }

@@ -17,13 +17,9 @@ use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Exception\FilelibException;
-use Xi\Filelib\Exception\FolderNotFoundException;
-use Xi\Filelib\Exception\FolderNotEmptyException;
-use Xi\Filelib\Exception\ResourceReferencedException;
+use Xi\Filelib\FilelibException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\ResourceEvent;
-use Xi\Filelib\Exception\NonUniqueFileException;
 use ArrayIterator;
 use Xi\Filelib\Events;
 

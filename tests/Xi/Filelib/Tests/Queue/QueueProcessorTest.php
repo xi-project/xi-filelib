@@ -97,13 +97,13 @@ class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
         $processor = new QueueProcessor($this->filelib);
 
         $processorFunc = function() {
-            throw new \Xi\Filelib\FilelibException('Lussen lussen luu!');
+            throw new \Xi\Filelib\InvalidArgumentException('Lussen lussen luu!');
         };
 
         $message = new Message(serialize('Tussihofen'));
 
         $this->setExpectedException(
-            'Xi\Filelib\FilelibException',
+            'Xi\Filelib\InvalidArgumentException',
             'Lussen lussen luu!'
         );
 

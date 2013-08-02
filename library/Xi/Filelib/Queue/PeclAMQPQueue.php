@@ -52,7 +52,7 @@ class PeclAMQPQueue implements Queue
         $queue->setName($queueName);
         $queue->setFlags(AMQP_DURABLE);
         $queue->declare();
-        $queue->bind($exchangeName, 'filelib');
+        $queue->bind($exchangeName, 'xi_filelib');
 
         $this->conn = $conn;
         $this->exchange = $exchange;
@@ -64,7 +64,7 @@ class PeclAMQPQueue implements Queue
     public function enqueue(Enqueueable $enqueueable)
     {
         $msg = serialize($enqueueable);
-        $this->exchange->publish($msg, 'filelib');
+        $this->exchange->publish($msg, 'xi_filelib');
     }
 
     public function dequeue()

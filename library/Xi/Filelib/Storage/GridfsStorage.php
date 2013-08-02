@@ -142,7 +142,7 @@ class GridfsStorage extends AbstractStorage implements Storage
      */
     private function toTemp(MongoGridFSFile $file)
     {
-        $tmp = tempnam($this->tempDir, 'filelib');
+        $tmp = tempnam($this->tempDir, 'xi_filelib');
 
         $file->write($tmp);
         $this->registerTempFile($tmp);
