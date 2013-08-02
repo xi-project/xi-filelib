@@ -11,7 +11,6 @@ use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Exception as ZencoderException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
-use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Events;
 
@@ -252,7 +251,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('retrieve')
             ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
-            ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
+            ->will($this->returnValue(ROOT_TESTS . '/data/hauska-joonas.mp4'));
 
         $this->plugin->setSleepyTime(0);
 
@@ -356,7 +355,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('retrieve')
             ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
-            ->will($this->returnValue(new FileObject(ROOT_TESTS . '/data/hauska-joonas.mp4')));
+            ->will($this->returnValue(ROOT_TESTS . '/data/hauska-joonas.mp4'));
 
         $this->setExpectedException(
             'Xi\Filelib\FilelibException',
