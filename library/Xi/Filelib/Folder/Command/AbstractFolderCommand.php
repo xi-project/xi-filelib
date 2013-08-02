@@ -40,5 +40,4 @@ abstract class AbstractFolderCommand extends AbstractCommand implements FolderCo
     {
         $this->folderOperator = $filelib->getFolderOperator();
     }
-
 }

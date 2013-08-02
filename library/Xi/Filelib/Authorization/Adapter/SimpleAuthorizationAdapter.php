@@ -27,9 +27,9 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
      */
     private $folderReadableByAnonymous;
 
-   /**
-    * @var bool
-    */
+    /**
+     * @var bool
+     */
     private $fileReadableByAnonymous;
 
     /**
@@ -78,9 +78,7 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
         $this->folderWritable = function (Folder $folder) {
             return true;
         };
-
     }
-
 
     /**
      * {@inheritdoc}
@@ -211,5 +209,4 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
     {
 
     }
-
 }

@@ -53,11 +53,6 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
-        $op->expects($this->atLeastOnce())
-           ->method('getProfile')
-           ->with($this->equalTo('versioned'))
-           ->will($this->returnValue($profile));
-
         $command = new AfterUploadFileCommand($fileitem);
         $command->attachTo($this->getMockedFilelib(null, $op));
 

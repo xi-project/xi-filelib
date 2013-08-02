@@ -59,7 +59,10 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
                     )
                 );
 
-                $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\CreateFolderCommand', array($created));
+                $command = $this->folderOperator->createCommand(
+                    'Xi\Filelib\Folder\Command\CreateFolderCommand',
+                    array($created)
+                );
                 $command->execute();
 
             }
@@ -78,10 +81,11 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
 
     public function serialize()
     {
-        return serialize(array(
-            'url' => $this->url,
-            'uuid' => $this->uuid,
-        ));
+        return serialize(
+            array(
+                'url' => $this->url,
+                'uuid' => $this->uuid,
+            )
+        );
     }
-
 }

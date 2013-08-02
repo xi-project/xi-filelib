@@ -181,5 +181,4 @@ class SymfonyAuthorizationAdapter implements AuthorizationAdapter
     {
         return $this->folderOperator->find($file->getFolderId());
     }
-
 }

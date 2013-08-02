@@ -16,14 +16,11 @@ use Xi\Filelib\FileLibrary;
 abstract class AbstractFileCommand extends AbstractCommand implements FileCommand
 {
     /**
-     *
      * @var FileOperator
      */
     protected $fileOperator;
 
     /**
-     * Returns fileoperator
-     *
      * @return FileOperator
      */
     public function getFileOperator()

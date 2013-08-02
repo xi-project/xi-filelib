@@ -120,14 +120,16 @@ class UploadFileCommand extends AbstractFileCommand
 
         $upload = $event->getFileUpload();
 
-        $file = File::create(array(
-            'folder_id' => $folder->getId(),
-            'name' => $upload->getUploadFilename(),
-            'profile' => $profile,
-            'date_created' => $upload->getDateUploaded(),
-            'uuid' => $this->getUuid(),
-            'versions' => array()
-        ));
+        $file = File::create(
+            array(
+                'folder_id' => $folder->getId(),
+                'name' => $upload->getUploadFilename(),
+                'profile' => $profile,
+                'date_created' => $upload->getDateUploaded(),
+                'uuid' => $this->getUuid(),
+                'versions' => array()
+            )
+        );
 
         // @todo: actual statuses
         $file->setStatus(File::STATUS_RAW);
@@ -141,7 +143,10 @@ class UploadFileCommand extends AbstractFileCommand
         $event = new FileEvent($file);
         $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_CREATE, $event);
 
-        $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($file));
+        $command = $this->fileOperator->createCommand(
+            'Xi\Filelib\File\Command\AfterUploadFileCommand',
+            array($file)
+        );
 
         $this->fileOperator->executeOrQueue($command, FileOperator::COMMAND_AFTERUPLOAD);
 
@@ -180,13 +185,13 @@ class UploadFileCommand extends AbstractFileCommand
             'realPath' => $upload->getRealPath(),
         );
 
-        return serialize(array(
-           'folder' => $this->folder,
-           'profile' => $this->profile,
-           'upload' => $uploadArr,
-           'uuid' => $this->uuid,
-        ));
-
+        return serialize(
+            array(
+               'folder' => $this->folder,
+                'profile' => $this->profile,
+                'upload' => $uploadArr,
+                'uuid' => $this->uuid,
+            )
+        );
     }
-
 }

@@ -43,16 +43,22 @@ class DeleteFolderCommand extends AbstractFolderCommand
         $this->folderOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_DELETE, $event);
 
         foreach ($this->folderOperator->findSubFolders($this->folder) as $childFolder) {
-            $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\DeleteFolderCommand', array(
-                $childFolder
-            ));
+            $command = $this->folderOperator->createCommand(
+                'Xi\Filelib\Folder\Command\DeleteFolderCommand',
+                array(
+                    $childFolder
+                )
+            );
             $command->execute();
         }
 
         foreach ($this->folderOperator->findFiles($this->folder) as $file) {
-            $command = $this->folderOperator->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array(
-                $file
-            ));
+            $command = $this->folderOperator->createCommand(
+                'Xi\Filelib\File\Command\DeleteFileCommand',
+                array(
+                    $file
+                )
+            );
             $command->execute();
         }
 
@@ -74,10 +80,12 @@ class DeleteFolderCommand extends AbstractFolderCommand
 
     public function serialize()
     {
-        return serialize(array(
-            'folder' => $this->folder,
-            'uuid' => $this->uuid,
-        ));
+        return serialize(
+            array(
+                'folder' => $this->folder,
+                'uuid' => $this->uuid,
+            )
+        );
     }
 
     public function attachTo(FileLibrary $filelib)
@@ -85,5 +93,4 @@ class DeleteFolderCommand extends AbstractFolderCommand
         parent::attachTo($filelib);
         $this->fileOperator = $filelib->getFileOperator();
     }
-
 }

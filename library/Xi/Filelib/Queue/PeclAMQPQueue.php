@@ -30,13 +30,15 @@ class PeclAMQPQueue implements Queue
 
     public function __construct($host, $port, $login, $password, $vhost, $exchangeName, $queueName)
     {
-        $conn = new AMQPConnection(array(
-            'host' => $host,
-            'port' => $port,
-            'vhost' => $vhost,
-            'login' => $login,
-            'password' => $password
-        ));
+        $conn = new AMQPConnection(
+            array(
+                'host' => $host,
+                'port' => $port,
+                'vhost' => $vhost,
+                'login' => $login,
+                'password' => $password
+            )
+        );
 
         $conn->connect();
 
@@ -96,5 +98,4 @@ class PeclAMQPQueue implements Queue
 
         $this->conn->disconnect();
     }
-
 }

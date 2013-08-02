@@ -2,6 +2,6 @@
 
 namespace Xi\Filelib;
 
-class RuntimeException extends \RunTimeException implements FilelibException {
-
+class RuntimeException extends \RunTimeException implements FilelibException
+{
 }

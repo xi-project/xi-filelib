@@ -113,5 +113,4 @@ class ChangeFormatPlugin extends AbstractPlugin
         $this->fileOperator = $filelib->getFileOperator();
         $this->tempDir = $filelib->getTempDir();
     }
-
 }

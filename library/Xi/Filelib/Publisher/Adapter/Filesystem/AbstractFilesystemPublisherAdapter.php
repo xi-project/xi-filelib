@@ -16,7 +16,6 @@ use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\LogicException;
 use SplFileInfo;
 
-
 /**
  * Abstract filesystem publisher convenience class
  *

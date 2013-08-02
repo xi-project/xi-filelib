@@ -14,6 +14,10 @@ use \finfo;
 class FinfoMimeTypeResolver implements MimeTypeResolver
 {
 
+    /**
+     * @param string $path
+     * @return string
+     */
     public function resolveMimeType($path)
     {
         $fileinfo = new finfo(FILEINFO_MIME_TYPE);
@@ -21,5 +25,4 @@ class FinfoMimeTypeResolver implements MimeTypeResolver
 
         return $mimeType;
     }
-
 }

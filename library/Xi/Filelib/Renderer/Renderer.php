@@ -125,9 +125,10 @@ class Renderer
 
     protected function injectContentToResponse(FileObject $file, Response $response)
     {
-        $response->setContent(function () use ($file) {
-            return file_get_contents($file->getRealPath());
-        });
+        $response->setContent(
+            function () use ($file) {
+                return file_get_contents($file->getRealPath());
+            }
+        );
     }
-
 }

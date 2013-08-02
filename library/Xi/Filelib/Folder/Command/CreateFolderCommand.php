@@ -63,10 +63,11 @@ class CreateFolderCommand extends AbstractFolderCommand
 
     public function serialize()
     {
-        return serialize(array(
-           'folder' => $this->folder,
-           'uuid' => $this->uuid,
-        ));
+        return serialize(
+            array(
+                'folder' => $this->folder,
+                'uuid' => $this->uuid,
+            )
+        );
     }
-
 }

@@ -134,7 +134,12 @@ class Publisher implements EventSubscriberInterface
 
     public function getUrlVersion(File $file, $version)
     {
-        return $this->adapter->getUrlVersion($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+        return $this->adapter->getUrlVersion(
+            $file,
+            $version,
+            $this->getVersionProvider($file, $version),
+            $this->linker
+        );
     }
 
     /**

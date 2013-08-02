@@ -50,9 +50,11 @@ class UpdateFileCommand extends AbstractFileCommand
 
     public function serialize()
     {
-        return serialize(array(
-           'file' => $this->file,
-           'uuid' => $this->uuid,
-        ));
+        return serialize(
+            array(
+            'file' => $this->file,
+            'uuid' => $this->uuid,
+            )
+        );
     }
 }

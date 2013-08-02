@@ -147,7 +147,10 @@ class CopyFileCommand extends AbstractFileCommand
         $event = new FileCopyEvent($this->file, $impostor);
         $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_COPY, $event);
 
-        $command = $this->fileOperator->createCommand('Xi\Filelib\File\Command\AfterUploadFileCommand', array($impostor));
+        $command = $this->fileOperator->createCommand(
+            'Xi\Filelib\File\Command\AfterUploadFileCommand',
+            array($impostor)
+        );
 
         return $command->execute();
     }
@@ -162,11 +165,12 @@ class CopyFileCommand extends AbstractFileCommand
 
     public function serialize()
     {
-        return serialize(array(
-            'file' => $this->file,
-            'folder' => $this->folder,
-            'uuid' => $this->uuid,
-        ));
+        return serialize(
+            array(
+                'file' => $this->file,
+                'folder' => $this->folder,
+                'uuid' => $this->uuid,
+            )
+        );
     }
-
 }

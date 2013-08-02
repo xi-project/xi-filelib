@@ -13,5 +13,4 @@ use Xi\Filelib\EnqueueableCommand;
 
 interface FolderCommand extends EnqueueableCommand
 {
-
 }

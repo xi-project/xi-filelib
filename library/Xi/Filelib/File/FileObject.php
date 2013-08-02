@@ -68,5 +68,4 @@ class FileObject extends SplFileObject
 
         return $this->mimeType;
     }
-
 }

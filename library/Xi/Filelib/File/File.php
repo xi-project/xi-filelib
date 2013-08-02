@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\File;
 
 use DateTime;
@@ -7,9 +14,6 @@ use ArrayObject;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\IdentityMap\Identifiable;
 
-/**
- * File
- */
 class File implements Identifiable
 {
     const STATUS_RAW = 1;
@@ -236,7 +240,7 @@ class File implements Identifiable
      */
     public function getStatus()
     {
-       return $this->status;
+        return $this->status;
     }
 
     /**

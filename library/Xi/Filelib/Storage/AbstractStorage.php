@@ -94,8 +94,11 @@ abstract class AbstractStorage implements Storage
         try {
             return $this->doStoreVersion($resource, $version, $tempFile, $file);
         } catch (\Exception $e) {
-            throw new FileIOException("Could not store file version '{$version}' for resource #{$resource->getId()}", 500, $e);
+            throw new FileIOException(
+                "Could not store file version '{$version}' for resource #{$resource->getId()}",
+                500,
+                $e
+            );
         }
     }
-
 }
