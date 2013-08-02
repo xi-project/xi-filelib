@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
-use Xi\Filelib\FilelibException;
+use Xi\Filelib\LogicException;
 
 /**
  * Creates directories in a leveled hierarchy based on a numeric file id
@@ -67,7 +67,7 @@ class LeveledDirectoryIdCalculator implements DirectoryIdCalculator
     public function calculateDirectoryId($obj)
     {
         if (!is_numeric($obj->getId())) {
-            throw new FilelibException(
+            throw new LogicException(
                 "Leveled directory id calculator requires numeric file ids ('{$obj->getId()}' was provided)"
             );
         }

@@ -7,8 +7,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Exception;
+namespace Xi\Filelib\Backend;
 
-class FolderNotEmptyException extends \Exception implements FilelibException
+use Xi\Filelib\FilelibException;
+
+class ResourceReferencedException extends \Exception implements FilelibException
 {
 }

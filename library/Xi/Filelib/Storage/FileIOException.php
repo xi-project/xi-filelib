@@ -7,8 +7,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Exception;
+namespace Xi\Filelib\Storage;
 
-class FolderNotFoundException extends \Exception implements FilelibException
+use Xi\Filelib\FilelibException;
+
+class FileIOException extends \Exception implements FilelibException
 {
+
 }

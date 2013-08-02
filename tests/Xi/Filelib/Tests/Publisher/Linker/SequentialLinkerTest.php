@@ -130,7 +130,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\Exception\InvalidArgumentException
+     * @expectedException Xi\Filelib\InvalidArgumentException
      */
     public function getDirectoryIdShouldThrowExceptionWithNonNumericFileIds()
     {
@@ -143,7 +143,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\Exception\InvalidArgumentException
+     * @expectedException Xi\Filelib\InvalidArgumentException
      */
     public function getDirectoryIdShouldThrowExceptionWhenDirectoryLevelsIsLessThanOne()
     {

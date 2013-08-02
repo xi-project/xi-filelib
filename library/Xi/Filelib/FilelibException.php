@@ -9,14 +9,6 @@
 
 namespace Xi\Filelib;
 
-/**
- * Generic filelib exception
- *
- * @author pekkis
- * @todo Design the more specific exception classes and refactor to them
- *
- */
-class FilelibException extends \Exception implements Exception
+interface FilelibException
 {
-
 }
