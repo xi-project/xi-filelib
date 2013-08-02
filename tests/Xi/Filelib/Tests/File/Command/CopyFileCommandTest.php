@@ -14,7 +14,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
 
     protected $op;
-    protected $fop;
     protected $folder;
     protected $ack;
 
@@ -24,14 +23,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
                     ->disableOriginalConstructor()
                     ->setMethods(array('getFolderOperator', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
                     ->getMock();
-
-        $this->fop = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                    ->disableOriginalConstructor()
-                    ->setMethods(array())
-                    ->getMock();
-
-        $this->op->expects($this->any())->method('getFolderOperator')->will($this->returnValue($this->fop));
-
         $this->folder = $this->getMock('Xi\Filelib\Folder\Folder');
     }
 
@@ -64,7 +55,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array('name' => 'tohtori-vesala.jpg'));
 
-        $command = new CopyFileCommand($this->op, $file, $this->folder);
+        $command = new CopyFileCommand($file, $this->folder);
 
         $ret = $command->getCopyName($originalName);
 
@@ -79,7 +70,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array('name' => 'tohtori-vesala.jpg'));
 
-        $command = new CopyFileCommand($this->op, $file, $this->folder);
+        $command = new CopyFileCommand($file, $this->folder);
 
         $ret = $command->getCopyName('');
 
@@ -96,13 +87,11 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala.jpg'))
              ->will($this->returnValue(false));
 
-        $this->op->expects($this->once())->method('generateUuid')
-                 ->will($this->returnValue('uusi-uuid'));
-
         $command = $this->getMockBuilder('Xi\Filelib\File\Command\CopyFileCommand')
                         ->setMethods(array('handleImpostorResource'))
-                        ->setConstructorArgs(array($this->op, $file, $this->folder))
+                        ->setConstructorArgs(array($file, $this->folder))
                         ->getMock();
+        $command->attachTo($this->getMockedFilelib(null, $this->op));
         $command->expects($this->once())->method('handleImpostorResource');
 
         $impostor = $command->getImpostor($file);
@@ -110,7 +99,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertCount(0, $impostor->getVersions());
 
         $this->assertEquals($file->getName(), $impostor->getName());
-        $this->assertEquals('uusi-uuid', $impostor->getUuid());
+        $this->assertUuid($impostor->getUuid());
     }
 
     /**
@@ -122,31 +111,29 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $this->folder->expects($this->any())->method('getId')->will($this->returnValue(666));
 
-        $this->op->expects($this->at(1))->method('findByFilename')
+        $this->op->expects($this->at(0))->method('findByFilename')
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala.jpg'))
              ->will($this->returnValue(true));
 
-        $this->op->expects($this->at(2))->method('findByFilename')
+        $this->op->expects($this->at(1))->method('findByFilename')
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala copy.jpg'))
              ->will($this->returnValue(true));
 
-        $this->op->expects($this->at(3))->method('findByFilename')
+        $this->op->expects($this->at(2))->method('findByFilename')
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala copy 2.jpg'))
              ->will($this->returnValue(false));
 
-        $this->op->expects($this->once())->method('generateUuid')
-                 ->will($this->returnValue('uusi-uuid'));
-
         $command = $this->getMockBuilder('Xi\Filelib\File\Command\CopyFileCommand')
                         ->setMethods(array('handleImpostorResource'))
-                        ->setConstructorArgs(array($this->op, $file, $this->folder))
+                        ->setConstructorArgs(array($file, $this->folder))
                         ->getMock();
+        $command->attachTo($this->getMockedFilelib(null, $this->op));
         $command->expects($this->once())->method('handleImpostorResource');
 
         $impostor = $command->getImpostor();
         $this->assertCount(0, $impostor->getVersions());
 
-        $this->assertEquals('uusi-uuid', $impostor->getUuid());
+        $this->assertUuid($impostor->getUuid());
 
         $this->assertEquals('tohtori-vesala copy 2.jpg', $impostor->getName());
         $this->assertEquals(666, $impostor->getFolderId());
@@ -177,9 +164,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $storage = $this->getMock('Xi\Filelib\Storage\Storage');
         $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-
-        $this->op->expects($this->once())->method('generateUuid')
-                 ->will($this->returnValue('uusi-uuid'));
 
         $this->op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
         $this->op->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
@@ -239,7 +223,8 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $afterUploadCommand->expects($this->once())->method('execute')->will($this->returnValue($file));
 
-        $command = new CopyFileCommand($this->op, $file, $this->folder);
+        $command = new CopyFileCommand($file, $this->folder);
+        $command->attachTo($this->getMockedFilelib(null, $this->op));
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
@@ -250,13 +235,9 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $op = $this->getMockedFileOperator();
-        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
-
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $file = $this->getMock('Xi\Filelib\File\File');
-
-        $command = new CopyFileCommand($op, $file, $folder);
+        $command = new CopyFileCommand($file, $folder);
 
         $serialized = serialize($command);
         $command2 = unserialize($serialized);

@@ -3,8 +3,7 @@
 namespace Xi\Filelib\Tests\Queue;
 
 use Xi\Filelib\Queue\Queue;
-use Xi\Filelib\Queue\Message;
-use Xi\Filelib\Tests\Queue\Processor\TestCommand;
+use Xi\Filelib\Tests\Queue\TestCommand;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {

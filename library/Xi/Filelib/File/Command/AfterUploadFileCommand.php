@@ -23,9 +23,9 @@ class AfterUploadFileCommand extends AbstractFileCommand
      */
     private $file;
 
-    public function __construct(FileOperator $fileOperator, File $file)
+    public function __construct(File $file)
     {
-        parent::__construct($fileOperator);
+        parent::__construct();
         $this->file = $file;
     }
 

@@ -127,8 +127,10 @@ abstract class AbstractOperator
     public function createCommand($commandClass, array $args = array())
     {
         $reflClass = new \ReflectionClass($commandClass);
+        $ret = $reflClass->newInstanceArgs($args);
+        $ret->attachTo($this->filelib);
 
-        return $reflClass->newInstanceArgs($args);
+        return $ret;
     }
 
     public function executeOrQueue(EnqueueableCommand $commandObj, $commandName, array $callbacks = array())

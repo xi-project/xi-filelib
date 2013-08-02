@@ -42,15 +42,18 @@ class Publisher implements EventSubscriberInterface
      */
     private $eventDispatcher;
 
-    public function __construct(FileLibrary $filelib, PublisherAdapter $adapter, Linker $linker)
+    public function __construct(PublisherAdapter $adapter, Linker $linker)
     {
-        $adapter->attachTo($filelib);
         $this->adapter = $adapter;
-
         $this->linker = $linker;
+    }
 
+    public function attachTo(FileLibrary $filelib)
+    {
         $this->fileOperator = $filelib->getFileOperator();
         $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->adapter->attachTo($filelib);
+        $this->linker->attachTo($filelib);
     }
 
     /**
@@ -118,6 +121,16 @@ class Publisher implements EventSubscriberInterface
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
     }
+
+    public function isPublished(File $file)
+    {
+        $data = $file->getData();
+        if (isset($data['publisher.published']) && $data['publisher.published'] == 1) {
+            return true;
+        }
+        return false;
+    }
+
 
     public function getUrlVersion(File $file, $version)
     {

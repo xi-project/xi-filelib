@@ -21,9 +21,9 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
      */
     private $url;
 
-    public function __construct(FolderOperator $folderOperator, $url)
+    public function __construct($url)
     {
-        parent::__construct($folderOperator);
+        parent::__construct();
         $this->url = $url;
     }
 
@@ -59,7 +59,7 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
                     )
                 );
 
-                $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\CreateFolderCommand', array($this->folderOperator, $created));
+                $command = $this->folderOperator->createCommand('Xi\Filelib\Folder\Command\CreateFolderCommand', array($created));
                 $command->execute();
 
             }

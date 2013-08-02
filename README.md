@@ -1,63 +1,51 @@
 # Filelib
 
-Filelib is a file library for PHP. See the wiki for more documentation.
+Filelib is a file library component for PHP, providing a virtual filesystem for your web application's files.
 
-## Requirements
+Filelib's subcomponents (storing of file metadata, physical storage, access control, publishing of files) are loosely
+coupled so you can mix and match to your heart's content and application's requirements.
+
+Filelib is extensible via plugins. Core plugins include processing and versioning of both images and files.
+
+## Hard requirements
 
 - PHP 5.3.x
-- A database for storing metadata like `MySQL`, `PostgreSQL`, `SQLite` or `MongoDB`
+
+## Soft requirements (for any kind of serious use) vary
+
+- A data storage (MySQL, PostgreSQL, MongoDB supported out of the box)
+- Imagemagick
+- Intl
 
 ## Quickstart
 
-### Using Doctrine ORM
-
-Filelib must have a place to store both files and file metadata.
-
-1. Use a database schema from `/docs/` to initialize your database tables.
-
-For MySQL
-
-    mysql -uroot -p filelib_example < schema-mysql.sql
-
-2. Configure Filelib with directory paths for `private` and `public`
-   and make them writable by the web server.
+### Using JSON storage (for simple testing only)
 
 ```php
 <?php
 
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Backend\Platform\JsonPlatform;
 use Xi\Filelib\Storage\FilesystemStorage;
-use Xi\Filelib\Backend\Platform\DoctrineOrmPlatform;
-use Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher;
-
-/**
- * @var $entityManager Doctrine\ORM\EntityManager
- */
+use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 
 $filelib = new FileLibrary(
-    new FilesystemStorage('/path/to/my/application/data/private'),
-    new DoctrineOrmPlatform($entityManager),
-    new SymlinkFilesystemPublisher('/path/to/my/application/web/files', '/files')
+    new FilesystemStorage(__DIR__ . '/files'), new TimeDirectoryIdCalculator()),
+    new JsonPlatform(__DIR__ . '/filelib-example.json')
 );
 
 $file = $filelib->upload('/path/to/some/file.jpg');
 ```
 
-For integration, see:
+### Examples and use cases
 
-* https://github.com/pekkis/xi-zend-filelib
+̈́`docs/examples/index.php` contains a lot of  examples. Checkout the code, configure a web server and dive
+straight into the code.
+
+For framework integration, see:
+
 * https://github.com/xi-project/xi-bundle-filelib
+* https://github.com/pekkis/xi-zend-filelib
 
 [![Build Status](https://secure.travis-ci.org/xi-project/xi-filelib.png?branch=master)](http://travis-ci.org/xi-project/xi-filelib)
 
-
-# Usage
-
-Explaining the mandatory subsystems:
-
-Virtual filesystem with folders and files.
-
-* ACL handles ACL
-* Backend / Platform handles metadata storage
-* Publisher publishes
-* Storage stores physical files

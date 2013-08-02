@@ -49,6 +49,7 @@ class AuthorizationPlugin extends AbstractPlugin
     public function attachTo(FileLibrary $filelib)
     {
         $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->adapter->attachTo($filelib);
     }
 
     public function checkFileAnonymousRead(FileEvent $event)

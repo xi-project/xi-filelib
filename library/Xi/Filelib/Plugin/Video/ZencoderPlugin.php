@@ -12,8 +12,8 @@ namespace Xi\Filelib\Plugin\Video;
 use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
+use Xi\Filelib\FileLibrary;
 use ZendService\Amazon\S3\S3 as AmazonService;
-use Xi\Filelib\Configurator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
@@ -69,10 +69,11 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function __construct(
         $identifier,
-        ZencoderService $zencoderService,
-        AmazonService $amazonService,
-        $tempDir,
-        $options = array()
+        $apiKey,
+        $awsKey,
+        $awsSecretKey,
+        $awsBucket,
+        $outputs = array()
     ) {
         parent::__construct(
             $identifier,
@@ -81,22 +82,18 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
                 return (bool) preg_match("/^video/", $file->getMimetype());
             }
         );
-        $this->zencoderService = $zencoderService;
-        $this->amazonService = $amazonService;
-        $this->tempDir = $tempDir;
 
-        Configurator::setOptions($this, $options);
+        $this->apiKey = $apiKey;
+        $this->awsKey = $awsKey;
+        $this->awsSecretKey = $awsSecretKey;
+        $this->awsBucket = $awsBucket;
+        $this->setOutputs($outputs);
     }
 
-    /**
-     * @param  string         $awsKey
-     * @return ZencoderPlugin
-     */
-    public function setAwsKey($awsKey)
+    public function attachTo(FileLibrary $filelib)
     {
-        $this->awsKey = $awsKey;
-
-        return $this;
+        parent::attachTo($filelib);
+        $this->tempDir = $filelib->getTempDir();
     }
 
     /**
@@ -105,28 +102,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     public function getAwsKey()
     {
         return $this->awsKey;
-    }
-
-    /**
-     * @param  string         $awsSecretKey
-     * @return ZencoderPlugin
-     */
-    public function setAwsSecretKey($awsSecretKey)
-    {
-        $this->awsSecretKey = $awsSecretKey;
-
-        return $this;
-    }
-
-    /**
-     * @param  string         $bucket
-     * @return ZencoderPlugin
-     */
-    public function setAwsBucket($bucket)
-    {
-        $this->awsBucket = $bucket;
-
-        return $this;
     }
 
     /**
@@ -143,17 +118,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     public function getAwsSecretKey()
     {
         return $this->awsSecretKey;
-    }
-
-    /**
-     * @param  string         $apiKey
-     * @return ZencoderPlugin
-     */
-    public function setApiKey($apiKey)
-    {
-        $this->apiKey = $apiKey;
-
-        return $this;
     }
 
     /**
@@ -175,6 +139,17 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
         return $this->amazonService;
     }
+
+    public function setAwsService(AmazonService $awsService)
+    {
+        $this->amazonService = $awsService;
+    }
+
+    public function setService(ZencoderService $service)
+    {
+        $this->zencoderService = $service;
+    }
+
 
     /**
      * Sets sleepy time in seconds
@@ -235,7 +210,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      * @param  File             $file
      * @return array
      * @throws FilelibException
-     * @todo should not depend on Amazon S3
      */
     public function createVersions(File $file)
     {
@@ -244,7 +218,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
         $retrieved = $this->getStorage()->retrieve($file->getResource());
 
-        $s3->putFile($retrieved->getRealPath(), $awsPath);
+        $s3->putFile($retrieved, $awsPath);
 
         $url = $s3->getEndpoint() . '/' . $awsPath;
 

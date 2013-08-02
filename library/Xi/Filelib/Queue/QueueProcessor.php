@@ -7,17 +7,63 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Queue\Processor;
+namespace Xi\Filelib\Queue;
 
-use Xi\Filelib\Queue\Message;
+use Symfony\Component\Console\Output\NullOutput;
 use Xi\Filelib\Command;
 use InvalidArgumentException;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderOperator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Default implementation of a queue processor
  */
-class DefaultQueueProcessor extends AbstractQueueProcessor
+class QueueProcessor
 {
+    /**
+     *
+     * @var FileLibrary
+     */
+    protected $filelib;
+
+    /**
+     *
+     * @var Queue
+     */
+    protected $queue;
+
+    /**
+     * @var OutputInterface
+     */
+    protected $output;
+
+    public function __construct(FileLibrary $filelib, OutputInterface $output = null)
+    {
+        $this->filelib = $filelib;
+        $this->queue = $filelib->getQueue();
+        $this->output = $output ?: new NullOutput();
+    }
+
+    /**
+     *
+     * @return FileLibrary
+     */
+    public function getFilelib()
+    {
+        return $this->filelib;
+    }
+
+    /**
+     *
+     * @return Queue
+     */
+    public function getQueue()
+    {
+        return $this->queue;
+    }
+
     /**
      * Processes a single message from the queue
      *
@@ -30,13 +76,24 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
         $message = $queue->dequeue();
 
         if (!$message) {
+            $this->output->writeln("Nothing to process");
             return false;
         }
 
+        $this->output->writeln("Processing a message");
+
         $command = $this->extractCommandFromMessage($message);
 
-        $this->processMessage($message, function(DefaultQueueProcessor $processor) use ($command) {
-            $processor->injectOperators($command);
+        $filelib = $this->filelib;
+        $output = $this->output;
+
+        $this->processMessage($message, function (QueueProcessor $processor) use ($command, $filelib, $output) {
+
+            $class = get_class($command);
+            $output->writeln("Processing a command of class '{$class}'");
+
+            $command->attachTo($filelib);
+            $command->setOutput($output);
             $command->execute();
         });
 
@@ -78,6 +135,7 @@ class DefaultQueueProcessor extends AbstractQueueProcessor
         if (!$command instanceof Command) {
             throw new InvalidArgumentException("Queue processor expects commands wrapped in a message");
         }
+
 
         return $command;
     }

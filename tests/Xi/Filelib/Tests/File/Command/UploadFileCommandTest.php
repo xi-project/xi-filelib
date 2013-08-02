@@ -51,9 +51,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $fileitem = $this->getMock('Xi\Filelib\File\File');
 
-        $op->expects($this->once())->method('generateUuid')
-           ->will($this->returnValue('uusi-uuid'));
-
         $dispatcher
             ->expects($this->at(0))
             ->method('dispatch')
@@ -113,9 +110,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
            ->with($this->isInstanceOf('Xi\Filelib\File\Command\AfterUploadFileCommand'));
 
         $command = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
-                        ->setConstructorArgs(array($op, $path, $folder, 'versioned'))
+                        ->setConstructorArgs(array($path, $folder, 'versioned'))
                         ->setMethods(array('getResource'))
                         ->getMock();
+        $command->attachTo($this->getMockedFilelib(null, $op));
 
         $command->expects($this->once())->method('getResource')
                 ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->isInstanceOf('Xi\Filelib\File\Upload\FileUpload'))
@@ -130,16 +128,13 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $op = $this->getMockedFileOperator();
-        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
-
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
         $profile = 'lussenhof';
 
         $upload = new FileUpload($path);
 
-        $command = new UploadFileCommand($op, $upload, $folder, $profile);
+        $command = new UploadFileCommand($upload, $folder, $profile);
 
         $serialized = serialize($command);
 
@@ -200,7 +195,8 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
-        $command = new UploadFileCommand($op, $upload, $folder, $profile);
+        $command = new UploadFileCommand($upload, $folder, $profile);
+        $command->attachTo($this->getMockedFilelib(null, $op));
         $ret = $command->getResource($file, $upload);
 
         $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
@@ -257,7 +253,8 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
-        $command = new UploadFileCommand($op, $upload, $folder, $profile);
+        $command = new UploadFileCommand($upload, $folder, $profile);
+        $command->attachTo($this->getMockedFilelib(null, $op));
 
         $ret = $command->getResource($file, $upload);
 
@@ -314,7 +311,8 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
-        $command = new UploadFileCommand($op, $upload, $folder, $profile);
+        $command = new UploadFileCommand($upload, $folder, $profile);
+        $command->attachTo($this->getMockedFilelib(null, $op));
 
         $ret = $command->getResource($file, $upload);
 

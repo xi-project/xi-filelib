@@ -31,26 +31,14 @@ class AbstractPluginTest extends TestCase
     /**
      * @test
      */
-    public function gettersAndSettersShouldWorkAsExpected()
-    {
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')->setMethods(array())->getMockForAbstractClass();
-
-        $this->assertEquals(array(), $plugin->getProfiles());
-
-        $profiles = array('tussin', 'lussutus');
-
-        $this->assertSame($plugin, $plugin->setProfiles($profiles));
-        $this->assertSame($profiles, $plugin->getProfiles());
-    }
-
-    /**
-     * @test
-     */
     public function hasProfileShouldReturnWhetherPluginBelongsToAProfile()
     {
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')->setMethods(array())->getMockForAbstractClass();
-
-        $plugin->setProfiles(array('lussi', 'tussi'));
+        $plugin->setHasProfileResolver(
+            function ($profile) {
+                return (bool) in_array($profile, array('lussi', 'tussi'));
+            }
+        );
 
         $this->assertFalse($plugin->hasProfile('xoo'));
         $this->assertTrue($plugin->hasProfile('lussi'));
@@ -73,17 +61,15 @@ class AbstractPluginTest extends TestCase
     public function onFileProfileAddShouldAddPluginToProfileIfPluginHasProfile()
     {
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
-                       ->setMethods(array('getProfiles'))
-                       ->getMock();
+                       ->setMethods(array())
+                       ->getMockForAbstractClass();
+        $plugin->setProfiles(array('lussen', 'hofer'));
 
         $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('lussen'));
         $profile->expects($this->once())->method('addPlugin')->with($this->equalTo($plugin));
 
-        $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussen', 'hofer')));
-
         $event = new FileProfileEvent($profile);
-
         $plugin->onFileProfileAdd($event);
     }
 
@@ -93,14 +79,13 @@ class AbstractPluginTest extends TestCase
     public function onFileProfileAddShouldNotAddPluginToProfileIfPluginDoesNotHaveProfile()
     {
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
-                       ->setMethods(array('getProfiles'))
-                       ->getMock();
+                       ->setMethods(array())
+                       ->getMockForAbstractClass();
+        $plugin->setProfiles(array('lussen', 'hofer'));
 
         $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('lussentussen'));
         $profile->expects($this->never())->method('addPlugin');
-
-        $plugin->expects($this->atLeastOnce())->method('getProfiles')->will($this->returnValue(array('lussen', 'hofer')));
 
         $event = new FileProfileEvent($profile);
         $plugin->onFileProfileAdd($event);

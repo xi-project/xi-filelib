@@ -48,8 +48,8 @@ class FilesystemStorage extends AbstractStorage implements Storage
     public function __construct(
         $root,
         DirectoryIdCalculator $directoryIdCalculator = null,
-        $filePermission = 0600,
-        $directoryPermission = 0700
+        $filePermission = "600",
+        $directoryPermission = "700"
     ) {
 
         if (!is_dir($root) || !is_writable($root)) {
@@ -58,8 +58,8 @@ class FilesystemStorage extends AbstractStorage implements Storage
 
         $this->root = $root;
         $this->directoryIdCalculator = $directoryIdCalculator ?: new TimeDirectoryIdCalculator();
-        $this->filePermission = $filePermission;
-        $this->directoryPermission = $directoryPermission;
+        $this->filePermission = octdec($filePermission);
+        $this->directoryPermission = octdec($directoryPermission);
     }
 
     /**

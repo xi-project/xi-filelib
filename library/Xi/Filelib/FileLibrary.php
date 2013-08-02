@@ -72,6 +72,8 @@ class FileLibrary
      */
     private $platform;
 
+    private $plugins;
+
 
     public function __construct(
         Storage $storage,
@@ -87,6 +89,8 @@ class FileLibrary
             $this->getEventDispatcher(),
             $this->platform
         );
+
+        $this->addProfile(new FileProfile('default'));
     }
 
     /**
@@ -219,8 +223,19 @@ class FileLibrary
      */
     public function addPlugin(Plugin $plugin, $profiles = array())
     {
-        // @todo: think about dependency hell
-        $plugin->setProfiles($profiles);
+        $this->plugins[] = $plugin;
+
+        if (!$profiles) {
+            $resolverFunc = function ($profile) {
+                return true;
+            };
+        } else {
+            $resolverFunc = function ($profile) use ($profiles) {
+                return (bool) in_array($profile, $profiles);
+            };
+        }
+
+        $plugin->setHasProfileResolver($resolverFunc);
         $plugin->attachTo($this);
 
         $this->getEventDispatcher()->addSubscriber($plugin);

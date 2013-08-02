@@ -47,13 +47,17 @@ class BeautifurlLinker implements Linker
      * @param Slugifier $slugifier
      * @param bool $excludeRoot
      */
-    public function __construct(FileLibrary $filelib, Slugifier $slugifier = null, $excludeRoot = true)
+    public function __construct(Slugifier $slugifier = null, $excludeRoot = true)
     {
         $this->excludeRoot = $excludeRoot;
         $this->slugifier = $slugifier;
+    }
 
+    public function attachTo(FileLibrary $filelib)
+    {
         $this->folderOperator = $filelib->getFolderOperator();
     }
+
 
     /**
      * Returns whether the root folder is to be excluded from beautifurls.

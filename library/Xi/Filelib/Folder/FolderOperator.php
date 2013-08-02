@@ -69,7 +69,7 @@ class FolderOperator extends AbstractOperator
     public function create(Folder $folder)
     {
         $command = $this->createCommand('Xi\Filelib\Folder\Command\CreateFolderCommand', array(
-            $this, $folder
+            $folder
         ));
 
         return $this->executeOrQueue($command, self::COMMAND_CREATE);
@@ -83,7 +83,7 @@ class FolderOperator extends AbstractOperator
     public function delete(Folder $folder)
     {
         $command = $this->createCommand('Xi\Filelib\Folder\Command\DeleteFolderCommand', array(
-            $this, $this->getFileOperator(), $folder
+            $folder
         ));
 
         return $this->executeOrQueue($command, self::COMMAND_DELETE);
@@ -98,7 +98,7 @@ class FolderOperator extends AbstractOperator
     public function update(Folder $folder)
     {
         $command = $this->createCommand('Xi\Filelib\Folder\Command\UpdateFolderCommand', array(
-            $this, $this->getFileOperator(), $folder
+            $folder
         ));
 
         return $this->executeOrQueue($command, self::COMMAND_UPDATE);
@@ -154,7 +154,7 @@ class FolderOperator extends AbstractOperator
     public function createByUrl($url)
     {
         $command = $this->createCommand('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', array(
-            $this, $url
+            $url
         ));
 
         return $this->executeOrQueue($command, self::COMMAND_CREATE_BY_URL);

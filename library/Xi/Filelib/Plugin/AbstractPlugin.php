@@ -31,6 +31,11 @@ abstract class AbstractPlugin implements Plugin
     protected static $subscribedEvents = array();
 
     /**
+     * @var callable
+     */
+    private $resolverFunc;
+
+    /**
      * Returns an array of subscribed events
      *
      * @return array
@@ -44,16 +49,6 @@ abstract class AbstractPlugin implements Plugin
     }
 
     /**
-     * Returns an array of profiles attached to the plugin
-     *
-     * @return array
-     */
-    public function getProfiles()
-    {
-        return $this->profiles;
-    }
-
-    /**
      * Returns whether plugin belongs to a profile
      *
      * @param  string  $profile
@@ -61,23 +56,17 @@ abstract class AbstractPlugin implements Plugin
      */
     public function hasProfile($profile)
     {
-        return in_array($profile, $this->getProfiles());
-    }
-
-    /**
-     * @param array $profiles
-     */
-    public function setProfiles(array $profiles)
-    {
-        $this->profiles = $profiles;
-        return $this;
+        if (!$this->resolverFunc) {
+            return false;
+        }
+        return call_user_func($this->resolverFunc, $profile);
     }
 
     public function onFileProfileAdd(FileProfileEvent $event)
     {
         $profile = $event->getProfile();
 
-        if (in_array($profile->getIdentifier(), $this->getProfiles())) {
+        if ($this->hasProfile($profile->getIdentifier())) {
             $profile->addPlugin($this);
         }
     }
@@ -85,5 +74,26 @@ abstract class AbstractPlugin implements Plugin
     public function attachTo(FileLibrary $filelib)
     {
 
+    }
+
+    public function setHasProfileResolver($resolverFunc)
+    {
+        if (!is_callable($resolverFunc)) {
+            throw new \InvalidArgumentException("Resolver must be a callable");
+        }
+
+        $this->resolverFunc = $resolverFunc;
+    }
+
+    /**
+     * @param array $profiles
+     */
+    public function setProfiles(array $profiles)
+    {
+        $this->setHasProfileResolver(
+            function ($profile) use ($profiles) {
+                return (bool) in_array($profile, $profiles);
+            }
+        );
     }
 }

@@ -101,7 +101,7 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
             ->method('find')
             ->will($this->throwException(new EntityNotFoundException()));
 
-        $this->backend->setEntityManager($em);
+        $backend = new DoctrineOrmPlatform($em);
 
         $resource = Folder::create(
             array(
@@ -111,7 +111,7 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
             )
         );
 
-        $this->assertFalse($this->backend->deleteFolder($resource));
+        $this->assertFalse($backend->deleteFolder($resource));
     }
 
     /**
@@ -126,11 +126,11 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
             ->method('find')
             ->will($this->throwException(new EntityNotFoundException()));
 
-        $this->backend->setEntityManager($em);
+        $backend = new DoctrineOrmPlatform($em);
 
         $resource = Resource::create(array('id' => 1));
 
-        $this->assertFalse($this->backend->deleteResource($resource));
+        $this->assertFalse($backend->deleteResource($resource));
     }
 
     /**
@@ -152,87 +152,6 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
             ->will($this->returnValue($repository));
     }
 
-    /**
-     * @test
-     */
-    public function getsAndSetsFileEntityName()
-    {
-        $this->setUpEmptyDataSet();
-
-        $fileEntityName = 'Foo\Bar';
-
-        $this->assertNotEquals(
-            $fileEntityName,
-            $this->backend->getFileEntityName()
-        );
-
-        $this->backend->setFileEntityName($fileEntityName);
-
-        $this->assertEquals(
-            $fileEntityName,
-            $this->backend->getFileEntityName()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getsAndSetsResourceEntityName()
-    {
-        $this->setUpEmptyDataSet();
-
-        $resEntityName = 'Foo\Bar';
-
-        $this->assertNotEquals(
-            $resEntityName,
-            $this->backend->getResourceEntityName()
-        );
-
-        $this->backend->setResourceEntityName($resEntityName);
-
-        $this->assertEquals(
-            $resEntityName,
-            $this->backend->getResourceEntityName()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getsAndSetsFolderEntityName()
-    {
-        $this->setUpEmptyDataSet();
-
-        $folderEntityName = 'Xoo\Bar';
-
-        $this->assertNotEquals(
-            $folderEntityName,
-            $this->backend->getFolderEntityName()
-        );
-
-        $this->backend->setFolderEntityName($folderEntityName);
-
-        $this->assertEquals(
-            $folderEntityName,
-            $this->backend->getFolderEntityName()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getsAndsetsEntityManager()
-    {
-        $this->setUpEmptyDataSet();
-
-        $em = $this->createEntityManagerMock();
-
-        $this->assertNotSame($em, $this->backend->getEntityManager());
-
-        $this->backend->setEntityManager($em);
-
-        $this->assertSame($em, $this->backend->getEntityManager());
-    }
 
     /**
      * @return PHPUnit_Framework_MockObject_MockObject

@@ -93,10 +93,9 @@ class FileProfile implements EventSubscriberInterface
      * Adds a plugin
      *
      * @param  Plugin      $plugin
-     * @param  integer     $priority
      * @return FileProfile
      */
-    public function addPlugin(Plugin $plugin, $priority = 1000)
+    public function addPlugin(Plugin $plugin)
     {
         $this->plugins[] = $plugin;
         return $this;
@@ -191,7 +190,7 @@ class FileProfile implements EventSubscriberInterface
     {
         $plugin = $event->getPlugin();
 
-        if (in_array($this->getIdentifier(), $plugin->getProfiles())) {
+        if ($plugin->hasProfile($this->getIdentifier())) {
             $this->addPlugin($plugin);
         }
     }

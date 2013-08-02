@@ -28,19 +28,13 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $fop = $this->getMockedFileOperator();
-        $op = $this->getMockedFolderOperator();
-        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
-        $fop->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
         $folder = $this->getMockedFolder();
 
-        $command = new UpdateFolderCommand($op, $fop, $folder);
+        $command = new UpdateFolderCommand($folder);
 
         $serialized = serialize($command);
         $command2 = unserialize($serialized);
 
-        $this->assertAttributeEquals(null, 'fileOperator', $command2);
-        $this->assertAttributeEquals(null, 'folderOperator', $command2);
         $this->assertAttributeEquals($folder, 'folder', $command2);
         $this->assertAttributeNotEmpty('uuid', $command2);
 
@@ -140,7 +134,9 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('updateFolder')
             ->with($folder);
 
-        $command = new UpdateFolderCommand($op, $fiop, $folder);
+        $command = new UpdateFolderCommand($folder);
+        $command->attachTo($this->getMockedFilelib(null, $fiop, $op));
+
         $command->execute();
 
     }

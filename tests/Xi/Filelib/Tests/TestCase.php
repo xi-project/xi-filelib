@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests;
 
+use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\FileLibrary;
 
 class TestCase extends \PHPUnit_Framework_TestCase
@@ -52,12 +53,32 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFileOperator()
+    public function getMockedFileOperator($profileNames = array())
     {
+        $profiles = array();
+        foreach ($profileNames as $profileName) {
+            $profiles[$profileName] = new FileProfile($profileName);
+        }
+
         $fileop = $this
             ->getMockBuilder('Xi\Filelib\File\FileOperator')
             ->disableOriginalConstructor()
             ->getMock();
+
+        if ($profiles) {
+            $fileop->expects($this->any())->method('getProfiles')->will($this->returnValue($profiles));
+
+            $fileop
+                ->expects($this->any())
+                ->method('getProfile')
+                ->will(
+                    $this->returnCallback(
+                        function ($name) use ($profiles) {
+                            return $profiles[$name];
+                        }
+                    )
+                );
+        }
 
         return $fileop;
     }
@@ -239,6 +260,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
     }
 
 
+
+    public function assertUuid($what)
+    {
+        $this->assertRegexp(
+            '/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/',
+            $what,
+            "'{$what}' is not an UUID"
+        );
+    }
 
 
 }

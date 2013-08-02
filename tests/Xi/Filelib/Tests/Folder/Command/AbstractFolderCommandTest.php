@@ -19,20 +19,12 @@ class AbstractFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldInitializeProperly()
     {
-        $uuid = 'loso-id';
-
-        $folderOperator = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')->disableOriginalConstructor()->getMock();
-
-        $folderOperator->expects($this->once())->method('generateUuid')
-                       ->will($this->returnValue($uuid));
-
         $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\AbstractFolderCommand')
                         ->setMethods(array('execute'))
-                        ->setConstructorArgs(array($folderOperator))
+                        ->setConstructorArgs(array())
                         ->getMockForAbstractClass();
 
-        $this->assertSame($folderOperator, $command->getFolderOperator());
-        $this->assertSame($uuid, $command->getUuid());
+        $this->assertUuid($command->getUuid());
 
     }
 

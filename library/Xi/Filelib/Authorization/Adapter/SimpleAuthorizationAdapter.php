@@ -12,6 +12,7 @@ namespace Xi\Filelib\Authorization\Adapter;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Authorization\AuthorizationAdapter;
+use Xi\Filelib\FileLibrary;
 
 /**
  * Simple ACL for development / testing / simplest of actual use cases
@@ -204,6 +205,11 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
             };
         }
         return $value;
+    }
+
+    public function attachTo(FileLibrary $filelib)
+    {
+
     }
 
 }

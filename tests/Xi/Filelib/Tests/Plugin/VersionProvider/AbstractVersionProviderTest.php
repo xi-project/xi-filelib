@@ -53,7 +53,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->storage = $this->getMockedStorage();
 
-        $this->fileOperator = $this->getMockedFileOperator();
+        $this->fileOperator = $this->getMockedFileOperator(array('tussi', 'lussi'));
 
         $this->plugin = $this
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
@@ -124,22 +124,19 @@ class AbstractVersionProviderTest extends TestCase
      */
     public function initShouldRegisterToProfiles()
     {
+        $this->plugin->setProfiles(array('lussi', 'tussi'));
+        $this->plugin->expects($this->any())->method('getVersions')->will($this->returnValue(array('xooxer', 'tooxer')));
 
-        $this->plugin->expects($this->atLeastOnce())->method('getVersions')
-                     ->will($this->returnValue(array('xooxer', 'tooxer')));
+        $lussi = $this->getMockedFileProfile('lussi');
+        $lussi->expects($this->at(1))->method('addFileVersion')->with($this->equalTo('xooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
+        $lussi->expects($this->at(2))->method('addFileVersion')->with($this->equalTo('tooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
 
-        $this->plugin->setProfiles(array('tussi', 'lussi'));
+        $tussi = $this->getMockedFileProfile('tussi');
+        $tussi->expects($this->at(1))->method('addFileVersion')->with($this->equalTo('xooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
+        $tussi->expects($this->at(2))->method('addFileVersion')->with($this->equalTo('tooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
 
-        $lussi = $this->getMockedFileProfile();
-        $lussi->expects($this->at(0))->method('addFileVersion')->with($this->equalTo('xooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
-        $lussi->expects($this->at(1))->method('addFileVersion')->with($this->equalTo('tooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
-
-        $tussi = $this->getMockedFileProfile();
-        $tussi->expects($this->at(0))->method('addFileVersion')->with($this->equalTo('xooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
-        $tussi->expects($this->at(1))->method('addFileVersion')->with($this->equalTo('tooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
-
-        $fileOperator = $this->fileOperator;
-
+        $fileOperator = $this->getMockedFileOperator();
+        $fileOperator->expects($this->any())->method('getProfiles')->will($this->returnValue(array($lussi, $tussi)));
         $fileOperator->expects($this->any())->method('getProfile')
                      ->with($this->logicalOr(
                          $this->equalTo('tussi'), $this->equalTo('lussi')
@@ -154,7 +151,8 @@ class AbstractVersionProviderTest extends TestCase
                          }
                      }));
 
-        $this->plugin->attachTo($this->filelib);
+        $filelib = $this->getMockedFilelib(null, $fileOperator);
+        $this->plugin->attachTo($filelib);
     }
 
     public function provideFilesForProvidesForMatching()

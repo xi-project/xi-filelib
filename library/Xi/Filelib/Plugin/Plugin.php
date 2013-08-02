@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Plugin;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Attacher;
 
 /**
  * Xi Filelib plugin interface
@@ -18,16 +18,13 @@ use Xi\Filelib\FileLibrary;
  * @package Xi_Filelib
  * @author pekkis
  */
-interface Plugin extends EventSubscriberInterface
+interface Plugin extends EventSubscriberInterface, Attacher
 {
     /**
-     * Returns an array of profiles
-     *
-     * @return array
+     * @param callable $resolverFunc
+     * @return Plugin
      */
-    public function getProfiles();
-
-    public function setProfiles(array $profiles);
+    public function setHasProfileResolver($resolverFunc);
 
     /**
      * Returns whether plugin has a certain profile
@@ -36,6 +33,4 @@ interface Plugin extends EventSubscriberInterface
      * @return boolean
      */
     public function hasProfile($profile);
-
-    public function attachTo(FileLibrary $filelib);
 }

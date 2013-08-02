@@ -25,12 +25,9 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $op = $this->getMockedFolderOperator();
-        $op->expects($this->any())->method('generateUuid')->will($this->returnValue('xooxer'));
-
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
-        $command = new CreateFolderCommand($op, $folder);
+        $command = new CreateFolderCommand($folder);
 
         $serialized = serialize($command);
         $command2 = unserialize($serialized);
@@ -73,9 +70,6 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
                    ->setConstructorArgs(array($filelib))
                    ->getMock();
 
-        $op->expects($this->once())->method('generateUuid')
-           ->will($this->returnValue('uusi-uuid'));
-
         $op->expects($this->once())->method('find')->with('lusser')->will($this->returnValue($this->getMockedFolder()));
 
 
@@ -106,10 +100,11 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnArgument(0));
 
-        $command = new CreateFolderCommand($op, $folder);
+        $command = new CreateFolderCommand($folder);
+        $command->attachTo($this->getMockedFilelib(null, null, $op));
 
         $folder2 = $command->execute();
-        $this->assertEquals('uusi-uuid', $folder2->getUuid());
+        $this->assertUuid($folder2->getUuid());
 
     }
 
