@@ -45,5 +45,4 @@ class Message
     {
         return $this->body;
     }
-
 }

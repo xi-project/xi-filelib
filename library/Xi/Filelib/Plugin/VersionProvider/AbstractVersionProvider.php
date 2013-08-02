@@ -160,7 +160,12 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
 
         foreach ($tmps as $version => $tmp) {
-            $this->getStorage()->storeVersion($file->getResource(), $version, $tmp, $this->areSharedVersionsAllowed() ? null : $file);
+            $this->getStorage()->storeVersion(
+                $file->getResource(),
+                $version,
+                $tmp,
+                $this->areSharedVersionsAllowed() ? null : $file
+            );
             unlink($tmp);
         }
     }

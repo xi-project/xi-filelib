@@ -84,9 +84,12 @@ class WatermarkCommand extends AbstractCommand
         }
 
         if (!in_array($position, array('nw', 'ne', 'sw', 'se'))) {
-            throw new InvalidArgumentException(sprintf(
-                "Invalid watermark position '%s'", $position
-            ));
+            throw new InvalidArgumentException(
+                sprintf(
+                    "Invalid watermark position '%s'",
+                    $position
+                )
+            );
         }
 
         $this->position = $position;
@@ -154,17 +157,14 @@ class WatermarkCommand extends AbstractCommand
                 $x = 0 + $this->getWatermarkPadding();
                 $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
                 break;
-
             case 'nw':
                 $x = 0 + $this->getWatermarkPadding();
                 $y = 0 + $this->getWatermarkPadding();
                 break;
-
             case 'ne':
                 $x = $imageWidth - $wWidth - $this->getWatermarkPadding();
                 $y = 0 + $this->getWatermarkPadding();
                 break;
-
             case 'se':
                 $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
                 $x = $imageWidth - $wWidth - $this->getWatermarkPadding();

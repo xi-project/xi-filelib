@@ -12,7 +12,6 @@ namespace Xi\Filelib\Backend\Platform;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\Backend\Finder\Finder;
 use ArrayIterator;
 use Rhumsaa\Uuid\Uuid;
@@ -377,7 +376,8 @@ class JsonPlatform implements Platform
                         'status'        => $file['status'],
                         'date_created'  => DateTime::createFromFormat(
                             'Y-m-d H:i:s',
-                            $file['date_created'])->setTimezone($date->getTimezone()),
+                            $file['date_created']
+                        )->setTimezone($date->getTimezone()),
                         'uuid'          => $file['uuid'],
                         'resource'      => $resource,
                         'data'      => $file['data'],

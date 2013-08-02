@@ -13,5 +13,4 @@ use Xi\Filelib\FilelibException;
 
 class FileIOException extends \Exception implements FilelibException
 {
-
 }

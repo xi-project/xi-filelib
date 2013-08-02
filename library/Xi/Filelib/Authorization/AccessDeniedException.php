@@ -13,5 +13,4 @@ use Xi\Filelib\FilelibException;
 
 class AccessDeniedException extends \Exception implements FilelibException
 {
-
 }

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Authorization;
 
 use Xi\Filelib\Event\FileEvent;
@@ -10,7 +17,6 @@ use Xi\Filelib\Plugin\AbstractPlugin;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\Publisher\Events as PublisherEvents;
-use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\Event\IdentifiableEvent;
 use Xi\Filelib\Renderer\Events as RendererEvents;
@@ -124,4 +130,3 @@ class AuthorizationPlugin extends AbstractPlugin
         $this->eventDispatcher->dispatch(Events::BEFORE_DENY_ACCESS, $event);
     }
 }
-

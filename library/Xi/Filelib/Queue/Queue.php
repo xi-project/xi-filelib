@@ -37,5 +37,4 @@ interface Queue
      * @param Message $message
      */
     public function ack(Message $message);
-
 }

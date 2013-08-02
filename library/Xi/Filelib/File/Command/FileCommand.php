@@ -13,5 +13,4 @@ use Xi\Filelib\EnqueueableCommand;
 
 interface FileCommand extends EnqueueableCommand
 {
-
 }

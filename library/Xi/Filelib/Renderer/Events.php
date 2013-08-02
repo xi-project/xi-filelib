@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Renderer;
 
 
-class Events {
+class Events
+{
     const RENDERER_BEFORE_RENDER = 'renderer.before_render';
 }

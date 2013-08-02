@@ -38,7 +38,7 @@ class VersionPlugin extends AbstractVersionProvider
     ) {
         parent::__construct(
             $identifier,
-            function(File $file) {
+            function (File $file) {
                 // @todo: maybe some more complex mime type based checking
                 return (bool) preg_match("/^image/", $file->getMimetype());
             }
@@ -122,5 +122,4 @@ class VersionPlugin extends AbstractVersionProvider
     {
         return $this->tempDir;
     }
-
 }

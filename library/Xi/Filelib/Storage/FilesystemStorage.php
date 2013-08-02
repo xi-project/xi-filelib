@@ -187,5 +187,4 @@ class FilesystemStorage extends AbstractStorage implements Storage
     {
         return file_exists($this->getVersionPathName($resource, $version, $file));
     }
-
 }

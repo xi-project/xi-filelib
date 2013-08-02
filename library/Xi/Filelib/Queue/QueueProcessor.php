@@ -87,15 +87,18 @@ class QueueProcessor
         $filelib = $this->filelib;
         $output = $this->output;
 
-        $this->processMessage($message, function (QueueProcessor $processor) use ($command, $filelib, $output) {
+        $this->processMessage(
+            $message,
+            function (QueueProcessor $processor) use ($command, $filelib, $output) {
 
-            $class = get_class($command);
-            $output->writeln("Processing a command of class '{$class}'");
+                $class = get_class($command);
+                $output->writeln("Processing a command of class '{$class}'");
 
-            $command->attachTo($filelib);
-            $command->setOutput($output);
-            $command->execute();
-        });
+                $command->attachTo($filelib);
+                $command->setOutput($output);
+                $command->execute();
+            }
+        );
 
         return true;
     }

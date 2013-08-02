@@ -77,7 +77,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     ) {
         parent::__construct(
             $identifier,
-            function(File $file) {
+            function (File $file) {
                 // @todo: maybe some more complex mime type based checking
                 return (bool) preg_match("/^video/", $file->getMimetype());
             }
@@ -242,7 +242,9 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
         } catch (Services_Zencoder_Exception $e) {
             throw new RuntimeException(
-                "Zencoder service responded with errors: " . $this->getZencoderErrors($e), 500, $e
+                "Zencoder service responded with errors: " . $this->getZencoderErrors($e),
+                500,
+                $e
             );
         }
     }
@@ -293,9 +295,14 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
     public function getOutputsToZencoder()
     {
-        return array_values(array_map(function($output) {
-            return $output['output'];
-        }, $this->getOutputs()));
+        return array_values(
+            array_map(
+                function ($output) {
+                    return $output['output'];
+                },
+                $this->getOutputs()
+            )
+        );
     }
 
     public function isSharedResourceAllowed()

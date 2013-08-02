@@ -121,9 +121,12 @@ class BeautifurlLinker implements Linker
         }
 
         if ($slugifier = $this->getSlugifier()) {
-            array_walk($beautifurl, function(&$frag) use ($slugifier) {
-                $frag = $slugifier->slugify($frag);
-            });
+            array_walk(
+                $beautifurl,
+                function (&$frag) use ($slugifier) {
+                    $frag = $slugifier->slugify($frag);
+                }
+            );
         }
 
         $beautifurl[] = $file->getName();

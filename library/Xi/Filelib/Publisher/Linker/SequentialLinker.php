@@ -110,7 +110,9 @@ class SequentialLinker implements Linker
     private function calculateDirectoryId(File $file)
     {
         if (!is_numeric($file->getId())) {
-            throw new InvalidArgumentException("Leveled linker requires numeric file ids ('{$file->getId()}' was provided)");
+            throw new InvalidArgumentException(
+                "Leveled linker requires numeric file ids ('{$file->getId()}' was provided)"
+            );
         }
 
         if ($this->getDirectoryLevels() < 1) {

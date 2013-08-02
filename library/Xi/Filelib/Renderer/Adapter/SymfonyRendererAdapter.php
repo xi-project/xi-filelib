@@ -38,7 +38,7 @@ class SymfonyRendererAdapter implements AcceleratedRendererAdapter
      */
     public function setRequest(Request $request)
     {
-       $this->request = $request;
+        $this->request = $request;
     }
 
     /**
@@ -86,5 +86,4 @@ class SymfonyRendererAdapter implements AcceleratedRendererAdapter
         }
         return $this->getRequest()->server->get('SERVER_SOFTWARE');
     }
-
 }

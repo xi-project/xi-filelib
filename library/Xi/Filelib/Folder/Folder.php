@@ -168,5 +168,4 @@ class Folder implements Identifiable
 
         return $folder->fromArray($data);
     }
-
 }
