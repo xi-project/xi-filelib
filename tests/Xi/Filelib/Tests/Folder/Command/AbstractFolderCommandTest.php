@@ -26,6 +26,14 @@ class AbstractFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertUuid($command->getUuid());
 
+        $this->assertNull($command->getFolderOperator());
+
+        $foop = $this->getMockedFolderOperator();
+        $filelib = $this->getMockedFilelib(null, null, $foop);
+
+        $command->attachTo($filelib);
+
+        $this->assertSame($foop, $command->getFolderOperator());
     }
 
 }

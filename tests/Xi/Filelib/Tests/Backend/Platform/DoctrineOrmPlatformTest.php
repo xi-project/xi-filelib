@@ -162,4 +162,15 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
             'Doctrine\ORM\EntityManager'
         );
     }
+
+    /**
+     * @test
+     */
+    public function entityManagerGetterShouldWork()
+    {
+        $em = $this->createEntityManagerMock();
+        $platform = new DoctrineOrmPlatform($em);
+
+        $this->assertSame($em, $platform->getEntityManager());
+    }
 }
