@@ -2,6 +2,6 @@
 
 namespace Xi\Filelib;
 
-class InvalidArgumentException extends \InvalidArgumentException implements FilelibException {
-
+class InvalidArgumentException extends \InvalidArgumentException implements FilelibException
+{
 }

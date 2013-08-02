@@ -8,6 +8,7 @@
  */
 
 namespace Xi\Filelib\File;
+
 use Dflydev\ApacheMimeTypes\PhpRepository;
 
 class MimeType
@@ -42,5 +43,3 @@ class MimeType
         return self::getRepository()->findType($extension);
     }
 }
-
-

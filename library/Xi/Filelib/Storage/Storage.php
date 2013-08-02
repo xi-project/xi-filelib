@@ -97,5 +97,4 @@ interface Storage
      * @return boolean
      */
     public function versionExists(Resource $resource, $version, File $file = null);
-
 }

@@ -100,5 +100,4 @@ class PhpAMQPQueue implements Queue
     {
         $this->getChannel()->basic_ack($message->getIdentifier());
     }
-
 }

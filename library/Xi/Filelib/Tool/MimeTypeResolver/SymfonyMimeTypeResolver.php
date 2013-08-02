@@ -13,11 +13,12 @@ use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 
 class SymfonyMimeTypeResolver implements MimeTypeResolver
 {
-
+    /**
+     * @var MimeTypeGuesser
+     */
     private $mimeTypeGuesser;
 
     /**
-     *
      * @return MimeTypeGuesser
      */
     private function getMimeTypeGuesser()
@@ -29,11 +30,14 @@ class SymfonyMimeTypeResolver implements MimeTypeResolver
         return $this->mimeTypeGuesser;
     }
 
+    /**
+     * @param string $path
+     * @return string
+     */
     public function resolveMimeType($path)
     {
         $mimeType = $this->getMimeTypeGuesser()->guess($path);
 
         return $mimeType;
     }
-
 }

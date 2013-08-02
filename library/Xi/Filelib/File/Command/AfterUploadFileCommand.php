@@ -16,9 +16,7 @@ use Xi\Filelib\Events;
 
 class AfterUploadFileCommand extends AbstractFileCommand
 {
-
     /**
-     *
      * @var File
      */
     private $file;
@@ -34,10 +32,7 @@ class AfterUploadFileCommand extends AbstractFileCommand
      */
     public function execute()
     {
-
         $file = $this->file;
-
-        $profileObj = $this->fileOperator->getProfile($file->getProfile());
 
         $event = new FileEvent($file);
         $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_AFTERUPLOAD, $event);
@@ -59,11 +54,11 @@ class AfterUploadFileCommand extends AbstractFileCommand
 
     public function serialize()
     {
-        return serialize(array(
-            'file' => $this->file,
-            'uuid' => $this->uuid,
-        ));
-
+        return serialize(
+            array(
+                'file' => $this->file,
+                'uuid' => $this->uuid,
+            )
+        );
     }
-
 }

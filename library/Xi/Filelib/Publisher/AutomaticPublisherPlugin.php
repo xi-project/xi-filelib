@@ -75,5 +75,4 @@ class AutomaticPublisherPlugin extends AbstractPlugin
     {
         $this->publisher->publish($event->getTarget());
     }
-
 }

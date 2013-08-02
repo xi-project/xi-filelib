@@ -79,5 +79,4 @@ class ResourceRefactorMigration extends AbstractCommand
             $this->createUuidToFolder($subfolder);
         }
     }
-
 }

@@ -343,6 +343,4 @@ class Resource implements Identifiable
     {
         return in_array($version, $this->getVersions());
     }
-
-
 }

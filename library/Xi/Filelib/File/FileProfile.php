@@ -135,7 +135,7 @@ class FileProfile implements EventSubscriberInterface
     public function getFileVersions(File $file)
     {
         $ret = array();
-        foreach($this->fileVersions as $version => $versionProvider) {
+        foreach ($this->fileVersions as $version => $versionProvider) {
             if ($versionProvider->providesFor($file)) {
                 $ret[] = $version;
             }

@@ -163,13 +163,31 @@ class GridfsStorage extends AbstractStorage implements Storage
     protected function doStore(Resource $resource, $tempFile)
     {
         $filename = $this->getFilename($resource);
-        $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $resource->getId(), 'version' => 'original')));
+        $this->getGridFS()->storeFile(
+            $tempFile,
+            array(
+                'filename' => $filename,
+                'metadata' => array(
+                    'id' => $resource->getId(),
+                    'version' => 'original'
+                )
+            )
+        );
     }
 
     protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
         $filename = $this->getFilenameVersion($resource, $version, $file);
-        $this->getGridFS()->storeFile($tempFile, array('filename' => $filename, 'metadata' => array('id' => $resource->getId(), 'version' => $version)));
+        $this->getGridFS()->storeFile(
+            $tempFile,
+            array(
+                'filename' => $filename,
+                'metadata' => array(
+                    'id' => $resource->getId(),
+                    'version' => $version
+                )
+            )
+        );
     }
 
     protected function doRetrieve(Resource $resource)
@@ -214,5 +232,4 @@ class GridfsStorage extends AbstractStorage implements Storage
 
         return $path;
     }
-
 }

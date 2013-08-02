@@ -12,12 +12,6 @@ class SimpleRendererAdapter implements AcceleratedRendererAdapter
     /**
      * Status codes translation table.
      *
-     * The list of codes is complete according to the
-     * {@link http://www.iana.org/assignments/http-status-codes/ Hypertext Transfer Protocol (HTTP) Status Code Registry}
-     * (last updated 2012-02-13).
-     *
-     * Unless otherwise noted, the status code is defined in RFC2616.
-     *
      * @var array
      */
     public static $statusTexts = array(
@@ -112,6 +106,4 @@ class SimpleRendererAdapter implements AcceleratedRendererAdapter
         }
         return 'MultiFail';
     }
-
 }
-

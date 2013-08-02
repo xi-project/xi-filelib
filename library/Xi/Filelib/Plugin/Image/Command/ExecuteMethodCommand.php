@@ -15,8 +15,8 @@ use BadMethodCallException;
 class ExecuteMethodCommand extends AbstractCommand
 {
     private $method = null;
-    private $parameters = array();
 
+    private $parameters = array();
 
     public function __construct($method, $parameters = array())
     {
@@ -44,9 +44,12 @@ class ExecuteMethodCommand extends AbstractCommand
         $callable = array($imagick, $this->getMethod());
 
         if (!is_callable($callable)) {
-            throw new BadMethodCallException(sprintf(
-                "Method '%s' not callable", $this->getMethod()
-            ));
+            throw new BadMethodCallException(
+                sprintf(
+                    "Method '%s' not callable",
+                    $this->getMethod()
+                )
+            );
         }
 
         call_user_func_array($callable, $this->getParameters());
@@ -62,5 +65,4 @@ class ExecuteMethodCommand extends AbstractCommand
     {
         $this->parameters = $parameters;
     }
-
 }

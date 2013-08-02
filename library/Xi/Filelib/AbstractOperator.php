@@ -103,7 +103,13 @@ abstract class AbstractOperator
 
     private function assertStrategyExists($strategy)
     {
-        if (!in_array($strategy, array(EnqueueableCommand::STRATEGY_ASYNCHRONOUS, EnqueueableCommand::STRATEGY_SYNCHRONOUS))) {
+        if (!in_array(
+            $strategy,
+            array(
+                EnqueueableCommand::STRATEGY_ASYNCHRONOUS,
+                EnqueueableCommand::STRATEGY_SYNCHRONOUS
+            )
+        )) {
             throw new InvalidArgumentException("Invalid command strategy '{$strategy}'");
         }
     }
