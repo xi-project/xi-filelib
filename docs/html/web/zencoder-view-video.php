@@ -26,11 +26,11 @@ $file = $filelib->getFileOperator()->find($id);
 
 <h1>Funny Joonas video</h1>
 
-<p>A funny Joonas video has been uploaded and queued for processing.</p>
+<p>A very funny video of Joonas has been uploaded and queued for processing.</p>
 
 <p>
     You may start processing it with <code>bin/zencoder-queue.php</code> and madly refresh this page.
-    When the video is processed something magical will happen!
+    When the video is processed Joonas will appear. Ta da!
 </p>
 
 <video controls>

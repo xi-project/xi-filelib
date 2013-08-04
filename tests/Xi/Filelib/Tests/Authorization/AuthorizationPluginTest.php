@@ -6,6 +6,11 @@ use Xi\Filelib\Tests\TestCase;
 
 class AuthorizationPluginTest extends TestCase
 {
+    public function setUp()
+    {
+        $this->adapter = $this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter');
+    }
+
     /**
      * @test
      */
@@ -13,4 +18,6 @@ class AuthorizationPluginTest extends TestCase
     {
         $this->assertClassExists('Xi\Filelib\Authorization\AuthorizationPlugin');
     }
+
+
 }
