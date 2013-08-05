@@ -351,10 +351,6 @@ class File implements Identifiable
             $this->data = new ArrayObject();
         }
 
-        if (is_array($this->data)) {
-            $this->data = new ArrayObject($this->data);
-        }
-
         return $this->data;
     }
 

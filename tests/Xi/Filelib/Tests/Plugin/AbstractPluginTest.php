@@ -33,7 +33,12 @@ class AbstractPluginTest extends TestCase
      */
     public function hasProfileShouldReturnWhetherPluginBelongsToAProfile()
     {
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')->setMethods(array())->getMockForAbstractClass();
+        $plugin = $this
+            ->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+            ->setMethods(array())
+            ->getMockForAbstractClass();
+        $plugin->attachTo($this->getMockedFilelib());
+
         $plugin->setHasProfileResolver(
             function ($profile) {
                 return (bool) in_array($profile, array('lussi', 'tussi'));
@@ -49,7 +54,28 @@ class AbstractPluginTest extends TestCase
     /**
      * @test
      */
-    public function getSubscribedEventsShouldReturnEmptyArray()
+    public function setProfileShouldBeAShortCutToSetHasProfileResolver()
+    {
+        $plugin = $this
+            ->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+            ->setMethods(array())
+            ->getMockForAbstractClass();
+        $plugin->attachTo($this->getMockedFilelib());
+
+        $plugin->setProfiles(array('tussi', 'watussi'));
+
+        $this->assertTrue($plugin->hasProfile('tussi'));
+        $this->assertFalse($plugin->hasProfile('laamantiini'));
+        $this->assertTrue($plugin->hasProfile('watussi'));
+    }
+
+
+
+
+    /**
+     * @test
+     */
+    public function getSubscribedEventsShouldContainProfileAddEvent()
     {
         $events = AbstractPlugin::getSubscribedEvents();
         $this->assertArrayHasKey(Events::PROFILE_AFTER_ADD, $events);

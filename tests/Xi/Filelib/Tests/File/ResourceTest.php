@@ -210,4 +210,20 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($resource->hasVersion('lussi'));
     }
 
+    /**
+     * @test
+     */
+    public function gettingAndSettingDataWorks()
+    {
+        $res = Resource::create(array());
+        $data = $res->getData();
+        $this->assertInstanceOf('ArrayObject', $data);
+
+        $res->setData(array('lusso' => 'magnifico'));
+
+        $data = $res->getData();
+        $this->assertEquals('magnifico', $data['lusso']);
+    }
+
+
 }

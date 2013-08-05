@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Tests\Renderer;
+namespace Xi\Filelib\Tests\Authorization;
 
 use Xi\Filelib\Authorization\AutomaticPublisherPlugin;
 use Xi\Filelib\Events;

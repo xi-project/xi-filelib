@@ -52,17 +52,8 @@ class FileProfile implements EventSubscriberInterface
      */
     private $plugins = array();
 
-    /**
-     * @var boolean Allow access to original file
-     */
-    private $accessToOriginal = true;
-
     public function __construct($identifier)
     {
-        if ($identifier === 'original') {
-            throw new InvalidArgumentException("Profile identifier can not be 'original'");
-        }
-
         $this->identifier = $identifier;
     }
 
@@ -169,16 +160,6 @@ class FileProfile implements EventSubscriberInterface
             throw new InvalidArgumentException("File has no version '{$version}'");
         }
         return $this->fileVersions[$version];
-    }
-
-    /**
-     * Returns whether access to the original file is allowed
-     *
-     * @return boolean
-     */
-    public function getAccessToOriginal()
-    {
-        return $this->accessToOriginal;
     }
 
     /**

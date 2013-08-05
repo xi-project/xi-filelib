@@ -171,19 +171,6 @@ class FileOperator extends AbstractOperator
     }
 
     /**
-     * Gets a new upload
-     *
-     * @param  string     $path Path to upload file
-     * @return FileUpload
-     */
-    public function prepareUpload($path)
-    {
-        $upload = new FileUpload($path);
-
-        return $upload;
-    }
-
-    /**
      * Uploads a file
      *
      * @param  mixed            $upload Uploadable, path or object

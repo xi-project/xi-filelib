@@ -14,7 +14,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Events;
+use Xi\Filelib\Events as CoreEvents;
 
 /**
  * Automatically publishes all files, emulating the pre-0.8 behavior
@@ -31,9 +31,9 @@ class AutomaticPublisherPlugin extends AbstractPlugin
      * @var array
      */
     protected static $subscribedEvents = array(
-        Events::FILE_AFTER_AFTERUPLOAD => 'doPublish',
-        Events::FILE_BEFORE_UPDATE => 'doUnpublishAndPublish',
-        Events::FILE_BEFORE_DELETE => 'doUnpublish'
+        CoreEvents::FILE_AFTER_AFTERUPLOAD => 'doPublish',
+        CoreEvents::FILE_BEFORE_UPDATE => 'doUnpublishAndPublish',
+        CoreEvents::FILE_BEFORE_DELETE => 'doUnpublish'
     );
 
     /**
