@@ -81,7 +81,26 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         $this->init();
     }
 
-    abstract public function createVersions(File $file);
+    public function createVersions(File $file)
+    {
+        $tmps = $this->createTemporaryVersions($file);
+        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
+        foreach (array_keys($tmps) as $version) {
+            $versionable->addVersion($version);
+        }
+
+        foreach ($tmps as $version => $tmp) {
+            $this->getStorage()->storeVersion(
+                $file->getResource(),
+                $version,
+                $tmp,
+                $this->areSharedVersionsAllowed() ? null : $file
+            );
+            unlink($tmp);
+        }
+    }
+
+    abstract public function createTemporaryVersions(File $file);
 
     /**
      * Registers a version to all profiles
@@ -151,23 +170,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             return;
         }
 
-        $tmps = $this->createVersions($file);
-
-        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
-
-        foreach (array_keys($tmps) as $version) {
-            $versionable->addVersion($version);
-        }
-
-        foreach ($tmps as $version => $tmp) {
-            $this->getStorage()->storeVersion(
-                $file->getResource(),
-                $version,
-                $tmp,
-                $this->areSharedVersionsAllowed() ? null : $file
-            );
-            unlink($tmp);
-        }
+        $this->createVersions($file);
     }
 
     public function onFileDelete(FileEvent $event)

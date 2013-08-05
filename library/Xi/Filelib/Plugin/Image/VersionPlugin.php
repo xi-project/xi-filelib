@@ -65,12 +65,12 @@ class VersionPlugin extends AbstractVersionProvider
     }
 
     /**
-     * Creates and stores version
+     * Creates temporary version
      *
      * @param  File  $file
      * @return array
      */
-    public function createVersions(File $file)
+    public function createTemporaryVersions(File $file)
     {
         // Todo: optimize
         $retrieved = $this->getStorage()->retrieve($file->getResource());

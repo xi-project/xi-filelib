@@ -139,7 +139,7 @@ class VersionPluginTest extends TestCase
 
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
 
-        $ret = $plugin->createVersions($file);
+        $ret = $plugin->createTemporaryVersions($file);
 
         $this->assertInternalType('array', $ret);
 
