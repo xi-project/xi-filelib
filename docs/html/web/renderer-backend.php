@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Xi\Filelib\Renderer\Adapter\SimpleRendererAdapter;
 
 // Set this to true to enable acceleration
-$enableAcceleration = true;
+$enableAcceleration = false;
 
 $id = $_GET['id'];
 $version = $_GET['version'];

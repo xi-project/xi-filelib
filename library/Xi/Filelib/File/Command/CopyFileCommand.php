@@ -151,7 +151,6 @@ class CopyFileCommand extends AbstractFileCommand
             'Xi\Filelib\File\Command\AfterUploadFileCommand',
             array($impostor)
         );
-
         return $command->execute();
     }
 

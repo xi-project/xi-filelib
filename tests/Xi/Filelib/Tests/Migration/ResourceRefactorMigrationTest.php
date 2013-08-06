@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests\Migration;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Migration\ResourceRefactorMigration;
+use Xi\Filelib\Storage\FileIOException;
 
 class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -17,10 +18,19 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Command', class_implements('Xi\Filelib\Migration\ResourceRefactorMigration'));
     }
 
+    public function provideData()
+    {
+        return array(
+            array(false),
+            array(true)
+        );
+    }
+
     /**
      * @test
+     * @dataProvider provideData
      */
-    public function executeShouldMigrate()
+    public function executeShouldDoMigration($expectFail)
     {
         $foop = $this->getMockedFolderOperator();
         $fiop = $this->getMockedFileOperator();
@@ -32,14 +42,34 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
+        /*
+        $retrieved = $this->filelib->getStorage()->retrieve($resource);
+        $resource->setHash(sha1_file($retrieved));
+        $resource->setVersions($profile->getFileVersions($file));
+        $this->filelib->getBackend()->updateResource($resource);
+        */
+
         $rootFolder = $this->getMockedFolder();
         $childFolder = $this->getMockedFolder();
 
         $rootFolder->expects($this->once())->method('setUuid')->with('uuid');
         $childFolder->expects($this->once())->method('setUuid')->with('uuid');
 
-        $storage->expects($this->once())->method('retrieve')
+        if ($expectFail) {
+
+            $storage->expects($this->once())->method('retrieve')
+                ->with($resource)->will($this->throwException(new FileIOException('Game over man')));
+            $resource->expects($this->never())->method('setHash');
+            $backend->expects($this->never())->method('updateResource');
+
+        } else {
+            $storage->expects($this->once())->method('retrieve')
                 ->with($resource)->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
+
+            $resource->expects($this->once())->method('setHash');
+            $backend->expects($this->once())->method('updateResource')->with($resource);
+
+        }
 
         $foop->expects($this->once())->method('findRoot')->will($this->returnValue($rootFolder));
         $foop->expects($this->exactly(2))->method('findSubFolders')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
@@ -62,7 +92,7 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
 
         $profile->expects($this->any())->method('getFileVersions')->with($file)->will($this->returnValue(array('lus', 'xoo')));
 
-        $backend->expects($this->once())->method('updateResource')->with($resource);
+
 
         $migration = new ResourceRefactorMigration($filelib);
 
@@ -72,5 +102,8 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $migration->attachTo($filelib);
         $migration->execute();
     }
+
+
+
 
 }

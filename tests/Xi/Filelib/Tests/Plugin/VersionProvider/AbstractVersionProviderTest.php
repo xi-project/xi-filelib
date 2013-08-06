@@ -256,7 +256,7 @@ class AbstractVersionProviderTest extends TestCase
         $pluginVersions = array('xooxer', 'losobees');
         $this->plugin->expects($this->any())->method('getVersions')->will($this->returnValue($pluginVersions));
 
-        $this->plugin->expects($this->once())->method('createVersions')
+        $this->plugin->expects($this->once())->method('createTemporaryVersions')
              ->with($this->isInstanceOf('Xi\Filelib\File\File'))
              ->will($this->returnValue(array('xooxer' => ROOT_TESTS . '/data/temp/life-is-my-enemy-xooxer.jpg', 'losobees' => ROOT_TESTS . '/data/temp/life-is-my-enemy-losobees.jpg')));
 

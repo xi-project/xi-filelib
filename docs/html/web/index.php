@@ -17,6 +17,35 @@
 
                 <h1>Welcome to Filelib</h1>
 
+                <p>
+                    Filelib, <em>Filebanksta</em> among friends, is a file library component for PHP.
+                </p>
+
+                <p>
+                    Filebanksta is purely a developer's tool. All kinds of end user applications can and have
+                    been built around it, but the library itself doesn't care. Filelib has been engineered for
+                    a singular purpose, to answer one question: what to do with and how to handle files
+                    <em>uploaded byt the app's end users</em>.
+                </p>
+
+                <dl>
+                    <dt><a href="history.php">History of Filebanksta</a></dt>
+                    <dd>
+                        Filebanksta goes back to 2004, so this stuff's been brewing for a while. How did we get here,
+                        and what was the motivation?
+                    </dd>
+
+                    <dt><a href="architecture.php">Architecture of Filebanksta</a></dt>
+                    <dd>
+                        Filelib's subcomponents are loosely coupled so you can mix and match to your heart's content
+                        and app's requirements. What are these subcomponents and what can be achieved with them?
+                    </dd>
+                </dl>
+
+                <p>
+                    Filebanksta is a developer's tool so let's code already. Clickety click the links and look at the code, dude!
+                </p>
+
                 <h2>Basic examples</h2>
 
                 <dl>
@@ -52,14 +81,16 @@
                         Renderer also supports <em>acceleration</em>, ie. using Filelib's authorization
                         but serving the actual file via a acceleration-enabled HTTP server like Nginx.
                     </dd>
+                </dl>
 
-                    <h2>Advanced examples</h2>
+                <h2>Advanced examples</h2>
 
-                    <p>
-                        Copy <code>../constants.example.php</code> to <code>../constants.php</code>
-                        and configure.
-                    </p>
+                <p>
+                    Copy <code>../constants.example.php</code> to <code>../constants.php</code>
+                    and configure.
+                </p>
 
+                <dl>
                     <dt><a href="async.php">Asynchronous processing</a></dt>
                     <dd>
                         Some operations, like creating a version of a 2 gigabyte video or batch creating 10.000

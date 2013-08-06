@@ -14,6 +14,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\LogicException;
 
 class CreateFolderCommand extends AbstractFolderCommand
 {
@@ -30,6 +31,10 @@ class CreateFolderCommand extends AbstractFolderCommand
 
     public function execute()
     {
+        if ($this->folder->getParentId() === null && $this->folder->getName() !== 'root') {
+            throw new LogicException('Only one root folder may exist');
+        }
+
         if ($this->folder->getParentId()) {
             $parentFolder = $this->folderOperator->find($this->folder->getParentId());
             $event = new FolderEvent($parentFolder);

@@ -108,4 +108,15 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 
     }
 
+    /**
+     * @test
+     */
+    public function commandShouldThrowUpIfWrongfulRootIsTryingToBeCreated()
+    {
+        $this->setExpectedException('Xi\Filelib\LogicException');
+        $command = new CreateFolderCommand(Folder::create(array('parent_id' => null, 'name' => 'manatee')));
+        $command->execute();
+    }
+
+
 }

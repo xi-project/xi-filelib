@@ -32,7 +32,6 @@ class AuthorizationPlugin extends AbstractPlugin
      * @var array
      */
     protected static $subscribedEvents = array(
-
         CoreEvents::FOLDER_BEFORE_WRITE_TO => 'checkFolderWrite',
         CoreEvents::FOLDER_BEFORE_DELETE => 'checkFolderWrite',
         CoreEvents::FOLDER_BEFORE_UPDATE => 'checkFolderWrite',

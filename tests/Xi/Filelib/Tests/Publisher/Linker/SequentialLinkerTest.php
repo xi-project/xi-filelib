@@ -121,8 +121,8 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
             $beautifurl[1],
             $linker->getLink(
                 $file,
-                $this->versionProvider->getIdentifier(),
-                $this->versionProvider->getExtensionFor($file, $this->versionProvider->getIdentifier())
+                'xoo',
+                $this->versionProvider->getExtensionFor($file, 'xoo')
             )
         );
 

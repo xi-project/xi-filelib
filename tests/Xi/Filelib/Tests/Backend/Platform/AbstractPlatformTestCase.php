@@ -433,6 +433,28 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider dataPersistenceProvider
+     * @test
+     */
+    public function dataShouldBeFetchedAndStored($id, $key, $expected)
+    {
+        $this->setUpSimpleDataSet();
+        $file = $this->findFile($id);
+
+        $data = $file->getData();
+        $this->assertSame($expected, $data[$key]);
+
+        $sucklingData = array('suckling' => 'on a duckling');
+        $data['imaiseppa'] = $sucklingData;
+
+        $this->backend->updateFile($file);
+
+        $file2 = $this->findFile($id);
+        $this->assertEquals($file, $file2);
+    }
+
+
+    /**
      * @test
      * @group finder
      * @dataProvider provideFinders

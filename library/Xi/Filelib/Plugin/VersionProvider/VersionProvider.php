@@ -27,13 +27,6 @@ interface VersionProvider extends Plugin
     public function getExtensionFor(File $file, $version);
 
     /**
-     * Returns file types which the version plugin provides version for.
-     *
-     * @return array
-     */
-    public function getProvidesFor();
-
-    /**
      * Returns whether the plugin provides a version for a file.
      *
      * @param  File    $file File item
@@ -42,21 +35,19 @@ interface VersionProvider extends Plugin
     public function providesFor(File $file);
 
     /**
-     * Returns version identifier
-     *
-     * @return string
-     */
-    public function getIdentifier();
-
-    /**
-     * Returns an array of (potentially) provided versions
+     * Returns an array of versions provided
      *
      * @return array
      */
     public function getVersions();
 
     /**
-     * Returns whether versions are already created for a resource
+     * (Re)create and store all versions provided by the plugin
+     */
+    public function createVersions(File $file);
+
+    /**
+     * Returns whether all versions are already created for a resource
      *
      * @return bool
      */
@@ -64,8 +55,13 @@ interface VersionProvider extends Plugin
 
     /**
      * Returns whether plugin allows sharing of resources
+     *
+     * @return bool
      */
     public function isSharedResourceAllowed();
 
+    /**
+     * @return bool
+     */
     public function areSharedVersionsAllowed();
 }

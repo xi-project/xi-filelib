@@ -255,6 +255,7 @@ class MongoPlatformTest extends AbstractPlatformTestCase
                     'resource_id'   => '48a7011a05c677b9a9166104',
                     'data' => array(
                         'versions' => array(),
+                        'lipaiseppa' => 'ankkaa',
                     ),
                 ),
                 array(
@@ -283,6 +284,16 @@ class MongoPlatformTest extends AbstractPlatformTestCase
         }
 
         return $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function dataPersistenceProvider()
+    {
+        return array(
+            array('49a7011a05c677b9a9166109', 'lipaiseppa', 'ankkaa')
+        );
     }
 
     /**
