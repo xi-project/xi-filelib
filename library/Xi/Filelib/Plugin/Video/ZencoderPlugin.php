@@ -211,7 +211,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      * @return array
      * @throws FilelibException
      */
-    public function createVersions(File $file)
+    public function createTemporaryVersions(File $file)
     {
         $s3 = $this->getAwsService();
         $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');

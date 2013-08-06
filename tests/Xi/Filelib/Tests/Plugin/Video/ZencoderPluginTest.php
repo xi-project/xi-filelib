@@ -255,7 +255,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->plugin->setSleepyTime(0);
 
-        $ret = $this->plugin->createVersions($file);
+        $ret = $this->plugin->createTemporaryVersions($file);
 
         $this->assertInternalType('array', $ret);
         $this->assertCount(2, $ret);
@@ -363,7 +363,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             500
         );
 
-        $this->plugin->createVersions($file);
+        $this->plugin->createTemporaryVersions($file);
     }
 
     private function getMockedAwsService()

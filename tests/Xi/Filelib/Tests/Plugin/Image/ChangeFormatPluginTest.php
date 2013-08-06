@@ -9,10 +9,10 @@
 
 namespace Xi\Filelib\Tests\Plugin\Image;
 
-use Imagick;
 use Xi\Filelib\Plugin\Image\ChangeFormatPlugin;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\File\Upload\FileUpload;
 
 /**
  * @group plugin
@@ -132,30 +132,20 @@ class ChangeFormatPluginTest extends TestCase
         $mock = $this->getMock('Imagick');
         $mock->expects($this->once())
              ->method('writeImage')
-             ->with($this->matchesRegularExpression('#^' . ROOT_TESTS . '/data/temp#'));
+             ->with($this->matchesRegularExpression('#^' . ROOT_TESTS . '/data/temp#'))
+             ->will(
+                $this->returnCallback(
+                    function ($path) {
+                        copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path);
+                    }
+                )
+            );
 
         $helper->expects($this->once())->method('createImagick')->will($this->returnValue($mock));
 
         $helper->expects($this->once())->method('execute')->with($this->equalTo($mock));
 
-        $upload = $this->getMockBuilder('Xi\Filelib\File\Upload\FileUpload')
-                       ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
-                       ->getMock();
-
-        $upload->expects($this->any())->method('getMimeType')->will($this->returnValue('image/jpeg'));
-        $upload->expects($this->atLeastOnce())->method('getUploadFilename')->will($this->returnValue('self-lussing-manatee.jpg'));
-
-        $nupload = $this->getMockBuilder('Xi\Filelib\File\Upload\FileUpload')
-                       ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
-                       ->getMock();
-        $nupload->expects($this->once())->method('setTemporary')->with($this->equalTo(true));
-        $nupload->expects($this->once())->method('setOverrideFilename')->with($this->equalTo('self-lussing-manatee.lus'));
-
-        $this->fileOperator
-             ->expects($this->once())
-             ->method('prepareUpload')
-             ->with($this->matchesRegularExpression('#^' . ROOT_TESTS . '/data/temp#'))
-             ->will($this->returnValue($nupload));
+        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
 
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ChangeFormatPlugin')
                        ->setMethods(array('getImageMagickHelper'))

@@ -29,7 +29,7 @@ class VersionPlugin extends AbstractVersionProvider
     /**
      * @var string
      */
-    private $tempDir;
+    protected $tempDir;
 
     public function __construct(
         $identifier,
@@ -65,12 +65,12 @@ class VersionPlugin extends AbstractVersionProvider
     }
 
     /**
-     * Creates and stores version
+     * Creates temporary version
      *
      * @param  File  $file
      * @return array
      */
-    public function createVersions(File $file)
+    public function createTemporaryVersions(File $file)
     {
         // Todo: optimize
         $retrieved = $this->getStorage()->retrieve($file->getResource());
@@ -116,10 +116,5 @@ class VersionPlugin extends AbstractVersionProvider
     public function areSharedVersionsAllowed()
     {
         return true;
-    }
-
-    public function getTempDir()
-    {
-        return $this->tempDir;
     }
 }

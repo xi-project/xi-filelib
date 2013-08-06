@@ -25,6 +25,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldUploadAndDelegateCorrectly()
     {
+
         $filelib = $this->getMockedFilelib();
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));

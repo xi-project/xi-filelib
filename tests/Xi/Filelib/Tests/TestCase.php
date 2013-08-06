@@ -133,7 +133,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedPublisher()
     {
-        return $this->getMock('Xi\Filelib\Publisher\Publisher');
+        return $this->getMockBuilder('Xi\Filelib\Publisher\Publisher')->disableOriginalConstructor()->getMock();
     }
 
     /**
@@ -191,7 +191,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedCommand()
     {
-        return $this->getMock('Xi\Filelib\Command\Command');
+        return $this->getMock('Xi\Filelib\Command');
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedEnqueueableCommand()
+    {
+        return $this->getMock('Xi\Filelib\EnqueueableCommand');
     }
 
     /**

@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Tests\Plugin\Image;
 
 use Imagick;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileOperator;
@@ -69,7 +70,23 @@ class VersionPluginTest extends TestCase
      */
     public function pluginShouldProvideForImage()
     {
-        $this->assertInstanceOf('Closure', $this->plugin->getProvidesFor());
+        $filelib = new FileLibrary(
+            $this->getMockedStorage(),
+            $this->getMockedPlatform()
+        );
+        $filelib->addPlugin($this->plugin);
+
+        $this->assertFalse(
+            $this->plugin->providesFor(
+                File::create(array('resource' => Resource::create(array('mimetype' => 'video/avi'))))
+            )
+        );
+
+        $this->assertTrue(
+            $this->plugin->providesFor(
+                File::create(array('resource' => Resource::create(array('mimetype' => 'image/png'))))
+            )
+        );
     }
 
     /**
@@ -139,7 +156,7 @@ class VersionPluginTest extends TestCase
 
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
 
-        $ret = $plugin->createVersions($file);
+        $ret = $plugin->createTemporaryVersions($file);
 
         $this->assertInternalType('array', $ret);
 
@@ -193,6 +210,40 @@ class VersionPluginTest extends TestCase
 
         $this->assertSame('lus', $ret);
     }
+
+    /**
+     * @test
+     */
+    public function getExtensionForShouldDelegateToParentToAutodetectExtension()
+    {
+        $storage = $this->getMockedStorage();
+        $filelib = new FileLibrary(
+            $storage,
+            $this->getMockedPlatform()
+        );
+
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\VersionPlugin')
+            ->setMethods(array('getExtension'))
+            ->disableOriginalConstructor()
+            ->getMock();
+        $plugin->attachTo($filelib);
+
+        $plugin->expects($this->once())->method('getExtension')->will($this->returnValue(null));
+
+        $resource = $this->getMockedResource();
+        $file = File::create(array('resource' => $resource));
+
+        $storage->expects($this->once())
+            ->method('retrieveVersion')
+            ->with($resource, 'xooxoo', null)
+            ->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
+
+        $ret = $plugin->getExtensionFor($file, 'xooxoo');
+
+        $this->assertSame('jpg', $ret);
+    }
+
+
 
     /**
      * @test

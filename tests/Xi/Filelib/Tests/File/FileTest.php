@@ -271,4 +271,18 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertFalse($file->hasVersion('lussi'));
     }
 
+    /**
+     * @test
+     */
+    public function gettingAndSettingDataWorks()
+    {
+        $file = File::create(array());
+        $data = $file->getData();
+        $this->assertInstanceOf('ArrayObject', $data);
+
+        $file->setData(array('lusso' => 'magnifico'));
+
+        $data = $file->getData();
+        $this->assertEquals('magnifico', $data['lusso']);
+    }
 }

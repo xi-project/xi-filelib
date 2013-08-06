@@ -45,7 +45,7 @@ class OriginalVersionPlugin extends AbstractVersionProvider
      * @param  File  $file
      * @return array
      */
-    public function createVersions(File $file)
+    public function createTemporaryVersions(File $file)
     {
         $retrieved = $this->getStorage()->retrieve($file->getResource());
         $tmp = $this->tempDir . '/' . uniqid('', true);

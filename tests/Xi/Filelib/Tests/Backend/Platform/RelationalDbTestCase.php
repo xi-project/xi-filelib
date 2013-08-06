@@ -340,6 +340,17 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
     }
 
     /**
+     * @return array
+     */
+    public function dataPersistenceProvider()
+    {
+        return array(
+            array(4, 'lipaiseppa', 'ankkaa')
+        );
+    }
+
+
+    /**
      * @return ArrayDataSet
      */
     private function getSimpleDataSet()
@@ -475,7 +486,7 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
                         'status'        => 4,
                         'uuid'          => 'uuid-4',
                         'resource_id'   => 4,
-                        'data' => json_encode(array('versions' => array())),
+                        'data' => json_encode(array('versions' => array(), 'lipaiseppa' => 'ankkaa')),
                     ),
                     array(
                         'id'            => 5,

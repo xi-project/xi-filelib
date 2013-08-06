@@ -14,6 +14,7 @@ use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events;
+use Xi\Filelib\File\Upload\FileUpload;
 
 /**
  * Changes images' formats before uploading them.
@@ -95,7 +96,7 @@ class ChangeFormatPlugin extends AbstractPlugin
 
         $pinfo = pathinfo($upload->getUploadFilename());
 
-        $nupload = $this->fileOperator->prepareUpload($tempnam);
+        $nupload = new FileUpload($tempnam);
         $nupload->setTemporary(true);
 
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $this->getTargetExtension());
