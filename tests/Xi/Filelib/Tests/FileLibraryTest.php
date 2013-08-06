@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests;
 
+use Xi\Filelib\Authorization\AuthorizationPlugin;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileProfile;
 use Xi\Filelib\Events;
@@ -198,6 +199,48 @@ class FileLibraryTest extends TestCase
             ->with($this->equalTo($plugin));
 
         $filelib->addPlugin($plugin);
+    }
+
+    /**
+     * @test
+     */
+    public function addPluginShouldAddToAllProfilesIfNoProfilesAreProvided()
+    {
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+
+        $plugin = new AuthorizationPlugin($this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter'));
+
+        $filelib->addPlugin($plugin);
+
+        $this->assertContains($plugin, $filelib->getProfile('default')->getPlugins());
+
+        $filelib->addProfile(new FileProfile('sucklee'));
+
+        $this->assertContains($plugin, $filelib->getProfile('sucklee')->getPlugins());
+
+        $this->assertTrue($plugin->hasProfile('sucklee'));
+        $this->assertTrue($plugin->hasProfile('suckler'));
+    }
+
+    /**
+     * @test
+     */
+    public function addPluginShouldAddToOnlyProfilesProvided()
+    {
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+
+        $plugin = new AuthorizationPlugin($this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter'));
+
+        $filelib->addPlugin($plugin, array('sucklee', 'ducklee'));
+
+        $this->assertNotContains($plugin, $filelib->getProfile('default')->getPlugins());
+
+        $filelib->addProfile(new FileProfile('sucklee'));
+
+        $this->assertContains($plugin, $filelib->getProfile('sucklee')->getPlugins());
+
+        $this->assertTrue($plugin->hasProfile('sucklee'));
+        $this->assertFalse($plugin->hasProfile('suckler'));
     }
 
     /**

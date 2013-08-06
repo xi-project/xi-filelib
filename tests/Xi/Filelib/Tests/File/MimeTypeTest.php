@@ -35,4 +35,15 @@ class MimeTypeTest extends TestCase
         $this->assertGreaterThanOrEqual(1, count($extensions));
         $this->assertContains($expectedExtension, $extensions);
     }
+
+    /**
+     * @dataProvider provideMimeTypesAndExtensions
+     * @test
+     */
+    public function extensionShouldResolveToMimeType($expectedMimeType, $extension)
+    {
+        $mimetype = MimeType::extensionToMimeType($extension);
+        $this->assertSame($expectedMimeType, $mimetype);
+    }
+
 }

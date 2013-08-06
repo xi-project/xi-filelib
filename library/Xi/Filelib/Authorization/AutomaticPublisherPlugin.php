@@ -7,20 +7,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Publisher;
+namespace Xi\Filelib\Authorization;
 
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Events;
+use Xi\Filelib\Events as CoreEvents;
 
 /**
- * Automatically publishes all files
+ * Automatically publishes all files, emulating the pre-0.8 behavior
  *
- * @todo: there are some fucktorings to be made.
- * @todo: ACL integration must be redone after ACL itself has been made a plugin
  */
 class AutomaticPublisherPlugin extends AbstractPlugin
 {
@@ -33,16 +31,19 @@ class AutomaticPublisherPlugin extends AbstractPlugin
      * @var array
      */
     protected static $subscribedEvents = array(
-        Events::FILE_AFTER_AFTERUPLOAD => 'doPublish',
-        Events::FILE_BEFORE_DELETE => 'doUnpublish'
+        CoreEvents::FILE_AFTER_AFTERUPLOAD => 'doPublish',
+        CoreEvents::FILE_BEFORE_UPDATE => 'doUnpublishAndPublish',
+        CoreEvents::FILE_BEFORE_DELETE => 'doUnpublish'
     );
 
     /**
      * @param Publisher $publisher
      */
-    public function __construct(Publisher $publisher)
+    public function __construct(Publisher $publisher, AuthorizationAdapter $adapter)
     {
         $this->publisher = $publisher;
+        $this->adapter = $adapter;
+
     }
 
     /**
@@ -54,10 +55,27 @@ class AutomaticPublisherPlugin extends AbstractPlugin
     }
 
     /**
-     * @param FileCopyEvent $event
+     * @param FileEvent $event
      */
     public function doUnpublish(FileEvent $event)
     {
-        $this->publisher->unpublish($event->getFile());
+        $file = $event->getFile();
+
+        if ($this->publisher->isPublished($file)) {
+            $this->publisher->unpublish($file);
+        }
+
     }
+
+    /**
+     * @param FileEvent $event
+     */
+    public function doUnPublishAndPublish(FileEvent $event)
+    {
+        $file = $event->getFile();
+        $this->publisher->unpublish($file);
+        $this->publisher->publish($file);
+    }
+
+
 }

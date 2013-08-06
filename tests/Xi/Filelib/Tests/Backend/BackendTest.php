@@ -543,6 +543,14 @@ class BackendTest extends TestCase
         $this->assertEquals('lus', $ret);
     }
 
+    /**
+     * @test
+     */
+    public function getIdentityMapHelperShouldReturnIdentityMapHelper()
+    {
+        $this->assertInstanceOf('Xi\Filelib\Backend\IdentityMapHelper', $this->backend->getIdentityMapHelper());
+    }
+
 
     public function getMockedBackend($methods = array())
     {

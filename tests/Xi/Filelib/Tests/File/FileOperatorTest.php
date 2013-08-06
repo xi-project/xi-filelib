@@ -97,6 +97,41 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
+    public function uploadShouldFindRootFolderIfNoFolderIsSupplied()
+    {
+        $foop = $this->getMockedFolderOperator();
+        $filelib = $this->getMockedFilelib(null, null, $foop);
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+
+        $foop->expects($this->once())->method('findRoot')->will($this->returnValue($folder));
+
+        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
+        $profile = 'versioned';
+
+        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
+            ->setMethods(array('createCommand', 'getQueue'))
+            ->setConstructorArgs(array($filelib))
+            ->getMock();
+
+        $op->expects($this->never())->method('getQueue');
+
+        $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
+            ->setConstructorArgs(array($upload, $folder, $profile))
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $uploadCommand->expects($this->once())->method('execute');
+
+        $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
+
+        $op->upload($upload, null, $profile);
+
+    }
+
+
+    /**
+     * @test
+     */
     public function uploadShouldQueueUploadCommandWhenAynchronousStrategyIsUsed()
     {
         $filelib = $this->getMockedFilelib();
@@ -351,20 +386,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $files = $op->findAll();
 
         $this->assertSame($iter, $files);
-    }
-
-    /**
-     * @test
-     */
-    public function prepareUploadShouldReturnFileUpload()
-    {
-        $filelib = $this->getMockedFilelib();
-        $op = new FileOperator($filelib);
-
-        $upload = $op->prepareUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-
-        $this->assertInstanceOf('Xi\Filelib\File\Upload\FileUpload', $upload);
-
     }
 
     /**

@@ -104,7 +104,7 @@ class UploadFileCommand extends AbstractFileCommand
     public function execute()
     {
         if (!$this->upload instanceof FileUpload) {
-            $this->upload = $this->fileOperator->prepareUpload($this->upload);
+            $this->upload = new FileUpload($this->upload);
         }
 
         $upload = $this->upload;
@@ -173,7 +173,7 @@ class UploadFileCommand extends AbstractFileCommand
     public function serialize()
     {
         if (!$this->upload instanceof FileUpload) {
-            $this->upload = $this->fileOperator->prepareUpload($this->upload);
+            $this->upload = new FileUpload($this->upload);
         }
 
         $upload = $this->upload;

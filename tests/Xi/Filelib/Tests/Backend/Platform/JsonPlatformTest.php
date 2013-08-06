@@ -227,6 +227,7 @@ class JsonPlatformTest extends AbstractPlatformTestCase
                     'resource_id'   => '48a7011a05c677b9a9166104',
                     'data' => array(
                         'versions' => array(),
+                        'lipaiseppa' => 'ankkaa',
                     ),
                 ),
                 array(
@@ -255,6 +256,17 @@ class JsonPlatformTest extends AbstractPlatformTestCase
         }
         return $ret;
     }
+
+    /**
+     * @return array
+     */
+    public function dataPersistenceProvider()
+    {
+        return array(
+            array('49a7011a05c677b9a9166109', 'lipaiseppa', 'ankkaa')
+        );
+    }
+
 
     /**
      * @return array
@@ -541,4 +553,21 @@ class JsonPlatformTest extends AbstractPlatformTestCase
             )
         );
     }
+
+    /**
+     * @test
+     */
+    public function doingSomethingCreatesFileIfItDoesNotExist()
+    {
+        $path = ROOT_TESTS . '/data/temp/temp.json';
+
+        $platform = new JsonPlatform($path);
+        $this->assertFileNotExists($path);
+
+        $platform->deleteFile(File::create(array('id' => 'xooxoo')));
+
+        $this->assertFileExists($path);
+
+    }
+
 }

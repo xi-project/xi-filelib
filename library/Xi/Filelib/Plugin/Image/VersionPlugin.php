@@ -117,9 +117,4 @@ class VersionPlugin extends AbstractVersionProvider
     {
         return true;
     }
-
-    public function getTempDir()
-    {
-        return $this->tempDir;
-    }
 }

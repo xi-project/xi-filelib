@@ -370,15 +370,13 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException \Xi\Filelib\FilelibException
+     * @expectedException \Xi\Filelib\RuntimeException
      */
-    public function findRootShouldFailWhenRootFolderIsNotFound()
+    public function findRootShouldCreateRootWhenItIsNotFound()
     {
-        return $this->markTestIncomplete('Fix later');
-
         $backend = $this->getMockedBackend();
         $filelib = $this->getMockedFilelib();
-        $op = $this->getFolderOperatorWithMockedBackend($filelib, $backend);
+        $op = $this->getFolderOperatorWithMockedBackend($filelib, $backend, array('create'));
 
         $finder = new FolderFinder(
             array(
@@ -398,6 +396,14 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
             )
             ->will($this->returnValue($folders));
 
+        $expectedRoot = Folder::create(array('parent_id' => null, 'name' => 'root'));
+
+        $op
+            ->expects($this->once())
+            ->method('create')
+            ->with($this->equalTo($expectedRoot))
+            ->will($this->returnValue($folders));
+
         $folder = $op->findRoot();
     }
 
@@ -408,7 +414,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
     {
         $backend = $this->getMockedBackend();
         $filelib = $this->getMockedFilelib();
-        $op = $this->getFolderOperatorWithMockedBackend($filelib, $backend);
+        $op = $this->getFolderOperatorWithMockedBackend($filelib, $backend, array('createFolder'));
 
         $finder = new FolderFinder(
             array(
@@ -508,12 +514,17 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
      *
      * @return FileOperator
      */
-    protected function getFolderOperatorWithMockedBackend($filelib, $backend)
+    protected function getFolderOperatorWithMockedBackend($filelib, $backend, $extraMethods = array())
     {
+        $mergedMethods = array_merge(
+            array('getBackend'),
+            $extraMethods
+        );
+
         $fiop = $this
             ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
             ->setConstructorArgs(array($filelib))
-            ->setMethods(array('getBackend'))
+            ->setMethods($mergedMethods)
             ->getMock();
 
         $fiop->expects($this->any())->method('getBackend')->will($this->returnValue($backend));

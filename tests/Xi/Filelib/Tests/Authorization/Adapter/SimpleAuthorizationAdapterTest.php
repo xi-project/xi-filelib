@@ -38,6 +38,7 @@ class SimpleAuthorizationAdapterTest extends \Xi\Filelib\Tests\TestCase
         }
 
         $acl = new SimpleAuthorizationAdapter();
+        $acl->attachTo($this->getMockedFilelib());
         $this->assertTrue($acl->$getter($identifiable));
 
         $this->assertSame($acl, $acl->$setter(false));
