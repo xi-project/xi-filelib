@@ -191,7 +191,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getVersionProviderShouldReturnCorrectVersionProvider()
     {
-        $this->addMockedVersionsToFileProfile();
+        $versionProviders = $this->addMockedVersionsToFileProfile();
 
         $file = File::create(array(
             'resource' => Resource::create(array('mimetype' => 'video/lus'))
@@ -199,7 +199,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
         $vp = $this->fileProfile->getVersionProvider($file, 'globalizer');
 
-        $this->assertEquals('globalizer', $vp->getIdentifier());
+        $this->assertSame($versionProviders['global'], $vp);
     }
 
     private function addMockedVersionsToFileProfile()
@@ -230,6 +230,13 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->fileProfile->addPlugin($imageProvider);
         $this->fileProfile->addPlugin($videoProvider);
         $this->fileProfile->addPlugin($globalProvider);
+
+        return array(
+            'video' => $videoProvider,
+            'global' => $globalProvider,
+            'image' => $imageProvider
+        );
+
     }
 
     /**

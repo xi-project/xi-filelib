@@ -125,7 +125,7 @@ class FolderOperator extends AbstractOperator
         )->current();
 
         if (!$folder) {
-            $this->createRoot();
+            $folder = $this->createRoot();
         }
 
         if (!$folder) {
@@ -143,6 +143,8 @@ class FolderOperator extends AbstractOperator
         $folder = new Folder();
         $folder->setName('root');
         $this->create($folder);
+
+        return $folder;
     }
 
     /**

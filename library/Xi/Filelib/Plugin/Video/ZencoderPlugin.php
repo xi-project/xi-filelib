@@ -339,8 +339,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     private function getZencoderErrors(Services_Zencoder_Exception $exception)
     {
-        echo $e;
-
         $msgs = array();
         foreach ($exception->getErrors() as $error) {
             $msgs[] = (string) $error;

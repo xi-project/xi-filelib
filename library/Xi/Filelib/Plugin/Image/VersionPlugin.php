@@ -29,7 +29,7 @@ class VersionPlugin extends AbstractVersionProvider
     /**
      * @var string
      */
-    private $tempDir;
+    protected $tempDir;
 
     public function __construct(
         $identifier,
