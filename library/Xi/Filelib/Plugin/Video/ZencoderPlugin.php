@@ -193,6 +193,9 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     public function getExtensionFor(File $file, $version)
     {
+        if (preg_match("#thumbnail$#", $version)) {
+            return 'png';
+        }
         return $this->outputs[$version]['extension'];
     }
 
@@ -202,6 +205,18 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      * @return array
      */
     public function getVersions()
+    {
+        $versions = $this->getVideoVersions();
+        foreach ($versions as $version) {
+            $versions[] = $version . '_thumbnail';
+        }
+        return $versions;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getVideoVersions()
     {
         return array_keys($this->getOutputs());
     }
@@ -214,10 +229,9 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     public function createTemporaryVersions(File $file)
     {
         $s3 = $this->getAwsService();
-        $awsPath = $this->getAwsBucket() . '/' . uniqid('zen');
+        $awsPath = $this->getAwsBucket() . '/' . $file->getUuid();
 
         $retrieved = $this->getStorage()->retrieve($file->getResource());
-
         $s3->putFile($retrieved, $awsPath);
 
         $url = $s3->getEndpoint() . '/' . $awsPath;
@@ -229,8 +243,14 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             "outputs" => $this->getOutputsToZencoder()
         );
 
+        // var_dump($options);
+
+
+
         try {
             $job = $this->getService()->jobs->create($options);
+
+            var_dump($job);
 
             $this->waitUntilJobFinished($job);
 
@@ -257,11 +277,13 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     protected function fetchOutputs(Job $job)
     {
-        $tmps = array();
-        foreach ($this->getVersions() as $version) {
-            $tmps[$version] = $this->fetchOutput($job, $version);
-        }
 
+        $tmps = array();
+        foreach ($this->getVideoVersions() as $version) {
+            $raw = $this->fetchOutput($job, $version);
+            $tmps[$version] = $raw[0];
+            $tmps[$version . '_thumbnail'] = $raw[1];
+        }
         return $tmps;
     }
 
@@ -270,17 +292,27 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      *
      * @param  Job    $job     Zencoder Job
      * @param  string $version Version identifier
-     * @return string Temporary filename
+     * @return array Temporary filenames for video and its thumb
      */
     protected function fetchOutput(Job $job, $version)
     {
         $tempnam = tempnam($this->tempDir, 'zen');
+        $thumbnam = tempnam($this->tempDir, 'zen');
+
         $output = $job->outputs[$version];
         $details = $this->getService()->outputs->details($output->id);
 
+        var_dump($details);
+
         file_put_contents($tempnam, file_get_contents($details->url));
 
-        return $tempnam;
+        $thumb = array_shift($details->thumbnails[0]->images);
+        file_put_contents($thumbnam, file_get_contents($thumb->url));
+
+        return array(
+            $tempnam,
+            $thumbnam
+        );
     }
 
     public function setOutputs($outputs)
@@ -298,11 +330,21 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         return array_values(
             array_map(
                 function ($output) {
+
+                    $output['output']['thumbnails'] = array(array(
+                        'label' => "{$output['output']['label']}-thumbnail",
+                        "filename" => "{$output['output']['label']}-{{number}}-thumbnail",
+                        'format' => 'png',
+                        'start_at_first_frame' => true,
+                        'number' => 1,
+                    ));
+
                     return $output['output'];
                 },
                 $this->getOutputs()
             )
         );
+
     }
 
     public function isSharedResourceAllowed()
@@ -321,7 +363,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             $done = 0;
             sleep($this->getSleepyTime());
 
-            foreach ($this->getVersions() as $label) {
+            foreach ($this->getVideoVersions() as $label) {
                 $output = $job->outputs[$label];
                 $progress = $this->getService()->outputs->progress($output->id);
 
@@ -330,7 +372,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
                 }
             }
 
-        } while ($done < count($this->getVersions()));
+        } while ($done < count($this->getVideoVersions()));
     }
 
     /**

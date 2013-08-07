@@ -16,6 +16,13 @@ $id = $_GET['id'];
 
 $file = $filelib->getFileOperator()->find($id);
 
+if ($file->getStatus() == File::STATUS_COMPLETED) {
+    if (!$publisher->isPublished($file)) {
+        $publisher->publish($file);
+    }
+}
+
+
 ?>
 
 <html>
@@ -23,6 +30,17 @@ $file = $filelib->getFileOperator()->find($id);
     <title>Funny Joonas</title>
 </head>
 <body>
+
+<pre>
+    <?php
+    var_dump($file);
+
+    var_dump($file->getVersions());
+
+    var_dump($file->getResource()->getVersions());
+
+    ?>
+</pre>
 
 <h1>Funny Joonas video</h1>
 
@@ -33,7 +51,7 @@ $file = $filelib->getFileOperator()->find($id);
     When the video is processed Joonas will appear. Ta da!
 </p>
 
-<video controls>
+<video poster="<?php echo $publisher->getUrlVersion($file, '720p_webm_thumbnail'); ?>" controls=true>
     <source src="<?php echo $publisher->getUrlVersion($file, '720p_webm'); ?>" type='video/webm; codecs="vp8.0, vorbis"'/>
     <source src="<?php echo $publisher->getUrlVersion($file, '720p_ogv'); ?>" type='video/ogg; codecs="theora, vorbis"'/>
     <p>Oh noes, video not playable!</p>

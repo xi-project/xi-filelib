@@ -25,6 +25,9 @@ use Xi\Filelib\Events as CoreEvents;
  */
 class Publisher implements EventSubscriberInterface
 {
+    /**
+     * @var FileOperator
+     */
     private $fileOperator;
 
     /**
