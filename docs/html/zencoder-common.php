@@ -29,7 +29,13 @@ $zencoderPlugin = new ZencoderPlugin(
                 'keyframe_interval' => 50,
                 'audio_bitrate' => 224,
                 'audio_channels' => 2,
-                'audio_sample_rate' => 44100
+                'audio_sample_rate' => 44100,
+                'watermarks' => array(
+                    'url' => 's3://puuppafilelibzencoder/watermark.png',
+                    'height' => 19,
+                    'x' => -10,
+                    'y' => -10
+                )
             )
         ),
         '720p_ogv' => array(
@@ -47,7 +53,13 @@ $zencoderPlugin = new ZencoderPlugin(
                 'keyframe_interval' => 50,
                 'audio_bitrate' => 224,
                 'audio_channels' => 2,
-                'audio_sample_rate' => 44100
+                'audio_sample_rate' => 44100,
+                'watermarks' => array(
+                    'url' => 's3://puuppafilelibzencoder/watermark.png',
+                    'height' => 36,
+                    'x' => -10,
+                    'y' => -10
+                )
             )
         ),
     )

@@ -46,20 +46,6 @@ class WatermarkCommand extends AbstractCommand
         $this->padding = $padding;
     }
 
-
-    /**
-     * Sets watermark image
-     *
-     * @param  string           $image
-     * @return WatermarkCommand
-     */
-    public function setWatermarkImage($image)
-    {
-        $this->image = $image;
-
-        return $this;
-    }
-
     /**
      * Returns watermark image
      *
@@ -93,7 +79,6 @@ class WatermarkCommand extends AbstractCommand
         }
 
         $this->position = $position;
-
         return $this;
     }
 
@@ -105,19 +90,6 @@ class WatermarkCommand extends AbstractCommand
     public function getWatermarkPosition()
     {
         return $this->position;
-    }
-
-    /**
-     * Sets padding for watermark image (in pixels)
-     *
-     * @param  int              $padding
-     * @return WatermarkCommand
-     */
-    public function setWatermarkPadding($padding)
-    {
-        $this->padding = $padding;
-
-        return $this;
     }
 
     /**

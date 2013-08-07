@@ -21,7 +21,7 @@ class ExecuteMethodCommandTest extends TestCase
     /**
      * @test
      */
-    public function gettersShouldWorkAsExpected()
+    public function gettersAndSettersShouldWorkAsExpected()
     {
         $command = new ExecuteMethodCommand('lussenhof');
 
@@ -35,6 +35,12 @@ class ExecuteMethodCommandTest extends TestCase
         $command = new ExecuteMethodCommand('cronsumera', array('mera', 'banana'));
         $this->assertSame('cronsumera', $command->getMethod());
         $this->assertEquals(array('mera', 'banana'), $command->getParameters());
+
+        $command->setMethod('lussutera');
+        $command->setParameters(array('grande', 'lusso'));
+
+        $this->assertSame('lussutera', $command->getMethod());
+        $this->assertSame(array('grande', 'lusso'), $command->getParameters());
     }
 
     /**

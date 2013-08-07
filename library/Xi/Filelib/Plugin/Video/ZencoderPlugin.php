@@ -243,14 +243,8 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
             "outputs" => $this->getOutputsToZencoder()
         );
 
-        // var_dump($options);
-
-
-
         try {
             $job = $this->getService()->jobs->create($options);
-
-            var_dump($job);
 
             $this->waitUntilJobFinished($job);
 
@@ -277,7 +271,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     protected function fetchOutputs(Job $job)
     {
-
         $tmps = array();
         foreach ($this->getVideoVersions() as $version) {
             $raw = $this->fetchOutput($job, $version);
@@ -301,8 +294,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
         $output = $job->outputs[$version];
         $details = $this->getService()->outputs->details($output->id);
-
-        var_dump($details);
 
         file_put_contents($tempnam, file_get_contents($details->url));
 
