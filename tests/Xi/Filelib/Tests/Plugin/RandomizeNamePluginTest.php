@@ -136,6 +136,8 @@ class RandomizeNamePluginTest extends TestCase
     public function beforeUploadShouldPrefixRandomizedName($prefix)
     {
         $plugin = new RandomizeNamePlugin($prefix);
+        $plugin->attachTo($this->getMockedFilelib());
+
         $plugin->setProfiles(array('tussi'));
 
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');

@@ -122,4 +122,22 @@ class ImageMagickHelperTest extends TestCase
         $this->assertCount(4, $helper->getCommands());
     }
 
+    /**
+     * @test
+     */
+    public function replacementOfCommandsShouldWork()
+    {
+        $first = new ExecuteMethodCommand('setLusso');
+        $second = new ExecuteMethodCommand('setGranLusso');
+        $third = new ExecuteMethodCommand('setAstroLusso');
+
+        $helper = new ImageMagickHelper(array($first, $second));
+
+        $this->assertSame($second, $helper->getCommand(1));
+
+        $helper->setCommand(1, $third);
+
+        $this->assertSame($third, $helper->getCommand(1));
+        $this->assertCount(2, $helper->getCommands());
+    }
 }

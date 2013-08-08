@@ -128,16 +128,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     }
 
     /**
-     * Returns file types which the version plugin provides version for.
-     *
-     * @return array
-     */
-    public function getProvidesFor()
-    {
-        return $this->providesFor;
-    }
-
-    /**
      * Returns whether the plugin provides a version for a file.
      *
      * @param  File    $file File item
@@ -242,9 +232,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
         $fileObj = new FileObject($retrieved);
         $extensions = MimeType::mimeTypeToExtensions($fileObj->getMimeType());
-        if (!count($extensions)) {
-            throw new RuntimeException("Failed to find an extension for mime type '{$fileObj->getMimeType()}'");
-        }
 
         $ret = array_shift($extensions);
         return $this->doExtensionReplacement($ret);

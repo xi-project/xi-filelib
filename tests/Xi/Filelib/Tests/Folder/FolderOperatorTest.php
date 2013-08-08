@@ -370,7 +370,6 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException \Xi\Filelib\RuntimeException
      */
     public function findRootShouldCreateRootWhenItIsNotFound()
     {
@@ -402,7 +401,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('create')
             ->with($this->equalTo($expectedRoot))
-            ->will($this->returnValue($folders));
+            ->will($this->returnValue(false));
 
         $folder = $op->findRoot();
     }

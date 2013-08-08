@@ -100,7 +100,7 @@ class FileOperator extends AbstractOperator
     /**
      * Returns all file profiles
      *
-     * @return array Array of file profiles
+     * @return FileProfile[] Array of file profiles
      */
     public function getProfiles()
     {

@@ -73,6 +73,7 @@ class AutomaticPublisherPlugin extends AbstractPlugin
     public function doUnPublishAndPublish(FileEvent $event)
     {
         $file = $event->getFile();
+
         $this->publisher->unpublish($file);
         $this->publisher->publish($file);
     }
