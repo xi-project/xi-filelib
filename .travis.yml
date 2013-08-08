@@ -32,6 +32,11 @@ before_script:
   - tar -xzf translit-0.6.1.tgz
   - sh -c "cd translit-0.6.1 && phpize && ./configure --with-imagick=/usr/local && make && sudo make install"
   - echo "extension=translit.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - sudo apt-get install -y librabbitmq-dev
+  - wget http://pecl.php.net/get/amqp-1.0.10.tgz
+  - tar -xzf amqp-1.0.10.tgz
+  - sh -c "cd amqp-1.0.10 && phpize && ./configure && make && sudo make install"
+  - echo "extension=amqp.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 script: cd tests && phpunit -v --configuration travis/$DB.travis.xml
 
