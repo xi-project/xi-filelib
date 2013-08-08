@@ -19,12 +19,14 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Events as CoreEvents;
 
 /**
- * Class Publisher
+ * Publisher
  *
- * @todo: Event dispatching?
  */
 class Publisher implements EventSubscriberInterface
 {
+    /**
+     * @var FileOperator
+     */
     private $fileOperator;
 
     /**
@@ -42,12 +44,19 @@ class Publisher implements EventSubscriberInterface
      */
     private $eventDispatcher;
 
+    /**
+     * @param PublisherAdapter $adapter
+     * @param Linker $linker
+     */
     public function __construct(PublisherAdapter $adapter, Linker $linker)
     {
         $this->adapter = $adapter;
         $this->linker = $linker;
     }
 
+    /**
+     * @param FileLibrary $filelib
+     */
     public function attachTo(FileLibrary $filelib)
     {
         $this->fileOperator = $filelib->getFileOperator();
@@ -75,6 +84,9 @@ class Publisher implements EventSubscriberInterface
         return $this->fileOperator->getVersionProvider($file, $version);
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return array(
@@ -103,7 +115,9 @@ class Publisher implements EventSubscriberInterface
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_PUBLISH, $event);
     }
 
-
+    /**
+     * @param File $file
+     */
     public function unpublish(File $file)
     {
         $event = new FileEvent($file);
@@ -122,6 +136,10 @@ class Publisher implements EventSubscriberInterface
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
     }
 
+    /**
+     * @param File $file
+     * @return bool
+     */
     public function isPublished(File $file)
     {
         $data = $file->getData();
@@ -131,7 +149,11 @@ class Publisher implements EventSubscriberInterface
         return false;
     }
 
-
+    /**
+     * @param File $file
+     * @param string $version
+     * @return string
+     */
     public function getUrlVersion(File $file, $version)
     {
         return $this->adapter->getUrlVersion(

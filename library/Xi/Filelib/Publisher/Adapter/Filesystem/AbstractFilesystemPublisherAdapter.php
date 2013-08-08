@@ -13,8 +13,7 @@ use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\Linker;
-use Xi\Filelib\LogicException;
-use SplFileInfo;
+use Xi\Filelib\InvalidArgumentException;
 
 /**
  * Abstract filesystem publisher convenience class
@@ -46,12 +45,8 @@ abstract class AbstractFilesystemPublisherAdapter implements PublisherAdapter
 
     public function __construct($publicRoot, $filePermission = "600", $directoryPermission = "700", $baseUrl = '')
     {
-        $dir = new SplFileInfo($publicRoot);
-        if (!$dir->isDir()) {
-            throw new LogicException("Directory '{$publicRoot}' does not exist");
-        }
-        if (!$dir->isWritable()) {
-            throw new LogicException("Directory '{$publicRoot}' is not writeable");
+        if (!is_writable($publicRoot)) {
+            throw new InvalidArgumentException("Directory '{$publicRoot}' is not writeable");
         }
 
         $this->publicRoot = $publicRoot;

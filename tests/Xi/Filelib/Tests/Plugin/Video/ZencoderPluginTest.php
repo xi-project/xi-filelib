@@ -13,6 +13,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Events;
+use Xi\Filelib\FileLibrary;
 
 /**
  * @group plugin
@@ -188,6 +189,9 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals('lussen', $this->plugin->getExtensionFor($file, 'pygmi'));
         $this->assertEquals('dorfer', $this->plugin->getExtensionFor($file, 'watussi'));
+
+        $this->assertEquals('png', $this->plugin->getExtensionFor($file, 'watussi_thumbnail'));
+
     }
 
     /**
@@ -195,8 +199,47 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getVersionsShouldReturnCorrectVersions()
     {
-        $this->assertEquals(array('pygmi', 'watussi'), $this->plugin->getVersions());
+        $this->assertEquals(
+            array('pygmi', 'watussi', 'pygmi_thumbnail', 'watussi_thumbnail'),
+            $this->plugin->getVersions()
+        );
     }
+
+
+    public function provideMimetypes()
+    {
+        return array(
+            array(false, 'image/png'),
+            array(true, 'video/ogg'),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideMimetypes
+     */
+    public function shouldProvideForVideo($expected, $mimetype)
+    {
+        $file = File::create(
+            array(
+                'profile' => 'default',
+                'resource' => Resource::create(
+                    array(
+                        'mimetype' => $mimetype
+                    )
+                )
+            )
+        );
+
+        $filelib = new FileLibrary(
+            $this->getMockedStorage(),
+            $this->getMockedPlatform()
+        );
+        $filelib->addPlugin($this->plugin);
+
+        $this->assertSame($expected, $this->plugin->providesFor($file));
+    }
+
 
     /**
      * @test
@@ -258,9 +301,11 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         $ret = $this->plugin->createTemporaryVersions($file);
 
         $this->assertInternalType('array', $ret);
-        $this->assertCount(2, $ret);
+        $this->assertCount(4, $ret);
         $this->assertArrayHasKey('pygmi', $ret);
         $this->assertArrayHasKey('watussi', $ret);
+        $this->assertArrayHasKey('pygmi_thumbnail', $ret);
+        $this->assertArrayHasKey('watussi_thumbnail', $ret);
     }
 
     private function setupStubsForZencoderService()
@@ -312,20 +357,15 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             ->with($this->equalTo(1))
             ->will($this->returnValue($progressFinished));
 
-        $details = $this->getMockBuilder('Services_Zencoder_Output')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $details->url = ROOT_TESTS . '/data/hauska-joonas.mp4';
-
         $this->zencoderService->outputs->expects($this->at(4))
             ->method('details')
             ->with($this->equalTo(2))
-            ->will($this->returnValue($details));
+            ->will($this->returnValue($this->getDetails()));
 
         $this->zencoderService->outputs->expects($this->at(5))
             ->method('details')
             ->with($this->equalTo(1))
-            ->will($this->returnValue($details));
+            ->will($this->returnValue($this->getDetails()));
     }
 
     /**
@@ -400,4 +440,25 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         $this->assertArrayHasKey(Events::FILE_AFTER_DELETE, $events);
         $this->assertArrayHasKey(Events::RESOURCE_AFTER_DELETE, $events);
     }
+
+    private function getDetails()
+    {
+        $details = $this->getMockBuilder('Services_Zencoder_Output')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $details->url = ROOT_TESTS . '/data/hauska-joonas.mp4';
+
+        $thumbs = new stdClass;
+        $thumbs->url = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+
+        $images = new stdClass;
+        $images->images = array($thumbs);
+
+        $details->thumbnails = array(
+            $images
+        );
+
+        return $details;
+    }
+
 }

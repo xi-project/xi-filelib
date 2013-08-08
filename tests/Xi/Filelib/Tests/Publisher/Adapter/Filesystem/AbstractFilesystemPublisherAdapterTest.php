@@ -45,6 +45,18 @@ class AbstractFilesystemPublisherAdapterTest extends TestCase
     /**
      * @test
      */
+    public function shouldThrowupIfRootDirNotWritable()
+    {
+        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
+
+        $invalidRoot = ROOT_TESTS . '/data/illusive_directory';
+
+        $publisher = $this->getMockedAdapter($invalidRoot);
+    }
+
+    /**
+     * @test
+     */
     public function shouldInitializeCorrectlyWithDefaults()
     {
         $publicRoot = ROOT_TESTS . '/data/publisher/public';

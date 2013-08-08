@@ -74,10 +74,6 @@ abstract class AbstractStorage implements Storage
 
     public function store(Resource $resource, $tempFile)
     {
-        if (!is_string($tempFile)) {
-            throw new InvalidArgumentException("Invalid tempfile in store()");
-        }
-
         try {
             return $this->doStore($resource, $tempFile);
         } catch (\Exception $e) {
@@ -87,10 +83,6 @@ abstract class AbstractStorage implements Storage
 
     public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
     {
-        if (!is_string($tempFile)) {
-            throw new InvalidArgumentException("Invalid tempfile in storeVersion()");
-        }
-
         try {
             return $this->doStoreVersion($resource, $version, $tempFile, $file);
         } catch (\Exception $e) {

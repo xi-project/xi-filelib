@@ -127,11 +127,6 @@ class FolderOperator extends AbstractOperator
         if (!$folder) {
             $folder = $this->createRoot();
         }
-
-        if (!$folder) {
-            throw new RuntimeException('Could not locate root folder', 500);
-        }
-
         return $folder;
     }
 

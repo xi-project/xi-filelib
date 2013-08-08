@@ -4,7 +4,8 @@ use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
 use Xi\Filelib\Publisher\Linker\CreationTimeLinker;
-use Xi\Filelib\Publisher\AutomaticPublisherPlugin;
+use Xi\Filelib\Authorization\AutomaticPublisherPlugin;
+use Xi\Filelib\Authorization\Adapter\SimpleAuthorizationAdapter;
 
 $zencoderPlugin = new ZencoderPlugin(
     'zencoder',
@@ -28,7 +29,13 @@ $zencoderPlugin = new ZencoderPlugin(
                 'keyframe_interval' => 50,
                 'audio_bitrate' => 224,
                 'audio_channels' => 2,
-                'audio_sample_rate' => 44100
+                'audio_sample_rate' => 44100,
+                'watermarks' => array(
+                    'url' => 's3://puuppafilelibzencoder/watermark.png',
+                    'height' => 19,
+                    'x' => -10,
+                    'y' => -10
+                )
             )
         ),
         '720p_ogv' => array(
@@ -46,7 +53,13 @@ $zencoderPlugin = new ZencoderPlugin(
                 'keyframe_interval' => 50,
                 'audio_bitrate' => 224,
                 'audio_channels' => 2,
-                'audio_sample_rate' => 44100
+                'audio_sample_rate' => 44100,
+                'watermarks' => array(
+                    'url' => 's3://puuppafilelibzencoder/watermark.png',
+                    'height' => 36,
+                    'x' => -10,
+                    'y' => -10
+                )
             )
         ),
     )
@@ -59,6 +72,6 @@ $publisher = new Publisher(
 );
 $publisher->attachTo($filelib);
 
-$automaticPublisherPlugin = new AutomaticPublisherPlugin($publisher);
-$filelib->addPlugin($automaticPublisherPlugin);
+// $automaticPublisherPlugin = new AutomaticPublisherPlugin($publisher, new SimpleAuthorizationAdapter());
+// $filelib->addPlugin($automaticPublisherPlugin);
 

@@ -37,6 +37,16 @@ class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
+    public function getFilelibShouldReturnFilelib()
+    {
+        $processor = new QueueProcessor($this->filelib);
+        $this->assertSame($this->filelib, $processor->getFilelib());
+    }
+
+
+    /**
+     * @test
+     */
     public function classShouldExists()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Queue\QueueProcessor'));

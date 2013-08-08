@@ -42,19 +42,22 @@ class CreationTimeLinker implements Linker
     }
 
     /**
-     * Returns link for a version of a file
-     *
-     * @param  File   $file
-     * @param  string $version   Version identifier
-     * @param  string $extension Extension
-     * @return string Versioned link
+     * @param File $file
+     * @param string $version
+     * @param string $extension
+     * @return string
      */
     public function getLink(File $file, $version, $extension)
     {
-        return $file->getDateCreated()->format($this->getFormat())
-            . '/' . $file->getName() . '-' . $version . '.' . $extension;
+        $pinfo = pathinfo($file->getName());
+
+        return $file->getDateCreated()->format($this->getFormat()) . '/' . $pinfo['filename']
+           . '-' . $version . '.' . $extension;
     }
 
+    /**
+     * @param FileLibrary $filelib
+     */
     public function attachTo(FileLibrary $filelib)
     {
 

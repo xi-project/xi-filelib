@@ -69,8 +69,20 @@ class AbstractPluginTest extends TestCase
         $this->assertTrue($plugin->hasProfile('watussi'));
     }
 
+    /**
+     * @test
+     */
+    public function setProfileResolverExpectsCallable()
+    {
+        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
 
+        $plugin = $this
+            ->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+            ->setMethods(array())
+            ->getMockForAbstractClass();
 
+        $plugin->setHasProfileResolver('libaiseb le tussi');
+    }
 
     /**
      * @test

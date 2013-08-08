@@ -116,6 +116,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $levels, $fpd, $beautifurl)
     {
         $linker = new SequentialLinker($levels, $fpd);
+        $linker->attachTo($this->getMockedFilelib());
 
         $this->assertEquals(
             $beautifurl[1],

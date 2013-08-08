@@ -50,7 +50,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
     {
         $this->storage = $filelib->getStorage();
         if (!$this->storage instanceof FilesystemStorage) {
-            throw new InvalidArgumentException("Invalid storage");
+            throw new InvalidArgumentException("Symlink filesystem publisher requires filesystem storage");
         }
     }
 
