@@ -26,6 +26,22 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
 
     /**
      * @test
+     */
+    public function attachToShouldFailWithNonFilesystemStorage()
+    {
+        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
+
+        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $filelib = $this->getMockedFilelib(null, null, null, $storage);
+        $publisher = new SymlinkFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
+
+        $publisher->attachTo($filelib);
+
+    }
+
+
+    /**
+     * @test
      * @expectedException Xi\Filelib\FilelibException
      */
     public function getRelativePathToVersionShouldFailWhenRelativePathToRootIsMissing()

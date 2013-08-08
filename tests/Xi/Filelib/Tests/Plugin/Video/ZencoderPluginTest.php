@@ -13,6 +13,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Events;
+use Xi\Filelib\FileLibrary;
 
 /**
  * @group plugin
@@ -203,6 +204,42 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             $this->plugin->getVersions()
         );
     }
+
+
+    public function provideMimetypes()
+    {
+        return array(
+            array(false, 'image/png'),
+            array(true, 'video/ogg'),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideMimetypes
+     */
+    public function shouldProvideForVideo($expected, $mimetype)
+    {
+        $file = File::create(
+            array(
+                'profile' => 'default',
+                'resource' => Resource::create(
+                    array(
+                        'mimetype' => $mimetype
+                    )
+                )
+            )
+        );
+
+        $filelib = new FileLibrary(
+            $this->getMockedStorage(),
+            $this->getMockedPlatform()
+        );
+        $filelib->addPlugin($this->plugin);
+
+        $this->assertSame($expected, $this->plugin->providesFor($file));
+    }
+
 
     /**
      * @test

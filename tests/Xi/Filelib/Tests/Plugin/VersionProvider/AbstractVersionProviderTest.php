@@ -454,4 +454,39 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->plugin->onResourceDelete($event);
     }
+
+    public function provideFiles()
+    {
+        return array(
+            array('jpg', ROOT_TESTS . '/data/self-lussing-manatee.jpeg'),
+            array('jpg', ROOT_TESTS . '/data/self-lussing-manatee.jpg'),
+            array('png', ROOT_TESTS . '/data/dporssi-screenshot.png'),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideFiles
+     */
+    public function getExtensionForShouldQueryExtensionAndReplaceFugly($expected, $filename)
+    {
+        $this->plugin->attachTo($this->filelib);
+
+        $resource = Resource::create();
+        $file = File::create(array('resource' => $resource));
+
+        $this->plugin
+            ->expects($this->atLeastOnce())
+            ->method('areSharedVersionsAllowed')
+            ->will($this->returnValue(true));
+
+        $this->storage
+            ->expects($this->once())
+            ->method('retrieveVersion')
+            ->with($resource, 'xoox')
+            ->will($this->returnValue($filename));
+
+        $extension = $this->plugin->getExtensionFor($file, 'xoox');
+        $this->assertSame($expected, $extension);
+    }
 }
