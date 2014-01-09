@@ -115,7 +115,7 @@ class DoctrineDbalPlatform implements Platform
     public function deleteFile(File $file)
     {
         $stmt = $this->conn->prepare($sql = "DELETE FROM xi_filelib_file WHERE id = ?");
-        $stmt->execute([$file->getId()]);
+        $stmt->execute(array($file->getId()));
 
         return (bool) $stmt->rowCount();
     }
@@ -198,7 +198,7 @@ class DoctrineDbalPlatform implements Platform
     public function deleteFolder(Folder $folder)
     {
         $stmt = $this->conn->prepare($sql = "DELETE FROM xi_filelib_folder WHERE id = ?");
-        $stmt->execute([$folder->getId()]);
+        $stmt->execute(array(($folder->getId()));
 
         return (bool) $stmt->rowCount();
     }
@@ -209,7 +209,7 @@ class DoctrineDbalPlatform implements Platform
     public function deleteResource(Resource $resource)
     {
         $stmt = $this->conn->prepare($sql = "DELETE FROM xi_filelib_resource WHERE id = ?");
-        $stmt->execute([$resource->getId()]);
+        $stmt->execute(array($resource->getId()));
 
         return (bool) $stmt->rowCount();
     }
