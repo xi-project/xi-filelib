@@ -77,6 +77,4 @@ class AutomaticPublisherPlugin extends AbstractPlugin
         $this->publisher->unpublish($file);
         $this->publisher->publish($file);
     }
-
-
 }
