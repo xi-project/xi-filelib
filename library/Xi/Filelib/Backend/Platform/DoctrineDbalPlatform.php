@@ -21,7 +21,8 @@ use Iterator;
 use DateTime;
 
 /**
- * Doctrine Dbal backend for filelib
+ * Doctrine Dbal backend for filelib. Only supports postgresql and mysql because of portability stuff.
+ * Strongly suggest you use the ORM version because it is much more portable.
  */
 class DoctrineDbalPlatform implements Platform
 {
@@ -84,7 +85,8 @@ class DoctrineDbalPlatform implements Platform
     {
         $sql = "
         UPDATE xi_filelib_file
-        SET folder_id = :folderId, fileprofile = :profile, filename = :name, date_created = :dateCreated, status = :status, uuid = :uuid, resource_id = :resourceId, data = :data
+        SET folder_id = :folderId, fileprofile = :profile, filename = :name, date_created = :dateCreated,
+        status = :status,uuid = :uuid, resource_id = :resourceId, data = :data
         WHERE id = :id
         ";
 
@@ -126,7 +128,10 @@ class DoctrineDbalPlatform implements Platform
         $this->conn->insert(
             'xi_filelib_folder',
             array(
-                'id' => ($this->conn->getDatabasePlatform()->getName() == 'mysql') ? null : $this->conn->fetchColumn($this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_folder_id_seq')),
+                'id' => ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
+                    null : $this->conn->fetchColumn(
+                        $this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_folder_id_seq')
+                    ),
                 'parent_id' => $folder->getParentId(),
                 'foldername' => $folder->getName(),
                 'folderurl' => $folder->getUrl(),
@@ -217,7 +222,10 @@ class DoctrineDbalPlatform implements Platform
         $this->conn->insert(
             'xi_filelib_resource',
             array(
-                'id' => ($this->conn->getDatabasePlatform()->getName() == 'mysql') ? null : $this->conn->fetchColumn($this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_resource_id_seq')),
+                'id' => ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
+                    null : $this->conn->fetchColumn(
+                        $this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_resource_id_seq')
+                    ),
                 'hash' => $resource->getHash(),
                 'date_created' => $resource->getDateCreated()->format('Y-m-d H:i:s'),
                 'mimetype' => $resource->getMimetype(),
@@ -249,7 +257,10 @@ class DoctrineDbalPlatform implements Platform
         $this->conn->insert(
             'xi_filelib_file',
             array(
-                'id' => ($this->conn->getDatabasePlatform()->getName() == 'mysql') ? null : $this->conn->fetchColumn($this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_file_id_seq')),
+                'id' => ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
+                    null : $this->conn->fetchColumn(
+                        $this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_file_id_seq')
+                    ),
                 'folder_id' => $folder->getId(),
                 'fileprofile' => $file->getProfile(),
                 'filename' => $file->getName(),
@@ -447,5 +458,4 @@ class DoctrineDbalPlatform implements Platform
     {
         return in_array($platform->getName(), $this->supportedPlatforms);
     }
-
 }
