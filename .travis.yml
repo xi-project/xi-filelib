@@ -19,7 +19,7 @@ before_script:
   - pyrus install -o pear.phpunit.de/PHPUnit
   - pyrus install -o pear.phpunit.de/DbUnit
   - phpenv rehash
-  - wget http://pecl.php.net/get/mongo-1.4.2.tgz
+  - wget http://pecl.php.net/get/mongo-1.4.5.tgz
   - tar -xzf mongo-1.4.5.tgz
   - sh -c "cd mongo-1.4.5 && phpize && ./configure --enable-mongo && make && sudo make install"
   - echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
