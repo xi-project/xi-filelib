@@ -33,7 +33,7 @@ class AcceleratedRendererTest extends RendererTest
     /**
      * @return
      */
-    public function  shouldSetupAcceleratedResponseCorrectly()
+    public function  shouldSetupAccelerationCorrectly()
     {
         $this->renderer->enableAcceleration(true);
     }
@@ -108,7 +108,7 @@ class AcceleratedRendererTest extends RendererTest
      * @test
      * @dataProvider provideAcceleratedOptions
      */
-    public function shouldSetupResponseCorrectly
+    public function shouldSetupAcceleratedResponseCorrectly
     (
         $download,
         $enableAcceleration,

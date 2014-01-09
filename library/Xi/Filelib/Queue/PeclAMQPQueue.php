@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Queue;
 
+use Xi\Filelib\Tool\ExtensionRequirements;
 use AMQPConnection;
 use AMQPChannel;
 use AMQPExchange;
@@ -30,6 +31,8 @@ class PeclAMQPQueue implements Queue
 
     public function __construct($host, $port, $login, $password, $vhost, $exchangeName, $queueName)
     {
+        ExtensionRequirements::requireVersion('amqp', '1.2.0');
+
         $conn = new AMQPConnection(
             array(
                 'host' => $host,
@@ -48,12 +51,12 @@ class PeclAMQPQueue implements Queue
         $exchange->setName($exchangeName);
         $exchange->setType(AMQP_EX_TYPE_DIRECT);
         $exchange->setFlags(AMQP_DURABLE);
-        $exchange->declare();
+        $exchange->declareExchange();
 
         $queue = new AMQPQueue($channel);
         $queue->setName($queueName);
         $queue->setFlags(AMQP_DURABLE);
-        $queue->declare();
+        $queue->declareQueue();
         $queue->bind($exchangeName, 'xi_filelib');
 
         $this->conn = $conn;
