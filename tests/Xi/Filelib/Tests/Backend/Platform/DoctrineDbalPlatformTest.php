@@ -5,6 +5,9 @@ namespace Xi\Filelib\Tests\Backend\Platform;
 use Xi\Filelib\Backend\Platform\DoctrineDbalPlatform;
 use Doctrine\DBAL\DriverManager;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 class DoctrineDbalPlatformTest extends RelationalDbTestCase
 {
 
@@ -23,5 +26,20 @@ class DoctrineDbalPlatformTest extends RelationalDbTestCase
             )
         );
         return new DoctrineDbalPlatform($conn);
+    }
+
+    /**
+     * @test
+     */
+    public function failsWhenPlatformIsNotSupported()
+    {
+        $this->setExpectedException('RuntimeException');
+
+        $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')->disableOriginalConstructor()->getMock();
+        $platform = $this->getMockBuilder('Doctrine\DBAL\Platforms\AbstractPlatform')->getMockForAbstractClass();
+
+        $conn->expects($this->any())->method('getDatabasePlatform')->will($this->returnValue($platform));
+
+        $p = new DoctrineDbalPlatform($conn);
     }
 }
