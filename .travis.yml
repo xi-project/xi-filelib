@@ -19,23 +19,23 @@ before_script:
   - pyrus install -o pear.phpunit.de/PHPUnit
   - pyrus install -o pear.phpunit.de/DbUnit
   - phpenv rehash
-  - wget http://pecl.php.net/get/mongo-1.4.2.tgz
-  - tar -xzf mongo-1.4.2.tgz
-  - sh -c "cd mongo-1.4.2 && phpize && ./configure --enable-mongo && make && sudo make install"
+  - wget http://pecl.php.net/get/mongo-1.4.5.tgz
+  - tar -xzf mongo-1.4.5.tgz
+  - sh -c "cd mongo-1.4.5 && phpize && ./configure --enable-mongo && make && sudo make install"
   - echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - sudo apt-get install -y imagemagick libtiff-dev libjpeg-dev libdjvulibre-dev libwmf-dev libmagickcore-dev libmagickwand-dev
-  - wget http://pecl.php.net/get/imagick-3.1.0RC2.tgz
-  - tar -xzf imagick-3.1.0RC2.tgz
-  - sh -c "cd imagick-3.1.0RC2 && phpize && ./configure --with-imagick=/usr/local && make && sudo make install"
+  - wget http://pecl.php.net/get/imagick-3.1.2.tgz
+  - tar -xzf imagick-3.1.2.tgz
+  - sh -c "cd imagick-3.1.2 && phpize && ./configure --with-imagick=/usr/local && make && sudo make install"
   - echo "extension=imagick.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - wget http://pecl.php.net/get/translit-0.6.1.tgz
   - tar -xzf translit-0.6.1.tgz
   - sh -c "cd translit-0.6.1 && phpize && ./configure --with-imagick=/usr/local && make && sudo make install"
   - echo "extension=translit.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - sudo apt-get install -y librabbitmq-dev
-  - wget http://pecl.php.net/get/amqp-1.0.10.tgz
-  - tar -xzf amqp-1.0.10.tgz
-  - sh -c "cd amqp-1.0.10 && phpize && ./configure && make && sudo make install"
+  - wget http://pecl.php.net/get/amqp-1.2.0.tgz
+  - tar -xzf amqp-1.2.0.tgz
+  - sh -c "cd amqp-1.2.0 && phpize && ./configure && make && sudo make install"
   - echo "extension=amqp.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 script: cd tests && phpunit -v --configuration travis/$DB.travis.xml

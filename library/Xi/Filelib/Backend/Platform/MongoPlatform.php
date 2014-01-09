@@ -19,6 +19,7 @@ use MongoId;
 use MongoDate;
 use DateTime;
 use ArrayIterator;
+use Xi\Filelib\Tool\ExtensionRequirements;
 
 /**
  * MongoDB backend for Filelib
@@ -70,6 +71,7 @@ class MongoPlatform implements Platform
      */
     public function __construct(MongoDB $mongo)
     {
+        ExtensionRequirements::requireVersion('mongo', '1.4.0');
         $this->setMongo($mongo);
     }
 
@@ -119,7 +121,7 @@ class MongoPlatform implements Platform
             )
         );
 
-        $this->getMongo()->files->insert($document, array('safe' => true));
+        $this->getMongo()->files->insert($document, array('w' => true));
 
         $file->setId((string) $document['_id']);
         $file->setFolderId($folder->getId());
@@ -178,7 +180,7 @@ class MongoPlatform implements Platform
                 '_id' => new MongoId($folder->getId()),
             ),
             $document,
-            array('safe' => true)
+            array('w' => true)
         );
 
         return (bool) $ret['n'];
@@ -198,7 +200,7 @@ class MongoPlatform implements Platform
                 '_id' => new MongoId($resource->getId()),
             ),
             $document,
-            array('safe' => true)
+            array('w' => true)
         );
 
         return (bool) $ret['n'];
@@ -224,7 +226,7 @@ class MongoPlatform implements Platform
                 '_id' => new MongoId($file->getId()),
             ),
             $document,
-            array('safe' => true)
+            array('w' => true)
         );
 
         return (bool) $ret['n'];
@@ -253,7 +255,7 @@ class MongoPlatform implements Platform
             )
         );
 
-        $this->getMongo()->resources->insert($document, array('safe' => true));
+        $this->getMongo()->resources->insert($document, array('w' => true));
         $resource->setId((string) $document['_id']);
 
         return $resource;
@@ -406,7 +408,7 @@ class MongoPlatform implements Platform
                 array(
                     '_id' => new MongoId($identifiable->getId())
                 ),
-                array('safe' => true)
+                array('w' => true)
             );
 
         return (boolean) $ret['n'];
