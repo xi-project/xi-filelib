@@ -33,7 +33,4 @@ class ExtensionRequirementsTest extends \PHPUnit_Framework_TestCase
         ExtensionRequirements::requireVersion('SPL');
         ExtensionRequirements::requireVersion('SPL', '0.1');
     }
-
-
-
 }
