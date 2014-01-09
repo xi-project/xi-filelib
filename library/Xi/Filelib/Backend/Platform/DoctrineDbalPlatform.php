@@ -198,7 +198,7 @@ class DoctrineDbalPlatform implements Platform
     public function deleteFolder(Folder $folder)
     {
         $stmt = $this->conn->prepare($sql = "DELETE FROM xi_filelib_folder WHERE id = ?");
-        $stmt->execute(array(($folder->getId()));
+        $stmt->execute(array($folder->getId()));
 
         return (bool) $stmt->rowCount();
     }
