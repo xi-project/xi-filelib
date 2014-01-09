@@ -30,8 +30,6 @@ use Xi\Filelib\Tool\ExtensionRequirements;
  */
 class MongoPlatform implements Platform
 {
-    const REQUIRED_VERSION = '1.4.0';
-
     /**
      * MongoDB reference
      *
