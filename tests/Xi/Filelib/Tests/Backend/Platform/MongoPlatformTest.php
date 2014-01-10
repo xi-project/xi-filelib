@@ -25,6 +25,12 @@ class MongoPlatformTest extends AbstractPlatformTestCase
      */
     protected $mongo;
 
+    public function assertValidCreatedIdentifier($identifier)
+    {
+        $this->assertNotNull($identifier);
+        $this->assertInternalType('string', $identifier);
+    }
+
     /**
      * Implements AbstractPlatformTest::setUpBackend
      *

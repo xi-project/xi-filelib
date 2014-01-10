@@ -125,13 +125,15 @@ class DoctrineDbalPlatform implements Platform
      */
     public function createFolder(Folder $folder)
     {
+        $id = ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
+            null : $this->conn->fetchColumn(
+                $this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_folder_id_seq')
+            );
+
         $this->conn->insert(
             'xi_filelib_folder',
             array(
-                'id' => ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
-                    null : $this->conn->fetchColumn(
-                        $this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_folder_id_seq')
-                    ),
+                'id' => $id,
                 'parent_id' => $folder->getParentId(),
                 'foldername' => $folder->getName(),
                 'folderurl' => $folder->getUrl(),
@@ -139,8 +141,8 @@ class DoctrineDbalPlatform implements Platform
             )
         );
 
-        $folder->setId($this->conn->lastInsertId());
-
+        $id = $this->conn->getDatabasePlatform()->getName() == 'mysql' ? $this->conn->lastInsertId() : $id;
+        $folder->setId($id);
         return $folder;
     }
 
@@ -219,13 +221,15 @@ class DoctrineDbalPlatform implements Platform
      */
     public function createResource(Resource $resource)
     {
+        $id = ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
+            null : $this->conn->fetchColumn(
+                $this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_resource_id_seq')
+            );
+
         $this->conn->insert(
             'xi_filelib_resource',
             array(
-                'id' => ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
-                    null : $this->conn->fetchColumn(
-                        $this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_resource_id_seq')
-                    ),
+                'id' => $id,
                 'hash' => $resource->getHash(),
                 'date_created' => $resource->getDateCreated()->format('Y-m-d H:i:s'),
                 'mimetype' => $resource->getMimetype(),
@@ -244,7 +248,8 @@ class DoctrineDbalPlatform implements Platform
             )
         );
 
-        $resource->setId($this->conn->lastInsertId());
+        $id = $this->conn->getDatabasePlatform()->getName() == 'mysql' ? $this->conn->lastInsertId() : $id;
+        $resource->setId($id);
 
         return $resource;
     }
@@ -254,13 +259,15 @@ class DoctrineDbalPlatform implements Platform
      */
     public function createFile(File $file, Folder $folder)
     {
+        $id = ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
+            null : $this->conn->fetchColumn(
+                $this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_file_id_seq')
+            );
+
         $this->conn->insert(
             'xi_filelib_file',
             array(
-                'id' => ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
-                    null : $this->conn->fetchColumn(
-                        $this->conn->getDatabasePlatform()->getSequenceNextValSQL('xi_filelib_file_id_seq')
-                    ),
+                'id' => $id,
                 'folder_id' => $folder->getId(),
                 'fileprofile' => $file->getProfile(),
                 'filename' => $file->getName(),
@@ -272,7 +279,8 @@ class DoctrineDbalPlatform implements Platform
             )
         );
 
-        $file->setId($this->conn->lastInsertId());
+        $id = $this->conn->getDatabasePlatform()->getName() == 'mysql' ? $this->conn->lastInsertId() : $id;
+        $file->setId($id);
         $file->setFolderId($folder->getId());
         return $file;
     }

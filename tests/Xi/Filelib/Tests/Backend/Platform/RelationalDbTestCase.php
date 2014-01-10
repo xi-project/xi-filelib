@@ -53,6 +53,14 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
         parent::tearDown();
     }
 
+
+    public function assertValidCreatedIdentifier($identifier)
+    {
+        $this->assertNotNull($identifier);
+        $this->assertTrue(is_numeric($identifier));
+    }
+
+
     /**
      * Implements AbstractPlatformTest::setUpEmptyDataSet
      *
