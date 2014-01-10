@@ -37,6 +37,8 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      */
     abstract protected function setUpSimpleDataSet();
 
+    abstract protected function assertValidCreatedIdentifier($identifier);
+
     protected function setUp()
     {
         $this->backend = $this->setUpBackend();
@@ -81,8 +83,9 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 
         $resource = Resource::create($data);
         $this->assertNull($resource->getId());
+        $this->backend->createResource($resource);
 
-        $this->assertNotNull($this->backend->createResource($resource)->getId());
+        $this->assertValidCreatedIdentifier($resource->getId());
     }
 
     /**
@@ -188,9 +191,9 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 
         $folder = Folder::create($data);
 
-        $this->assertNull($folder->getId());
+        $this->backend->createFolder($folder);
+        $this->assertValidCreatedIdentifier($folder->getId());
 
-        $this->assertNotNull($this->backend->createFolder($folder)->getId());
     }
 
     /**
@@ -418,10 +421,11 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $file = File::create($fidata);
         $folder = Folder::create($fodata);
 
+
         $file = $this->backend->createFile($file, $folder);
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-        $this->assertNotNull($file->getId());
+        $this->assertValidCreatedIdentifier($file->getId());
 
         $this->assertEquals($fodata['id'], $file->getFolderId());
         $this->assertEquals($fidata['profile'], $file->getProfile());

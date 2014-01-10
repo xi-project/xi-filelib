@@ -16,6 +16,12 @@ use Xi\Filelib\Backend\Platform\JsonPlatform;
 class JsonPlatformTest extends AbstractPlatformTestCase
 {
 
+    public function assertValidCreatedIdentifier($identifier)
+    {
+        $this->assertNotNull($identifier);
+        $this->assertInternalType('string', $identifier);
+    }
+
     /**
      * Implements AbstractPlatformTest::setUpBackend
      *
