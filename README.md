@@ -35,6 +35,11 @@ $filelib = new FileLibrary(
 );
 
 $file = $filelib->upload('/path/to/some/file.jpg');
+
+// Display the image
+header("Content-Type: " . $file->getMimetype());
+echo file_get_contents($filelib->getStorage()->retrieve($file->getResource()));
+
 ```
 
 ### Examples and use cases
@@ -45,7 +50,6 @@ straight into the code.
 For framework integration, see:
 
 * https://github.com/xi-project/xi-bundle-filelib
-* https://github.com/pekkis/xi-zend-filelib
 
 [![Build Status](https://secure.travis-ci.org/xi-project/xi-filelib.png?branch=master)](http://travis-ci.org/xi-project/xi-filelib)
 
