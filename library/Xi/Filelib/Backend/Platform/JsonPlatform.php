@@ -72,9 +72,22 @@ class JsonPlatform implements Platform
 
     private function flush()
     {
-        // Suckety suck! PHP 5.3 does not have pretty print. Rejoice!
-        $options = defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT: 0;
-        file_put_contents($this->file, json_encode($this->json, $options));
+        $handle = fopen($this->file, 'w');
+
+        if (flock($handle, LOCK_EX)) {
+
+            // Suckety suck! PHP 5.3 does not have pretty print. Rejoice!
+            $options = defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT: 0;
+
+            fwrite($handle, json_encode($this->json, $options));
+            flock($handle, LOCK_UN);
+
+        } else {
+            throw new \RuntimeException("Failed to get a write lock");
+        }
+
+        fclose($handle);
+
     }
 
     private function init()
@@ -88,9 +101,23 @@ class JsonPlatform implements Platform
                 );
                 $this->flush();
             } else {
-                $this->json = json_decode(file_get_contents($this->file), true);
-            }
 
+                $handle = fopen($this->file, 'rb');
+
+                if (flock($handle, LOCK_SH)) {
+
+                    $json = fread($handle, filesize($this->file));
+                    $this->json = json_decode($json, true);
+
+                    flock($handle, LOCK_UN);
+
+                } else {
+                    throw new \RuntimeException("Failed to get a read lock");
+                }
+
+                fclose($handle);
+
+            }
             $this->init = true;
         }
     }
