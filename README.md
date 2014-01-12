@@ -30,7 +30,7 @@ use Xi\Filelib\Storage\FilesystemStorage;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 
 $filelib = new FileLibrary(
-    new FilesystemStorage(__DIR__ . '/files'), new TimeDirectoryIdCalculator()),
+    new FilesystemStorage(__DIR__ . '/files', new TimeDirectoryIdCalculator()),
     new JsonPlatform(__DIR__ . '/filelib-example.json')
 );
 
