@@ -9,12 +9,22 @@ class ExtensionRequirementsTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function throwsExceptionWhenExtensionIsNotLoaded()
+    public function throwsExceptionWhenExtensionIsNotLoadedAndVersionIsNotDefined()
+    {
+        $this->setExpectedException('RuntimeException');
+        ExtensionRequirements::requireVersion('lussogrande');
+    }
+
+    /**
+     * @test
+     */
+    public function throwsExceptionWhenExtensionIsNotLoadedAndVersionIsDefined()
     {
         $this->setExpectedException('RuntimeException');
         ExtensionRequirements::requireVersion('lussogrande', '1.0.0');
 
     }
+
 
     /**
      * @test
