@@ -39,25 +39,18 @@ class GaufretteStorage extends AbstractStorage implements Storage
     private $tempFiles;
 
     /**
-     * @var integer Octal representation for directory permissions
-     */
-    private $directoryPermission = 0700;
-
-    /**
-     * @var integer Octal representation for file permissions
-     */
-    private $filePermission = 0600;
-
-    /**
      * @var DirectoryIdCalculator
      */
     private $directoryIdCalculator;
 
+    /**
+     * @param Filesystem $filesystem
+     * @param DirectoryIdCalculator $directoryIdCalculator
+     * @param string $tempDir
+     */
     public function __construct(
         Filesystem $filesystem,
         DirectoryIdCalculator $directoryIdCalculator = null,
-        $filePermission = "600",
-        $directoryPermission = "700",
         $tempDir = null
     ) {
 
@@ -65,8 +58,6 @@ class GaufretteStorage extends AbstractStorage implements Storage
         $this->tempFiles = new TemporaryFileContainer($tempDir);
 
         $this->directoryIdCalculator = $directoryIdCalculator ?: new TimeDirectoryIdCalculator();
-        $this->filePermission = octdec($filePermission);
-        $this->directoryPermission = octdec($directoryPermission);
     }
 
     /**
@@ -88,26 +79,6 @@ class GaufretteStorage extends AbstractStorage implements Storage
     public function getDirectoryId(Identifiable $identifiable)
     {
         return $this->getDirectoryIdCalculator()->calculateDirectoryId($identifiable);
-    }
-
-    /**
-     * Returns directory permission
-     *
-     * @return integer
-     */
-    public function getDirectoryPermission()
-    {
-        return $this->directoryPermission;
-    }
-
-    /**
-     * Returns file permission
-     *
-     * @return integer
-     */
-    public function getFilePermission()
-    {
-        return $this->filePermission;
     }
 
     private function getPathName(Resource $resource)
