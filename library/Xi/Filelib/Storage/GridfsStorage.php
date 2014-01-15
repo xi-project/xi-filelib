@@ -26,11 +26,6 @@ use Xi\Filelib\File\FileObject;
 class GridfsStorage extends AbstractStorage implements Storage
 {
     /**
-     * @var string
-     */
-    private $tempDir;
-
-    /**
      * @var MongoDB Mongo reference
      */
     private $mongo;
@@ -58,18 +53,8 @@ class GridfsStorage extends AbstractStorage implements Storage
     public function __construct(MongoDB $mongo, $prefix = 'xi_filelib', $tempDir = null)
     {
         $this->mongo = $mongo;
-        $this->tempDir = $tempDir ?: sys_get_temp_dir();
+        $this->tempFiles = new TemporaryFileContainer($tempDir);
         $this->prefix = $prefix;
-    }
-
-    /**
-     * Deletes all temp files on destruct
-     */
-    public function __destruct()
-    {
-        foreach ($this->tempFiles as $tempFile) {
-            unlink($tempFile);
-        }
     }
 
     /**
@@ -106,14 +91,6 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $this->prefix;
     }
 
-    /**
-     * @return string
-     */
-    public function getTempDir()
-    {
-        return $this->tempDir;
-    }
-
 
     public function exists(Resource $resource)
     {
@@ -142,22 +119,12 @@ class GridfsStorage extends AbstractStorage implements Storage
      */
     private function toTemp(MongoGridFSFile $file)
     {
-        $tmp = tempnam($this->tempDir, 'xi_filelib');
+        $tmp = $this->tempFiles->getTemporaryFilename();
 
         $file->write($tmp);
-        $this->registerTempFile($tmp);
+        $this->tempFiles->registerTemporaryFile($tmp);
 
         return $tmp;
-    }
-
-    /**
-     * Registers an internal temp file
-     *
-     * @param string $fo
-     */
-    private function registerTempFile($fo)
-    {
-        $this->tempFiles[] = $fo;
     }
 
     protected function doStore(Resource $resource, $tempFile)

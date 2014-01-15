@@ -5,6 +5,9 @@ namespace Xi\Filelib\Tests\Storage;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use DateTime;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {
@@ -33,8 +36,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->resource = Resource::create(array('id' => 1));
-        $this->file = File::create(array('id' => 666));
+        $this->resource = Resource::create(array('id' => 1, 'date_created' => new DateTime()));
+        $this->file = File::create(array('id' => 666, 'date_created' => new DateTime()));
 
         $this->resourcePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
         $this->resourceVersionPath = ROOT_TESTS . '/data/self-lussing-manatee-mini.jpg';
@@ -46,6 +49,33 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
     }
 
+    protected function tearDown()
+    {
+        $diter = new RecursiveDirectoryIterator(ROOT_TESTS . '/data/files');
+        $riter = new RecursiveIteratorIterator($diter, \RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach ($riter as $item) {
+            if ($item->isFile() && $item->getFilename() !== '.gitignore') {
+                @unlink($item->getPathName());
+            }
+        }
+
+        foreach ($riter as $item) {
+            if ($item->isDir() && !in_array($item->getPathName(), array('.', '..'))) {
+                @rmdir($item->getPathName());
+            }
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function deletingUnexistingResourceShouldThrowException()
+    {
+        $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
+        $this->storage->delete($this->resource);
+    }
+
     /**
      * @test
      */
@@ -54,7 +84,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertFalse($this->storage->exists($this->resource));
         $this->storage->store($this->resource, $this->resourcePath);
 
-        $this->assertTrue($this->storage->exists($this->resource));
+        $this->assertTrue($this->storage->exists($this->resource), 'Storage did not store');
 
         $retrieved = $this->storage->retrieve($this->resource);
         $this->assertInternalType('string', $retrieved);

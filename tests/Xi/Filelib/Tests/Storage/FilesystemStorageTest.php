@@ -10,8 +10,6 @@
 namespace Xi\Filelib\Tests\Storage;
 
 use Xi\Filelib\Storage\FilesystemStorage;
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
 use Xi\Filelib\Exception\FileIOException;
 
 /**
@@ -19,25 +17,6 @@ use Xi\Filelib\Exception\FileIOException;
  */
 class FilesystemStorageTest extends TestCase
 {
-
-    public function tearDown()
-    {
-        $diter = new RecursiveDirectoryIterator($this->storage->getRoot());
-        $riter = new RecursiveIteratorIterator($diter, \RecursiveIteratorIterator::CHILD_FIRST);
-
-        foreach ($riter as $item) {
-            if ($item->isFile() && $item->getFilename() !== '.gitignore') {
-                @unlink($item->getPathName());
-            }
-        }
-
-        foreach ($riter as $item) {
-            if ($item->isDir() && !in_array($item->getPathName(), array('.', '..'))) {
-                @rmdir($item->getPathName());
-            }
-        }
-    }
-
     protected function getStorage()
     {
         $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');

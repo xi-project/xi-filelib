@@ -59,7 +59,9 @@
         "zendframework/zend-filter": "2.2.*",
         "zendframework/zend-servicemanager": "2.2.*",
         "zencoder/zencoder-php": "2.1.x",
-        "xi/transliterator": "dev-master@dev"
+        "xi/transliterator": "dev-master@dev",
+        "knplabs/gaufrette": "0.1.*",
+        "aws/aws-sdk-php": "2.5.1"
     },
 
     "autoload": {
