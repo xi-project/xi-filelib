@@ -256,4 +256,24 @@ class PublisherTest extends TestCase
 
         $this->assertFalse($this->publisher->isPublished($file));
     }
+
+    /**
+     * @test
+     */
+    public function unpublishedFileIsNotUnpublishedAgain()
+    {
+        $file = File::create(array('profile' => 'default'));
+        $this->adapter->expects($this->never())->method('unpublish');
+        $this->publisher->unpublish($file);
+    }
+
+    /**
+     * @test
+     */
+    public function publishedFileIsNotPublishedAgain()
+    {
+        $file = File::create(array('profile' => 'default', 'data' => array('publisher.published' => 1)));
+        $this->adapter->expects($this->never())->method('publish');
+        $this->publisher->publish($file);
+    }
 }
