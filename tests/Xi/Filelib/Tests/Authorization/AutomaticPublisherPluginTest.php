@@ -5,9 +5,14 @@ namespace Xi\Filelib\Tests\Authorization;
 use Xi\Filelib\Authorization\AutomaticPublisherPlugin;
 use Xi\Filelib\Events;
 use Xi\Filelib\Event\FileEvent;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Xi\Filelib\File\File;
 
 class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 {
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $publisher;
 
     /**
@@ -17,6 +22,9 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 
     private $file;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $adapter;
 
     public function setUp()
@@ -44,8 +52,8 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals(
             array(
                 Events::FILE_AFTER_AFTERUPLOAD => 'doPublish',
-                Events::FILE_BEFORE_DELETE => 'doUnpublish',
-                Events::FILE_BEFORE_UPDATE => 'doUnpublishAndPublish',
+                Events::FILE_BEFORE_UPDATE => 'doUnpublish',
+                Events::FILE_AFTER_UPDATE => 'doPublish',
                 Events::PROFILE_AFTER_ADD => 'onFileProfileAdd'
             ),
             AutomaticPublisherPlugin::getSubscribedEvents()
@@ -55,8 +63,14 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function pluginShouldAutomaticallyPublishIfWorldReadable()
+    public function pluginShouldPublishIfWorldReadable()
     {
+        $this->adapter
+            ->expects($this->once())
+            ->method('isFileReadableByAnonymous')
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+            ->will($this->returnValue(true));
+
         $this->publisher
             ->expects($this->once())
             ->method('publish')
@@ -65,6 +79,26 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
         $event = new FileEvent($this->file);
         $this->plugin->doPublish($event);
     }
+
+    /**
+     * @test
+     */
+    public function pluginShouldNotPublishIfNotWorldReadable()
+    {
+        $this->adapter
+            ->expects($this->once())
+            ->method('isFileReadableByAnonymous')
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+            ->will($this->returnValue(false));
+
+        $this->publisher
+            ->expects($this->never())
+            ->method('publish');
+
+        $event = new FileEvent($this->file);
+        $this->plugin->doPublish($event);
+    }
+
 
     /**
      * @test
@@ -85,38 +119,65 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function pluginShouldNotAutomaticallyUnpublishIfNotPublished()
+    public function pluginShouldNotPublishRecursively()
     {
-        $this->expectFilePublished(false);
+        $this->adapter
+            ->expects($this->once())
+            ->method('isFileReadableByAnonymous')
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+            ->will($this->returnValue(true));
+
+        $ed = new EventDispatcher();
+        $ed->addSubscriber($this->plugin);
+
+        $file = $this->file;
 
         $this->publisher
-            ->expects($this->never())
-            ->method('unpublish');
+            ->expects($this->once())
+            ->method('publish')
+            ->with($this->file)
+            ->will(
+                $this->returnCallback(
+                    function () use ($ed, $file) {
+                        $ed->dispatch(Events::FILE_AFTER_UPDATE, new FileEvent($file));
+                    }
+                )
+            );
 
         $event = new FileEvent($this->file);
-        $this->plugin->doUnpublish($event);
+        $this->plugin->doPublish($event);
     }
 
     /**
      * @test
      */
-    public function pluginShouldUnpublishAndPublishOnUpdate()
+    public function pluginShouldNotUnpublishRecursively()
     {
-        $this->expectFilePublished(true);
+        $this->adapter
+            ->expects($this->never())
+            ->method('isFileReadableByAnonymous');
+
+        $ed = new EventDispatcher();
+        $ed->addSubscriber($this->plugin);
+
+        $file = File::create(array('data' => array('publisher.published' => 1)));
 
         $this->publisher
-            ->expects($this->at(0))
+            ->expects($this->once())
             ->method('unpublish')
-            ->with($this->file);
+            ->with($file)
+            ->will(
+                $this->returnCallback(
+                    function () use ($ed, $file) {
+                        $ed->dispatch(Events::FILE_BEFORE_UPDATE, new FileEvent($file));
+                    }
+                )
+            );
 
-        $this->publisher
-            ->expects($this->at(1))
-            ->method('publish')
-            ->with($this->file);
-
-        $event = new FileEvent($this->file);
-        $this->plugin->doUnPublishAndPublish($event);
+        $event = new FileEvent($file);
+        $this->plugin->doUnpublish($event);
     }
+
 
     private function expectFilePublished($ret)
     {
@@ -126,5 +187,4 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
             ->with($this->file)
             ->will($this->returnValue($ret));
     }
-
 }

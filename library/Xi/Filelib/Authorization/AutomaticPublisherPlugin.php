@@ -17,8 +17,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Events as CoreEvents;
 
 /**
- * Automatically publishes all files, emulating the pre-0.8 behavior
- *
+ * Automatically publishes all anonymous-readable files, emulating the pre-0.8 behavior
  */
 class AutomaticPublisherPlugin extends AbstractPlugin
 {
@@ -28,12 +27,19 @@ class AutomaticPublisherPlugin extends AbstractPlugin
     private $publisher;
 
     /**
+     * @var AuthorizationAdapter
+     */
+    private $adapter;
+
+    private $executing = false;
+
+    /**
      * @var array
      */
     protected static $subscribedEvents = array(
         CoreEvents::FILE_AFTER_AFTERUPLOAD => 'doPublish',
-        CoreEvents::FILE_BEFORE_UPDATE => 'doUnpublishAndPublish',
-        CoreEvents::FILE_BEFORE_DELETE => 'doUnpublish'
+        CoreEvents::FILE_BEFORE_UPDATE => 'doUnpublish',
+        CoreEvents::FILE_AFTER_UPDATE => 'doPublish',
     );
 
     /**
@@ -43,7 +49,6 @@ class AutomaticPublisherPlugin extends AbstractPlugin
     {
         $this->publisher = $publisher;
         $this->adapter = $adapter;
-
     }
 
     /**
@@ -51,7 +56,17 @@ class AutomaticPublisherPlugin extends AbstractPlugin
      */
     public function doPublish(FileEvent $event)
     {
+        if ($this->executing) {
+            return;
+        }
+
+        if (!$this->adapter->isFileReadableByAnonymous($event->getFile())) {
+            return;
+        }
+
+        $this->executing = true;
         $this->publisher->publish($event->getFile());
+        $this->executing = false;
     }
 
     /**
@@ -59,22 +74,12 @@ class AutomaticPublisherPlugin extends AbstractPlugin
      */
     public function doUnpublish(FileEvent $event)
     {
-        $file = $event->getFile();
-
-        if ($this->publisher->isPublished($file)) {
-            $this->publisher->unpublish($file);
+        if ($this->executing) {
+            return;
         }
 
-    }
-
-    /**
-     * @param FileEvent $event
-     */
-    public function doUnPublishAndPublish(FileEvent $event)
-    {
-        $file = $event->getFile();
-
-        $this->publisher->unpublish($file);
-        $this->publisher->publish($file);
+        $this->executing = true;
+        $this->publisher->unpublish($event->getFile());
+        $this->executing = false;
     }
 }
