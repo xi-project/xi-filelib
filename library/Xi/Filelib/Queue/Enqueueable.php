@@ -11,5 +11,8 @@ namespace Xi\Filelib\Queue;
 
 interface Enqueueable
 {
-    public function getEnqueueReturnValue();
+    /**
+     * @return Message
+     */
+    public function getMessage();
 }

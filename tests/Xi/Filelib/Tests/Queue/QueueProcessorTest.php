@@ -2,9 +2,9 @@
 
 namespace Xi\Filelib\Tests\Queue\Processor;
 
+use Xi\Filelib\Queue\ProcessorResult;
 use Xi\Filelib\Queue\QueueProcessor;
 use Xi\Filelib\Queue\Message;
-use Xi\Filelib\Tests\Queue\TestCommand;
 
 class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -13,202 +13,98 @@ class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
      */
     protected $queue;
 
-    protected $fileOperator;
-
-    protected $folderOperator;
-
-    protected $filelib;
+    /**
+     * @var QueueProcessor
+     */
+    protected $processor;
 
     public function setUp()
     {
-        $fiop = $this->getMockedFileOperator();
-        $foop = $this->getMockedFolderOperator();
-        $filelib = $this->getMockedFilelib(array(), $fiop, $foop);
-
         $queue = $this->getMock('Xi\Filelib\Queue\Queue');
-        $filelib->setQueue($queue);
-
         $this->queue = $queue;
-        $this->fileOperator = $fiop;
-        $this->folderOperator = $foop;
-        $this->filelib = $filelib;
+
+        $this->processor = new QueueProcessor($this->queue);
+
     }
 
     /**
      * @test
      */
-    public function getFilelibShouldReturnFilelib()
+    public function getQueueReturnsQueue()
     {
-        $processor = new QueueProcessor($this->filelib);
-        $this->assertSame($this->filelib, $processor->getFilelib());
-    }
-
-
-    /**
-     * @test
-     */
-    public function classShouldExists()
-    {
-        $this->assertTrue(class_exists('Xi\Filelib\Queue\QueueProcessor'));
+        $this->assertSame($this->queue, $this->processor->getQueue());
     }
 
     /**
      * @test
      */
-    public function processReturnsFalseIfQueueIsEmpty()
+    public function exceptionIsThrownWhenNoHandlers()
     {
-        $processor = new QueueProcessor($this->filelib);
+        $this->setExpectedException('RuntimeException', "No handler will handle a message of type 'test'");
 
-        $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue(null));
-
-        $this->assertFalse($processor->process());
-    }
-
-    /**
-     * @test
-     * @expectedException \InvalidArgumentException
-     */
-    public function processShouldThrowExceptionWhenSomethingOtherThanACommandIsDequeued()
-    {
-        $processor = new QueueProcessor($this->filelib);
-
-        $message = new Message(serialize('A total eclipse of the heart'));
-        $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue($message));
-
-        $processor->process();
-    }
-
-    /**
-     * @test
-     */
-    public function processShouldProcessMessageWhenACommandIsDequeued()
-    {
-        $processor = $this->getMockBuilder('Xi\Filelib\Queue\QueueProcessor')
-                          ->setConstructorArgs(array($this->filelib))
-                          ->setMethods(array('processMessage'))
-                          ->getMock();
-
-        $command = new TestCommand();
-
-        $message = new Message(serialize($command));
+        $message = Message::create('test', array('banana' => 'is not just a banaana, banaana'));
 
         $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue($message));
 
-        $processor->expects($this->once())->method('processMessage')->with($message);
-
-        $processor->process();
-    }
-
-     /**
-      * @test
-      */
-    public function processMessageDoesNotCatchExceptionFromProcessorFunction()
-    {
-        $processor = new QueueProcessor($this->filelib);
-
-        $processorFunc = function() {
-            throw new \Xi\Filelib\InvalidArgumentException('Lussen lussen luu!');
-        };
-
-        $message = new Message(serialize('Tussihofen'));
-
-        $this->setExpectedException(
-            'Xi\Filelib\InvalidArgumentException',
-            'Lussen lussen luu!'
-        );
-
-        $processor->processMessage($message, $processorFunc);
+        $this->processor->process($message);
     }
 
     /**
      * @test
      */
-    public function processMessageShouldAckMessageWhenProcessorFunctionDoesntThrowException()
+    public function exceptionIsThrownWhenNoHandlerWillHandleMessage()
     {
-        $processor = new QueueProcessor($this->filelib);
+        $this->setExpectedException('RuntimeException', "No handler will handle a message of type 'test'");
 
-        $processorFunc = function() {
-            return true;
-        };
-
-        $message = new Message(serialize('Tussihofen'));
-
-        $this->queue->expects($this->once())->method('ack')->with($this->equalTo($message));
-
-        $processor->processMessage($message, $processorFunc);
-    }
-
-    /**
-     * @test
-     */
-    public function processMessageShouldEnqueeWhenProcessorFunctionReturnsANewCommand()
-    {
-        $processor = new QueueProcessor($this->filelib);
-
-        $processorFunc = function() {
-            return new TestCommand();
-        };
-
-        $message = new Message(serialize('Tussihofen'));
-
-        $this->queue->expects($this->once())->method('ack')->with($this->equalTo($message));
-
-        $this->queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\Command'));
-
-        $processor->processMessage($message, $processorFunc);
-    }
-
-    /**
-     * @test
-     */
-    public function processMessageShouldExecuteCommand()
-    {
-        $processor = $this->getMockBuilder('Xi\Filelib\Queue\QueueProcessor')
-                          ->setConstructorArgs(array($this->filelib))
-                          ->setMethods(array('extractCommandFromMessage'))
-                          ->getMock();
-
-        $command = $this->getMock('Xi\Filelib\Tests\Queue\TestCommand');
-
-        $message = new Message(serialize($command));
+        $message = Message::create('test', array('banana' => 'is not just a banaana, banaana'));
 
         $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue($message));
 
-        $processor->expects($this->once())->method('extractCommandFromMessage')
-                  ->with($this->isInstanceOf('Xi\Filelib\Queue\Message'))
-                  ->will($this->returnValue($command));
+        $mockHandler = $this->getMock('Xi\Filelib\Queue\MessageHandler');
+        $mockHandler->expects($this->once())->method('willHandle')->with($message)->will($this->returnValue(false));
+        $mockHandler->expects($this->never())->method('handle');
 
-        $command->expects($this->once())->method('execute');
+        $this->processor->registerHandler($mockHandler);
 
-        $processor->process();
-    }
-
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function extractCommandFromMessageShouldThrowExceptionIfCommandIsNotFound()
-    {
-        $lus = serialize('tussi');
-        $message = new Message($lus);
-
-        $processor = new QueueProcessor($this->filelib);
-
-        $processor->extractCommandFromMessage($message);
+        $this->processor->process($message);
     }
 
     /**
      * @test
      */
-    public function extractCommandFromMessageShouldReturnCommand()
+    public function newMessagesWillBeQueuedFromResponse()
     {
-        $lus = serialize(new TestCommand());
-        $message = new Message($lus);
 
-        $processor = new QueueProcessor($this->filelib);
+        $message = Message::create('test', array('banana' => 'is not just a banaana, banaana'));
 
-        $ret = $processor->extractCommandFromMessage($message);
+        $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue($message));
 
-        $this->assertInstanceOf('Xi\Filelib\Tests\Queue\TestCommand', $ret);
+        $mockHandler2 = $this->getMock('Xi\Filelib\Queue\MessageHandler');
+        $mockHandler2->expects($this->never())->method('willHandle');
+
+        $mockHandler = $this->getMock('Xi\Filelib\Queue\MessageHandler');
+        $mockHandler->expects($this->once())->method('willHandle')->with($message)->will($this->returnValue(true));
+
+        $message2 = Message::create('test', array('banana' => 'is not just a banaana, banaana'));
+        $message3 = Message::create('test', array('banana' => 'is not just a banaana, banaana'));
+
+        $result = new ProcessorResult(true);
+        $result->addMessage($message2);
+        $result->addMessage($message3);
+
+        $mockHandler->expects($this->once())->method('handle')->will($this->returnValue($result));
+
+        $this->queue->expects($this->once())->method('ack')->with($message);
+
+        $this->queue
+            ->expects($this->exactly(2))
+            ->method('enqueue')
+            ->with($this->isInstanceOf('Xi\Filelib\Queue\Message'));
+
+        $this->processor->registerHandler($mockHandler2);
+        $this->processor->registerHandler($mockHandler);
+
+        $this->processor->process($message);
     }
+
 }

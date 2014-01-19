@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Queue;
 
 use Xi\Filelib\Queue\Queue;
-use Xi\Filelib\Tests\Queue\TestCommand;
+use Xi\Filelib\Queue\Message;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {
@@ -13,11 +13,14 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     protected $queue;
 
+    /**
+     * @var Message
+     */
     protected $message;
 
     public function setUp()
     {
-        $this->message = new TestCommand();
+        $this->message = Message::create('test-message', array('aybabtu' => 'lussentus'));
         $this->queue = $this->getQueue();
         $this->queue->purge();
     }
@@ -36,9 +39,11 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertInstanceOf('Xi\Filelib\Queue\Message', $message);
         $this->queue->ack($message);
 
-        $this->assertEquals($this->message, unserialize($message->getBody()));
-        $this->assertNotNull($message->getIdentifier());
+        $this->assertEquals($this->message->getData(), $message->getData());
+        $this->assertEquals($this->message->getUuid(), $message->getUuid());
+        $this->assertEquals($this->message->getType(), $message->getType());
 
+        $this->assertNotNull($message->getIdentifier());
     }
 
     /**
@@ -56,7 +61,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
     public function purgeShouldResultInAnEmptyQueue()
     {
         for ($x = 10; $x <= 10; $x++) {
-            $this->queue->enqueue(new TestCommand());
+            $this->queue->enqueue(Message::create('testosteron', array('count' => $x)));
         }
 
         $msg = $this->queue->dequeue();
@@ -79,7 +84,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $this->assertNull($queue->dequeue());
 
-        $message = new TestCommand();
+        $message = Message::create('testosteron', array('mucho' => 'masculino'));
         $queue->enqueue($message);
 
         $this->assertInstanceOf('Xi\Filelib\Queue\Message', $queue->dequeue());

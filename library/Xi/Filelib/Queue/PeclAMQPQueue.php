@@ -68,19 +68,21 @@ class PeclAMQPQueue implements Queue
 
     public function enqueue(Enqueueable $enqueueable)
     {
-        $msg = serialize($enqueueable);
+        $msg = $enqueueable->getMessage();
+
+        $msg = json_encode($msg->toArray());
+
         $this->exchange->publish($msg, 'xi_filelib');
     }
 
     public function dequeue()
     {
         $msg = $this->queue->get();
-
         if (!$msg) {
             return null;
         }
 
-        $message = new Message($msg->getBody());
+        $message = Message::fromArray(json_decode($msg->getBody(), true));
         $message->setIdentifier($msg->getDeliveryTag());
 
         return $message;
@@ -98,7 +100,6 @@ class PeclAMQPQueue implements Queue
 
     public function __destruct()
     {
-
         $this->conn->disconnect();
     }
 }

@@ -12,36 +12,45 @@ class MessageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function messageShouldInitializeProperly()
     {
-        $body = 'All your base are belong to us';
+        $type = 'test';
+        $data = array('message' => 'All your base are belong to us');
 
-        $message = new Message($body);
+        $message = Message::create($type, $data);
 
-        $this->assertEquals($body, $message->getBody());
-    }
+        $this->assertEquals($data, $message->getData());
+        $this->assertEquals($type, $message->getType());
+        $this->assertUuid($message->getUuid());
 
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function messageInitializationShouldThrowExceptionWhenBodyIsNotString()
-    {
-        $body = array('tussi');
-
-        $message = new Message($body);
     }
 
     /**
      * @test
      */
-    public function gettersAndSettersShouldWork()
+    public function shouldBeRestorableFromArray()
     {
-        $message = new Message('luss');
-        $identifier = 'lussentuf';
+        $arr = array(
+            'uuid' => 'lussutus-uuid',
+            'type' => 'lussutusviesti',
+            'data' => array('lussutappa' => 'tussia')
+        );
+
+        $message = Message::fromArray($arr);
+
+        $this->assertEquals($arr['data'], $message->getData());
+        $this->assertEquals($arr['uuid'], $message->getUuid());
+        $this->assertEquals($arr['type'], $message->getType());
+    }
+
+    /**
+     * @test
+     */
+    public function internalDataShouldWork()
+    {
+        $message = Message::create('luss', array('mussutus' => 'kovaa mussutusta'));
 
         $this->assertNull($message->getIdentifier());
-        $this->assertSame($message, $message->setIdentifier($identifier));
-
-        $this->assertEquals($identifier, $message->getIdentifier());
+        $this->assertSame($message, $message->setIdentifier('loso'));
+        $this->assertEquals('loso', $message->getIdentifier());
 
     }
 
