@@ -99,6 +99,10 @@ class Publisher implements EventSubscriberInterface
      */
     public function publish(File $file)
     {
+        if ($this->isPublished($file)) {
+            return;
+        }
+
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_PUBLISH, $event);
 
@@ -120,6 +124,10 @@ class Publisher implements EventSubscriberInterface
      */
     public function unpublish(File $file)
     {
+        if (!$this->isPublished($file)) {
+            return;
+        }
+
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UNPUBLISH, $event);
 
