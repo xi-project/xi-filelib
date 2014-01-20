@@ -1,12 +1,11 @@
 <?php
 
-namespace Xi\Filelib\Tests\Queue;
+namespace Xi\Filelib\Tests\Queue\Adapter;
 
-use Xi\Filelib\Queue\PhpAMQPQueue;
+use Xi\Filelib\Queue\Adapter\PhpAMQPAdapter;
 
-class PhpAMQPQueueTest extends \Xi\Filelib\Tests\Queue\TestCase
+class PhpAMQPAdapterTest extends TestCase
 {
-
     public function setUp()
     {
         if (!class_exists('PhpAmqpLib\Connection\AMQPConnection')) {
@@ -20,9 +19,9 @@ class PhpAMQPQueueTest extends \Xi\Filelib\Tests\Queue\TestCase
         parent::setUp();
     }
 
-    protected function getQueue()
+    protected function getAdapter()
     {
-        return new PhpAMQPQueue(RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_USERNAME, RABBITMQ_PASSWORD, RABBITMQ_VHOST, 'filelib_test_exchange', 'filelib_test_queue');
+        return new PhpAMQPAdapter(RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_USERNAME, RABBITMQ_PASSWORD, RABBITMQ_VHOST, 'filelib_test_exchange', 'filelib_test_queue');
     }
 
 }

@@ -72,7 +72,6 @@ class Message implements Enqueueable
         return $this->setInternal('identifier', $identifier);
     }
 
-
     public static function create($type, $data = array())
     {
         return new self(Uuid::uuid4()->toString(), $type, $data);

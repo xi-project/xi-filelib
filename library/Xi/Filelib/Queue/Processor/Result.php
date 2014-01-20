@@ -1,8 +1,10 @@
 <?php
 
-namespace Xi\Filelib\Queue;
+namespace Xi\Filelib\Queue\Processor;
 
-class ProcessorResult
+use Xi\Filelib\Queue\Enqueueable;
+
+class Result
 {
     private $success;
 

@@ -7,13 +7,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Queue;
+namespace Xi\Filelib\Queue\Adapter;
 
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Channel\AMQPChannel;
+use Xi\Filelib\Queue\Enqueueable;
+use Xi\Filelib\Queue\Message;
 
-class PhpAMQPQueue implements Queue
+class PhpAMQPAdapter implements Adapter
 {
     /**
      *

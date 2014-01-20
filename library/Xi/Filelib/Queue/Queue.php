@@ -1,40 +1,56 @@
 <?php
 
-/**
- * This file is part of the Xi Filelib package.
- *
- * For copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Xi\Filelib\Queue;
 
-interface Queue
+use Xi\Filelib\Queue\Adapter\Adapter;
+
+class Queue
 {
+    /**
+     * @param Adapter $adapter
+     */
+    public function __construct(Adapter $adapter)
+    {
+        $this->adapter = $adapter;
+    }
 
     /**
      * Enqueues message
      *
      * @param Enqueueable $enqueueable
      */
-    public function enqueue(Enqueueable $enqueueable);
+    public function enqueue(Enqueueable $enqueueable)
+    {
+        $message = $enqueueable->getMessage();
+
+        return $this->adapter->enqueue($enqueueable);
+    }
 
     /**
      * Dequeues message
      *
      * @return Message
      */
-    public function dequeue();
+    public function dequeue()
+    {
+        return $this->adapter->dequeue();
+    }
 
     /**
      * Purges the queue
      */
-    public function purge();
+    public function purge()
+    {
+        return $this->adapter->purge();
+    }
 
     /**
      * Acknowledges message
      *
      * @param Message $message
      */
-    public function ack(Message $message);
+    public function ack(Message $message)
+    {
+        return $this->adapter->ack($message);
+    }
 }

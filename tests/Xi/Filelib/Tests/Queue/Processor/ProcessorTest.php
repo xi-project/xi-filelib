@@ -2,11 +2,11 @@
 
 namespace Xi\Filelib\Tests\Queue\Processor;
 
-use Xi\Filelib\Queue\ProcessorResult;
-use Xi\Filelib\Queue\QueueProcessor;
+use Xi\Filelib\Queue\Processor\Result;
+use Xi\Filelib\Queue\Processor\Processor;
 use Xi\Filelib\Queue\Message;
 
-class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
+class ProcessorTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -14,16 +14,16 @@ class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
     protected $queue;
 
     /**
-     * @var QueueProcessor
+     * @var Processor
      */
     protected $processor;
 
     public function setUp()
     {
-        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+        $queue = $this->getMockBuilder('Xi\Filelib\Queue\Queue')->disableOriginalConstructor()->getMock();
         $this->queue = $queue;
 
-        $this->processor = new QueueProcessor($this->queue);
+        $this->processor = new Processor($this->queue);
 
     }
 
@@ -51,6 +51,7 @@ class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
+     *
      */
     public function exceptionIsThrownWhenNoHandlerWillHandleMessage()
     {
@@ -60,7 +61,7 @@ class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
 
         $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue($message));
 
-        $mockHandler = $this->getMock('Xi\Filelib\Queue\MessageHandler');
+        $mockHandler = $this->getMock('Xi\Filelib\Queue\Processor\MessageHandler');
         $mockHandler->expects($this->once())->method('willHandle')->with($message)->will($this->returnValue(false));
         $mockHandler->expects($this->never())->method('handle');
 
@@ -69,32 +70,44 @@ class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
         $this->processor->process($message);
     }
 
+    public function provideData()
+    {
+        return array(
+            array(true),
+            array(false)
+        );
+    }
+
     /**
      * @test
+     * @dataProvider provideData
      */
-    public function newMessagesWillBeQueuedFromResponse()
+    public function newMessagesWillBeQueuedFromResponse($successfulResult)
     {
-
         $message = Message::create('test', array('banana' => 'is not just a banaana, banaana'));
 
         $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue($message));
 
-        $mockHandler2 = $this->getMock('Xi\Filelib\Queue\MessageHandler');
+        $mockHandler2 = $this->getMock('Xi\Filelib\Queue\Processor\MessageHandler');
         $mockHandler2->expects($this->never())->method('willHandle');
 
-        $mockHandler = $this->getMock('Xi\Filelib\Queue\MessageHandler');
+        $mockHandler = $this->getMock('Xi\Filelib\Queue\Processor\MessageHandler');
         $mockHandler->expects($this->once())->method('willHandle')->with($message)->will($this->returnValue(true));
 
         $message2 = Message::create('test', array('banana' => 'is not just a banaana, banaana'));
         $message3 = Message::create('test', array('banana' => 'is not just a banaana, banaana'));
 
-        $result = new ProcessorResult(true);
+        $result = new Result($successfulResult);
         $result->addMessage($message2);
         $result->addMessage($message3);
 
         $mockHandler->expects($this->once())->method('handle')->will($this->returnValue($result));
 
-        $this->queue->expects($this->once())->method('ack')->with($message);
+        if ($successfulResult) {
+            $this->queue->expects($this->once())->method('ack')->with($message);
+        } else {
+            $this->queue->expects($this->never())->method('ack');
+        }
 
         $this->queue
             ->expects($this->exactly(2))
@@ -107,4 +120,14 @@ class QueueProcessorTest extends \Xi\Filelib\Tests\TestCase
         $this->processor->process($message);
     }
 
+    /**
+     * @test
+     */
+    public function exitsEarlyWhenNoMessages()
+    {
+        $this->queue->expects($this->once())->method('dequeue')->will($this->returnValue(false));
+
+        $ret = $this->processor->process();
+        $this->assertFalse($ret);
+    }
 }

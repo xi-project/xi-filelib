@@ -7,7 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Queue;
+namespace Xi\Filelib\Queue\Processor;
+
+use Xi\Filelib\Queue\Message;
 
 interface MessageHandler
 {
@@ -19,7 +21,7 @@ interface MessageHandler
 
     /**
      * @param Message $message
-     * @return ProcessorResult
+     * @return Result
      */
     public function handle(Message $message);
 }

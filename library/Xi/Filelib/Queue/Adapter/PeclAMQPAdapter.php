@@ -7,15 +7,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Queue;
+namespace Xi\Filelib\Queue\Adapter;
 
-use Xi\Filelib\Tool\ExtensionRequirements;
 use AMQPConnection;
 use AMQPChannel;
 use AMQPExchange;
 use AMQPQueue;
+use Xi\Filelib\Queue\Enqueueable;
+use Xi\Filelib\Queue\Message;
 
-class PeclAMQPQueue implements Queue
+class PeclAMQPAdapter implements Adapter
 {
     private $conn;
 
@@ -31,8 +32,6 @@ class PeclAMQPQueue implements Queue
 
     public function __construct($host, $port, $login, $password, $vhost, $exchangeName, $queueName)
     {
-        ExtensionRequirements::requireVersion('amqp', '1.2.0');
-
         $conn = new AMQPConnection(
             array(
                 'host' => $host,

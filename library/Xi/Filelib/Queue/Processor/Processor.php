@@ -7,15 +7,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Queue;
+namespace Xi\Filelib\Queue\Processor;
 
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Xi\Filelib\Queue\Queue;
+use Xi\Filelib\Queue\Message;
 
 /**
  * Default implementation of a queue processor
  */
-class QueueProcessor
+class Processor
 {
     /**
      *
@@ -74,10 +76,9 @@ class QueueProcessor
 
         if ($result->isSuccess()) {
             $this->queue->ack($message);
-
-            foreach ($result->getMessages() as $message) {
-                $this->queue->enqueue($message);
-            }
+        }
+        foreach ($result->getMessages() as $message) {
+            $this->queue->enqueue($message);
         }
 
         return true;

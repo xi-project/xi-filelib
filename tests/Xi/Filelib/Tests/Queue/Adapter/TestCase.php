@@ -1,17 +1,17 @@
 <?php
 
-namespace Xi\Filelib\Tests\Queue;
+namespace Xi\Filelib\Tests\Queue\Adapter;
 
-use Xi\Filelib\Queue\Queue;
+use Xi\Filelib\Queue\Adapter\Adapter;
 use Xi\Filelib\Queue\Message;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {
     /**
      *
-     * @var Queue
+     * @var Adapter
      */
-    protected $queue;
+    protected $adapter;
 
     /**
      * @var Message
@@ -21,11 +21,11 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
     public function setUp()
     {
         $this->message = Message::create('test-message', array('aybabtu' => 'lussentus'));
-        $this->queue = $this->getQueue();
-        $this->queue->purge();
+        $this->adapter = $this->getAdapter();
+        $this->adapter->purge();
     }
 
-    abstract protected function getQueue();
+    abstract protected function getAdapter();
 
     /**
      * @test
@@ -33,11 +33,11 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function dequeueShouldDequeueEnqueuedMessage()
     {
-        $this->queue->enqueue($this->message);
+        $this->adapter->enqueue($this->message);
 
-        $message = $this->queue->dequeue();
+        $message = $this->adapter->dequeue();
         $this->assertInstanceOf('Xi\Filelib\Queue\Message', $message);
-        $this->queue->ack($message);
+        $this->adapter->ack($message);
 
         $this->assertEquals($this->message->getData(), $message->getData());
         $this->assertEquals($this->message->getUuid(), $message->getUuid());
@@ -51,7 +51,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function dequeueShouldReturnNullIfQueueIsEmpty()
     {
-        $message = $this->queue->dequeue();
+        $message = $this->adapter->dequeue();
         $this->assertNull($message);
     }
 
@@ -61,16 +61,16 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
     public function purgeShouldResultInAnEmptyQueue()
     {
         for ($x = 10; $x <= 10; $x++) {
-            $this->queue->enqueue(Message::create('testosteron', array('count' => $x)));
+            $this->adapter->enqueue(Message::create('testosteron', array('count' => $x)));
         }
 
-        $msg = $this->queue->dequeue();
+        $msg = $this->adapter->dequeue();
         $this->assertNotNull($msg);
-        $this->queue->ack($msg);
+        $this->adapter->ack($msg);
 
-        $this->queue->purge();
+        $this->adapter->purge();
 
-        $this->assertNull($this->queue->dequeue());
+        $this->assertNull($this->adapter->dequeue());
 
     }
 
@@ -79,7 +79,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function queueShouldResendIfMessageIsNotAcked()
     {
-        $queue = $this->getQueue();
+        $queue = $this->getAdapter();
         $queue->purge();
 
         $this->assertNull($queue->dequeue());
@@ -93,7 +93,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         unset($queue);
         gc_collect_cycles();
 
-        $queue = $this->getQueue();
+        $queue = $this->getAdapter();
 
         $msg = $queue->dequeue();
         $this->assertInstanceOf('Xi\Filelib\Queue\Message', $msg);
