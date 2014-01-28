@@ -15,10 +15,10 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
+use Pekkis\Queue\Message;
 
 class DeleteFolderCommand extends AbstractFolderCommand
 {
-
     /**
      *
      * @var FileOperator
@@ -33,7 +33,6 @@ class DeleteFolderCommand extends AbstractFolderCommand
 
     public function __construct(Folder $folder)
     {
-        parent::__construct();
         $this->folder = $folder;
     }
 
@@ -71,26 +70,22 @@ class DeleteFolderCommand extends AbstractFolderCommand
         );
     }
 
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-        $this->uuid = $data['uuid'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'folder' => $this->folder,
-                'uuid' => $this->uuid,
-            )
-        );
-    }
-
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
         $this->fileOperator = $filelib->getFileOperator();
+    }
+
+    /**
+     * @return Message
+     */
+    public function getMessage()
+    {
+        return Message::create(
+            'xi_filelib.command.folder.delete',
+            array(
+                'folder_id' => $this->folder->getId(),
+            )
+        );
     }
 }

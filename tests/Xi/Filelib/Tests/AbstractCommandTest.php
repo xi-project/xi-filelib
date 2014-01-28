@@ -29,18 +29,6 @@ class AbstractCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function classShouldInitializeCorrectly()
-    {
-        $uuid = $this->command->getUuid();
-        $this->assertUuid($uuid);
-        $this->assertSame($uuid, $this->command->getEnqueueReturnValue());
-
-
-    }
-
-    /**
-     * @test
-     */
     public function outputShouldDefaultToNullOutput()
     {
         $this->assertInstanceOf('Symfony\Component\Console\Output\NullOutput', $this->command->getOutput());

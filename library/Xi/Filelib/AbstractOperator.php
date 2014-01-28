@@ -13,7 +13,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\Queue\Queue;
+use Pekkis\Queue\Queue;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Rhumsaa\Uuid\Uuid;
 

@@ -145,7 +145,8 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
                    ->setConstructorArgs(array($filelib))
                    ->getMock();
 
-        $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
+        $queue = $this->getMockedQueue();
+
         $op->expects($this->atLeastOnce())->method('getQueue')->will($this->returnValue($queue));
 
         $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
@@ -481,7 +482,8 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
                    ->setConstructorArgs(array($filelib))
                    ->getMock();
 
-          $queue = $this->getMockForAbstractClass('Xi\Filelib\Queue\Queue');
+          $queue = $this->getMockedQueue();
+
           $op->expects($this->any())->method('getQueue')->will($this->returnValue($queue));
 
           $command = $this->getMockBuilder($commandClass)

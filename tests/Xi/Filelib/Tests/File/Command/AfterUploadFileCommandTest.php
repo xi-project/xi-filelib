@@ -60,24 +60,27 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-
     }
 
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
+    public function returnsProperMessage()
     {
-        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
+        $file = File::create(array('id' => 321));
 
         $command = new AfterUploadFileCommand($file);
-        $serialized = serialize($command);
 
-        $command2 = unserialize($serialized);
+        $message = $command->getMessage();
 
-        $this->assertAttributeEquals(null, 'fileOperator', $command2);
-        $this->assertAttributeEquals($file, 'file', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
+        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
+        $this->assertSame('xi_filelib.command.file.after_upload', $message->getType());
+        $this->assertEquals(
+            array(
+                'file_id' => $file->getId(),
+            ),
+            $message->getData()
+        );
     }
 
 }

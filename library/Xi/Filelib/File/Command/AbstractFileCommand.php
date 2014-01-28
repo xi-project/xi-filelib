@@ -20,14 +20,6 @@ abstract class AbstractFileCommand extends AbstractCommand implements FileComman
      */
     protected $fileOperator;
 
-    /**
-     * @return FileOperator
-     */
-    public function getFileOperator()
-    {
-        return $this->fileOperator;
-    }
-
     public function attachTo(FileLibrary $filelib)
     {
         $this->fileOperator = $filelib->getFileOperator();

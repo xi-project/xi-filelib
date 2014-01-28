@@ -18,7 +18,7 @@ use Xi\Filelib\File\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Filelib\Event\PluginEvent;
-use Xi\Filelib\Queue\Queue;
+use Pekkis\Queue\Queue;
 use Xi\Filelib\Backend\Platform\Platform;
 
 /**

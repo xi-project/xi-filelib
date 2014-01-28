@@ -117,7 +117,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedQueue()
     {
-        return $this->getMock('Xi\Filelib\Queue\Queue');
+        return $this->getMockBuilder('Pekkis\Queue\Queue')->disableOriginalConstructor()->getMock();
     }
 
     /**

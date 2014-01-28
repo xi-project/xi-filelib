@@ -13,6 +13,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
+use Pekkis\Queue\Message;
 
 class UpdateFileCommand extends AbstractFileCommand
 {
@@ -24,7 +25,6 @@ class UpdateFileCommand extends AbstractFileCommand
 
     public function __construct(File $file)
     {
-        parent::__construct();
         $this->file = $file;
     }
 
@@ -41,19 +41,19 @@ class UpdateFileCommand extends AbstractFileCommand
         return $this->file;
     }
 
-    public function unserialize($serialized)
+    /**
+     * @return Message
+     */
+    public function getMessage()
     {
-        $data = unserialize($serialized);
-        $this->file = $data['file'];
-        $this->uuid = $data['uuid'];
-    }
+        $darr = $this->file->toArray();
+        unset($darr['resource']);
+        $darr['resource_id'] = $this->file->getResource() ? $this->file->getResource()->getId() : null;
 
-    public function serialize()
-    {
-        return serialize(
+        return Message::create(
+            'xi_filelib.command.file.update',
             array(
-            'file' => $this->file,
-            'uuid' => $this->uuid,
+                'file_data' => $darr,
             )
         );
     }

@@ -22,24 +22,6 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
     }
 
     /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
-
-        $command = new DeleteFileCommand($file);
-
-        $serialized = serialize($command);
-
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'fileOperator', $command2);
-        $this->assertAttributeEquals($file, 'file', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
-    }
-
-    /**
      * @return array
      */
     public function provideForDeleteDelegation()
@@ -109,7 +91,26 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new DeleteFileCommand($file);
         $command->attachTo($this->getMockedFilelib(null, $op));
         $command->execute();
-
     }
 
+    /**
+     * @test
+     */
+    public function returnsProperMessage()
+    {
+        $file = File::create(array('id' => 321));
+
+        $command = new DeleteFileCommand($file);
+
+        $message = $command->getMessage();
+
+        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
+        $this->assertSame('xi_filelib.command.file.delete', $message->getType());
+        $this->assertEquals(
+            array(
+                'file_id' => $file->getId(),
+            ),
+            $message->getData()
+        );
+    }
 }

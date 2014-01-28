@@ -1,6 +1,6 @@
 <?php
 
-use Xi\Filelib\Queue\PhpAMQPQueue;
+use Pekkis\Queue\PhpAMQPQueue;
 
 $queue = new PhpAMQPQueue(
     RABBITMQ_HOST,

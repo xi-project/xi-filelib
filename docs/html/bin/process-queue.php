@@ -1,6 +1,6 @@
 <?php
 
-use Xi\Filelib\Queue\QueueProcessor;
+use Pekkis\Queue\QueueProcessor;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 require_once __DIR__ . '/../bootstrap.php';

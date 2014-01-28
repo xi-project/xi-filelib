@@ -15,6 +15,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\FileLibrary;
+use Pekkis\Queue\Message;
 
 class UpdateFolderCommand extends AbstractFolderCommand
 {
@@ -32,7 +33,6 @@ class UpdateFolderCommand extends AbstractFolderCommand
 
     public function __construct(Folder $folder)
     {
-        parent::__construct();
         $this->folder = $folder;
     }
 
@@ -70,26 +70,24 @@ class UpdateFolderCommand extends AbstractFolderCommand
         );
     }
 
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-        $this->uuid = $data['uuid'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'folder' => $this->folder,
-                'uuid' => $this->uuid,
-            )
-        );
-    }
-
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
         $this->fileOperator = $filelib->getFileOperator();
     }
+
+    /**
+     * @return Message
+     */
+    public function getMessage()
+    {
+        return Message::create(
+            'xi_filelib.command.folder.update',
+            array(
+                'folder_data' => $this->folder->toArray(),
+            )
+        );
+    }
+
+
 }

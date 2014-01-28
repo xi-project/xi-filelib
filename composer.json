@@ -42,7 +42,8 @@
         "php": ">=5.3.10",
         "symfony/event-dispatcher": ">=2.0.14",
         "dflydev/apache-mime-types": "1.0.*",
-        "rhumsaa/uuid": "2.3.*"
+        "rhumsaa/uuid": "2.3.*",
+        "pekkis/queue": "0.1.*"
     },
 
     "require-dev": {

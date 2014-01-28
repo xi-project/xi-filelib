@@ -160,7 +160,7 @@ class AbstractOperatorTest extends TestCase
                         ->disableOriginalConstructor()
                         ->getMock();
 
-        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+        $queue = $this->getMockedQueue();
 
         $op->expects($this->once())->method('getCommandStrategy')
            ->with($this->equalTo('tussi'))
@@ -194,7 +194,7 @@ class AbstractOperatorTest extends TestCase
                         ->disableOriginalConstructor()
                         ->getMock();
 
-        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+        $queue = $this->getMockedQueue();
 
         $op->expects($this->once())->method('getCommandStrategy')
            ->with($this->equalTo('tussi'))
@@ -246,7 +246,7 @@ class AbstractOperatorTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+        $queue = $this->getMockedQueue();
 
         $op->expects($this->once())->method('getCommandStrategy')
             ->with($this->equalTo('tussi'))
@@ -277,7 +277,7 @@ class AbstractOperatorTest extends TestCase
         $mockClass = $this
             ->getMockClass(
                 'Xi\Filelib\File\Command\AbstractFileCommand',
-                array('execute', 'serialize', 'unserialize', 'attachTo')
+                array('execute', 'serialize', 'unserialize', 'attachTo', 'getMessage')
             );
 
         $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')

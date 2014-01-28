@@ -9,10 +9,9 @@
 
 namespace Xi\Filelib;
 
-use Serializable;
-use Xi\Filelib\Queue\Enqueueable;
+use Pekkis\Queue\Enqueueable;
 
-interface EnqueueableCommand extends Command, Enqueueable, Serializable
+interface EnqueueableCommand extends Command, Enqueueable
 {
     const STRATEGY_SYNCHRONOUS = 'sync';
     const STRATEGY_ASYNCHRONOUS = 'async';

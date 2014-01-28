@@ -22,26 +22,6 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-
-        $url = 'tussen/hofen/meister';
-
-        $command = new CreateByUrlFolderCommand($url);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'folderOperator', $command2);
-        $this->assertAttributeEquals($url, 'url', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
-
-    }
-
-    /**
-     * @test
-     */
     public function createByUrlShouldCreateRecursivelyIfFolderDoesNotExist()
     {
         $op = $this->getMockedOp();
@@ -176,5 +156,25 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->getMock();
 
         return $op;
+    }
+
+    /**
+     * @test
+     */
+    public function returnsProperMessage()
+    {
+        $url = 'tenhunen/imaisee/mehevan/keihaan';
+        $command = new CreateByUrlFolderCommand($url);
+
+        $message = $command->getMessage();
+
+        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
+        $this->assertSame('xi_filelib.command.folder.create_by_url', $message->getType());
+        $this->assertEquals(
+            array(
+                'url' => $url,
+            ),
+            $message->getData()
+        );
     }
 }

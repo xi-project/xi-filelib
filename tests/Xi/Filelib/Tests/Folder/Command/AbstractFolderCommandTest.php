@@ -14,26 +14,18 @@ class AbstractFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\AbstractFolderCommand'));
     }
 
-    /**
-     * @test
-     */
-    public function commandShouldInitializeProperly()
+    public function attachesFromFilelib()
     {
-        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\AbstractFolderCommand')
-                        ->setMethods(array('execute'))
-                        ->setConstructorArgs(array())
-                        ->getMockForAbstractClass();
-
-        $this->assertUuid($command->getUuid());
-
-        $this->assertNull($command->getFolderOperator());
-
         $foop = $this->getMockedFolderOperator();
         $filelib = $this->getMockedFilelib(null, null, $foop);
 
+        $command = $this->getMockForAbstractClass('Xi\Filelib\Command\AbstractFolderCommand');
         $command->attachTo($filelib);
 
-        $this->assertSame($foop, $command->getFolderOperator());
+        $this->assertAttributeSame($foop, 'folderOperator', $command);
+
+
     }
+
 
 }

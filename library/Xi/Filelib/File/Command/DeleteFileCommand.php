@@ -13,6 +13,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
+use Pekkis\Queue\Message;
 
 class DeleteFileCommand extends AbstractFileCommand
 {
@@ -24,7 +25,6 @@ class DeleteFileCommand extends AbstractFileCommand
 
     public function __construct(File $file)
     {
-        parent::__construct();
         $this->file = $file;
     }
 
@@ -46,19 +46,15 @@ class DeleteFileCommand extends AbstractFileCommand
         return true;
     }
 
-    public function unserialize($serialized)
+    /**
+     * @return Message
+     */
+    public function getMessage()
     {
-        $data = unserialize($serialized);
-        $this->file = $data['file'];
-        $this->uuid = $data['uuid'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
+        return Message::create(
+            'xi_filelib.command.file.delete',
             array(
-                'file' => $this->file,
-                'uuid' => $this->uuid,
+                'file_id' => $this->file->getId(),
             )
         );
     }

@@ -26,23 +26,6 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-
-        $command = new DeleteFolderCommand($folder);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
-
-    }
-
-        /**
-     * @test
-     */
     public function deleteShouldDeleteFoldersAndFilesRecursively()
     {
         $filelib = $this->getMockedFilelib();
@@ -142,5 +125,25 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new DeleteFolderCommand($folder);
         $command->attachTo($this->getMockedFilelib(null, $fiop, $op));
         $command->execute();
+    }
+
+    /**
+     * @test
+     */
+    public function returnsProperMessage()
+    {
+        $folder = Folder::create(array('id' => 321));
+        $command = new DeleteFolderCommand($folder);
+
+        $message = $command->getMessage();
+
+        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
+        $this->assertSame('xi_filelib.command.folder.delete', $message->getType());
+        $this->assertEquals(
+            array(
+                'folder_id' => $folder->getId(),
+            ),
+            $message->getData()
+        );
     }
 }

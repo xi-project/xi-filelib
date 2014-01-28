@@ -233,17 +233,38 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
+    public function returnsProperMessage()
     {
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $file = $this->getMock('Xi\Filelib\File\File');
+        $folder = Folder::create(array('id' => 123));
+        $file = File::create(array('id' => 321));
+
         $command = new CopyFileCommand($file, $folder);
 
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
+        $message = $command->getMessage();
 
-        $this->assertAttributeEquals($file, 'file', $command2);
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
+        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
+        $this->assertSame('xi_filelib.command.file.copy', $message->getType());
+        $this->assertEquals(
+            array(
+                'file_id' => $file->getId(),
+                'folder_id' => $folder->getId(),
+            ),
+            $message->getData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function respectsPresetUuid()
+    {
+        $folder = Folder::create(array('id' => 123));
+        $file = File::create(array('id' => 321));
+
+        $command = new CopyFileCommand($file, $folder);
+        $this->assertUuid($command->getUuid());
+
+        $presetCommand = new CopyFileCommand($file, $folder, 'lussen-tussen-hof');
+        $this->assertSame('lussen-tussen-hof', $presetCommand->getUuid());
     }
 }

@@ -7,6 +7,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Command\UpdateFileCommand;
 use Xi\Filelib\Events;
+use Xi\Filelib\File\Resource;
 
 class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -18,25 +19,6 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->assertTrue(class_exists('Xi\Filelib\File\Command\UpdateFileCommand'));
         $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\UpdateFileCommand'));
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
-
-        $command = new UpdateFileCommand($file);
-
-        $serialized = serialize($command);
-
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'fileOperator', $command2);
-        $this->assertAttributeEquals($file, 'file', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
-
     }
 
     /**
@@ -91,6 +73,63 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new UpdateFileCommand( $file);
         $command->attachTo($this->getMockedFilelib(null, $op));
         $command->execute();
-
     }
+
+    /**
+     * @test
+     */
+    public function returnsProperMessage()
+    {
+        $file = File::create(array('id' => 321));
+
+        $command = new UpdateFileCommand($file);
+
+        $message = $command->getMessage();
+
+        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
+        $this->assertSame('xi_filelib.command.file.update', $message->getType());
+
+        $darr = $file->toArray();
+        $darr['resource_id'] = null;
+        unset($darr['resource']);
+
+        $this->assertEquals(
+            array(
+                'file_data' => $darr,
+            ),
+            $message->getData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function returnsProperMessageWithResource()
+    {
+        $file = File::create(
+            array(
+                'id' => 321,
+                'resource' => Resource::create(array('id' => 986))
+            )
+        );
+
+        $command = new UpdateFileCommand($file);
+
+        $message = $command->getMessage();
+
+        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
+        $this->assertSame('xi_filelib.command.file.update', $message->getType());
+
+        $darr = $file->toArray();
+        $darr['resource_id'] = 986;
+        unset($darr['resource']);
+
+        $this->assertEquals(
+            array(
+                'file_data' => $darr,
+            ),
+            $message->getData()
+        );
+    }
+
 }
