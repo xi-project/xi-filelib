@@ -180,6 +180,10 @@ class FileOperator extends AbstractOperator
      */
     public function upload($upload, Folder $folder = null, $profile = 'default')
     {
+        if (!$upload instanceof FileUpload) {
+            $upload = new FileUpload($upload);
+        }
+
         if (!$folder) {
             $folder = $this->getFolderOperator()->findRoot();
         }
