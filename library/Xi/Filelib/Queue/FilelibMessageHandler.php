@@ -6,7 +6,10 @@ use Pekkis\Queue\Processor\MessageHandler;
 use Pekkis\Queue\Message;
 use Pekkis\Queue\Processor\Result;
 use Xi\Filelib\Attacher;
+use Xi\Filelib\File\Command\AfterUploadFileCommand;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderOperator;
 
 class FilelibMessageHandler implements MessageHandler, Attacher
 {
@@ -22,9 +25,14 @@ class FilelibMessageHandler implements MessageHandler, Attacher
         'xi_filelib.command.folder.update',
     );
 
+    /**
+     * @var FileLibrary
+     */
+    private $filelib;
+
     public function attachTo(FileLibrary $filelib)
     {
-
+        $this->filelib = $filelib;
     }
 
     public function willHandle(Message $message)
@@ -34,6 +42,19 @@ class FilelibMessageHandler implements MessageHandler, Attacher
 
     public function handle(Message $message)
     {
-        return new Result(false, 'Failuro catastropho!');
+        switch ($message->getType()) {
+
+            case 'xi_filelib.command.file.after_upload':
+                $data = $message->getData();
+                $file = $this->filelib->getFileOperator()->find($data['file_id']);
+                $command = new AfterUploadFileCommand($file);
+                $command->attachTo($this->filelib);
+                $command->execute();
+                $result = new Result(true);
+                break;
+
+        }
+
+        return $result;
     }
 }

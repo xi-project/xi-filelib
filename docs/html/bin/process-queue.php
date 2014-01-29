@@ -3,13 +3,22 @@
 use Pekkis\Queue\Processor\Processor;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Xi\Filelib\Queue\FilelibMessageHandler;
+use Pekkis\Queue\Processor\ConsoleOutputSubscriber as ProcessorConsoleOutputSubscriber;
+use Pekkis\Queue\ConsoleOutputSubscriber;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../constants.php';
 require_once __DIR__ . '/../async-common.php';
 
 $output = new ConsoleOutput();
-$processor = new Processor($filelib->getQueue(), $output);
+$queueSubscriber = new ConsoleOutputSubscriber($output);
+$processorSubscriber = new ProcessorConsoleOutputSubscriber($output);
+
+$ed = $filelib->getEventDispatcher();
+$ed->addSubscriber($queueSubscriber);
+$ed->addSubscriber($processorSubscriber);
+
+$processor = new Processor($filelib->getQueue(), $filelib->getEventDispatcher());
 
 $messageHandler = new FilelibMessageHandler();
 $messageHandler->attachTo($filelib);

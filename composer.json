@@ -23,18 +23,6 @@
         {
             "type": "composer",
             "url": "http://packages.zendframework.com/"
-        },
-        {
-            "type": "package",
-            "package": {
-                "name": "zencoder/zencoder-php",
-                "version": "2.0.2",
-                "source": {
-                    "url": "git://github.com/zencoder/zencoder-php.git",
-                    "type": "git",
-                    "reference": "v2.0.2"
-                }
-            }
         }
     ],
 
@@ -43,7 +31,7 @@
         "symfony/event-dispatcher": ">=2.0.14",
         "dflydev/apache-mime-types": "1.0.*",
         "rhumsaa/uuid": "2.3.*",
-        "pekkis/queue": "0.1.*"
+        "pekkis/queue": "dev-master@dev"
     },
 
     "require-dev": {

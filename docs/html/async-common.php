@@ -13,5 +13,6 @@ $adapter = new PhpAMQPAdapter(
     'filelib_example_queue'
 );
 
-$queue = new Queue($adapter);
+$queue = new Queue($adapter, $filelib->getEventDispatcher());
 $filelib->setQueue($queue);
+
