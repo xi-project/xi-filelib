@@ -180,7 +180,7 @@ class UploadFileCommand extends AbstractFileCommand
             array(
                 'folder_id' => $this->folder->getId(),
                 'upload' => $uploadArr,
-                'profile' => $this->profile
+                'profile' => $this->profile,
             )
         );
     }

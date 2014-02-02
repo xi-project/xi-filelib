@@ -14,18 +14,15 @@ $output = new ConsoleOutput();
 $queueSubscriber = new ConsoleOutputSubscriber($output);
 $processorSubscriber = new ProcessorConsoleOutputSubscriber($output);
 
-$ed = $filelib->getEventDispatcher();
-$ed->addSubscriber($queueSubscriber);
-$ed->addSubscriber($processorSubscriber);
+$queue->addSubscriber($queueSubscriber);
+$queue->addSubscriber($processorSubscriber);
 
-$processor = new Processor($filelib->getQueue(), $filelib->getEventDispatcher());
+$processor = new Processor($queue);
 
 $messageHandler = new FilelibMessageHandler();
 $messageHandler->attachTo($filelib);
 
-$processor->registerHandler(
-    $messageHandler
-);
+$processor->registerHandler($messageHandler);
 
 try {
 
