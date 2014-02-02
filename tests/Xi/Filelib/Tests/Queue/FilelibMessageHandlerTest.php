@@ -104,7 +104,7 @@ class FilelibMessageHandlerTest extends \Xi\Filelib\Tests\TestCase
         $self = $this;
         $commandBuilder = function ($class, $args) use ($self, $expectedClass, $throwUp)  {
             $self->assertEquals($class, $expectedClass);
-            $mock = $this->getMockBuilder($class)->setMethods(array('execute'))->setConstructorArgs($args)->getMock();
+            $mock = $self->getMockBuilder($class)->setMethods(array('execute'))->setConstructorArgs($args)->getMock();
 
             if ($throwUp) {
                 $mock->expects($this->once())
