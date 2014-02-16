@@ -45,15 +45,22 @@ class AfterUploadFileCommand extends AbstractFileCommand
         return $file;
     }
 
-    /**
-     * @return Message
-     */
-    public function getMessage()
+    public function getTopic()
     {
-        return Message::create(
-            'xi_filelib.command.file.after_upload',
+        return 'xi_filelib.command.file.after_upload';
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->file = $data['file'];
+    }
+
+    public function serialize()
+    {
+        return serialize(
             array(
-                'file_id' => $this->file->getId(),
+                'file' => $this->file,
             )
         );
     }

@@ -169,13 +169,26 @@ class CopyFileCommand extends AbstractFileCommand
         return $command->execute();
     }
 
-    public function getMessage()
+    public function getTopic()
     {
-        return Message::create(
-            'xi_filelib.command.file.copy',
+        return 'xi_filelib.command.file.copy';
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->file = $data['file'];
+        $this->folder = $data['folder'];
+        $this->uuid = $data['uuid'];
+    }
+
+    public function serialize()
+    {
+        return serialize(
             array(
-                'file_id' => $this->file->getId(),
-                'folder_id' => $this->folder->getId(),
+                'file' => $this->file,
+                'folder' => $this->folder,
+                'uuid' => $this->uuid,
             )
         );
     }

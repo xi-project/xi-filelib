@@ -74,15 +74,24 @@ class CreateFolderCommand extends AbstractFolderCommand
         return $this->uuid ?: Uuid::uuid4()->toString();
     }
 
-    /**
-     * @return Message
-     */
-    public function getMessage()
+    public function getTopic()
     {
-        return Message::create(
-            'xi_filelib.command.folder.create',
+        return 'xi_filelib.command.folder.create';
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->folder = $data['folder'];
+        $this->uuid = $data['uuid'];
+    }
+
+    public function serialize()
+    {
+        return serialize(
             array(
-                'folder_data' => $this->folder->toArray(),
+                'folder' => $this->folder,
+                'uuid' => $this->uuid,
             )
         );
     }

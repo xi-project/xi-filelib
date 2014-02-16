@@ -78,58 +78,30 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnsProperMessage()
+    public function commandShouldSerializeAndUnserializeProperly()
     {
-        $file = File::create(array('id' => 321));
+        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
         $command = new UpdateFileCommand($file);
 
-        $message = $command->getMessage();
+        $serialized = serialize($command);
 
-        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
-        $this->assertSame('xi_filelib.command.file.update', $message->getType());
+        $command2 = unserialize($serialized);
 
-        $darr = $file->toArray();
-        $darr['resource_id'] = null;
-        unset($darr['resource']);
-
-        $this->assertEquals(
-            array(
-                'file_data' => $darr,
-            ),
-            $message->getData()
-        );
+        $this->assertAttributeEquals(null, 'fileOperator', $command2);
+        $this->assertAttributeEquals($file, 'file', $command2);
     }
 
     /**
      * @test
      */
-    public function returnsProperMessageWithResource()
+    public function topicIsCorrect()
     {
-        $file = File::create(
-            array(
-                'id' => 321,
-                'resource' => Resource::create(array('id' => 986))
-            )
-        );
-
-        $command = new UpdateFileCommand($file);
-
-        $message = $command->getMessage();
-
-        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
-        $this->assertSame('xi_filelib.command.file.update', $message->getType());
-
-        $darr = $file->toArray();
-        $darr['resource_id'] = 986;
-        unset($darr['resource']);
-
-        $this->assertEquals(
-            array(
-                'file_data' => $darr,
-            ),
-            $message->getData()
-        );
+        $command = $this->getMockBuilder('Xi\Filelib\File\Command\UpdateFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+        $this->assertEquals('xi_filelib.command.file.update', $command->getTopic());
     }
 
 }

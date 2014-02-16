@@ -37,8 +37,6 @@ class ResourceRefactorMigration extends AbstractCommand
 
         foreach ($files as $file) {
 
-            $this->getOutput()->writeln("Processing file #{$file->getId()}");
-
             $profile = $this->filelib->getFileOperator()->getProfile($file->getProfile());
 
             $file->setUuid($this->filelib->getFileOperator()->generateUuid());
@@ -46,16 +44,13 @@ class ResourceRefactorMigration extends AbstractCommand
 
             $resource = $file->getResource();
 
-
-
             try {
-                $this->getOutput()->writeln("Setting hash for resource #{$resource->getId()}");
                 $retrieved = $this->filelib->getStorage()->retrieve($resource);
                 $resource->setHash(sha1_file($retrieved));
                 $resource->setVersions($profile->getFileVersions($file));
                 $this->filelib->getBackend()->updateResource($resource);
             } catch (\Exception $e) {
-                $this->getOutput()->writeln("Failed to set hash for resource #{$resource->getId()}");
+                // Loo
             }
 
         }
@@ -70,13 +65,26 @@ class ResourceRefactorMigration extends AbstractCommand
      */
     private function createUuidToFolder(Folder $folder)
     {
-        $this->getOutput()->writeln("Processing folder #{$folder->getId()}");
-
         $folder->setUuid($this->filelib->getFolderOperator()->generateUuid());
         $this->filelib->getFolderOperator()->update($folder);
 
         foreach ($this->filelib->getFolderOperator()->findSubFolders($folder) as $subfolder) {
             $this->createUuidToFolder($subfolder);
         }
+    }
+
+    public function getTopic()
+    {
+        return 'xi_filelib.command.migration.resource_refactor';
+    }
+
+    public function serialize()
+    {
+        return serialize(array());
+    }
+
+    public function unserialize($data)
+    {
+
     }
 }

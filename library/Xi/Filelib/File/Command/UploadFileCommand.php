@@ -163,10 +163,27 @@ class UploadFileCommand extends AbstractFileCommand
         return $file;
     }
 
-    /**
-     * @return Message
-     */
-    public function getMessage()
+    public function getTopic()
+    {
+        return 'xi_filelib.command.file.upload';
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->folder = $data['folder'];
+        $this->profile = $data['profile'];
+        $this->uuid = $data['uuid'];
+
+        $upload = new FileUpload($data['upload']['realPath']);
+        $upload->setOverrideBasename($data['upload']['overrideBasename']);
+        $upload->setOverrideFilename($data['upload']['overrideFilename']);
+        $upload->setTemporary($data['upload']['temporary']);
+
+        $this->upload = $upload;
+    }
+
+    public function serialize()
     {
         $uploadArr = array(
             'overrideBasename' => $this->upload->getOverrideBasename(),
@@ -175,15 +192,13 @@ class UploadFileCommand extends AbstractFileCommand
             'realPath' => $this->upload->getRealPath(),
         );
 
-        return Message::create(
-            'xi_filelib.command.file.upload',
+        return serialize(
             array(
-                'folder_id' => $this->folder->getId(),
-                'upload' => $uploadArr,
+                'folder' => $this->folder,
                 'profile' => $this->profile,
+                'upload' => $uploadArr,
+                'uuid' => $this->uuid,
             )
         );
     }
-
-
 }

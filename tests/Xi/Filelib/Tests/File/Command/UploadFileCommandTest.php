@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\File\Command;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
@@ -299,36 +300,25 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnsProperMessage()
+    public function commandShouldSerializeAndUnserializeProperly()
     {
-        $now = new \DateTime();
-        $folder = Folder::create(array('id' => 123));
-        $fileupload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpeg');
-        $fileupload->setDateUploaded($now);
-        $fileupload->setOverrideBasename('lussenmeister');
-        $fileupload->setTemporary(false);
+        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $profile = 'lussenhof';
+        $uuid = Uuid::uuid4()->toString();
 
-        $command = new UploadFileCommand($fileupload, $folder, 'manatee');
+        $command = new UploadFileCommand($upload, $folder, $profile, $uuid);
 
+        $serialized = serialize($command);
 
-        $message = $command->getMessage();
+        $command2 = unserialize($serialized);
 
-        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
-        $this->assertSame('xi_filelib.command.file.upload', $message->getType());
-        $this->assertEquals(
-            array(
-                'folder_id' => $folder->getId(),
-                'profile' => 'manatee',
-                'upload' => array(
-                    'overrideBasename' => $fileupload->getOverrideBasename(),
-                    'overrideFilename' => $fileupload->getOverrideFilename(),
-                    'temporary' => $fileupload->isTemporary(),
-                    'realPath' => $fileupload->getRealPath(),
-                )
-            ),
-            $message->getData()
-        );
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+        $this->assertAttributeEquals($profile, 'profile', $command2);
+        $this->assertAttributeInstanceof('Xi\Filelib\File\Upload\FileUpload', 'upload', $command2);
+        $this->assertAttributeEquals($uuid, 'uuid', $command2);
     }
+
 
     /**
      * @test
@@ -345,5 +335,16 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame('lussen-meister-hof', $presetCommand->getUuid());
     }
 
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
 
+        $this->assertEquals('xi_filelib.command.file.upload', $command->getTopic());
+    }
 }

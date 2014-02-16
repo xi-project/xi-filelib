@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Folder\Command;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Folder\Folder;
@@ -117,20 +118,33 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnsProperMessage()
+    public function commandShouldSerializeAndUnserializeProperly()
     {
-        $folder = Folder::create(array('id' => 743, 'parent_id' => 890));
-        $command = new CreateFolderCommand($folder);
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $uuid = Uuid::uuid4()->toString();
 
-        $message = $command->getMessage();
+        $command = new CreateFolderCommand($folder, $uuid);
 
-        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
-        $this->assertSame('xi_filelib.command.folder.create', $message->getType());
-        $this->assertEquals(
-            array(
-                'folder_data' => $folder->toArray(),
-            ),
-            $message->getData()
-        );
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
+
+        $this->assertAttributeEquals(null, 'folderOperator', $command2);
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+        $this->assertAttributeEquals($uuid, 'uuid', $command2);
+
     }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\CreateFolderCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.folder.create', $command->getTopic());
+    }
+
 }

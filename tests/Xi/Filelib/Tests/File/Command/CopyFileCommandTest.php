@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\File\Command;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
@@ -233,24 +234,20 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnsProperMessage()
+    public function commandShouldSerializeAndUnserializeProperly()
     {
-        $folder = Folder::create(array('id' => 123));
-        $file = File::create(array('id' => 321));
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $file = $this->getMock('Xi\Filelib\File\File');
+        $uuid = Uuid::uuid4()->toString();
 
-        $command = new CopyFileCommand($file, $folder);
+        $command = new CopyFileCommand($file, $folder, $uuid);
 
-        $message = $command->getMessage();
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
 
-        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
-        $this->assertSame('xi_filelib.command.file.copy', $message->getType());
-        $this->assertEquals(
-            array(
-                'file_id' => $file->getId(),
-                'folder_id' => $folder->getId(),
-            ),
-            $message->getData()
-        );
+        $this->assertAttributeEquals($file, 'file', $command2);
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+        $this->assertAttributeEquals($uuid, 'uuid', $command2);
     }
 
     /**
@@ -266,5 +263,18 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $presetCommand = new CopyFileCommand($file, $folder, 'lussen-tussen-hof');
         $this->assertSame('lussen-tussen-hof', $presetCommand->getUuid());
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\File\Command\CopyFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.file.copy', $command->getTopic());
     }
 }

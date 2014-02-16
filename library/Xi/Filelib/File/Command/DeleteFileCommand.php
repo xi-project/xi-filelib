@@ -46,15 +46,22 @@ class DeleteFileCommand extends AbstractFileCommand
         return true;
     }
 
-    /**
-     * @return Message
-     */
-    public function getMessage()
+    public function getTopic()
     {
-        return Message::create(
-            'xi_filelib.command.file.delete',
+        return 'xi_filelib.command.file.delete';
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->file = $data['file'];
+    }
+
+    public function serialize()
+    {
+        return serialize(
             array(
-                'file_id' => $this->file->getId(),
+                'file' => $this->file,
             )
         );
     }

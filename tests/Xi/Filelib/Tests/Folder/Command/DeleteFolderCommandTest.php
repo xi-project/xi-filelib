@@ -130,20 +130,29 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnsProperMessage()
+    public function commandShouldSerializeAndUnserializeProperly()
     {
-        $folder = Folder::create(array('id' => 321));
+        $folder = $this->getMockedFolder();
+
         $command = new DeleteFolderCommand($folder);
 
-        $message = $command->getMessage();
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
 
-        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
-        $this->assertSame('xi_filelib.command.folder.delete', $message->getType());
-        $this->assertEquals(
-            array(
-                'folder_id' => $folder->getId(),
-            ),
-            $message->getData()
-        );
+        $this->assertAttributeEquals($folder, 'folder', $command2);
     }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\DeleteFolderCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.folder.delete', $command->getTopic());
+    }
+
 }

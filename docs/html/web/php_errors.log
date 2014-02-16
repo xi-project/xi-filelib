@@ -1101,7 +1101,7 @@ Stack trace:
 [25-Jul-2013 23:58:20 Europe/Helsinki] PHP   4. Xi\Filelib\AbstractOperator->createCommand() /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php:210
 [25-Jul-2013 23:58:20 Europe/Helsinki] PHP   5. ReflectionClass->newInstanceArgs() /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php:130
 [25-Jul-2013 23:58:20 Europe/Helsinki] PHP   6. Xi\Filelib\File\Command\UploadFileCommand->__construct() /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php:130
-[25-Jul-2013 23:58:49 Europe/Helsinki] PHP Catchable fatal error:  Argument 1 passed to Xi\Filelib\AbstractOperator::executeOrQueue() must implement interface Xi\Filelib\Command\EnqueueableCommand, null given, called in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php on line 212 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php on line 134
+[25-Jul-2013 23:58:49 Europe/Helsinki] PHP Catchable fatal error:  Argument 1 passed to Xi\Filelib\AbstractOperator::executeOrQueue() must implement interface Xi\Filelib\Command\Command, null given, called in /wwwroot/xi-filelib/library/Xi/Filelib/File/FileOperator.php on line 212 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/AbstractOperator.php on line 134
 [25-Jul-2013 23:58:49 Europe/Helsinki] PHP Stack trace:
 [25-Jul-2013 23:58:49 Europe/Helsinki] PHP   1. {main}() /wwwroot/xi-filelib/docs/examples/web/hello-world.php:0
 [25-Jul-2013 23:58:49 Europe/Helsinki] PHP   2. Xi\Filelib\FileLibrary->upload() /wwwroot/xi-filelib/docs/examples/web/hello-world.php:6
@@ -2906,3 +2906,20 @@ Stack trace:
 [29-Jan-2014 23:07:24 Europe/Helsinki] PHP   5. Xi\Filelib\Backend\Backend->createFile() /wwwroot/xi-filelib/library/Xi/Filelib/File/Command/UploadFileCommand.php:150
 [29-Jan-2014 23:07:24 Europe/Helsinki] PHP   6. Xi\Filelib\Backend\Backend->findByFinder() /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:133
 [29-Jan-2014 23:07:24 Europe/Helsinki] PHP   7. Xi\Filelib\Backend\Platform\JsonPlatform->findByFinder() /wwwroot/xi-filelib/library/Xi/Filelib/Backend/Backend.php:91
+[16-Feb-2014 18:13:18 Europe/Helsinki] PHP Notice:  Undefined variable: queue in /wwwroot/xi-filelib/docs/html/async-common.php on line 16
+[16-Feb-2014 18:13:18 Europe/Helsinki] PHP Stack trace:
+[16-Feb-2014 18:13:18 Europe/Helsinki] PHP   1. {main}() /wwwroot/xi-filelib/docs/html/web/zencoder.php:0
+[16-Feb-2014 18:13:18 Europe/Helsinki] PHP   2. require_once() /wwwroot/xi-filelib/docs/html/web/zencoder.php:16
+[16-Feb-2014 18:13:18 Europe/Helsinki] PHP Catchable fatal error:  Argument 1 passed to Xi\Filelib\FileLibrary::createQueueFromAdapter() must implement interface Pekkis\Queue\Adapter\Adapter, null given, called in /wwwroot/xi-filelib/docs/html/async-common.php on line 16 and defined in /wwwroot/xi-filelib/library/Xi/Filelib/FileLibrary.php on line 253
+[16-Feb-2014 18:13:18 Europe/Helsinki] PHP Stack trace:
+[16-Feb-2014 18:13:18 Europe/Helsinki] PHP   1. {main}() /wwwroot/xi-filelib/docs/html/web/zencoder.php:0
+[16-Feb-2014 18:13:18 Europe/Helsinki] PHP   2. require_once() /wwwroot/xi-filelib/docs/html/web/zencoder.php:16
+[16-Feb-2014 18:13:18 Europe/Helsinki] PHP   3. Xi\Filelib\FileLibrary->createQueueFromAdapter() /wwwroot/xi-filelib/docs/html/async-common.php:16
+[16-Feb-2014 18:13:34 Europe/Helsinki] PHP Fatal error:  Uncaught exception 'PhpAmqpLib\Exception\AMQPRuntimeException' with message 'Error reading data. Received 0 instead of expected 7 bytes' in /wwwroot/xi-filelib/vendor/videlalvaro/php-amqplib/PhpAmqpLib/Wire/IO/StreamIO.php:56
+Stack trace:
+#0 /wwwroot/xi-filelib/vendor/videlalvaro/php-amqplib/PhpAmqpLib/Wire/AMQPReader.php(130): PhpAmqpLib\Wire\IO\StreamIO->read(7)
+#1 /wwwroot/xi-filelib/vendor/videlalvaro/php-amqplib/PhpAmqpLib/Wire/AMQPReader.php(89): PhpAmqpLib\Wire\AMQPReader->rawread(7)
+#2 /wwwroot/xi-filelib/vendor/videlalvaro/php-amqplib/PhpAmqpLib/Connection/AbstractConnection.php(312): PhpAmqpLib\Wire\AMQPReader->read(7)
+#3 /wwwroot/xi-filelib/vendor/videlalvaro/php-amqplib/PhpAmqpLib/Connection/AbstractConnection.php(345): PhpAmqpLib\Connection\AbstractConnection->wait_frame(0)
+#4 /wwwroot/xi-filelib/vendor/videlalvaro/php-amqplib/PhpAmqpLib/Channel/AbstractChannel.php(121): PhpAmqpLib\Connection\AbstractConnection->wait_channel(0, 0)
+#5 /wwwroot/xi-filelib/vendor/videlalvaro/php-amqplib/PhpAmqpLib/C in /wwwroot/xi-filelib/vendor/videlalvaro/php-amqplib/PhpAmqpLib/Wire/IO/StreamIO.php on line 56

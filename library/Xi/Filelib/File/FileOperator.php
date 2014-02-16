@@ -19,7 +19,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileProfileEvent;
-use Xi\Filelib\EnqueueableCommand;
+use Xi\Filelib\Command;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 use Xi\Filelib\Events;
@@ -44,11 +44,11 @@ class FileOperator extends AbstractOperator
      * @var array
      */
     protected $commandStrategies = array(
-        self::COMMAND_UPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_AFTERUPLOAD => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UPDATE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_DELETE => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_COPY => EnqueueableCommand::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UPLOAD => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_AFTERUPLOAD => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_COPY => Command::STRATEGY_SYNCHRONOUS,
     );
 
     /**

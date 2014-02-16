@@ -161,20 +161,31 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnsProperMessage()
+    public function commandShouldSerializeAndUnserializeProperly()
     {
-        $url = 'tenhunen/imaisee/mehevan/keihaan';
+        $folder = $this->getMockedFolder();
+
+        $url = 'tussen/hofen/meister';
+
         $command = new CreateByUrlFolderCommand($url);
 
-        $message = $command->getMessage();
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
 
-        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
-        $this->assertSame('xi_filelib.command.folder.create_by_url', $message->getType());
-        $this->assertEquals(
-            array(
-                'url' => $url,
-            ),
-            $message->getData()
-        );
+        $this->assertAttributeEquals(null, 'folderOperator', $command2);
+        $this->assertAttributeEquals($url, 'url', $command2);
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.folder.create_by_url', $command->getTopic());
     }
 }

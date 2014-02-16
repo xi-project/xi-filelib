@@ -41,19 +41,22 @@ class UpdateFileCommand extends AbstractFileCommand
         return $this->file;
     }
 
-    /**
-     * @return Message
-     */
-    public function getMessage()
+    public function getTopic()
     {
-        $darr = $this->file->toArray();
-        unset($darr['resource']);
-        $darr['resource_id'] = $this->file->getResource() ? $this->file->getResource()->getId() : null;
+        return 'xi_filelib.command.file.update';
+    }
 
-        return Message::create(
-            'xi_filelib.command.file.update',
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->file = $data['file'];
+    }
+
+    public function serialize()
+    {
+        return serialize(
             array(
-                'file_data' => $darr,
+                'file' => $this->file,
             )
         );
     }

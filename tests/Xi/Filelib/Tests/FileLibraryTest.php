@@ -55,10 +55,12 @@ class FileLibraryTest extends TestCase
     public function queueSetterAndGetterShouldWork()
     {
         $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
-        $obj = $this->getMockedQueue();
         $this->assertNull($filelib->getQueue());
-        $this->assertSame($filelib, $filelib->setQueue($obj));
-        $this->assertSame($obj, $filelib->getQueue());
+
+        $adapter = $this->getMockedQueueAdapter();
+        $this->assertSame($filelib, $filelib->createQueueFromAdapter($adapter));
+
+        $this->assertInstanceOf('Pekkis\Queue\SymfonyBridge\EventDispatchingQueue', $filelib->getQueue());
     }
 
     /**

@@ -65,22 +65,29 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnsProperMessage()
+    public function commandShouldSerializeAndUnserializeProperly()
     {
-        $file = File::create(array('id' => 321));
+        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
 
         $command = new AfterUploadFileCommand($file);
+        $serialized = serialize($command);
 
-        $message = $command->getMessage();
+        $command2 = unserialize($serialized);
 
-        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
-        $this->assertSame('xi_filelib.command.file.after_upload', $message->getType());
-        $this->assertEquals(
-            array(
-                'file_id' => $file->getId(),
-            ),
-            $message->getData()
-        );
+        $this->assertAttributeEquals(null, 'fileOperator', $command2);
+        $this->assertAttributeEquals($file, 'file', $command2);
     }
 
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.file.after_upload', $command->getTopic());
+    }
 }

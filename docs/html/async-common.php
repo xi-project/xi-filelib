@@ -1,7 +1,6 @@
 <?php
 
 use Pekkis\Queue\Adapter\PhpAMQPAdapter;
-use Pekkis\Queue\Queue;
 
 $adapter = new PhpAMQPAdapter(
     RABBITMQ_HOST,
@@ -13,6 +12,7 @@ $adapter = new PhpAMQPAdapter(
     'filelib_example_queue'
 );
 
-$queue = new Queue($adapter, $filelib->getEventDispatcher());
-$filelib->setQueue($queue);
+// Filelib creates its queue with our adapter
+$filelib->createQueueFromAdapter($adapter);
 
+$queue = $filelib->getQueue();

@@ -15,7 +15,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\EnqueueableCommand;
+use Xi\Filelib\Command;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 use Xi\Filelib\File\FileProfile;
@@ -39,11 +39,11 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $filelib = $this->getMockedFilelib();
         $op = new FileOperator($filelib);
 
-        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
-        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_AFTERUPLOAD));
-        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPDATE));
-        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_DELETE));
-        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_COPY));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_AFTERUPLOAD));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPDATE));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_DELETE));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_COPY));
     }
 
     /**
@@ -54,24 +54,32 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $filelib = $this->getMockedFilelib();
         $op = new FileOperator($filelib);
 
-        $this->assertEquals(EnqueueableCommand::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
 
-        $this->assertSame($op, $op->setCommandStrategy(FileOperator::COMMAND_UPLOAD, EnqueueableCommand::STRATEGY_ASYNCHRONOUS));
+        $this->assertSame($op, $op->setCommandStrategy(FileOperator::COMMAND_UPLOAD, Command::STRATEGY_ASYNCHRONOUS));
 
-        $this->assertEquals(EnqueueableCommand::STRATEGY_ASYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
+        $this->assertEquals(Command::STRATEGY_ASYNCHRONOUS, $op->getCommandStrategy(FileOperator::COMMAND_UPLOAD));
 
+    }
+
+    public function provideUploads()
+    {
+        return array(
+            array(new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg')),
+            array(ROOT_TESTS . '/data/self-lussing-manatee.jpg')
+        );
     }
 
     /**
      * @test
+     * @dataProvider provideUploads
      */
-    public function uploadShouldExecuteCommandsWhenSynchronousStrategyIsUsed()
+    public function uploadShouldExecuteCommandsWhenSynchronousStrategyIsUsed($upload)
     {
         $filelib = $this->getMockedFilelib();
 
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
 
-        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $profile = 'versioned';
 
         $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
@@ -81,8 +89,10 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
 
         $op->expects($this->never())->method('getQueue');
 
+        $xupload = ($upload instanceof FileUpload) ? $upload: new FileUpload($upload);
+
         $uploadCommand = $this->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
-                               ->setConstructorArgs(array($upload, $folder, $profile))
+                               ->setConstructorArgs(array($xupload, $folder, $profile))
                                ->setMethods(array('execute'))
                                ->getMock();
 
@@ -154,11 +164,14 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
                                ->setMethods(array('execute'))
                                ->getMock();
 
-        $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf('Xi\Filelib\File\Command\UploadFileCommand'));
+        $queue->expects($this->once())->method('enqueue')->with(
+            $uploadCommand->getTopic(),
+            $this->isInstanceOf('Xi\Filelib\File\Command\UploadFileCommand')
+        );
 
         $op->expects($this->at(0))->method('createCommand')->with($this->equalTo('Xi\Filelib\File\Command\UploadFileCommand'))->will($this->returnValue($uploadCommand));
 
-        $op->setCommandStrategy(FileOperator::COMMAND_UPLOAD, EnqueueableCommand::STRATEGY_ASYNCHRONOUS);
+        $op->setCommandStrategy(FileOperator::COMMAND_UPLOAD, Command::STRATEGY_ASYNCHRONOUS);
 
         $op->upload($upload, $folder, $profile);
 
@@ -459,12 +472,12 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
     public function provideCommandMethods()
     {
         return array(
-            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', FileOperator::COMMAND_COPY, EnqueueableCommand::STRATEGY_ASYNCHRONOUS, true, true),
-            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', FileOperator::COMMAND_COPY, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false, true),
-            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', FileOperator::COMMAND_DELETE, EnqueueableCommand::STRATEGY_ASYNCHRONOUS, true, false),
-            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', FileOperator::COMMAND_DELETE, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false, false),
-            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', FileOperator::COMMAND_UPDATE, EnqueueableCommand::STRATEGY_ASYNCHRONOUS, true, false),
-            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', FileOperator::COMMAND_UPDATE, EnqueueableCommand::STRATEGY_SYNCHRONOUS, false, false),
+            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', FileOperator::COMMAND_COPY, Command::STRATEGY_ASYNCHRONOUS, true, true),
+            array('Xi\Filelib\File\Command\CopyFileCommand', 'copy', FileOperator::COMMAND_COPY, Command::STRATEGY_SYNCHRONOUS, false, true),
+            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', FileOperator::COMMAND_DELETE, Command::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\DeleteFileCommand', 'delete', FileOperator::COMMAND_DELETE, Command::STRATEGY_SYNCHRONOUS, false, false),
+            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', FileOperator::COMMAND_UPDATE, Command::STRATEGY_ASYNCHRONOUS, true, false),
+            array('Xi\Filelib\File\Command\UpdateFileCommand', 'update', FileOperator::COMMAND_UPDATE, Command::STRATEGY_SYNCHRONOUS, false, false),
         );
 
     }
@@ -492,7 +505,10 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
                           ->getMock();
 
           if ($queueExpected) {
-              $queue->expects($this->once())->method('enqueue')->with($this->isInstanceOf($commandClass));
+              $queue->expects($this->once())->method('enqueue')->with(
+                  $this->isType('string'),
+                  $this->isInstanceOf($commandClass)
+              );
               $command->expects($this->never())->method('execute');
           } else {
               $queue->expects($this->never())->method('enqueue');

@@ -76,18 +76,23 @@ class UpdateFolderCommand extends AbstractFolderCommand
         $this->fileOperator = $filelib->getFileOperator();
     }
 
-    /**
-     * @return Message
-     */
-    public function getMessage()
+    public function getTopic()
     {
-        return Message::create(
-            'xi_filelib.command.folder.update',
+        return 'xi_filelib.command.folder.update';
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->folder = $data['folder'];
+    }
+
+    public function serialize()
+    {
+        return serialize(
             array(
-                'folder_data' => $this->folder->toArray(),
+                'folder' => $this->folder,
             )
         );
     }
-
-
 }

@@ -126,20 +126,28 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnsProperMessage()
+    public function commandShouldSerializeAndUnserializeProperly()
     {
-        $folder = Folder::create(array('id' => 743, 'parent_id' => 890));
+        $folder = $this->getMockedFolder();
+
         $command = new UpdateFolderCommand($folder);
 
-        $message = $command->getMessage();
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
 
-        $this->assertInstanceOf('Pekkis\Queue\Message', $message);
-        $this->assertSame('xi_filelib.command.folder.update', $message->getType());
-        $this->assertEquals(
-            array(
-                'folder_data' => $folder->toArray(),
-            ),
-            $message->getData()
-        );
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\UpdateFolderCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.folder.update', $command->getTopic());
     }
 }

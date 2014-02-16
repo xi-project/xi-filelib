@@ -76,15 +76,22 @@ class DeleteFolderCommand extends AbstractFolderCommand
         $this->fileOperator = $filelib->getFileOperator();
     }
 
-    /**
-     * @return Message
-     */
-    public function getMessage()
+    public function getTopic()
     {
-        return Message::create(
-            'xi_filelib.command.folder.delete',
+        return 'xi_filelib.command.folder.delete';
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->folder = $data['folder'];
+    }
+
+    public function serialize()
+    {
+        return serialize(
             array(
-                'folder_id' => $this->folder->getId(),
+                'folder' => $this->folder,
             )
         );
     }

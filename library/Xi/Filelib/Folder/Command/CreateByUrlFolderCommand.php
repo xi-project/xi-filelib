@@ -72,13 +72,20 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
         return $created;
     }
 
-    /**
-     * @return Message
-     */
-    public function getMessage()
+    public function getTopic()
     {
-        return Message::create(
-            'xi_filelib.command.folder.create_by_url',
+        return 'xi_filelib.command.folder.create_by_url';
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->url = $data['url'];
+    }
+
+    public function serialize()
+    {
+        return serialize(
             array(
                 'url' => $this->url,
             )
