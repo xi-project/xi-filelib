@@ -4,7 +4,7 @@ use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\EnqueueableCommand;
+use Xi\Filelib\Command;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../constants.php';
@@ -47,7 +47,7 @@ for ($x = 1; $x <= 10; $x++) {
 
             $filelib->getFileOperator()->setCommandStrategy(
                 FileOperator::COMMAND_AFTERUPLOAD,
-                EnqueueableCommand::STRATEGY_ASYNCHRONOUS
+                Command::STRATEGY_ASYNCHRONOUS
             );
 
             $filelib->getFileOperator()->upload($file->getRealPath());

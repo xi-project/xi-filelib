@@ -13,7 +13,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\Queue\Queue;
+use Pekkis\Queue\Queue;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Rhumsaa\Uuid\Uuid;
 
@@ -106,8 +106,8 @@ abstract class AbstractOperator
         if (!in_array(
             $strategy,
             array(
-                EnqueueableCommand::STRATEGY_ASYNCHRONOUS,
-                EnqueueableCommand::STRATEGY_SYNCHRONOUS
+                Command::STRATEGY_ASYNCHRONOUS,
+                Command::STRATEGY_SYNCHRONOUS
             )
         )) {
             throw new InvalidArgumentException("Invalid command strategy '{$strategy}'");
@@ -139,11 +139,12 @@ abstract class AbstractOperator
         return $ret;
     }
 
-    public function executeOrQueue(EnqueueableCommand $commandObj, $commandName, array $callbacks = array())
+    public function executeOrQueue(Command $commandObj, $commandName, array $callbacks = array())
     {
+        /* @todo: refactor */
         $strategy = $this->getCommandStrategy($commandName);
-        if ($strategy == EnqueueableCommand::STRATEGY_ASYNCHRONOUS) {
-            $ret = $this->getQueue()->enqueue($commandObj);
+        if ($strategy == Command::STRATEGY_ASYNCHRONOUS) {
+            $ret = $this->getQueue()->enqueue($commandObj->getTopic(), $commandObj);
         } else {
             $ret = $commandObj->execute();
         }

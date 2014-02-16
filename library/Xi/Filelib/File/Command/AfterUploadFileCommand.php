@@ -13,6 +13,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
+use Pekkis\Queue\Message;
 
 class AfterUploadFileCommand extends AbstractFileCommand
 {
@@ -23,7 +24,6 @@ class AfterUploadFileCommand extends AbstractFileCommand
 
     public function __construct(File $file)
     {
-        parent::__construct();
         $this->file = $file;
     }
 
@@ -45,11 +45,15 @@ class AfterUploadFileCommand extends AbstractFileCommand
         return $file;
     }
 
+    public function getTopic()
+    {
+        return 'xi_filelib.command.file.after_upload';
+    }
+
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
-        $this->uuid = $data['uuid'];
     }
 
     public function serialize()
@@ -57,7 +61,6 @@ class AfterUploadFileCommand extends AbstractFileCommand
         return serialize(
             array(
                 'file' => $this->file,
-                'uuid' => $this->uuid,
             )
         );
     }

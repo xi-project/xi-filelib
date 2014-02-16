@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\File\Command;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
@@ -21,6 +22,7 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
 use Xi\Filelib\Events;
+use Pekkis\Queue\Message;
 
 class UploadFileCommand extends AbstractFileCommand
 {
@@ -42,13 +44,25 @@ class UploadFileCommand extends AbstractFileCommand
      */
     private $profile;
 
-    public function __construct($upload, Folder $folder, $profile = 'default')
-    {
-        parent::__construct();
+    /**
+     * @var string
+     */
+    protected $uuid;
 
+    public function __construct(FileUpload $upload, Folder $folder, $profile = 'default', $uuid = null)
+    {
         $this->upload = $upload;
         $this->folder = $folder;
         $this->profile = $profile;
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid ?: Uuid::uuid4()->toString();
     }
 
     /**
@@ -103,10 +117,6 @@ class UploadFileCommand extends AbstractFileCommand
 
     public function execute()
     {
-        if (!$this->upload instanceof FileUpload) {
-            $this->upload = new FileUpload($this->upload);
-        }
-
         $upload = $this->upload;
         $folder = $this->folder;
         $profile = $this->profile;
@@ -153,10 +163,14 @@ class UploadFileCommand extends AbstractFileCommand
         return $file;
     }
 
+    public function getTopic()
+    {
+        return 'xi_filelib.command.file.upload';
+    }
+
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
-
         $this->folder = $data['folder'];
         $this->profile = $data['profile'];
         $this->uuid = $data['uuid'];
@@ -167,27 +181,20 @@ class UploadFileCommand extends AbstractFileCommand
         $upload->setTemporary($data['upload']['temporary']);
 
         $this->upload = $upload;
-
     }
 
     public function serialize()
     {
-        if (!$this->upload instanceof FileUpload) {
-            $this->upload = new FileUpload($this->upload);
-        }
-
-        $upload = $this->upload;
-
         $uploadArr = array(
-            'overrideBasename' => $upload->getOverrideBasename(),
-            'overrideFilename' => $upload->getOverrideFilename(),
-            'temporary' => $upload->isTemporary(),
-            'realPath' => $upload->getRealPath(),
+            'overrideBasename' => $this->upload->getOverrideBasename(),
+            'overrideFilename' => $this->upload->getOverrideFilename(),
+            'temporary' => $this->upload->isTemporary(),
+            'realPath' => $this->upload->getRealPath(),
         );
 
         return serialize(
             array(
-               'folder' => $this->folder,
+                'folder' => $this->folder,
                 'profile' => $this->profile,
                 'upload' => $uploadArr,
                 'uuid' => $this->uuid,

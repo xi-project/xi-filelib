@@ -11,19 +11,18 @@ namespace Xi\Filelib;
 
 use Xi\Filelib\Attacher;
 use Symfony\Component\Console\Output\OutputInterface;
+use Serializable;
 
-interface Command extends Attacher
+interface Command extends Attacher, Serializable
 {
+    const STRATEGY_SYNCHRONOUS = 'sync';
+    const STRATEGY_ASYNCHRONOUS = 'async';
+
     public function execute();
 
     /**
-     * @param OutputInterface $output
-     * @return Command
+     * @return string
      */
-    public function setOutput(OutputInterface $output);
+    public function getTopic();
 
-    /**
-     * @return OutputInterface
-     */
-    public function getOutput();
 }

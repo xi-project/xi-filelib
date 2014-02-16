@@ -51,8 +51,8 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             $this->markTestSkipped('ZencoderService class could not be loaded');
         }
 
-        if (!class_exists('ZendService\Amazon\S3\S3')) {
-            $this->markTestSkipped('ZendService\Amazon\S3\S3 class could not be loaded');
+        if (!class_exists('Aws\S3\S3Client')) {
+            $this->markTestSkipped('AWS client class could not be loaded');
         }
 
         $this->config = array(
@@ -79,7 +79,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $this->storage = $this->getMockedStorage();
 
         $this->amazonService = $this->getMockedAwsService();
 
@@ -107,7 +107,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
     public function tearDown()
     {
-        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
+        if (!class_exists('Aws\S3\S3Client')) {
             return;
         }
 
@@ -118,8 +118,6 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         if (!ZENCODER_KEY) {
             $this->markTestSkipped('Zencoder service not configured');
         }
-
-        $this->plugin->getAwsService()->cleanBucket($this->plugin->getAwsBucket());
     }
 
     /**
@@ -154,11 +152,11 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function getAwsServiceShouldReturnAndCacheAwsService()
+    public function getClientShouldReturnAndCacheAwsService()
     {
-        $service = $this->plugin->getAwsService();
-        $this->assertInstanceOf('ZendService\Amazon\S3\S3', $service);
-        $this->assertSame($service, $this->plugin->getAwsService());
+        $service = $this->plugin->getClient();
+        $this->assertInstanceOf('Aws\S3\S3Client', $service);
+        $this->assertSame($service, $this->plugin->getClient());
     }
 
     /**
@@ -270,23 +268,18 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     public function createVersionsShouldCreateVersions()
     {
         $this->setupStubsForZencoderService();
-        $this->plugin->setAwsService($this->amazonService);
+        $this->plugin->setClient($this->amazonService);
         $this->plugin->setService($this->zencoderService);
 
         $this->amazonService
             ->expects($this->at(0))
-            ->method('putFile')
-            ->with($this->isType('string'), $this->isType('string'));
+            ->method('putObject')
+            ->with($this->isType('array'));
 
         $this->amazonService
             ->expects($this->at(1))
-            ->method('getEndpoint')
-            ->will($this->returnValue('http://dr-kobros.com'));
-
-        $this->amazonService
-            ->expects($this->at(2))
-            ->method('removeObject')
-            ->with($this->isType('string'));
+            ->method('deleteObject')
+            ->with($this->isType('array'));
 
         $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
 
@@ -373,7 +366,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
      */
     public function createVersionsShouldThrowExceptionOnZencoderError()
     {
-        $this->plugin->setAwsService($this->amazonService);
+        $this->plugin->setClient($this->amazonService);
         $this->plugin->setService($this->zencoderService);
 
         $this->zencoderService->jobs->expects($this->once())->method('create')
@@ -386,8 +379,8 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->amazonService
             ->expects($this->at(0))
-            ->method('putFile')
-            ->with($this->isType('string'), $this->isType('string'));
+            ->method('putObject')
+            ->with($this->isType('array'));
 
         $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
 
@@ -408,8 +401,9 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
     private function getMockedAwsService()
     {
-        return $this->getMockBuilder('ZendService\Amazon\S3\S3')
+        return $this->getMockBuilder('Aws\S3\S3Client')
                     ->disableOriginalConstructor()
+                    ->setMethods(array('putObject', 'deleteObject'))
                     ->getMock();
     }
 

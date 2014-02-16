@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\File\Command;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
@@ -237,13 +238,43 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $file = $this->getMock('Xi\Filelib\File\File');
-        $command = new CopyFileCommand($file, $folder);
+        $uuid = Uuid::uuid4()->toString();
+
+        $command = new CopyFileCommand($file, $folder, $uuid);
 
         $serialized = serialize($command);
         $command2 = unserialize($serialized);
 
         $this->assertAttributeEquals($file, 'file', $command2);
         $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
+        $this->assertAttributeEquals($uuid, 'uuid', $command2);
+    }
+
+    /**
+     * @test
+     */
+    public function respectsPresetUuid()
+    {
+        $folder = Folder::create(array('id' => 123));
+        $file = File::create(array('id' => 321));
+
+        $command = new CopyFileCommand($file, $folder);
+        $this->assertUuid($command->getUuid());
+
+        $presetCommand = new CopyFileCommand($file, $folder, 'lussen-tussen-hof');
+        $this->assertSame('lussen-tussen-hof', $presetCommand->getUuid());
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\File\Command\CopyFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.file.copy', $command->getTopic());
     }
 }

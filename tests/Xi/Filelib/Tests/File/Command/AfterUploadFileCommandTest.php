@@ -60,7 +60,6 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-
     }
 
     /**
@@ -77,7 +76,18 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertAttributeEquals(null, 'fileOperator', $command2);
         $this->assertAttributeEquals($file, 'file', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
     }
 
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.file.after_upload', $command->getTopic());
+    }
 }

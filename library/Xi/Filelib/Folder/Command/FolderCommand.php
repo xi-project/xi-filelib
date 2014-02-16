@@ -9,8 +9,8 @@
 
 namespace Xi\Filelib\Folder\Command;
 
-use Xi\Filelib\EnqueueableCommand;
+use Xi\Filelib\Command;
 
-interface FolderCommand extends EnqueueableCommand
+interface FolderCommand extends Command
 {
 }

@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Folder\Command;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Folder\Folder;
@@ -18,24 +19,6 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\CreateFolderCommand'));
         $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\CreateFolderCommand'));
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-
-        $command = new CreateFolderCommand($folder);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'folderOperator', $command2);
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
-
     }
 
     /**
@@ -118,5 +101,50 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $command->execute();
     }
 
+    /**
+     * @test
+     */
+    public function respectsPresetUuid()
+    {
+        $folder = Folder::create(array('id' => 123));
+
+        $command = new CreateFolderCommand($folder);
+        $this->assertUuid($command->getUuid());
+
+        $presetCommand = new CreateFolderCommand($folder, 'lussen-meister-hof');
+        $this->assertSame('lussen-meister-hof', $presetCommand->getUuid());
+    }
+
+    /**
+     * @test
+     */
+    public function commandShouldSerializeAndUnserializeProperly()
+    {
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $uuid = Uuid::uuid4()->toString();
+
+        $command = new CreateFolderCommand($folder, $uuid);
+
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
+
+        $this->assertAttributeEquals(null, 'folderOperator', $command2);
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+        $this->assertAttributeEquals($uuid, 'uuid', $command2);
+
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\CreateFolderCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.folder.create', $command->getTopic());
+    }
 
 }

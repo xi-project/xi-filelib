@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib;
 
+use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\Storage;
@@ -18,8 +19,9 @@ use Xi\Filelib\File\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Filelib\Event\PluginEvent;
-use Xi\Filelib\Queue\Queue;
 use Xi\Filelib\Backend\Platform\Platform;
+use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
+use Pekkis\Queue\Queue;
 
 /**
  * File library
@@ -61,7 +63,7 @@ class FileLibrary
     private $tempDir;
 
     /**
-     * @var Queue
+     * @var EventDispatchingQueue
      */
     private $queue;
 
@@ -245,19 +247,26 @@ class FileLibrary
     /**
      * Sets queue
      *
-     * @param Queue $queue
+     * @param QueueAdapter $adapter
      */
-    public function setQueue(Queue $queue)
+    public function createQueueFromAdapter(QueueAdapter $adapter)
     {
-        $this->queue = $queue;
+        $queue = new Queue($adapter);
+        $queue->addDataSerializer(
+            new CommandDataSerializer($this)
+        );
 
+        $this->queue = new EventDispatchingQueue(
+            $queue,
+            $this->getEventDispatcher()
+        );
         return $this;
     }
 
     /**
      * Returns queue
      *
-     * @return Queue
+     * @return EventDispatchingQueue
      */
     public function getQueue()
     {

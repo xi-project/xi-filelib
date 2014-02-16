@@ -101,7 +101,7 @@ Upgrade your code. Everything will be broken now. Faaaantastic!
 
 #### MongoDB
 
-    db.files.update( { }, { $rename : { "date_uploaded" : "date_created" } } );
+    db.files.update( { }, { $rename : { "date_uploaded" : "date_created" } }, false, true );
 
     db.resources.drop();
     var createResource = function(file) {
@@ -125,7 +125,7 @@ Upgrade your code. Everything will be broken now. Faaaantastic!
 
     var fixFile = function(file) {
 
-        file.resource_id = file._id.toString();
+        file.resource_id = file._id.valueOf();
         delete file.mimetype;
         delete file.size;
         file.versions = [];

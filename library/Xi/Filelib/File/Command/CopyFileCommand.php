@@ -18,6 +18,8 @@ use Xi\Filelib\InvalidArgumentException;
 use DateTime;
 use Xi\Filelib\Events;
 use Xi\Filelib\Event\FolderEvent;
+use Pekkis\Queue\Message;
+use Rhumsaa\Uuid\Uuid;
 
 class CopyFileCommand extends AbstractFileCommand
 {
@@ -33,11 +35,24 @@ class CopyFileCommand extends AbstractFileCommand
      */
     private $folder;
 
-    public function __construct(File $file, Folder $folder)
+    /**
+     * @var string
+     */
+    private $uuid;
+
+    public function __construct(File $file, Folder $folder, $uuid = null)
     {
-        parent::__construct();
         $this->file = $file;
         $this->folder = $folder;
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid ?: Uuid::uuid4()->toString();
     }
 
     /**
@@ -152,6 +167,11 @@ class CopyFileCommand extends AbstractFileCommand
             array($impostor)
         );
         return $command->execute();
+    }
+
+    public function getTopic()
+    {
+        return 'xi_filelib.command.file.copy';
     }
 
     public function unserialize($serialized)

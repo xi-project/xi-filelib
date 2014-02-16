@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\EnqueueableCommand;
+use Xi\Filelib\Command;
 use Xi\Filelib\AbstractOperator;
 
 class AbstractOperatorTest extends TestCase
@@ -127,7 +127,7 @@ class AbstractOperatorTest extends TestCase
                          ->setConstructorArgs(array($filelib))
                          ->getMockForAbstractClass();
 
-        $op->setCommandStrategy('lussenhof', EnqueueableCommand::STRATEGY_ASYNCHRONOUS);
+        $op->setCommandStrategy('lussenhof', Command::STRATEGY_ASYNCHRONOUS);
 
     }
 
@@ -156,21 +156,18 @@ class AbstractOperatorTest extends TestCase
                    ->setMethods(array('getCommandStrategy', 'getQueue'))
                    ->getMock();
 
-        $command = $this->getMockBuilder('Xi\Filelib\EnqueueableCommand')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-
-        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+        $command = $this->getMockedCommand('tenhunen.imaisee.mehevaa');
+        $queue = $this->getMockedQueue();
 
         $op->expects($this->once())->method('getCommandStrategy')
            ->with($this->equalTo('tussi'))
-           ->will($this->returnValue(EnqueueableCommand::STRATEGY_ASYNCHRONOUS));
+           ->will($this->returnValue(Command::STRATEGY_ASYNCHRONOUS));
 
         $op->expects($this->any())->method('getQueue')
            ->will($this->returnValue($queue));
 
         $queue->expects($this->once())->method('enqueue')
-              ->with($this->isInstanceOf('Xi\Filelib\Command'))
+              ->with($this->isType('string'), $this->isInstanceOf('Xi\Filelib\Command'))
               ->will($this->returnValue('tussi-id'));
 
         $ret = $op->executeOrQueue($command, 'tussi', array());
@@ -190,15 +187,15 @@ class AbstractOperatorTest extends TestCase
                    ->setMethods(array('getCommandStrategy', 'getQueue'))
                    ->getMock();
 
-        $command = $this->getMockBuilder('Xi\Filelib\EnqueueableCommand')
+        $command = $this->getMockBuilder('Xi\Filelib\Command')
                         ->disableOriginalConstructor()
                         ->getMock();
 
-        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+        $queue = $this->getMockedQueue();
 
         $op->expects($this->once())->method('getCommandStrategy')
            ->with($this->equalTo('tussi'))
-           ->will($this->returnValue(EnqueueableCommand::STRATEGY_SYNCHRONOUS));
+           ->will($this->returnValue(Command::STRATEGY_SYNCHRONOUS));
 
         $op->expects($this->any())->method('getQueue')
            ->will($this->returnValue($queue));
@@ -217,8 +214,8 @@ class AbstractOperatorTest extends TestCase
     public function provideCallbackStrategies()
     {
         return array(
-            array('asynchronous', EnqueueableCommand::STRATEGY_ASYNCHRONOUS),
-            array('synchronous', EnqueueableCommand::STRATEGY_SYNCHRONOUS),
+            array('asynchronous', Command::STRATEGY_ASYNCHRONOUS),
+            array('synchronous', Command::STRATEGY_SYNCHRONOUS),
         );
     }
 
@@ -229,10 +226,10 @@ class AbstractOperatorTest extends TestCase
     public function executeOrQueueShouldUtilizeCallbacks($expectedValue, $strategy)
     {
         $callbacks = array(
-            EnqueueableCommand::STRATEGY_ASYNCHRONOUS => function(AbstractOperator $op, $ret) {
+            Command::STRATEGY_ASYNCHRONOUS => function(AbstractOperator $op, $ret) {
                 return 'asynchronous';
             },
-            EnqueueableCommand::STRATEGY_SYNCHRONOUS => function(AbstractOperator $op, $ret) {
+            Command::STRATEGY_SYNCHRONOUS => function(AbstractOperator $op, $ret) {
                 return 'synchronous';
             }
         );
@@ -242,11 +239,11 @@ class AbstractOperatorTest extends TestCase
             ->setMethods(array('getCommandStrategy', 'getQueue'))
             ->getMock();
 
-        $command = $this->getMockBuilder('Xi\Filelib\EnqueueableCommand')
+        $command = $this->getMockBuilder('Xi\Filelib\Command')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $queue = $this->getMock('Xi\Filelib\Queue\Queue');
+        $queue = $this->getMockedQueue();
 
         $op->expects($this->once())->method('getCommandStrategy')
             ->with($this->equalTo('tussi'))
@@ -277,7 +274,7 @@ class AbstractOperatorTest extends TestCase
         $mockClass = $this
             ->getMockClass(
                 'Xi\Filelib\File\Command\AbstractFileCommand',
-                array('execute', 'serialize', 'unserialize', 'attachTo')
+                array('execute', 'serialize', 'unserialize', 'attachTo', 'getMessage', 'getTopic')
             );
 
         $op = $this->getMockBuilder('Xi\Filelib\AbstractOperator')

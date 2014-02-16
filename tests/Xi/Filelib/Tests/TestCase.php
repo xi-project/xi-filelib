@@ -117,7 +117,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedQueue()
     {
-        return $this->getMock('Xi\Filelib\Queue\Queue');
+        return $this->getMockBuilder('Pekkis\Queue\Queue')->disableOriginalConstructor()->getMock();
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedQueueAdapter()
+    {
+        return $this->getMock('Pekkis\Queue\Adapter\Adapter');
     }
 
     /**
@@ -189,17 +197,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedCommand()
+    public function getMockedCommand($topic = 'some_random_topic')
     {
-        return $this->getMock('Xi\Filelib\Command');
-    }
-
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    public function getMockedEnqueueableCommand()
-    {
-        return $this->getMock('Xi\Filelib\EnqueueableCommand');
+        $mock = $this->getMock('Xi\Filelib\Command');
+        $mock->expects($this->any())->method('getTopic')->will($this->returnValue($topic));
+        return $mock;
     }
 
     /**

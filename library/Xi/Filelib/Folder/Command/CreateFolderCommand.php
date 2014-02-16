@@ -9,12 +9,14 @@
 
 namespace Xi\Filelib\Folder\Command;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\LogicException;
+use Pekkis\Queue\Message;
 
 class CreateFolderCommand extends AbstractFolderCommand
 {
@@ -23,10 +25,15 @@ class CreateFolderCommand extends AbstractFolderCommand
      */
     private $folder;
 
-    public function __construct(Folder $folder)
+    /**
+     * @var string
+     */
+    private $uuid;
+
+    public function __construct(Folder $folder, $uuid = null)
     {
-        parent::__construct();
         $this->folder = $folder;
+        $this->uuid = $uuid;
     }
 
     public function execute()
@@ -57,6 +64,19 @@ class CreateFolderCommand extends AbstractFolderCommand
         );
 
         return $this->folder;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid ?: Uuid::uuid4()->toString();
+    }
+
+    public function getTopic()
+    {
+        return 'xi_filelib.command.folder.create';
     }
 
     public function unserialize($serialized)

@@ -26,23 +26,6 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-
-        $command = new UpdateFolderCommand($folder);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
-
-    }
-
-        /**
-     * @test
-     */
     public function updateShouldUpdateFoldersAndFilesRecursively()
     {
         $filelib = $this->getMockedFilelib();
@@ -138,7 +121,33 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $command->attachTo($this->getMockedFilelib(null, $fiop, $op));
 
         $command->execute();
-
     }
 
+    /**
+     * @test
+     */
+    public function commandShouldSerializeAndUnserializeProperly()
+    {
+        $folder = $this->getMockedFolder();
+
+        $command = new UpdateFolderCommand($folder);
+
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
+
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\UpdateFolderCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.folder.update', $command->getTopic());
+    }
 }
