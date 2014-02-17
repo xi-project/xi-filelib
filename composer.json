@@ -31,7 +31,7 @@
         "symfony/event-dispatcher": ">=2.0.14",
         "dflydev/apache-mime-types": "1.0.*",
         "rhumsaa/uuid": "2.3.*",
-        "pekkis/queue": "0.4.x-dev"
+        "pekkis/queue": "0.4.*@dev"
     },
 
     "require-dev": {
@@ -42,8 +42,9 @@
         "symfony/http-kernel": ">=2.2.0",
         "symfony/security": ">=2.2.0",
         "symfony/console": ">=2.2.0",
-        "videlalvaro/php-amqplib": ">=dev-master@dev",
+        "videlalvaro/php-amqplib": "2.2.*",
         "zendframework/zend-filter": "2.2.*",
+        "zendframework/zend-i18n": "2.2.*",
         "zencoder/zencoder-php": "2.1.x",
         "xi/transliterator": "dev-master@dev",
         "knplabs/gaufrette": "0.1.*",
