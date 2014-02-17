@@ -10,16 +10,22 @@ class AbstractFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\AbstractFolderCommand'));
-        $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\AbstractFolderCommand'));
+        $this->assertClassExists('Xi\Filelib\Folder\Command\AbstractFolderCommand');
+        $this->assertImplements(
+            'Xi\Filelib\Command\Command',
+            'Xi\Filelib\Folder\Command\AbstractFolderCommand'
+        );
     }
 
+    /**
+     * @test
+     */
     public function attachesFromFilelib()
     {
         $foop = $this->getMockedFolderOperator();
         $filelib = $this->getMockedFilelib(null, null, $foop);
 
-        $command = $this->getMockForAbstractClass('Xi\Filelib\Command\AbstractFolderCommand');
+        $command = $this->getMockForAbstractClass('Xi\Filelib\Folder\Command\AbstractFolderCommand');
         $command->attachTo($filelib);
 
         $this->assertAttributeSame($foop, 'folderOperator', $command);

@@ -20,7 +20,7 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\DeleteFolderCommand'));
-        $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\DeleteFolderCommand'));
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\Folder\Command\DeleteFolderCommand'));
     }
 
     /**

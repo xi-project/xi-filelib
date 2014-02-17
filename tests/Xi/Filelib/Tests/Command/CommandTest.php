@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Tests;
+namespace Xi\Filelib\Tests\Command;
 
 class CommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -10,7 +10,7 @@ class CommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function interfaceShouldExist()
     {
-        $this->assertTrue(interface_exists('Xi\Filelib\Command'));
+        $this->assertTrue(interface_exists('Xi\Filelib\Command\Command'));
     }
 
 }

@@ -4,7 +4,7 @@ use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Command;
+use Xi\Filelib\Command\Command;
 use Xi\Filelib\File\File;
 
 require_once __DIR__ . '/../bootstrap.php';

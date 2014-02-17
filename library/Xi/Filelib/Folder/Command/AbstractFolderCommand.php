@@ -9,11 +9,11 @@
 
 namespace Xi\Filelib\Folder\Command;
 
+use Xi\Filelib\Command\Command;
 use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\AbstractCommand;
 use Xi\Filelib\FileLibrary;
 
-abstract class AbstractFolderCommand extends AbstractCommand implements FolderCommand
+abstract class AbstractFolderCommand implements Command
 {
     /**
      *

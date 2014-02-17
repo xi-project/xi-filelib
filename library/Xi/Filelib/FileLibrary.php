@@ -22,6 +22,7 @@ use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Backend\Platform\Platform;
 use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
 use Pekkis\Queue\Queue;
+use Xi\Filelib\Command\CommandDataSerializer;
 
 /**
  * File library

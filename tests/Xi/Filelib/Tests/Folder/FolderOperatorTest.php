@@ -2,13 +2,12 @@
 
 namespace Xi\Filelib\Tests\Folder;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Command;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use ArrayIterator;
 
 class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
@@ -31,20 +30,20 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
 
         $op = new FolderOperator($filelib);
 
-        $this->assertEquals(Command::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FolderOperator::COMMAND_CREATE));
+        $this->assertEquals(ExecutionStrategy::STRATEGY_SYNCHRONOUS, $op->getCommandStrategy(FolderOperator::COMMAND_CREATE));
     }
 
     public function provideCommandMethods()
     {
         return array(
-            array('Xi\Filelib\Folder\Command\DeleteFolderCommand', 'delete', FolderOperator::COMMAND_DELETE, Command::STRATEGY_ASYNCHRONOUS, true),
-            array('Xi\Filelib\Folder\Command\DeleteFolderCommand', 'delete', FolderOperator::COMMAND_DELETE, Command::STRATEGY_SYNCHRONOUS, false),
-            array('Xi\Filelib\Folder\Command\CreateFolderCommand', 'create', FolderOperator::COMMAND_CREATE, Command::STRATEGY_ASYNCHRONOUS, true),
-            array('Xi\Filelib\Folder\Command\CreateFolderCommand', 'create', FolderOperator::COMMAND_CREATE, Command::STRATEGY_SYNCHRONOUS, false),
-            array('Xi\Filelib\Folder\Command\UpdateFolderCommand', 'update', FolderOperator::COMMAND_UPDATE, Command::STRATEGY_ASYNCHRONOUS, true),
-            array('Xi\Filelib\Folder\Command\UpdateFolderCommand', 'update', FolderOperator::COMMAND_UPDATE, Command::STRATEGY_SYNCHRONOUS, false),
-            array('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', 'createByUrl', FolderOperator::COMMAND_CREATE_BY_URL, Command::STRATEGY_ASYNCHRONOUS, true),
-            array('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', 'createByUrl', FolderOperator::COMMAND_CREATE_BY_URL, Command::STRATEGY_SYNCHRONOUS, false),
+            array('Xi\Filelib\Folder\Command\DeleteFolderCommand', 'delete', FolderOperator::COMMAND_DELETE, ExecutionStrategy::STRATEGY_ASYNCHRONOUS, true),
+            array('Xi\Filelib\Folder\Command\DeleteFolderCommand', 'delete', FolderOperator::COMMAND_DELETE, ExecutionStrategy::STRATEGY_SYNCHRONOUS, false),
+            array('Xi\Filelib\Folder\Command\CreateFolderCommand', 'create', FolderOperator::COMMAND_CREATE, ExecutionStrategy::STRATEGY_ASYNCHRONOUS, true),
+            array('Xi\Filelib\Folder\Command\CreateFolderCommand', 'create', FolderOperator::COMMAND_CREATE, ExecutionStrategy::STRATEGY_SYNCHRONOUS, false),
+            array('Xi\Filelib\Folder\Command\UpdateFolderCommand', 'update', FolderOperator::COMMAND_UPDATE, ExecutionStrategy::STRATEGY_ASYNCHRONOUS, true),
+            array('Xi\Filelib\Folder\Command\UpdateFolderCommand', 'update', FolderOperator::COMMAND_UPDATE, ExecutionStrategy::STRATEGY_SYNCHRONOUS, false),
+            array('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', 'createByUrl', FolderOperator::COMMAND_CREATE_BY_URL, ExecutionStrategy::STRATEGY_ASYNCHRONOUS, true),
+            array('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand', 'createByUrl', FolderOperator::COMMAND_CREATE_BY_URL, ExecutionStrategy::STRATEGY_SYNCHRONOUS, false),
         );
     }
 

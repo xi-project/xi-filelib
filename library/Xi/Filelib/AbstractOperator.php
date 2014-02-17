@@ -16,6 +16,10 @@ use Xi\Filelib\InvalidArgumentException;
 use Pekkis\Queue\Queue;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Rhumsaa\Uuid\Uuid;
+use Xi\Filelib\Command\Command;
+use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
+use Xi\Filelib\Command\ExecutionStrategy\AsynchronousExecutionStrategy;
+use Xi\Filelib\Command\ExecutionStrategy\SynchronousExecutionStrategy;
 
 /**
  * Abstract convenience class for operators
@@ -106,20 +110,33 @@ abstract class AbstractOperator
         if (!in_array(
             $strategy,
             array(
-                Command::STRATEGY_ASYNCHRONOUS,
-                Command::STRATEGY_SYNCHRONOUS
+                ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+                ExecutionStrategy::STRATEGY_SYNCHRONOUS
             )
         )) {
-            throw new InvalidArgumentException("Invalid command strategy '{$strategy}'");
+            throw new InvalidArgumentException("Invalid execution strategy '{$strategy}'");
         }
     }
 
     public function getCommandStrategy($command)
     {
         $this->assertCommandExists($command);
-
         return $this->commandStrategies[$command];
     }
+
+    /**
+     * @param $command
+     * @return ExecutionStrategy
+     */
+    private function createCommandStrategy($command)
+    {
+        if ($this->getCommandStrategy($command) == ExecutionStrategy::STRATEGY_ASYNCHRONOUS) {
+            return new AsynchronousExecutionStrategy($this->getQueue());
+        } else {
+            return new SynchronousExecutionStrategy();
+        }
+    }
+
 
     public function setCommandStrategy($command, $strategy)
     {
@@ -139,35 +156,8 @@ abstract class AbstractOperator
         return $ret;
     }
 
-    public function executeOrQueue(Command $commandObj, $commandName, array $callbacks = array())
+    public function executeOrQueue(Command $commandObj, $commandName)
     {
-        /* @todo: refactor */
-        $strategy = $this->getCommandStrategy($commandName);
-        if ($strategy == Command::STRATEGY_ASYNCHRONOUS) {
-            $ret = $this->getQueue()->enqueue($commandObj->getTopic(), $commandObj);
-        } else {
-            $ret = $commandObj->execute();
-        }
-
-        return $this->executeOrQueueHandleCallbacks($strategy, $callbacks, $ret);
-    }
-
-    private function executeOrQueueHandleCallbacks($strategy, $callbacks, $ret)
-    {
-        if (isset($callbacks[$strategy])) {
-            return $callbacks[$strategy]($this, $ret);
-        }
-
-        return $ret;
-    }
-
-    /**
-     * Generates UUID
-     *
-     * @return string
-     */
-    public function generateUuid()
-    {
-        return Uuid::uuid4()->toString();
+        return $this->createCommandStrategy($commandName)->execute($commandObj);
     }
 }

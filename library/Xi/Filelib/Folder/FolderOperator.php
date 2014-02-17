@@ -10,13 +10,13 @@
 namespace Xi\Filelib\Folder;
 
 use Xi\Filelib\AbstractOperator;
-use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Command;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use ArrayIterator;
+
 
 /**
  * Operates on folders
@@ -33,10 +33,10 @@ class FolderOperator extends AbstractOperator
     const COMMAND_CREATE_BY_URL = 'create_by_url';
 
     protected $commandStrategies = array(
-        self::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_CREATE_BY_URL => Command::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_CREATE => ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_DELETE => ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_UPDATE => ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+        self::COMMAND_CREATE_BY_URL => ExecutionStrategy::STRATEGY_SYNCHRONOUS,
     );
 
     /**

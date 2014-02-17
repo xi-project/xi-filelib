@@ -10,10 +10,10 @@
 namespace Xi\Filelib\File\Command;
 
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\AbstractCommand;
+use Xi\Filelib\Command\Command;
 use Xi\Filelib\FileLibrary;
 
-abstract class AbstractFileCommand extends AbstractCommand implements FileCommand
+abstract class AbstractFileCommand implements Command
 {
     /**
      * @var FileOperator

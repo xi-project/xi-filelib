@@ -9,14 +9,15 @@
 
 namespace Xi\Filelib\Migration;
 
-use Xi\Filelib\AbstractCommand;
+use Rhumsaa\Uuid\Uuid;
+use Xi\Filelib\Command\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\Folder;
 
 /**
  * Migration command to be run after resourcification (v0.7.0)
  */
-class ResourceRefactorMigration extends AbstractCommand
+class ResourceRefactorMigration implements Command
 {
     /**
      * @var FileLibrary
@@ -39,7 +40,7 @@ class ResourceRefactorMigration extends AbstractCommand
 
             $profile = $this->filelib->getFileOperator()->getProfile($file->getProfile());
 
-            $file->setUuid($this->filelib->getFileOperator()->generateUuid());
+            $file->setUuid(Uuid::uuid4()->toString());
             $this->filelib->getFileOperator()->update($file);
 
             $resource = $file->getResource();
@@ -65,7 +66,7 @@ class ResourceRefactorMigration extends AbstractCommand
      */
     private function createUuidToFolder(Folder $folder)
     {
-        $folder->setUuid($this->filelib->getFolderOperator()->generateUuid());
+        $folder->setUuid(Uuid::uuid4()->toString());
         $this->filelib->getFolderOperator()->update($folder);
 
         foreach ($this->filelib->getFolderOperator()->findSubFolders($folder) as $subfolder) {

@@ -117,7 +117,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedQueue()
     {
-        return $this->getMockBuilder('Pekkis\Queue\Queue')->disableOriginalConstructor()->getMock();
+        return $this
+            ->getMockBuilder('Pekkis\Queue\SymfonyBridge\EventDispatchingQueue')
+            ->disableOriginalConstructor()->getMock();
     }
 
     /**
@@ -199,7 +201,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedCommand($topic = 'some_random_topic')
     {
-        $mock = $this->getMock('Xi\Filelib\Command');
+        $mock = $this->getMock('Xi\Filelib\Command\Command');
         $mock->expects($this->any())->method('getTopic')->will($this->returnValue($topic));
         return $mock;
     }

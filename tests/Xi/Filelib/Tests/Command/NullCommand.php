@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Filelib\Tests;
+namespace Xi\Filelib\Tests\Command;
 
-use Xi\Filelib\Command;
+use Xi\Filelib\Command\Command;
 use Xi\Filelib\FileLibrary;
 
 class NullCommand implements Command

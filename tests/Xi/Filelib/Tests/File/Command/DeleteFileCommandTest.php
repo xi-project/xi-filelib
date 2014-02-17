@@ -18,7 +18,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\File\Command\DeleteFileCommand'));
-        $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\DeleteFileCommand'));
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\File\Command\DeleteFileCommand'));
     }
 
     /**

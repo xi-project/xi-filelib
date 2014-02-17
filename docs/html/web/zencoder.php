@@ -4,7 +4,7 @@ use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Command;
+use Xi\Filelib\Command\Command;
 
 if (is_file(__DIR__ . '/../filelib-example.json')) {
     unlink(__DIR__ . '/../filelib-example.json');
@@ -20,7 +20,7 @@ $path = realpath(__DIR__ . '/../../../tests/data/hauska-joonas.mp4');
 
 $filelib->getFileOperator()->setCommandStrategy(
     FileOperator::COMMAND_AFTERUPLOAD,
-    Command::STRATEGY_ASYNCHRONOUS
+    ExecutionStrategy::STRATEGY_ASYNCHRONOUS
 );
 
 
