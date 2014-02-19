@@ -139,7 +139,11 @@ class Publisher implements EventSubscriberInterface
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UNPUBLISH, $event);
 
         foreach ($this->getVersions($file) as $version) {
-            $this->adapter->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+            try {
+                $this->adapter->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+            } catch (FileIOException $e) {
+                // Version does not exists
+            }
         }
 
         $data = $file->getData();
