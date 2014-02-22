@@ -17,6 +17,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Events as CoreEvents;
+use Xi\Filelib\Storage\FileIOException;
 
 /**
  * Publisher
@@ -107,7 +108,13 @@ class Publisher implements EventSubscriberInterface
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_PUBLISH, $event);
 
         foreach ($this->getVersions($file) as $version) {
-            $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+
+            try {
+                $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+            } catch (FileIOException $e) {
+                // Version does not exists
+            }
+
         }
 
         $data = $file->getData();
@@ -132,7 +139,11 @@ class Publisher implements EventSubscriberInterface
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UNPUBLISH, $event);
 
         foreach ($this->getVersions($file) as $version) {
-            $this->adapter->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+            try {
+                $this->adapter->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+            } catch (FileIOException $e) {
+                // Version does not exists
+            }
         }
 
         $data = $file->getData();
