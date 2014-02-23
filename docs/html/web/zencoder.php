@@ -1,10 +1,8 @@
 <?php
 
-use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
-use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Command\Command;
+use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 
 if (is_file(__DIR__ . '/../filelib-example.json')) {
     unlink(__DIR__ . '/../filelib-example.json');
@@ -22,7 +20,6 @@ $filelib->getFileOperator()->setExecutionStrategy(
     FileOperator::COMMAND_AFTERUPLOAD,
     ExecutionStrategy::STRATEGY_ASYNCHRONOUS
 );
-
 
 $file = $filelib->getFileOperator()->upload($path);
 
