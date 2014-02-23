@@ -59,9 +59,31 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
         $this->filelib = $this->getMockedFilelib(null, null, null, null, null, null, null, $this->queue);
 
         $this->commander = new Commander($this->filelib);
+
+        // $this->commander->setQueue($this->queue);
+        // $this->commander->addClient($this->client);
+
+    }
+
+    /**
+     * @test
+     */
+    public function asyncStrategyIsNotAvailableWhenTheresNoQueue()
+    {
+        $definition = new CommandDefinition('Tenhunen\Imaisee\Mehevaa', ExecutionStrategy::STRATEGY_ASYNCHRONOUS);
+        $this->setExpectedException('Xi\Filelib\RuntimeException');
+        $this->commander->addCommandDefinition($definition);
+    }
+
+    /**
+     * @test
+     */
+    public function asyncStrategyBecomesAvailableWithQueue()
+    {
         $this->commander->setQueue($this->queue);
 
-        $this->commander->addClient($this->client);
+        $definition = new CommandDefinition('Tenhunen\Imaisee\Mehevaa', ExecutionStrategy::STRATEGY_ASYNCHRONOUS);
+        $this->commander->addCommandDefinition($definition);
     }
 
     /**
@@ -83,10 +105,10 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
-     * @expectedException InvalidArgumentException
      */
     public function settingInvalidStrategyShouldThrowException()
     {
+        $this->setExpectedException('Xi\Filelib\RuntimeException');
         $this->commander->setExecutionStrategy('lussenhof', ExecutionStrategy::STRATEGY_ASYNCHRONOUS);
     }
 
@@ -95,6 +117,9 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
      */
     public function settingStrategyShouldWork()
     {
+        $this->commander->setQueue($this->queue);
+        $this->commander->addClient($this->client);
+
         $this->assertEquals(
             ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
             $this->commander->getExecutionStrategy('ManateeTussi')
@@ -116,6 +141,10 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
      */
     public function createCommandCreatesCommandObject()
     {
+        $this->commander->setQueue($this->queue);
+        $this->commander->addClient($this->client);
+
+
         if (!class_exists('ManateeLussi')) {
             $mockClass = $this->getMockClass(
                 'Xi\Filelib\Command\Command',
@@ -146,4 +175,59 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
         );
         $this->assertInstanceOf('Xi\Filelib\Command\Command', $executable);
     }
+
+    /**
+     * @test
+     */
+    public function createsAsynchronousExecutable()
+    {
+        $this->commander->setQueue($this->queue);
+
+        $definition = new CommandDefinition(
+            'Xi\Filelib\Tests\Command\NullCommand',
+            ExecutionStrategy::STRATEGY_ASYNCHRONOUS
+        );
+
+        $this->commander->addCommandDefinition($definition);
+
+        $executable = $this->commander->createExecutable($definition->getClass());
+        $this->assertInstanceOf('Xi\Filelib\Command\Executable', $executable);
+
+        $this->assertInstanceOf(
+            'Xi\Filelib\Command\ExecutionStrategy\AsynchronousExecutionStrategy',
+            $executable->getStrategy()
+        );
+
+        $this->assertInstanceOf(
+            'Xi\Filelib\Tests\Command\NullCommand',
+            $executable->getCommand()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function createsSynchronousExecutable()
+    {
+        $definition = new CommandDefinition(
+            'Xi\Filelib\Tests\Command\NullCommand',
+            ExecutionStrategy::STRATEGY_SYNCHRONOUS
+        );
+
+        $this->commander->addCommandDefinition($definition);
+
+        $executable = $this->commander->createExecutable($definition->getClass());
+        $this->assertInstanceOf('Xi\Filelib\Command\Executable', $executable);
+
+        $this->assertInstanceOf(
+            'Xi\Filelib\Command\ExecutionStrategy\SynchronousExecutionStrategy',
+            $executable->getStrategy()
+        );
+
+        $this->assertInstanceOf(
+            'Xi\Filelib\Tests\Command\NullCommand',
+            $executable->getCommand()
+        );
+    }
+
 }

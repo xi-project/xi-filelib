@@ -2,7 +2,6 @@
 
 namespace Xi\Filelib\Tests\Migration;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Migration\ResourceRefactorMigration;
 use Xi\Filelib\Storage\FileIOException;
 
@@ -25,6 +24,16 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
             array(true)
         );
     }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $migration = new ResourceRefactorMigration();
+        $this->assertEquals('xi_filelib.command.migration.resource_refactor', $migration->getTopic());
+    }
+
 
     /**
      * @test
@@ -94,7 +103,7 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
 
 
 
-        $migration = new ResourceRefactorMigration($filelib);
+        $migration = new ResourceRefactorMigration();
 
         $filelib = $this->getMockedFilelib(null, $fiop, $foop, $storage);
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
@@ -103,7 +112,17 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $migration->execute();
     }
 
+    /**
+     * @test
+     */
+    public function commandShouldSerializeAndUnserializeProperly()
+    {
+        $command = new ResourceRefactorMigration();
 
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
 
+        $this->assertInstanceOf('Xi\Filelib\Migration\ResourceRefactorMigration', $command2);
+    }
 
 }

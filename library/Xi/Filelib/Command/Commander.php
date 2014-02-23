@@ -11,7 +11,6 @@ namespace Xi\Filelib\Command;
 
 use Pekkis\Queue\QueueInterface;
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
-use Xi\Filelib\Attacher;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidArgumentException;
@@ -143,7 +142,7 @@ class Commander
      * @param CommandDefinition $commandDefinition
      * @return Commander
      */
-    private function addCommandDefinition(CommandDefinition $commandDefinition)
+    public function addCommandDefinition(CommandDefinition $commandDefinition)
     {
         if (!$this->isExecutionStrategyAvailable($commandDefinition->getStrategy())) {
             throw new RuntimeException(
