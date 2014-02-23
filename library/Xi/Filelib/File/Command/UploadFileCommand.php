@@ -80,7 +80,7 @@ class UploadFileCommand extends AbstractFileCommand
         $profileObj = $this->fileOperator->getProfile($this->profile);
 
         $finder = new ResourceFinder(array('hash' => $hash));
-        $resources = $this->fileOperator->getBackend()->findByFinder($finder);
+        $resources = $this->backend->findByFinder($finder);
 
         if ($resources) {
             foreach ($resources as $resource) {
@@ -103,7 +103,7 @@ class UploadFileCommand extends AbstractFileCommand
             $resource->setMimetype($upload->getMimeType());
             $resource->setVersions(array());
 
-            $this->fileOperator->getBackend()->createResource($resource);
+            $this->backend->createResource($resource);
             $file->setResource($resource);
 
             if (!$profileObj->isSharedResourceAllowed($file)) {
@@ -122,11 +122,11 @@ class UploadFileCommand extends AbstractFileCommand
         $profile = $this->profile;
 
         $event = new FolderEvent($folder);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
+        $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
 
         $profileObj = $this->fileOperator->getProfile($profile);
         $event = new FileUploadEvent($upload, $folder, $profileObj);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_CREATE, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_CREATE, $event);
 
         $upload = $event->getFileUpload();
 
@@ -147,18 +147,16 @@ class UploadFileCommand extends AbstractFileCommand
         $resource = $this->getResource($file, $upload);
 
         $file->setResource($resource);
-        $this->fileOperator->getBackend()->createFile($file, $folder);
-        $this->fileOperator->getStorage()->store($resource, $upload->getRealPath());
+        $this->backend->createFile($file, $folder);
+        $this->storage->store($resource, $upload->getRealPath());
 
         $event = new FileEvent($file);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_CREATE, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_CREATE, $event);
 
-        $command = $this->fileOperator->createCommand(
-            'Xi\Filelib\File\Command\AfterUploadFileCommand',
+        $this->fileOperator->createExecutable(
+            FileOperator::COMMAND_AFTERUPLOAD,
             array($file)
-        );
-
-        $this->fileOperator->executeOrQueue($command, FileOperator::COMMAND_AFTERUPLOAD);
+        )->execute();
 
         return $file;
     }

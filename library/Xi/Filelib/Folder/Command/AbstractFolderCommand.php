@@ -9,11 +9,13 @@
 
 namespace Xi\Filelib\Folder\Command;
 
+use Xi\Filelib\Backend\Backend;
+use Xi\Filelib\Command\Command;
 use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\AbstractCommand;
 use Xi\Filelib\FileLibrary;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-abstract class AbstractFolderCommand extends AbstractCommand implements FolderCommand
+abstract class AbstractFolderCommand implements Command
 {
     /**
      *
@@ -21,8 +23,20 @@ abstract class AbstractFolderCommand extends AbstractCommand implements FolderCo
      */
     protected $folderOperator;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
+     * @var Backend
+     */
+    protected $backend;
+
     public function attachTo(FileLibrary $filelib)
     {
         $this->folderOperator = $filelib->getFolderOperator();
+        $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->backend = $filelib->getBackend();
     }
 }

@@ -6,7 +6,7 @@ use Pekkis\Queue\Processor\MessageHandler;
 use Pekkis\Queue\Message;
 use Pekkis\Queue\Processor\Result;
 use Pekkis\Queue\QueueInterface;
-use Xi\Filelib\Command;
+use Xi\Filelib\Command\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileOperator;

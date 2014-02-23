@@ -45,7 +45,7 @@ class CreateFolderCommand extends AbstractFolderCommand
         if ($this->folder->getParentId()) {
             $parentFolder = $this->folderOperator->find($this->folder->getParentId());
             $event = new FolderEvent($parentFolder);
-            $this->folderOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
+            $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
         }
 
         $route = $this->folderOperator->buildRoute($this->folder);
@@ -53,15 +53,12 @@ class CreateFolderCommand extends AbstractFolderCommand
         $this->folder->setUuid($this->getUuid());
 
         $event = new FolderEvent($this->folder);
-        $this->folderOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_CREATE, $event);
+        $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_CREATE, $event);
 
-        $this->folderOperator->getBackend()->createFolder($this->folder);
+        $this->backend->createFolder($this->folder);
 
         $event = new FolderEvent($this->folder);
-        $this->folderOperator->getEventDispatcher()->dispatch(
-            Events::FOLDER_AFTER_CREATE,
-            $event
-        );
+        $this->eventDispatcher->dispatch(Events::FOLDER_AFTER_CREATE,$event);
 
         return $this->folder;
     }

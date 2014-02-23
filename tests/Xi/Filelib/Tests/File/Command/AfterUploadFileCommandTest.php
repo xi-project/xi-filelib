@@ -17,7 +17,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\File\Command\AfterUploadFileCommand'));
-        $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\AfterUploadFileCommand'));
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\File\Command\AfterUploadFileCommand'));
     }
 
     /**
@@ -25,41 +25,48 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldUploadAndDelegateCorrectly()
     {
-
-        $filelib = $this->getMockedFilelib();
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($dispatcher));
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getProfile', 'getBackend', 'getStorage', 'publish', 'createCommand'))
-                   ->getMock();
+        $op = $this->getMockedFileOperator(array('versioned'));
 
-        $fileitem = $this->getMock('Xi\Filelib\File\File');
+        $file = $this->getMockedFile('versioned');
 
         $backend = $this
             ->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->disableOriginalConstructor()
             ->getMock();
-        $backend->expects($this->once())->method('updateFile')->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
-        $fileitem->expects($this->any())->method('getProfile')->will($this->returnValue('versioned'));
+        $filelib = $this->getMockedFilelib(
+            null,
+            $op,
+            null,
+            null,
+            $dispatcher,
+            $backend
+        );
 
-        $fileitem->expects($this->once())->method('setStatus')->with($this->equalTo(File::STATUS_COMPLETED));
+        $backend->expects($this->once())
+            ->method('updateFile')
+            ->with($file);
 
-        $dispatcher->expects($this->at(0))->method('dispatch')
-                   ->with($this->equalTo(Events::FILE_AFTER_AFTERUPLOAD), $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+        $file
+            ->expects($this->once())
+            ->method('setStatus')
+            ->with($this->equalTo(File::STATUS_COMPLETED));
 
-        $profile = $this->getMockedFileProfile();
+        $dispatcher
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with(
+                $this->equalTo(Events::FILE_AFTER_AFTERUPLOAD),
+                $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
+            );
 
-        $op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-
-        $command = new AfterUploadFileCommand($fileitem);
-        $command->attachTo($this->getMockedFilelib(null, $op));
-
+        $command = new AfterUploadFileCommand($file);
+        $command->attachTo($filelib);
         $ret = $command->execute();
 
-        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
+        $this->assertSame($file, $ret);
     }
 
     /**

@@ -10,34 +10,33 @@
 namespace Xi\Filelib\Folder;
 
 use Xi\Filelib\AbstractOperator;
-use Xi\Filelib\RuntimeException;
+use Xi\Filelib\Command\CommandDefinition;
+use Xi\Filelib\Command\CommanderClient;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Command;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 
-/**
- * Operates on folders
- *
- * @package Xi_Filelib
- * @author pekkis
- *
- */
 class FolderOperator extends AbstractOperator
 {
-    const COMMAND_CREATE = 'create';
-    const COMMAND_DELETE = 'delete';
-    const COMMAND_UPDATE = 'update';
-    const COMMAND_CREATE_BY_URL = 'create_by_url';
+    const COMMAND_CREATE = 'Xi\Filelib\Folder\Command\CreateFolderCommand';
+    const COMMAND_DELETE = 'Xi\Filelib\Folder\Command\DeleteFolderCommand';
+    const COMMAND_UPDATE = 'Xi\Filelib\Folder\Command\UpdateFolderCommand';
+    const COMMAND_CREATE_BY_URL = 'Xi\Filelib\Folder\Command\CreateByUrlFolderCommand';
 
-    protected $commandStrategies = array(
-        self::COMMAND_CREATE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_DELETE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UPDATE => Command::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_CREATE_BY_URL => Command::STRATEGY_SYNCHRONOUS,
-    );
+    /**
+     * @return array
+     */
+    public function getCommandDefinitions()
+    {
+        return array(
+            new CommandDefinition(self::COMMAND_CREATE),
+            new CommandDefinition(self::COMMAND_CREATE_BY_URL),
+            new CommandDefinition(self::COMMAND_DELETE),
+            new CommandDefinition(self::COMMAND_UPDATE),
+        );
+    }
 
     /**
      * Returns directory route for folder
@@ -68,14 +67,9 @@ class FolderOperator extends AbstractOperator
      */
     public function create(Folder $folder)
     {
-        $command = $this->createCommand(
-            'Xi\Filelib\Folder\Command\CreateFolderCommand',
-            array(
-                $folder
-            )
-        );
-
-        return $this->executeOrQueue($command, self::COMMAND_CREATE);
+        return $this->commander
+            ->createExecutable(self::COMMAND_CREATE, array($folder))
+            ->execute();
     }
 
     /**
@@ -85,15 +79,9 @@ class FolderOperator extends AbstractOperator
      */
     public function delete(Folder $folder)
     {
-        $command = $this->createCommand(
-            'Xi\Filelib\Folder\Command\DeleteFolderCommand',
-            array(
-                $folder
-            )
-        );
-
-        return $this->executeOrQueue($command, self::COMMAND_DELETE);
-
+        return $this->commander
+            ->createExecutable(self::COMMAND_DELETE, array($folder))
+            ->execute();
     }
 
     /**
@@ -103,14 +91,9 @@ class FolderOperator extends AbstractOperator
      */
     public function update(Folder $folder)
     {
-        $command = $this->createCommand(
-            'Xi\Filelib\Folder\Command\UpdateFolderCommand',
-            array(
-                $folder
-            )
-        );
-
-        return $this->executeOrQueue($command, self::COMMAND_UPDATE);
+        return $this->commander
+            ->createExecutable(self::COMMAND_UPDATE, array($folder))
+            ->execute();
     }
 
     /**
@@ -120,7 +103,7 @@ class FolderOperator extends AbstractOperator
      */
     public function findRoot()
     {
-        $folder = $this->getBackend()->findByFinder(
+        $folder = $this->backend->findByFinder(
             new FolderFinder(array('parent_id' => null))
         )->current();
 
@@ -150,14 +133,14 @@ class FolderOperator extends AbstractOperator
      */
     public function find($id)
     {
-        $folder = $this->getBackend()->findById($id, 'Xi\Filelib\Folder\Folder');
+        $folder = $this->backend->findById($id, 'Xi\Filelib\Folder\Folder');
 
         return $folder;
     }
 
     public function findByUrl($url)
     {
-        $folder = $this->getBackend()->findByFinder(
+        $folder = $this->backend->findByFinder(
             new FolderFinder(array('url' => $url))
         )->current();
 
@@ -166,14 +149,9 @@ class FolderOperator extends AbstractOperator
 
     public function createByUrl($url)
     {
-        $command = $this->createCommand(
-            'Xi\Filelib\Folder\Command\CreateByUrlFolderCommand',
-            array(
-                $url
-            )
-        );
-
-        return $this->executeOrQueue($command, self::COMMAND_CREATE_BY_URL);
+        return $this->commander
+            ->createExecutable(self::COMMAND_CREATE_BY_URL, array($url))
+            ->execute();
     }
 
     /**
@@ -184,7 +162,7 @@ class FolderOperator extends AbstractOperator
      */
     public function findSubFolders(Folder $folder)
     {
-        $folders = $this->getBackend()->findByFinder(
+        $folders = $this->backend->findByFinder(
             new FolderFinder(array('parent_id' => $folder->getId()))
         );
 
@@ -195,7 +173,7 @@ class FolderOperator extends AbstractOperator
      * Finds parent folder
      *
      * @param  Folder       $folder
-     * @return Folder|false
+     * @return Folder
      */
     public function findParentFolder(Folder $folder)
     {
@@ -203,7 +181,7 @@ class FolderOperator extends AbstractOperator
             return false;
         }
 
-        $parent = $this->getBackend()->findById($folder->getParentId(), 'Xi\Filelib\Folder\Folder');
+        $parent = $this->backend->findById($folder->getParentId(), 'Xi\Filelib\Folder\Folder');
 
         return $parent;
     }
@@ -214,19 +192,10 @@ class FolderOperator extends AbstractOperator
      */
     public function findFiles(Folder $folder)
     {
-        $files = $this->getBackend()->findByFinder(
+        $files = $this->backend->findByFinder(
             new FileFinder(array('folder_id' => $folder->getId()))
         );
 
         return $files;
-    }
-
-    /**
-     *
-     * @return FileOperator
-     */
-    public function getFileOperator()
-    {
-        return $this->getFilelib()->getFileOperator();
     }
 }

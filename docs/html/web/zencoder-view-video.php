@@ -4,7 +4,7 @@ use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Command;
+use Xi\Filelib\Command\Command;
 use Xi\Filelib\File\File;
 
 require_once __DIR__ . '/../bootstrap.php';
@@ -46,15 +46,22 @@ if ($file->getStatus() == File::STATUS_COMPLETED) {
     </p>
 
     <p>
-        Captions: "Say something funny." "Seppo."
+        Captions: -"Say something funny." -"Seppo."
     </p>
 
+    <?php if ($file->getStatus() === File::STATUS_COMPLETED): ?>
 
     <video poster="<?php echo $publisher->getUrlVersion($file, '720p_webm_thumbnail'); ?>" controls=true>
         <source src="<?php echo $publisher->getUrlVersion($file, '720p_webm'); ?>" type='video/webm; codecs="vp8.0, vorbis"'/>
         <source src="<?php echo $publisher->getUrlVersion($file, '720p_ogv'); ?>" type='video/ogg; codecs="theora, vorbis"'/>
         <p>Oh noes, video not playable!</p>
     </video>
+
+    <?php else: ?>
+
+        <p><strong>Oh noes, the video is not ready yet!!</strong></p>
+
+    <?php endif; ?>
 
 </div>
 </body>

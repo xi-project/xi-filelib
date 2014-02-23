@@ -7,10 +7,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib;
+namespace Xi\Filelib\Command;
 
 use Pekkis\Queue\Data\AbstractDataSerializer;
 use Pekkis\Queue\Data\DataSerializer;
+use Xi\Filelib\FileLibrary;
 
 class CommandDataSerializer extends AbstractDataSerializer implements DataSerializer
 {

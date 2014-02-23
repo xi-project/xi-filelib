@@ -11,8 +11,16 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFilelib($methods = null, $fiop = null, $foop = null, $storage = null, $ed = null)
-    {
+    public function getMockedFilelib(
+        $methods = null,
+        $fiop = null,
+        $foop = null,
+        $storage = null,
+        $ed = null,
+        $backend = null,
+        $commander = null,
+        $queue = null
+    ) {
         $filelib = $this
             ->getMockBuilder('Xi\Filelib\FileLibrary')
             ->disableOriginalConstructor();
@@ -47,22 +55,36 @@ class TestCase extends \PHPUnit_Framework_TestCase
             $ret->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
         }
 
+        if ($backend) {
+            $ret->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
+        }
+
+        if ($queue) {
+            $ret->expects($this->any())->method('getQueue')->will($this->returnValue($queue));
+        }
+
+        if (!$commander) {
+            $commander = $this->getMockedCommander();
+        }
+        $ret->expects($this->any())->method('getCommander')->will($this->returnValue($commander));
+
         return $ret;
     }
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFileOperator($profileNames = array())
+    public function getMockedFileOperator($profileNames = array(), $methods = array())
     {
         $profiles = array();
-        foreach ($profileNames as $profileName) {
+        foreach ($profileNames as $key => $profileName) {
             $profiles[$profileName] = new FileProfile($profileName);
         }
 
         $fileop = $this
             ->getMockBuilder('Xi\Filelib\File\FileOperator')
             ->disableOriginalConstructor()
+            ->setMethods($methods)
             ->getMock();
 
         if ($profiles) {
@@ -117,7 +139,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedQueue()
     {
-        return $this->getMockBuilder('Pekkis\Queue\Queue')->disableOriginalConstructor()->getMock();
+        return $this
+            ->getMockBuilder('Pekkis\Queue\SymfonyBridge\EventDispatchingQueue')
+            ->disableOriginalConstructor()->getMock();
     }
 
     /**
@@ -151,6 +175,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         return $this->getMock('Xi\Filelib\Backend\Platform\Platform');
     }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedCommander()
+    {
+        return $this->getMockBuilder('Xi\Filelib\Command\Commander')->disableOriginalConstructor()->getMock();
+    }
+
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
@@ -197,11 +230,39 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedCommand($topic = 'some_random_topic')
+    public function getMockedCommand($topic = 'some_random_topic', $expectToBeExecuted = null)
     {
-        $mock = $this->getMock('Xi\Filelib\Command');
+        $mock = $this->getMock('Xi\Filelib\Command\Command');
         $mock->expects($this->any())->method('getTopic')->will($this->returnValue($topic));
+
+        // Horrible fate :(
+        if (!is_null($expectToBeExecuted)) {
+            $mock->expects($this->once())->method('execute')->will($this->returnValue($expectToBeExecuted));
+        }
         return $mock;
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedExecutable($expectToBeExecuted = null)
+    {
+        $mock = $this->getMockBuilder('Xi\Filelib\Command\Executable')->disableOriginalConstructor()->getMock();
+
+        // Another horrible fate :(
+        if (!is_null($expectToBeExecuted)) {
+            $mock->expects($this->once())->method('execute')->will($this->returnValue($expectToBeExecuted));
+        }
+
+        return $mock;
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedExecutionStrategy()
+    {
+        return $this->getMock('Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy');
     }
 
     /**
@@ -215,9 +276,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFile()
+    public function getMockedFile($profile = 'versioned')
     {
-        return $this->getMock('Xi\Filelib\File\File');
+        $file = $this->getMock('Xi\Filelib\File\File');
+        $file
+            ->expects($this->any())
+            ->method('getProfile')
+            ->will($this->returnValue($profile));
+
+        return $file;
     }
 
     /**

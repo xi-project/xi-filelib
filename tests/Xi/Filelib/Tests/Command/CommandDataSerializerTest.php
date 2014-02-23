@@ -1,9 +1,9 @@
 <?php
 
-namespace Xi\Filelib\Tests;
+namespace Xi\Filelib\Tests\Command;
 
 use Pekkis\Queue\Message;
-use Xi\Filelib\CommandDataSerializer;
+use Xi\Filelib\Command\CommandDataSerializer;
 
 class CommandDataSerializerTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -19,8 +19,8 @@ class CommandDataSerializerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertClassExists('Xi\Filelib\CommandDataSerializer');
-        $this->assertImplements('Pekkis\Queue\Data\DataSerializer', 'Xi\Filelib\CommandDataSerializer');
+        $this->assertClassExists('Xi\Filelib\Command\CommandDataSerializer');
+        $this->assertImplements('Pekkis\Queue\Data\DataSerializer', 'Xi\Filelib\Command\CommandDataSerializer');
     }
 
     public function setUp()
@@ -64,6 +64,6 @@ class CommandDataSerializerTest extends \Xi\Filelib\Tests\TestCase
     public function unserializes($serialized)
     {
         $command = $this->serializer->unserialize($serialized);
-        $this->assertInstanceOf('Xi\Filelib\Tests\NullCommand', $command);
+        $this->assertInstanceOf('Xi\Filelib\Tests\Command\NullCommand', $command);
     }
 }

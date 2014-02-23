@@ -2,7 +2,6 @@
 
 namespace Xi\Filelib\Tests\Migration;
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Migration\ResourceRefactorMigration;
 use Xi\Filelib\Storage\FileIOException;
 
@@ -15,7 +14,7 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Migration\ResourceRefactorMigration'));
-        $this->assertContains('Xi\Filelib\Command', class_implements('Xi\Filelib\Migration\ResourceRefactorMigration'));
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\Migration\ResourceRefactorMigration'));
     }
 
     public function provideData()
@@ -25,6 +24,16 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
             array(true)
         );
     }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $migration = new ResourceRefactorMigration();
+        $this->assertEquals('xi_filelib.command.migration.resource_refactor', $migration->getTopic());
+    }
+
 
     /**
      * @test
@@ -52,8 +61,8 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $rootFolder = $this->getMockedFolder();
         $childFolder = $this->getMockedFolder();
 
-        $rootFolder->expects($this->once())->method('setUuid')->with('uuid');
-        $childFolder->expects($this->once())->method('setUuid')->with('uuid');
+        $rootFolder->expects($this->once())->method('setUuid')->with($this->isType('string'));
+        $childFolder->expects($this->once())->method('setUuid')->with($this->isType('string'));
 
         if ($expectFail) {
 
@@ -87,14 +96,14 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
              ->will($this->returnValue(array($file)));
 
         $file->expects($this->any())->method('getProfile')->will($this->returnValue('lus'));
-        $file->expects($this->once())->method('setUuid')->with('uuid');
+        $file->expects($this->once())->method('setUuid')->with($this->isType('string'));
         $file->expects($this->any())->method('getResource')->will($this->returnValue($resource));
 
         $profile->expects($this->any())->method('getFileVersions')->with($file)->will($this->returnValue(array('lus', 'xoo')));
 
 
 
-        $migration = new ResourceRefactorMigration($filelib);
+        $migration = new ResourceRefactorMigration();
 
         $filelib = $this->getMockedFilelib(null, $fiop, $foop, $storage);
         $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
@@ -103,7 +112,17 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $migration->execute();
     }
 
+    /**
+     * @test
+     */
+    public function commandShouldSerializeAndUnserializeProperly()
+    {
+        $command = new ResourceRefactorMigration();
 
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
 
+        $this->assertInstanceOf('Xi\Filelib\Migration\ResourceRefactorMigration', $command2);
+    }
 
 }

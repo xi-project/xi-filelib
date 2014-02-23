@@ -18,7 +18,7 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\CreateFolderCommand'));
-        $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\CreateFolderCommand'));
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\Folder\Command\CreateFolderCommand'));
     }
 
     /**
@@ -26,10 +26,7 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldCreateFolder()
     {
-        $filelib = $this->getMockedFilelib();
-
-
-        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $ed = $this->getMockedEventDispatcher();
 
         $ed
             ->expects($this->at(0))
@@ -46,15 +43,9 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('dispatch')
             ->with(Events::FOLDER_AFTER_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
 
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
-
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                   ->setMethods(array('buildRoute', 'generateUuid', 'find'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
+        $op = $this->getMockedFolderOperator();
 
         $op->expects($this->once())->method('find')->with('lusser')->will($this->returnValue($this->getMockedFolder()));
-
 
         $folder = $this
             ->getMockBuilder('Xi\Filelib\Folder\Folder')
@@ -70,21 +61,17 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnValue('route'));
 
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-
+        $backend = $this->getMockedBackend();
         $backend
             ->expects($this->once())
             ->method('createFolder')
             ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnArgument(0));
 
+        $filelib = $this->getMockedFilelib(null, null, $op, null, $ed, $backend);
+
         $command = new CreateFolderCommand($folder);
-        $command->attachTo($this->getMockedFilelib(null, null, $op));
+        $command->attachTo($filelib);
 
         $folder2 = $command->execute();
         $this->assertUuid($folder2->getUuid());

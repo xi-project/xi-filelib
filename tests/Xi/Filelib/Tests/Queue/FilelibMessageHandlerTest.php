@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Queue;
 
 use Pekkis\Queue\Message;
-use Xi\Filelib\Command;
+use Xi\Filelib\Command\Command;
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
 use Xi\Filelib\File\Command\CopyFileCommand;
 use Xi\Filelib\File\Command\DeleteFileCommand;

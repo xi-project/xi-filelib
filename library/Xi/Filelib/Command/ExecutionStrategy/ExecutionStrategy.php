@@ -7,22 +7,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib;
+namespace Xi\Filelib\Command\ExecutionStrategy;
 
-use Xi\Filelib\Attacher;
-use Symfony\Component\Console\Output\OutputInterface;
-use Serializable;
+use Xi\Filelib\Command\Command;
 
-interface Command extends Attacher, Serializable
+interface ExecutionStrategy
 {
     const STRATEGY_SYNCHRONOUS = 'sync';
     const STRATEGY_ASYNCHRONOUS = 'async';
 
-    public function execute();
-
-    /**
-     * @return string
-     */
-    public function getTopic();
-
+    public function execute(Command $command);
 }

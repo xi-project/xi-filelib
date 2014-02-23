@@ -10,20 +10,24 @@ class AbstractFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\File\Command\AbstractFileCommand'));
-        $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\AbstractFileCommand'));
+        $this->assertClassExists('Xi\Filelib\File\Command\AbstractFileCommand');
+        $this->assertImplements(
+            'Xi\Filelib\Command\Command',
+            'Xi\Filelib\File\Command\AbstractFileCommand'
+        );
     }
 
+    /**
+     * @test
+     */
     public function attachesFromFilelib()
     {
         $fiop = $this->getMockedFileOperator();
         $filelib = $this->getMockedFilelib(null, $fiop);
 
-        $command = $this->getMockForAbstractClass('Xi\Filelib\Command\AbstractFileCommand');
+        $command = $this->getMockForAbstractClass('Xi\Filelib\File\Command\AbstractFileCommand');
         $command->attachTo($filelib);
 
         $this->assertAttributeSame($fiop, 'fileOperator', $command);
-
-
     }
 }

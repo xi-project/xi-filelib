@@ -59,12 +59,10 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
                     )
                 );
 
-                $command = $this->folderOperator->createCommand(
-                    'Xi\Filelib\Folder\Command\CreateFolderCommand',
+                $this->folderOperator->createCommand(
+                    FolderOperator::COMMAND_CREATE,
                     array($created)
-                );
-                $command->execute();
-
+                )->execute();
             }
             $previous = $created;
         }

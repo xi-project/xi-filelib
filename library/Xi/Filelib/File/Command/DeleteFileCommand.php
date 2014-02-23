@@ -31,17 +31,17 @@ class DeleteFileCommand extends AbstractFileCommand
     public function execute()
     {
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_DELETE, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_DELETE, $event);
 
-        $this->fileOperator->getBackend()->deleteFile($this->file);
+        $this->backend->deleteFile($this->file);
 
         if ($this->file->getResource()->isExclusive()) {
-            $this->fileOperator->getStorage()->delete($this->file->getResource());
-            $this->fileOperator->getBackend()->deleteResource($this->file->getResource());
+            $this->storage->delete($this->file->getResource());
+            $this->backend->deleteResource($this->file->getResource());
         }
 
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_DELETE, $event);
+       $this->eventDispatcher->dispatch(Events::FILE_AFTER_DELETE, $event);
 
         return true;
     }
