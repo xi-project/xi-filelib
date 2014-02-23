@@ -16,24 +16,19 @@ use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
  */
 class CommandDefinition
 {
+    private $class;
+
+    private $strategy;
+
     /**
      * @param string $name
      * @param string $class
      * @param string $strategy
      */
-    public function __construct($name, $class, $strategy)
+    public function __construct($class, $strategy = ExecutionStrategy::STRATEGY_SYNCHRONOUS)
     {
-        $this->name = $name;
         $this->class = $class;
         $this->setStrategy($strategy);
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**

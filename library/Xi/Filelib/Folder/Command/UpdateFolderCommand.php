@@ -41,33 +41,28 @@ class UpdateFolderCommand extends AbstractFolderCommand
         $route = $this->folderOperator->buildRoute($this->folder);
         $this->folder->setUrl($route);
 
-        $this->folderOperator->getBackend()->updateFolder($this->folder);
+        $this->backend->updateFolder($this->folder);
 
         foreach ($this->folderOperator->findFiles($this->folder) as $file) {
-            $command = $this->folderOperator->createCommand(
-                'Xi\Filelib\File\Command\UpdateFileCommand',
+            $this->folderOperator->createCommand(
+                FileOperator::COMMAND_UPDATE,
                 array(
                     $file
                 )
-            );
-            $command->execute();
+            )->execute();
         }
 
         foreach ($this->folderOperator->findSubFolders($this->folder) as $subFolder) {
-            $command = $this->folderOperator->createCommand(
-                'Xi\Filelib\Folder\Command\UpdateFolderCommand',
+            $this->folderOperator->createCommand(
+                FolderOperator::COMMAND_UPDATE,
                 array(
                     $subFolder
                 )
-            );
-            $command->execute();
+            )->execute();
         }
 
         $event = new FolderEvent($this->folder);
-        $this->folderOperator->getEventDispatcher()->dispatch(
-            Events::FOLDER_AFTER_UPDATE,
-            $event
-        );
+        $this->eventDispatcher->dispatch(Events::FOLDER_AFTER_UPDATE, $event);
     }
 
     public function attachTo(FileLibrary $filelib)

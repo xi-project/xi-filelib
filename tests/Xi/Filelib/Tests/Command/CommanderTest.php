@@ -9,12 +9,12 @@ use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 
 class CommanderTest extends \Xi\Filelib\Tests\TestCase
 {
-    private $commander;
-
     /**
      * @var Commander
      */
-    private $commandFactory;
+    private $commander;
+
+    private $client;
 
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -31,13 +31,18 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
      */
     private $lussi;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $filelib;
+
     public function setUp()
     {
-        $this->tussi = new CommandDefinition('tussi', 'ManateeTussi', ExecutionStrategy::STRATEGY_ASYNCHRONOUS);
-        $this->lussi = new CommandDefinition('lussi', 'ManateeLussi', ExecutionStrategy::STRATEGY_SYNCHRONOUS);
+        $this->tussi = new CommandDefinition('ManateeTussi', ExecutionStrategy::STRATEGY_ASYNCHRONOUS);
+        $this->lussi = new CommandDefinition('ManateeLussi');
 
-        $this->commander = $this->getMock('Xi\Filelib\Command\CommanderClient');
-        $this->commander
+        $this->client = $this->getMock('Xi\Filelib\Command\CommanderClient');
+        $this->client
             ->expects($this->any())
             ->method('getCommandDefinitions')
             ->will(
@@ -50,7 +55,13 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
             );
 
         $this->queue = $this->getMockedQueue();
-        $this->commandFactory = new Commander($this->queue, $this->commander);
+
+        $this->filelib = $this->getMockedFilelib(null, null, null, null, null, null, null, $this->queue);
+
+        $this->commander = new Commander($this->filelib);
+        $this->commander->setQueue($this->queue);
+
+        $this->commander->addClient($this->client);
     }
 
     /**
@@ -58,40 +69,25 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Command\Commander'));
-    }
-
-    /**
-     * @test
-     */
-    public function shouldInitializeProperly()
-    {
-        $this->assertAttributeSame(
-            array(
-                'tussi' => $this->tussi,
-                'lussi' => $this->lussi,
-            ),
-            'commandDefinitions',
-            $this->commandFactory
-        );
+        $this->assertClassExists('Xi\Filelib\Command\Commander');
     }
 
     /**
      * @test
      * @expectedException InvalidArgumentException
      */
-    public function gettingInvalidCommandShouldThrowException()
+    public function gettingInvalidStrategyShouldThrowException()
     {
-        $this->commandFactory->getCommandStrategy('lussenhof');
+        $this->commander->getExecutionStrategy('lussenhof');
     }
 
     /**
      * @test
      * @expectedException InvalidArgumentException
      */
-    public function settingInvalidCommandShouldThrowException()
+    public function settingInvalidStrategyShouldThrowException()
     {
-        $this->commandFactory->setCommandStrategy('lussenhof', Commander::STRATEGY_ASYNCHRONOUS);
+        $this->commander->setExecutionStrategy('lussenhof', ExecutionStrategy::STRATEGY_ASYNCHRONOUS);
     }
 
     /**
@@ -100,18 +96,18 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
     public function settingStrategyShouldWork()
     {
         $this->assertEquals(
-            Commander::STRATEGY_ASYNCHRONOUS,
-            $this->commandFactory->getCommandStrategy('tussi')
+            ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+            $this->commander->getExecutionStrategy('ManateeTussi')
         );
 
         $this->assertSame(
-            $this->commandFactory,
-            $this->commandFactory->setCommandStrategy('tussi', Commander::STRATEGY_SYNCHRONOUS)
+            $this->commander,
+            $this->commander->setExecutionStrategy('ManateeTussi', ExecutionStrategy::STRATEGY_SYNCHRONOUS)
         );
 
         $this->assertEquals(
-            Commander::STRATEGY_SYNCHRONOUS,
-            $this->commandFactory->getCommandStrategy('tussi')
+            ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+            $this->commander->getExecutionStrategy('ManateeTussi')
         );
     }
 
@@ -139,14 +135,14 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
         }
 
 
-        $executable = $this->commandFactory->createCommand(
-            'tussi'
+        $executable = $this->commander->createCommand(
+            'ManateeTussi'
         );
         $this->assertInstanceOf('Xi\Filelib\Command\Command', $executable);
 
 
-        $executable = $this->commandFactory->createCommand(
-            'lussi'
+        $executable = $this->commander->createCommand(
+            'ManateeLussi'
         );
         $this->assertInstanceOf('Xi\Filelib\Command\Command', $executable);
     }

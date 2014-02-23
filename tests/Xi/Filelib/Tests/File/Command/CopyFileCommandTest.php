@@ -158,19 +158,19 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldExecute($exclusiveResource)
     {
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $backend = $this->getMockedBackend();
+        $storage = $this->getMockedStorage();
+        $eventDispatcher = $this->getMockedEventDispatcher();
 
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-
-        $this->op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-        $this->op->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
-        $this->op->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($eventDispatcher));
-
-        $file = File::create(array('name' => 'tohtori-vesala.jpg', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
+        $file = File::create(
+            array(
+                'name' => 'tohtori-vesala.jpg',
+                'resource' => Resource::create(
+                    array(
+                        'exclusive' => $exclusiveResource)
+                )
+            )
+        );
 
         $backend
             ->expects($this->once())
@@ -225,7 +225,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $afterUploadCommand->expects($this->once())->method('execute')->will($this->returnValue($file));
 
         $command = new CopyFileCommand($file, $this->folder);
-        $command->attachTo($this->getMockedFilelib(null, $this->op));
+        $command->attachTo($this->getMockedFilelib(null, $this->op, null, $storage, $eventDispatcher, $backend));
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);

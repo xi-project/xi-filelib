@@ -45,7 +45,7 @@ for ($x = 1; $x <= 10; $x++) {
     foreach ($diterator as $file) {
         if ($file->isFile()) {
 
-            $filelib->getFileOperator()->setCommandStrategy(
+            $filelib->getFileOperator()->setExecutionStrategy(
                 FileOperator::COMMAND_AFTERUPLOAD,
                 ExecutionStrategy::STRATEGY_ASYNCHRONOUS
             );

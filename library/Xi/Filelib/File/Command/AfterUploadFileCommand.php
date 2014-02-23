@@ -35,12 +35,12 @@ class AfterUploadFileCommand extends AbstractFileCommand
         $file = $this->file;
 
         $event = new FileEvent($file);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_AFTERUPLOAD, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_AFTERUPLOAD, $event);
 
         // @todo: actual statuses
         $file->setStatus(File::STATUS_COMPLETED);
 
-        $this->fileOperator->getBackend()->updateFile($file);
+        $this->backend->updateFile($file);
 
         return $file;
     }

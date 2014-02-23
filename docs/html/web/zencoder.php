@@ -18,7 +18,7 @@ require_once __DIR__ . '/../zencoder-common.php';
 
 $path = realpath(__DIR__ . '/../../../tests/data/hauska-joonas.mp4');
 
-$filelib->getFileOperator()->setCommandStrategy(
+$filelib->getFileOperator()->setExecutionStrategy(
     FileOperator::COMMAND_AFTERUPLOAD,
     ExecutionStrategy::STRATEGY_ASYNCHRONOUS
 );

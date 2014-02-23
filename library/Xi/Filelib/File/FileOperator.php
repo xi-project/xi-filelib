@@ -9,6 +9,9 @@
 
 namespace Xi\Filelib\File;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Xi\Filelib\Command\CommandDefinition;
+use Xi\Filelib\Command\CommanderClient;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\AbstractOperator;
@@ -22,7 +25,7 @@ use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 use Xi\Filelib\Events;
-use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * File operator
@@ -32,29 +35,59 @@ use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
  */
 class FileOperator extends AbstractOperator
 {
-    const COMMAND_UPLOAD = 'upload';
-    const COMMAND_AFTERUPLOAD = 'after_upload';
-    const COMMAND_UPDATE = 'update';
-    const COMMAND_DELETE = 'delete';
-    const COMMAND_COPY = 'copy';
-
-    /**
-     * Default command strategies
-     *
-     * @var array
-     */
-    protected $commandStrategies = array(
-        self::COMMAND_UPLOAD => ExecutionStrategy::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_AFTERUPLOAD => ExecutionStrategy::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_UPDATE => ExecutionStrategy::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_DELETE => ExecutionStrategy::STRATEGY_SYNCHRONOUS,
-        self::COMMAND_COPY => ExecutionStrategy::STRATEGY_SYNCHRONOUS,
-    );
+    const COMMAND_UPLOAD = 'Xi\Filelib\File\Command\UploadFileCommand';
+    const COMMAND_AFTERUPLOAD = 'Xi\Filelib\File\Command\AfterUploadFileCommand';
+    const COMMAND_UPDATE = 'Xi\Filelib\File\Command\UpdateFileCommand';
+    const COMMAND_DELETE = 'Xi\Filelib\File\Command\DeleteFileCommand';
+    const COMMAND_COPY = 'Xi\Filelib\File\Command\CopyFileCommand';
 
     /**
      * @var array Profiles
      */
     private $profiles = array();
+
+    /**
+     * @var FolderOperator
+     */
+    private $folderOperator;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    public function attachTo(FileLibrary $filelib)
+    {
+        parent::attachTo($filelib);
+        $this->folderOperator = $filelib->getFolderOperator();
+        $this->eventDispatcher = $filelib->getEventDispatcher();
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommandDefinitions()
+    {
+        return array(
+            new CommandDefinition(
+                self::COMMAND_UPLOAD
+            ),
+            new CommandDefinition(
+                self::COMMAND_AFTERUPLOAD
+            ),
+            new CommandDefinition(
+                self::COMMAND_UPDATE
+            ),
+            new CommandDefinition(
+                self::COMMAND_DELETE
+            ),
+            new CommandDefinition(
+                self::COMMAND_COPY
+            ),
+        );
+    }
+
+
 
     /**
      * Adds a file profile
@@ -73,10 +106,10 @@ class FileOperator extends AbstractOperator
         }
         $this->profiles[$identifier] = $profile;
 
-        $this->getEventDispatcher()->addSubscriber($profile);
+        $this->eventDispatcher->addSubscriber($profile);
 
         $event = new FileProfileEvent($profile);
-        $this->getEventDispatcher()->dispatch(Events::PROFILE_AFTER_ADD, $event);
+        $this->eventDispatcher->dispatch(Events::PROFILE_AFTER_ADD, $event);
 
         return $this;
     }
@@ -115,10 +148,9 @@ class FileOperator extends AbstractOperator
      */
     public function update(File $file)
     {
-        return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\UpdateFileCommand', array($file)),
-            self::COMMAND_UPDATE
-        );
+        return $this->commander
+            ->createExecutable(self::COMMAND_UPDATE, array($file))
+            ->execute();
     }
 
     /**
@@ -129,7 +161,7 @@ class FileOperator extends AbstractOperator
      */
     public function find($id)
     {
-        $file = $this->getBackend()->findById($id, 'Xi\Filelib\File\File');
+        $file = $this->backend->findById($id, 'Xi\Filelib\File\File');
 
         if (!$file) {
             return false;
@@ -147,7 +179,7 @@ class FileOperator extends AbstractOperator
      */
     public function findByFilename(Folder $folder, $filename)
     {
-        $file = $this->getBackend()->findByFinder(
+        $file = $this->backend->findByFinder(
             new FileFinder(array('folder_id' => $folder->getId(), 'name' => $filename))
         )->current();
 
@@ -165,7 +197,7 @@ class FileOperator extends AbstractOperator
      */
     public function findAll()
     {
-        $files = $this->getBackend()->findByFinder(new FileFinder());
+        $files = $this->backend->findByFinder(new FileFinder());
 
         return $files;
     }
@@ -185,13 +217,12 @@ class FileOperator extends AbstractOperator
         }
 
         if (!$folder) {
-            $folder = $this->getFolderOperator()->findRoot();
+            $folder = $this->folderOperator->findRoot();
         }
 
-        return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\UploadFileCommand', array($upload, $folder, $profile)),
-            self::COMMAND_UPLOAD
-        );
+        return $this->commander
+            ->createExecutable(self::COMMAND_UPLOAD, array($upload, $folder, $profile))
+            ->execute();
     }
 
     /**
@@ -201,10 +232,9 @@ class FileOperator extends AbstractOperator
      */
     public function delete(File $file)
     {
-        return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\DeleteFileCommand', array($file)),
-            self::COMMAND_DELETE
-        );
+        return $this->commander
+            ->createExecutable(self::COMMAND_DELETE, array($file))
+            ->execute();
     }
 
     /**
@@ -215,11 +245,9 @@ class FileOperator extends AbstractOperator
      */
     public function copy(File $file, Folder $folder)
     {
-        return $this->executeOrQueue(
-            $this->createCommand('Xi\Filelib\File\Command\CopyFileCommand', array($file, $folder)),
-            self::COMMAND_COPY
-        );
-
+        return $this->commander
+            ->createExecutable(self::COMMAND_COPY, array($file, $folder))
+            ->execute();
     }
 
     /**
@@ -245,16 +273,6 @@ class FileOperator extends AbstractOperator
     public function getVersionProvider(File $file, $version)
     {
         $profile = $this->getProfile($file->getProfile());
-
         return $profile->getVersionProvider($file, $version);
-    }
-
-    /**
-     *
-     * @return FolderOperator
-     */
-    public function getFolderOperator()
-    {
-        return $this->getFilelib()->getFolderOperator();
     }
 }

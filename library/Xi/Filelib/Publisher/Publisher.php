@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Publisher;
 
+use Xi\Filelib\Attacher;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
@@ -23,7 +24,7 @@ use Xi\Filelib\Storage\FileIOException;
  * Publisher
  *
  */
-class Publisher implements EventSubscriberInterface
+class Publisher implements EventSubscriberInterface, Attacher
 {
     /**
      * @var FileOperator

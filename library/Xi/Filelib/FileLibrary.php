@@ -10,6 +10,7 @@
 namespace Xi\Filelib;
 
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
+use Xi\Filelib\Command\Commander;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Storage\Storage;
@@ -73,18 +74,34 @@ class FileLibrary
      */
     private $platform;
 
-    private $plugins;
+    /**
+     * @var array
+     */
+    private $plugins = array();
 
+    /**
+     * @var Commander
+     */
+    private $commander;
 
     public function __construct(
         Storage $storage,
         Platform $platform,
-        EventDispatcherInterface $eventDispatcher = null
+        EventDispatcherInterface $eventDispatcher = null,
+        Commander $commander = null
     ) {
+        if (!$eventDispatcher) {
+            $eventDispatcher = new EventDispatcher();
+        }
+
+        if (!$commander) {
+            $commander = new Commander($this);
+        }
 
         $this->storage = $storage;
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
+        $this->commander = $commander;
 
         $this->backend = new Backend(
             $this->getEventDispatcher(),
@@ -99,9 +116,6 @@ class FileLibrary
      */
     public function getEventDispatcher()
     {
-        if (!$this->eventDispatcher) {
-            $this->eventDispatcher = new EventDispatcher();
-        }
         return $this->eventDispatcher;
     }
 
@@ -146,9 +160,9 @@ class FileLibrary
     public function getFileOperator()
     {
         if (!$this->fileOperator) {
-            $this->fileOperator = new FileOperator($this);
+            $this->fileOperator = new FileOperator();
+            $this->fileOperator->attachTo($this);
         }
-
         return $this->fileOperator;
     }
 
@@ -160,7 +174,8 @@ class FileLibrary
     public function getFolderOperator()
     {
         if (!$this->folderOperator) {
-            $this->folderOperator = new FolderOperator($this);
+            $this->folderOperator = new FolderOperator();
+            $this->folderOperator->attachTo($this);
         }
 
         return $this->folderOperator;
@@ -261,6 +276,8 @@ class FileLibrary
             $queue,
             $this->getEventDispatcher()
         );
+
+        $this->commander->setQueue($this->queue);
         return $this;
     }
 
@@ -282,6 +299,14 @@ class FileLibrary
     public function getPlatform()
     {
         return $this->platform;
+    }
+
+    /**
+     * @return Commander
+     */
+    public function getCommander()
+    {
+        return $this->commander;
     }
 
     public function upload($file, $folder = null, $profile = 'default')
