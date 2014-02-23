@@ -7,7 +7,6 @@ use Pekkis\Queue\Message;
 use Pekkis\Queue\Processor\Result;
 use Pekkis\Queue\QueueInterface;
 use Xi\Filelib\Command\Command;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
@@ -16,21 +15,6 @@ use Xi\Filelib\File\Resource;
 
 class FilelibMessageHandler implements MessageHandler
 {
-    /**
-     * @var FileLibrary
-     */
-    private $filelib;
-
-    /**
-     * @var FileOperator
-     */
-    private $fiop;
-
-    /**
-     * @var FolderOperator
-     */
-    private $foop;
-
     public function willHandle(Message $message)
     {
         return ($message->getData() instanceof Command);
@@ -38,7 +22,11 @@ class FilelibMessageHandler implements MessageHandler
 
     public function handle(Message $message, QueueInterface $queue)
     {
-        $message->getData()->execute();
+        $command = $message->getData();
+        if ($command instanceof UuidReceiver) {
+            $command->setUuid($message->getUuid());
+        }
+        $command->execute();
         return new Result(true);
     }
 }

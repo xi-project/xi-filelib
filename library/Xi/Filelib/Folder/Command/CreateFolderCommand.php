@@ -17,8 +17,9 @@ use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\LogicException;
 use Pekkis\Queue\Message;
+use Xi\Filelib\Queue\UuidReceiver;
 
-class CreateFolderCommand extends AbstractFolderCommand
+class CreateFolderCommand extends AbstractFolderCommand implements UuidReceiver
 {
     /**
      * @var Folder
@@ -28,11 +29,15 @@ class CreateFolderCommand extends AbstractFolderCommand
     /**
      * @var string
      */
-    private $uuid;
+    private $uuid = null;
 
-    public function __construct(Folder $folder, $uuid = null)
+    public function __construct(Folder $folder)
     {
         $this->folder = $folder;
+    }
+
+    public function setUuid($uuid)
+    {
         $this->uuid = $uuid;
     }
 

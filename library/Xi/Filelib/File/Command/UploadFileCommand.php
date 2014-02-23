@@ -23,8 +23,9 @@ use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
+use Xi\Filelib\Queue\UuidReceiver;
 
-class UploadFileCommand extends AbstractFileCommand
+class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
 {
     /**
      *
@@ -47,14 +48,13 @@ class UploadFileCommand extends AbstractFileCommand
     /**
      * @var string
      */
-    protected $uuid;
+    protected $uuid = null;
 
-    public function __construct(FileUpload $upload, Folder $folder, $profile = 'default', $uuid = null)
+    public function __construct(FileUpload $upload, Folder $folder, $profile = 'default')
     {
         $this->upload = $upload;
         $this->folder = $folder;
         $this->profile = $profile;
-        $this->uuid = $uuid;
     }
 
     /**
@@ -63,6 +63,11 @@ class UploadFileCommand extends AbstractFileCommand
     public function getUuid()
     {
         return $this->uuid ?: Uuid::uuid4()->toString();
+    }
+
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
     }
 
     /**

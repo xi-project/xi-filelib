@@ -4,12 +4,15 @@ namespace Xi\Filelib\Tests\Command;
 
 use Xi\Filelib\Command\Command;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Queue\UuidReceiver;
 
-class NullCommand implements Command
+class NullCommand implements Command, UuidReceiver
 {
     private $topic;
 
     private $returnValue;
+
+    private $uuid;
 
     public function __construct($topic = 'xooxer', $returnValue = null)
     {
@@ -33,6 +36,16 @@ class NullCommand implements Command
     public function serialize()
     {
         return '';
+    }
+
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
     }
 
     public function unserialize($data)

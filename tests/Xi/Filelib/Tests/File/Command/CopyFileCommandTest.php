@@ -240,7 +240,8 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $file = $this->getMock('Xi\Filelib\File\File');
         $uuid = Uuid::uuid4()->toString();
 
-        $command = new CopyFileCommand($file, $folder, $uuid);
+        $command = new CopyFileCommand($file, $folder);
+        $command->setUuid($uuid);
 
         $serialized = serialize($command);
         $command2 = unserialize($serialized);
@@ -261,7 +262,8 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new CopyFileCommand($file, $folder);
         $this->assertUuid($command->getUuid());
 
-        $presetCommand = new CopyFileCommand($file, $folder, 'lussen-tussen-hof');
+        $presetCommand = new CopyFileCommand($file, $folder);
+        $presetCommand->setUuid('lussen-tussen-hof');
         $this->assertSame('lussen-tussen-hof', $presetCommand->getUuid());
     }
 

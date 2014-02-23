@@ -20,8 +20,9 @@ use Xi\Filelib\Events;
 use Xi\Filelib\Event\FolderEvent;
 use Pekkis\Queue\Message;
 use Rhumsaa\Uuid\Uuid;
+use Xi\Filelib\Queue\UuidReceiver;
 
-class CopyFileCommand extends AbstractFileCommand
+class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
 {
     /**
      *
@@ -38,12 +39,16 @@ class CopyFileCommand extends AbstractFileCommand
     /**
      * @var string
      */
-    private $uuid;
+    private $uuid = null;
 
-    public function __construct(File $file, Folder $folder, $uuid = null)
+    public function __construct(File $file, Folder $folder)
     {
         $this->file = $file;
         $this->folder = $folder;
+    }
+
+    public function setUuid($uuid)
+    {
         $this->uuid = $uuid;
     }
 

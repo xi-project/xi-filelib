@@ -98,8 +98,9 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new CreateFolderCommand($folder);
         $this->assertUuid($command->getUuid());
 
-        $presetCommand = new CreateFolderCommand($folder, 'lussen-meister-hof');
-        $this->assertSame('lussen-meister-hof', $presetCommand->getUuid());
+        $presetCommand = new CreateFolderCommand($folder);
+        $presetCommand->setUuid('lipaiseppa-kvaakkua-artoseni');
+        $this->assertSame('lipaiseppa-kvaakkua-artoseni', $presetCommand->getUuid());
     }
 
     /**
@@ -110,7 +111,8 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $uuid = Uuid::uuid4()->toString();
 
-        $command = new CreateFolderCommand($folder, $uuid);
+        $command = new CreateFolderCommand($folder);
+        $command->setUuid($uuid);
 
         $serialized = serialize($command);
         $command2 = unserialize($serialized);

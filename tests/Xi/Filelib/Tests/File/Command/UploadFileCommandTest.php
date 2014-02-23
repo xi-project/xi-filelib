@@ -295,7 +295,8 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $profile = 'lussenhof';
         $uuid = Uuid::uuid4()->toString();
 
-        $command = new UploadFileCommand($upload, $folder, $profile, $uuid);
+        $command = new UploadFileCommand($upload, $folder, $profile);
+        $command->setUuid($uuid);
 
         $serialized = serialize($command);
 
@@ -319,7 +320,9 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new UploadFileCommand($fileupload, $folder, 'oh-the-huge-manatee');
         $this->assertUuid($command->getUuid());
 
-        $presetCommand = new UploadFileCommand($fileupload, $folder, 'oh-the-huge-manatee', 'lussen-meister-hof');
+        $presetCommand = new UploadFileCommand($fileupload, $folder, 'oh-the-huge-manatee');
+        $presetCommand->setUuid('lussen-meister-hof');
+
         $this->assertSame('lussen-meister-hof', $presetCommand->getUuid());
     }
 

@@ -3,21 +3,11 @@
 namespace Xi\Filelib\Tests\Queue;
 
 use Pekkis\Queue\Message;
-use Xi\Filelib\Command\Command;
-use Xi\Filelib\File\Command\AfterUploadFileCommand;
-use Xi\Filelib\File\Command\CopyFileCommand;
-use Xi\Filelib\File\Command\DeleteFileCommand;
-use Xi\Filelib\File\Command\UpdateFileCommand;
-use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
-use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\Folder\Command\CreateByUrlFolderCommand;
-use Xi\Filelib\Folder\Command\CreateFolderCommand;
-use Xi\Filelib\Folder\Command\DeleteFolderCommand;
-use Xi\Filelib\Folder\Command\UpdateFolderCommand;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Queue\FilelibMessageHandler;
+use Xi\Filelib\Tests\Command\NullCommand;
 
 class FilelibMessageHandlerTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -29,7 +19,6 @@ class FilelibMessageHandlerTest extends \Xi\Filelib\Tests\TestCase
     public function setUp()
     {
         $this->handler = new FilelibMessageHandler();
-
     }
 
     /**
@@ -66,6 +55,21 @@ class FilelibMessageHandlerTest extends \Xi\Filelib\Tests\TestCase
             $this->getMockedQueue()
         );
         $this->assertInstanceOf('Pekkis\Queue\Processor\Result', $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function injectsMessagesUuidToUuidReceivers()
+    {
+        $command = new NullCommand();
+        $message = Message::create('lus.tus', $command);
+
+        $this->assertNull($command->getUuid());
+
+        $this->handler->handle($message, $this->getMockedQueue());
+
+        $this->assertEquals($message->getUuid(), $command->getUuid());
     }
 
 }

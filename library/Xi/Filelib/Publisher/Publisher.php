@@ -154,6 +154,9 @@ class Publisher implements EventSubscriberInterface, Attacher
 
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
+
+        $data = $file->getData();
+        unset($data["publisher.version_url"]);
     }
 
     /**
@@ -176,12 +179,22 @@ class Publisher implements EventSubscriberInterface, Attacher
      */
     public function getUrlVersion(File $file, $version)
     {
-        return $this->adapter->getUrlVersion(
+        $data = $file->getData();
+        if (isset($data["publisher.version_url"][$version])) {
+            return $data["publisher.version_url"][$version];
+        }
+
+        $url = $this->adapter->getUrlVersion(
             $file,
             $version,
             $this->getVersionProvider($file, $version),
             $this->linker
         );
+
+        $data["publisher.version_url"][$version] = $url;
+        $this->fileOperator->update($file);
+
+        return $url;
     }
 
     /**
