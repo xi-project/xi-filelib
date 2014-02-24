@@ -285,4 +285,21 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $data = $file->getData();
         $this->assertEquals('magnifico', $data['lusso']);
     }
+
+    /**
+     * @test
+     */
+    public function clonesDeeply()
+    {
+        $source = File::create();
+        $sourceData = $source->getData();
+        $sourceData['lussutappa'] = 'tussia';
+
+        $target = clone $source;
+        $targetData = $target->getData();
+
+        $this->assertEquals($source->getData()->getArrayCopy(), $target->getData()->getArrayCopy());
+        $this->assertNotSame($sourceData, $targetData);
+    }
+
 }

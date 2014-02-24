@@ -139,6 +139,14 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
+    public function getMockedPublisherAdapter()
+    {
+        return $this->getMock('Xi\Filelib\Publisher\PublisherAdapter');
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
     public function getMockedPlatform()
     {
         return $this->getMock('Xi\Filelib\Backend\Platform\Platform');

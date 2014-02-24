@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Publisher;
 
+use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\Publisher;
@@ -92,7 +93,8 @@ class PublisherTest extends TestCase
     public function shouldSubscribeToEvents()
     {
         $expected = array(
-            CoreEvents::FILE_BEFORE_DELETE => array('onBeforeDelete')
+            CoreEvents::FILE_BEFORE_DELETE => array('onBeforeDelete'),
+            CoreEvents::FILE_BEFORE_COPY => array('onBeforeCopy')
         );
 
         $this->assertEquals(
@@ -117,6 +119,33 @@ class PublisherTest extends TestCase
         $event = new FileEvent($file);
         $publisher->onBeforeDelete($event);
     }
+
+    /**
+     * @test
+     */
+    public function onBeforeCopyShouldResetTargetData()
+    {
+        $source = File::create();
+        $sourceData = $source->getData();
+        $sourceData['publisher.published'] = 1;
+
+        $target = clone $source;
+        $targetData = $target->getData();
+
+        $this->assertNotSame($sourceData, $targetData);
+
+        $this->assertArrayHasKey('publisher.published', $sourceData);
+        $this->assertArrayHasKey('publisher.published', $targetData);
+
+        $publisher = new Publisher($this->getMockedPublisherAdapter(), $this->getMockedLinker());
+
+        $event = new FileCopyEvent($source, $target);
+        $publisher->onBeforeCopy($event);
+
+        $this->assertArrayHasKey('publisher.published', $sourceData);
+        $this->assertArrayNotHasKey('publisher.published', $targetData);
+    }
+
 
     /**
      * @test
