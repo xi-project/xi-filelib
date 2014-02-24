@@ -128,6 +128,8 @@ class PublisherTest extends TestCase
         $source = File::create();
         $sourceData = $source->getData();
         $sourceData['publisher.published'] = 1;
+        $sourceData['publisher.version_url']['ankan'] = 'arto';
+        $sourceData['publisher.version_url']['lipaisija'] = 'tenhunen';
 
         $target = clone $source;
         $targetData = $target->getData();
@@ -136,6 +138,8 @@ class PublisherTest extends TestCase
 
         $this->assertArrayHasKey('publisher.published', $sourceData);
         $this->assertArrayHasKey('publisher.published', $targetData);
+        $this->assertArrayHasKey('publisher.version_url', $sourceData);
+        $this->assertArrayHasKey('publisher.version_url', $targetData);
 
         $publisher = new Publisher($this->getMockedPublisherAdapter(), $this->getMockedLinker());
 
@@ -144,6 +148,7 @@ class PublisherTest extends TestCase
 
         $this->assertArrayHasKey('publisher.published', $sourceData);
         $this->assertArrayNotHasKey('publisher.published', $targetData);
+        $this->assertArrayNotHasKey('publisher.version_url', $targetData);
     }
 
 

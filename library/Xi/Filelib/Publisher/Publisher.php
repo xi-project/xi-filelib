@@ -217,5 +217,6 @@ class Publisher implements EventSubscriberInterface, Attacher
         $target = $event->getTarget();
         $data = $target->getData();
         unset($data['publisher.published']);
+        unset($data['publisher.version_url']);
     }
 }
