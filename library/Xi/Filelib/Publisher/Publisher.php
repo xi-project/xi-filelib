@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\Attacher;
+use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
@@ -63,6 +64,7 @@ class Publisher implements EventSubscriberInterface, Attacher
     {
         $this->fileOperator = $filelib->getFileOperator();
         $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->eventDispatcher->addSubscriber($this);
         $this->adapter->attachTo($filelib);
         $this->linker->attachTo($filelib);
     }
@@ -92,7 +94,8 @@ class Publisher implements EventSubscriberInterface, Attacher
     public static function getSubscribedEvents()
     {
         return array(
-            CoreEvents::FILE_BEFORE_DELETE => array('onBeforeDelete')
+            CoreEvents::FILE_BEFORE_DELETE => array('onBeforeDelete'),
+            CoreEvents::FILE_BEFORE_COPY => array('onBeforeCopy'),
         );
     }
 
@@ -204,5 +207,15 @@ class Publisher implements EventSubscriberInterface, Attacher
     {
         $file = $event->getFile();
         $this->unpublish($file);
+    }
+
+    /**
+     * @param FileEvent $event
+     */
+    public function onBeforeCopy(FileCopyEvent $event)
+    {
+        $target = $event->getTarget();
+        $data = $target->getData();
+        unset($data['publisher.published']);
     }
 }

@@ -427,4 +427,11 @@ class File implements Identifiable
     {
         return in_array($version, $this->getVersions());
     }
+
+    public function __clone()
+    {
+        if ($this->data) {
+            $this->data = clone $this->data;
+        }
+    }
 }
