@@ -11,6 +11,7 @@ namespace Xi\Filelib\Folder\Command;
 
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Folder\Folder;
+use Pekkis\Queue\Message;
 
 class CreateByUrlFolderCommand extends AbstractFolderCommand
 {
@@ -23,7 +24,6 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
 
     public function __construct($url)
     {
-        parent::__construct();
         $this->url = $url;
     }
 
@@ -59,12 +59,10 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
                     )
                 );
 
-                $command = $this->folderOperator->createCommand(
-                    'Xi\Filelib\Folder\Command\CreateFolderCommand',
+                $this->folderOperator->createCommand(
+                    FolderOperator::COMMAND_CREATE,
                     array($created)
-                );
-                $command->execute();
-
+                )->execute();
             }
             $previous = $created;
         }
@@ -72,11 +70,15 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
         return $created;
     }
 
+    public function getTopic()
+    {
+        return 'xi_filelib.command.folder.create_by_url';
+    }
+
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->url = $data['url'];
-        $this->uuid = $data['uuid'];
     }
 
     public function serialize()
@@ -84,7 +86,6 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
         return serialize(
             array(
                 'url' => $this->url,
-                'uuid' => $this->uuid,
             )
         );
     }

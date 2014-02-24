@@ -20,10 +20,10 @@ class VersionTest extends TestCase
             array(-1, '0.6.0'),
             array(-1, '0.7.0dev'),
             array(-1, '0.7.0'),
-            array(0, '0.8.0dev'),
-            array(1, '0.8.0'),
-            array(1, '0.9.0'),
-            array(1, '0.10.0'),
+            array(-1, '0.8.0dev'),
+            array(-1, '0.8.0'),
+            array(-1, '0.9.0'),
+            array(0, '0.10.0'),
             array(1, '1.0.0'),
         );
     }

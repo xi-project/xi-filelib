@@ -1,6 +1,8 @@
 composer.phar
 composer.lock
 tests/phpunit.xml
+tests/php_errors.log
+docs/html/web/php_errors.log
 nbproject
 /vendor/
 .idea

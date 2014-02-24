@@ -11,7 +11,6 @@ namespace Xi\Filelib\File;
 
 use DateTime;
 use ArrayObject;
-use Xi\Filelib\File\Resource;
 use Xi\Filelib\IdentityMap\Identifiable;
 
 class File implements Identifiable

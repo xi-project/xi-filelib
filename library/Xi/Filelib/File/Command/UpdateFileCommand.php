@@ -13,6 +13,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
+use Pekkis\Queue\Message;
 
 class UpdateFileCommand extends AbstractFileCommand
 {
@@ -24,36 +25,38 @@ class UpdateFileCommand extends AbstractFileCommand
 
     public function __construct(File $file)
     {
-        parent::__construct();
         $this->file = $file;
     }
 
     public function execute()
     {
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_UPDATE, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UPDATE, $event);
 
-        $this->fileOperator->getBackend()->updateFile($this->file);
+        $this->backend->updateFile($this->file);
 
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_UPDATE, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_UPDATE, $event);
 
         return $this->file;
+    }
+
+    public function getTopic()
+    {
+        return 'xi_filelib.command.file.update';
     }
 
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
-        $this->uuid = $data['uuid'];
     }
 
     public function serialize()
     {
         return serialize(
             array(
-            'file' => $this->file,
-            'uuid' => $this->uuid,
+                'file' => $this->file,
             )
         );
     }

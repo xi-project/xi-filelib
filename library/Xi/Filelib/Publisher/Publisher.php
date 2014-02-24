@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Publisher;
 
+use Xi\Filelib\Attacher;
 use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
@@ -24,7 +25,7 @@ use Xi\Filelib\Storage\FileIOException;
  * Publisher
  *
  */
-class Publisher implements EventSubscriberInterface
+class Publisher implements EventSubscriberInterface, Attacher
 {
     /**
      * @var FileOperator
@@ -156,6 +157,9 @@ class Publisher implements EventSubscriberInterface
 
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
+
+        $data = $file->getData();
+        unset($data["publisher.version_url"]);
     }
 
     /**
@@ -178,12 +182,22 @@ class Publisher implements EventSubscriberInterface
      */
     public function getUrlVersion(File $file, $version)
     {
-        return $this->adapter->getUrlVersion(
+        $data = $file->getData();
+        if (isset($data["publisher.version_url"][$version])) {
+            return $data["publisher.version_url"][$version];
+        }
+
+        $url = $this->adapter->getUrlVersion(
             $file,
             $version,
             $this->getVersionProvider($file, $version),
             $this->linker
         );
+
+        $data["publisher.version_url"][$version] = $url;
+        $this->fileOperator->update($file);
+
+        return $url;
     }
 
     /**
@@ -203,5 +217,6 @@ class Publisher implements EventSubscriberInterface
         $target = $event->getTarget();
         $data = $target->getData();
         unset($data['publisher.published']);
+        unset($data['publisher.version_url']);
     }
 }

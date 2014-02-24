@@ -18,25 +18,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\File\Command\DeleteFileCommand'));
-        $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\DeleteFileCommand'));
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
-
-        $command = new DeleteFileCommand($file);
-
-        $serialized = serialize($command);
-
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'fileOperator', $command2);
-        $this->assertAttributeEquals($file, 'file', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\File\Command\DeleteFileCommand'));
     }
 
     /**
@@ -56,9 +38,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function deleteShouldDelegateCorrectly($exclusiveResource)
     {
-        $filelib = $this->getMockedFilelib();
         $ed = $this->getMockedEventDispatcher();
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
 
         $ed
             ->expects($this->at(0))
@@ -76,22 +56,26 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
                 $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
             );
 
-        $op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-                   ->setConstructorArgs(array($filelib))
-                   ->setMethods(array('getProfile', 'createCommand'))
-                   ->getMock();
-
-        $profile = $this->getMockedFileProfile();
+        $op = $this->getMockedFileOperator(array('lussen'));
 
         $file = File::create(array('id' => 1, 'profile' => 'lussen', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
 
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $backend->expects($this->once())->method('deleteFile')->with($this->equalTo($file));
+        $backend = $this->getMockedBackend();
+        $backend
+            ->expects($this->once())
+            ->method('deleteFile')
+            ->with($this->equalTo($file));
 
-        $storage = $this->getMockForAbstractClass('Xi\Filelib\Storage\Storage');
+        $storage = $this->getMockedStorage();
+
+        $filelib = $this->getMockedFilelib(
+            null,
+            $op,
+            null,
+            $storage,
+            $ed,
+            $backend
+        );
 
         if ($exclusiveResource) {
             $storage->expects($this->once())->method('delete')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
@@ -101,15 +85,37 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
             $backend->expects($this->never())->method('deleteResource');
         }
 
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
-
-        $op->expects($this->any())->method('getProfile')->with($this->equalTo('lussen'))->will($this->returnValue($profile));
-
         $command = new DeleteFileCommand($file);
-        $command->attachTo($this->getMockedFilelib(null, $op));
+        $command->attachTo($filelib);
         $command->execute();
-
     }
 
+    /**
+     * @test
+     */
+    public function commandShouldSerializeAndUnserializeProperly()
+    {
+        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
+        $command = new DeleteFileCommand($file);
+
+        $serialized = serialize($command);
+
+        $command2 = unserialize($serialized);
+
+        $this->assertAttributeEquals(null, 'fileOperator', $command2);
+        $this->assertAttributeEquals($file, 'file', $command2);
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\File\Command\DeleteFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.file.delete', $command->getTopic());
+    }
 }

@@ -13,6 +13,7 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
+use Pekkis\Queue\Message;
 
 class DeleteFileCommand extends AbstractFileCommand
 {
@@ -24,33 +25,36 @@ class DeleteFileCommand extends AbstractFileCommand
 
     public function __construct(File $file)
     {
-        parent::__construct();
         $this->file = $file;
     }
 
     public function execute()
     {
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_DELETE, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_DELETE, $event);
 
-        $this->fileOperator->getBackend()->deleteFile($this->file);
+        $this->backend->deleteFile($this->file);
 
         if ($this->file->getResource()->isExclusive()) {
-            $this->fileOperator->getStorage()->delete($this->file->getResource());
-            $this->fileOperator->getBackend()->deleteResource($this->file->getResource());
+            $this->storage->delete($this->file->getResource());
+            $this->backend->deleteResource($this->file->getResource());
         }
 
         $event = new FileEvent($this->file);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_DELETE, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_DELETE, $event);
 
         return true;
+    }
+
+    public function getTopic()
+    {
+        return 'xi_filelib.command.file.delete';
     }
 
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->file = $data['file'];
-        $this->uuid = $data['uuid'];
     }
 
     public function serialize()
@@ -58,7 +62,6 @@ class DeleteFileCommand extends AbstractFileCommand
         return serialize(
             array(
                 'file' => $this->file,
-                'uuid' => $this->uuid,
             )
         );
     }

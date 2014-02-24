@@ -9,16 +9,17 @@
 
 namespace Xi\Filelib\Plugin\Video;
 
+use Guzzle\Service\Resource\Model;
 use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
 use Xi\Filelib\FileLibrary;
-use ZendService\Amazon\S3\S3 as AmazonService;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\RuntimeException;
+use Aws\S3\S3Client;
 
 class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 {
@@ -26,11 +27,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      * @var ZencoderService
      */
     private $zencoderService;
-
-    /**
-     * @var AmazonService
-     */
-    private $amazonService;
 
     /**
      * @var string
@@ -61,6 +57,11 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      * @var string
      */
     private $awsBucket;
+
+    /**
+     * @var S3Client
+     */
+    private $client;
 
     /**
      * @var integer
@@ -129,27 +130,30 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     }
 
     /**
-     * @return AmazonService
+     * @return S3Client
      */
-    public function getAwsService()
+    public function getClient()
     {
-        if (!$this->amazonService) {
-            $this->amazonService = new AmazonService($this->getAwsKey(), $this->getAwsSecretKey());
+        if (!$this->client) {
+            $this->client = S3Client::factory(
+                array(
+                    'key'    => $this->awsKey,
+                    'secret' => $this->awsSecretKey
+                )
+            );
         }
-
-        return $this->amazonService;
+        return $this->client;
     }
 
-    public function setAwsService(AmazonService $awsService)
+    public function setClient(S3Client $client)
     {
-        $this->amazonService = $awsService;
+        $this->client = $client;
     }
 
     public function setService(ZencoderService $service)
     {
         $this->zencoderService = $service;
     }
-
 
     /**
      * Sets sleepy time in seconds
@@ -228,18 +232,23 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      */
     public function createTemporaryVersions(File $file)
     {
-        $s3 = $this->getAwsService();
         $awsPath = $this->getAwsBucket() . '/' . $file->getUuid();
 
         $retrieved = $this->getStorage()->retrieve($file->getResource());
-        $s3->putFile($retrieved, $awsPath);
 
-        $url = $s3->getEndpoint() . '/' . $awsPath;
+        /** @var Model $result */
+        $result = $this->getClient()->putObject(
+            array(
+                'Bucket' => $this->awsBucket,
+                'Key'    => $file->getUuid(),
+                'SourceFile' => $retrieved,
+            )
+        );
 
         $options = array(
             "test" => false,
             "mock" => false,
-            "input" => $url,
+            "input" => $result['ObjectURL'],
             "outputs" => $this->getOutputsToZencoder()
         );
 
@@ -250,7 +259,12 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
 
             $outputs = $this->fetchOutputs($job);
 
-            $s3->removeObject($awsPath);
+            $this->getClient()->deleteObject(
+                array(
+                    'Bucket' => $this->awsBucket,
+                    'Key' => $file->getUuid()
+                )
+            );
 
             return $outputs;
 

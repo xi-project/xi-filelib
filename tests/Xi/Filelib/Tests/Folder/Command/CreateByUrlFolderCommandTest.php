@@ -16,27 +16,7 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand'));
-        $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand'));
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-
-        $url = 'tussen/hofen/meister';
-
-        $command = new CreateByUrlFolderCommand($url);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'folderOperator', $command2);
-        $this->assertAttributeEquals($url, 'url', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
-
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand'));
     }
 
     /**
@@ -176,5 +156,36 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->getMock();
 
         return $op;
+    }
+
+    /**
+     * @test
+     */
+    public function commandShouldSerializeAndUnserializeProperly()
+    {
+        $folder = $this->getMockedFolder();
+
+        $url = 'tussen/hofen/meister';
+
+        $command = new CreateByUrlFolderCommand($url);
+
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
+
+        $this->assertAttributeEquals(null, 'folderOperator', $command2);
+        $this->assertAttributeEquals($url, 'url', $command2);
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.folder.create_by_url', $command->getTopic());
     }
 }

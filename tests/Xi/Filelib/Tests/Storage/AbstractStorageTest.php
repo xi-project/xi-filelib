@@ -5,6 +5,7 @@ namespace Xi\Filelib\Tests\Storage;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Storage\FileIOException;
+use DateTime;
 
 class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -27,7 +28,7 @@ class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
 
         $this->resource = Resource::create();
         $this->version = 'version';
-        $this->file = File::create(array());
+        $this->file = File::create(array('created_at' => new DateTime()));
     }
 
     /**

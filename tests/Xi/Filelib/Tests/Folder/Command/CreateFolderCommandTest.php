@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Folder\Command;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderOperator;
 use Xi\Filelib\Folder\Folder;
@@ -17,25 +18,7 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\CreateFolderCommand'));
-        $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\CreateFolderCommand'));
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-
-        $command = new CreateFolderCommand($folder);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'folderOperator', $command2);
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
-
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\Folder\Command\CreateFolderCommand'));
     }
 
     /**
@@ -43,10 +26,7 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldCreateFolder()
     {
-        $filelib = $this->getMockedFilelib();
-
-
-        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $ed = $this->getMockedEventDispatcher();
 
         $ed
             ->expects($this->at(0))
@@ -63,15 +43,9 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('dispatch')
             ->with(Events::FOLDER_AFTER_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
 
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
-
-        $op = $this->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-                   ->setMethods(array('buildRoute', 'generateUuid', 'find'))
-                   ->setConstructorArgs(array($filelib))
-                   ->getMock();
+        $op = $this->getMockedFolderOperator();
 
         $op->expects($this->once())->method('find')->with('lusser')->will($this->returnValue($this->getMockedFolder()));
-
 
         $folder = $this
             ->getMockBuilder('Xi\Filelib\Folder\Folder')
@@ -87,21 +61,17 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnValue('route'));
 
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-
+        $backend = $this->getMockedBackend();
         $backend
             ->expects($this->once())
             ->method('createFolder')
             ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'))
             ->will($this->returnArgument(0));
 
+        $filelib = $this->getMockedFilelib(null, null, $op, null, $ed, $backend);
+
         $command = new CreateFolderCommand($folder);
-        $command->attachTo($this->getMockedFilelib(null, null, $op));
+        $command->attachTo($filelib);
 
         $folder2 = $command->execute();
         $this->assertUuid($folder2->getUuid());
@@ -118,5 +88,52 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $command->execute();
     }
 
+    /**
+     * @test
+     */
+    public function respectsPresetUuid()
+    {
+        $folder = Folder::create(array('id' => 123));
+
+        $command = new CreateFolderCommand($folder);
+        $this->assertUuid($command->getUuid());
+
+        $presetCommand = new CreateFolderCommand($folder);
+        $presetCommand->setUuid('lipaiseppa-kvaakkua-artoseni');
+        $this->assertSame('lipaiseppa-kvaakkua-artoseni', $presetCommand->getUuid());
+    }
+
+    /**
+     * @test
+     */
+    public function commandShouldSerializeAndUnserializeProperly()
+    {
+        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $uuid = Uuid::uuid4()->toString();
+
+        $command = new CreateFolderCommand($folder);
+        $command->setUuid($uuid);
+
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
+
+        $this->assertAttributeEquals(null, 'folderOperator', $command2);
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+        $this->assertAttributeEquals($uuid, 'uuid', $command2);
+
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\CreateFolderCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.folder.create', $command->getTopic());
+    }
 
 }

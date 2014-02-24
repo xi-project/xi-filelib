@@ -128,6 +128,8 @@ class PublisherTest extends TestCase
         $source = File::create();
         $sourceData = $source->getData();
         $sourceData['publisher.published'] = 1;
+        $sourceData['publisher.version_url']['ankan'] = 'arto';
+        $sourceData['publisher.version_url']['lipaisija'] = 'tenhunen';
 
         $target = clone $source;
         $targetData = $target->getData();
@@ -136,6 +138,8 @@ class PublisherTest extends TestCase
 
         $this->assertArrayHasKey('publisher.published', $sourceData);
         $this->assertArrayHasKey('publisher.published', $targetData);
+        $this->assertArrayHasKey('publisher.version_url', $sourceData);
+        $this->assertArrayHasKey('publisher.version_url', $targetData);
 
         $publisher = new Publisher($this->getMockedPublisherAdapter(), $this->getMockedLinker());
 
@@ -144,6 +148,7 @@ class PublisherTest extends TestCase
 
         $this->assertArrayHasKey('publisher.published', $sourceData);
         $this->assertArrayNotHasKey('publisher.published', $targetData);
+        $this->assertArrayNotHasKey('publisher.version_url', $targetData);
     }
 
 
@@ -176,7 +181,7 @@ class PublisherTest extends TestCase
     /**
      * @test
      */
-    public function getUrlShouldDelegateToAdapter()
+    public function getUrlShouldDelegateToAdapterIfNoCachedData()
     {
         $file = File::create();
 
@@ -191,9 +196,39 @@ class PublisherTest extends TestCase
             )
             ->will($this->returnValue('lussutusbansku'));
 
+        $this->fiop
+            ->expects($this->once())
+            ->method('update')
+            ->with($file);
+
         $ret = $this->publisher->getUrlVersion($file, 'ankan');
-        $this->assertSame('lussutusbansku', $ret);
+        $this->assertEquals('lussutusbansku', $ret);
+
+        $data = $file->getData();
+        $this->assertEquals('lussutusbansku', $data['publisher.version_url']['ankan']);
     }
+
+    /**
+     * @test
+     */
+    public function getUrlShouldUseCachedDataWhenAvailable()
+    {
+        $file = File::create();
+        $data = $file->getData();
+        $data['publisher.version_url']['ankan'] = 'kerran-tenhusen-lipaisema-lopullisesti-pilalla';
+
+        $this->adapter
+            ->expects($this->never())
+            ->method('getUrlVersion');
+
+        $this->fiop
+            ->expects($this->never())
+            ->method('update');
+
+        $ret = $this->publisher->getUrlVersion($file, 'ankan');
+        $this->assertEquals('kerran-tenhusen-lipaisema-lopullisesti-pilalla', $ret);
+    }
+
 
     /**
      * @test
@@ -246,6 +281,10 @@ class PublisherTest extends TestCase
      */
     public function unpublishShouldUnpublish(File $file)
     {
+        $data = $file->getData();
+        $data['publisher.version_url']['ankan'] = 'kvaak-kvaak';
+        $this->assertArrayHasKey('publisher.version_url', $data);
+
         $this->assertTrue($this->publisher->isPublished($file));
 
         $this->fiop->expects($this->once())->method('update')->with($file);
@@ -284,6 +323,8 @@ class PublisherTest extends TestCase
         $this->publisher->unpublish($file);
 
         $this->assertFalse($this->publisher->isPublished($file));
+
+        $this->assertArrayNotHasKey('publisher.version_url', $data);
     }
 
     /**

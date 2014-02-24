@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\File\Command;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\File\File;
@@ -32,7 +33,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\File\Command\CopyFileCommand'));
-        $this->assertContains('Xi\Filelib\File\Command\FileCommand', class_implements('Xi\Filelib\File\Command\CopyFileCommand'));
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\File\Command\CopyFileCommand'));
     }
 
     public function provideNames()
@@ -157,19 +158,19 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldExecute($exclusiveResource)
     {
-        $backend = $this
-            ->getMockBuilder('Xi\Filelib\Backend\Backend')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $backend = $this->getMockedBackend();
+        $storage = $this->getMockedStorage();
+        $eventDispatcher = $this->getMockedEventDispatcher();
 
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-
-        $this->op->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-        $this->op->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
-        $this->op->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($eventDispatcher));
-
-        $file = File::create(array('name' => 'tohtori-vesala.jpg', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
+        $file = File::create(
+            array(
+                'name' => 'tohtori-vesala.jpg',
+                'resource' => Resource::create(
+                    array(
+                        'exclusive' => $exclusiveResource)
+                )
+            )
+        );
 
         $backend
             ->expects($this->once())
@@ -224,7 +225,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $afterUploadCommand->expects($this->once())->method('execute')->will($this->returnValue($file));
 
         $command = new CopyFileCommand($file, $this->folder);
-        $command->attachTo($this->getMockedFilelib(null, $this->op));
+        $command->attachTo($this->getMockedFilelib(null, $this->op, null, $storage, $eventDispatcher, $backend));
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
@@ -237,13 +238,45 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $folder = $this->getMock('Xi\Filelib\Folder\Folder');
         $file = $this->getMock('Xi\Filelib\File\File');
+        $uuid = Uuid::uuid4()->toString();
+
         $command = new CopyFileCommand($file, $folder);
+        $command->setUuid($uuid);
 
         $serialized = serialize($command);
         $command2 = unserialize($serialized);
 
         $this->assertAttributeEquals($file, 'file', $command2);
         $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
+        $this->assertAttributeEquals($uuid, 'uuid', $command2);
+    }
+
+    /**
+     * @test
+     */
+    public function respectsPresetUuid()
+    {
+        $folder = Folder::create(array('id' => 123));
+        $file = File::create(array('id' => 321));
+
+        $command = new CopyFileCommand($file, $folder);
+        $this->assertUuid($command->getUuid());
+
+        $presetCommand = new CopyFileCommand($file, $folder);
+        $presetCommand->setUuid('lussen-tussen-hof');
+        $this->assertSame('lussen-tussen-hof', $presetCommand->getUuid());
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\File\Command\CopyFileCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.file.copy', $command->getTopic());
     }
 }

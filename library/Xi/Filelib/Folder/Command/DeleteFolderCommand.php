@@ -15,10 +15,10 @@ use Xi\Filelib\File\FileOperator;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
+use Pekkis\Queue\Message;
 
 class DeleteFolderCommand extends AbstractFolderCommand
 {
-
     /**
      *
      * @var FileOperator
@@ -33,58 +33,38 @@ class DeleteFolderCommand extends AbstractFolderCommand
 
     public function __construct(Folder $folder)
     {
-        parent::__construct();
         $this->folder = $folder;
     }
 
     public function execute()
     {
         $event = new FolderEvent($this->folder);
-        $this->folderOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_DELETE, $event);
+        $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_DELETE, $event);
 
         foreach ($this->folderOperator->findSubFolders($this->folder) as $childFolder) {
-            $command = $this->folderOperator->createCommand(
-                'Xi\Filelib\Folder\Command\DeleteFolderCommand',
+            $this->folderOperator->createCommand(
+                FolderOperator::COMMAND_DELETE,
                 array(
                     $childFolder
                 )
-            );
-            $command->execute();
+            )->execute();
         }
 
         foreach ($this->folderOperator->findFiles($this->folder) as $file) {
-            $command = $this->folderOperator->createCommand(
-                'Xi\Filelib\File\Command\DeleteFileCommand',
+            $this->folderOperator->createCommand(
+                FileOperator::COMMAND_DELETE,
                 array(
                     $file
                 )
-            );
-            $command->execute();
+            )->execute();
         }
 
-        $this->folderOperator->getBackend()->deleteFolder($this->folder);
+        $this->backend->deleteFolder($this->folder);
 
         $event = new FolderEvent($this->folder);
-        $this->folderOperator->getEventDispatcher()->dispatch(
+        $this->eventDispatcher->dispatch(
             Events::FOLDER_AFTER_DELETE,
             $event
-        );
-    }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-        $this->uuid = $data['uuid'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'folder' => $this->folder,
-                'uuid' => $this->uuid,
-            )
         );
     }
 
@@ -92,5 +72,25 @@ class DeleteFolderCommand extends AbstractFolderCommand
     {
         parent::attachTo($filelib);
         $this->fileOperator = $filelib->getFileOperator();
+    }
+
+    public function getTopic()
+    {
+        return 'xi_filelib.command.folder.delete';
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->folder = $data['folder'];
+    }
+
+    public function serialize()
+    {
+        return serialize(
+            array(
+                'folder' => $this->folder,
+            )
+        );
     }
 }

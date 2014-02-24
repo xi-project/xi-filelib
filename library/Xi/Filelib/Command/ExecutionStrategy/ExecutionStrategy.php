@@ -7,13 +7,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib;
+namespace Xi\Filelib\Command\ExecutionStrategy;
 
-use Serializable;
-use Xi\Filelib\Queue\Enqueueable;
+use Xi\Filelib\Command\Command;
 
-interface EnqueueableCommand extends Command, Enqueueable, Serializable
+interface ExecutionStrategy
 {
     const STRATEGY_SYNCHRONOUS = 'sync';
     const STRATEGY_ASYNCHRONOUS = 'async';
+
+    public function execute(Command $command);
 }

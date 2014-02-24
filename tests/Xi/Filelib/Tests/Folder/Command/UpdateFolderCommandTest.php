@@ -20,34 +20,16 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Folder\Command\UpdateFolderCommand'));
-        $this->assertContains('Xi\Filelib\Folder\Command\FolderCommand', class_implements('Xi\Filelib\Folder\Command\UpdateFolderCommand'));
+        $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\Folder\Command\UpdateFolderCommand'));
     }
 
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-
-        $command = new UpdateFolderCommand($folder);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeNotEmpty('uuid', $command2);
-
-    }
-
-        /**
-     * @test
-     */
     public function updateShouldUpdateFoldersAndFilesRecursively()
     {
-        $filelib = $this->getMockedFilelib();
 
-        $ed = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $ed = $this->getMockedEventDispatcher();
         $ed
             ->expects($this->once())
             ->method('dispatch')
@@ -55,13 +37,8 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             $this->equalTo(Events::FOLDER_AFTER_UPDATE),
             $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
         );
-        $filelib->expects($this->any())->method('getEventDispatcher')->will($this->returnValue($ed));
 
-        $op = $this
-            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
-            ->setConstructorArgs(array($filelib))
-            ->setMethods(array('createCommand', 'findSubFolders', 'findFiles'))
-            ->getMock();
+        $op = $this->getMockedFolderOperator();
 
         $updateCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\UpdateFolderCommand')
             ->disableOriginalConstructor()
@@ -119,13 +96,9 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $fiop = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
-            ->setMethods(array('delete'))
-            ->setConstructorArgs(array($filelib))
-            ->getMock();
+        $fiop = $this->getMockedFileOperator();
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')->disableOriginalConstructor()->getMock();
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
 
         $folder = Folder::create(array('id' => 1));
 
@@ -134,11 +107,39 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('updateFolder')
             ->with($folder);
 
+        $filelib = $this->getMockedFilelib(null, $fiop, $op, null, $ed, $backend);
+
         $command = new UpdateFolderCommand($folder);
-        $command->attachTo($this->getMockedFilelib(null, $fiop, $op));
+        $command->attachTo($filelib);
 
         $command->execute();
-
     }
 
+    /**
+     * @test
+     */
+    public function commandShouldSerializeAndUnserializeProperly()
+    {
+        $folder = $this->getMockedFolder();
+
+        $command = new UpdateFolderCommand($folder);
+
+        $serialized = serialize($command);
+        $command2 = unserialize($serialized);
+
+        $this->assertAttributeEquals($folder, 'folder', $command2);
+    }
+
+    /**
+     * @test
+     */
+    public function topicIsCorrect()
+    {
+        $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\UpdateFolderCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(array('execute'))
+            ->getMock();
+
+        $this->assertEquals('xi_filelib.command.folder.update', $command->getTopic());
+    }
 }

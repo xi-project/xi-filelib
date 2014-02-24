@@ -23,18 +23,6 @@
         {
             "type": "composer",
             "url": "http://packages.zendframework.com/"
-        },
-        {
-            "type": "package",
-            "package": {
-                "name": "zencoder/zencoder-php",
-                "version": "2.0.2",
-                "source": {
-                    "url": "git://github.com/zencoder/zencoder-php.git",
-                    "type": "git",
-                    "reference": "v2.0.2"
-                }
-            }
         }
     ],
 
@@ -42,7 +30,8 @@
         "php": ">=5.3.10",
         "symfony/event-dispatcher": ">=2.0.14",
         "dflydev/apache-mime-types": "1.0.*",
-        "rhumsaa/uuid": "2.3.*"
+        "rhumsaa/uuid": "2.3.*",
+        "pekkis/queue": "0.4.*"
     },
 
     "require-dev": {
@@ -53,13 +42,13 @@
         "symfony/http-kernel": ">=2.2.0",
         "symfony/security": ">=2.2.0",
         "symfony/console": ">=2.2.0",
-        "videlalvaro/php-amqplib": ">=dev-master@dev",
-        "zendframework/zendservice-amazon": "2.0.*",
-        "zendframework/zend-i18n": "2.2.*",
+        "videlalvaro/php-amqplib": "2.2.*",
         "zendframework/zend-filter": "2.2.*",
-        "zendframework/zend-servicemanager": "2.2.*",
+        "zendframework/zend-i18n": "2.2.*",
         "zencoder/zencoder-php": "2.1.x",
-        "xi/transliterator": "dev-master@dev"
+        "xi/transliterator": "dev-master@dev",
+        "knplabs/gaufrette": "0.1.*",
+        "aws/aws-sdk-php": "2.5.*"
     },
 
     "autoload": {
@@ -67,13 +56,5 @@
             "Xi\\Filelib": "library/"
         }
     },
-    "minimum-stability": "stable",
-
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.8.x-dev"
-        }
-    }
-
-
+    "minimum-stability": "stable"
 }

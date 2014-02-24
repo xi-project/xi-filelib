@@ -18,8 +18,11 @@ use Xi\Filelib\InvalidArgumentException;
 use DateTime;
 use Xi\Filelib\Events;
 use Xi\Filelib\Event\FolderEvent;
+use Pekkis\Queue\Message;
+use Rhumsaa\Uuid\Uuid;
+use Xi\Filelib\Queue\UuidReceiver;
 
-class CopyFileCommand extends AbstractFileCommand
+class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
 {
     /**
      *
@@ -33,11 +36,28 @@ class CopyFileCommand extends AbstractFileCommand
      */
     private $folder;
 
+    /**
+     * @var string
+     */
+    private $uuid = null;
+
     public function __construct(File $file, Folder $folder)
     {
-        parent::__construct();
         $this->file = $file;
         $this->folder = $folder;
+    }
+
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid ?: Uuid::uuid4()->toString();
     }
 
     /**
@@ -83,7 +103,7 @@ class CopyFileCommand extends AbstractFileCommand
         $oldResource = $file->getResource();
         if ($oldResource->isExclusive()) {
 
-            $retrieved = $this->fileOperator->getStorage()->retrieve($oldResource);
+            $retrieved = $this->storage->retrieve($oldResource);
 
             $resource = new Resource();
             $resource->setDateCreated(new DateTime());
@@ -91,8 +111,8 @@ class CopyFileCommand extends AbstractFileCommand
             $resource->setSize($oldResource->getSize());
             $resource->setMimetype($oldResource->getMimetype());
 
-            $this->fileOperator->getBackend()->createResource($resource);
-            $this->fileOperator->getStorage()->store($resource, $retrieved);
+            $this->backend->createResource($resource);
+            $this->storage->store($resource, $retrieved);
 
             $file->setResource($resource);
         }
@@ -137,21 +157,25 @@ class CopyFileCommand extends AbstractFileCommand
         $impostor = $this->getImpostor($this->file);
 
         $event = new FileCopyEvent($this->file, $impostor);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_BEFORE_COPY, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_COPY, $event);
 
         $event = new FolderEvent($this->folder);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
+        $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
 
-        $this->fileOperator->getBackend()->createFile($impostor, $this->folder);
+        $this->backend->createFile($impostor, $this->folder);
 
         $event = new FileCopyEvent($this->file, $impostor);
-        $this->fileOperator->getEventDispatcher()->dispatch(Events::FILE_AFTER_COPY, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_COPY, $event);
 
-        $command = $this->fileOperator->createCommand(
+        return $this->fileOperator->createCommand(
             'Xi\Filelib\File\Command\AfterUploadFileCommand',
             array($impostor)
-        );
-        return $command->execute();
+        )->execute();
+    }
+
+    public function getTopic()
+    {
+        return 'xi_filelib.command.file.copy';
     }
 
     public function unserialize($serialized)

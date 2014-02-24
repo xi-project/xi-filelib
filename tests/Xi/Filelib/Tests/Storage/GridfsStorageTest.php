@@ -58,7 +58,6 @@ class GridFsStorageTest extends TestCase
     {
         $storage = new GridfsStorage($this->getMockBuilder('MongoDB')->disableOriginalConstructor()->getMock());
         $this->assertSame('xi_filelib', $storage->getPrefix());
-        $this->assertSame(sys_get_temp_dir(), $storage->getTempDir());
     }
 
     /**
