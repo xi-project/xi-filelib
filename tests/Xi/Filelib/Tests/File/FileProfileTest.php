@@ -14,7 +14,7 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
  */
 class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 {
-    private $fileOperator;
+    private $fileRepository;
 
     /**
      * @var FileProfile
@@ -23,9 +23,9 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
     protected function setUp()
     {
-        $this->fileOperator = $this->getMockedFileOperator();
+        $this->fileRepository = $this->getMockedFileRepository();
         $this->fileProfile = new FileProfile('lussen');
-        $this->fileProfile->setFileOperator($this->fileOperator);
+        $this->fileProfile->setFileRepository($this->fileRepository);
     }
 
     /**

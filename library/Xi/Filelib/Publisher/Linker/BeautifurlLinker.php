@@ -11,7 +11,7 @@ namespace Xi\Filelib\Publisher\Linker;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Tool\Slugifier\Slugifier;
-use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\FileLibrary;
 
@@ -38,9 +38,9 @@ class BeautifurlLinker implements Linker
     private $slugify = true;
 
     /**
-     * @var FolderOperator
+     * @var FolderRepository
      */
-    private $folderOperator;
+    private $folderRepository;
 
     /**
      * @param FileLibrary $filelib
@@ -55,7 +55,7 @@ class BeautifurlLinker implements Linker
 
     public function attachTo(FileLibrary $filelib)
     {
-        $this->folderOperator = $filelib->getFolderOperator();
+        $this->folderRepository = $filelib->getFolderRepository();
     }
 
 
@@ -107,10 +107,10 @@ class BeautifurlLinker implements Linker
     protected function getBaseLink(File $file)
     {
         $folders = array();
-        $folders[] = $folder = $this->folderOperator->find($file->getFolderId());
+        $folders[] = $folder = $this->folderRepository->find($file->getFolderId());
 
         while ($folder->getParentId()) {
-            $folder = $this->folderOperator->find($folder->getParentId());
+            $folder = $this->folderRepository->find($folder->getParentId());
             array_unshift($folders, $folder);
         }
 

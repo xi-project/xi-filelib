@@ -348,7 +348,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         $publisher = $this
             ->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
             ->setMethods(array('getLinkerForFile'))
-            ->setConstructorArgs(array($this->storage, $this->fileOperator, array()))
+            ->setConstructorArgs(array($this->storage, $this->fileRepository, array()))
             ->getMock();
 
         $publisher

@@ -57,7 +57,7 @@ class PublisherTest extends TestCase
             ->with($this->isInstanceOf('Xi\Filelib\File\File'))
             ->will($this->returnValue(array('ankan', 'imaisu')));
 
-        $this->fiop = $this->getMockedFileOperator();
+        $this->fiop = $this->getMockedFileRepository();
         $this->fiop
             ->expects($this->any())
             ->method('getProfile')

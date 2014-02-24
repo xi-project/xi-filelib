@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\File\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Command\AfterUploadFileCommand;
 use Xi\Filelib\Events;
@@ -27,7 +27,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
-        $op = $this->getMockedFileOperator(array('versioned'));
+        $op = $this->getMockedFileRepository(array('versioned'));
 
         $file = $this->getMockedFile('versioned');
 
@@ -81,7 +81,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $command2 = unserialize($serialized);
 
-        $this->assertAttributeEquals(null, 'fileOperator', $command2);
+        $this->assertAttributeEquals(null, 'fileRepository', $command2);
         $this->assertAttributeEquals($file, 'file', $command2);
     }
 

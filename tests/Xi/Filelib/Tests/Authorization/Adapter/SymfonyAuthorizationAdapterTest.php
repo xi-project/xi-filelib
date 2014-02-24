@@ -3,8 +3,8 @@
 namespace Xi\Filelib\Tests\Authorization;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Symfony\Component\Security\Core\SecurityContextInterface;
@@ -30,13 +30,13 @@ class SymfonyAuthorizationAdapterTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      *
-     * @var FileOperator
+     * @var FileRepository
      */
     private $fiop;
 
     /**
      *
-     * @var FolderOperator
+     * @var FolderRepository
      */
     private $foop;
 
@@ -48,8 +48,8 @@ class SymfonyAuthorizationAdapterTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->fiop = $this->getMockedFileOperator();
-        $this->foop = $this->getMockedFolderOperator();
+        $this->fiop = $this->getMockedFileRepository();
+        $this->foop = $this->getMockedFolderRepository();
 
         $this->filelib = $this->getMockedFilelib(null, $this->fiop, $this->foop);
 

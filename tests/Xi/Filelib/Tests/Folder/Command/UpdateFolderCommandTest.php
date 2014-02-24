@@ -3,8 +3,8 @@
 namespace Xi\Filelib\Tests\Folder\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Command\UpdateFolderCommand;
@@ -38,7 +38,7 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             $this->isInstanceOf('Xi\Filelib\Event\FolderEvent')
         );
 
-        $op = $this->getMockedFolderOperator();
+        $op = $this->getMockedFolderRepository();
 
         $updateCommand = $this->getMockBuilder('Xi\Filelib\Folder\Command\UpdateFolderCommand')
             ->disableOriginalConstructor()
@@ -96,7 +96,7 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $fiop = $this->getMockedFileOperator();
+        $fiop = $this->getMockedFileRepository();
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')->disableOriginalConstructor()->getMock();
 

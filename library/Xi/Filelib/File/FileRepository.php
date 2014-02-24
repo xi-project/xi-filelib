@@ -13,8 +13,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Filelib\Command\CommandDefinition;
 use Xi\Filelib\Command\CommanderClient;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\AbstractOperator;
+use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\File\File;
@@ -33,7 +33,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author pekkis
  *
  */
-class FileOperator extends AbstractOperator
+class FileRepository extends AbstractRepository
 {
     const COMMAND_UPLOAD = 'Xi\Filelib\File\Command\UploadFileCommand';
     const COMMAND_AFTERUPLOAD = 'Xi\Filelib\File\Command\AfterUploadFileCommand';
@@ -47,9 +47,9 @@ class FileOperator extends AbstractOperator
     private $profiles = array();
 
     /**
-     * @var FolderOperator
+     * @var FolderRepository
      */
-    private $folderOperator;
+    private $folderRepository;
 
     /**
      * @var EventDispatcherInterface
@@ -59,7 +59,7 @@ class FileOperator extends AbstractOperator
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->folderOperator = $filelib->getFolderOperator();
+        $this->folderRepository = $filelib->getFolderRepository();
         $this->eventDispatcher = $filelib->getEventDispatcher();
     }
 
@@ -98,7 +98,7 @@ class FileOperator extends AbstractOperator
      */
     public function addProfile(FileProfile $profile)
     {
-        $profile->setFileOperator($this);
+        $profile->setFileRepository($this);
 
         $identifier = $profile->getIdentifier();
         if (isset($this->profiles[$identifier])) {
@@ -144,7 +144,7 @@ class FileOperator extends AbstractOperator
      * Updates a file
      *
      * @param  File         $file
-     * @return FileOperator
+     * @return FileRepository
      */
     public function update(File $file)
     {
@@ -217,7 +217,7 @@ class FileOperator extends AbstractOperator
         }
 
         if (!$folder) {
-            $folder = $this->folderOperator->findRoot();
+            $folder = $this->folderRepository->findRoot();
         }
 
         return $this->commander

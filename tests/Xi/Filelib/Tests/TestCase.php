@@ -28,11 +28,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         if ($methods !== null) {
             if ($fiop) {
-                $methods[] = 'getFileOperator';
+                $methods[] = 'getFileRepository';
             }
 
             if ($foop) {
-                $methods[] = 'getFolderOperator';
+                $methods[] = 'getFolderRepository';
             }
             $filelib->setMethods(array_unique($methods));
         }
@@ -40,11 +40,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $ret = $filelib->getMock();
 
         if ($fiop) {
-            $ret->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
+            $ret->expects($this->any())->method('getFileRepository')->will($this->returnValue($fiop));
         }
 
         if ($foop) {
-            $ret->expects($this->any())->method('getFolderOperator')->will($this->returnValue($foop));
+            $ret->expects($this->any())->method('getFolderRepository')->will($this->returnValue($foop));
         }
 
         if ($storage) {
@@ -74,7 +74,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFileOperator($profileNames = array(), $methods = array())
+    public function getMockedFileRepository($profileNames = array(), $methods = array())
     {
         $profiles = array();
         foreach ($profileNames as $key => $profileName) {
@@ -82,7 +82,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
         }
 
         $fileop = $this
-            ->getMockBuilder('Xi\Filelib\File\FileOperator')
+            ->getMockBuilder('Xi\Filelib\File\FileRepository')
             ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();
@@ -108,10 +108,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFolderOperator()
+    public function getMockedFolderRepository()
     {
         $folderop = $this
-            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
+            ->getMockBuilder('Xi\Filelib\Folder\FolderRepository')
             ->disableOriginalConstructor()
             ->getMock();
 

@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\File\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Command\UpdateFileCommand;
 use Xi\Filelib\Events;
@@ -44,7 +44,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
             $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
         );
 
-        $op = $this->getMockedFileOperator(array('lussenhofer'));
+        $op = $this->getMockedFileRepository(array('lussenhofer'));
 
         $file = $this->getMockedFile();
 
@@ -82,7 +82,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $command2 = unserialize($serialized);
 
-        $this->assertAttributeEquals(null, 'fileOperator', $command2);
+        $this->assertAttributeEquals(null, 'fileRepository', $command2);
         $this->assertAttributeEquals($file, 'file', $command2);
     }
 

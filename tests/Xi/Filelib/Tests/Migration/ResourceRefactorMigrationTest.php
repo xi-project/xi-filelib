@@ -41,8 +41,8 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
      */
     public function executeShouldDoMigration($expectFail)
     {
-        $foop = $this->getMockedFolderOperator();
-        $fiop = $this->getMockedFileOperator();
+        $foop = $this->getMockedFolderRepository();
+        $fiop = $this->getMockedFileRepository();
         $resource = $this->getMockedResource();
         $storage = $this->getMockedStorage();
         $backend = $this->getMockedBackend();

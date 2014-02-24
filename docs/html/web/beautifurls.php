@@ -36,7 +36,7 @@ $versionPlugin = new VersionPlugin(
 );
 $filelib->addPlugin($versionPlugin);
 
-$folder = $filelib->getFolderOperator()->createByUrl('pictures/of/very beaütiful manatees');
+$folder = $filelib->getFolderRepository()->createByUrl('pictures/of/very beaütiful manatees');
 
 $file = $filelib->upload(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
 $publisher->publish($file);

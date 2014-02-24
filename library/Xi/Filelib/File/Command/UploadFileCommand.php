@@ -10,7 +10,7 @@
 namespace Xi\Filelib\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
@@ -82,7 +82,7 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
 
 
         $hash = sha1_file($upload->getRealPath());
-        $profileObj = $this->fileOperator->getProfile($this->profile);
+        $profileObj = $this->fileRepository->getProfile($this->profile);
 
         $finder = new ResourceFinder(array('hash' => $hash));
         $resources = $this->backend->findByFinder($finder);
@@ -129,7 +129,7 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
         $event = new FolderEvent($folder);
         $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
 
-        $profileObj = $this->fileOperator->getProfile($profile);
+        $profileObj = $this->fileRepository->getProfile($profile);
         $event = new FileUploadEvent($upload, $folder, $profileObj);
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_CREATE, $event);
 
@@ -158,8 +158,8 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_CREATE, $event);
 
-        $this->fileOperator->createExecutable(
-            FileOperator::COMMAND_AFTERUPLOAD,
+        $this->fileRepository->createExecutable(
+            FileRepository::COMMAND_AFTERUPLOAD,
             array($file)
         )->execute();
 

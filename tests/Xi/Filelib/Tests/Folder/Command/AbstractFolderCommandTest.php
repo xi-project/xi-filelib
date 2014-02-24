@@ -22,13 +22,13 @@ class AbstractFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function attachesFromFilelib()
     {
-        $foop = $this->getMockedFolderOperator();
+        $foop = $this->getMockedFolderRepository();
         $filelib = $this->getMockedFilelib(null, null, $foop);
 
         $command = $this->getMockForAbstractClass('Xi\Filelib\Folder\Command\AbstractFolderCommand');
         $command->attachTo($filelib);
 
-        $this->assertAttributeSame($foop, 'folderOperator', $command);
+        $this->assertAttributeSame($foop, 'folderRepository', $command);
 
 
     }

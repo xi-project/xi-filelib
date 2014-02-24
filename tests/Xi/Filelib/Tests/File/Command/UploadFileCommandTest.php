@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
@@ -74,7 +74,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('store')
             ->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
 
-        $op = $this->getMockedFileOperator(array('versioned'));
+        $op = $this->getMockedFileRepository(array('versioned'));
 
         $afterUploadCommand = $this->getMockedExecutable();
         $afterUploadCommand
@@ -124,7 +124,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
 
-        $op = $this->getMockedFileOperator(array('lussenhof'));
+        $op = $this->getMockedFileRepository(array('lussenhof'));
         $backend = $this->getMockedBackend();
 
         $profile = $this->getMockedFileProfile();
@@ -176,7 +176,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
 
-        $op = $this->getMockedFileOperator();
+        $op = $this->getMockedFileRepository();
 
         $backend = $this->getMockedBackend();
 
@@ -234,7 +234,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
 
-        $op = $this->getMockedFileOperator();
+        $op = $this->getMockedFileRepository();
 
         $profile = $this->getMockedFileProfile();
 

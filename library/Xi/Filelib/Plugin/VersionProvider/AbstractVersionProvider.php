@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
@@ -52,9 +52,9 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected $storage;
 
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
-    protected $fileOperator;
+    protected $fileRepository;
 
     /**
      * @var array
@@ -77,7 +77,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function attachTo(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
-        $this->fileOperator = $filelib->getFileOperator();
+        $this->fileRepository = $filelib->getFileRepository();
         $this->init();
     }
 
@@ -107,7 +107,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function init()
     {
-        foreach ($this->fileOperator->getProfiles() as $profile) {
+        foreach ($this->fileRepository->getProfiles() as $profile) {
 
             if ($this->hasProfile($profile->getIdentifier())) {
                 foreach ($this->getVersions() as $version) {

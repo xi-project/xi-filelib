@@ -11,8 +11,8 @@ namespace Xi\Filelib;
 
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
 use Xi\Filelib\Command\Commander;
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Plugin\Plugin;
@@ -50,14 +50,14 @@ class FileLibrary
     private $storage;
 
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
-    private $fileOperator;
+    private $fileRepository;
 
     /**
-     * @var FolderOperator
+     * @var FolderRepository
      */
-    private $folderOperator;
+    private $folderRepository;
 
     /**
      * @var string
@@ -155,30 +155,30 @@ class FileLibrary
     /**
      * Returns file operator
      *
-     * @return FileOperator
+     * @return FileRepository
      */
-    public function getFileOperator()
+    public function getFileRepository()
     {
-        if (!$this->fileOperator) {
-            $this->fileOperator = new FileOperator();
-            $this->fileOperator->attachTo($this);
+        if (!$this->fileRepository) {
+            $this->fileRepository = new FileRepository();
+            $this->fileRepository->attachTo($this);
         }
-        return $this->fileOperator;
+        return $this->fileRepository;
     }
 
     /**
      * Returns folder operator
      *
-     * @return FolderOperator
+     * @return FolderRepository
      */
-    public function getFolderOperator()
+    public function getFolderRepository()
     {
-        if (!$this->folderOperator) {
-            $this->folderOperator = new FolderOperator();
-            $this->folderOperator->attachTo($this);
+        if (!$this->folderRepository) {
+            $this->folderRepository = new FolderRepository();
+            $this->folderRepository->attachTo($this);
         }
 
-        return $this->folderOperator;
+        return $this->folderRepository;
     }
 
     /**
@@ -208,7 +208,7 @@ class FileLibrary
      */
     public function addProfile(FileProfile $profile)
     {
-        $this->getFileOperator()->addProfile($profile);
+        $this->getFileRepository()->addProfile($profile);
     }
 
     /**
@@ -218,7 +218,7 @@ class FileLibrary
      */
     public function getProfiles()
     {
-        return $this->getFileOperator()->getProfiles();
+        return $this->getFileRepository()->getProfiles();
     }
 
     /**
@@ -227,7 +227,7 @@ class FileLibrary
      */
     public function getProfile($identifier)
     {
-        return $this->getFileOperator()->getProfile($identifier);
+        return $this->getFileRepository()->getProfile($identifier);
     }
 
     /**
@@ -311,6 +311,6 @@ class FileLibrary
 
     public function upload($file, $folder = null, $profile = 'default')
     {
-        return $this->getFileOperator()->upload($file, $folder, $profile);
+        return $this->getFileRepository()->upload($file, $folder, $profile);
     }
 }

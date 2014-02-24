@@ -43,7 +43,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
     public function setUp()
     {
         $this->ed = $this->getMockedEventDispatcher();
-        $this->fiop = $this->getMockedFileOperator();
+        $this->fiop = $this->getMockedFileRepository();
         $this->storage = $this->getMockedStorage();
         $this->filelib = $this->getMockedFilelib(null, $this->fiop, null, $this->storage, $this->ed);
 

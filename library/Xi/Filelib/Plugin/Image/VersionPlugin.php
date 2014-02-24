@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\FileLibrary;
 

@@ -13,7 +13,7 @@ use Imagick;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\File\Resource;
@@ -35,9 +35,9 @@ class VersionPluginTest extends TestCase
     private $storage;
 
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
-    private $fileOperator;
+    private $fileRepository;
 
     public function setUp()
     {
@@ -45,7 +45,7 @@ class VersionPluginTest extends TestCase
 
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
 
-        $this->fileOperator = $this->getMockedFileOperator(array('default'));
+        $this->fileRepository = $this->getMockedFileRepository(array('default'));
 
         $this->plugin = new VersionPlugin(
             'xooxer',
@@ -149,7 +149,7 @@ class VersionPluginTest extends TestCase
                        ))
                        ->getMock();
 
-        $filelib = $this->getMockedFilelib(null, $this->fileOperator);
+        $filelib = $this->getMockedFilelib(null, $this->fileRepository);
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
         $plugin->attachTo($filelib);

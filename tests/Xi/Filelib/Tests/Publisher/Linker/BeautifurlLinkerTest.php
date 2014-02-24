@@ -36,7 +36,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
             $this->markTestSkipped('Intl extension must be loaded');
         }
 
-        $foop = $this->getMockedFolderOperator();
+        $foop = $this->getMockedFolderRepository();
         $foop->expects($this->any())
              ->method('find')
              ->will($this->returnCallback(function($id) {

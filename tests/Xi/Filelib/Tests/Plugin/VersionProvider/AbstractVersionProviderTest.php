@@ -14,7 +14,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
@@ -26,9 +26,9 @@ use Xi\Filelib\Events;
 class AbstractVersionProviderTest extends TestCase
 {
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
-    private $fileOperator;
+    private $fileRepository;
 
     /**
      * @var Storage
@@ -53,7 +53,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->storage = $this->getMockedStorage();
 
-        $this->fileOperator = $this->getMockedFileOperator(array('tussi', 'lussi'));
+        $this->fileRepository = $this->getMockedFileRepository(array('tussi', 'lussi'));
 
         $this->plugin = $this
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
@@ -68,7 +68,7 @@ class AbstractVersionProviderTest extends TestCase
             ->getMockForAbstractClass();
 
 
-        $filelib = $this->getMockedFilelib(null, $this->fileOperator, null, $this->storage);
+        $filelib = $this->getMockedFilelib(null, $this->fileRepository, null, $this->storage);
 
         $this->filelib = $filelib;
 
@@ -135,9 +135,9 @@ class AbstractVersionProviderTest extends TestCase
         $tussi->expects($this->at(1))->method('addFileVersion')->with($this->equalTo('xooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
         $tussi->expects($this->at(2))->method('addFileVersion')->with($this->equalTo('tooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
 
-        $fileOperator = $this->getMockedFileOperator();
-        $fileOperator->expects($this->any())->method('getProfiles')->will($this->returnValue(array($lussi, $tussi)));
-        $fileOperator->expects($this->any())->method('getProfile')
+        $fileRepository = $this->getMockedFileRepository();
+        $fileRepository->expects($this->any())->method('getProfiles')->will($this->returnValue(array($lussi, $tussi)));
+        $fileRepository->expects($this->any())->method('getProfile')
                      ->with($this->logicalOr(
                          $this->equalTo('tussi'), $this->equalTo('lussi')
                      ))
@@ -151,7 +151,7 @@ class AbstractVersionProviderTest extends TestCase
                          }
                      }));
 
-        $filelib = $this->getMockedFilelib(null, $fileOperator);
+        $filelib = $this->getMockedFilelib(null, $fileRepository);
         $this->plugin->attachTo($filelib);
     }
 
@@ -419,7 +419,7 @@ class AbstractVersionProviderTest extends TestCase
             ->setConstructorArgs(array(
                 $this->storage,
                 $this->publisher,
-                $this->fileOperator
+                $this->fileRepository
             ))
             ->getMockForAbstractClass();
 

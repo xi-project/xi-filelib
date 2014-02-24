@@ -8,9 +8,9 @@ use Pekkis\Queue\Processor\Result;
 use Pekkis\Queue\QueueInterface;
 use Xi\Filelib\Command\Command;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\File\Resource;
 
 class FilelibMessageHandler implements MessageHandler

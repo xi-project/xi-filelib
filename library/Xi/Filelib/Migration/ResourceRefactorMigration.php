@@ -34,14 +34,14 @@ class ResourceRefactorMigration implements Command
      */
     public function execute()
     {
-        $files = $this->filelib->getFileOperator()->findAll();
+        $files = $this->filelib->getFileRepository()->findAll();
 
         foreach ($files as $file) {
 
-            $profile = $this->filelib->getFileOperator()->getProfile($file->getProfile());
+            $profile = $this->filelib->getFileRepository()->getProfile($file->getProfile());
 
             $file->setUuid(Uuid::uuid4()->toString());
-            $this->filelib->getFileOperator()->update($file);
+            $this->filelib->getFileRepository()->update($file);
 
             $resource = $file->getResource();
 
@@ -56,7 +56,7 @@ class ResourceRefactorMigration implements Command
 
         }
 
-        $folder = $this->filelib->getFolderOperator()->findRoot();
+        $folder = $this->filelib->getFolderRepository()->findRoot();
         $this->createUuidToFolder($folder);
 
     }
@@ -67,9 +67,9 @@ class ResourceRefactorMigration implements Command
     private function createUuidToFolder(Folder $folder)
     {
         $folder->setUuid(Uuid::uuid4()->toString());
-        $this->filelib->getFolderOperator()->update($folder);
+        $this->filelib->getFolderRepository()->update($folder);
 
-        foreach ($this->filelib->getFolderOperator()->findSubFolders($folder) as $subfolder) {
+        foreach ($this->filelib->getFolderRepository()->findSubFolders($folder) as $subfolder) {
             $this->createUuidToFolder($subfolder);
         }
     }

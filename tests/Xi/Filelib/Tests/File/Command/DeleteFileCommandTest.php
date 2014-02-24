@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\File\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\Command\DeleteFileCommand;
@@ -56,7 +56,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
                 $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
             );
 
-        $op = $this->getMockedFileOperator(array('lussen'));
+        $op = $this->getMockedFileRepository(array('lussen'));
 
         $file = File::create(array('id' => 1, 'profile' => 'lussen', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
 
@@ -102,7 +102,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $command2 = unserialize($serialized);
 
-        $this->assertAttributeEquals(null, 'fileOperator', $command2);
+        $this->assertAttributeEquals(null, 'fileRepository', $command2);
         $this->assertAttributeEquals($file, 'file', $command2);
     }
 

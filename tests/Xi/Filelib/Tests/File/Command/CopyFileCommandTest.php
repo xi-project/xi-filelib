@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
@@ -20,9 +20,9 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
+        $this->op = $this->getMockBuilder('Xi\Filelib\File\FileRepository')
                     ->disableOriginalConstructor()
-                    ->setMethods(array('getFolderOperator', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
+                    ->setMethods(array('getFolderRepository', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
                     ->getMock();
         $this->folder = $this->getMock('Xi\Filelib\Folder\Folder');
     }

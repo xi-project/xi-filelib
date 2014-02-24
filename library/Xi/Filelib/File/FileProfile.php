@@ -26,9 +26,9 @@ use Xi\Filelib\Events;
 class FileProfile implements EventSubscriberInterface
 {
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
-    private $fileOperator;
+    private $fileRepository;
 
     /**
      * @var array Subscribed events
@@ -57,9 +57,9 @@ class FileProfile implements EventSubscriberInterface
         $this->identifier = $identifier;
     }
 
-    public function setFileOperator(FileOperator $fileOperator)
+    public function setFileRepository(FileRepository $fileRepository)
     {
-        $this->fileOperator = $fileOperator;
+        $this->fileRepository = $fileRepository;
     }
 
     /**
