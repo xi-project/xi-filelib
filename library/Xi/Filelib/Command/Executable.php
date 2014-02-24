@@ -8,6 +8,7 @@
  */
 
 namespace Xi\Filelib\Command;
+
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 
 class Executable

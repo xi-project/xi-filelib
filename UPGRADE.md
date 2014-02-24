@@ -1,36 +1,38 @@
-# Filelib migrations
+# Upgrading Filelib
 
-## From versions < 0.5 to 0.5.x
+Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
+It's been developed for years. If you're using 0.9 or greater, good for you! If not, good luck. Trust me. I know.
 
-Migrations are not officially supported. It is possible, though. You have
-to update database tables to schema expected in 0.5.x series.
+## From version 0.9.x to version 0.10.x
 
-You also have to update Filelib sources and all integration packages. You may
-still be using some Emerald\ prefixed software. They are not supported
-and will not work with Filelib version 0.5.x.
+* Data is backwards compatible. Hoorah!
+* Zend Framework's AWS was not fun no more. Replaced with Amazon's own client. Update your composer.json if needed.
+* Queue subsystem was extracted as [pekkis/queue](https://github.com/pekkis/queue) and refactored. So if you're
+  hooked to that prepare for code changes.
+* Command system was refactored so if you have custom commands or hook to that prepare for tears.
+* [Gaufrette](https://github.com/KnpLabs/Gaufrette) support in storage. If you are using either GridFS or a local
+  filesystem you could switch to this implementation if you wanted.
 
-## From version 0.5.x to version 0.6.x
+## From version 0.7.x to version 0.9.x
 
-Files now have a status field. You have to update your metadata backends
-correspondingly.
-
-### MongoDB
-
-    db.files.update({}, { $set: { 'status': 2 }}, false, true);
+This upgrade is going to be fun as we did a major refactoring round. The whole structure of Filelib
+was changed. When I do an actual migration for an actual client code, I will write this guide. :)
 
 ### PostgreSQL
 
-    ALTER TABLE xi_filelib_file ADD COLUMN status integer NOT NULL default 2;
-    ALTER TABLE xi_filelib_file ALTER COLUMN status SET DEFAULT null;
+ALTER TABLE xi_filelib_resource RENAME COLUMN versions TO data;
+ALTER TABLE xi_filelib_file RENAME COLUMN versions TO data;
+ALTER TABLE xi_filelib_file DROP COLUMN filelink;
 
 ### MySQL
 
-    ALTER TABLE xi_filelib_file ADD COLUMN status integer NOT NULL default 2;
-    ALTER TABLE xi_filelib_file ALTER COLUMN status DROP DEFAULT;
+ALTER TABLE xi_filelib_resource CHANGE versions data longtext NOT NULL;
+ALTER TABLE xi_filelib_file CHANGE versions data longtext NOT NULL;
+ALTER TABLE xi_filelib_file DROP COLUMN filelink;
 
-### Other SQL
+### MongoDB
 
-Emulate previous example. Do what you must do.
+Still not sure what needs to be done. Will upgrade this one old app and update instructions.
 
 ## From version 0.6.x to version 0.7.x
 
@@ -163,23 +165,35 @@ The start of the sequence must be at least MAX(id) FROM xi_filelib_resource + 1
 
 Everything should work now!!!
 
-## From version 0.7.x to version 0.8.x
 
-This upgrade is going to be fun as we did a major refactoring round. The whole structure of Filelib
-was changed. When I do an actual migration for an actual client code, I will write this guide. :)
+## From version 0.5.x to version 0.6.x
 
-### PostgreSQL
-
-ALTER TABLE xi_filelib_resource RENAME COLUMN versions TO data;
-ALTER TABLE xi_filelib_file RENAME COLUMN versions TO data;
-ALTER TABLE xi_filelib_file DROP COLUMN filelink;
-
-### MySQL
-
-ALTER TABLE xi_filelib_resource CHANGE versions data longtext NOT NULL;
-ALTER TABLE xi_filelib_file CHANGE versions data longtext NOT NULL;
-ALTER TABLE xi_filelib_file DROP COLUMN filelink;
+Files now have a status field. You have to update your metadata backends
+correspondingly.
 
 ### MongoDB
 
+    db.files.update({}, { $set: { 'status': 2 }}, false, true);
 
+### PostgreSQL
+
+    ALTER TABLE xi_filelib_file ADD COLUMN status integer NOT NULL default 2;
+    ALTER TABLE xi_filelib_file ALTER COLUMN status SET DEFAULT null;
+
+### MySQL
+
+    ALTER TABLE xi_filelib_file ADD COLUMN status integer NOT NULL default 2;
+    ALTER TABLE xi_filelib_file ALTER COLUMN status DROP DEFAULT;
+
+### Other SQL
+
+Emulate previous example. Do what you must do.
+
+## From versions < 0.5 to 0.5.x
+
+Migrations are not officially supported. It is possible, though. You have
+to update database tables to schema expected in 0.5.x series.
+
+You also have to update Filelib sources and all integration packages. You may
+still be using some Emerald\ prefixed software. They are not supported
+and will not work with Filelib version 0.5.x.

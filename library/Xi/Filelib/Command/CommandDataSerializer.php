@@ -58,5 +58,4 @@ class CommandDataSerializer extends AbstractDataSerializer implements DataSerial
 
         return $command;
     }
-
 }

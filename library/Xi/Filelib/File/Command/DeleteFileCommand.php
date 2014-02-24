@@ -41,7 +41,7 @@ class DeleteFileCommand extends AbstractFileCommand
         }
 
         $event = new FileEvent($this->file);
-       $this->eventDispatcher->dispatch(Events::FILE_AFTER_DELETE, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_DELETE, $event);
 
         return true;
     }

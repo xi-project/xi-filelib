@@ -31,7 +31,7 @@
         "symfony/event-dispatcher": ">=2.0.14",
         "dflydev/apache-mime-types": "1.0.*",
         "rhumsaa/uuid": "2.3.*",
-        "pekkis/queue": "0.4.*@dev"
+        "pekkis/queue": "0.4.*"
     },
 
     "require-dev": {
@@ -48,7 +48,7 @@
         "zencoder/zencoder-php": "2.1.x",
         "xi/transliterator": "dev-master@dev",
         "knplabs/gaufrette": "0.1.*",
-        "aws/aws-sdk-php": "2.5.1"
+        "aws/aws-sdk-php": "2.5.*"
     },
 
     "autoload": {

@@ -20,5 +20,4 @@ interface Command extends Attacher, Serializable
      * @return string
      */
     public function getTopic();
-
 }

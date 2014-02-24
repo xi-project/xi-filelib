@@ -63,7 +63,7 @@ class CreateFolderCommand extends AbstractFolderCommand implements UuidReceiver
         $this->backend->createFolder($this->folder);
 
         $event = new FolderEvent($this->folder);
-        $this->eventDispatcher->dispatch(Events::FOLDER_AFTER_CREATE,$event);
+        $this->eventDispatcher->dispatch(Events::FOLDER_AFTER_CREATE, $event);
 
         return $this->folder;
     }

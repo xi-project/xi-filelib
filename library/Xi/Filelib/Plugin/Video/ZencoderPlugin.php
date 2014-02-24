@@ -135,10 +135,12 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     public function getClient()
     {
         if (!$this->client) {
-            $this->client = S3Client::factory(array(
-                'key'    => $this->awsKey,
-                'secret' => $this->awsSecretKey
-            ));
+            $this->client = S3Client::factory(
+                array(
+                    'key'    => $this->awsKey,
+                    'secret' => $this->awsSecretKey
+                )
+            );
         }
         return $this->client;
     }

@@ -9,11 +9,6 @@
 
 namespace Xi\Filelib\Storage;
 
-/**
- * Stores files in MongoDB's GridFS filesystem
- *
- * @author pekkis
- */
 class TemporaryFileContainer
 {
     /**
@@ -41,6 +36,9 @@ class TemporaryFileContainer
         }
     }
 
+    /**
+     * @return string
+     */
     public function getTemporaryFilename()
     {
         return tempnam($this->tempDir, 'xi_filelib');
@@ -55,5 +53,4 @@ class TemporaryFileContainer
     {
         $this->tempFiles[] = $file;
     }
-
 }

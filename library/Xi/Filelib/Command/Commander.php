@@ -36,7 +36,7 @@ class Commander
     private $filelib;
 
     /**
-     * @param CommanderClient $client
+     * @param FileLibrary $filelib
      */
     public function __construct(FileLibrary $filelib)
     {
@@ -140,7 +140,8 @@ class Commander
 
     /**
      * @param CommandDefinition $commandDefinition
-     * @return Commander
+     * @return $this
+     * @throws RuntimeException
      */
     public function addCommandDefinition(CommandDefinition $commandDefinition)
     {

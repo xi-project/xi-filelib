@@ -123,7 +123,10 @@ class GaufretteStorage extends AbstractStorage implements Storage
     {
         $tmp = $this->tempFiles->getTemporaryFilename();
         file_put_contents(
-            $tmp, $this->filesystem->get($this->getVersionPathName($resource, $version, $file))->getContent()
+            $tmp,
+            $this->filesystem->get(
+                $this->getVersionPathName($resource, $version, $file)
+            )->getContent()
         );
         return $tmp;
     }
