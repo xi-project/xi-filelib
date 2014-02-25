@@ -45,7 +45,18 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
         $this->ed = $this->getMockedEventDispatcher();
         $this->fiop = $this->getMockedFileRepository();
         $this->storage = $this->getMockedStorage();
-        $this->filelib = $this->getMockedFilelib(null, $this->fiop, null, $this->storage, $this->ed);
+        $this->pm = $this->getMockedProfileManager();
+        $this->filelib = $this->getMockedFilelib(
+            null,
+            $this->fiop,
+            null,
+            $this->storage,
+            $this->ed,
+            null,
+            null,
+            null,
+            $this->pm
+        );
 
         $this->adapter = $this->getAdapter();
         $this->adapter
@@ -116,7 +127,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('hasVersion')
             ->with($file, 'xooxer')
@@ -157,7 +168,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('hasVersion')
             ->with($file, 'xooxer')
@@ -172,7 +183,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
         $vp = $this->getMockedVersionProvider('xooxer');
         $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue($sharedVersions));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('getVersionProvider')
             ->with($file, 'xooxer')

@@ -24,6 +24,7 @@ use Xi\Filelib\Backend\Platform\Platform;
 use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
 use Pekkis\Queue\Queue;
 use Xi\Filelib\Command\CommandDataSerializer;
+use Xi\Filelib\Profile\ProfileManager;
 
 /**
  * File library
@@ -84,6 +85,11 @@ class FileLibrary
      */
     private $commander;
 
+    /**
+     * @var ProfileManager
+     */
+    private $profileManager;
+
     public function __construct(
         Storage $storage,
         Platform $platform,
@@ -101,6 +107,7 @@ class FileLibrary
         $this->storage = $storage;
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
+        $this->profileManager = new ProfileManager($this->eventDispatcher);
         $this->commander = $commander;
 
         $this->backend = new Backend(
@@ -117,6 +124,14 @@ class FileLibrary
     public function getEventDispatcher()
     {
         return $this->eventDispatcher;
+    }
+
+    /**
+     * @return ProfileManager
+     */
+    public function getProfileManager()
+    {
+        return $this->profileManager;
     }
 
     /**
@@ -208,7 +223,7 @@ class FileLibrary
      */
     public function addProfile(FileProfile $profile)
     {
-        $this->getFileRepository()->addProfile($profile);
+        $this->getProfileManager()->addProfile($profile);
     }
 
     /**
@@ -218,7 +233,7 @@ class FileLibrary
      */
     public function getProfiles()
     {
-        return $this->getFileRepository()->getProfiles();
+        return $this->getProfileManager()->getProfiles();
     }
 
     /**
@@ -227,7 +242,7 @@ class FileLibrary
      */
     public function getProfile($identifier)
     {
-        return $this->getFileRepository()->getProfile($identifier);
+        return $this->getProfileManager()->getProfile($identifier);
     }
 
     /**

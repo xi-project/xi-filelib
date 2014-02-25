@@ -19,6 +19,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Events as CoreEvents;
+use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\FileIOException;
 
 /**
@@ -48,6 +49,11 @@ class Publisher implements EventSubscriberInterface, Attacher
     private $eventDispatcher;
 
     /**
+     * @var ProfileManager
+     */
+    private $profiles;
+
+    /**
      * @param PublisherAdapter $adapter
      * @param Linker $linker
      */
@@ -63,6 +69,7 @@ class Publisher implements EventSubscriberInterface, Attacher
     public function attachTo(FileLibrary $filelib)
     {
         $this->fileRepository = $filelib->getFileRepository();
+        $this->profiles = $filelib->getProfileManager();
         $this->eventDispatcher = $filelib->getEventDispatcher();
         $this->eventDispatcher->addSubscriber($this);
         $this->adapter->attachTo($filelib);
@@ -75,7 +82,7 @@ class Publisher implements EventSubscriberInterface, Attacher
      */
     protected function getVersions(File $file)
     {
-        return $this->fileRepository->getProfile($file->getProfile())->getFileVersions($file);
+        return $this->profiles->getProfile($file->getProfile())->getFileVersions($file);
     }
 
     /**
@@ -85,7 +92,7 @@ class Publisher implements EventSubscriberInterface, Attacher
      */
     protected function getVersionProvider(File $file, $version)
     {
-        return $this->fileRepository->getVersionProvider($file, $version);
+        return $this->profiles->getVersionProvider($file, $version);
     }
 
     /**

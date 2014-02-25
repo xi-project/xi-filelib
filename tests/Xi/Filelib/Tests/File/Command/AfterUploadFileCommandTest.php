@@ -27,7 +27,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
-        $op = $this->getMockedFileRepository(array('versioned'));
+        $op = $this->getMockedFileRepository();
 
         $file = $this->getMockedFile('versioned');
 

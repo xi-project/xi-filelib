@@ -74,7 +74,8 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('store')
             ->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
 
-        $op = $this->getMockedFileRepository(array('versioned'));
+        $op = $this->getMockedFileRepository();
+        $pm = $this->getMockedProfileManager(array('versioned'));
 
         $afterUploadCommand = $this->getMockedExecutable();
         $afterUploadCommand
@@ -100,7 +101,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             null,
             $storage,
             $dispatcher,
-            $backend
+            $backend,
+            null,
+            null,
+            $pm
         );
 
         $command->attachTo($filelib);
@@ -124,12 +128,13 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
 
-        $op = $this->getMockedFileRepository(array('lussenhof'));
+        $op = $this->getMockedFileRepository();
         $backend = $this->getMockedBackend();
 
         $profile = $this->getMockedFileProfile();
 
-        $op->expects($this->any())->method('getProfile')
+        $pm = $this->getMockedProfileManager(array('lussenhof'));
+        $pm->expects($this->any())->method('getProfile')
             ->with($this->equalTo('lussenhof'))
             ->will($this->returnValue($profile));
 
@@ -158,7 +163,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             null,
             null,
             null,
-            $backend
+            $backend,
+            null,
+            null,
+            $pm
         );
 
         $command = new UploadFileCommand($upload, $folder, $profile);
@@ -182,7 +190,8 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $profile = $this->getMockedFileProfile();
 
-        $op->expects($this->any())->method('getProfile')
+        $pm = $this->getMockedProfileManager();
+        $pm->expects($this->any())->method('getProfile')
             ->with($this->equalTo('lussenhof'))
             ->will($this->returnValue($profile));
 
@@ -215,7 +224,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             null,
             null,
             null,
-            $backend
+            $backend,
+            null,
+            null,
+            $pm
         );
 
         $command = new UploadFileCommand($upload, $folder, $profile);
@@ -238,7 +250,8 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $profile = $this->getMockedFileProfile();
 
-        $op->expects($this->any())->method('getProfile')
+        $pm = $this->getMockedProfileManager();
+        $pm->expects($this->any())->method('getProfile')
            ->with($this->equalTo('lussenhof'))
            ->will($this->returnValue($profile));
 
@@ -273,7 +286,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             null,
             null,
             null,
-            $backend
+            $backend,
+            null,
+            null,
+            $pm
         );
 
         $command = new UploadFileCommand($upload, $folder, $profile);

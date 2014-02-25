@@ -44,7 +44,7 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
             $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
         );
 
-        $op = $this->getMockedFileRepository(array('lussenhofer'));
+        $op = $this->getMockedFileRepository();
 
         $file = $this->getMockedFile();
 

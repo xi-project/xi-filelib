@@ -40,10 +40,16 @@ class Renderer
      */
     private $eventDispatcher;
 
+    /**
+     * @var ProfileManager
+     */
+    private $profiles;
+
     public function __construct(FileLibrary $filelib, RendererAdapter $adapter)
     {
         $this->adapter = $adapter;
         $this->fileRepository = $filelib->getFileRepository();
+        $this->profiles = $filelib->getProfileManager();
         $this->storage = $filelib->getStorage();
         $this->eventDispatcher = $filelib->getEventDispatcher();
     }
@@ -82,7 +88,7 @@ class Renderer
 
         $options = $this->mergeOptions($options);
 
-        if (!$this->fileRepository->hasVersion($file, $version)) {
+        if (!$this->profiles->hasVersion($file, $version)) {
             return $this->adapter->returnResponse($response->setStatusCode(404));
         }
 
@@ -111,7 +117,7 @@ class Renderer
 
     private function retrieve(File $file, $version)
     {
-        $provider = $this->fileRepository->getVersionProvider($file, $version);
+        $provider = $this->profiles->getVersionProvider($file, $version);
 
         if ($provider->areSharedVersionsAllowed()) {
             $res = $this->storage->retrieveVersion($file->getResource(), $version);

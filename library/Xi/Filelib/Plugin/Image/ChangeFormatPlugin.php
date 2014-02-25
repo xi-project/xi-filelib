@@ -33,20 +33,13 @@ class ChangeFormatPlugin extends AbstractPlugin
     protected $targetExtension;
 
     /**
-     * @var FileRepository
-     */
-    private $fileRepository;
-
-    /**
      * @var string
      */
     private $tempDir;
 
     /**
-     * @param  FileRepository       $fileRepository
-     * @param  string             $tempDir
-     * @param  array              $options
-     * @return ChangeFormatPlugin
+     * @param string $targetExtension
+     * @param array $commandDefinitions
      */
     public function __construct($targetExtension, array $commandDefinitions = array())
     {
@@ -111,7 +104,6 @@ class ChangeFormatPlugin extends AbstractPlugin
      */
     public function attachTo(FileLibrary $filelib)
     {
-        $this->fileRepository = $filelib->getFileRepository();
         $this->tempDir = $filelib->getTempDir();
     }
 }

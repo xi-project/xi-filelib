@@ -41,11 +41,6 @@ class FileRepository extends AbstractRepository
     const COMMAND_COPY = 'Xi\Filelib\File\Command\CopyFileCommand';
 
     /**
-     * @var array Profiles
-     */
-    private $profiles = array();
-
-    /**
      * @var FolderRepository
      */
     private $folderRepository;
@@ -84,57 +79,6 @@ class FileRepository extends AbstractRepository
                 self::COMMAND_COPY
             ),
         );
-    }
-
-
-
-    /**
-     * Adds a file profile
-     *
-     * @param  FileProfile              $profile
-     * @return FileLibrary
-     * @throws InvalidArgumentException
-     */
-    public function addProfile(FileProfile $profile)
-    {
-        $identifier = $profile->getIdentifier();
-        if (isset($this->profiles[$identifier])) {
-            throw new InvalidArgumentException("Profile '{$identifier}' already exists");
-        }
-        $this->profiles[$identifier] = $profile;
-
-        $this->eventDispatcher->addSubscriber($profile);
-
-        $event = new FileProfileEvent($profile);
-        $this->eventDispatcher->dispatch(Events::PROFILE_AFTER_ADD, $event);
-
-        return $this;
-    }
-
-    /**
-     * Returns a file profile
-     *
-     * @param  string                   $identifier File profile identifier
-     * @throws InvalidArgumentException
-     * @return FileProfile
-     */
-    public function getProfile($identifier)
-    {
-        if (!isset($this->profiles[$identifier])) {
-            throw new InvalidArgumentException("File profile '{$identifier}' not found");
-        }
-
-        return $this->profiles[$identifier];
-    }
-
-    /**
-     * Returns all file profiles
-     *
-     * @return FileProfile[] Array of file profiles
-     */
-    public function getProfiles()
-    {
-        return $this->profiles;
     }
 
     /**
@@ -245,31 +189,5 @@ class FileRepository extends AbstractRepository
         return $this->commander
             ->createExecutable(self::COMMAND_COPY, array($file, $folder))
             ->execute();
-    }
-
-    /**
-     * Returns whether a file has a certain version
-     *
-     * @param  File    $file    File item
-     * @param  string  $version Version
-     * @return boolean
-     */
-    public function hasVersion(File $file, $version)
-    {
-        $profile = $this->getProfile($file->getProfile());
-        return $profile->fileHasVersion($file, $version);
-    }
-
-    /**
-     * Returns version provider for a file/version
-     *
-     * @param  File            $file    File item
-     * @param  string          $version Version
-     * @return VersionProvider Provider
-     */
-    public function getVersionProvider(File $file, $version)
-    {
-        $profile = $this->getProfile($file->getProfile());
-        return $profile->getVersionProvider($file, $version);
     }
 }

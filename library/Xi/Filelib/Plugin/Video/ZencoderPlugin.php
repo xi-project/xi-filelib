@@ -234,7 +234,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     {
         $awsPath = $this->getAwsBucket() . '/' . $file->getUuid();
 
-        $retrieved = $this->getStorage()->retrieve($file->getResource());
+        $retrieved = $this->storage->retrieve($file->getResource());
 
         /** @var Model $result */
         $result = $this->getClient()->putObject(

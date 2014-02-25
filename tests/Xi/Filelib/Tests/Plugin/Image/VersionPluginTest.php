@@ -34,18 +34,11 @@ class VersionPluginTest extends TestCase
      */
     private $storage;
 
-    /**
-     * @var FileRepository
-     */
-    private $fileRepository;
-
     public function setUp()
     {
         parent::setUp();
 
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
-
-        $this->fileRepository = $this->getMockedFileRepository(array('default'));
 
         $this->plugin = new VersionPlugin(
             'xooxer',
@@ -149,7 +142,8 @@ class VersionPluginTest extends TestCase
                        ))
                        ->getMock();
 
-        $filelib = $this->getMockedFilelib(null, $this->fileRepository);
+        $pm = $this->getMockedProfileManager(array('xooxer'));
+        $filelib = $this->getMockedFilelib(null, null, null, null, null, null, null, null, $pm);
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
         $plugin->attachTo($filelib);

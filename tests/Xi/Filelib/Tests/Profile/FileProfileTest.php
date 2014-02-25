@@ -8,9 +8,6 @@ use Xi\Filelib\File\Resource;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Events;
 
-/**
- * @group file-profile
- */
 class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 {
     /**

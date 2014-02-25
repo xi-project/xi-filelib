@@ -18,7 +18,6 @@ use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
-use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 
 class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -133,61 +132,6 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
     }
 
 
-    /**
-     * @test
-     */
-    public function addProfileShouldAddProfile()
-    {
-        $this->assertEquals(array(), $this->op->getProfiles());
-
-        $profile = $this->getMockedFileProfile('xooxer');
-
-        $profile2 = $this->getMockedFileProfile('lusser');
-
-        $this->ed
-            ->expects($this->exactly(2))
-            ->method('addSubscriber')
-            ->with($this->isInstanceOf('Xi\Filelib\Profile\FileProfile'));
-
-        $this->ed
-            ->expects($this->exactly(2))
-            ->method('dispatch')
-            ->with(
-                $this->equalTo(Events::PROFILE_AFTER_ADD),
-                $this->isInstanceOf('Xi\Filelib\Event\FileProfileEvent')
-            );
-
-        $this->op->addProfile($profile);
-        $this->assertCount(1, $this->op->getProfiles());
-
-        $this->op->addProfile($profile2);
-        $this->assertCount(2, $this->op->getProfiles());
-
-        $this->assertSame($profile, $this->op->getProfile('xooxer'));
-        $this->assertSame($profile2, $this->op->getProfile('lusser'));
-    }
-
-    /**
-     * @test
-     */
-    public function addProfileShouldFailWhenProfileAlreadyExists()
-    {
-        $profile = new FileProfile('xooxer');
-        $profile2 = new FileProfile('xooxer');
-
-        $this->op->addProfile($profile);
-        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
-        $this->op->addProfile($profile2);
-    }
-
-    /**
-     * @test
-     */
-    public function getProfileShouldFailWhenProfileDoesNotExist()
-    {
-        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
-        $prof = $this->op->getProfile('xooxer');
-    }
 
     /**
      * @test
@@ -320,52 +264,6 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $files = $this->op->findAll();
         $this->assertSame($iter, $files);
-    }
-
-    /**
-     * @test
-     */
-    public function hasVersionShouldDelegateToProfile()
-    {
-        $file = File::create(array('profile' => 'meisterlus'));
-
-        $profile = $this->getMockedFileProfile('meisterlus');
-        $profile
-            ->expects($this->once())
-            ->method('fileHasVersion')
-            ->with(
-                $file,
-                'kloo'
-            )
-            ->will($this->returnValue(true));
-
-        $this->op->addProfile($profile);
-        $hasVersion = $this->op->hasVersion($file, 'kloo');
-        $this->assertTrue($hasVersion);
-    }
-
-    /**
-     * @test
-     */
-    public function getVersionProviderShouldDelegateToProfile()
-    {
-        $vp = $this->getMockedVersionProvider('lux');
-        $file = File::create(array('profile' => 'meisterlus'));
-
-        $profile = $this->getMockedFileProfile('meisterlus');
-        $profile
-            ->expects($this->once())
-            ->method('getVersionProvider')
-            ->with(
-                $file,
-                'kloo'
-            )
-            ->will($this->returnValue($vp));
-
-        $this->op->addProfile($profile);
-        $ret = $this->op->getVersionProvider($file, 'kloo');
-
-        $this->assertSame($vp, $ret);
     }
 
     /**

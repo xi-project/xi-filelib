@@ -56,7 +56,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
                 $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
             );
 
-        $op = $this->getMockedFileRepository(array('lussen'));
+        $op = $this->getMockedFileRepository();
 
         $file = File::create(array('id' => 1, 'profile' => 'lussen', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
 

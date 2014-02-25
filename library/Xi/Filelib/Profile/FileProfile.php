@@ -17,12 +17,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Events;
 
-/**
- * File profile
- *
- * @author pekkis
- *
- */
 class FileProfile implements EventSubscriberInterface
 {
     /**
@@ -117,6 +111,7 @@ class FileProfile implements EventSubscriberInterface
     {
         $ret = array();
         foreach ($this->fileVersions as $version => $versionProvider) {
+            /** @var VersionProvider $versionProvider */
             if ($versionProvider->providesFor($file)) {
                 $ret[] = $version;
             }

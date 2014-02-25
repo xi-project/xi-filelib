@@ -73,7 +73,7 @@ class VersionPlugin extends AbstractVersionProvider
     public function createTemporaryVersions(File $file)
     {
         // Todo: optimize
-        $retrieved = $this->getStorage()->retrieve($file->getResource());
+        $retrieved = $this->storage->retrieve($file->getResource());
         $img = $this->getImageMagickHelper()->createImagick($retrieved);
 
         $this->getImageMagickHelper()->execute($img);

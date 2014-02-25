@@ -11,6 +11,7 @@ namespace Xi\Filelib\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
@@ -23,10 +24,16 @@ use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
+use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Queue\UuidReceiver;
 
 class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
 {
+    /**
+     * @var ProfileManager
+     */
+    private $profiles;
+
     /**
      *
      * @var FileUpload
@@ -57,6 +64,12 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
         $this->profile = $profile;
     }
 
+    public function attachTo(FileLibrary $filelib)
+    {
+        parent::attachTo($filelib);
+        $this->profiles = $filelib->getProfileManager();
+    }
+
     /**
      * @return string
      */
@@ -82,7 +95,7 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
 
 
         $hash = sha1_file($upload->getRealPath());
-        $profileObj = $this->fileRepository->getProfile($this->profile);
+        $profileObj = $this->profiles->getProfile($this->profile);
 
         $finder = new ResourceFinder(array('hash' => $hash));
         $resources = $this->backend->findByFinder($finder);
@@ -129,7 +142,7 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
         $event = new FolderEvent($folder);
         $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
 
-        $profileObj = $this->fileRepository->getProfile($profile);
+        $profileObj = $this->profiles->getProfile($profile);
         $event = new FileUploadEvent($upload, $folder, $profileObj);
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_CREATE, $event);
 

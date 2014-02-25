@@ -58,7 +58,10 @@ class PublisherTest extends TestCase
             ->will($this->returnValue(array('ankan', 'imaisu')));
 
         $this->fiop = $this->getMockedFileRepository();
-        $this->fiop
+
+        $this->pm = $this->getMockedProfileManager();
+
+        $this->pm
             ->expects($this->any())
             ->method('getProfile')
             ->with('default')
@@ -66,7 +69,7 @@ class PublisherTest extends TestCase
 
         $this->provider = $this->getMockedVersionProvider('lipsautus');
 
-        $this->fiop
+        $this->pm
             ->expects($this->any())
             ->method('getVersionProvider')
             ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->logicalOr('ankan', 'imaisu'))
@@ -74,7 +77,7 @@ class PublisherTest extends TestCase
 
         $this->ed = $this->getMockedEventDispatcher();
 
-        $filelib = $this->getMockedFilelib(null, $this->fiop, null, null, $this->ed);
+        $filelib = $this->getMockedFilelib(null, $this->fiop, null, null, $this->ed, null, null, null, $this->pm);
 
 
         $this->adapter = $this->getMock('Xi\Filelib\Publisher\PublisherAdapter');
