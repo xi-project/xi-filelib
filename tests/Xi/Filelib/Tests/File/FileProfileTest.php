@@ -7,7 +7,6 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Events;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
 /**
  * @group file-profile
@@ -23,9 +22,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
     protected function setUp()
     {
-        $this->fileRepository = $this->getMockedFileRepository();
         $this->fileProfile = new FileProfile('lussen');
-        $this->fileProfile->setFileRepository($this->fileRepository);
     }
 
     /**

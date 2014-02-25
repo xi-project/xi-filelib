@@ -98,8 +98,6 @@ class FileRepository extends AbstractRepository
      */
     public function addProfile(FileProfile $profile)
     {
-        $profile->setFileRepository($this);
-
         $identifier = $profile->getIdentifier();
         if (isset($this->profiles[$identifier])) {
             throw new InvalidArgumentException("Profile '{$identifier}' already exists");

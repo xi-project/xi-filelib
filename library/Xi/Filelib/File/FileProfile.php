@@ -26,11 +26,6 @@ use Xi\Filelib\Events;
 class FileProfile implements EventSubscriberInterface
 {
     /**
-     * @var FileRepository
-     */
-    private $fileRepository;
-
-    /**
      * @var array Subscribed events
      */
     protected static $subscribedEvents = array(
@@ -55,11 +50,6 @@ class FileProfile implements EventSubscriberInterface
     public function __construct($identifier)
     {
         $this->identifier = $identifier;
-    }
-
-    public function setFileRepository(FileRepository $fileRepository)
-    {
-        $this->fileRepository = $fileRepository;
     }
 
     /**
