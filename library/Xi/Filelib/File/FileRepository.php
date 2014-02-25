@@ -9,9 +9,7 @@
 
 namespace Xi\Filelib\File;
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Filelib\Command\CommandDefinition;
-use Xi\Filelib\Command\CommanderClient;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\AbstractRepository;
@@ -26,6 +24,7 @@ use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 use Xi\Filelib\Events;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Profile\FileProfile;
 
 /**
  * File operator

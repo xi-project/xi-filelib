@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests;
 
-use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\FileLibrary;
 
 class TestCase extends \PHPUnit_Framework_TestCase
@@ -212,7 +212,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     public function getMockedFileProfile($name = null)
     {
         $profile = $this
-            ->getMockBuilder('Xi\Filelib\File\FileProfile')
+            ->getMockBuilder('Xi\Filelib\Profile\FileProfile')
             ->disableOriginalConstructor()
             ->getMock();
 

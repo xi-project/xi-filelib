@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Filelib\Tests\File;
+namespace Xi\Filelib\Tests\Profile;
 
-use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Event\PluginEvent;
@@ -13,8 +13,6 @@ use Xi\Filelib\Events;
  */
 class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 {
-    private $fileRepository;
-
     /**
      * @var FileProfile
      */
@@ -30,9 +28,9 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\File\FileProfile'));
+        $this->assertTrue(class_exists('Xi\Filelib\Profile\FileProfile'));
         $this->assertContains(
-            'Symfony\Component\EventDispatcher\EventSubscriberInterface', class_implements('Xi\Filelib\File\FileProfile')
+            'Symfony\Component\EventDispatcher\EventSubscriberInterface', class_implements('Xi\Filelib\Profile\FileProfile')
         );
     }
 

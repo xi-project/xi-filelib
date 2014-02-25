@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Authorization\AuthorizationPlugin;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
 
 class FileLibraryTest extends TestCase

@@ -16,7 +16,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
-use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 
@@ -147,7 +147,7 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $this->ed
             ->expects($this->exactly(2))
             ->method('addSubscriber')
-            ->with($this->isInstanceOf('Xi\Filelib\File\FileProfile'));
+            ->with($this->isInstanceOf('Xi\Filelib\Profile\FileProfile'));
 
         $this->ed
             ->expects($this->exactly(2))
