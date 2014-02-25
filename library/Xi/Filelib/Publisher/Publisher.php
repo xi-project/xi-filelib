@@ -159,7 +159,10 @@ class Publisher implements EventSubscriberInterface, Attacher
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
 
         $data = $file->getData();
-        unset($data["publisher.version_url"]);
+
+        if (isset($data["publisher.version_url"])) {
+            unset($data["publisher.version_url"]);
+        }
     }
 
     /**
@@ -216,7 +219,14 @@ class Publisher implements EventSubscriberInterface, Attacher
     {
         $target = $event->getTarget();
         $data = $target->getData();
-        unset($data['publisher.published']);
-        unset($data['publisher.version_url']);
+
+
+        if (isset($data['publisher.published'])) {
+            unset($data['publisher.published']);
+        }
+
+        if (isset($data['publisher.version_url'])) {
+            unset($data['publisher.version_url']);
+        }
     }
 }
