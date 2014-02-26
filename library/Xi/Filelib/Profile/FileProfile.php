@@ -73,6 +73,12 @@ class FileProfile implements EventSubscriberInterface
     public function addPlugin(Plugin $plugin)
     {
         $this->plugins[] = $plugin;
+
+        if ($plugin instanceof VersionProvider) {
+            foreach ($plugin->getVersions() as $version) {
+                $this->addFileVersion($version, $plugin);
+            }
+        }
         return $this;
     }
 

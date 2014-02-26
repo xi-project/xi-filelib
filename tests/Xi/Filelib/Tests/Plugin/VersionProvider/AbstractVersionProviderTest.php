@@ -119,41 +119,6 @@ class AbstractVersionProviderTest extends TestCase
         $this->assertEquals(true, $this->plugin->areVersionsCreated($file));
 
     }
-    /**
-     * @test
-     */
-    public function initShouldRegisterToProfiles()
-    {
-        $this->plugin->setProfiles(array('lussi', 'tussi'));
-        $this->plugin->expects($this->any())->method('getVersions')->will($this->returnValue(array('xooxer', 'tooxer')));
-
-        $lussi = $this->getMockedFileProfile('lussi');
-        $lussi->expects($this->at(1))->method('addFileVersion')->with($this->equalTo('xooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
-        $lussi->expects($this->at(2))->method('addFileVersion')->with($this->equalTo('tooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
-
-        $tussi = $this->getMockedFileProfile('tussi');
-        $tussi->expects($this->at(1))->method('addFileVersion')->with($this->equalTo('xooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
-        $tussi->expects($this->at(2))->method('addFileVersion')->with($this->equalTo('tooxer'), $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider'));
-
-        $pm = $this->getMockedProfileManager();
-        $pm->expects($this->any())->method('getProfiles')->will($this->returnValue(array($lussi, $tussi)));
-        $pm->expects($this->any())->method('getProfile')
-                     ->with($this->logicalOr(
-                         $this->equalTo('tussi'), $this->equalTo('lussi')
-                     ))
-                     ->will($this->returnCallback(function($name) use ($lussi, $tussi) {
-                         if ($name === 'lussi') {
-                             return $lussi;
-                         }
-
-                         if ($name === 'tussi') {
-                             return $tussi;
-                         }
-                     }));
-
-        $filelib = $this->getMockedFilelib(null, null, null, $this->storage, null, null, null, null, $pm);
-        $this->plugin->attachTo($filelib);
-    }
 
     public function provideFilesForProvidesForMatching()
     {

@@ -71,8 +71,8 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function addPluginShouldAddPlugin()
     {
-        $plugin1 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        $plugin2 = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
+        $plugin1 = $this->getMockedPlugin();
+        $plugin2 = $this->getMockedPlugin();
 
         $this->assertEquals(array(), $this->fileProfile->getPlugins());
 
@@ -92,6 +92,27 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains($plugin1, $plugins);
         $this->assertContains($plugin2, $plugins);
     }
+
+    /**
+     * @test
+     */
+    public function addingVersionProviderAddsVersions()
+    {
+        $file = File::create();
+
+        $plugin1 = $this->getMockedVersionProvider('lussi', array('tenhunen', 'imaisee'));
+        $plugin1
+            ->expects($this->atLeastOnce())
+            ->method('providesFor')
+            ->with($file)
+            ->will($this->returnValue(true));
+
+        $this->fileProfile->addPlugin($plugin1);
+
+        $this->assertSame($plugin1, $this->fileProfile->getVersionProvider($file, 'tenhunen'));
+        $this->assertSame($plugin1, $this->fileProfile->getVersionProvider($file, 'imaisee'));
+    }
+
 
     /**
      * @test

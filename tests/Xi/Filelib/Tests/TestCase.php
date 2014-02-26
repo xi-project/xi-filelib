@@ -343,7 +343,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedVersionProvider($identifier)
+    public function getMockedVersionProvider($identifier, $versions = array())
     {
         $versionProvider = $this
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
@@ -352,6 +352,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $versionProvider
             ->expects($this->any())->method('getIdentifier')
             ->will($this->returnValue($identifier));
+
+        $versionProvider
+            ->expects($this->any())
+            ->method('getVersions')
+            ->will($this->returnValue($versions));
 
         return $versionProvider;
     }

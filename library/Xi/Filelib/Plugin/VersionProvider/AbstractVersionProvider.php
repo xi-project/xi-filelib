@@ -31,7 +31,6 @@ use Xi\Filelib\File\FileObject;
 abstract class AbstractVersionProvider extends AbstractPlugin implements VersionProvider
 {
     protected static $subscribedEvents = array(
-        Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',
         Events::FILE_AFTER_AFTERUPLOAD => 'onAfterUpload',
         Events::FILE_AFTER_DELETE => 'onFileDelete',
         Events::RESOURCE_AFTER_DELETE => 'onResourceDelete',
@@ -79,7 +78,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     {
         $this->storage = $filelib->getStorage();
         $this->profiles = $filelib->getProfileManager();
-        $this->init();
     }
 
     public function createVersions(File $file)
@@ -102,21 +100,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     }
 
     abstract public function createTemporaryVersions(File $file);
-
-    /**
-     * Registers a version to all profiles
-     */
-    public function init()
-    {
-        foreach ($this->profiles->getProfiles() as $profile) {
-
-            if ($this->hasProfile($profile->getIdentifier())) {
-                foreach ($this->getVersions() as $version) {
-                    $profile->addFileVersion($version, $this);
-                }
-            }
-        }
-    }
 
     /**
      * Returns identifier

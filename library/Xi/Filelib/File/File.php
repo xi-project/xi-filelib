@@ -67,19 +67,16 @@ class File implements Identifiable
     private $status;
 
     /**
-     *
      * @var Resource
      */
     private $resource;
 
     /**
-     *
      * @var string
      */
     private $uuid;
 
     /**
-     *
      * @var ArrayObject
      */
     private $data;

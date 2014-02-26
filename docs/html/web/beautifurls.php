@@ -49,6 +49,11 @@ $publisher->publish($file);
     </head>
     <body>
         <h1>You just published a picture of a manatee and a cinemascope thumbnail. Aww!!!</h1>
+
+        <p>
+            Inspect 'em elements and take notice of the BEAUTIFURL urls created!
+        </p>
+
         <p>
             <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
         </p>
