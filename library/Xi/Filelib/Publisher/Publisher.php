@@ -111,19 +111,20 @@ class Publisher implements EventSubscriberInterface, Attacher
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_PUBLISH, $event);
 
+        $data = $file->getData();
         foreach ($this->getVersions($file) as $version) {
 
             try {
                 $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+                $data["publisher.version_url"][$version] = $this->getUrlVersion($file, $version);
+
             } catch (FileIOException $e) {
-                // Version does not exists
+                // Version does not exists, but it shall not stop us!
             }
 
         }
 
-        $data = $file->getData();
         $data['publisher.published'] = 1;
-
         $this->fileOperator->update($file);
 
         $event = new FileEvent($file);
@@ -152,6 +153,8 @@ class Publisher implements EventSubscriberInterface, Attacher
 
         $data = $file->getData();
         $data['publisher.published'] = 0;
+
+
 
         $this->fileOperator->update($file);
 
@@ -196,10 +199,6 @@ class Publisher implements EventSubscriberInterface, Attacher
             $this->getVersionProvider($file, $version),
             $this->linker
         );
-
-        $data["publisher.version_url"][$version] = $url;
-        $this->fileOperator->update($file);
-
         return $url;
     }
 
