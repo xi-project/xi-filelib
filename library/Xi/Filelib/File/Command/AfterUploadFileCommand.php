@@ -32,7 +32,7 @@ class AfterUploadFileCommand extends AbstractFileCommand
      */
     public function execute()
     {
-        $file = $this->file;
+        $file = $this->fileOperator->find($this->file->getId());
 
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_AFTERUPLOAD, $event);
