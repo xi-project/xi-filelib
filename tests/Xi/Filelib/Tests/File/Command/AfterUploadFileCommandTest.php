@@ -30,6 +30,11 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $op = $this->getMockedFileOperator(array('versioned'));
 
         $file = $this->getMockedFile('versioned');
+        $file
+            ->expects($this->any())
+            ->method('getId')
+            ->will($this->returnValue('xooxer'));
+
 
         $backend = $this
             ->getMockBuilder('Xi\Filelib\Backend\Backend')
@@ -44,6 +49,12 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             $dispatcher,
             $backend
         );
+
+        $op
+            ->expects($this->once())
+            ->method('find')
+            ->with('xooxer')
+            ->will($this->returnValue($file));
 
         $backend->expects($this->once())
             ->method('updateFile')
