@@ -408,8 +408,8 @@ class DoctrineOrmPlatform implements Platform
                 'id' => $ids
             )
         );
-        $rows = new ArrayIterator($rows);
 
+        $rows = new ArrayIterator($rows);
         return $this->$resources['exporter']($rows);
     }
 
@@ -446,7 +446,9 @@ class DoctrineOrmPlatform implements Platform
         $ret = new ArrayIterator(array());
         foreach ($iter as $file) {
 
-            $resource = $this->findByIds(array($file->getResource()->getId()), 'Xi\Filelib\File\Resource')->current();
+            // $resource = $this->findByIds(array($file->getResource()->getId()), 'Xi\Filelib\File\Resource')->current();
+
+            $resources = new ArrayIterator(array($file->getResource()));
 
             $ret->append(
                 File::create(
@@ -458,7 +460,7 @@ class DoctrineOrmPlatform implements Platform
                         'date_created' => $file->getDateCreated(),
                         'status' => $file->getStatus(),
                         'uuid' => $file->getUuid(),
-                        'resource' => $resource,
+                        'resource' => $this->exportResources($resources)->current(),
                         'data' => $file->getData(),
                     )
                 )

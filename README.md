@@ -68,7 +68,7 @@ echo file_get_contents($filelib->getStorage()->retrieve($file->getResource()));
 
 ### Examples and use cases
 
-̈́`docs/examples/index.php` contains a lot of coded examples. Checkout the code, configure a web server and dive
+̈́`docs/examples/web/index.php` contains a lot of coded examples. Checkout the code, configure a web server and dive
 straight into the code.
 
 ## About integrating to your own software
@@ -82,7 +82,7 @@ ids / uids within your own data and use Filelib for everything else.
 For framework integration, see:
 
 * https://github.com/xi-project/xi-bundle-filelib (Symfony bundle, needs a maintainer, I'm a very bad one!)
-* https://github.com/xi-project/xi-bundle-filelib (Symfony sandbox, needs a maintainer too!)
+* https://github.com/xi-project/xi-filelib-symfony-sandbox (Symfony sandbox, needs a maintainer too!)
 
 ## Actual applications using Filelib
 
