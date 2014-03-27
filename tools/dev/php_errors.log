@@ -1,0 +1,23 @@
+[27-Mar-2014 14:13:08 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\LogicException' with message 'Root directory '' is not writable' in /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php:57
+Stack trace:
+#0 /wwwroot/xi-filelib/tools/dev/lifecycle-testing.php(14): Xi\Filelib\Storage\FilesystemStorage->__construct(false, Object(Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator))
+#1 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php on line 57
+[27-Mar-2014 14:13:21 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\LogicException' with message 'Root directory '' is not writable' in /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php:57
+Stack trace:
+#0 /wwwroot/xi-filelib/tools/dev/lifecycle-testing.php(14): Xi\Filelib\Storage\FilesystemStorage->__construct(false, Object(Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator))
+#1 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Storage/FilesystemStorage.php on line 57
+[27-Mar-2014 14:30:36 UTC] PHP Fatal error:  Uncaught exception 'Xi\Filelib\InvalidArgumentException' with message 'Directory '/wwwroot/xi-filelib/tools/dev/web/files' is not writeable' in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Adapter/Filesystem/AbstractFilesystemPublisherAdapter.php:49
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Adapter/Filesystem/SymlinkFilesystemPublisherAdapter.php(45): Xi\Filelib\Publisher\Adapter\Filesystem\AbstractFilesystemPublisherAdapter->__construct('/wwwroot/xi-fil...', '600', '700', 'files')
+#1 /wwwroot/xi-filelib/tools/dev/lifecycle-testing.php(54): Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter->__construct('/wwwroot/xi-fil...', '600', '700', 'files')
+#2 {main}
+  thrown in /wwwroot/xi-filelib/library/Xi/Filelib/Publisher/Adapter/Filesystem/AbstractFilesystemPublisherAdapter.php on line 49
+[27-Mar-2014 14:30:52 UTC] PHP Fatal error:  Uncaught exception 'ImagickException' with message 'unable to open file `/wwwroot/xi-filelib/tools/dev/watermark.png' @ error/png.c/ReadPNGImage/3691' in /wwwroot/xi-filelib/library/Xi/Filelib/Plugin/Image/Command/AbstractCommand.php:31
+Stack trace:
+#0 /wwwroot/xi-filelib/library/Xi/Filelib/Plugin/Image/Command/AbstractCommand.php(31): Imagick->__construct('/wwwroot/xi-fil...')
+#1 /wwwroot/xi-filelib/library/Xi/Filelib/Plugin/Image/Command/WatermarkCommand.php(157): Xi\Filelib\Plugin\Image\Command\AbstractCommand->createImagick('/wwwroot/xi-fil...')
+#2 /wwwroot/xi-filelib/library/Xi/Filelib/Plugin/Image/Command/WatermarkCommand.php(119): Xi\Filelib\Plugin\Image\Command\WatermarkCommand->getWatermarkResource()
+#3 /wwwroot/xi-filelib/library/Xi/Filelib/Plugin/Image/Command/WatermarkCommand.php(107): Xi\Filelib\Plugin\Image\Command\WatermarkCommand->calculateCoordinates(Object(Imagick))
+#4 /wwwroot/xi-filelib/library/Xi/Filelib/Plugin/Image/ImageMagickHelper.php(67): Xi\Filelib\Plugin\Image\Command\WatermarkComm in /wwwroot/xi-filelib/library/Xi/Filelib/Plugin/Image/Command/AbstractCommand.php on line 33

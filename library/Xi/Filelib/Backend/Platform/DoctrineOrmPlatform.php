@@ -96,6 +96,11 @@ class DoctrineOrmPlatform implements Platform
         $this->em = $em;
     }
 
+    public function isOrigin()
+    {
+        return true;
+    }
+
     /**
      * Returns the fully qualified file entity classname
      *
@@ -398,12 +403,12 @@ class DoctrineOrmPlatform implements Platform
      */
     public function findByIds(FindByIdsRequest $request)
     {
+        if ($request->isFulfilled()) {
+            return $request;
+        }
+
         $ids = $request->getNotFoundIds();
         $className = $request->getClassName();
-
-        if (!$ids) {
-            return new ArrayIterator(array());
-        }
 
         $resources = $this->classNameToResources[$className];
         $repo = $this->em->getRepository($this->$resources['getEntityName']());
@@ -414,7 +419,7 @@ class DoctrineOrmPlatform implements Platform
         );
 
         $rows = new ArrayIterator($rows);
-        return $this->$resources['exporter']($rows);
+        return $request->foundMany($this->$resources['exporter']($rows));
     }
 
     /**

@@ -11,6 +11,8 @@ namespace Xi\Filelib\IdentityMap;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Backend\FindByIdsRequest;
+use Xi\Filelib\Backend\FindByIdsRequestResolver;
 use Xi\Filelib\Event\IdentifiableEvent;
 use Iterator;
 use Xi\Filelib\Events;
@@ -18,7 +20,7 @@ use Xi\Filelib\Events;
 /**
  * Identity map
  */
-class IdentityMap implements EventSubscriberInterface
+class IdentityMap implements EventSubscriberInterface, FindByIdsRequestResolver
 {
     /**
      * @var EventDispatcherInterface
@@ -51,6 +53,7 @@ class IdentityMap implements EventSubscriberInterface
             Events::FILE_AFTER_DELETE => 'onDelete',
             Events::FOLDER_AFTER_DELETE => 'onDelete',
             Events::FOLDER_AFTER_CREATE => 'onCreate',
+            Events::IDENTIFIABLE_INSTANTIATE => 'onInstantiate',
         );
     }
 
@@ -179,9 +182,40 @@ class IdentityMap implements EventSubscriberInterface
     /**
      * @param IdentifiableEvent $event
      */
+    public function onInstantiate(IdentifiableEvent $event)
+    {
+        $this->add($event->getIdentifiable());
+    }
+
+    /**
+     * @param IdentifiableEvent $event
+     */
     public function onDelete(IdentifiableEvent $event)
     {
         $this->remove($event->getIdentifiable());
+    }
+
+    /**
+     * @param FindByIdsRequest $request
+     * @return FindByIdsRequest
+     */
+    public function findByIds(FindByIdsRequest $request)
+    {
+        $className = $request->getClassName();
+        foreach ($request->getNotFoundIds() as $id) {
+            if ($identifiable = $this->get($id, $className)) {
+                $request->found($identifiable);
+            }
+        }
+        return $request;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOrigin()
+    {
+        return false;
     }
 
     /**

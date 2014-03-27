@@ -471,7 +471,8 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $this->assertCount($expected, $ids);
 
         $request = new FindByIdsRequest($ids, $finder->getResultClass());
-        $objs = $this->backend->findByIds($request);
+        $objs = $this->backend->findByIds($request)->getResult();
+
         $this->assertCount($expected, $objs);
 
         foreach ($objs as $obj) {
@@ -497,7 +498,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     {
         $request = new FindByIdsRequest(array($id), 'Xi\Filelib\File\Resource');
         $ret = $this->backend->findByIds($request);
-        return $ret->current();
+        return $ret->getResult()->current();
     }
 
     /**
@@ -508,7 +509,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     {
         $request = new FindByIdsRequest(array($id), 'Xi\Filelib\File\File');
         $ret = $this->backend->findByIds($request);
-        return $ret->current();
+        return $ret->getResult()->current();
     }
 
     /**
@@ -519,6 +520,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
     {
         $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Folder\Folder');
         $ret = $this->backend->findByIds($request);
-        return $ret->current();
+        return $ret->getResult()->current();
     }
 }

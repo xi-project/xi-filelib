@@ -7,3 +7,5 @@ nbproject
 /vendor/
 .idea
 .DS_Store
+dev/tools/data/private/*
+dev/tools/web/files/*

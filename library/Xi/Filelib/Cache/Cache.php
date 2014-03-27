@@ -2,10 +2,16 @@
 
 namespace Xi\Filelib\Cache;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Xi\Filelib\Backend\FindByIdsRequest;
+use Xi\Filelib\Backend\FindByIdsRequestResolver;
 use Xi\Filelib\Cache\Adapter\CacheAdapter;
+use Xi\Filelib\Event\IdentifiableEvent;
+use Xi\Filelib\Events;
 use Xi\Filelib\IdentityMap\Identifiable;
+use ArrayIterator;
 
-class Cache
+class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
 {
     /**
      * @var CacheAdapter
@@ -15,6 +21,28 @@ class Cache
     public function __construct(CacheAdapter $adapter)
     {
         $this->adapter = $adapter;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Events::FILE_AFTER_CREATE => 'onCreate',
+            Events::FILE_AFTER_DELETE => 'onDelete',
+            Events::FOLDER_AFTER_DELETE => 'onDelete',
+            Events::FOLDER_AFTER_CREATE => 'onCreate',
+            Events::IDENTIFIABLE_INSTANTIATE => 'onInstantiate',
+            Events::FOLDER_AFTER_UPDATE => 'onUpdate',
+            Events::FILE_AFTER_UPDATE => 'onUpdate'
+        );
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isOrigin()
+    {
+        return true;
     }
 
     /**
@@ -32,9 +60,12 @@ class Cache
      * @param $className
      * @return Identifiable[]
      */
-    public function findByIds(array $ids = array(), $className)
+    public function findByIds(FindByIdsRequest $request)
     {
-        return $this->adapter->findByIds($ids, $className);
+        $identifiables = new ArrayIterator(
+            $this->adapter->findByIds($request->getNotFoundIds(), $request->getClassName())
+        );
+        return $request->foundMany($identifiables);
     }
 
     /**
@@ -68,6 +99,26 @@ class Cache
     public function delete(Identifiable $identifiable)
     {
         return $this->adapter->delete($identifiable);
+    }
+
+    public function onInstantiate(IdentifiableEvent $event)
+    {
+        $this->save($event->getIdentifiable());
+    }
+
+    public function onUpdate(IdentifiableEvent $event)
+    {
+        $this->save($event->getIdentifiable());
+    }
+
+    public function onDelete(IdentifiableEvent $event)
+    {
+        $this->delete($event->getIdentifiable());
+    }
+
+    public function onCreate(IdentifiableEvent $event)
+    {
+        $this->delete($event->getIdentifiable());
     }
 }
 

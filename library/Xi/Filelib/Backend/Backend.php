@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Backend;
 
+use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\IdentityMap\IdentityMap;
 use Xi\Filelib\Backend\Platform\Platform;
@@ -41,6 +42,16 @@ class Backend
     private $identityMapHelper;
 
     /**
+     * @var IdentityMap
+     */
+    private $identityMap;
+
+    /**
+     * @var Cache
+     */
+    private $cache;
+
+    /**
      * @param EventDispatcherInterface $eventDispatcher
      * @param Platform                 $platform
      */
@@ -50,8 +61,24 @@ class Backend
     ) {
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
-        $this->identityMapHelper = new IdentityMapHelper(new IdentityMap($this->eventDispatcher), $platform);
+
+        $this->identityMap = new IdentityMap($this->eventDispatcher);
+        $this->identityMapHelper = new IdentityMapHelper($this->identityMap, $platform);
+
     }
+
+    public function getCache()
+    {
+        return $this->cache;
+    }
+
+    public function setCache(Cache $cache)
+    {
+        $this->eventDispatcher->addSubscriber($cache);
+        $this->cache = $cache;
+        return $this;
+    }
+
 
     /**
      * @return EventDispatcherInterface
@@ -77,6 +104,20 @@ class Backend
         return $this->identityMapHelper;
     }
 
+    public function getResolvers()
+    {
+        return ($this->cache) ?
+            array(
+                $this->identityMap,
+                $this->cache,
+                $this->platform
+            ) :
+            array(
+                $this->identityMap,
+                $this->platform
+            );
+    }
+
     /**
      * Finds objects via finder
      *
@@ -85,16 +126,24 @@ class Backend
      */
     public function findByFinder(Finder $finder)
     {
-        $resultClass = $finder->getResultClass();
+        $ids = $this->getPlatform()->findByFinder($finder);
+        $className = $finder->getResultClass();
 
+        $request = new FindByIdsRequest($ids, $className, $this->eventDispatcher);
+        $request->resolve($this->getResolvers());
+
+        return $request->getResult();
+
+        /*
         return $this->getIdentityMapHelper()->tryManyFromIdentityMap(
-            $this->getPlatform()->findByFinder($finder),
+
             $finder->getResultClass(),
             function (Platform $platform, $ids) use ($resultClass) {
                 $request = new FindByIdsRequest($ids, $resultClass);
                 return $platform->findByIds($request);
             }
         );
+        */
     }
 
     /**
@@ -106,14 +155,10 @@ class Backend
      */
     public function findById($id, $className)
     {
-        return $this->getIdentityMapHelper()->tryOneFromIdentityMap(
-            $id,
-            $className,
-            function (Platform $platform, $id) use ($className) {
-                $request = new FindByIdsRequest($id, $className);
-                return $platform->findByIds($request);
-            }
-        );
+        $request = new FindByIdsRequest($id, $className, $this->eventDispatcher);
+        $request->resolve($this->getResolvers());
+
+        return $request->getResult()->current();
     }
 
     /**

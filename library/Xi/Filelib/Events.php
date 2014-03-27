@@ -49,4 +49,6 @@ class Events
     const IDENTITYMAP_BEFORE_ADD = 'xi_filelib.identitymap.before_add';
     const IDENTITYMAP_AFTER_REMOVE = 'xi_filelib.identitymap.after_remove';
     const IDENTITYMAP_BEFORE_REMOVE = 'xi_filelib.identitymap.before_remove';
+
+    const IDENTIFIABLE_INSTANTIATE = 'xi_filelib.identifiable.instantiate';
 }

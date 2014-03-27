@@ -10,6 +10,7 @@
 namespace Xi\Filelib;
 
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
+use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\Command\Commander;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\File\FileRepository;
@@ -328,4 +329,15 @@ class FileLibrary
     {
         return $this->getFileRepository()->upload($file, $folder, $profile);
     }
+
+    public function setCache(Cache $cache)
+    {
+        $this->getBackend()->setCache($cache);
+    }
+
+    public function getCache()
+    {
+        return $this->getBackend()->getCache();
+    }
+
 }

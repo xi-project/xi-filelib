@@ -71,6 +71,11 @@ class JsonPlatform implements Platform
         $this->flush();
     }
 
+    public function isOrigin()
+    {
+        return true;
+    }
+
     private function flush()
     {
         $handle = fopen($this->file, 'w');
@@ -335,12 +340,12 @@ class JsonPlatform implements Platform
      */
     public function findByIds(FindByIdsRequest $request)
     {
+        if ($request->isFulfilled()) {
+            return $request;
+        }
+
         $ids = $request->getNotFoundIds();
         $className = $request->getClassName();
-
-        if (!$ids) {
-            return new ArrayIterator(array());
-        }
 
         $this->init();
 
@@ -357,7 +362,7 @@ class JsonPlatform implements Platform
         }
 
         $exporter = $resources['exporter'];
-        return $this->$exporter($iter);
+        return $request->foundMany($this->$exporter($iter));
     }
 
     /**
@@ -397,7 +402,8 @@ class JsonPlatform implements Platform
         foreach ($iter as $file) {
 
             $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\File\Resource');
-            $resource = $this->findByIds($request)->current();
+
+            $resource = $this->findByIds($request)->getResult()->current();
 
             $ret->append(
                 File::create(

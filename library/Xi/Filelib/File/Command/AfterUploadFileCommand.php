@@ -32,17 +32,19 @@ class AfterUploadFileCommand extends AbstractFileCommand
      */
     public function execute()
     {
-        $file = $this->fileRepository->find($this->file->getId());
+        if (!$this->file instanceof File) {
+            $this->file = $this->fileRepository->find($this->file->getId());
+        }
 
-        $event = new FileEvent($file);
+        $event = new FileEvent($this->file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_AFTERUPLOAD, $event);
 
         // @todo: actual statuses
-        $file->setStatus(File::STATUS_COMPLETED);
+        $this->file->setStatus(File::STATUS_COMPLETED);
 
-        $this->backend->updateFile($file);
-
-        return $file;
+        // @todo: fucktor.
+        $this->backend->updateFile($this->file);
+        return $this->file;
     }
 
     public function getTopic()
@@ -60,7 +62,7 @@ class AfterUploadFileCommand extends AbstractFileCommand
     {
         return serialize(
             array(
-                'file' => $this->file,
+                'file' => $this->file->getId(),
             )
         );
     }

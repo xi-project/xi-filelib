@@ -79,6 +79,11 @@ class DoctrineDbalPlatform implements Platform
         }
     }
 
+    public function isOrigin()
+    {
+        return true;
+    }
+
     /**
      * @see Platform::updateFile
      */
@@ -347,12 +352,12 @@ class DoctrineDbalPlatform implements Platform
      */
     public function findByIds(FindByIdsRequest $request)
     {
+        if ($request->isFulfilled()) {
+            return $request;
+        }
+
         $ids = $request->getNotFoundIds();
         $className = $request->getClassName();
-
-        if (!$ids) {
-            return new ArrayIterator(array());
-        }
 
         $resources = $this->classNameToResources[$className];
         $tableName = $resources['table'];
@@ -363,7 +368,7 @@ class DoctrineDbalPlatform implements Platform
         );
         $rows = new ArrayIterator($rows);
 
-        return $this->$resources['exporter']($rows);
+        return $request->foundMany($this->$resources['exporter']($rows));
     }
 
     /**
@@ -400,7 +405,7 @@ class DoctrineDbalPlatform implements Platform
         foreach ($iter as $file) {
 
             $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\File\Resource');
-            $resource = $this->findByIds($request)->current();
+            $resource = $this->findByIds($request)->getResult()->current();
 
             $ret->append(
                 File::create(

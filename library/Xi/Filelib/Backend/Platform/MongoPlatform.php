@@ -76,6 +76,11 @@ class MongoPlatform implements Platform
         $this->setMongo($mongo);
     }
 
+    public function isOrigin()
+    {
+        return true;
+    }
+
     /**
      * Sets MongoDB
      *
@@ -308,12 +313,12 @@ class MongoPlatform implements Platform
      */
     public function findByIds(FindByIdsRequest $request)
     {
+        if ($request->isFulfilled()) {
+            return $request;
+        }
+
         $ids = $request->getNotFoundIds();
         $className = $request->getClassName();
-
-        if (!$ids) {
-            return new ArrayIterator(array());
-        }
 
         $resources = $this->classNameToResources[$className];
 
@@ -333,9 +338,9 @@ class MongoPlatform implements Platform
         foreach ($ret as $doc) {
             $iter->append($doc);
         }
-        $exporter = $resources['exporter'];
 
-        return $this->$exporter($iter);
+        $exporter = $resources['exporter'];
+        return $request->foundMany($this->$exporter($iter));
     }
 
     /**
@@ -375,7 +380,7 @@ class MongoPlatform implements Platform
         foreach ($iter as $file) {
 
             $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\File\Resource');
-            $resource = $this->findByIds($request)->current();
+            $resource = $this->findByIds($request)->getResult()->current();
 
             $ret->append(
                 File::create(
