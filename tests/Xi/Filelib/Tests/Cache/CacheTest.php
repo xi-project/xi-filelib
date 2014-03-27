@@ -20,6 +20,10 @@ class CacheTest extends TestCase
 
     public function setUp()
     {
+        if (!class_exists('Memcached')) {
+            return $this->markTestSkipped('Memcached required');
+        }
+
         $this->adapter = $this->getMockedCacheAdapter();
         $this->cache = new Cache($this->adapter);
     }
