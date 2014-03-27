@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests\Backend\Platform;
 
 use PHPUnit_Framework_TestCase;
 use DateTime;
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
@@ -469,7 +470,8 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $ids = $this->backend->findByFinder($finder);
         $this->assertCount($expected, $ids);
 
-        $objs = $this->backend->findByIds($ids, $finder->getResultClass());
+        $request = new FindByIdsRequest($ids, $finder->getResultClass());
+        $objs = $this->backend->findByIds($request);
         $this->assertCount($expected, $objs);
 
         foreach ($objs as $obj) {
@@ -493,8 +495,8 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      */
     public function findResource($id)
     {
-        $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\Resource');
-
+        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\File\Resource');
+        $ret = $this->backend->findByIds($request);
         return $ret->current();
     }
 
@@ -504,8 +506,8 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      */
     public function findFile($id)
     {
-        $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\File');
-
+        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\File\File');
+        $ret = $this->backend->findByIds($request);
         return $ret->current();
     }
 
@@ -515,8 +517,8 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      */
     public function findFolder($id)
     {
-        $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\Folder\Folder');
-
+        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Folder\Folder');
+        $ret = $this->backend->findByIds($request);
         return $ret->current();
     }
 }

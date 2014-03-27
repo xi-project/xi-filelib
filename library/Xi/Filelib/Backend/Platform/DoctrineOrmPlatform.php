@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Backend\Platform;
 
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
@@ -395,8 +396,11 @@ class DoctrineOrmPlatform implements Platform
     /**
      * @see Platform::findByIds
      */
-    public function findByIds(array $ids, $className)
+    public function findByIds(FindByIdsRequest $request)
     {
+        $ids = $request->getNotFoundIds();
+        $className = $request->getClassName();
+
         if (!$ids) {
             return new ArrayIterator(array());
         }
@@ -445,8 +449,6 @@ class DoctrineOrmPlatform implements Platform
     {
         $ret = new ArrayIterator(array());
         foreach ($iter as $file) {
-
-            // $resource = $this->findByIds(array($file->getResource()->getId()), 'Xi\Filelib\File\Resource')->current();
 
             $resources = new ArrayIterator(array($file->getResource()));
 

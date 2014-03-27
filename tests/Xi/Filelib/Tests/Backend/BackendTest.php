@@ -455,7 +455,7 @@ class BackendTest extends TestCase
             ->will($this->returnValue(array(1, 2, 3, 4, 5)));
 
         $this->platform->expects($this->once())->method('findByIds')
-            ->with(array(2, 4), $finder->getResultClass())
+            ->with($this->isInstanceOf('Xi\Filelib\Backend\FindByIdsRequest'))
             ->will($this->returnValue('lus'));
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
@@ -509,7 +509,7 @@ class BackendTest extends TestCase
     public function findByIdShouldTryOneFromIdentityMapAndDelegateToPlatform($className)
     {
         $this->platform->expects($this->once())->method('findByIds')
-            ->with(array(1), $className)
+            ->with($this->isInstanceOf('Xi\Filelib\Backend\FindByIdsRequest'))
             ->will($this->returnValue('lus'));
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')

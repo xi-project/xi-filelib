@@ -4,14 +4,13 @@ namespace Xi\Filelib\Tests\Cache;
 
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Cache\Cache;
-use Xi\Filelib\Cache\MemcachedCache;
+use Xi\Filelib\Cache\Adapter\MemcachedCacheAdapter;
 use Xi\Filelib\File\File;
 use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\Tests\TestCase;
 use Memcached;
 
-class MemcachedCacheTest extends TestCase
+class MemcachedCacheAdapterTest extends TestCase
 {
     /**
      * @var Memcached
@@ -19,7 +18,7 @@ class MemcachedCacheTest extends TestCase
     private $memcached;
 
     /**
-     * @var Cache
+     * @var MemcachedCache
      */
     private $cache;
 
@@ -27,7 +26,7 @@ class MemcachedCacheTest extends TestCase
     {
         $this->memcached = new Memcached();
         $this->memcached->addServer('127.0.0.1', 11211);
-        $this->cache = new MemcachedCache($this->memcached, 'test___');
+        $this->cache = new MemcachedCacheAdapter($this->memcached, 'test___');
     }
 
     public function tearDown()
@@ -42,10 +41,10 @@ class MemcachedCacheTest extends TestCase
      */
     public function exists()
     {
-        $this->assertClassExists('Xi\Filelib\Cache\MemcachedCache');
+        $this->assertClassExists('Xi\Filelib\Cache\Adapter\MemcachedCacheAdapter');
         $this->assertImplements(
-            'Xi\Filelib\Cache\Cache',
-            'Xi\Filelib\Cache\MemcachedCache'
+            'Xi\Filelib\Cache\Adapter\CacheAdapter',
+            'Xi\Filelib\Cache\Adapter\MemcachedCacheAdapter'
         );
     }
 
@@ -70,6 +69,7 @@ class MemcachedCacheTest extends TestCase
         $this->cache->save($file);
     }
 
+
     public function provideIdentifiables()
     {
         return array(
@@ -78,6 +78,8 @@ class MemcachedCacheTest extends TestCase
             array(Resource::create(array('id' => 'xooxooxoo'))),
         );
     }
+
+
 
     /**
      * @test
@@ -89,6 +91,27 @@ class MemcachedCacheTest extends TestCase
 
         $cached = $this->cache->findById($obj->getId(), get_class($obj));
         $this->assertEquals($obj, $cached);
+    }
+
+    /**
+     * @test
+     */
+    public function returnsFalseWhenNotFound()
+    {
+        $this->assertFalse(
+            $this->cache->findById('xooxer', 'Xi\Filelib\File\File')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function returnsEmptyArrayWhenNotFound()
+    {
+        $this->assertEquals(
+            array(),
+            $this->cache->findByIds(array('lusso', 'tusso'), 'Xi\Filelib\File\File')
+        );
     }
 
     /**
@@ -108,5 +131,37 @@ class MemcachedCacheTest extends TestCase
         $this->assertEquals($identifiables[1], $cached);
     }
 
+    /**
+     * @test
+     */
+    public function deletes()
+    {
+        $identifiables = array(
+            File::create(array('id' => 1, 'data' => array('lus' => 'hof'))),
+            File::create(array('id' => 2, 'data' => array('lus' => 'hof'))),
+            File::create(array('id' => 3, 'data' => array('lus' => 'hof'))),
+        );
 
+        $this->cache->saveMany($identifiables);
+
+        $keys = array();
+        foreach ($identifiables as $identifiable) {
+            $keys[] = $identifiable->getId();
+        }
+
+        $found = $this->cache->findByIds($keys, 'Xi\Filelib\File\File');
+        $this->assertEquals(array_values($identifiables), array_values($found));
+
+        $doNotDelete = array_shift($identifiables);
+        $this->cache->deleteMany($identifiables);
+
+        $notGonnaFind = array_shift($identifiables);
+        $this->assertFalse($this->cache->findById($notGonnaFind->getId(), get_class($notGonnaFind)));
+
+        $this->assertEquals($doNotDelete, $this->cache->findById($doNotDelete->getId(), get_class($doNotDelete)));
+
+        $this->cache->delete($doNotDelete);
+
+        $this->assertFalse($this->cache->findById($doNotDelete->getId(), get_class($doNotDelete)));
+    }
 }

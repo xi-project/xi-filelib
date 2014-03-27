@@ -91,7 +91,8 @@ class Backend
             $this->getPlatform()->findByFinder($finder),
             $finder->getResultClass(),
             function (Platform $platform, $ids) use ($resultClass) {
-                return $platform->findByIds($ids, $resultClass);
+                $request = new FindByIdsRequest($ids, $resultClass);
+                return $platform->findByIds($request);
             }
         );
     }
@@ -109,7 +110,8 @@ class Backend
             $id,
             $className,
             function (Platform $platform, $id) use ($className) {
-                return $platform->findByIds(array($id), $className);
+                $request = new FindByIdsRequest($id, $className);
+                return $platform->findByIds($request);
             }
         );
     }

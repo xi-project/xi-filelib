@@ -15,6 +15,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Backend\Finder\Finder;
 use ArrayIterator;
+use Xi\Filelib\Backend\FindByIdsRequest;
 
 /**
  * Filelib backend platform interface
@@ -44,7 +45,7 @@ interface Platform
      * @param $className
      * @return ArrayIterator
      */
-    public function findByIds(array $ids, $className);
+    public function findByIds(FindByIdsRequest $request);
 
     /**
      * Creates a folder

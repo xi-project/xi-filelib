@@ -9,12 +9,13 @@
 
 namespace Xi\Filelib\Backend\Platform;
 
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\Backend\Finder\Finder;
-use MongoDb;
+use MongoDB;
 use MongoId;
 use MongoDate;
 use DateTime;
@@ -305,8 +306,11 @@ class MongoPlatform implements Platform
     /**
      * @see Platform::findByIds
      */
-    public function findByIds(array $ids, $className)
+    public function findByIds(FindByIdsRequest $request)
     {
+        $ids = $request->getNotFoundIds();
+        $className = $request->getClassName();
+
         if (!$ids) {
             return new ArrayIterator(array());
         }
@@ -369,7 +373,10 @@ class MongoPlatform implements Platform
         $date = new DateTime();
 
         foreach ($iter as $file) {
-            $resource = $this->findByIds(array($file['resource_id']), 'Xi\Filelib\File\Resource')->current();
+
+            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\File\Resource');
+            $resource = $this->findByIds($request)->current();
+
             $ret->append(
                 File::create(
                     array(

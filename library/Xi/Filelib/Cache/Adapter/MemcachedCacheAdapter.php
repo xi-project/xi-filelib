@@ -1,12 +1,12 @@
 <?php
 
-namespace Xi\Filelib\Cache;
+namespace Xi\Filelib\Cache\Adapter;
 
 use Xi\Filelib\IdentityMap\Identifiable;
 use Memcached;
 use Xi\Filelib\RuntimeException;
 
-class MemcachedCache implements Cache
+class MemcachedCacheAdapter implements CacheAdapter
 {
     /**
      * @var Memcached
@@ -27,18 +27,35 @@ class MemcachedCache implements Cache
         $this->prefix = $prefix;
     }
 
-
+    /**
+     * @param $id
+     * @param $className
+     * @return Identifiable
+     */
     public function findById($id, $className)
     {
         $ret = $this->memcached->get($this->createKeyFromParts($id, $className));
         return $ret;
     }
 
+    /**
+     * @param array $ids
+     * @param $className
+     * @return Identifiable[]
+     */
     public function findByIds(array $ids = array(), $className)
     {
+        $keys = array();
+        foreach ($ids as $id) {
+            $keys[] = $this->createKeyFromParts($id, $className);
+        }
 
+        return $this->memcached->getMulti($keys);
     }
 
+    /**
+     * @param Identifiable[] $identifiables
+     */
     public function saveMany($identifiables)
     {
         $arr = array();
@@ -48,11 +65,23 @@ class MemcachedCache implements Cache
         $this->memcached->setMulti($arr);
     }
 
+    /**
+     * @param Identifiable[] $identifiables
+     */
     public function deleteMany($identifiables)
     {
+        $keys = array();
+        foreach ($identifiables as $identifiable) {
+            $keys[] = $this->createKeyFromIdentifiable($identifiable);
+        }
 
+        $this->memcached->deleteMulti($keys);
     }
 
+    /**
+     * @param Identifiable $identifiable
+     * @return bool
+     */
     public function save(Identifiable $identifiable)
     {
         return $this->memcached->set(
@@ -63,10 +92,10 @@ class MemcachedCache implements Cache
 
     public function delete(Identifiable $identifiable)
     {
-
+        return $this->memcached->delete($this->createKeyFromIdentifiable($identifiable));
     }
 
-    private function createKeyFromIdentifiable(Identifiable $identifiable)
+    public function createKeyFromIdentifiable(Identifiable $identifiable)
     {
         if (!$identifiable->getId()) {
             throw new RuntimeException("Identifiable is missing an id");
@@ -75,7 +104,7 @@ class MemcachedCache implements Cache
 
     }
 
-    private function createKeyFromParts($id, $className)
+    public function createKeyFromParts($id, $className)
     {
         return $this->prefix . $className . '___' . $id;
     }

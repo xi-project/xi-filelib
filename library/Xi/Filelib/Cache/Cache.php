@@ -2,20 +2,73 @@
 
 namespace Xi\Filelib\Cache;
 
+use Xi\Filelib\Cache\Adapter\CacheAdapter;
 use Xi\Filelib\IdentityMap\Identifiable;
 
-interface Cache
+class Cache
 {
-    public function findById($id, $className);
+    /**
+     * @var CacheAdapter
+     */
+    private $adapter;
 
-    public function findByIds(array $ids = array(), $className);
+    public function __construct(CacheAdapter $adapter)
+    {
+        $this->adapter = $adapter;
+    }
 
-    public function saveMany($identifiables);
+    /**
+     * @param $id
+     * @param $className
+     * @return Identifiable
+     */
+    public function findById($id, $className)
+    {
+        return $this->adapter->findById($id, $className);
+    }
 
-    public function deleteMany($identifiables);
+    /**
+     * @param array $ids
+     * @param $className
+     * @return Identifiable[]
+     */
+    public function findByIds(array $ids = array(), $className)
+    {
+        return $this->adapter->findByIds($ids, $className);
+    }
 
-    public function save(Identifiable $identifiable);
+    /**
+     * @param Identifiable[] $identifiables
+     */
+    public function saveMany($identifiables)
+    {
+        return $this->adapter->saveMany($identifiables);
+    }
 
-    public function delete(Identifiable $identifiable);
+    /**
+     * @param Identifiable[] $identifiables
+     */
+    public function deleteMany($identifiables)
+    {
+        return $this->adapter->deleteMany($identifiables);
+    }
+
+    /**
+     * @param Identifiable $identifiable
+     */
+    public function save(Identifiable $identifiable)
+    {
+        return $this->adapter->save($identifiable);
+    }
+
+    /**
+     * @param Identifiable $identifiable
+     * @return mixed
+     */
+    public function delete(Identifiable $identifiable)
+    {
+        return $this->adapter->delete($identifiable);
+    }
 }
+
 
