@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Cache\Adapter;
 
 use Xi\Filelib\IdentityMap\Identifiable;
@@ -18,7 +25,7 @@ interface CacheAdapter
      * @param $className
      * @return Identifiable[]
      */
-    public function findByIds(array $ids = array(), $className);
+    public function findByIds(array $ids, $className);
 
     /**
      * @param Identifiable[] $identifiables
@@ -41,4 +48,3 @@ interface CacheAdapter
      */
     public function delete(Identifiable $identifiable);
 }
-

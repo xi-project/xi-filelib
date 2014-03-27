@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests\Backend;
 
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Backend\Platform\Platform;
+use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\IdentityMap\IdentityMap;
 use Xi\Filelib\File\Resource;
 use Xi\Filelib\File\File;
@@ -498,4 +499,14 @@ class BackendTest extends TestCase
         return $backend;
     }
 
+    /**
+     * @test
+     */
+    public function cacheCanBeSet()
+    {
+        $cache = new Cache($this->getMockedCacheAdapter());
+        $this->assertNull($this->backend->getCache());
+        $this->assertSame($this->backend, $this->backend->setCache($cache));
+        $this->assertSame($cache, $this->backend->getCache());
+    }
 }

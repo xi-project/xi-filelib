@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Cache;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -18,11 +25,17 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
      */
     private $adapter;
 
+    /**
+     * @param CacheAdapter $adapter
+     */
     public function __construct(CacheAdapter $adapter)
     {
         $this->adapter = $adapter;
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return array(
@@ -93,32 +106,41 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
 
     /**
      * @param Identifiable $identifiable
-     * @return mixed
      */
     public function delete(Identifiable $identifiable)
     {
         return $this->adapter->delete($identifiable);
     }
 
+    /**
+     * @param IdentifiableEvent $event
+     */
     public function onInstantiate(IdentifiableEvent $event)
     {
         $this->save($event->getIdentifiable());
     }
 
+    /**
+     * @param IdentifiableEvent $event
+     */
     public function onUpdate(IdentifiableEvent $event)
     {
         $this->save($event->getIdentifiable());
     }
 
+    /**
+     * @param IdentifiableEvent $event
+     */
     public function onDelete(IdentifiableEvent $event)
     {
         $this->delete($event->getIdentifiable());
     }
 
+    /**
+     * @param IdentifiableEvent $event
+     */
     public function onCreate(IdentifiableEvent $event)
     {
         $this->delete($event->getIdentifiable());
     }
 }
-
-

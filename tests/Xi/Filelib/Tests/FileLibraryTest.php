@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Authorization\AuthorizationPlugin;
+use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
@@ -287,7 +288,16 @@ class FileLibraryTest extends TestCase
         $this->assertSame('xooxer', $ret);
     }
 
+    /**
+     * @test
+     */
+    public function cacheCanBeSet()
+    {
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
 
-
-
+        $cache = new Cache($this->getMockedCacheAdapter());
+        $this->assertNull($filelib->getCache());
+        $this->assertSame($filelib, $filelib->setCache($cache));
+        $this->assertSame($cache, $filelib->getCache());
+    }
 }

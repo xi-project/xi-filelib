@@ -37,11 +37,6 @@ class Backend
     private $platform;
 
     /**
-     * @var IdentityMapHelper
-     */
-    private $identityMapHelper;
-
-    /**
      * @var IdentityMap
      */
     private $identityMap;
@@ -65,18 +60,24 @@ class Backend
         $this->identityMap = new IdentityMap($this->eventDispatcher);
     }
 
+    /**
+     * @return Cache
+     */
     public function getCache()
     {
         return $this->cache;
     }
 
+    /**
+     * @param Cache $cache
+     * @return Backend
+     */
     public function setCache(Cache $cache)
     {
         $this->eventDispatcher->addSubscriber($cache);
         $this->cache = $cache;
         return $this;
     }
-
 
     /**
      * @return EventDispatcherInterface

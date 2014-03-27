@@ -127,7 +127,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $resource = Resource::create($data);
 
         $this->assertFalse($this->backend->deleteResource($resource));
-
     }
 
     /**
@@ -478,6 +477,14 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         foreach ($objs as $obj) {
             $this->assertInstanceOf($finder->getResultClass(), $obj);
         }
+    }
+
+    /**
+     * @test
+     */
+    public function mustBeOriginResolver()
+    {
+        $this->assertTrue($this->backend->isOrigin());
     }
 
     /**

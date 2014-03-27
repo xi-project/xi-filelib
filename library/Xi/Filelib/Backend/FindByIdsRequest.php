@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Backend;
 
 use ArrayIterator;
@@ -11,12 +18,24 @@ use Xi\Filelib\Events;
 
 class FindByIdsRequest
 {
+    /**
+     * @var array
+     */
     private $notFoundIds = array();
 
+    /**
+     * @var array
+     */
     private $foundIds = array();
 
+    /**
+     * @var array
+     */
     private $foundObjects = array();
 
+    /**
+     * @var bool
+     */
     private $isOrigin = false;
 
     /**
@@ -24,6 +43,11 @@ class FindByIdsRequest
      */
     private $eventDispatcher;
 
+    /**
+     * @param mixed $ids
+     * @param string $className
+     * @param EventDispatcherInterface $eventDispatcher
+     */
     public function __construct($ids, $className, EventDispatcherInterface $eventDispatcher = null)
     {
         if (!is_array($ids)) {
@@ -36,26 +60,50 @@ class FindByIdsRequest
         $this->eventDispatcher = $eventDispatcher;
     }
 
+    /**
+     * @return bool
+     */
     public function isFulfilled()
     {
         return count($this->notFoundIds) === 0;
     }
 
+    /**
+     * @return array
+     */
     public function getNotFoundIds()
     {
         return $this->notFoundIds;
     }
 
+    /**
+     * @return array
+     */
+    public function getFoundIds()
+    {
+        return $this->foundIds;
+    }
+
+    /**
+     * @return string
+     */
     public function getClassName()
     {
         return $this->className;
     }
 
+    /**
+     * @return ArrayIterator
+     */
     public function getResult()
     {
         return new ArrayIterator($this->foundObjects);
     }
 
+    /**
+     * @param Identifiable $identifiable
+     * @return FindByIdsRequest
+     */
     public function found(Identifiable $identifiable)
     {
         $key = array_search($identifiable->getId(), $this->notFoundIds);
@@ -76,7 +124,6 @@ class FindByIdsRequest
 
     /**
      * @param Identifiable[] $identifiables
-     * @todo optimize
      */
     public function foundMany(Traversable $identifiables)
     {
@@ -89,7 +136,7 @@ class FindByIdsRequest
 
     /**
      * @param FindByIdsRequestResolver[] $resolvers
-     * @return $this
+     * @return FindByIdsRequest
      */
     public function resolve(array $resolvers)
     {
@@ -100,6 +147,9 @@ class FindByIdsRequest
         return $this;
     }
 
+    /**
+     * @param bool $isOrigin
+     */
     private function isOrigin($isOrigin)
     {
         $this->isOrigin = $isOrigin;

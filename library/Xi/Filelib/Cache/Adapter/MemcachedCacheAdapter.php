@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Cache\Adapter;
 
 use Xi\Filelib\IdentityMap\Identifiable;
@@ -34,8 +41,7 @@ class MemcachedCacheAdapter implements CacheAdapter
      */
     public function findById($id, $className)
     {
-        $ret = $this->memcached->get($this->createKeyFromParts($id, $className));
-        return $ret;
+        return $this->memcached->get($this->createKeyFromParts($id, $className));
     }
 
     /**
@@ -43,13 +49,12 @@ class MemcachedCacheAdapter implements CacheAdapter
      * @param $className
      * @return Identifiable[]
      */
-    public function findByIds(array $ids = array(), $className)
+    public function findByIds(array $ids, $className)
     {
         $keys = array();
         foreach ($ids as $id) {
             $keys[] = $this->createKeyFromParts($id, $className);
         }
-
         return $this->memcached->getMulti($keys);
     }
 
@@ -80,33 +85,44 @@ class MemcachedCacheAdapter implements CacheAdapter
 
     /**
      * @param Identifiable $identifiable
-     * @return bool
      */
     public function save(Identifiable $identifiable)
     {
-        return $this->memcached->set(
+        $this->memcached->set(
             $this->createKeyFromIdentifiable($identifiable),
             $identifiable
         );
     }
 
+    /**
+     * @param Identifiable $identifiable
+     */
     public function delete(Identifiable $identifiable)
     {
-        return $this->memcached->delete($this->createKeyFromIdentifiable($identifiable));
+        $this->memcached->delete($this->createKeyFromIdentifiable($identifiable));
     }
 
+    /**
+     * @param Identifiable $identifiable
+     * @return string
+     * @throws RuntimeException
+     */
     public function createKeyFromIdentifiable(Identifiable $identifiable)
     {
         if (!$identifiable->getId()) {
             throw new RuntimeException("Identifiable is missing an id");
         }
-        return $this->createKeyFromParts($identifiable->getId(), get_class($identifiable));
 
+        return $this->createKeyFromParts($identifiable->getId(), get_class($identifiable));
     }
 
+    /**
+     * @param string $id
+     * @param string $className
+     * @return string
+     */
     public function createKeyFromParts($id, $className)
     {
         return $this->prefix . $className . '___' . $id;
     }
-
 }
