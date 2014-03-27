@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Cache;
 
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
@@ -78,14 +79,18 @@ class CacheTest extends TestCase
         );
         $class = 'Xi\Filelib\File\File';
 
+        $file = File::create();
+
         $this->adapter
             ->expects($this->once())
             ->method('findByIds')
             ->with($arr, $class)
-            ->will($this->returnValue('xoo'));
+            ->will($this->returnValue(array($file)));
 
-        $ret = $this->cache->findByIds($arr, $class);
-        $this->assertEquals('xoo', $ret);
+        $request = new FindByIdsRequest($arr, $class);
+        $ret = $this->cache->findByIds($request);
+
+        $this->assertEquals(new \ArrayIterator(array($file)), $ret->getResult());
     }
 
     /**

@@ -36,13 +36,12 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
         );
     }
 
-
     /**
      * @return bool
      */
     public function isOrigin()
     {
-        return true;
+        return false;
     }
 
     /**

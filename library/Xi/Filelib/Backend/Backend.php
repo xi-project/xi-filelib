@@ -63,8 +63,6 @@ class Backend
         $this->eventDispatcher = $eventDispatcher;
 
         $this->identityMap = new IdentityMap($this->eventDispatcher);
-        $this->identityMapHelper = new IdentityMapHelper($this->identityMap, $platform);
-
     }
 
     public function getCache()
@@ -96,14 +94,6 @@ class Backend
         return $this->platform;
     }
 
-    /**
-     * @return IdentityMapHelper
-     */
-    public function getIdentityMapHelper()
-    {
-        return $this->identityMapHelper;
-    }
-
     public function getResolvers()
     {
         return ($this->cache) ?
@@ -132,18 +122,8 @@ class Backend
         $request = new FindByIdsRequest($ids, $className, $this->eventDispatcher);
         $request->resolve($this->getResolvers());
 
+        $this->identityMap->addMany($request->getResult());
         return $request->getResult();
-
-        /*
-        return $this->getIdentityMapHelper()->tryManyFromIdentityMap(
-
-            $finder->getResultClass(),
-            function (Platform $platform, $ids) use ($resultClass) {
-                $request = new FindByIdsRequest($ids, $resultClass);
-                return $platform->findByIds($request);
-            }
-        );
-        */
     }
 
     /**
@@ -157,7 +137,7 @@ class Backend
     {
         $request = new FindByIdsRequest($id, $className, $this->eventDispatcher);
         $request->resolve($this->getResolvers());
-
+        $this->identityMap->addMany($request->getResult());
         return $request->getResult()->current();
     }
 
@@ -186,14 +166,7 @@ class Backend
                 )
             );
         }
-
-        $this->getIdentityMapHelper()->tryAndAddToIdentityMap(
-            function (Platform $platform, File $file, Folder $folder) {
-                return $platform->createFile($file, $folder);
-            },
-            $file,
-            $folder
-        );
+        return $this->platform->createFile($file, $folder);
     }
 
     /**
@@ -211,13 +184,7 @@ class Backend
                 );
             }
         }
-
-        $this->getIdentityMapHelper()->tryAndAddToIdentityMap(
-            function (Platform $platform, Folder $folder) {
-                return $platform->createFolder($folder);
-            },
-            $folder
-        );
+        return $this->platform->createFolder($folder);
     }
 
     /**
@@ -228,12 +195,7 @@ class Backend
      */
     public function createResource(Resource $resource)
     {
-        $this->getIdentityMapHelper()->tryAndAddToIdentityMap(
-            function (Platform $platform, Resource $resource) {
-                return $platform->createResource($resource);
-            },
-            $resource
-        );
+        return $this->platform->createResource($resource);
     }
 
     /**
@@ -244,12 +206,7 @@ class Backend
      */
     public function deleteFile(File $file)
     {
-        $this->getIdentityMapHelper()->tryAndRemoveFromIdentityMap(
-            function (Platform $platform, File $file) {
-                return $platform->deleteFile($file);
-            },
-            $file
-        );
+        return $this->platform->deleteFile($file);
     }
 
     /**
@@ -263,13 +220,7 @@ class Backend
         if ($this->findByFinder(new FileFinder(array('folder_id' => $folder->getId())))->count()) {
             throw new FolderNotEmptyException('Can not delete folder with files');
         }
-
-        $this->getIdentityMapHelper()->tryAndRemoveFromIdentityMap(
-            function (Platform $platform, Folder $folder) {
-                return $platform->deleteFolder($folder);
-            },
-            $folder
-        );
+        return $this->platform->deleteFolder($folder);
     }
 
     /**
@@ -290,14 +241,7 @@ class Backend
                 )
             );
         }
-
-        $this->getIdentityMapHelper()->tryAndRemoveFromIdentityMap(
-            function (Platform $platform, Resource $resource) {
-                return $platform->deleteResource($resource);
-            },
-            $resource
-        );
-
+        $this->platform->deleteResource($resource);
         $event = new ResourceEvent($resource);
         $this->getEventDispatcher()->dispatch(Events::RESOURCE_AFTER_DELETE, $event);
     }

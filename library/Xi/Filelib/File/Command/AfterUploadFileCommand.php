@@ -33,7 +33,7 @@ class AfterUploadFileCommand extends AbstractFileCommand
     public function execute()
     {
         if (!$this->file instanceof File) {
-            $this->file = $this->fileRepository->find($this->file->getId());
+            $this->file = $this->fileRepository->find($this->file);
         }
 
         $event = new FileEvent($this->file);
@@ -42,8 +42,11 @@ class AfterUploadFileCommand extends AbstractFileCommand
         // @todo: actual statuses
         $this->file->setStatus(File::STATUS_COMPLETED);
 
-        // @todo: fucktor.
-        $this->backend->updateFile($this->file);
+        return $this->fileRepository->createCommand(
+            'Xi\Filelib\File\Command\UpdateFileCommand',
+            array($this->file)
+        )->execute();
+
         return $this->file;
     }
 
