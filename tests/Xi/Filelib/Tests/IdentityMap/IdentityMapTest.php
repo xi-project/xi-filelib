@@ -5,7 +5,7 @@ namespace Xi\Filelib\Tests;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\IdentityMap\IdentityMap;
 use Xi\Filelib\IdentityMap\Identifiable;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FileEvent;

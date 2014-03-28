@@ -18,7 +18,6 @@ use Pekkis\Queue\Message;
 class DeleteFileCommand extends AbstractFileCommand
 {
     /**
-     *
      * @var File
      */
     private $file;

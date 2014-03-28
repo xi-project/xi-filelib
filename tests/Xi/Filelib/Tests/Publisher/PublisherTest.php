@@ -199,16 +199,8 @@ class PublisherTest extends TestCase
             )
             ->will($this->returnValue('lussutusbansku'));
 
-        $this->fiop
-            ->expects($this->once())
-            ->method('update')
-            ->with($file);
-
         $ret = $this->publisher->getUrlVersion($file, 'ankan');
         $this->assertEquals('lussutusbansku', $ret);
-
-        $data = $file->getData();
-        $this->assertEquals('lussutusbansku', $data['publisher.version_url']['ankan']);
     }
 
     /**
@@ -260,6 +252,17 @@ class PublisherTest extends TestCase
 
         $this->adapter
             ->expects($this->at(1))
+            ->method('getUrlVersion')
+            ->with(
+                $file,
+                'ankan',
+                $this->provider,
+                $this->linker
+            )
+            ->will($this->returnValue('tenhusen-suuruuden-ylistyksen-url'));
+
+        $this->adapter
+            ->expects($this->at(2))
             ->method('publish')
             ->with(
                 $file,
@@ -268,12 +271,27 @@ class PublisherTest extends TestCase
                 $this->linker
             );
 
+        $this->adapter
+            ->expects($this->at(3))
+            ->method('getUrlVersion')
+            ->with(
+                $file,
+                'imaisu',
+                $this->provider,
+                $this->linker
+            )
+            ->will($this->returnValue('tenhusen-ylistyksen-suuruuden-url'));
+
         $this->ed
             ->expects($this->at(1))
             ->method('dispatch')
             ->with(Events::FILE_AFTER_PUBLISH, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
         $this->publisher->publish($file);
+
+        $data = $file->getData();
+        $this->assertEquals('tenhusen-suuruuden-ylistyksen-url', $data['publisher.version_url']['ankan']);
+        $this->assertEquals('tenhusen-ylistyksen-suuruuden-url', $data['publisher.version_url']['imaisu']);
 
         return $file;
     }

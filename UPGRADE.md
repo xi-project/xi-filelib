@@ -38,7 +38,10 @@ ALTER TABLE xi_filelib_file DROP COLUMN filelink;
 
 ### MongoDB
 
-Still not sure what needs to be done. Will upgrade this one old app and update instructions.
+db.files.update( { }, { $rename : { "versions" : "data" } }, false, true );
+db.resources.update( { }, { $rename : { "versions" : "data" } }, false, true );
+
+db.files.update( { }, { $unset: { link: "" } }, { multi: true });
 
 ## From version 0.6.x to version 0.7.x
 

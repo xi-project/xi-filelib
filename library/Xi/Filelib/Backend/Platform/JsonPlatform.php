@@ -9,8 +9,9 @@
 
 namespace Xi\Filelib\Backend\Platform;
 
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;
 use ArrayIterator;
@@ -34,7 +35,7 @@ class JsonPlatform implements Platform
      * @var array
      */
     private $finderMap = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'id' => 'id',
             'hash' => 'hash',
         ),
@@ -54,7 +55,7 @@ class JsonPlatform implements Platform
      * @var array
      */
     private $classNameToResources = array(
-        'Xi\Filelib\File\Resource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
+        'Xi\Filelib\Resource\Resource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
         'Xi\Filelib\File\File' => array('collection' => 'files', 'exporter' => 'exportFiles'),
         'Xi\Filelib\Folder\Folder' => array('collection' => 'folders', 'exporter' => 'exportFolders'),
     );
@@ -68,6 +69,11 @@ class JsonPlatform implements Platform
     public function __destruct()
     {
         $this->flush();
+    }
+
+    public function isOrigin()
+    {
+        return true;
     }
 
     private function flush()
@@ -332,11 +338,14 @@ class JsonPlatform implements Platform
     /**
      * @see Platform::findByIds
      */
-    public function findByIds(array $ids, $className)
+    public function findByIds(FindByIdsRequest $request)
     {
-        if (!$ids) {
-            return new ArrayIterator(array());
+        if ($request->isFulfilled()) {
+            return $request;
         }
+
+        $ids = $request->getNotFoundIds();
+        $className = $request->getClassName();
 
         $this->init();
 
@@ -353,7 +362,7 @@ class JsonPlatform implements Platform
         }
 
         $exporter = $resources['exporter'];
-        return $this->$exporter($iter);
+        return $request->foundMany($this->$exporter($iter));
     }
 
     /**
@@ -391,7 +400,11 @@ class JsonPlatform implements Platform
         $date = new DateTime();
 
         foreach ($iter as $file) {
-            $resource = $this->findByIds(array($file['resource_id']), 'Xi\Filelib\File\Resource')->current();
+
+            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
+
+            $resource = $this->findByIds($request)->getResult()->current();
+
             $ret->append(
                 File::create(
                     array(

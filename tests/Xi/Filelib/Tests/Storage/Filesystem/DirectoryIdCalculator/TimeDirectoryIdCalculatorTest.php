@@ -11,7 +11,7 @@ namespace Xi\Filelib\Tests\Storage\Filesystem\DirectoryIdCalculator;
 
 use DateTime;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 
 /**
  * @group storage

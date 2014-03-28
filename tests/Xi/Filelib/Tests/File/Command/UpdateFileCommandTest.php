@@ -7,7 +7,7 @@ use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Command\UpdateFileCommand;
 use Xi\Filelib\Events;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 
 class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {

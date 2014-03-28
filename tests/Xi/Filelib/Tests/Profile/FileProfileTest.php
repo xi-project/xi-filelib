@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Profile;
 
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Events;
 

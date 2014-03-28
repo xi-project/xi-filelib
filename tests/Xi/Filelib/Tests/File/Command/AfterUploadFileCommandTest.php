@@ -20,16 +20,44 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('Xi\Filelib\Command\Command', class_implements('Xi\Filelib\File\Command\AfterUploadFileCommand'));
     }
 
+    public function provideSerialization()
+    {
+        return array(
+            array(false),
+            array(true)
+        );
+    }
+
     /**
      * @test
+     * @dataProvider provideSerialization
      */
-    public function commandShouldUploadAndDelegateCorrectly()
+    public function commandShouldUploadAndDelegateCorrectly($serialize)
     {
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
-        $op = $this->getMockedFileRepository();
-
         $file = $this->getMockedFile('versioned');
+        $file
+            ->expects($this->any())
+            ->method('getId')
+            ->will($this->returnValue('xooxer'));
+
+
+        $command = $this->getMockedCommand();
+        $command
+            ->expects($this->once())
+            ->method('execute')
+            ->will($this->returnValue($file));
+
+        $op = $this->getMockedFileRepository();
+        $op
+            ->expects($this->once())
+            ->method('createCommand')
+            ->with(
+                'Xi\Filelib\File\Command\UpdateFileCommand',
+                array($file)
+            )
+            ->will($this->returnValue($command));
 
         $backend = $this
             ->getMockBuilder('Xi\Filelib\Backend\Backend')
@@ -45,10 +73,6 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             $backend
         );
 
-        $backend->expects($this->once())
-            ->method('updateFile')
-            ->with($file);
-
         $file
             ->expects($this->once())
             ->method('setStatus')
@@ -63,6 +87,17 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             );
 
         $command = new AfterUploadFileCommand($file);
+
+        if ($serialize) {
+            $command = unserialize(serialize($command));
+
+            $op
+                ->expects($this->once())
+                ->method('find')
+                ->with('xooxer')
+                ->will($this->returnValue($file));
+        }
+
         $command->attachTo($filelib);
         $ret = $command->execute();
 
@@ -82,7 +117,7 @@ class AfterUploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $command2 = unserialize($serialized);
 
         $this->assertAttributeEquals(null, 'fileRepository', $command2);
-        $this->assertAttributeEquals($file, 'file', $command2);
+        $this->assertAttributeEquals(1, 'file', $command2);
     }
 
     /**

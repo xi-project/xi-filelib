@@ -11,7 +11,7 @@ namespace Xi\Filelib\Tests\File;
 
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Backend\Finder\FileFinder;

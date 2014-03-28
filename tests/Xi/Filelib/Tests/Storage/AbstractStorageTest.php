@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\Storage;
 
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Storage\FileIOException;
 use DateTime;

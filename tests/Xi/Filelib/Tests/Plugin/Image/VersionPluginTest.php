@@ -16,7 +16,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Events;
 
 /**
@@ -120,7 +120,7 @@ class VersionPluginTest extends TestCase
         $this->storage
             ->expects($this->once())
             ->method('retrieve')
-            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
             ->will($this->returnValue($retrievedPath));
 
         $helper = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ImageMagickHelper')->disableOriginalConstructor()->getMock();

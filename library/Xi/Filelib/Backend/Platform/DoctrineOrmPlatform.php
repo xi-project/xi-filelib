@@ -9,8 +9,9 @@
 
 namespace Xi\Filelib\Backend\Platform;
 
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
@@ -53,7 +54,7 @@ class DoctrineOrmPlatform implements Platform
      * @var array
      */
     private $finderMap = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'id' => 'id',
             'hash' => 'hash',
         ),
@@ -70,7 +71,7 @@ class DoctrineOrmPlatform implements Platform
     );
 
     private $classNameToResources = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'table' => 'xi_filelib_resource',
             'exporter' => 'exportResources',
             'getEntityName' => 'getResourceEntityName',
@@ -93,6 +94,11 @@ class DoctrineOrmPlatform implements Platform
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
+    }
+
+    public function isOrigin()
+    {
+        return true;
     }
 
     /**
@@ -395,11 +401,14 @@ class DoctrineOrmPlatform implements Platform
     /**
      * @see Platform::findByIds
      */
-    public function findByIds(array $ids, $className)
+    public function findByIds(FindByIdsRequest $request)
     {
-        if (!$ids) {
-            return new ArrayIterator(array());
+        if ($request->isFulfilled()) {
+            return $request;
         }
+
+        $ids = $request->getNotFoundIds();
+        $className = $request->getClassName();
 
         $resources = $this->classNameToResources[$className];
         $repo = $this->em->getRepository($this->$resources['getEntityName']());
@@ -408,9 +417,9 @@ class DoctrineOrmPlatform implements Platform
                 'id' => $ids
             )
         );
-        $rows = new ArrayIterator($rows);
 
-        return $this->$resources['exporter']($rows);
+        $rows = new ArrayIterator($rows);
+        return $request->foundMany($this->$resources['exporter']($rows));
     }
 
     /**
@@ -446,7 +455,7 @@ class DoctrineOrmPlatform implements Platform
         $ret = new ArrayIterator(array());
         foreach ($iter as $file) {
 
-            $resource = $this->findByIds(array($file->getResource()->getId()), 'Xi\Filelib\File\Resource')->current();
+            $resources = new ArrayIterator(array($file->getResource()));
 
             $ret->append(
                 File::create(
@@ -458,7 +467,7 @@ class DoctrineOrmPlatform implements Platform
                         'date_created' => $file->getDateCreated(),
                         'status' => $file->getStatus(),
                         'uuid' => $file->getUuid(),
-                        'resource' => $resource,
+                        'resource' => $this->exportResources($resources)->current(),
                         'data' => $file->getData(),
                     )
                 )

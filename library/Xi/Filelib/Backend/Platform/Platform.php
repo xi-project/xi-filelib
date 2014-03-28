@@ -9,17 +9,19 @@
 
 namespace Xi\Filelib\Backend\Platform;
 
+use Xi\Filelib\Backend\FindByIdsRequestResolver;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Backend\Finder\Finder;
 use ArrayIterator;
+use Xi\Filelib\Backend\FindByIdsRequest;
 
 /**
  * Filelib backend platform interface
  */
-interface Platform
+interface Platform extends FindByIdsRequestResolver
 {
     /**
      * Returns how many times a resource is referenced by files
@@ -42,9 +44,9 @@ interface Platform
      *
      * @param array $ids
      * @param $className
-     * @return ArrayIterator
+     * @return FindByIdsRequest
      */
-    public function findByIds(array $ids, $className);
+    public function findByIds(FindByIdsRequest $request);
 
     /**
      * Creates a folder

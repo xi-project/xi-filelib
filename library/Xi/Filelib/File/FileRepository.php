@@ -10,6 +10,7 @@
 namespace Xi\Filelib\File;
 
 use Xi\Filelib\Command\CommandDefinition;
+use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\AbstractRepository;
@@ -67,7 +68,12 @@ class FileRepository extends AbstractRepository
                 self::COMMAND_UPLOAD
             ),
             new CommandDefinition(
-                self::COMMAND_AFTERUPLOAD
+                self::COMMAND_AFTERUPLOAD,
+                ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+                array(
+                    ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+                    ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+                )
             ),
             new CommandDefinition(
                 self::COMMAND_UPDATE

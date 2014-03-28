@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Queue;
 
 use Pekkis\Queue\Message;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Queue\FilelibMessageHandler;
 use Xi\Filelib\Tests\Command\NullCommand;

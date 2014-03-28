@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Backend\Platform;
 
 use Xi\Filelib\Backend\Platform\DoctrineOrmPlatform;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityNotFoundException;

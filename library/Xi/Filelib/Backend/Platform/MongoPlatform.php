@@ -9,12 +9,13 @@
 
 namespace Xi\Filelib\Backend\Platform;
 
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\IdentityMap\Identifiable;
 use Xi\Filelib\Backend\Finder\Finder;
-use MongoDb;
+use MongoDB;
 use MongoId;
 use MongoDate;
 use DateTime;
@@ -41,7 +42,7 @@ class MongoPlatform implements Platform
      * @var array
      */
     private $finderMap = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'id' => '_id',
             'hash' => 'hash',
         ),
@@ -61,7 +62,7 @@ class MongoPlatform implements Platform
      * @var array
      */
     private $classNameToResources = array(
-        'Xi\Filelib\File\Resource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
+        'Xi\Filelib\Resource\Resource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
         'Xi\Filelib\File\File' => array('collection' => 'files', 'exporter' => 'exportFiles'),
         'Xi\Filelib\Folder\Folder' => array('collection' => 'folders', 'exporter' => 'exportFolders'),
     );
@@ -73,6 +74,11 @@ class MongoPlatform implements Platform
     {
         ExtensionRequirements::requireVersion('mongo', '1.4.0');
         $this->setMongo($mongo);
+    }
+
+    public function isOrigin()
+    {
+        return true;
     }
 
     /**
@@ -305,11 +311,14 @@ class MongoPlatform implements Platform
     /**
      * @see Platform::findByIds
      */
-    public function findByIds(array $ids, $className)
+    public function findByIds(FindByIdsRequest $request)
     {
-        if (!$ids) {
-            return new ArrayIterator(array());
+        if ($request->isFulfilled()) {
+            return $request;
         }
+
+        $ids = $request->getNotFoundIds();
+        $className = $request->getClassName();
 
         $resources = $this->classNameToResources[$className];
 
@@ -329,9 +338,9 @@ class MongoPlatform implements Platform
         foreach ($ret as $doc) {
             $iter->append($doc);
         }
-        $exporter = $resources['exporter'];
 
-        return $this->$exporter($iter);
+        $exporter = $resources['exporter'];
+        return $request->foundMany($this->$exporter($iter));
     }
 
     /**
@@ -369,7 +378,10 @@ class MongoPlatform implements Platform
         $date = new DateTime();
 
         foreach ($iter as $file) {
-            $resource = $this->findByIds(array($file['resource_id']), 'Xi\Filelib\File\Resource')->current();
+
+            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
+            $resource = $this->findByIds($request)->getResult()->current();
+
             $ret->append(
                 File::create(
                     array(
