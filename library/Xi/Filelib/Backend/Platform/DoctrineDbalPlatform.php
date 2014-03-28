@@ -12,7 +12,7 @@ namespace Xi\Filelib\Backend\Platform;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;
 use Doctrine\DBAL\Connection;
@@ -33,7 +33,7 @@ class DoctrineDbalPlatform implements Platform
      * @var array
      */
     private $finderMap = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'id' => 'id',
             'hash' => 'hash',
         ),
@@ -50,7 +50,7 @@ class DoctrineDbalPlatform implements Platform
     );
 
     private $classNameToResources = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'table' => 'xi_filelib_resource',
             'exporter' => 'exportResources',
             'getEntityName' => 'getResourceEntityName',
@@ -404,7 +404,7 @@ class DoctrineDbalPlatform implements Platform
         $ret = new ArrayIterator(array());
         foreach ($iter as $file) {
 
-            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\File\Resource');
+            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
             $resource = $this->findByIds($request)->getResult()->current();
 
             $ret->append(

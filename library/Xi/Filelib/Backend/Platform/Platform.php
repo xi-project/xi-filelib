@@ -11,7 +11,7 @@ namespace Xi\Filelib\Backend\Platform;
 
 use Xi\Filelib\Backend\FindByIdsRequestResolver;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Backend\Finder\Finder;

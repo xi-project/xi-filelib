@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\File;
 
 use DateTime;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use ArrayObject;
 
 class FileTest extends \Xi\Filelib\Tests\TestCase

@@ -7,7 +7,7 @@ use DateTime;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;
 
@@ -104,7 +104,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 
         $resource = Resource::create($data);
 
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $this->findResource($resourceId));
+        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $this->findResource($resourceId));
 
         $this->assertTrue($this->backend->deleteResource($resource));
 
@@ -141,7 +141,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 
         $resource = $this->findResource($resourceId);
 
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $resource);
+        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $resource);
 
         $this->assertEquals($resourceId, $resource->getId());
         $this->assertNotEquals($versions, $resource->getVersions());
@@ -503,7 +503,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      */
     public function findResource($id)
     {
-        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\File\Resource');
+        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Resource\Resource');
         $ret = $this->backend->findByIds($request);
         return $ret->getResult()->current();
     }

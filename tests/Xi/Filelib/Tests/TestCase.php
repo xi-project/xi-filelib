@@ -312,7 +312,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedResource()
     {
-        return $this->getMock('Xi\Filelib\File\Resource');
+        return $this->getMock('Xi\Filelib\Resource\Resource');
     }
 
     /**

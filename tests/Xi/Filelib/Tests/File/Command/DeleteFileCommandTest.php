@@ -5,7 +5,7 @@ namespace Xi\Filelib\Tests\File\Command;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\Command\DeleteFileCommand;
 use Xi\Filelib\Events;
 
@@ -78,8 +78,8 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
         );
 
         if ($exclusiveResource) {
-            $storage->expects($this->once())->method('delete')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
-            $backend->expects($this->once())->method('deleteResource')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
+            $storage->expects($this->once())->method('delete')->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'));
+            $backend->expects($this->once())->method('deleteResource')->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'));
         } else {
             $storage->expects($this->never())->method('delete');
             $backend->expects($this->never())->method('deleteResource');

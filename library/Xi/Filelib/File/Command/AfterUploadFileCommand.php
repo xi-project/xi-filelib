@@ -46,8 +46,6 @@ class AfterUploadFileCommand extends AbstractFileCommand
             'Xi\Filelib\File\Command\UpdateFileCommand',
             array($this->file)
         )->execute();
-
-        return $this->file;
     }
 
     public function getTopic()

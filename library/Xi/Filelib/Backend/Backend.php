@@ -16,7 +16,7 @@ use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

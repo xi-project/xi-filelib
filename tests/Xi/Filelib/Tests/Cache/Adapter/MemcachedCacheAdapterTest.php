@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\Cache;
 
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Cache\Adapter\MemcachedCacheAdapter;
 use Xi\Filelib\File\File;

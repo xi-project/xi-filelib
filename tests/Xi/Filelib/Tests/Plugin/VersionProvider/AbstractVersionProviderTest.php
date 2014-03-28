@@ -12,7 +12,7 @@ namespace Xi\Filelib\Tests\Plugin\VersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
@@ -94,7 +94,7 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
              ->will($this->returnValue($sharedVersionsAllowed));
 
-        $resource = $this->getMock('Xi\Filelib\File\Resource');
+        $resource = $this->getMock('Xi\Filelib\Resource\Resource');
 
         $file = $this->getMock('Xi\Filelib\File\File');
         $file->expects($this->any())->method('getResource')->will($this->returnValue($resource));
@@ -234,7 +234,7 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->storage->expects($this->exactly(2))->method('storeVersion')
                 ->with(
-                    $this->isInstanceOf('Xi\Filelib\File\Resource'),
+                    $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
                     $this->isType('string'),
                     $this->isType('string'),
                     $sharedVersionsAllowed ? $this->isNull() : $this->isInstanceOf('Xi\Filelib\File\File')
@@ -325,12 +325,12 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->storage->expects($this->once())->method('deleteVersion')
              ->with(
-                     $this->isInstanceOf('Xi\Filelib\File\Resource'),
+                     $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
                      $this->equalTo('lusser')
               );
 
         $this->storage->expects($this->exactly(2))->method('versionExists')
-            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->isType('string'))
+            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'), $this->isType('string'))
             ->will($this->onConsecutiveCalls(false, true));
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
@@ -406,13 +406,13 @@ class AbstractVersionProviderTest extends TestCase
              ->will($this->returnValue(array('xooxer', 'lusser')));
 
         $this->storage->expects($this->exactly(2))->method('versionExists')
-             ->with($this->isInstanceOf('Xi\Filelib\File\Resource'),
+             ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'),
                     $this->isType('string'))
              ->will($this->onConsecutiveCalls(true, false));
 
         $this->storage->expects($this->once())
              ->method('deleteVersion')
-             ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->isType('string'));
+             ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'), $this->isType('string'));
 
         $resource = Resource::create(array('mimetype' => 'image/png'));
         $event = new ResourceEvent($resource);

@@ -11,7 +11,7 @@ namespace Xi\Filelib\Backend\Platform;
 
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
@@ -54,7 +54,7 @@ class DoctrineOrmPlatform implements Platform
      * @var array
      */
     private $finderMap = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'id' => 'id',
             'hash' => 'hash',
         ),
@@ -71,7 +71,7 @@ class DoctrineOrmPlatform implements Platform
     );
 
     private $classNameToResources = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'table' => 'xi_filelib_resource',
             'exporter' => 'exportResources',
             'getEntityName' => 'getResourceEntityName',

@@ -11,7 +11,7 @@ namespace Xi\Filelib\Backend\Platform;
 
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;
 use ArrayIterator;
@@ -35,7 +35,7 @@ class JsonPlatform implements Platform
      * @var array
      */
     private $finderMap = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'id' => 'id',
             'hash' => 'hash',
         ),
@@ -55,7 +55,7 @@ class JsonPlatform implements Platform
      * @var array
      */
     private $classNameToResources = array(
-        'Xi\Filelib\File\Resource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
+        'Xi\Filelib\Resource\Resource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
         'Xi\Filelib\File\File' => array('collection' => 'files', 'exporter' => 'exportFiles'),
         'Xi\Filelib\Folder\Folder' => array('collection' => 'folders', 'exporter' => 'exportFolders'),
     );
@@ -401,7 +401,7 @@ class JsonPlatform implements Platform
 
         foreach ($iter as $file) {
 
-            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\File\Resource');
+            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
 
             $resource = $this->findByIds($request)->getResult()->current();
 

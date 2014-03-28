@@ -12,7 +12,7 @@ namespace Xi\Filelib\File\Command;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\InvalidArgumentException;
 use DateTime;

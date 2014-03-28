@@ -6,7 +6,7 @@ use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\IdentityMap\IdentityMap;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Tests\TestCase;
@@ -454,7 +454,7 @@ class BackendTest extends TestCase
     {
         return array(
             array('Xi\Filelib\File\File'),
-            array('Xi\Filelib\File\Resource'),
+            array('Xi\Filelib\Resource\Resource'),
             array('Xi\Filelib\Folder\Folder'),
         );
     }

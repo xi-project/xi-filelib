@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\File;
+namespace Xi\Filelib\Resource;
 
 use DateTime;
 use Xi\Filelib\IdentityMap\Identifiable;
