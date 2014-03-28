@@ -32,17 +32,20 @@ class AfterUploadFileCommand extends AbstractFileCommand
      */
     public function execute()
     {
-        $file = $this->file;
+        if (!$this->file instanceof File) {
+            $this->file = $this->fileRepository->find($this->file);
+        }
 
-        $event = new FileEvent($file);
+        $event = new FileEvent($this->file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_AFTERUPLOAD, $event);
 
         // @todo: actual statuses
-        $file->setStatus(File::STATUS_COMPLETED);
+        $this->file->setStatus(File::STATUS_COMPLETED);
 
-        $this->backend->updateFile($file);
-
-        return $file;
+        return $this->fileRepository->createCommand(
+            'Xi\Filelib\File\Command\UpdateFileCommand',
+            array($this->file)
+        )->execute();
     }
 
     public function getTopic()
@@ -60,7 +63,7 @@ class AfterUploadFileCommand extends AbstractFileCommand
     {
         return serialize(
             array(
-                'file' => $this->file,
+                'file' => $this->file->getId(),
             )
         );
     }

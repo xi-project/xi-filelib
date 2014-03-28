@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Storage\Filesystem\DirectoryIdCalculator;
 
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 
 /**
  * @group storage

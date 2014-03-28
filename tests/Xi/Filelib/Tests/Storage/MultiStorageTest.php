@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Storage;
 
 use Xi\Filelib\Storage\MultiStorage;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 
 /**
  * @group storage

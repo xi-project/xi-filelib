@@ -59,7 +59,7 @@ class File
     private $folder;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Resource", inversedBy="files")
+     * @ORM\ManyToOne(targetEntity="Resource", inversedBy="files", fetch="EAGER")
      * @ORM\JoinColumn(name="resource_id", referencedColumnName="id", nullable=false)
      **/
     private $resource;

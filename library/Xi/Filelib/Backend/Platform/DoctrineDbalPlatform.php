@@ -10,8 +10,9 @@
 namespace Xi\Filelib\Backend\Platform;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;
 use Doctrine\DBAL\Connection;
@@ -32,7 +33,7 @@ class DoctrineDbalPlatform implements Platform
      * @var array
      */
     private $finderMap = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'id' => 'id',
             'hash' => 'hash',
         ),
@@ -49,7 +50,7 @@ class DoctrineDbalPlatform implements Platform
     );
 
     private $classNameToResources = array(
-        'Xi\Filelib\File\Resource' => array(
+        'Xi\Filelib\Resource\Resource' => array(
             'table' => 'xi_filelib_resource',
             'exporter' => 'exportResources',
             'getEntityName' => 'getResourceEntityName',
@@ -76,6 +77,11 @@ class DoctrineDbalPlatform implements Platform
         if (!$this->isPlatformSupported($this->conn->getDatabasePlatform())) {
             throw new \RuntimeException("Unsupported Doctrine platform");
         }
+    }
+
+    public function isOrigin()
+    {
+        return true;
     }
 
     /**
@@ -344,11 +350,14 @@ class DoctrineDbalPlatform implements Platform
     /**
      * @see Platform::findByIds
      */
-    public function findByIds(array $ids, $className)
+    public function findByIds(FindByIdsRequest $request)
     {
-        if (!$ids) {
-            return new ArrayIterator(array());
+        if ($request->isFulfilled()) {
+            return $request;
         }
+
+        $ids = $request->getNotFoundIds();
+        $className = $request->getClassName();
 
         $resources = $this->classNameToResources[$className];
         $tableName = $resources['table'];
@@ -359,7 +368,7 @@ class DoctrineDbalPlatform implements Platform
         );
         $rows = new ArrayIterator($rows);
 
-        return $this->$resources['exporter']($rows);
+        return $request->foundMany($this->$resources['exporter']($rows));
     }
 
     /**
@@ -395,7 +404,8 @@ class DoctrineDbalPlatform implements Platform
         $ret = new ArrayIterator(array());
         foreach ($iter as $file) {
 
-            $resource = $this->findByIds(array($file['resource_id']), 'Xi\Filelib\File\Resource')->current();
+            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
+            $resource = $this->findByIds($request)->getResult()->current();
 
             $ret->append(
                 File::create(

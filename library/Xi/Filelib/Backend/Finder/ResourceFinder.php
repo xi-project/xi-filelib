@@ -19,5 +19,5 @@ class ResourceFinder extends AbstractFinder
         'hash',
     );
 
-    protected $resultClass = 'Xi\Filelib\File\Resource';
+    protected $resultClass = 'Xi\Filelib\Resource\Resource';
 }
