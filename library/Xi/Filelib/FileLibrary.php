@@ -10,6 +10,7 @@
 namespace Xi\Filelib;
 
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
+use Xi\Filelib\Cache\Adapter\CacheAdapter;
 use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\Command\Commander;
 use Xi\Filelib\File\File;
@@ -343,8 +344,9 @@ class FileLibrary
      * @param Cache $cache
      * @return FileLibrary
      */
-    public function setCache(Cache $cache)
+    public function createCacheFromAdapter(CacheAdapter $adapter)
     {
+        $cache = new Cache($adapter);
         $this->getBackend()->setCache($cache);
         return $this;
     }

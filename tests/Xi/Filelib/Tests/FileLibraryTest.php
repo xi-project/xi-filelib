@@ -295,9 +295,9 @@ class FileLibraryTest extends TestCase
     {
         $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
 
-        $cache = new Cache($this->getMockedCacheAdapter());
+        $adapter = $this->getMockedCacheAdapter();
         $this->assertNull($filelib->getCache());
-        $this->assertSame($filelib, $filelib->setCache($cache));
-        $this->assertSame($cache, $filelib->getCache());
+        $this->assertSame($filelib, $filelib->createCacheFromAdapter($adapter));
+        $this->assertInstanceOf('Xi\Filelib\Cache\Cache', $filelib->getCache());
     }
 }
