@@ -38,7 +38,14 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->tussi = new CommandDefinition('ManateeTussi', ExecutionStrategy::STRATEGY_ASYNCHRONOUS);
+        $this->tussi = new CommandDefinition(
+            'ManateeTussi',
+            ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+            array(
+                ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+                ExecutionStrategy::STRATEGY_SYNCHRONOUS
+            )
+        );
         $this->lussi = new CommandDefinition('ManateeLussi');
 
         $this->client = $this->getMock('Xi\Filelib\Command\CommanderClient');
@@ -67,10 +74,19 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
+     * @group lusso
      */
     public function asyncStrategyIsNotAvailableWhenTheresNoQueue()
     {
-        $definition = new CommandDefinition('Tenhunen\Imaisee\Mehevaa', ExecutionStrategy::STRATEGY_ASYNCHRONOUS);
+        $definition = new CommandDefinition(
+            'Tenhunen\Imaisee\Mehevaa',
+            ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+            array(
+                ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+                ExecutionStrategy::STRATEGY_SYNCHRONOUS
+            )
+        );
+
         $this->setExpectedException('Xi\Filelib\RuntimeException');
         $this->commander->addCommandDefinition($definition);
     }
@@ -82,7 +98,15 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->commander->setQueue($this->queue);
 
-        $definition = new CommandDefinition('Tenhunen\Imaisee\Mehevaa', ExecutionStrategy::STRATEGY_ASYNCHRONOUS);
+        $definition = new CommandDefinition(
+            'Tenhunen\Imaisee\Mehevaa',
+            ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+            array(
+                ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+                ExecutionStrategy::STRATEGY_SYNCHRONOUS
+            )
+        );
+
         $this->commander->addCommandDefinition($definition);
     }
 
@@ -185,7 +209,10 @@ class CommanderTest extends \Xi\Filelib\Tests\TestCase
 
         $definition = new CommandDefinition(
             'Xi\Filelib\Tests\Command\NullCommand',
-            ExecutionStrategy::STRATEGY_ASYNCHRONOUS
+            ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+            array(
+                ExecutionStrategy::STRATEGY_ASYNCHRONOUS
+            )
         );
 
         $this->commander->addCommandDefinition($definition);

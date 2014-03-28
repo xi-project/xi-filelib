@@ -33,7 +33,10 @@ class CommandDefinitionTest extends \Xi\Filelib\Tests\TestCase
      */
     public function invalidStrategyThrowsException()
     {
-        $this->setExpectedException('InvalidArgumentException', "Invalid execution strategy 'consummatore'");
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            "Command does not support execution strategy 'consummatore'"
+        );
 
         $definition = new CommandDefinition(
             'Lussen\Sie\Tussen',

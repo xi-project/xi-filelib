@@ -43,8 +43,10 @@ class CommandDefinition
             ExecutionStrategy::STRATEGY_SYNCHRONOUS,
         )
     ) {
+
         $this->class = $class;
         $this->strategies = $strategies;
+
         $this->setStrategy($strategy);
     }
 
@@ -65,7 +67,7 @@ class CommandDefinition
             $strategy,
             $this->strategies
         )) {
-            throw new \InvalidArgumentException("Invalid execution strategy '{$strategy}'");
+            throw new \InvalidArgumentException("Command does not support execution strategy '{$strategy}'");
         }
 
         $this->strategy = $strategy;
