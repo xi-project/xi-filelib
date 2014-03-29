@@ -10,7 +10,7 @@
 namespace Xi\Filelib\File\Command;
 
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Command\Command;
 use Xi\Filelib\FileLibrary;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -19,9 +19,9 @@ use Xi\Filelib\Storage\Storage;
 abstract class AbstractFileCommand implements Command
 {
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
-    protected $fileOperator;
+    protected $fileRepository;
 
     /**
      * @var EventDispatcherInterface
@@ -40,7 +40,7 @@ abstract class AbstractFileCommand implements Command
 
     public function attachTo(FileLibrary $filelib)
     {
-        $this->fileOperator = $filelib->getFileOperator();
+        $this->fileRepository = $filelib->getFileRepository();
         $this->eventDispatcher = $filelib->getEventDispatcher();
         $this->backend = $filelib->getBackend();
         $this->storage = $filelib->getStorage();

@@ -4,9 +4,10 @@ namespace Xi\Filelib\Tests\Backend\Platform;
 
 use PHPUnit_Framework_TestCase;
 use DateTime;
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;
 
@@ -103,7 +104,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 
         $resource = Resource::create($data);
 
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $this->findResource($resourceId));
+        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $this->findResource($resourceId));
 
         $this->assertTrue($this->backend->deleteResource($resource));
 
@@ -126,7 +127,6 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $resource = Resource::create($data);
 
         $this->assertFalse($this->backend->deleteResource($resource));
-
     }
 
     /**
@@ -141,7 +141,7 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
 
         $resource = $this->findResource($resourceId);
 
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $resource);
+        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $resource);
 
         $this->assertEquals($resourceId, $resource->getId());
         $this->assertNotEquals($versions, $resource->getVersions());
@@ -469,12 +469,22 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
         $ids = $this->backend->findByFinder($finder);
         $this->assertCount($expected, $ids);
 
-        $objs = $this->backend->findByIds($ids, $finder->getResultClass());
+        $request = new FindByIdsRequest($ids, $finder->getResultClass());
+        $objs = $this->backend->findByIds($request)->getResult();
+
         $this->assertCount($expected, $objs);
 
         foreach ($objs as $obj) {
             $this->assertInstanceOf($finder->getResultClass(), $obj);
         }
+    }
+
+    /**
+     * @test
+     */
+    public function mustBeOriginResolver()
+    {
+        $this->assertTrue($this->backend->isOrigin());
     }
 
     /**
@@ -493,9 +503,9 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      */
     public function findResource($id)
     {
-        $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\Resource');
-
-        return $ret->current();
+        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Resource\Resource');
+        $ret = $this->backend->findByIds($request);
+        return $ret->getResult()->current();
     }
 
     /**
@@ -504,9 +514,9 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      */
     public function findFile($id)
     {
-        $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\File\File');
-
-        return $ret->current();
+        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\File\File');
+        $ret = $this->backend->findByIds($request);
+        return $ret->getResult()->current();
     }
 
     /**
@@ -515,8 +525,8 @@ abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
      */
     public function findFolder($id)
     {
-        $ret = $this->backend->findByIds(array($id), 'Xi\Filelib\Folder\Folder');
-
-        return $ret->current();
+        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Folder\Folder');
+        $ret = $this->backend->findByIds($request);
+        return $ret->getResult()->current();
     }
 }

@@ -12,13 +12,14 @@ namespace Xi\Filelib\Publisher;
 use Xi\Filelib\Attacher;
 use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Events as CoreEvents;
+use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\FileIOException;
 
 /**
@@ -28,9 +29,9 @@ use Xi\Filelib\Storage\FileIOException;
 class Publisher implements EventSubscriberInterface, Attacher
 {
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
-    private $fileOperator;
+    private $fileRepository;
 
     /**
      * @var Linker
@@ -48,6 +49,11 @@ class Publisher implements EventSubscriberInterface, Attacher
     private $eventDispatcher;
 
     /**
+     * @var ProfileManager
+     */
+    private $profiles;
+
+    /**
      * @param PublisherAdapter $adapter
      * @param Linker $linker
      */
@@ -62,7 +68,8 @@ class Publisher implements EventSubscriberInterface, Attacher
      */
     public function attachTo(FileLibrary $filelib)
     {
-        $this->fileOperator = $filelib->getFileOperator();
+        $this->fileRepository = $filelib->getFileRepository();
+        $this->profiles = $filelib->getProfileManager();
         $this->eventDispatcher = $filelib->getEventDispatcher();
         $this->eventDispatcher->addSubscriber($this);
         $this->adapter->attachTo($filelib);
@@ -75,7 +82,7 @@ class Publisher implements EventSubscriberInterface, Attacher
      */
     protected function getVersions(File $file)
     {
-        return $this->fileOperator->getProfile($file->getProfile())->getFileVersions($file);
+        return $this->profiles->getProfile($file->getProfile())->getFileVersions($file);
     }
 
     /**
@@ -85,7 +92,7 @@ class Publisher implements EventSubscriberInterface, Attacher
      */
     protected function getVersionProvider(File $file, $version)
     {
-        return $this->fileOperator->getVersionProvider($file, $version);
+        return $this->profiles->getVersionProvider($file, $version);
     }
 
     /**
@@ -125,7 +132,7 @@ class Publisher implements EventSubscriberInterface, Attacher
         }
 
         $data['publisher.published'] = 1;
-        $this->fileOperator->update($file);
+        $this->fileRepository->update($file);
 
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_PUBLISH, $event);
@@ -154,9 +161,7 @@ class Publisher implements EventSubscriberInterface, Attacher
         $data = $file->getData();
         $data['publisher.published'] = 0;
 
-
-
-        $this->fileOperator->update($file);
+        $this->fileRepository->update($file);
 
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);

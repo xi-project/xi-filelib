@@ -3,8 +3,9 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Authorization\AuthorizationPlugin;
+use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
 
 class FileLibraryTest extends TestCase
@@ -143,23 +144,23 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function getFileOperatorShouldWork()
+    public function getFileRepositoryShouldWork()
     {
         $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
-        $fop = $filelib->getFileOperator();
+        $fop = $filelib->getFileRepository();
 
-        $this->assertInstanceOf('Xi\Filelib\File\FileOperator', $fop);
+        $this->assertInstanceOf('Xi\Filelib\File\FileRepository', $fop);
     }
 
     /**
      * @test
      */
-    public function getFolderOperatorShouldWork()
+    public function getFolderRepositoryShouldWork()
     {
         $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
-        $fop = $filelib->getFolderOperator();
+        $fop = $filelib->getFolderRepository();
 
-        $this->assertInstanceOf('Xi\Filelib\Folder\FolderOperator', $fop);
+        $this->assertInstanceOf('Xi\Filelib\Folder\FolderRepository', $fop);
     }
 
     /**
@@ -270,10 +271,10 @@ class FileLibraryTest extends TestCase
      */
     public function uploadShortcutShouldDelegate()
     {
-        $filelib = $this->getMockedFilelib(array('getFileOperator'));
-        $fop = $this->getMockedFileOperator();
+        $filelib = $this->getMockedFilelib(array('getFileRepository'));
+        $fop = $this->getMockedFileRepository();
 
-        $filelib->expects($this->any())->method('getFileOperator')->will($this->returnValue($fop));
+        $filelib->expects($this->any())->method('getFileRepository')->will($this->returnValue($fop));
 
         $folder = $this->getMockedFolder();
 
@@ -287,7 +288,16 @@ class FileLibraryTest extends TestCase
         $this->assertSame('xooxer', $ret);
     }
 
+    /**
+     * @test
+     */
+    public function cacheCanBeSet()
+    {
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
 
-
-
+        $adapter = $this->getMockedCacheAdapter();
+        $this->assertNull($filelib->getCache());
+        $this->assertSame($filelib, $filelib->createCacheFromAdapter($adapter));
+        $this->assertInstanceOf('Xi\Filelib\Cache\Cache', $filelib->getCache());
+    }
 }

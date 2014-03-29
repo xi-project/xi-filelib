@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Folder;
 
 use Xi\Filelib\Command\Commander;
-use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Backend\Finder\FolderFinder;
@@ -11,7 +11,7 @@ use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use ArrayIterator;
 
-class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
+class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -29,7 +29,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
     private $commander;
 
     /**
-     * @var FolderOperator
+     * @var FolderRepository
      */
     private $op;
 
@@ -39,7 +39,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
 
         $this->backend = $this->getMockedBackend();
         $this->filelib = $this->getMockedFilelib(null, null, null, null, null, $this->backend, $this->commander);
-        $this->op = new FolderOperator();
+        $this->op = new FolderRepository();
         $this->op->attachTo($this->filelib);
     }
 
@@ -48,7 +48,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertClassExists('Xi\Filelib\Folder\FolderOperator');
+        $this->assertClassExists('Xi\Filelib\Folder\FolderRepository');
     }
 
     /**
@@ -310,7 +310,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FolderOperator::COMMAND_CREATE
+                FolderRepository::COMMAND_CREATE
             )
             ->will($this->returnValue($command));
 
@@ -386,7 +386,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
     {
         $backend = $this->getMockedBackend();
         $filelib = $this->getMockedFilelib(null, null, null, null, null, $backend);
-        $op = new FolderOperator();
+        $op = new FolderRepository();
         $op->attachTo($filelib);
 
         // $op->expects($this->exactly(4))->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
@@ -437,7 +437,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FolderOperator::COMMAND_CREATE,
+                FolderRepository::COMMAND_CREATE,
                 array(
                     $folder
                 )
@@ -460,7 +460,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FolderOperator::COMMAND_DELETE,
+                FolderRepository::COMMAND_DELETE,
                 array(
                     $folder
                 )
@@ -483,7 +483,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FolderOperator::COMMAND_UPDATE,
+                FolderRepository::COMMAND_UPDATE,
                 array(
                     $folder
                 )
@@ -506,7 +506,7 @@ class FolderOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FolderOperator::COMMAND_CREATE_BY_URL,
+                FolderRepository::COMMAND_CREATE_BY_URL,
                 array(
                     $url
                 )

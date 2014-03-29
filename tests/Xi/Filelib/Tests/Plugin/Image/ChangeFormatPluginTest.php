@@ -27,18 +27,18 @@ class ChangeFormatPluginTest extends TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $fileOperator;
+    private $fileRepository;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->fileOperator = $this
-            ->getMockBuilder('Xi\Filelib\File\FileOperator')
+        $this->fileRepository = $this
+            ->getMockBuilder('Xi\Filelib\File\FileRepository')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $filelib = $this->getMockedFilelib(null, $this->fileOperator);
+        $filelib = $this->getMockedFilelib(null, $this->fileRepository);
         $filelib
             ->expects($this->once())
             ->method('getTempDir')
@@ -154,7 +154,7 @@ class ChangeFormatPluginTest extends TestCase
                        ))
                        ->getMock();
 
-        $filelib = $this->getMockedFilelib(null, $this->fileOperator);
+        $filelib = $this->getMockedFilelib(null, $this->fileRepository);
         $filelib
             ->expects($this->once())
             ->method('getTempDir')

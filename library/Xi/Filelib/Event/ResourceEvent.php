@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Event;
 
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 
 /**
  * Resource event

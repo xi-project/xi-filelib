@@ -12,6 +12,7 @@ namespace Xi\Filelib\File;
 use DateTime;
 use ArrayObject;
 use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Resource\Resource;
 
 class File implements Identifiable
 {
@@ -67,19 +68,16 @@ class File implements Identifiable
     private $status;
 
     /**
-     *
      * @var Resource
      */
     private $resource;
 
     /**
-     *
      * @var string
      */
     private $uuid;
 
     /**
-     *
      * @var ArrayObject
      */
     private $data;

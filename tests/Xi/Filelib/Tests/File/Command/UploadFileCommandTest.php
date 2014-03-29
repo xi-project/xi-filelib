@@ -4,9 +4,9 @@ namespace Xi\Filelib\Tests\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -72,9 +72,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $storage
             ->expects($this->once())
             ->method('store')
-            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
+            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'));
 
-        $op = $this->getMockedFileOperator(array('versioned'));
+        $op = $this->getMockedFileRepository();
+        $pm = $this->getMockedProfileManager(array('versioned'));
 
         $afterUploadCommand = $this->getMockedExecutable();
         $afterUploadCommand
@@ -100,7 +101,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             null,
             $storage,
             $dispatcher,
-            $backend
+            $backend,
+            null,
+            null,
+            $pm
         );
 
         $command->attachTo($filelib);
@@ -124,12 +128,13 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
 
-        $op = $this->getMockedFileOperator(array('lussenhof'));
+        $op = $this->getMockedFileRepository();
         $backend = $this->getMockedBackend();
 
         $profile = $this->getMockedFileProfile();
 
-        $op->expects($this->any())->method('getProfile')
+        $pm = $this->getMockedProfileManager(array('lussenhof'));
+        $pm->expects($this->any())->method('getProfile')
             ->with($this->equalTo('lussenhof'))
             ->will($this->returnValue($profile));
 
@@ -158,14 +163,17 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             null,
             null,
             null,
-            $backend
+            $backend,
+            null,
+            null,
+            $pm
         );
 
         $command = new UploadFileCommand($upload, $folder, $profile);
         $command->attachTo($filelib);
         $ret = $command->getResource($file, $upload);
 
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
+        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $ret);
         $this->assertSame($hash, $ret->getHash());
     }
 
@@ -176,13 +184,14 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
 
-        $op = $this->getMockedFileOperator();
+        $op = $this->getMockedFileRepository();
 
         $backend = $this->getMockedBackend();
 
         $profile = $this->getMockedFileProfile();
 
-        $op->expects($this->any())->method('getProfile')
+        $pm = $this->getMockedProfileManager();
+        $pm->expects($this->any())->method('getProfile')
             ->with($this->equalTo('lussenhof'))
             ->will($this->returnValue($profile));
 
@@ -215,7 +224,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             null,
             null,
             null,
-            $backend
+            $backend,
+            null,
+            null,
+            $pm
         );
 
         $command = new UploadFileCommand($upload, $folder, $profile);
@@ -223,7 +235,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $ret = $command->getResource($file, $upload);
 
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
+        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $ret);
         $this->assertSame($hash, $ret->getHash());
     }
 
@@ -234,11 +246,12 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
 
-        $op = $this->getMockedFileOperator();
+        $op = $this->getMockedFileRepository();
 
         $profile = $this->getMockedFileProfile();
 
-        $op->expects($this->any())->method('getProfile')
+        $pm = $this->getMockedProfileManager();
+        $pm->expects($this->any())->method('getProfile')
            ->with($this->equalTo('lussenhof'))
            ->will($this->returnValue($profile));
 
@@ -273,7 +286,10 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             null,
             null,
             null,
-            $backend
+            $backend,
+            null,
+            null,
+            $pm
         );
 
         $command = new UploadFileCommand($upload, $folder, $profile);
@@ -281,7 +297,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $ret = $command->getResource($file, $upload);
 
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
+        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $ret);
         $this->assertSame('first-id', $ret->getId());
     }
 

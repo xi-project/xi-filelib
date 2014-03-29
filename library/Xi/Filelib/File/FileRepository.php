@@ -9,12 +9,11 @@
 
 namespace Xi\Filelib\File;
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Filelib\Command\CommandDefinition;
-use Xi\Filelib\Command\CommanderClient;
+use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\AbstractOperator;
+use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\File\File;
@@ -26,6 +25,7 @@ use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 use Xi\Filelib\Events;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Profile\FileProfile;
 
 /**
  * File operator
@@ -33,7 +33,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author pekkis
  *
  */
-class FileOperator extends AbstractOperator
+class FileRepository extends AbstractRepository
 {
     const COMMAND_UPLOAD = 'Xi\Filelib\File\Command\UploadFileCommand';
     const COMMAND_AFTERUPLOAD = 'Xi\Filelib\File\Command\AfterUploadFileCommand';
@@ -42,14 +42,9 @@ class FileOperator extends AbstractOperator
     const COMMAND_COPY = 'Xi\Filelib\File\Command\CopyFileCommand';
 
     /**
-     * @var array Profiles
+     * @var FolderRepository
      */
-    private $profiles = array();
-
-    /**
-     * @var FolderOperator
-     */
-    private $folderOperator;
+    private $folderRepository;
 
     /**
      * @var EventDispatcherInterface
@@ -59,7 +54,7 @@ class FileOperator extends AbstractOperator
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->folderOperator = $filelib->getFolderOperator();
+        $this->folderRepository = $filelib->getFolderRepository();
         $this->eventDispatcher = $filelib->getEventDispatcher();
     }
 
@@ -73,7 +68,12 @@ class FileOperator extends AbstractOperator
                 self::COMMAND_UPLOAD
             ),
             new CommandDefinition(
-                self::COMMAND_AFTERUPLOAD
+                self::COMMAND_AFTERUPLOAD,
+                ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+                array(
+                    ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+                    ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
+                )
             ),
             new CommandDefinition(
                 self::COMMAND_UPDATE
@@ -87,64 +87,11 @@ class FileOperator extends AbstractOperator
         );
     }
 
-
-
-    /**
-     * Adds a file profile
-     *
-     * @param  FileProfile              $profile
-     * @return FileLibrary
-     * @throws InvalidArgumentException
-     */
-    public function addProfile(FileProfile $profile)
-    {
-        $profile->setFileOperator($this);
-
-        $identifier = $profile->getIdentifier();
-        if (isset($this->profiles[$identifier])) {
-            throw new InvalidArgumentException("Profile '{$identifier}' already exists");
-        }
-        $this->profiles[$identifier] = $profile;
-
-        $this->eventDispatcher->addSubscriber($profile);
-
-        $event = new FileProfileEvent($profile);
-        $this->eventDispatcher->dispatch(Events::PROFILE_AFTER_ADD, $event);
-
-        return $this;
-    }
-
-    /**
-     * Returns a file profile
-     *
-     * @param  string                   $identifier File profile identifier
-     * @throws InvalidArgumentException
-     * @return FileProfile
-     */
-    public function getProfile($identifier)
-    {
-        if (!isset($this->profiles[$identifier])) {
-            throw new InvalidArgumentException("File profile '{$identifier}' not found");
-        }
-
-        return $this->profiles[$identifier];
-    }
-
-    /**
-     * Returns all file profiles
-     *
-     * @return FileProfile[] Array of file profiles
-     */
-    public function getProfiles()
-    {
-        return $this->profiles;
-    }
-
     /**
      * Updates a file
      *
      * @param  File         $file
-     * @return FileOperator
+     * @return FileRepository
      */
     public function update(File $file)
     {
@@ -217,7 +164,7 @@ class FileOperator extends AbstractOperator
         }
 
         if (!$folder) {
-            $folder = $this->folderOperator->findRoot();
+            $folder = $this->folderRepository->findRoot();
         }
 
         return $this->commander
@@ -248,31 +195,5 @@ class FileOperator extends AbstractOperator
         return $this->commander
             ->createExecutable(self::COMMAND_COPY, array($file, $folder))
             ->execute();
-    }
-
-    /**
-     * Returns whether a file has a certain version
-     *
-     * @param  File    $file    File item
-     * @param  string  $version Version
-     * @return boolean
-     */
-    public function hasVersion(File $file, $version)
-    {
-        $profile = $this->getProfile($file->getProfile());
-        return $profile->fileHasVersion($file, $version);
-    }
-
-    /**
-     * Returns version provider for a file/version
-     *
-     * @param  File            $file    File item
-     * @param  string          $version Version
-     * @return VersionProvider Provider
-     */
-    public function getVersionProvider(File $file, $version)
-    {
-        $profile = $this->getProfile($file->getProfile());
-        return $profile->getVersionProvider($file, $version);
     }
 }

@@ -1,17 +1,19 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Queue;
 
-use Pekkis\Queue\Processor\MessageHandler;
 use Pekkis\Queue\Message;
-use Pekkis\Queue\Processor\Result;
-use Pekkis\Queue\QueueInterface;
+use Pekkis\Queue\Processor\MessageHandler;
 use Xi\Filelib\Command\Command;
-use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileOperator;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\File\Resource;
+use Pekkis\Queue\QueueInterface;
+use Pekkis\Queue\Processor\Result;
 
 class FilelibMessageHandler implements MessageHandler
 {

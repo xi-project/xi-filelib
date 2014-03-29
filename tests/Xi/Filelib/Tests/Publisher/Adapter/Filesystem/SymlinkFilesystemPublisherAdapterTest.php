@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
 
 class SymlinkFilesystemPublisherAdapterTest extends TestCase
@@ -348,7 +348,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         $publisher = $this
             ->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
             ->setMethods(array('getLinkerForFile'))
-            ->setConstructorArgs(array($this->storage, $this->fileOperator, array()))
+            ->setConstructorArgs(array($this->storage, $this->fileRepository, array()))
             ->getMock();
 
         $publisher

@@ -6,7 +6,7 @@ use Xi\Filelib\Authorization\AccessDeniedException;
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../renderer-common.php';
 
-$folder = $filelib->getFolderOperator()->createByUrl('pictures/of/very beaütiful manatees');
+$folder = $filelib->getFolderRepository()->createByUrl('pictures/of/very beaütiful manatees');
 
 try {
     $file = $filelib->upload(__DIR__ . '/../manatees/manatus-12.jpg', $folder);

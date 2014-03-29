@@ -14,7 +14,7 @@ use Xi\Filelib\Command\Commander;
 use Xi\Filelib\Command\CommanderClient;
 use Xi\Filelib\FileLibrary;
 
-abstract class AbstractOperator implements Attacher, CommanderClient
+abstract class AbstractRepository implements Attacher, CommanderClient
 {
     /**
      * @var Commander

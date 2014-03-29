@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Folder\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\Command\CreateByUrlFolderCommand;
 
@@ -119,7 +119,7 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     public function createByUrlShouldExitEarlyIfFolderExists()
     {
         $op = $this
-            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
+            ->getMockBuilder('Xi\Filelib\Folder\FolderRepository')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -150,7 +150,7 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     protected function getMockedOp()
     {
         $op = $this
-            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
+            ->getMockBuilder('Xi\Filelib\Folder\FolderRepository')
             ->disableOriginalConstructor()
             ->setMethods(array('findRoot', 'findByUrl', 'createCommand'))
             ->getMock();
@@ -172,7 +172,7 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $serialized = serialize($command);
         $command2 = unserialize($serialized);
 
-        $this->assertAttributeEquals(null, 'folderOperator', $command2);
+        $this->assertAttributeEquals(null, 'folderRepository', $command2);
         $this->assertAttributeEquals($url, 'url', $command2);
     }
 

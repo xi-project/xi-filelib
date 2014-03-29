@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\File;
+namespace Xi\Filelib\Profile;
 
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
@@ -17,19 +17,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Events;
 
-/**
- * File profile
- *
- * @author pekkis
- *
- */
 class FileProfile implements EventSubscriberInterface
 {
-    /**
-     * @var FileOperator
-     */
-    private $fileOperator;
-
     /**
      * @var array Subscribed events
      */
@@ -55,11 +44,6 @@ class FileProfile implements EventSubscriberInterface
     public function __construct($identifier)
     {
         $this->identifier = $identifier;
-    }
-
-    public function setFileOperator(FileOperator $fileOperator)
-    {
-        $this->fileOperator = $fileOperator;
     }
 
     /**
@@ -89,6 +73,12 @@ class FileProfile implements EventSubscriberInterface
     public function addPlugin(Plugin $plugin)
     {
         $this->plugins[] = $plugin;
+
+        if ($plugin instanceof VersionProvider) {
+            foreach ($plugin->getVersions() as $version) {
+                $this->addFileVersion($version, $plugin);
+            }
+        }
         return $this;
     }
 
@@ -127,6 +117,7 @@ class FileProfile implements EventSubscriberInterface
     {
         $ret = array();
         foreach ($this->fileVersions as $version => $versionProvider) {
+            /** @var VersionProvider $versionProvider */
             if ($versionProvider->providesFor($file)) {
                 $ret[] = $version;
             }

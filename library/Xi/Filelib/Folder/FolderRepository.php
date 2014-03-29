@@ -9,16 +9,16 @@
 
 namespace Xi\Filelib\Folder;
 
-use Xi\Filelib\AbstractOperator;
+use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Command\CommandDefinition;
 use Xi\Filelib\Command\CommanderClient;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
 
-class FolderOperator extends AbstractOperator
+class FolderRepository extends AbstractRepository
 {
     const COMMAND_CREATE = 'Xi\Filelib\Folder\Command\CreateFolderCommand';
     const COMMAND_DELETE = 'Xi\Filelib\Folder\Command\DeleteFolderCommand';

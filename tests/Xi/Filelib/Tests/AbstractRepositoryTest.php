@@ -2,11 +2,11 @@
 
 namespace Xi\Filelib\Tests;
 
-use Xi\Filelib\AbstractOperator;
+use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use Xi\Filelib\FileLibrary;
 
-class AbstractOperatorTest extends TestCase
+class AbstractRepositoryTest extends TestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -14,13 +14,13 @@ class AbstractOperatorTest extends TestCase
     private $commander;
 
     /**
-     * @var AbstractOperator
+     * @var AbstractRepository
      */
     private $operator;
 
     public function setUp()
     {
-        $this->operator = $this->getMockBuilder('Xi\Filelib\AbstractOperator')
+        $this->operator = $this->getMockBuilder('Xi\Filelib\AbstractRepository')
             ->setMethods(array())
             ->getMockForAbstractClass();
 
@@ -41,9 +41,9 @@ class AbstractOperatorTest extends TestCase
      */
     public function classShouldExist()
     {
-        $this->assertClassExists('Xi\Filelib\AbstractOperator');
-        $this->assertImplements('Xi\Filelib\Attacher', 'Xi\Filelib\AbstractOperator');
-        $this->assertImplements('Xi\Filelib\Command\CommanderClient', 'Xi\Filelib\AbstractOperator');
+        $this->assertClassExists('Xi\Filelib\AbstractRepository');
+        $this->assertImplements('Xi\Filelib\Attacher', 'Xi\Filelib\AbstractRepository');
+        $this->assertImplements('Xi\Filelib\Command\CommanderClient', 'Xi\Filelib\AbstractRepository');
     }
 
     /**

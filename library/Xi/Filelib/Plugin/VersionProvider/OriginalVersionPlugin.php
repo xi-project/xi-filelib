@@ -26,7 +26,7 @@ class OriginalVersionPlugin extends AbstractVersionProvider
         $identifier
     ) {
         parent::__construct(
-            $identifier,
+            $identifier = 'original',
             function (File $file) {
                 return true;
             }
@@ -47,7 +47,7 @@ class OriginalVersionPlugin extends AbstractVersionProvider
      */
     public function createTemporaryVersions(File $file)
     {
-        $retrieved = $this->getStorage()->retrieve($file->getResource());
+        $retrieved = $this->storage->retrieve($file->getResource());
         $tmp = $this->tempDir . '/' . uniqid('', true);
 
         copy($retrieved, $tmp);

@@ -3,7 +3,7 @@
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 
 require_once __DIR__ . '/../bootstrap.php';
@@ -45,12 +45,12 @@ for ($x = 1; $x <= 10; $x++) {
     foreach ($diterator as $file) {
         if ($file->isFile()) {
 
-            $filelib->getFileOperator()->setExecutionStrategy(
-                FileOperator::COMMAND_AFTERUPLOAD,
+            $filelib->getFileRepository()->setExecutionStrategy(
+                FileRepository::COMMAND_AFTERUPLOAD,
                 ExecutionStrategy::STRATEGY_ASYNCHRONOUS
             );
 
-            $filelib->getFileOperator()->upload($file->getRealPath());
+            $filelib->getFileRepository()->upload($file->getRealPath());
 
             $uploaders[] = $file->getRealPath();
         }

@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\File;
 
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use DateTime;
 use ArrayObject;
 
@@ -14,7 +14,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\File\Resource'));
+        $this->assertTrue(class_exists('Xi\Filelib\Resource\Resource'));
     }
 
     /**
@@ -162,7 +162,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function createShouldCreateNewInstance()
     {
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', Resource::create(array()));
+        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', Resource::create(array()));
     }
 
     /**

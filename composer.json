@@ -19,22 +19,20 @@
         }
     ],
 
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "http://packages.zendframework.com/"
-        }
-    ],
-
     "require": {
         "php": ">=5.3.10",
         "symfony/event-dispatcher": ">=2.0.14",
         "dflydev/apache-mime-types": "1.0.*",
         "rhumsaa/uuid": "2.3.*",
-        "pekkis/queue": "0.4.*"
+        "pekkis/queue": "0.4.*",
+        "cocur/slugify": "v0.5",
+        "xi/transliterator": "0.5.*"
     },
 
     "require-dev": {
+        "phpunit/phpunit": "4.0.*",
+        "phpunit/phpunit-mock-objects": "2.0.*",
+        "phpunit/dbunit": "1.3.*",
         "doctrine/orm": ">=2.3.0",
         "doctrine/dbal": ">=2.3.0",
         "doctrine/common": ">=2.3.0",
@@ -42,13 +40,20 @@
         "symfony/http-kernel": ">=2.2.0",
         "symfony/security": ">=2.2.0",
         "symfony/console": ">=2.2.0",
+        "symfony/stopwatch": ">=2.2.0",
         "videlalvaro/php-amqplib": "2.2.*",
-        "zendframework/zend-filter": "2.2.*",
-        "zendframework/zend-i18n": "2.2.*",
         "zencoder/zencoder-php": "2.1.x",
-        "xi/transliterator": "dev-master@dev",
         "knplabs/gaufrette": "0.1.*",
         "aws/aws-sdk-php": "2.5.*"
+    },
+
+    "suggest": {
+        "videlalvaro/php-amqplib": "Pure PHP library for RabbitMQ support",
+        "iron-io/iron_mq": "For IronMQ support",
+        "zencoder/zencoder-php": "For Zencoder support",
+        "aws/aws-sdk-php": "For Zencoder and AWS support",
+        "doctrine/orm": "For Doctrine ORM support",
+        "knplabs/gaufrette": "For Gaufrette support"
     },
 
     "autoload": {

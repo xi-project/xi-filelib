@@ -127,7 +127,7 @@ class WatermarkCommandTest extends TestCase
                         ->setMethods(array('destroy', 'clear'))
                         ->getMock();
 
-        $watermark->expects($this->once())->method('destroy');
+        $watermark->expects($this->once())->method('clear');
 
         $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
                         ->setMethods(array('createImagick'))

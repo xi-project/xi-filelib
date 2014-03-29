@@ -52,7 +52,7 @@ class AcceleratedRendererTest extends RendererTest
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('hasVersion')
             ->with($file, 'xooxer')
@@ -67,7 +67,7 @@ class AcceleratedRendererTest extends RendererTest
         $vp = $this->getMockedVersionProvider('xooxer');
         $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue($sharedVersions));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('getVersionProvider')
             ->with($file, 'xooxer')
@@ -143,7 +143,7 @@ class AcceleratedRendererTest extends RendererTest
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('hasVersion')
             ->with($file, 'xooxer')
@@ -158,7 +158,7 @@ class AcceleratedRendererTest extends RendererTest
         $vp = $this->getMockedVersionProvider('xooxer');
         $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue(true));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('getVersionProvider')
             ->with($file, 'xooxer')

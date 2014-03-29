@@ -16,7 +16,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
     protected $version;
 
-    protected $fileOperator;
+    protected $fileRepository;
 
     protected $filelib;
 

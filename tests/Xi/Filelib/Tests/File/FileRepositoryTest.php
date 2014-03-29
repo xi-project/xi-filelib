@@ -9,18 +9,17 @@
 
 namespace Xi\Filelib\Tests\File;
 
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
-use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
-use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 
-class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
+class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -48,7 +47,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
     private $commander;
 
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
     private $op;
 
@@ -57,11 +56,11 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
         $this->commander = $this->getMockedCommander();
         $this->backend = $this->getMockedBackend();
         $this->ed = $this->getMockedEventDispatcher();
-        $this->foop = $this->getMockedFolderOperator();
+        $this->foop = $this->getMockedFolderRepository();
 
         $this->filelib = $this->getMockedFilelib(null, null, $this->foop, null, $this->ed, $this->backend, $this->commander);
 
-        $this->op = new FileOperator();
+        $this->op = new FileRepository();
         $this->op->attachTo($this->filelib);
 
     }
@@ -71,7 +70,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertClassExists('Xi\Filelib\File\FileOperator');
+        $this->assertClassExists('Xi\Filelib\File\FileRepository');
     }
 
     public function provideUploads()
@@ -96,7 +95,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FileOperator::COMMAND_UPLOAD,
+                FileRepository::COMMAND_UPLOAD,
                 $this->isType('array')
             )
             ->will($this->returnValue($command));
@@ -120,7 +119,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FileOperator::COMMAND_UPLOAD,
+                FileRepository::COMMAND_UPLOAD,
                 $this->isType('array')
             )
             ->will($this->returnValue($command));
@@ -133,61 +132,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
     }
 
 
-    /**
-     * @test
-     */
-    public function addProfileShouldAddProfile()
-    {
-        $this->assertEquals(array(), $this->op->getProfiles());
-
-        $profile = $this->getMockedFileProfile('xooxer');
-
-        $profile2 = $this->getMockedFileProfile('lusser');
-
-        $this->ed
-            ->expects($this->exactly(2))
-            ->method('addSubscriber')
-            ->with($this->isInstanceOf('Xi\Filelib\File\FileProfile'));
-
-        $this->ed
-            ->expects($this->exactly(2))
-            ->method('dispatch')
-            ->with(
-                $this->equalTo(Events::PROFILE_AFTER_ADD),
-                $this->isInstanceOf('Xi\Filelib\Event\FileProfileEvent')
-            );
-
-        $this->op->addProfile($profile);
-        $this->assertCount(1, $this->op->getProfiles());
-
-        $this->op->addProfile($profile2);
-        $this->assertCount(2, $this->op->getProfiles());
-
-        $this->assertSame($profile, $this->op->getProfile('xooxer'));
-        $this->assertSame($profile2, $this->op->getProfile('lusser'));
-    }
-
-    /**
-     * @test
-     */
-    public function addProfileShouldFailWhenProfileAlreadyExists()
-    {
-        $profile = new FileProfile('xooxer');
-        $profile2 = new FileProfile('xooxer');
-
-        $this->op->addProfile($profile);
-        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
-        $this->op->addProfile($profile2);
-    }
-
-    /**
-     * @test
-     */
-    public function getProfileShouldFailWhenProfileDoesNotExist()
-    {
-        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
-        $prof = $this->op->getProfile('xooxer');
-    }
 
     /**
      * @test
@@ -325,52 +269,6 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function hasVersionShouldDelegateToProfile()
-    {
-        $file = File::create(array('profile' => 'meisterlus'));
-
-        $profile = $this->getMockedFileProfile('meisterlus');
-        $profile
-            ->expects($this->once())
-            ->method('fileHasVersion')
-            ->with(
-                $file,
-                'kloo'
-            )
-            ->will($this->returnValue(true));
-
-        $this->op->addProfile($profile);
-        $hasVersion = $this->op->hasVersion($file, 'kloo');
-        $this->assertTrue($hasVersion);
-    }
-
-    /**
-     * @test
-     */
-    public function getVersionProviderShouldDelegateToProfile()
-    {
-        $vp = $this->getMockedVersionProvider('lux');
-        $file = File::create(array('profile' => 'meisterlus'));
-
-        $profile = $this->getMockedFileProfile('meisterlus');
-        $profile
-            ->expects($this->once())
-            ->method('getVersionProvider')
-            ->with(
-                $file,
-                'kloo'
-            )
-            ->will($this->returnValue($vp));
-
-        $this->op->addProfile($profile);
-        $ret = $this->op->getVersionProvider($file, 'kloo');
-
-        $this->assertSame($vp, $ret);
-    }
-
-    /**
-     * @test
-     */
     public function updateCreatesExecutableAndExecutes()
     {
         $file = File::create();
@@ -380,7 +278,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FileOperator::COMMAND_UPDATE,
+                FileRepository::COMMAND_UPDATE,
                 array(
                     $file
                 )
@@ -404,7 +302,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FileOperator::COMMAND_COPY,
+                FileRepository::COMMAND_COPY,
                 array(
                     $file,
                     $folder
@@ -427,7 +325,7 @@ class FileOperatorTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('createExecutable')
             ->with(
-                FileOperator::COMMAND_DELETE,
+                FileRepository::COMMAND_DELETE,
                 array(
                     $file
                 )

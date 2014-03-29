@@ -10,13 +10,18 @@
 namespace Xi\Filelib;
 
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
+use Xi\Filelib\Cache\Adapter\CacheAdapter;
+use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\Command\Commander;
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Plugin\Plugin;
-use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Profile\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Filelib\Event\PluginEvent;
@@ -24,6 +29,7 @@ use Xi\Filelib\Backend\Platform\Platform;
 use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
 use Pekkis\Queue\Queue;
 use Xi\Filelib\Command\CommandDataSerializer;
+use Xi\Filelib\Profile\ProfileManager;
 
 /**
  * File library
@@ -50,14 +56,14 @@ class FileLibrary
     private $storage;
 
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
-    private $fileOperator;
+    private $fileRepository;
 
     /**
-     * @var FolderOperator
+     * @var FolderRepository
      */
-    private $folderOperator;
+    private $folderRepository;
 
     /**
      * @var string
@@ -84,6 +90,11 @@ class FileLibrary
      */
     private $commander;
 
+    /**
+     * @var ProfileManager
+     */
+    private $profileManager;
+
     public function __construct(
         Storage $storage,
         Platform $platform,
@@ -101,6 +112,7 @@ class FileLibrary
         $this->storage = $storage;
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
+        $this->profileManager = new ProfileManager($this->eventDispatcher);
         $this->commander = $commander;
 
         $this->backend = new Backend(
@@ -117,6 +129,14 @@ class FileLibrary
     public function getEventDispatcher()
     {
         return $this->eventDispatcher;
+    }
+
+    /**
+     * @return ProfileManager
+     */
+    public function getProfileManager()
+    {
+        return $this->profileManager;
     }
 
     /**
@@ -155,30 +175,30 @@ class FileLibrary
     /**
      * Returns file operator
      *
-     * @return FileOperator
+     * @return FileRepository
      */
-    public function getFileOperator()
+    public function getFileRepository()
     {
-        if (!$this->fileOperator) {
-            $this->fileOperator = new FileOperator();
-            $this->fileOperator->attachTo($this);
+        if (!$this->fileRepository) {
+            $this->fileRepository = new FileRepository();
+            $this->fileRepository->attachTo($this);
         }
-        return $this->fileOperator;
+        return $this->fileRepository;
     }
 
     /**
      * Returns folder operator
      *
-     * @return FolderOperator
+     * @return FolderRepository
      */
-    public function getFolderOperator()
+    public function getFolderRepository()
     {
-        if (!$this->folderOperator) {
-            $this->folderOperator = new FolderOperator();
-            $this->folderOperator->attachTo($this);
+        if (!$this->folderRepository) {
+            $this->folderRepository = new FolderRepository();
+            $this->folderRepository->attachTo($this);
         }
 
-        return $this->folderOperator;
+        return $this->folderRepository;
     }
 
     /**
@@ -208,7 +228,7 @@ class FileLibrary
      */
     public function addProfile(FileProfile $profile)
     {
-        $this->getFileOperator()->addProfile($profile);
+        $this->getProfileManager()->addProfile($profile);
     }
 
     /**
@@ -218,7 +238,7 @@ class FileLibrary
      */
     public function getProfiles()
     {
-        return $this->getFileOperator()->getProfiles();
+        return $this->getProfileManager()->getProfiles();
     }
 
     /**
@@ -227,7 +247,7 @@ class FileLibrary
      */
     public function getProfile($identifier)
     {
-        return $this->getFileOperator()->getProfile($identifier);
+        return $this->getProfileManager()->getProfile($identifier);
     }
 
     /**
@@ -309,8 +329,33 @@ class FileLibrary
         return $this->commander;
     }
 
+    /**
+     * @param string|FileUpload $file
+     * @param Folder $folder
+     * @param string $profile
+     * @return File
+     */
     public function upload($file, $folder = null, $profile = 'default')
     {
-        return $this->getFileOperator()->upload($file, $folder, $profile);
+        return $this->getFileRepository()->upload($file, $folder, $profile);
+    }
+
+    /**
+     * @param Cache $cache
+     * @return FileLibrary
+     */
+    public function createCacheFromAdapter(CacheAdapter $adapter)
+    {
+        $cache = new Cache($adapter);
+        $this->getBackend()->setCache($cache);
+        return $this;
+    }
+
+    /**
+     * @return Cache
+     */
+    public function getCache()
+    {
+        return $this->getBackend()->getCache();
     }
 }

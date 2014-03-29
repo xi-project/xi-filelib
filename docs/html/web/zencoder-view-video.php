@@ -3,7 +3,7 @@
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Command\Command;
 use Xi\Filelib\File\File;
 
@@ -14,7 +14,7 @@ require_once __DIR__ . '/../zencoder-common.php';
 
 $id = $_GET['id'];
 
-$file = $filelib->getFileOperator()->find($id);
+$file = $filelib->getFileRepository()->find($id);
 
 if ($file->getStatus() == File::STATUS_COMPLETED) {
     if (!$publisher->isPublished($file)) {

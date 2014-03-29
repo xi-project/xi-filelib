@@ -4,9 +4,9 @@ namespace Xi\Filelib\Tests\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\CopyFileCommand;
 use Xi\Filelib\Events;
@@ -20,9 +20,9 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
+        $this->op = $this->getMockBuilder('Xi\Filelib\File\FileRepository')
                     ->disableOriginalConstructor()
-                    ->setMethods(array('getFolderOperator', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
+                    ->setMethods(array('getFolderRepository', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
                     ->getMock();
         $this->folder = $this->getMock('Xi\Filelib\Folder\Folder');
     }
@@ -182,13 +182,13 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         if ($exclusiveResource) {
 
             $storage->expects($this->once())->method('retrieve')
-                     ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                     ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
                      ->will($this->returnValue('xooxoo'));
             $storage->expects($this->once())->method('store')
-                    ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->equalTo('xooxoo'));
+                    ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'), $this->equalTo('xooxoo'));
 
             $backend->expects($this->once())->method('createResource')
-                    ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                    ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
                     ->will($this->returnArgument(0));
         } else {
             $storage->expects($this->never())->method('retrieve');
