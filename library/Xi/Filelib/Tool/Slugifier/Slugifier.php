@@ -8,20 +8,47 @@
  */
 
 namespace Xi\Filelib\Tool\Slugifier;
+use Xi\Filelib\Tool\Slugifier\Adapter\CocurSlugifierAdapter;
+use Xi\Filelib\Tool\Slugifier\Adapter\SlugifierAdapter;
 
 /**
  * Slugifier interface
  */
-interface Slugifier
+class Slugifier
 {
+    /**
+     * @var SlugifierAdapter
+     */
+    private $adapter;
 
     /**
-     * Slugifies a path
-     *
-     * @param  string $path
+     * @param SlugifierAdapter $adapter
+     */
+    public function __construct(SlugifierAdapter $adapter = null)
+    {
+        if (!$adapter) {
+            $adapter = new CocurSlugifierAdapter();
+        }
+
+        $this->adapter = $adapter;
+    }
+
+    /**
+     * @param string $path
      * @return string
      */
-    public function slugifyPath($path);
+    public function slugifyPath($path)
+    {
+        $path = explode('/', $path);
+
+        $ret = array();
+        foreach ($path as $fragment) {
+            $ret[] = $this->slugify($fragment);
+        }
+
+        return implode('/', $ret);
+
+    }
 
     /**
      * Slugifies a word
@@ -29,5 +56,8 @@ interface Slugifier
      * @param  string $unslugged
      * @return string
      */
-    public function slugify($unslugged);
+    public function slugify($unslugged)
+    {
+        return $this->adapter->slugify($unslugged);
+    }
 }

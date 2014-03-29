@@ -3,9 +3,7 @@
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
 use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
-use Xi\Filelib\Tool\Slugifier\ZendSlugifier;
-use Xi\Transliterator\IntlTransliterator;
-
+use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Folder\Folder;
@@ -15,7 +13,7 @@ require_once __DIR__ . '/../bootstrap.php';
 $publisher = new Publisher(
     new SymlinkFilesystemPublisherAdapter(__DIR__ . '/files', '600', '700', 'files'),
     new BeautifurlLinker(
-        new ZendSlugifier(new IntlTransliterator())
+        new Slugifier()
     )
 );
 $publisher->attachTo($filelib);

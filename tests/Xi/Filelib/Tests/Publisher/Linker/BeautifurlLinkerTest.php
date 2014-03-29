@@ -14,8 +14,10 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
 
+use Xi\Filelib\Tool\Slugifier\Adapter\CocurSlugifierAdapter;
+use Xi\Filelib\Tool\Slugifier\Adapter\PreTransliterator;
 use Xi\Transliterator\StupidTransliterator;
-use Xi\Filelib\Tool\Slugifier\ZendSlugifier;
+use Xi\Filelib\Tool\Slugifier\Slugifier;
 
 /**
  * @group linker
@@ -28,14 +30,6 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        if (!class_exists('Zend\Filter\FilterChain')) {
-            $this->markTestSkipped('Zend Framework 2 filters not loadable');
-        }
-
-        if (!extension_loaded('intl')) {
-            $this->markTestSkipped('Intl extension must be loaded');
-        }
-
         $foop = $this->getMockedFolderRepository();
         $foop->expects($this->any())
              ->method('find')
@@ -87,8 +81,9 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
              }));
 
         $this->filelib = $this->getMockedFilelib(null, null, $foop);
-        $this->slugifier = new ZendSlugifier(new StupidTransliterator());
-
+        $this->slugifier = new Slugifier(
+            new PreTransliterator(new StupidTransliterator(), new CocurSlugifierAdapter())
+        );
     }
 
     public function provideFiles()
