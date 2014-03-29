@@ -8,6 +8,21 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 * Data is backwards compatible
 * All things operator related renamed to repository. getFileOperator() -> getFileRepository() in your code.
 * Profiles moved to profile manager
+* ZendSlugifier is gone. If you use beautifurls, use the following replacement slugifier to get
+  100% backwards compatibility.:
+
+```php
+use Xi\Filelib\Tool\Slugifier\Slugifier;
+use Xi\Filelib\Tool\Slugifier\Adapter\PreTransliterator;
+use Xi\Filelib\Tool\Slugifier\Adapter\CocurSlugifierAdapter;
+use Xi\Transliterator\IntlTransliterator;
+
+$slugifier = new Slugifier(new PreTransliterator(new IntlTransliterator(), new CocurSlugifierAdapter()));
+
+// This may just be enough, at least if you republish all files.
+$slugifier = new Slugifier();
+
+```
 
 ## From version 0.9.x to version 0.10.x
 
@@ -26,22 +41,22 @@ was changed. When I do an actual migration for an actual client code, I will wri
 
 ### PostgreSQL
 
-ALTER TABLE xi_filelib_resource RENAME COLUMN versions TO data;
-ALTER TABLE xi_filelib_file RENAME COLUMN versions TO data;
-ALTER TABLE xi_filelib_file DROP COLUMN filelink;
+    ALTER TABLE xi_filelib_resource RENAME COLUMN versions TO data;
+    ALTER TABLE xi_filelib_file RENAME COLUMN versions TO data;
+    ALTER TABLE xi_filelib_file DROP COLUMN filelink;
 
 ### MySQL
 
-ALTER TABLE xi_filelib_resource CHANGE versions data longtext NOT NULL;
-ALTER TABLE xi_filelib_file CHANGE versions data longtext NOT NULL;
-ALTER TABLE xi_filelib_file DROP COLUMN filelink;
+    ALTER TABLE xi_filelib_resource CHANGE versions data longtext NOT NULL;
+    ALTER TABLE xi_filelib_file CHANGE versions data longtext NOT NULL;
+    ALTER TABLE xi_filelib_file DROP COLUMN filelink;
 
 ### MongoDB
 
-db.files.update( { }, { $rename : { "versions" : "data" } }, false, true );
-db.resources.update( { }, { $rename : { "versions" : "data" } }, false, true );
+    db.files.update( { }, { $rename : { "versions" : "data" } }, false, true );
+    db.resources.update( { }, { $rename : { "versions" : "data" } }, false, true );
 
-db.files.update( { }, { $unset: { link: "" } }, { multi: true });
+    db.files.update( { }, { $unset: { link: "" } }, { multi: true });
 
 ## From version 0.6.x to version 0.7.x
 
