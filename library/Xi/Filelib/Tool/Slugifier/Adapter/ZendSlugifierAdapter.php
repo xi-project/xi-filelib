@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tool\Slugifier;
+namespace Xi\Filelib\Tool\Slugifier\Adapter;
 
 use Zend\Filter\FilterChain;
 use Zend\I18n\Filter\Alnum as AlnumFilter;
@@ -18,8 +18,10 @@ use Xi\Transliterator\Transliterator;
 
 /**
  * Zend Framework 2 slugifier
+ *
+ * @deprecated
  */
-class ZendSlugifier implements Slugifier
+class ZendSlugifierAdapter implements SlugifierAdapter
 {
     private $filter;
 
@@ -28,26 +30,9 @@ class ZendSlugifier implements Slugifier
      */
     private $transliterator;
 
-    public function __construct(Transliterator $transliterator)
+    public function __construct()
     {
-        $this->transliterator = $transliterator;
-    }
-
-    /**
-     * @param string $path
-     * @return string
-     */
-    public function slugifyPath($path)
-    {
-        $path = explode('/', $path);
-
-        $ret = array();
-        foreach ($path as $fragment) {
-            $ret[] = $this->slugify($fragment);
-        }
-
-        return implode('/', $ret);
-
+        // $this->inner = new PreTransliterator($transliterator, $this);
     }
 
     /**
@@ -56,9 +41,8 @@ class ZendSlugifier implements Slugifier
      */
     public function slugify($unslugged)
     {
-        $slugged = $this->transliterator->transliterate($unslugged);
-        $slugged = $this->getFilter()->filter($slugged);
-
+        // $slugged = $this->transliterator->transliterate($unslugged);
+        $slugged = $this->getFilter()->filter($unslugged);
         return $slugged;
     }
 

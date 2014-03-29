@@ -16,9 +16,6 @@ services:
 before_script:
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE xi_filelib_test;' -U postgres; psql xi_filelib_test -f docs/schema-postgresql.sql; fi"
   - curl -s http://getcomposer.org/installer | php && php composer.phar install --dev
-  - pyrus channel-discover pear.symfony.com
-  - pyrus install -o pear.phpunit.de/PHPUnit
-  - pyrus install -o pear.phpunit.de/DbUnit
   - phpenv rehash
   - wget http://pecl.php.net/get/mongo-1.4.5.tgz
   - tar -xzf mongo-1.4.5.tgz
@@ -43,7 +40,7 @@ before_script:
   - sh -c "cd memcached-2.2.0RC1 && phpize && ./configure && make && sudo make install"
   - echo "extension=memcached.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
-script: cd tests && phpunit -v --configuration travis/$DB.travis.xml
+script: cd tests && ../vendor/bin/phpunit -v --configuration travis/$DB.travis.xml
 
 notifications:
   irc: "irc.freenode.net#xi-project"
