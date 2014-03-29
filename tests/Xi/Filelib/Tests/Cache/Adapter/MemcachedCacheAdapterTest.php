@@ -18,7 +18,7 @@ class MemcachedCacheAdapterTest extends TestCase
     private $memcached;
 
     /**
-     * @var MemcachedCache
+     * @var MemcachedCacheAdapter
      */
     private $cache;
 

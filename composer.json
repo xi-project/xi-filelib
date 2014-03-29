@@ -19,13 +19,6 @@
         }
     ],
 
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "http://packages.zendframework.com/"
-        }
-    ],
-
     "require": {
         "php": ">=5.3.10",
         "symfony/event-dispatcher": ">=2.0.14",
@@ -49,8 +42,6 @@
         "symfony/console": ">=2.2.0",
         "symfony/stopwatch": ">=2.2.0",
         "videlalvaro/php-amqplib": "2.2.*",
-        "zendframework/zend-filter": "2.2.*",
-        "zendframework/zend-i18n": "2.2.*",
         "zencoder/zencoder-php": "2.1.x",
         "knplabs/gaufrette": "0.1.*",
         "aws/aws-sdk-php": "2.5.*"
