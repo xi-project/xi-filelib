@@ -48,7 +48,7 @@ class AcceleratedRendererTest extends RendererTest
         $file = File::create(array('resource' => $resource, 'name' => 'lussuti.pdf'));
 
         $this->ed
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
@@ -139,7 +139,7 @@ class AcceleratedRendererTest extends RendererTest
             ->will($this->returnValue($serverSignature));
 
         $this->ed
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 

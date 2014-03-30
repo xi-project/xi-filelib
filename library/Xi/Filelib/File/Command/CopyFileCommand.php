@@ -105,7 +105,7 @@ class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
 
             $retrieved = $this->storage->retrieve($oldResource);
 
-            $resource = new Resource();
+            $resource = Resource::create();
             $resource->setDateCreated(new DateTime());
             $resource->setHash($oldResource->getHash());
             $resource->setSize($oldResource->getSize());

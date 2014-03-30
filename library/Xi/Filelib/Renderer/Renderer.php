@@ -100,6 +100,9 @@ class Renderer
         $response->setHeader('Content-Type', $retrieved->getMimetype());
 
         $this->injectContentToResponse($retrieved, $response);
+
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::RENDERER_RENDER, $event);
         return $this->adapter->returnResponse($response);
     }
 

@@ -22,7 +22,7 @@ class FileEventTest extends \Xi\Filelib\Tests\TestCase
      */
     public function eventShouldInitializeCorrectly()
     {
-        $file = $this->getMock('Xi\Filelib\File\File');
+        $file = $this->getMockedFile();
 
         $event = new FileEvent($file);
 

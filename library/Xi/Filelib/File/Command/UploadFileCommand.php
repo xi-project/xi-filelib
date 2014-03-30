@@ -26,6 +26,7 @@ use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Queue\UuidReceiver;
+use Xi\Filelib\Resource\ResourceRepository;
 
 class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
 {
@@ -57,6 +58,11 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
      */
     protected $uuid = null;
 
+    /**
+     * @var ResourceRepository
+     */
+    protected $resourceRepository;
+
     public function __construct(FileUpload $upload, Folder $folder, $profile = 'default')
     {
         $this->upload = $upload;
@@ -68,6 +74,7 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
     {
         parent::attachTo($filelib);
         $this->profiles = $filelib->getProfileManager();
+        $this->resourceRepository = $filelib->getResourceRepository();
     }
 
     /**
@@ -81,56 +88,6 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
     public function setUuid($uuid)
     {
         $this->uuid = $uuid;
-    }
-
-    /**
-     * @param  File       $file
-     * @param  FileUpload $upload
-     * @return Resource
-     * @todo This method (isSharedResource() particularly) has the smell of code.
-     */
-    public function getResource(File $file, FileUpload $upload)
-    {
-        $file = clone $file;
-
-
-        $hash = sha1_file($upload->getRealPath());
-        $profileObj = $this->profiles->getProfile($this->profile);
-
-        $finder = new ResourceFinder(array('hash' => $hash));
-        $resources = $this->backend->findByFinder($finder);
-
-        if ($resources) {
-            foreach ($resources as $resource) {
-                if (!$resource->isExclusive()) {
-                    $file->setResource($resource);
-                    if (!$profileObj->isSharedResourceAllowed($file)) {
-                        $file->unsetResource();
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (!$file->getResource()) {
-
-            $resource = new Resource();
-            $resource->setDateCreated(new DateTime());
-            $resource->setHash($hash);
-            $resource->setSize($upload->getSize());
-            $resource->setMimetype($upload->getMimeType());
-            $resource->setVersions(array());
-
-            $this->backend->createResource($resource);
-            $file->setResource($resource);
-
-            if (!$profileObj->isSharedResourceAllowed($file)) {
-                $resource->setExclusive(true);
-            }
-
-        }
-
-        return $file->getResource();
     }
 
     public function execute()
@@ -162,11 +119,10 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
         // @todo: actual statuses
         $file->setStatus(File::STATUS_RAW);
 
-        $resource = $this->getResource($file, $upload);
-
+        $resource = $this->resourceRepository->findResourceForUpload($file, $upload);
         $file->setResource($resource);
+
         $this->backend->createFile($file, $folder);
-        $this->storage->store($resource, $upload->getRealPath());
 
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_CREATE, $event);

@@ -28,16 +28,6 @@ interface CacheAdapter
     public function findByIds(array $ids, $className);
 
     /**
-     * @param Identifiable[] $identifiables
-     */
-    public function saveMany($identifiables);
-
-    /**
-     * @param Identifiable[] $identifiables
-     */
-    public function deleteMany($identifiables);
-
-    /**
      * @param Identifiable $identifiable
      */
     public function save(Identifiable $identifiable);

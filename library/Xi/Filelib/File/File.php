@@ -82,6 +82,9 @@ class File implements Identifiable
      */
     private $data;
 
+    private function __construct()
+    { }
+
     /**
      * Sets id
      *

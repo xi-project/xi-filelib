@@ -15,20 +15,15 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\FilelibException;
-use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use ArrayIterator;
-use Xi\Filelib\Events;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Filelib\Profile\FileProfile;
 
 /**
- * File operator
+ * File repository
  *
  * @author pekkis
  *

@@ -18,6 +18,7 @@ use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\Resource\ResourceRepository;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Plugin\Plugin;
@@ -54,6 +55,11 @@ class FileLibrary
      * @var Storage
      */
     private $storage;
+
+    /**
+     * @var ResourceRepository
+     */
+    private $resourceRepository;
 
     /**
      * @var FileRepository
@@ -171,9 +177,23 @@ class FileLibrary
         return $this->tempDir;
     }
 
+    /**
+     * Returns resource repository
+     *
+     * @return ResourceRepository
+     */
+    public function getResourceRepository()
+    {
+        if (!$this->resourceRepository) {
+            $this->resourceRepository = new ResourceRepository();
+            $this->resourceRepository->attachTo($this);
+        }
+        return $this->resourceRepository;
+    }
+
 
     /**
-     * Returns file operator
+     * Returns file repository
      *
      * @return FileRepository
      */
@@ -187,7 +207,7 @@ class FileLibrary
     }
 
     /**
-     * Returns folder operator
+     * Returns folder repository
      *
      * @return FolderRepository
      */

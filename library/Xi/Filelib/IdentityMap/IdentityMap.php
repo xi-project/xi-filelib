@@ -53,6 +53,8 @@ class IdentityMap implements EventSubscriberInterface, FindByIdsRequestResolver
             Events::FILE_AFTER_DELETE => 'onDelete',
             Events::FOLDER_AFTER_DELETE => 'onDelete',
             Events::FOLDER_AFTER_CREATE => 'onCreate',
+            Events::RESOURCE_AFTER_CREATE => 'onCreate',
+            Events::RESOURCE_AFTER_DELETE => 'onDelete'
         );
     }
 

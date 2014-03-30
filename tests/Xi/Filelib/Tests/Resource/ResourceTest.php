@@ -22,7 +22,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function gettersAndSettersShouldWorkAsExpected()
     {
-        $resource = new Resource();
+        $resource = Resource::create();
 
         $val = 666;
         $this->assertNull($resource->getId());
@@ -90,7 +90,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function fromArrayShouldWorkAsExpected($data)
     {
-        $resource = new Resource();
+        $resource = Resource::create();
         $resource->fromArray($data);
 
         $map = array(
@@ -126,7 +126,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function toArrayShouldWorkAsExpected()
     {
-        $resource = new Resource();
+        $resource = Resource::create();
         $resource->setHash('hashisen-kone');
         $resource->setId(655);
         $resource->setDateCreated(new \DateTime('1978-03-21'));
@@ -145,7 +145,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'exclusive' => true,
         ), $resource->toArray());
 
-        $resource = new Resource();
+        $resource = Resource::create();
         $this->assertEquals(array(
             'id' => null,
             'hash' => null,

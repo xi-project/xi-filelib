@@ -164,9 +164,14 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
         $file = File::create(array('resource' => $resource, 'name' => 'lussuti.pdf'));
 
         $this->ed
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+
+        $this->ed
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(Events::RENDERER_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
         $this->pm
             ->expects($this->once())

@@ -40,12 +40,15 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
     {
         return array(
             Events::FILE_AFTER_CREATE => 'onCreate',
+            Events::FILE_AFTER_UPDATE => 'onUpdate',
             Events::FILE_AFTER_DELETE => 'onDelete',
-            Events::FOLDER_AFTER_DELETE => 'onDelete',
             Events::FOLDER_AFTER_CREATE => 'onCreate',
-            Events::IDENTIFIABLE_INSTANTIATE => 'onInstantiate',
             Events::FOLDER_AFTER_UPDATE => 'onUpdate',
-            Events::FILE_AFTER_UPDATE => 'onUpdate'
+            Events::FOLDER_AFTER_DELETE => 'onDelete',
+            Events::RESOURCE_AFTER_CREATE => 'onCreate',
+            Events::RESOURCE_AFTER_UPDATE => 'onUpdate',
+            Events::RESOURCE_AFTER_DELETE => 'onDelete',
+            Events::IDENTIFIABLE_INSTANTIATE => 'onInstantiate',
         );
     }
 
@@ -78,22 +81,6 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
             $this->adapter->findByIds($request->getNotFoundIds(), $request->getClassName())
         );
         return $request->foundMany($identifiables);
-    }
-
-    /**
-     * @param Identifiable[] $identifiables
-     */
-    public function saveMany($identifiables)
-    {
-        return $this->adapter->saveMany($identifiables);
-    }
-
-    /**
-     * @param Identifiable[] $identifiables
-     */
-    public function deleteMany($identifiables)
-    {
-        return $this->adapter->deleteMany($identifiables);
     }
 
     /**
@@ -141,6 +128,6 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
      */
     public function onCreate(IdentifiableEvent $event)
     {
-        $this->delete($event->getIdentifiable());
+        $this->save($event->getIdentifiable());
     }
 }

@@ -158,7 +158,7 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
     {
         $id = 1;
 
-        $file = new File();
+        $file = File::create();
 
         $this->backend
             ->expects($this->once())
@@ -204,7 +204,7 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $folder = Folder::create(array('id' => 6));
 
-        $file = new File();
+        $file = File::create();
 
         $finder = new FileFinder(
             array(
@@ -250,9 +250,9 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $finder = new FileFinder();
 
         $iter = new ArrayIterator(array(
-            new File(),
-            new File(),
-            new File(),
+            File::create(),
+            File::create(),
+            File::create(),
         ));
 
         $this->backend
