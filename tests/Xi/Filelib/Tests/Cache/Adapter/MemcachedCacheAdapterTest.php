@@ -117,23 +117,6 @@ class MemcachedCacheAdapterTest extends TestCase
     /**
      * @test
      */
-    public function savesManyAndFindsOne()
-    {
-        $identifiables = array(
-            File::create(array('id' => 1, 'data' => array('lus' => 'hof'))),
-            Folder::create(array('id' => 'xooxooxoo')),
-            Resource::create(array('id' => 'xooxooxoo')),
-        );
-
-        $this->cache->saveMany($identifiables);
-
-        $cached = $this->cache->findById('xooxooxoo', 'Xi\Filelib\Folder\Folder');
-        $this->assertEquals($identifiables[1], $cached);
-    }
-
-    /**
-     * @test
-     */
     public function deletes()
     {
         $identifiables = array(
@@ -142,7 +125,9 @@ class MemcachedCacheAdapterTest extends TestCase
             File::create(array('id' => 3, 'data' => array('lus' => 'hof'))),
         );
 
-        $this->cache->saveMany($identifiables);
+        foreach ($identifiables as $identifiable) {
+            $this->cache->save($identifiable);
+        }
 
         $keys = array();
         foreach ($identifiables as $identifiable) {
@@ -153,7 +138,10 @@ class MemcachedCacheAdapterTest extends TestCase
         $this->assertEquals(array_values($identifiables), array_values($found));
 
         $doNotDelete = array_shift($identifiables);
-        $this->cache->deleteMany($identifiables);
+
+        foreach ($identifiables as $identifiable) {
+            $this->cache->delete($identifiable);
+        }
 
         $notGonnaFind = array_shift($identifiables);
         $this->assertFalse($this->cache->findById($notGonnaFind->getId(), get_class($notGonnaFind)));

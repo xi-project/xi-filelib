@@ -23,51 +23,12 @@ class CacheTest extends TestCase
     public function setUp()
     {
         if (!class_exists('Memcached')) {
-            return $this->markTestSkipped('Memcached required');
+            $this->markTestSkipped('Memcached required');
+            return;
         }
 
         $this->adapter = $this->getMockedCacheAdapter();
         $this->cache = new Cache($this->adapter);
-    }
-
-    /**
-     * @test
-     */
-    public function saveManyDelegates()
-    {
-        $arr = array(
-            File::create(array())
-        );
-
-        $this->adapter
-            ->expects($this->once())
-            ->method('saveMany')
-            ->with($arr)
-            ->will($this->returnValue('xoo'));
-
-
-        $ret = $this->cache->saveMany($arr);
-        $this->assertEquals('xoo', $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function deleteManyDelegates()
-    {
-        $arr = array(
-            File::create(array())
-        );
-
-        $this->adapter
-            ->expects($this->once())
-            ->method('deleteMany')
-            ->with($arr)
-            ->will($this->returnValue('xoo'));
-
-
-        $ret = $this->cache->deleteMany($arr);
-        $this->assertEquals('xoo', $ret);
     }
 
     /**

@@ -59,31 +59,6 @@ class MemcachedCacheAdapter implements CacheAdapter
     }
 
     /**
-     * @param Identifiable[] $identifiables
-     */
-    public function saveMany($identifiables)
-    {
-        $arr = array();
-        foreach ($identifiables as $identifiable) {
-            $arr[$this->createKeyFromIdentifiable($identifiable)] = $identifiable;
-        }
-        $this->memcached->setMulti($arr);
-    }
-
-    /**
-     * @param Identifiable[] $identifiables
-     */
-    public function deleteMany($identifiables)
-    {
-        $keys = array();
-        foreach ($identifiables as $identifiable) {
-            $keys[] = $this->createKeyFromIdentifiable($identifiable);
-        }
-
-        $this->memcached->deleteMulti($keys);
-    }
-
-    /**
      * @param Identifiable $identifiable
      */
     public function save(Identifiable $identifiable)

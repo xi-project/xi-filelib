@@ -84,22 +84,6 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
     }
 
     /**
-     * @param Identifiable[] $identifiables
-     */
-    public function saveMany($identifiables)
-    {
-        return $this->adapter->saveMany($identifiables);
-    }
-
-    /**
-     * @param Identifiable[] $identifiables
-     */
-    public function deleteMany($identifiables)
-    {
-        return $this->adapter->deleteMany($identifiables);
-    }
-
-    /**
      * @param Identifiable $identifiable
      */
     public function save(Identifiable $identifiable)
@@ -144,6 +128,6 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
      */
     public function onCreate(IdentifiableEvent $event)
     {
-        $this->delete($event->getIdentifiable());
+        $this->save($event->getIdentifiable());
     }
 }
