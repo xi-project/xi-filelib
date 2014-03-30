@@ -94,9 +94,9 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
              ->will($this->returnValue($sharedVersionsAllowed));
 
-        $resource = $this->getMock('Xi\Filelib\Resource\Resource');
+        $resource = $this->getMockedResource();
 
-        $file = $this->getMock('Xi\Filelib\File\File');
+        $file = $this->getMockedFile();
         $file->expects($this->any())->method('getResource')->will($this->returnValue($resource));
 
         $this->plugin->expects($this->atLeastOnce())->method('areSharedVersionsAllowed')

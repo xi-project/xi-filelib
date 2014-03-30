@@ -125,7 +125,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     public function commandShouldSerializeAndUnserializeProperly()
     {
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
         $profile = 'lussenhof';
         $uuid = Uuid::uuid4()->toString();
 

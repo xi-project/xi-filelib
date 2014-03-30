@@ -75,7 +75,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
     {
         $id = 1;
 
-        $folder = new Folder();
+        $folder = Folder::create();
 
         $this->backend
             ->expects($this->once())
@@ -127,9 +127,9 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $files = new ArrayIterator(
             array(
-                new File(),
-                new File(),
-                new File(),
+                File::create(),
+                File::create(),
+                File::create(),
             )
         );
 
@@ -187,7 +187,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
     public function findParentFolderShouldReturnFolderWhenParentIsFound()
     {
         $id = 5;
-        $parentFolder = new Folder();
+        $parentFolder = Folder::create();
 
         $this->backend
             ->expects($this->once())
@@ -242,9 +242,9 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $folders = new ArrayIterator(
             array(
-                new Folder(),
-                new Folder(),
-                new Folder(),
+                Folder::create(),
+                Folder::create(),
+                Folder::create(),
             )
         );
 
@@ -275,7 +275,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $folders = new ArrayIterator(
             array(
-                new Folder(),
+                Folder::create(),
             )
         );
 
@@ -352,7 +352,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $folders = new ArrayIterator(
             array(
-                new Folder(),
+                Folder::create(),
             )
         );
 

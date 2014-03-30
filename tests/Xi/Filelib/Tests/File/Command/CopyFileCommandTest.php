@@ -24,7 +24,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
                     ->disableOriginalConstructor()
                     ->setMethods(array('getFolderRepository', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
                     ->getMock();
-        $this->folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $this->folder = $this->getMockedFolder();
     }
 
     /**
@@ -236,8 +236,8 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function commandShouldSerializeAndUnserializeProperly()
     {
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $file = $this->getMock('Xi\Filelib\File\File');
+        $folder = $this->getMockedFolder();
+        $file = $this->getMockedFile();
         $uuid = Uuid::uuid4()->toString();
 
         $command = new CopyFileCommand($file, $folder);

@@ -82,7 +82,7 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $pm->expects($this->any())->method('getProfile')->with($this->isType('string'))
              ->will($this->returnValue($profile));
 
-        $file = $this->getMock('Xi\Filelib\File\File');
+        $file = $this->getMockedFile();
 
         $fiop->expects($this->once())->method('findAll')
              ->will($this->returnValue(array($file)));

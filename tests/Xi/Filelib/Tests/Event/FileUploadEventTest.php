@@ -28,7 +28,7 @@ class FileUploadEventTest extends \Xi\Filelib\Tests\TestCase
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
 
         $profile = $this->getMockedFileProfile();
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
         $event = new FileUploadEvent($upload, $folder, $profile);
 
         $this->assertSame($upload, $event->getFileUpload());
@@ -42,7 +42,7 @@ class FileUploadEventTest extends \Xi\Filelib\Tests\TestCase
     public function fileUploadShouldBeReplacable()
     {
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
         $profile = $this->getMockedFileProfile();
         $event = new FileUploadEvent($upload, $folder, $profile);
 

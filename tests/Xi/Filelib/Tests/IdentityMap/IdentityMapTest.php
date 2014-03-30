@@ -86,7 +86,9 @@ class IdentityMapTest extends TestCase
                 Events::FILE_AFTER_CREATE,
                 Events::FILE_AFTER_DELETE,
                 Events::FOLDER_AFTER_DELETE,
-                Events::FOLDER_AFTER_CREATE
+                Events::FOLDER_AFTER_CREATE,
+                Events::RESOURCE_AFTER_CREATE,
+                Events::RESOURCE_AFTER_DELETE,
             ),
             array_keys(IdentityMap::getSubscribedEvents())
         );

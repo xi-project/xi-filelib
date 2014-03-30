@@ -32,20 +32,38 @@ class Folder implements Identifiable
         'uuid' => 'setUuid',
     );
 
+    /**
+     * @var mixed
+     */
     private $id;
 
+    /**
+     * @var mixed
+     */
     private $parentId;
 
+    /**
+     * @var string
+     */
     private $name;
 
+    /**
+     * @var string
+     */
     private $url;
 
+    /**
+     * @var string
+     */
     private $uuid;
+
+    private function __construct()
+    { }
 
     /**
      * Sets id
      *
-     * @param  type   $id
+     * @param mixed $id
      * @return Folder
      */
     public function setId($id)
@@ -55,6 +73,9 @@ class Folder implements Identifiable
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function getId()
     {
         return $this->id;
@@ -68,10 +89,12 @@ class Folder implements Identifiable
     public function setParentId($parentId)
     {
         $this->parentId = $parentId;
-
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function getParentId()
     {
         return $this->parentId;
@@ -89,6 +112,9 @@ class Folder implements Identifiable
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
@@ -106,13 +132,17 @@ class Folder implements Identifiable
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getUrl()
     {
         return $this->url;
     }
 
     /**
-     * @return Folder
+     * @param string $uuid
+     * @return $this
      */
     public function setUuid($uuid)
     {
@@ -122,7 +152,6 @@ class Folder implements Identifiable
     }
 
     /**
-     *
      * @return string
      */
     public function getUuid()
@@ -130,6 +159,9 @@ class Folder implements Identifiable
         return $this->uuid;
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         return array(
@@ -165,7 +197,6 @@ class Folder implements Identifiable
     public static function create(array $data = array())
     {
         $folder = new self();
-
         return $folder->fromArray($data);
     }
 }

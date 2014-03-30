@@ -40,12 +40,15 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
     {
         return array(
             Events::FILE_AFTER_CREATE => 'onCreate',
+            Events::FILE_AFTER_UPDATE => 'onUpdate',
             Events::FILE_AFTER_DELETE => 'onDelete',
-            Events::FOLDER_AFTER_DELETE => 'onDelete',
             Events::FOLDER_AFTER_CREATE => 'onCreate',
-            Events::IDENTIFIABLE_INSTANTIATE => 'onInstantiate',
             Events::FOLDER_AFTER_UPDATE => 'onUpdate',
-            Events::FILE_AFTER_UPDATE => 'onUpdate'
+            Events::FOLDER_AFTER_DELETE => 'onDelete',
+            Events::RESOURCE_AFTER_CREATE => 'onCreate',
+            Events::RESOURCE_AFTER_UPDATE => 'onUpdate',
+            Events::RESOURCE_AFTER_DELETE => 'onDelete',
+            Events::IDENTIFIABLE_INSTANTIATE => 'onInstantiate',
         );
     }
 

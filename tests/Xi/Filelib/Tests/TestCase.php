@@ -330,7 +330,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedFolder()
     {
-        return $this->getMock('Xi\Filelib\Folder\Folder');
+        return $this
+            ->getMockBuilder('Xi\Filelib\Folder\Folder')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -338,7 +341,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedFile($profile = 'versioned')
     {
-        $file = $this->getMock('Xi\Filelib\File\File');
+        $file = $this
+            ->getMockBuilder('Xi\Filelib\File\File')
+            ->disableOriginalConstructor()
+            ->getMock();
         $file
             ->expects($this->any())
             ->method('getProfile')
@@ -352,7 +358,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedResource()
     {
-        return $this->getMock('Xi\Filelib\Resource\Resource');
+        return $this->getMockBuilder('Xi\Filelib\Resource\Resource')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**

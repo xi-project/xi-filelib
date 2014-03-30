@@ -14,7 +14,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
         $files = array();
 
         for ($x = 1; $x <= 5; $x++) {
-            $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
+            $file = $this->getMockedFile();
 
             $file
                 ->expects($this->any())

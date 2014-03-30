@@ -164,7 +164,7 @@ class ResourceRepository extends AbstractRepository
         }
 
         if (!$file->getResource()) {
-            $resource = new Resource();
+            $resource = Resource::create();
             $resource->setDateCreated(new DateTime());
             $resource->setHash($hash);
             $resource->setSize($upload->getSize());

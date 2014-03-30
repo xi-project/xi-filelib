@@ -101,7 +101,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
     {
         $id = 1;
 
-        $resource = new Resource();
+        $resource = Resource::create();
 
         $this->backend
             ->expects($this->once())
@@ -322,7 +322,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
                 Resource::create(array('id' => 'second-id')),
             ))));
 
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
 
         $filelib = $this->getMockedFilelib(
             null,
@@ -386,7 +386,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
                 Resource::create(array('id' => 'second-id')),
             ))));
 
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
 
         $filelib = $this->getMockedFilelib(
             null,

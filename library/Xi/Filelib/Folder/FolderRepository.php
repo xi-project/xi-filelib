@@ -118,7 +118,7 @@ class FolderRepository extends AbstractRepository
      */
     private function createRoot()
     {
-        $folder = new Folder();
+        $folder = Folder::create();
         $folder->setName('root');
         $this->create($folder);
 

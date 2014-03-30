@@ -19,7 +19,7 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
      */
     public function gettersAndSettersShouldWorkAsExpected()
     {
-        $folder = new Folder();
+        $folder = Folder::create();
 
         $val = 666;
         $this->assertEquals(null, $folder->getId());
@@ -76,7 +76,7 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
      */
     public function fromArrayShouldWorkAsExpected($data)
     {
-        $folder = new Folder();
+        $folder = Folder::create();
         $folder->fromArray($data);
 
         $map = array(
@@ -102,7 +102,7 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
      */
     public function toArrayShouldWorkAsExpected()
     {
-        $folder = new Folder();
+        $folder = Folder::create();
         $folder->setId(1);
         $folder->setParentId(655);
         $folder->setName('klussutusta');
@@ -117,7 +117,7 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
             'uuid' => 'luss3r',
         ));
 
-        $folder = new Folder();
+        $folder = Folder::create();
         $this->assertEquals($folder->toArray(), array(
             'id' => null,
             'parent_id' => null,

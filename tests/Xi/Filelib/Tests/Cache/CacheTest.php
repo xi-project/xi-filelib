@@ -6,6 +6,7 @@ use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Cache\Cache;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Events;
 
 class CacheTest extends TestCase
 {
@@ -144,5 +145,28 @@ class CacheTest extends TestCase
         $ret = $this->cache->delete($identifiable);
         $this->assertEquals('xoo', $ret);
     }
+
+    /**
+     * @test
+     */
+    public function subscribesToCorrectEvents()
+    {
+        $this->assertEquals(
+            array(
+                Events::FILE_AFTER_CREATE,
+                Events::FILE_AFTER_UPDATE,
+                Events::FILE_AFTER_DELETE,
+                Events::FOLDER_AFTER_CREATE,
+                Events::FOLDER_AFTER_UPDATE,
+                Events::FOLDER_AFTER_DELETE,
+                Events::RESOURCE_AFTER_CREATE,
+                Events::RESOURCE_AFTER_UPDATE,
+                Events::RESOURCE_AFTER_DELETE,
+                Events::IDENTIFIABLE_INSTANTIATE,
+            ),
+            array_keys(Cache::getSubscribedEvents())
+        );
+    }
+
 
 }

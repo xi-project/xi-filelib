@@ -5,11 +5,15 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 
 ## From version 0.10.x to version 0.11.x
 
-* Data is backwards compatible
-* All things operator related renamed to repository. getFileOperator() -> getFileRepository() in your code.
+* Data is backwards compatible. Hoorah!
+* Caching is available. Consider adding a memcache cache to your app via `Filelib::createCacheFromAdapter()`
+  to get moar speed.
+* All things operator related are renamed to repository. getFileOperator() -> getFileRepository() in your code.
 * Profiles moved to profile manager
+* Resource stuff moved from FileRepository to ResourceRepository
+* All identifiable (resource, file, folder) constructors are now private. Use create() function to instantiate.
 * ZendSlugifier is gone. If you use beautifurls, use the following replacement slugifier to get
-  100% backwards compatibility.:
+  absolute 100% backwards compatibility.:
 
 ```php
 use Xi\Filelib\Tool\Slugifier\Slugifier;

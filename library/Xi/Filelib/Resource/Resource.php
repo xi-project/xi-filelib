@@ -52,19 +52,16 @@ class Resource implements Identifiable
     private $exclusive = false;
 
     /**
-     *
      * @var DateTime
      */
     private $dateCreated;
 
     /**
-     *
      * @var string
      */
     private $mimetype;
 
     /**
-     *
      * @var integer
      */
     private $size;
@@ -73,6 +70,9 @@ class Resource implements Identifiable
      * @var ArrayObject
      */
     private $data;
+
+    private function __construct()
+    { }
 
     /**
      * @return ArrayObject
@@ -85,6 +85,10 @@ class Resource implements Identifiable
         return $this->data;
     }
 
+    /**
+     * @param mixed $data
+     * @return Resource
+     */
     public function setData($data)
     {
         if (is_array($data)) {
@@ -109,10 +113,7 @@ class Resource implements Identifiable
     }
 
     /**
-     * Returns id
-     *
      * @return mixed
-     *
      */
     public function getId()
     {
@@ -128,7 +129,6 @@ class Resource implements Identifiable
     public function setDateCreated(DateTime $dateCreated)
     {
         $this->dateCreated = $dateCreated;
-
         return $this;
     }
 
