@@ -189,17 +189,6 @@ class Backend
     }
 
     /**
-     * Creates a resource
-     *
-     * @param  Resource         $resource
-     * @throws FilelibException If resource could not be created.
-     */
-    public function createResource(Resource $resource)
-    {
-        return $this->platform->createResource($resource);
-    }
-
-    /**
      * Deletes a file
      *
      * @param  File             $file
@@ -222,29 +211,6 @@ class Backend
             throw new FolderNotEmptyException('Can not delete folder with files');
         }
         return $this->platform->deleteFolder($folder);
-    }
-
-    /**
-     * Deletes a resource
-     *
-     * @param  Resource         $resource
-     * @throws FilelibException If resource could not be deleted.
-     * @todo The event part seems misplaced here.
-     */
-    public function deleteResource(Resource $resource)
-    {
-        if ($rno = $this->getNumberOfReferences($resource)) {
-            throw new ResourceReferencedException(
-                sprintf(
-                    'Resource #%s is referenced %s times',
-                    $resource->getId(),
-                    $rno
-                )
-            );
-        }
-        $this->platform->deleteResource($resource);
-        $event = new ResourceEvent($resource);
-        $this->getEventDispatcher()->dispatch(Events::RESOURCE_AFTER_DELETE, $event);
     }
 
     /**
@@ -273,6 +239,38 @@ class Backend
     public function updateFolder(Folder $folder)
     {
         $this->getPlatform()->updateFolder($folder);
+    }
+
+    /**
+     * Deletes a resource
+     *
+     * @param  Resource         $resource
+     * @throws FilelibException If resource could not be deleted.
+     * @todo The event part seems misplaced here.
+     */
+    public function deleteResource(Resource $resource)
+    {
+        if ($rno = $this->getNumberOfReferences($resource)) {
+            throw new ResourceReferencedException(
+                sprintf(
+                    'Resource #%s is referenced %s times',
+                    $resource->getId(),
+                    $rno
+                )
+            );
+        }
+        $this->platform->deleteResource($resource);
+    }
+
+    /**
+     * Creates a resource
+     *
+     * @param  Resource         $resource
+     * @throws FilelibException If resource could not be created.
+     */
+    public function createResource(Resource $resource)
+    {
+        return $this->platform->createResource($resource);
     }
 
     /**

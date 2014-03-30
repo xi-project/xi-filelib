@@ -383,7 +383,6 @@ class BackendTest extends TestCase
         $obj = Resource::create(array('id' => 1));
 
         $this->platform->expects($this->never())->method('deleteResource');
-        $this->ed->expects($this->never())->method('dispatch');
 
         $backend = $this->getMockedBackend(array('getNumberOfReferences'));
 
@@ -396,15 +395,12 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function deleteResourceShouldDelegateToPlatformAndRemoveFromIdentityMap()
+    public function deleteResourceShouldDelegateToPlatform()
     {
         $obj = Resource::create(array('id' => 1));
 
         $this->platform->expects($this->once())->method('deleteResource')
             ->with($obj)->will($this->returnArgument(0));
-
-        $this->ed->expects($this->once())->method('dispatch')
-            ->with(Events::RESOURCE_AFTER_DELETE, $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
 
         $backend = $this->getMockedBackend();
         $ret = $backend->deleteResource($obj);

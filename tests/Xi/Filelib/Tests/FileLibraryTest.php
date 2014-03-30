@@ -144,6 +144,16 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
+    public function getsResourceRepository()
+    {
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $rere = $filelib->getResourceRepository();
+        $this->assertInstanceOf('Xi\Filelib\Resource\ResourceRepository', $rere);
+    }
+
+    /**
+     * @test
+     */
     public function getFileRepositoryShouldWork()
     {
         $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());

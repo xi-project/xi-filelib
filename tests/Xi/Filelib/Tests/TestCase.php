@@ -13,8 +13,8 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedFilelib(
         $methods = null,
-        $fiop = null,
-        $foop = null,
+        $fire = null,
+        $fore = null,
         $storage = null,
         $ed = null,
         $backend = null,
@@ -22,17 +22,38 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $queue = null,
         $pm = null
     ) {
+
+        // Beautiful backwards compatible kludge. My best code evah!
+        $rere = null;
+        $args = func_get_args();
+        if (isset($args[1]) && is_array($args[1])) {
+            $defaults = array(
+                'fire' => null,
+                'fore' => null,
+                'rere' => null,
+                'storage' => null,
+                'ed' => null,
+                'backend' => null,
+                'commander' => null,
+                'queue' => null,
+                'pm' => null,
+            );
+
+            $mocks = array_merge($defaults, $args[1]);
+            extract($mocks, EXTR_OVERWRITE);
+        }
+
         $filelib = $this
             ->getMockBuilder('Xi\Filelib\FileLibrary')
             ->disableOriginalConstructor();
 
 
         if ($methods !== null) {
-            if ($fiop) {
+            if ($fire) {
                 $methods[] = 'getFileRepository';
             }
 
-            if ($foop) {
+            if ($fore) {
                 $methods[] = 'getFolderRepository';
             }
             $filelib->setMethods(array_unique($methods));
@@ -40,12 +61,16 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         $ret = $filelib->getMock();
 
-        if ($fiop) {
-            $ret->expects($this->any())->method('getFileRepository')->will($this->returnValue($fiop));
+        if ($fire) {
+            $ret->expects($this->any())->method('getFileRepository')->will($this->returnValue($fire));
         }
 
-        if ($foop) {
-            $ret->expects($this->any())->method('getFolderRepository')->will($this->returnValue($foop));
+        if ($fore) {
+            $ret->expects($this->any())->method('getFolderRepository')->will($this->returnValue($fore));
+        }
+
+        if ($rere) {
+            $ret->expects($this->any())->method('getResourceRepository')->will($this->returnValue($rere));
         }
 
         if ($storage) {
@@ -116,6 +141,21 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         return $fileop;
     }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedResourceRepository($methods = array())
+    {
+        $repo = $this
+            ->getMockBuilder('Xi\Filelib\Resource\ResourceRepository')
+            ->disableOriginalConstructor()
+            ->setMethods($methods)
+            ->getMock();
+
+        return $repo;
+    }
+
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject

@@ -69,10 +69,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             ->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
         $storage = $this->getMockedStorage();
-        $storage
-            ->expects($this->once())
-            ->method('store')
-            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'));
 
         $op = $this->getMockedFileRepository();
         $pm = $this->getMockedProfileManager(array('versioned'));
@@ -95,22 +91,24 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
                         ->setMethods(array('getResource'))
                         ->getMock();
 
+        $rere = $this->getMockedResourceRepository();
+
         $filelib = $this->getMockedFilelib(
             null,
-            $op,
-            null,
-            $storage,
-            $dispatcher,
-            $backend,
-            null,
-            null,
-            $pm
+            array(
+                'fire' => $op,
+                'storage' => $storage,
+                'ed' => $dispatcher,
+                'backend' => $backend,
+                'pm' => $pm,
+                'rere' => $rere,
+            )
         );
 
         $command->attachTo($filelib);
 
-        $command
-            ->expects($this->once())->method('getResource')
+        $rere
+            ->expects($this->once())->method('findResourceForUpload')
             ->with(
                 $this->isInstanceOf('Xi\Filelib\File\File'),
                 $this->isInstanceOf('Xi\Filelib\File\Upload\FileUpload')
@@ -119,186 +117,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $ret = $command->execute();
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function getResourceShouldGenerateNewResourceIfProfileAllowsButNoResourceIsFound()
-    {
-        $file = File::create(array());
-
-        $op = $this->getMockedFileRepository();
-        $backend = $this->getMockedBackend();
-
-        $profile = $this->getMockedFileProfile();
-
-        $pm = $this->getMockedProfileManager(array('lussenhof'));
-        $pm->expects($this->any())->method('getProfile')
-            ->with($this->equalTo('lussenhof'))
-            ->will($this->returnValue($profile));
-
-        $profile->expects($this->never())
-            ->method('isSharedResourceAllowed');
-
-        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpeg';
-        $profile = 'lussenhof';
-        $upload = new FileUpload($path);
-        $hash = sha1_file($upload->getRealPath());
-
-        $finder = new ResourceFinder(
-            array(
-                'hash' => $hash,
-            )
-        );
-        $backend->expects($this->once())->method('findByFinder')
-                ->with($this->equalTo($finder))
-                ->will($this->returnValue(new ArrayIterator(array())));
-
-        $folder = $this->getMockedFolder();
-
-        $filelib = $this->getMockedFilelib(
-            null,
-            $op,
-            null,
-            null,
-            null,
-            $backend,
-            null,
-            null,
-            $pm
-        );
-
-        $command = new UploadFileCommand($upload, $folder, $profile);
-        $command->attachTo($filelib);
-        $ret = $command->getResource($file, $upload);
-
-        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $ret);
-        $this->assertSame($hash, $ret->getHash());
-    }
-
-    /**
-     * @test
-     */
-    public function getResourceShouldGenerateNewResourceIfProfileRequires()
-    {
-        $file = File::create(array());
-
-        $op = $this->getMockedFileRepository();
-
-        $backend = $this->getMockedBackend();
-
-        $profile = $this->getMockedFileProfile();
-
-        $pm = $this->getMockedProfileManager();
-        $pm->expects($this->any())->method('getProfile')
-            ->with($this->equalTo('lussenhof'))
-            ->will($this->returnValue($profile));
-
-        $profile->expects($this->atLeastOnce())
-            ->method('isSharedResourceAllowed')
-            ->will($this->returnValue(false));
-
-        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpeg';
-        $profile = 'lussenhof';
-        $upload = new FileUpload($path);
-        $hash = sha1_file($upload->getRealPath());
-
-        $finder = new ResourceFinder(
-            array(
-                'hash' => $hash,
-            )
-        );
-        $backend->expects($this->once())->method('findByFinder')
-            ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array(
-                Resource::create(array('id' => 'first-id')),
-                Resource::create(array('id' => 'second-id')),
-            ))));
-
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-
-        $filelib = $this->getMockedFilelib(
-            null,
-            $op,
-            null,
-            null,
-            null,
-            $backend,
-            null,
-            null,
-            $pm
-        );
-
-        $command = new UploadFileCommand($upload, $folder, $profile);
-        $command->attachTo($filelib);
-
-        $ret = $command->getResource($file, $upload);
-
-        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $ret);
-        $this->assertSame($hash, $ret->getHash());
-    }
-
-    /**
-     * @test
-     */
-    public function getResourceShouldReuseResourceIfProfileAllowsAndResourcesAreFound()
-    {
-        $file = File::create(array());
-
-        $op = $this->getMockedFileRepository();
-
-        $profile = $this->getMockedFileProfile();
-
-        $pm = $this->getMockedProfileManager();
-        $pm->expects($this->any())->method('getProfile')
-           ->with($this->equalTo('lussenhof'))
-           ->will($this->returnValue($profile));
-
-        $profile->expects($this->once())
-                ->method('isSharedResourceAllowed')
-                ->will($this->returnValue(true));
-
-        $backend = $this->getMockedBackend();
-
-        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpeg';
-        $profile = 'lussenhof';
-        $upload = new FileUpload($path);
-        $hash = sha1_file($upload->getRealPath());
-
-        $finder = new ResourceFinder(
-            array(
-                'hash' => $hash,
-            )
-        );
-        $backend->expects($this->once())->method('findByFinder')
-            ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array(
-            Resource::create(array('id' => 'first-id')),
-            Resource::create(array('id' => 'second-id')),
-        ))));
-
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-
-        $filelib = $this->getMockedFilelib(
-            null,
-            $op,
-            null,
-            null,
-            null,
-            $backend,
-            null,
-            null,
-            $pm
-        );
-
-        $command = new UploadFileCommand($upload, $folder, $profile);
-        $command->attachTo($filelib);
-
-        $ret = $command->getResource($file, $upload);
-
-        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $ret);
-        $this->assertSame('first-id', $ret->getId());
     }
 
     /**
