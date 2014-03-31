@@ -75,19 +75,4 @@ class UpdateFolderCommand extends AbstractFolderCommand
     {
         return 'xi_filelib.command.folder.update';
     }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'folder' => $this->folder,
-            )
-        );
-    }
 }

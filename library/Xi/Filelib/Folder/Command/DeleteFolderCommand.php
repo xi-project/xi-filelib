@@ -78,19 +78,4 @@ class DeleteFolderCommand extends AbstractFolderCommand
     {
         return 'xi_filelib.command.folder.delete';
     }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'folder' => $this->folder,
-            )
-        );
-    }
 }

@@ -161,24 +161,6 @@ class CreateByUrlFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-
-        $url = 'tussen/hofen/meister';
-
-        $command = new CreateByUrlFolderCommand($url);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'folderRepository', $command2);
-        $this->assertAttributeEquals($url, 'url', $command2);
-    }
-
-    /**
-     * @test
-     */
     public function topicIsCorrect()
     {
         $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\CreateByUrlFolderCommand')

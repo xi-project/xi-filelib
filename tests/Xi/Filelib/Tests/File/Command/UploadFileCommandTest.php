@@ -122,30 +122,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $folder = $this->getMockedFolder();
-        $profile = 'lussenhof';
-        $uuid = Uuid::uuid4()->toString();
-
-        $command = new UploadFileCommand($upload, $folder, $profile);
-        $command->setUuid($uuid);
-
-        $serialized = serialize($command);
-
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeEquals($profile, 'profile', $command2);
-        $this->assertAttributeInstanceof('Xi\Filelib\File\Upload\FileUpload', 'upload', $command2);
-        $this->assertAttributeEquals($uuid, 'uuid', $command2);
-    }
-
-
-    /**
-     * @test
-     */
     public function respectsPresetUuid()
     {
         $folder = Folder::create(array('id' => 123));

@@ -75,19 +75,6 @@ class CreateResourceCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $resource = Resource::create(array('id' => 1));
-        $command = new CreateResourceCommand($resource, 'lussenhofer');
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-        $this->assertAttributeEquals($resource, 'resource', $command2);
-        $this->assertAttributeEquals('lussenhofer', 'path', $command2);
-    }
-
-    /**
-     * @test
-     */
     public function topicIsCorrect()
     {
         $command = $this->getMockBuilder('Xi\Filelib\Resource\Command\CreateResourceCommand')

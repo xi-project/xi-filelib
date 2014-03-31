@@ -44,19 +44,4 @@ class DeleteResourceCommand extends AbstractResourceCommand
     {
         return 'xi_filelib.command.resource.delete';
     }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->resource = $data['resource'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'resource' => $this->resource,
-            )
-        );
-    }
 }

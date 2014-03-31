@@ -49,19 +49,4 @@ class DeleteFileCommand extends AbstractFileCommand
     {
         return 'xi_filelib.command.file.delete';
     }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->file = $data['file'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'file' => $this->file,
-            )
-        );
-    }
 }

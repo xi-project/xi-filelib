@@ -234,26 +234,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-        $file = $this->getMockedFile();
-        $uuid = Uuid::uuid4()->toString();
-
-        $command = new CopyFileCommand($file, $folder);
-        $command->setUuid($uuid);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals($file, 'file', $command2);
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeEquals($uuid, 'uuid', $command2);
-    }
-
-    /**
-     * @test
-     */
     public function respectsPresetUuid()
     {
         $folder = Folder::create(array('id' => 123));

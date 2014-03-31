@@ -139,38 +139,4 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
     {
         return 'xi_filelib.command.file.upload';
     }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-        $this->profile = $data['profile'];
-        $this->uuid = $data['uuid'];
-
-        $upload = new FileUpload($data['upload']['realPath']);
-        $upload->setOverrideBasename($data['upload']['overrideBasename']);
-        $upload->setOverrideFilename($data['upload']['overrideFilename']);
-        $upload->setTemporary($data['upload']['temporary']);
-
-        $this->upload = $upload;
-    }
-
-    public function serialize()
-    {
-        $uploadArr = array(
-            'overrideBasename' => $this->upload->getOverrideBasename(),
-            'overrideFilename' => $this->upload->getOverrideFilename(),
-            'temporary' => $this->upload->isTemporary(),
-            'realPath' => $this->upload->getRealPath(),
-        );
-
-        return serialize(
-            array(
-                'folder' => $this->folder,
-                'profile' => $this->profile,
-                'upload' => $uploadArr,
-                'uuid' => $this->uuid,
-            )
-        );
-    }
 }

@@ -177,23 +177,4 @@ class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
     {
         return 'xi_filelib.command.file.copy';
     }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->file = $data['file'];
-        $this->folder = $data['folder'];
-        $this->uuid = $data['uuid'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'file' => $this->file,
-                'folder' => $this->folder,
-                'uuid' => $this->uuid,
-            )
-        );
-    }
 }

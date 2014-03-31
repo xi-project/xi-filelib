@@ -80,21 +80,4 @@ class CreateFolderCommand extends AbstractFolderCommand implements UuidReceiver
     {
         return 'xi_filelib.command.folder.create';
     }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-        $this->uuid = $data['uuid'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'folder' => $this->folder,
-                'uuid' => $this->uuid,
-            )
-        );
-    }
 }

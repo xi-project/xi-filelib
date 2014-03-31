@@ -118,21 +118,6 @@ class UpdateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-
-        $command = new UpdateFolderCommand($folder);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-    }
-
-    /**
-     * @test
-     */
     public function topicIsCorrect()
     {
         $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\UpdateFolderCommand')

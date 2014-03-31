@@ -106,26 +106,6 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-        $uuid = Uuid::uuid4()->toString();
-
-        $command = new CreateFolderCommand($folder);
-        $command->setUuid($uuid);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'folderRepository', $command2);
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeEquals($uuid, 'uuid', $command2);
-
-    }
-
-    /**
-     * @test
-     */
     public function topicIsCorrect()
     {
         $command = $this->getMockBuilder('Xi\Filelib\Folder\Command\CreateFolderCommand')

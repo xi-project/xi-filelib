@@ -43,19 +43,4 @@ class UpdateResourceCommand extends AbstractResourceCommand
     {
         return 'xi_filelib.command.resource.update';
     }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->resource = $data['resource'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'resource' => $this->resource,
-            )
-        );
-    }
 }

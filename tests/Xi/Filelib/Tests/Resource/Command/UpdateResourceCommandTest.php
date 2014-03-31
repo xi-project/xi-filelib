@@ -65,18 +65,6 @@ class UpdateResourceCommandTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $resource = Resource::create(array('id' => 1));
-        $command = new UpdateResourceCommand($resource);
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-        $this->assertAttributeEquals($resource, 'resource', $command2);
-    }
-
-    /**
-     * @test
-     */
     public function topicIsCorrect()
     {
         $command = $this->getMockBuilder('Xi\Filelib\Resource\Command\UpdateResourceCommand')

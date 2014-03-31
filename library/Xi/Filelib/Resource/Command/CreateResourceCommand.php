@@ -50,21 +50,4 @@ class CreateResourceCommand extends AbstractResourceCommand
     {
         return 'xi_filelib.command.resource.create';
     }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->resource = $data['resource'];
-        $this->path = $data['path'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'resource' => $this->resource,
-                'path' => $this->path,
-            )
-        );
-    }
 }

@@ -14,8 +14,9 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
+use Serializable;
 
-class AfterUploadFileCommand extends AbstractFileCommand
+class AfterUploadFileCommand extends AbstractFileCommand implements Serializable
 {
     /**
      * @var File
