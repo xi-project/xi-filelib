@@ -6,6 +6,7 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 ## From version 0.10.x to version 0.11.x
 
 * Data is backwards compatible. Hoorah!
+* Only AfterUploadFileCommand is async-capable.
 * Caching is available. Consider adding a memcache cache to your app via `Filelib::createCacheFromAdapter()`
   to get moar speed.
 * All things operator related are renamed to repository. getFileOperator() -> getFileRepository() in your code.
