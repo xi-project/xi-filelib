@@ -20,7 +20,6 @@ use MongoId;
 use MongoDate;
 use DateTime;
 use ArrayIterator;
-use Xi\Filelib\Tool\ExtensionRequirements;
 
 /**
  * MongoDB backend for Filelib
@@ -72,7 +71,6 @@ class MongoPlatform implements Platform
      */
     public function __construct(MongoDB $mongo)
     {
-        ExtensionRequirements::requireVersion('mongo', '1.4.0');
         $this->setMongo($mongo);
     }
 
