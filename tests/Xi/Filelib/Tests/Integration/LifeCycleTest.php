@@ -3,6 +3,8 @@
 namespace Xi\Filelib\Tests\Integration;
 
 
+use Xi\Filelib\Authorization\AutomaticPublisherPlugin;
+
 class LifeCycleTest extends TestCase
 {
     /**
@@ -17,6 +19,7 @@ class LifeCycleTest extends TestCase
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
 
         $file = $this->filelib->upload($manateePath, $folder);
+        $this->assertPublisherFileCount(0);
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
 
@@ -52,4 +55,22 @@ class LifeCycleTest extends TestCase
         $allResources = $this->filelib->getResourceRepository()->findAll();
         $this->assertCount(0, $allResources);
     }
+
+    /**
+     * @test
+     */
+    public function automaticPublisherPublishesAutomatically()
+    {
+        $automaticPublisherPlugin = new AutomaticPublisherPlugin(
+            $this->publisher,
+            $this->authorizationAdapter
+        );
+        $this->filelib->addPlugin($automaticPublisherPlugin);
+
+        $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file =  $this->filelib->upload($manateePath);
+
+        $this->assertPublisherFileCount(2);
+    }
+
 }

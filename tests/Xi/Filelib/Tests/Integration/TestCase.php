@@ -46,6 +46,11 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     protected $publisher;
 
+    /**
+     * @var SimpleAuthorizationAdapter
+     */
+    protected $authorizationAdapter;
+
     public function setUp()
     {
         if (!extension_loaded('mongo')) {
@@ -80,14 +85,15 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $filelib->addPlugin(new RandomizeNamePlugin());
 
-        $AuthorizationAdapter = new SimpleAuthorizationAdapter();
-        $AuthorizationPlugin = new AuthorizationPlugin($AuthorizationAdapter);
-        $filelib->addPlugin($AuthorizationPlugin, array('default'));
+        $authorizationAdapter = new SimpleAuthorizationAdapter();
+        $authorizationPlugin = new AuthorizationPlugin($authorizationAdapter);
+        $filelib->addPlugin($authorizationPlugin, array('default'));
 
-        $AuthorizationAdapter
+        $authorizationAdapter
             ->setFolderWritable(true)
             ->setFileReadableByAnonymous(true)
             ->setFileReadable(true);
+        $this->authorizationAdapter = $authorizationAdapter;
 
         $publisher = new Publisher(
             new SymlinkFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public', '600', '700', 'files'),
