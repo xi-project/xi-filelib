@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests\Integration;
 
 
 use Xi\Filelib\Authorization\AutomaticPublisherPlugin;
+use Xi\Filelib\File\File;
 
 class LifeCycleTest extends TestCase
 {
@@ -19,6 +20,7 @@ class LifeCycleTest extends TestCase
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
 
         $file = $this->filelib->upload($manateePath, $folder);
+        $this->assertEquals(File::STATUS_COMPLETED, $file->getStatus());
         $this->assertPublisherFileCount(0);
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
