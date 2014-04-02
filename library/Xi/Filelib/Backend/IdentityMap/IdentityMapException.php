@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\IdentityMap;
+namespace Xi\Filelib\Backend\IdentityMap;
 
 use Xi\Filelib\FilelibException;
 

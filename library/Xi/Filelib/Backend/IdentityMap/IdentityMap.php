@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\IdentityMap;
+namespace Xi\Filelib\Backend\IdentityMap;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -16,6 +16,7 @@ use Xi\Filelib\Backend\FindByIdsRequestResolver;
 use Xi\Filelib\Event\IdentifiableEvent;
 use Iterator;
 use Xi\Filelib\Events;
+use Xi\Filelib\Identifiable;
 
 /**
  * Identity map

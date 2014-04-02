@@ -1,10 +1,10 @@
 <?php
 
-namespace Xi\Filelib\Tests;
+namespace Xi\Filelib\Tests\Backend\IdentityMap;
 
 use Xi\Filelib\Tests\TestCase;
-use Xi\Filelib\IdentityMap\IdentityMap;
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Backend\IdentityMap\IdentityMap;
+use Xi\Filelib\Identifiable;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
@@ -39,7 +39,7 @@ class IdentityMapTest extends TestCase
         $this->ed
             ->expects($this->once())->method('addSubscriber')
             ->with(
-                $this->isInstanceOf('Xi\Filelib\IdentityMap\IdentityMap')
+                $this->isInstanceOf('Xi\Filelib\Backend\IdentityMap\IdentityMap')
             );
 
         $im = new IdentityMap($this->ed);
@@ -72,7 +72,7 @@ class IdentityMapTest extends TestCase
     {
         $this->assertContains(
             'Symfony\Component\EventDispatcher\EventSubscriberInterface',
-            class_implements('Xi\Filelib\IdentityMap\IdentityMap')
+            class_implements('Xi\Filelib\Backend\IdentityMap\IdentityMap')
         );
     }
 
@@ -99,7 +99,7 @@ class IdentityMapTest extends TestCase
      */
     public function onCreateAddsFile()
     {
-        $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+        $im = $this->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
             ->setMethods(array('add', 'remove'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -120,7 +120,7 @@ class IdentityMapTest extends TestCase
      */
     public function onDeleteRemovesFolder()
     {
-        $im = $this->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+        $im = $this->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
             ->setMethods(array('add', 'remove'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -158,10 +158,11 @@ class IdentityMapTest extends TestCase
 
     /**
      * @test
-     * @expectedException Xi\Filelib\IdentityMap\IdentityMapException
+     *
      */
     public function addShouldThrowExceptionWhenAddingObjectWithoutId()
     {
+        $this->setExpectedException('Xi\Filelib\Backend\IdentityMap\IdentityMapException');
         $this->ed
             ->expects($this->never())
             ->method('dispatch');
@@ -205,7 +206,7 @@ class IdentityMapTest extends TestCase
         $iter = new ArrayIterator($array);
 
         $im = $this
-            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
             ->setMethods(array('add'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -214,7 +215,7 @@ class IdentityMapTest extends TestCase
             ->expects($this->exactly(3))
             ->method('add')
             ->with(
-                $this->isInstanceOf('Xi\Filelib\IdentityMap\Identifiable')
+                $this->isInstanceOf('Xi\Filelib\Identifiable')
             );
 
         $im->addMany($iter);
@@ -236,7 +237,7 @@ class IdentityMapTest extends TestCase
         $iter = new ArrayIterator($array);
 
         $im = $this
-            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
             ->setMethods(array('remove'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -244,7 +245,7 @@ class IdentityMapTest extends TestCase
         $im
             ->expects($this->exactly(3))
             ->method('remove')
-            ->with($this->isInstanceOf('Xi\Filelib\IdentityMap\Identifiable'));
+            ->with($this->isInstanceOf('Xi\Filelib\Identifiable'));
 
         $im->removeMany($iter);
         $this->assertSame($first, $iter->current());

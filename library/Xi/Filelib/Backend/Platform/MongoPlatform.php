@@ -13,7 +13,7 @@ use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 use Xi\Filelib\Backend\Finder\Finder;
 use MongoDB;
 use MongoId;

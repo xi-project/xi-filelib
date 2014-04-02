@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Event;
 
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 use Symfony\Component\EventDispatcher\Event;
 
 /**

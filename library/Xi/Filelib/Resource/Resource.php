@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Resource;
 
 use DateTime;
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 use ArrayObject;
 
 /**

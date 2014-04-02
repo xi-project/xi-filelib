@@ -368,7 +368,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedCacheAdapter()
     {
-        return $this->getMock('Xi\Filelib\Cache\Adapter\CacheAdapter');
+        return $this->getMock('Xi\Filelib\Backend\Cache\Adapter\CacheAdapter');
     }
 
     public function assertClassExists($className)

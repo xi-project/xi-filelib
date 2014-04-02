@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Tests\Cache\Adapter;
+namespace Xi\Filelib\Tests\Backend\Cache\Adapter;
 
 use Xi\Filelib\Tests\TestCase;
 
@@ -11,6 +11,6 @@ class CacheAdapterTest extends TestCase
      */
     public function exists()
     {
-        $this->assertInterfaceExists('Xi\Filelib\Cache\Adapter\CacheAdapter');
+        $this->assertInterfaceExists('Xi\Filelib\Backend\Cache\Adapter\CacheAdapter');
     }
 }

@@ -10,8 +10,8 @@
 namespace Xi\Filelib;
 
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
-use Xi\Filelib\Cache\Adapter\CacheAdapter;
-use Xi\Filelib\Cache\Cache;
+use Xi\Filelib\Backend\Cache\Adapter\CacheAdapter;
+use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Command\Commander;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;

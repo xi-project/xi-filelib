@@ -9,9 +9,9 @@
 
 namespace Xi\Filelib\Backend;
 
-use Xi\Filelib\Cache\Cache;
-use Xi\Filelib\IdentityMap\Identifiable;
-use Xi\Filelib\IdentityMap\IdentityMap;
+use Xi\Filelib\Backend\Cache\Cache;
+use Xi\Filelib\Identifiable;
+use Xi\Filelib\Backend\IdentityMap\IdentityMap;
 use Xi\Filelib\Backend\Platform\Platform;
 use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\FileFinder;

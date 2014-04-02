@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Cache\Adapter;
+namespace Xi\Filelib\Backend\Cache\Adapter;
 
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 use Memcached;
 use Xi\Filelib\RuntimeException;
 

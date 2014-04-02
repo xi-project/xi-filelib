@@ -7,15 +7,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Cache;
+namespace Xi\Filelib\Backend\Cache;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\FindByIdsRequestResolver;
-use Xi\Filelib\Cache\Adapter\CacheAdapter;
+use Xi\Filelib\Backend\Cache\Adapter\CacheAdapter;
 use Xi\Filelib\Event\IdentifiableEvent;
 use Xi\Filelib\Events;
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 use ArrayIterator;
 
 class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
@@ -80,7 +80,7 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
         $identifiables = new ArrayIterator(
             $this->adapter->findByIds($request->getNotFoundIds(), $request->getClassName())
         );
-        return $request->foundMany($identifiables);
+        return $request->foundMany($identifiables) ?: array();
     }
 
     /**

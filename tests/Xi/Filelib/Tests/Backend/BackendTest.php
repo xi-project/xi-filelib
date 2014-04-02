@@ -4,8 +4,8 @@ namespace Xi\Filelib\Tests\Backend;
 
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Backend\Platform\Platform;
-use Xi\Filelib\Cache\Cache;
-use Xi\Filelib\IdentityMap\IdentityMap;
+use Xi\Filelib\Backend\Cache\Cache;
+use Xi\Filelib\Backend\IdentityMap\IdentityMap;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
@@ -44,7 +44,7 @@ class BackendTest extends TestCase
         $this->platform = $this->getMock('Xi\Filelib\Backend\Platform\Platform');
 
         $this->im = $this
-            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
             ->disableOriginalConstructor()
             ->getMock();
 

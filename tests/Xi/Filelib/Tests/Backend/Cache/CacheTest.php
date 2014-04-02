@@ -1,9 +1,9 @@
 <?php
 
-namespace Xi\Filelib\Tests\Cache;
+namespace Xi\Filelib\Tests\Backend\Cache;
 
 use Xi\Filelib\Backend\FindByIdsRequest;
-use Xi\Filelib\Cache\Cache;
+use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Events;

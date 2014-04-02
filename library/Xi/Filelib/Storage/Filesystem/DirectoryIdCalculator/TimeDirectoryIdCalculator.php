@@ -11,7 +11,7 @@ namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
 
 use DateTime;
 use Xi\Filelib\FilelibException;
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 
 /**
  * Calculates directory id by formatting an objects creation date

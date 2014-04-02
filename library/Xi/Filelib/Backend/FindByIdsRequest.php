@@ -12,7 +12,7 @@ namespace Xi\Filelib\Backend;
 use ArrayIterator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\IdentifiableEvent;
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 use Traversable;
 use Xi\Filelib\Events;
 

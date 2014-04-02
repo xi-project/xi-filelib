@@ -9,9 +9,9 @@
 
 namespace Xi\Filelib\Plugin;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Events;
-use Xi\Filelib\FileLibrary;
 
 /**
  * Randomizes all uploads' file names before uploading. Ensures that same file
@@ -57,23 +57,7 @@ class RandomizeNamePlugin extends AbstractPlugin
         }
 
         $upload = $event->getFileUpload();
-
-        $pinfo = pathinfo($upload->getUploadFilename());
-
-        $newname = uniqid($this->getPrefix(), true);
-        $newname = str_replace('.', '_', $newname);
-
-        if (isset($pinfo['extension'])) {
-            $newname .= '.' . $pinfo['extension'];
-        }
-
-        $upload->setOverrideFilename($newname);
-
+        $upload->setOverrideBasename($this->prefix . Uuid::uuid4());
         return $upload;
-    }
-
-    public function attachTo(FileLibrary $filelib)
-    {
-
     }
 }

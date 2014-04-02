@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Authorization\AuthorizationPlugin;
-use Xi\Filelib\Cache\Cache;
+use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
@@ -308,6 +308,6 @@ class FileLibraryTest extends TestCase
         $adapter = $this->getMockedCacheAdapter();
         $this->assertNull($filelib->getCache());
         $this->assertSame($filelib, $filelib->createCacheFromAdapter($adapter));
-        $this->assertInstanceOf('Xi\Filelib\Cache\Cache', $filelib->getCache());
+        $this->assertInstanceOf('Xi\Filelib\Backend\Cache\Cache', $filelib->getCache());
     }
 }

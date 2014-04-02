@@ -4,12 +4,10 @@ namespace Xi\Filelib\Tests\Integration;
 
 use Xi\Filelib\Backend\Platform\MongoPlatform;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Backend\Platform\JsonPlatform;
 use Xi\Filelib\Storage\FilesystemStorage;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
-use Xi\Filelib\Cache\Cache;
-use Xi\Filelib\Cache\Adapter\MemcachedCacheAdapter;
+use Xi\Filelib\Backend\Cache\Adapter\MemcachedCacheAdapter;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -105,7 +103,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->publisher = $publisher;
 
         $originalPlugin = new OriginalVersionPlugin('original');
-        $filelib->addPlugin($originalPlugin);
+        $filelib->addPlugin($originalPlugin, array('default'));
 
         $versionPlugin = new VersionPlugin(
             'cinemascope',
@@ -118,7 +116,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
                 'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(ROOT_TESTS . '/data/watermark.png', 'se', 10),
             )
         );
-        $filelib->addPlugin($versionPlugin);
+        $filelib->addPlugin($versionPlugin, array('default'));
 
         $this->filelib = $filelib;
     }

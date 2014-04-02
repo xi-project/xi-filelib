@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Folder;
 
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 
 /**
  * Folder
