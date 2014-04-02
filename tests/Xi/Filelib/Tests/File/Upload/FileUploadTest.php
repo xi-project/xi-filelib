@@ -14,10 +14,11 @@ class FileUploadTest extends TestCase
 {
     /**
      * @test
-     * @expectedException \RuntimeException
+     *
      */
-    public function constructorShouldFailIfPathIsInvalid()
+    public function throwsUpIfPathIsInvalid()
     {
+        $this->setExpectedException('Xi\Filelib\RuntimeException');
         new FileUpload(ROOT_TESTS . '/invalid-file.lus');
     }
 

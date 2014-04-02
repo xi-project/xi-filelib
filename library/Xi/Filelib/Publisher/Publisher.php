@@ -194,8 +194,11 @@ class Publisher implements EventSubscriberInterface, Attacher
     public function getUrlVersion(File $file, $version)
     {
         $data = $file->getData();
-        if (isset($data["publisher.version_url"][$version])) {
-            return $data["publisher.version_url"][$version];
+
+        if ($data->offsetExists('publisher.version_url')) {
+            if (isset($data['publisher.version_url'][$version])) {
+                return $data["publisher.version_url"][$version];
+            }
         }
 
         $url = $this->adapter->getUrlVersion(

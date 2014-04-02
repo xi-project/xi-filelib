@@ -11,6 +11,7 @@ namespace Xi\Filelib\File\Upload;
 
 use Xi\Filelib\File\FileObject;
 use DateTime;
+use Xi\Filelib\RuntimeException;
 
 /**
  * Uploadable file
@@ -50,6 +51,12 @@ class FileUpload
      */
     public function __construct($filename)
     {
+        if (!is_readable($filename)) {
+            throw new RuntimeException(
+                sprintf("Path '%s' not readable", $filename)
+            );
+        }
+
         $this->fileObject = new FileObject($filename);
     }
 

@@ -55,7 +55,7 @@ class MemcachedCacheAdapter implements CacheAdapter
         foreach ($ids as $id) {
             $keys[] = $this->createKeyFromParts($id, $className);
         }
-        return $this->memcached->getMulti($keys);
+        return $this->memcached->getMulti($keys) ?: array();
     }
 
     /**
