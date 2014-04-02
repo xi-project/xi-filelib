@@ -1,11 +1,11 @@
 <?php
 
-namespace Xi\Filelib\Tests\Backend\Platform;
+namespace Xi\Filelib\Tests\Backend\Adapter;
 
 use PHPUnit_Framework_TestCase;
 use DateTime;
 use Xi\Filelib\Backend\FindByIdsRequest;
-use Xi\Filelib\Backend\Platform\Platform;
+use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
@@ -16,15 +16,15 @@ use Xi\Filelib\Backend\Finder\Finder;
  *
  * @group backend
  */
-abstract class AbstractPlatformTestCase extends PHPUnit_Framework_TestCase
+abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Platform
+     * @var BackendAdapter
      */
     protected $backend;
 
     /**
-     * @return Platform
+     * @return BackendAdapter
      */
     abstract protected function setUpBackend();
 

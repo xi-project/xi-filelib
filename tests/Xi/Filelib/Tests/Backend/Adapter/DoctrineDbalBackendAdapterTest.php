@@ -1,14 +1,13 @@
 <?php
 
-namespace Xi\Filelib\Tests\Backend\Platform;
+namespace Xi\Filelib\Tests\Backend\Adapter;
 
-use Xi\Filelib\Backend\Platform\DoctrineDbalPlatform;
+use Xi\Filelib\Backend\Adapter\DoctrineDbalBackendAdapter;
 use Doctrine\DBAL\DriverManager;
-
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
-class DoctrineDbalPlatformTest extends RelationalDbTestCase
+class DoctrineDbalBackendAdapterTest extends RelationalDbTestCase
 {
 
     /**
@@ -25,7 +24,7 @@ class DoctrineDbalPlatformTest extends RelationalDbTestCase
                 'host' => PDO_HOST,
             )
         );
-        return new DoctrineDbalPlatform($conn);
+        return new DoctrineDbalBackendAdapter($conn);
     }
 
     /**
@@ -40,6 +39,6 @@ class DoctrineDbalPlatformTest extends RelationalDbTestCase
 
         $conn->expects($this->any())->method('getDatabasePlatform')->will($this->returnValue($platform));
 
-        $p = new DoctrineDbalPlatform($conn);
+        $p = new DoctrineDbalBackendAdapter($conn);
     }
 }

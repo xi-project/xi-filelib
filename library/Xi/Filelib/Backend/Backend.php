@@ -12,7 +12,7 @@ namespace Xi\Filelib\Backend;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\Backend\IdentityMap\IdentityMap;
-use Xi\Filelib\Backend\Platform\Platform;
+use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Folder\Folder;
@@ -32,7 +32,7 @@ class Backend
     private $eventDispatcher;
 
     /**
-     * @var Platform
+     * @var BackendAdapter
      */
     private $platform;
 
@@ -48,11 +48,11 @@ class Backend
 
     /**
      * @param EventDispatcherInterface $eventDispatcher
-     * @param Platform                 $platform
+     * @param BackendAdapter                 $platform
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
-        Platform $platform
+        BackendAdapter $platform
     ) {
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
@@ -88,9 +88,9 @@ class Backend
     }
 
     /**
-     * @return Platform
+     * @return BackendAdapter
      */
-    public function getPlatform()
+    public function getBackendAdapter()
     {
         return $this->platform;
     }
@@ -117,7 +117,7 @@ class Backend
      */
     public function findByFinder(Finder $finder)
     {
-        $ids = $this->getPlatform()->findByFinder($finder);
+        $ids = $this->getBackendAdapter()->findByFinder($finder);
         $className = $finder->getResultClass();
 
         $request = new FindByIdsRequest($ids, $className, $this->eventDispatcher);
@@ -227,7 +227,7 @@ class Backend
             );
         }
         $this->updateResource($file->getResource());
-        $this->getPlatform()->updateFile($file);
+        $this->getBackendAdapter()->updateFile($file);
     }
 
     /**
@@ -238,7 +238,7 @@ class Backend
      */
     public function updateFolder(Folder $folder)
     {
-        $this->getPlatform()->updateFolder($folder);
+        $this->getBackendAdapter()->updateFolder($folder);
     }
 
     /**
@@ -281,7 +281,7 @@ class Backend
      */
     public function updateResource(Resource $resource)
     {
-        $this->getPlatform()->updateResource($resource);
+        $this->getBackendAdapter()->updateResource($resource);
     }
 
     /**
@@ -292,6 +292,6 @@ class Backend
      */
     public function getNumberOfReferences(Resource $resource)
     {
-        return $this->getPlatform()->getNumberOfReferences($resource);
+        return $this->getBackendAdapter()->getNumberOfReferences($resource);
     }
 }

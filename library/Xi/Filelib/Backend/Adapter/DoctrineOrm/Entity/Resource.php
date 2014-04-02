@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Backend\Platform\DoctrineOrm\Entity;
+namespace Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;

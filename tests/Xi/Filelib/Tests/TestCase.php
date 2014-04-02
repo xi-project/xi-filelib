@@ -231,9 +231,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedPlatform()
+    public function getMockedBackendAdapter()
     {
-        return $this->getMock('Xi\Filelib\Backend\Platform\Platform');
+        return $this->getMock('Xi\Filelib\Backend\Adapter\BackendAdapter');
     }
 
     /**

@@ -26,7 +26,7 @@ use Xi\Filelib\Profile\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Filelib\Event\PluginEvent;
-use Xi\Filelib\Backend\Platform\Platform;
+use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
 use Pekkis\Queue\Queue;
 use Xi\Filelib\Command\CommandDataSerializer;
@@ -82,7 +82,7 @@ class FileLibrary
     private $queue;
 
     /**
-     * @var Platform
+     * @var BackendAdapter
      */
     private $platform;
 
@@ -103,7 +103,7 @@ class FileLibrary
 
     public function __construct(
         Storage $storage,
-        Platform $platform,
+        BackendAdapter $platform,
         EventDispatcherInterface $eventDispatcher = null,
         Commander $commander = null
     ) {
@@ -334,9 +334,9 @@ class FileLibrary
     /**
      * Returns platform
      *
-     * @return Platform
+     * @return BackendAdapter
      */
-    public function getPlatform()
+    public function getBackendAdapter()
     {
         return $this->platform;
     }

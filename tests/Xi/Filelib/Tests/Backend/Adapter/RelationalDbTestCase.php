@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Tests\Backend\Platform;
+namespace Xi\Filelib\Tests\Backend\Adapter;
 
 use PDO;
 use PDOException;
@@ -24,7 +24,7 @@ use Xi\Filelib\Backend\Finder\ResourceFinder;
  *
  * @group backend
  */
-abstract class RelationalDbTestCase extends AbstractPlatformTestCase
+abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
 {
     /**
      * @var string|null
@@ -62,7 +62,7 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
 
 
     /**
-     * Implements AbstractPlatformTest::setUpEmptyDataSet
+     * Implements AbstractBackendAdapterTest::setUpEmptyDataSet
      *
      * Set up a test using an empty data set.
      */
@@ -72,7 +72,7 @@ abstract class RelationalDbTestCase extends AbstractPlatformTestCase
     }
 
     /**
-     * Implements AbstractPlatformTest::setUpSimpleDataSet
+     * Implements AbstractBackendAdapterTest::setUpSimpleDataSet
      *
      * Set up a test using a simple data set.
      */

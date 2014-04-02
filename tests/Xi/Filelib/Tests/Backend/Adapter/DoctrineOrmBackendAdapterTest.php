@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Filelib\Tests\Backend\Platform;
+namespace Xi\Filelib\Tests\Backend\Adapter;
 
-use Xi\Filelib\Backend\Platform\DoctrineOrmPlatform;
+use Xi\Filelib\Backend\Adapter\DoctrineOrmBackendAdapter;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Resource\Resource;
 use Doctrine\ORM\EntityManager;
@@ -19,11 +19,11 @@ use PHPUnit_Framework_MockObject_MockObject;
  * @group backend
  * @group doctrine
  */
-class DoctrineOrmPlatformTest extends RelationalDbTestCase
+class DoctrineOrmBackendAdapterTest extends RelationalDbTestCase
 {
 
     /**
-     * @return DoctrineOrmPlatform
+     * @return DoctrineOrmBackendAdapter
      */
     protected function setUpBackend()
     {
@@ -63,7 +63,7 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
 
         $em = EntityManager::create($connectionOptions, $config);
 
-        return new DoctrineOrmPlatform($em);
+        return new DoctrineOrmBackendAdapter($em);
     }
 
     /**
@@ -74,17 +74,17 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
         $this->setUpEmptyDataSet();
 
         $this->assertEquals(
-            'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\File',
+            'Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\File',
             $this->backend->getFileEntityName()
         );
 
         $this->assertEquals(
-            'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder',
+            'Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Folder',
             $this->backend->getFolderEntityName()
         );
 
         $this->assertEquals(
-            'Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Resource',
+            'Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Resource',
             $this->backend->getResourceEntityName()
         );
     }
@@ -101,7 +101,7 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
             ->method('find')
             ->will($this->throwException(new EntityNotFoundException()));
 
-        $backend = new DoctrineOrmPlatform($em);
+        $backend = new DoctrineOrmBackendAdapter($em);
 
         $resource = Folder::create(
             array(
@@ -126,7 +126,7 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
             ->method('find')
             ->will($this->throwException(new EntityNotFoundException()));
 
-        $backend = new DoctrineOrmPlatform($em);
+        $backend = new DoctrineOrmBackendAdapter($em);
 
         $resource = Resource::create(array('id' => 1));
 
@@ -169,7 +169,7 @@ class DoctrineOrmPlatformTest extends RelationalDbTestCase
     public function entityManagerGetterShouldWork()
     {
         $em = $this->createEntityManagerMock();
-        $platform = new DoctrineOrmPlatform($em);
+        $platform = new DoctrineOrmBackendAdapter($em);
 
         $this->assertSame($em, $platform->getEntityManager());
     }

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Backend\Platform;
+namespace Xi\Filelib\Backend\Adapter;
 
 use Xi\Filelib\Backend\FindByIdsRequestResolver;
 use Xi\Filelib\File\File;
@@ -21,7 +21,7 @@ use Xi\Filelib\Backend\FindByIdsRequest;
 /**
  * Filelib backend platform interface
  */
-interface Platform extends FindByIdsRequestResolver
+interface BackendAdapter extends FindByIdsRequestResolver
 {
     /**
      * Returns how many times a resource is referenced by files

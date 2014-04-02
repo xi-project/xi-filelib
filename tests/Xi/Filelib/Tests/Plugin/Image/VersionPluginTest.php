@@ -65,7 +65,7 @@ class VersionPluginTest extends TestCase
     {
         $filelib = new FileLibrary(
             $this->getMockedStorage(),
-            $this->getMockedPlatform()
+            $this->getMockedBackendAdapter()
         );
         $filelib->addPlugin($this->plugin);
 
@@ -213,7 +213,7 @@ class VersionPluginTest extends TestCase
         $storage = $this->getMockedStorage();
         $filelib = new FileLibrary(
             $storage,
-            $this->getMockedPlatform()
+            $this->getMockedBackendAdapter()
         );
 
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\VersionPlugin')

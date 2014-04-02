@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Backend\Platform;
+namespace Xi\Filelib\Backend\Adapter;
 
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
@@ -23,7 +23,7 @@ use DateTime;
  *
  * @author pekkis
  */
-class JsonPlatform implements Platform
+class JsonBackendAdapter implements BackendAdapter
 {
     private $init = false;
 
@@ -171,7 +171,7 @@ class JsonPlatform implements Platform
 
 
     /**
-     * @see Platform::createFile
+     * @see BackendAdapter::createFile
      */
     public function createFile(File $file, Folder $folder)
     {
@@ -196,7 +196,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::createFolder
+     * @see BackendAdapter::createFolder
      */
     public function createFolder(Folder $folder)
     {
@@ -209,7 +209,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::deleteFolder
+     * @see BackendAdapter::deleteFolder
      */
     public function deleteFolder(Folder $folder)
     {
@@ -218,7 +218,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::deleteFile
+     * @see BackendAdapter::deleteFile
      */
     public function deleteFile(File $file)
     {
@@ -226,7 +226,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::updateFolder
+     * @see BackendAdapter::updateFolder
      */
     public function updateFolder(Folder $folder)
     {
@@ -246,7 +246,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::updateFile
+     * @see BackendAdapter::updateFile
      */
     public function updateFile(File $file)
     {
@@ -261,7 +261,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::createResource
+     * @see BackendAdapter::createResource
      */
     public function createResource(Resource $resource)
     {
@@ -282,7 +282,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::deleteResource
+     * @see BackendAdapter::deleteResource
      */
     public function deleteResource(Resource $resource)
     {
@@ -290,7 +290,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::getNumberOfReferences
+     * @see BackendAdapter::getNumberOfReferences
      */
     public function getNumberOfReferences(Resource $resource)
     {
@@ -306,7 +306,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::findByFinder
+     * @see BackendAdapter::findByFinder
      */
     public function findByFinder(Finder $finder)
     {
@@ -336,7 +336,7 @@ class JsonPlatform implements Platform
     }
 
     /**
-     * @see Platform::findByIds
+     * @see BackendAdapter::findByIds
      */
     public function findByIds(FindByIdsRequest $request)
     {

@@ -14,6 +14,7 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 * Resource stuff moved from FileRepository to ResourceRepository
 * All identifiable (resource, file, folder) constructors are now private. Use create() function to instantiate.
 * RandomizeNamePlugin now uses Rhumsaa::uuid4() and generates an UUID based random name
+* Renamed Platform (under Backend) to BackendAdapter for consistency's sake (everything else already uses this)
 * ZendSlugifier is gone. If you use beautifurls, use the following replacement slugifier to get
   absolute 100% backwards compatibility.:
 

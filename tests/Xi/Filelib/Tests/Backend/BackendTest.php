@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Backend;
 
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\Backend\Platform\Platform;
+use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Backend\IdentityMap\IdentityMap;
 use Xi\Filelib\Resource\Resource;
@@ -41,7 +41,7 @@ class BackendTest extends TestCase
 
     public function setUp()
     {
-        $this->platform = $this->getMock('Xi\Filelib\Backend\Platform\Platform');
+        $this->platform = $this->getMock('Xi\Filelib\Backend\Adapter\BackendAdapter');
 
         $this->im = $this
             ->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
@@ -57,7 +57,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function getNumberOfReferencesShouldDelegateToPlatform()
+    public function getNumberOfReferencesShouldDelegateToBackendAdapter()
     {
         $resource = Resource::create(array('id' => 1));
         $this->platform->expects($this->once())->method('getNumberOfReferences')->with($resource)
@@ -77,15 +77,15 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function getPlatformShouldReturnPlatform()
+    public function getBackendAdapterShouldReturnBackendAdapter()
     {
-        $this->assertSame($this->platform, $this->backend->getPlatform());
+        $this->assertSame($this->platform, $this->backend->getBackendAdapter());
     }
 
     /**
      * @test
      */
-    public function updateResourceShouldDelegateToPlatform()
+    public function updateResourceShouldDelegateToBackendAdapter()
     {
         $obj = Resource::create(array('id' => 1));
 
@@ -102,7 +102,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function updateFolderShouldDelegateToPlatform()
+    public function updateFolderShouldDelegateToBackendAdapter()
     {
         $obj = Folder::create(array('id' => 1));
         $this->platform->expects($this->once())->method('updateFolder')->with($obj)->will($this->returnValue(true));
@@ -140,7 +140,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function updateFileShouldDelegateToPlatform()
+    public function updateFileShouldDelegateToBackendAdapter()
     {
         $resource = Resource::create(array('id' => 2));
         $folder = Folder::create(array('id' => 666));
@@ -164,7 +164,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function createResourceShouldDelegateToPlatform()
+    public function createResourceShouldDelegateToBackendAdapter()
     {
         $obj = Resource::create(array('id' => 1));
 
@@ -180,7 +180,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function createFolderShouldDelegateToPlatform()
+    public function createFolderShouldDelegateToBackendAdapter()
     {
         $parent = Folder::create(array('id' => 66, 'parent_id' => null));
         $obj = Folder::create(array('id' => 1, 'parent_id' => 66));
@@ -256,7 +256,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function createFileShouldDelegateToPlatform()
+    public function createFileShouldDelegateToBackendAdapter()
     {
         $backend = $this->getMockedBackend(array('findByFinder', 'getIdentityMapHelper'));
 
@@ -281,7 +281,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function deleteFolderShouldDelegateToPlatformAndRemoveFromIdentityMap()
+    public function deleteFolderShouldDelegateToBackendAdapterAndRemoveFromIdentityMap()
     {
         $obj = Folder::create(array('id' => 1, 'parent_id' => 66));
 
@@ -360,7 +360,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function deleteFileShouldDelegateToPlatform()
+    public function deleteFileShouldDelegateToBackendAdapter()
     {
         $obj = File::create(array('id' => 1));
 
@@ -395,7 +395,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function deleteResourceShouldDelegateToPlatform()
+    public function deleteResourceShouldDelegateToBackendAdapter()
     {
         $obj = Resource::create(array('id' => 1));
 
@@ -424,7 +424,7 @@ class BackendTest extends TestCase
      * @dataProvider provideFinders
      * @param Finder $finder
      */
-    public function findByFinderShouldTryManyFromIdentityMapAndDelegateToPlatform(Finder $finder)
+    public function findByFinderShouldTryManyFromIdentityMapAndDelegateToBackendAdapter(Finder $finder)
     {
         $this->platform->expects($this->once())->method('findByFinder')
             ->with($finder)
@@ -460,7 +460,7 @@ class BackendTest extends TestCase
      * @dataProvider provideClassNames
      * @param string $className
      */
-    public function findByIdShouldDelegateToPlatform($className)
+    public function findByIdShouldDelegateToBackendAdapter($className)
     {
         $this->platform->expects($this->once())->method('findByIds')
             ->with($this->isInstanceOf('Xi\Filelib\Backend\FindByIdsRequest'))

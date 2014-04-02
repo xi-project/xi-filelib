@@ -46,7 +46,7 @@ class FileLibraryTest extends TestCase
      */
     public function storageGetterShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
         $this->assertInstanceOf('Xi\Filelib\Storage\Storage', $filelib->getStorage());
     }
 
@@ -63,7 +63,7 @@ class FileLibraryTest extends TestCase
 
         $filelib = new FileLibrary(
             $this->getMockedStorage(),
-            $this->getMockedPlatform(),
+            $this->getMockedBackendAdapter(),
             $this->getMockedEventDispatcher(),
             $commander
         );
@@ -79,8 +79,8 @@ class FileLibraryTest extends TestCase
      */
     public function platformGetterShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
-        $this->assertInstanceOf('Xi\Filelib\Backend\Platform\Platform', $filelib->getPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $this->assertInstanceOf('Xi\Filelib\Backend\Adapter\BackendAdapter', $filelib->getBackendAdapter());
     }
 
     /**
@@ -88,7 +88,7 @@ class FileLibraryTest extends TestCase
      */
     public function backendGetterShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
         $this->assertInstanceOf('Xi\Filelib\Backend\Backend', $filelib->getBackend());
     }
 
@@ -97,7 +97,7 @@ class FileLibraryTest extends TestCase
      */
     public function tempDirShouldDefaultToSystemTempDir()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
         $this->assertEquals(sys_get_temp_dir(), $filelib->getTempDir());
     }
 
@@ -106,7 +106,7 @@ class FileLibraryTest extends TestCase
      */
     public function setTempDirShouldFailWhenDirectoryDoesNotExists()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
 
         $this->setExpectedException(
             'InvalidArgumentException',
@@ -128,7 +128,7 @@ class FileLibraryTest extends TestCase
         $this->assertTrue(is_dir($this->dirname));
         $this->assertFalse(is_writable($this->dirname));
 
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
 
         $this->setExpectedException(
             'InvalidArgumentException',
@@ -146,7 +146,7 @@ class FileLibraryTest extends TestCase
      */
     public function getsResourceRepository()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
         $rere = $filelib->getResourceRepository();
         $this->assertInstanceOf('Xi\Filelib\Resource\ResourceRepository', $rere);
     }
@@ -156,7 +156,7 @@ class FileLibraryTest extends TestCase
      */
     public function getFileRepositoryShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
         $fop = $filelib->getFileRepository();
 
         $this->assertInstanceOf('Xi\Filelib\File\FileRepository', $fop);
@@ -167,7 +167,7 @@ class FileLibraryTest extends TestCase
      */
     public function getFolderRepositoryShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
         $fop = $filelib->getFolderRepository();
 
         $this->assertInstanceOf('Xi\Filelib\Folder\FolderRepository', $fop);
@@ -178,7 +178,7 @@ class FileLibraryTest extends TestCase
      */
     public function addedProfileShouldBeReturned()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
 
         $this->assertCount(1, $filelib->getProfiles());
 
@@ -204,7 +204,7 @@ class FileLibraryTest extends TestCase
     public function addPluginShouldFirePluginAddEventAndAddPluginAsSubscriber()
     {
         $ed = $this->getMockedEventDispatcher();
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform(), $ed);
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter(), $ed);
 
         $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
 
@@ -229,7 +229,7 @@ class FileLibraryTest extends TestCase
      */
     public function addPluginShouldAddToAllProfilesIfNoProfilesAreProvided()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
 
         $plugin = new AuthorizationPlugin($this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter'));
 
@@ -250,7 +250,7 @@ class FileLibraryTest extends TestCase
      */
     public function addPluginShouldAddToOnlyProfilesProvided()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
 
         $plugin = new AuthorizationPlugin($this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter'));
 
@@ -272,7 +272,7 @@ class FileLibraryTest extends TestCase
     public function getEventDispatcherShouldWork()
     {
         $ed = $this->getMockedEventDispatcher();
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform(), $ed);
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter(), $ed);
         $this->assertSame($ed, $filelib->getEventDispatcher());
     }
 
@@ -303,7 +303,7 @@ class FileLibraryTest extends TestCase
      */
     public function cacheCanBeSet()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedPlatform());
+        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
 
         $adapter = $this->getMockedCacheAdapter();
         $this->assertNull($filelib->getCache());

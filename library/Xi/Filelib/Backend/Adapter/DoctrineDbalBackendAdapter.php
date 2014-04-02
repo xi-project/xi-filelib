@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Backend\Platform;
+namespace Xi\Filelib\Backend\Adapter;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Xi\Filelib\Backend\FindByIdsRequest;
@@ -25,7 +25,7 @@ use DateTime;
  * Doctrine Dbal backend for filelib. Only supports postgresql and mysql because of portability stuff.
  * Strongly suggest you use the ORM version because it is much more portable.
  */
-class DoctrineDbalPlatform implements Platform
+class DoctrineDbalBackendAdapter implements BackendAdapter
 {
     private $supportedPlatforms = array('postgresql', 'mysql');
 
@@ -85,7 +85,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::updateFile
+     * @see BackendAdapter::updateFile
      */
     public function updateFile(File $file)
     {
@@ -116,7 +116,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::deleteFile
+     * @see BackendAdapter::deleteFile
      */
     public function deleteFile(File $file)
     {
@@ -127,7 +127,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::createFolder
+     * @see BackendAdapter::createFolder
      */
     public function createFolder(Folder $folder)
     {
@@ -153,7 +153,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::updateFolder
+     * @see BackendAdapter::updateFolder
      */
     public function updateFolder(Folder $folder)
     {
@@ -179,7 +179,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::updateResource
+     * @see BackendAdapter::updateResource
      */
     public function updateResource(Resource $resource)
     {
@@ -201,7 +201,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::deleteFolder
+     * @see BackendAdapter::deleteFolder
      */
     public function deleteFolder(Folder $folder)
     {
@@ -212,7 +212,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::deleteResource
+     * @see BackendAdapter::deleteResource
      */
     public function deleteResource(Resource $resource)
     {
@@ -223,7 +223,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::createResource
+     * @see BackendAdapter::createResource
      */
     public function createResource(Resource $resource)
     {
@@ -261,7 +261,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::createFile
+     * @see BackendAdapter::createFile
      */
     public function createFile(File $file, Folder $folder)
     {
@@ -292,7 +292,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::getNumberOfReferences
+     * @see BackendAdapter::getNumberOfReferences
      */
     public function getNumberOfReferences(Resource $resource)
     {
@@ -305,7 +305,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::findByFinder
+     * @see BackendAdapter::findByFinder
      */
     public function findByFinder(Finder $finder)
     {
@@ -348,7 +348,7 @@ class DoctrineDbalPlatform implements Platform
     }
 
     /**
-     * @see Platform::findByIds
+     * @see BackendAdapter::findByIds
      */
     public function findByIds(FindByIdsRequest $request)
     {
@@ -469,7 +469,7 @@ class DoctrineDbalPlatform implements Platform
 
 
     /**
-     * @param AbstractPlatform $platform
+     * @param AbstractBackendAdapter $platform
      * @return bool
      */
     private function isPlatformSupported(AbstractPlatform $platform)

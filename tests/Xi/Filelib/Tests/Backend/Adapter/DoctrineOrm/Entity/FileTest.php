@@ -1,9 +1,9 @@
 <?php
 
-namespace Xi\Filelib\Tests\Backend\Platform\DoctrineOrm\Entity;
+namespace Xi\Filelib\Tests\Backend\Adapter\DoctrineOrm\Entity;
 
-use Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\File;
-use Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\Folder;
+use Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\File;
+use Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Folder;
 use DateTime;
 
 class FileTest extends \Xi\Filelib\Tests\TestCase
@@ -13,7 +13,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Backend\Platform\DoctrineOrm\Entity\File'));
+        $this->assertTrue(class_exists('Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\File'));
     }
 
     /**

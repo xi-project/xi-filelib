@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\Integration;
 
-use Xi\Filelib\Backend\Platform\MongoPlatform;
+use Xi\Filelib\Backend\Adapter\MongoBackendAdapter;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\FilesystemStorage;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
@@ -69,7 +69,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $filelib = new FileLibrary(
             new FilesystemStorage(ROOT_TESTS . '/data/files', new TimeDirectoryIdCalculator()),
-            new MongoPlatform(
+            new MongoBackendAdapter(
                 $this->mongo
             ),
             $ed
