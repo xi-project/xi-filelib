@@ -72,7 +72,8 @@ class Resource implements Identifiable
     private $data;
 
     private function __construct()
-    { }
+    {
+    }
 
     /**
      * @return ArrayObject

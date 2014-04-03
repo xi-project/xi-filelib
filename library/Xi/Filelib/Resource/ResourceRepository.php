@@ -43,6 +43,9 @@ class ResourceRepository extends AbstractRepository
      */
     private $profiles;
 
+    /**
+     * @param FileLibrary $filelib
+     */
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
@@ -70,7 +73,7 @@ class ResourceRepository extends AbstractRepository
     }
 
     /**
-     * Updates a file
+     * Updates a resource
      *
      * @param  Resource         $resource
      * @return ResourceRepository
@@ -83,9 +86,9 @@ class ResourceRepository extends AbstractRepository
     }
 
     /**
-     * Finds a file
+     * Finds a resource
      *
-     * @param  mixed      $id Resource id
+     * @param  mixed $id Resource id
      * @return Resource
      */
     public function find($id)
@@ -100,7 +103,7 @@ class ResourceRepository extends AbstractRepository
     }
 
     /**
-     * Finds and returns all files
+     * Finds and returns all resources
      *
      * @return ArrayIterator
      */
@@ -134,7 +137,6 @@ class ResourceRepository extends AbstractRepository
             ->createExecutable(self::COMMAND_CREATE, array($resource, $path))
             ->execute();
     }
-
 
     /**
      * @param  File       $file
@@ -181,5 +183,4 @@ class ResourceRepository extends AbstractRepository
 
         return $file->getResource();
     }
-
 }
