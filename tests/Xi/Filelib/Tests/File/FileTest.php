@@ -183,7 +183,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'status' => 54,
             'uuid' => 'tussi-poski',
             'resource' => Resource::create(),
-            'data' => new ArrayObject(array('versions' => array('lussi', 'xussi')))
+            'data' => array('versions' => array('lussi', 'xussi'))
         ));
 
         $file = File::create();
@@ -196,7 +196,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'status' => null,
             'uuid' => null,
             'resource' => null,
-            'data' => new ArrayObject(),
+            'data' => array(),
         ));
 
 
@@ -218,9 +218,8 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $file = File::create();
         $data = $file->getData();
 
-        $this->assertInstanceOf('ArrayObject', $data);
-
-        $data['tussi'] = 'lussi';
+        $this->assertInstanceOf('Xi\Filelib\IdentifiableDataContainer', $data);
+        $data->set('tussi', 'lussi');
 
         $this->assertSame($data, $file->getData());
 
@@ -278,12 +277,12 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
         $data = $file->getData();
-        $this->assertInstanceOf('ArrayObject', $data);
+        $this->assertInstanceOf('Xi\Filelib\IdentifiableDataContainer', $data);
 
         $file->setData(array('lusso' => 'magnifico'));
 
         $data = $file->getData();
-        $this->assertEquals('magnifico', $data['lusso']);
+        $this->assertEquals('magnifico', $data->get('lusso'));
     }
 
     /**
@@ -293,12 +292,12 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
     {
         $source = File::create();
         $sourceData = $source->getData();
-        $sourceData['lussutappa'] = 'tussia';
+        $sourceData->set('lussutappa', 'tussia');
 
         $target = clone $source;
         $targetData = $target->getData();
 
-        $this->assertEquals($source->getData()->getArrayCopy(), $target->getData()->getArrayCopy());
+        $this->assertEquals($source->getData()->toArray(), $target->getData()->toArray());
         $this->assertNotSame($sourceData, $targetData);
     }
 

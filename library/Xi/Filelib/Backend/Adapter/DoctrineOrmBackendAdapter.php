@@ -154,7 +154,7 @@ class DoctrineOrmBackendAdapter implements BackendAdapter
         $entity->setStatus($file->getStatus());
         $entity->setUuid($file->getUuid());
         $entity->setResource($this->em->getReference($this->getResourceEntityName(), $file->getResource()->getId()));
-        $entity->setData($file->getData()->getArrayCopy());
+        $entity->setData($file->getData()->toArray());
 
         $this->em->flush($entity);
         return true;
@@ -233,7 +233,7 @@ class DoctrineOrmBackendAdapter implements BackendAdapter
     {
         try {
             $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
-            $resourceRow->setData($resource->getData()->getArrayCopy());
+            $resourceRow->setData($resource->getData()->toArray());
             $resourceRow->setExclusive($resource->isExclusive());
             $resourceRow->setHash($resource->getHash());
             $this->em->flush($resourceRow);
@@ -322,7 +322,7 @@ class DoctrineOrmBackendAdapter implements BackendAdapter
                 $entity->setDateCreated($file->getDateCreated());
                 $entity->setStatus($file->getStatus());
                 $entity->setUuid($file->getUuid());
-                $entity->setData($file->getData()->getArrayCopy());
+                $entity->setData($file->getData()->toArray());
 
                 $resource = $file->getResource();
                 if ($resource) {

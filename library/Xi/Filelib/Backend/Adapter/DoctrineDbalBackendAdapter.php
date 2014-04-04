@@ -107,7 +107,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
                 'status' => $file->getStatus(),
                 'uuid' => $file->getUuid(),
                 'resourceId' => $file->getResource()->getId(),
-                'data' => json_encode($file->getdata()),
+                'data' => json_encode($file->getdata()->toArray()),
                 'id' => $file->getId(),
             )
         );
@@ -193,7 +193,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
 
         $stmt->bindValue('hash', $resource->getHash(), PDO::PARAM_STR);
         $stmt->bindValue('exclusive', $resource->isExclusive(), PDO::PARAM_BOOL);
-        $stmt->bindValue('data', json_encode($resource->getData()), PDO::PARAM_STR);
+        $stmt->bindValue('data', json_encode($resource->getData()->toArray()), PDO::PARAM_STR);
         $stmt->bindValue('id', $resource->getId(), PDO::PARAM_INT);
 
         $stmt->execute();
@@ -241,7 +241,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
                 'mimetype' => $resource->getMimetype(),
                 'exclusive' => $resource->isExclusive(),
                 'filesize' => $resource->getSize(),
-                'data' => json_encode($resource->getData()),
+                'data' => json_encode($resource->getData()->toArray()),
             ),
             array(
                 PDO::PARAM_INT,
@@ -281,7 +281,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
                 'status' => $file->getStatus(),
                 'uuid' => $file->getUuid(),
                 'resource_id' => $file->getResource()->getId(),
-                'data' => json_encode($file->getdata()),
+                'data' => json_encode($file->getdata()->toArray()),
             )
         );
 

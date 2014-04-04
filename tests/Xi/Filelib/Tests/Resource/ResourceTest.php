@@ -139,7 +139,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'id' => 655,
             'hash' => 'hashisen-kone',
             'date_created' => new \DateTime('1978-03-21'),
-            'data' => new ArrayObject(array('versions' => array('kraa', 'xoo'))),
+            'data' => array('versions' => array('kraa', 'xoo')),
             'size' => 5678,
             'mimetype' => 'video/lus',
             'exclusive' => true,
@@ -150,7 +150,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'id' => null,
             'hash' => null,
             'date_created' => null,
-            'data' => new ArrayObject(array()),
+            'data' => array(),
             'size' => null,
             'mimetype' => null,
             'exclusive' => false,
@@ -217,13 +217,11 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $res = Resource::create(array());
         $data = $res->getData();
-        $this->assertInstanceOf('ArrayObject', $data);
+        $this->assertInstanceOf('Xi\Filelib\IdentifiableDataContainer', $data);
 
         $res->setData(array('lusso' => 'magnifico'));
 
         $data = $res->getData();
-        $this->assertEquals('magnifico', $data['lusso']);
+        $this->assertEquals('magnifico', $data->get('lusso'));
     }
-
-
 }

@@ -112,7 +112,7 @@ class MongoBackendAdapter implements BackendAdapter
             'date_created'  => new MongoDate($file->getDateCreated()->getTimestamp()),
             'uuid'          => $file->getUuid(),
             'resource_id'   => $file->getResource()->getId(),
-            'data'      => $file->getData()->getArrayCopy(),
+            'data'      => $file->getData()->toArray(),
         );
 
         $this->getMongo()->files->ensureIndex(
@@ -246,7 +246,7 @@ class MongoBackendAdapter implements BackendAdapter
             'mimetype' => $resource->getMimetype(),
             'size' => $resource->getSize(),
             'date_created' => new MongoDate($resource->getDateCreated()->getTimestamp()),
-            'data' => $resource->getData(),
+            'data' => $resource->getData()->toArray(),
             'exclusive' => $resource->isExclusive(),
         );
 

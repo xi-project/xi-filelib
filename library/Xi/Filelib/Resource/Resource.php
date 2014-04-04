@@ -12,6 +12,7 @@ namespace Xi\Filelib\Resource;
 use DateTime;
 use Xi\Filelib\Identifiable;
 use ArrayObject;
+use Xi\Filelib\IdentifiableDataContainer;
 
 /**
  * Resource
@@ -76,12 +77,12 @@ class Resource implements Identifiable
     }
 
     /**
-     * @return ArrayObject
+     * @return IdentifiableDataContainer
      */
     public function getData()
     {
         if (!$this->data) {
-            $this->data = new ArrayObject();
+            $this->data = new IdentifiableDataContainer();
         }
         return $this->data;
     }
@@ -93,9 +94,8 @@ class Resource implements Identifiable
     public function setData($data)
     {
         if (is_array($data)) {
-            $data = new ArrayObject($data);
+            $data = new IdentifiableDataContainer($data);
         }
-
         $this->data = $data;
         return $this;
     }
@@ -238,7 +238,7 @@ class Resource implements Identifiable
             'id' => $this->getId(),
             'hash' => $this->getHash(),
             'date_created' => $this->getDateCreated(),
-            'data' => $this->getData(),
+            'data' => $this->getData()->toArray(),
             'mimetype' => $this->getMimetype(),
             'size' => $this->getSize(),
             'exclusive' => $this->isExclusive(),
@@ -283,9 +283,7 @@ class Resource implements Identifiable
      */
     public function setVersions(array $versions = array())
     {
-        $data = $this->getData();
-        $data['versions'] = $versions;
-
+        $this->getData()->set('versions', $versions);
         return $this;
     }
 
@@ -296,11 +294,7 @@ class Resource implements Identifiable
      */
     public function getVersions()
     {
-        $data = $this->getData();
-        if (!isset($data['versions'])) {
-            $data['versions'] = array();
-        }
-        return $data['versions'];
+        return $this->getData()->get('versions', array());
     }
 
     /**
