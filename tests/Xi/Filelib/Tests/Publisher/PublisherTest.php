@@ -57,8 +57,11 @@ class PublisherTest extends TestCase
             ->with($this->isInstanceOf('Xi\Filelib\File\File'))
             ->will($this->returnValue(array('ankan', 'imaisu')));
 
-        $this->fiop = $this->getMockedFileOperator();
-        $this->fiop
+        $this->fiop = $this->getMockedFileRepository();
+
+        $this->pm = $this->getMockedProfileManager();
+
+        $this->pm
             ->expects($this->any())
             ->method('getProfile')
             ->with('default')
@@ -66,7 +69,7 @@ class PublisherTest extends TestCase
 
         $this->provider = $this->getMockedVersionProvider('lipsautus');
 
-        $this->fiop
+        $this->pm
             ->expects($this->any())
             ->method('getVersionProvider')
             ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->logicalOr('ankan', 'imaisu'))
@@ -74,7 +77,7 @@ class PublisherTest extends TestCase
 
         $this->ed = $this->getMockedEventDispatcher();
 
-        $filelib = $this->getMockedFilelib(null, $this->fiop, null, null, $this->ed);
+        $filelib = $this->getMockedFilelib(null, $this->fiop, null, null, $this->ed, null, null, null, $this->pm);
 
 
         $this->adapter = $this->getMock('Xi\Filelib\Publisher\PublisherAdapter');
@@ -127,28 +130,35 @@ class PublisherTest extends TestCase
     {
         $source = File::create();
         $sourceData = $source->getData();
-        $sourceData['publisher.published'] = 1;
-        $sourceData['publisher.version_url']['ankan'] = 'arto';
-        $sourceData['publisher.version_url']['lipaisija'] = 'tenhunen';
+        $sourceData->set('publisher.published', 1);
+
+        $sourceData->set(
+            'publisher.version_url',
+            array(
+                'ankan' => 'arto',
+                'lipaisija' => 'tenhunen',
+            )
+        );
+
 
         $target = clone $source;
         $targetData = $target->getData();
 
         $this->assertNotSame($sourceData, $targetData);
 
-        $this->assertArrayHasKey('publisher.published', $sourceData);
-        $this->assertArrayHasKey('publisher.published', $targetData);
-        $this->assertArrayHasKey('publisher.version_url', $sourceData);
-        $this->assertArrayHasKey('publisher.version_url', $targetData);
+        $this->assertArrayHasKey('publisher.published', $sourceData->toArray());
+        $this->assertArrayHasKey('publisher.published', $targetData->toArray());
+        $this->assertArrayHasKey('publisher.version_url', $sourceData->toArray());
+        $this->assertArrayHasKey('publisher.version_url', $targetData->toArray());
 
         $publisher = new Publisher($this->getMockedPublisherAdapter(), $this->getMockedLinker());
 
         $event = new FileCopyEvent($source, $target);
         $publisher->onBeforeCopy($event);
 
-        $this->assertArrayHasKey('publisher.published', $sourceData);
-        $this->assertArrayNotHasKey('publisher.published', $targetData);
-        $this->assertArrayNotHasKey('publisher.version_url', $targetData);
+        $this->assertArrayHasKey('publisher.published', $sourceData->toArray());
+        $this->assertArrayNotHasKey('publisher.published', $targetData->toArray());
+        $this->assertArrayNotHasKey('publisher.version_url', $targetData->toArray());
     }
 
 
@@ -163,10 +173,10 @@ class PublisherTest extends TestCase
         $data = $file->getData();
         $this->assertFalse($this->publisher->isPublished($file));
 
-        $data['publisher.published'] = 0;
+        $data->set('publisher.published', 0);
         $this->assertFalse($this->publisher->isPublished($file));
 
-        $data['publisher.published'] = 1;
+        $data->set('publisher.published', 1);
         $this->assertTrue($this->publisher->isPublished($file));
     }
 
@@ -207,7 +217,12 @@ class PublisherTest extends TestCase
     {
         $file = File::create();
         $data = $file->getData();
-        $data['publisher.version_url']['ankan'] = 'kerran-tenhusen-lipaisema-lopullisesti-pilalla';
+        $data->set(
+            'publisher.version_url',
+            array(
+                'ankan' => 'kerran-tenhusen-lipaisema-lopullisesti-pilalla'
+            )
+        );
 
         $this->adapter
             ->expects($this->never())
@@ -286,9 +301,9 @@ class PublisherTest extends TestCase
 
         $this->publisher->publish($file);
 
-        $data = $file->getData();
-        $this->assertEquals('tenhusen-suuruuden-ylistyksen-url', $data['publisher.version_url']['ankan']);
-        $this->assertEquals('tenhusen-ylistyksen-suuruuden-url', $data['publisher.version_url']['imaisu']);
+        $versionUrls = $file->getData()->get('publisher.version_url');
+        $this->assertEquals('tenhusen-suuruuden-ylistyksen-url', $versionUrls['ankan']);
+        $this->assertEquals('tenhusen-ylistyksen-suuruuden-url', $versionUrls['imaisu']);
 
         return $file;
     }
@@ -300,8 +315,15 @@ class PublisherTest extends TestCase
     public function unpublishShouldUnpublish(File $file)
     {
         $data = $file->getData();
-        $data['publisher.version_url']['ankan'] = 'kvaak-kvaak';
-        $this->assertArrayHasKey('publisher.version_url', $data);
+
+        $data->set(
+            'publisher.version_url',
+            array(
+                'ankan' => 'kvaak-kvaak'
+            )
+        );
+
+        $this->assertArrayHasKey('publisher.version_url', $data->toArray());
 
         $this->assertTrue($this->publisher->isPublished($file));
 
@@ -342,7 +364,7 @@ class PublisherTest extends TestCase
 
         $this->assertFalse($this->publisher->isPublished($file));
 
-        $this->assertArrayNotHasKey('publisher.version_url', $data);
+        $this->assertArrayNotHasKey('publisher.version_url', $data->toArray());
     }
 
     /**

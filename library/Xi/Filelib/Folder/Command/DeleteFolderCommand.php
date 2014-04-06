@@ -10,8 +10,8 @@
 namespace Xi\Filelib\Folder\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
@@ -21,9 +21,9 @@ class DeleteFolderCommand extends AbstractFolderCommand
 {
     /**
      *
-     * @var FileOperator
+     * @var FileRepository
      */
-    private $fileOperator;
+    private $fileRepository;
 
     /**
      *
@@ -41,18 +41,18 @@ class DeleteFolderCommand extends AbstractFolderCommand
         $event = new FolderEvent($this->folder);
         $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_DELETE, $event);
 
-        foreach ($this->folderOperator->findSubFolders($this->folder) as $childFolder) {
-            $this->folderOperator->createCommand(
-                FolderOperator::COMMAND_DELETE,
+        foreach ($this->folderRepository->findSubFolders($this->folder) as $childFolder) {
+            $this->folderRepository->createCommand(
+                FolderRepository::COMMAND_DELETE,
                 array(
                     $childFolder
                 )
             )->execute();
         }
 
-        foreach ($this->folderOperator->findFiles($this->folder) as $file) {
-            $this->folderOperator->createCommand(
-                FileOperator::COMMAND_DELETE,
+        foreach ($this->folderRepository->findFiles($this->folder) as $file) {
+            $this->folderRepository->createCommand(
+                FileRepository::COMMAND_DELETE,
                 array(
                     $file
                 )
@@ -71,26 +71,11 @@ class DeleteFolderCommand extends AbstractFolderCommand
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->fileOperator = $filelib->getFileOperator();
+        $this->fileRepository = $filelib->getFileRepository();
     }
 
     public function getTopic()
     {
         return 'xi_filelib.command.folder.delete';
-    }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'folder' => $this->folder,
-            )
-        );
     }
 }

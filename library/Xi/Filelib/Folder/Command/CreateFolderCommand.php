@@ -10,8 +10,8 @@
 namespace Xi\Filelib\Folder\Command;
 
 use Rhumsaa\Uuid\Uuid;
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
@@ -48,12 +48,12 @@ class CreateFolderCommand extends AbstractFolderCommand implements UuidReceiver
         }
 
         if ($this->folder->getParentId()) {
-            $parentFolder = $this->folderOperator->find($this->folder->getParentId());
+            $parentFolder = $this->folderRepository->find($this->folder->getParentId());
             $event = new FolderEvent($parentFolder);
             $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
         }
 
-        $route = $this->folderOperator->buildRoute($this->folder);
+        $route = $this->folderRepository->buildRoute($this->folder);
         $this->folder->setUrl($route);
         $this->folder->setUuid($this->getUuid());
 
@@ -79,22 +79,5 @@ class CreateFolderCommand extends AbstractFolderCommand implements UuidReceiver
     public function getTopic()
     {
         return 'xi_filelib.command.folder.create';
-    }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-        $this->uuid = $data['uuid'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'folder' => $this->folder,
-                'uuid' => $this->uuid,
-            )
-        );
     }
 }

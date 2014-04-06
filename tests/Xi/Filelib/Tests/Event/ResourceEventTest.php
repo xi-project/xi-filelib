@@ -22,7 +22,7 @@ class ResourceEventTest extends \Xi\Filelib\Tests\TestCase
      */
     public function eventShouldInitializeCorrectly()
     {
-        $resource = $this->getMock('Xi\Filelib\File\Resource');
+        $resource = $this->getMockedResource();
         $event = new ResourceEvent($resource);
         $resource2 = $event->getResource();
         $this->assertSame($resource, $resource2);

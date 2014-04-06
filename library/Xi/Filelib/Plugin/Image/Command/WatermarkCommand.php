@@ -37,7 +37,7 @@ class WatermarkCommand extends AbstractCommand
     /**
      * @var \Imagick
      */
-    protected $watermark;
+    protected $watermark = null;
 
     public function __construct($image, $position, $padding)
     {
@@ -166,7 +166,8 @@ class WatermarkCommand extends AbstractCommand
     public function destroyWatermarkResource()
     {
         if ($this->watermark) {
-            $this->watermark->destroy();
+            $this->watermark->clear();
+            $this->watermark = null;
         }
     }
 

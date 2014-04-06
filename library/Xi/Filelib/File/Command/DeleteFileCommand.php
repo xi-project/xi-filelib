@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\File\Command;
 
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
@@ -18,7 +18,6 @@ use Pekkis\Queue\Message;
 class DeleteFileCommand extends AbstractFileCommand
 {
     /**
-     *
      * @var File
      */
     private $file;
@@ -49,20 +48,5 @@ class DeleteFileCommand extends AbstractFileCommand
     public function getTopic()
     {
         return 'xi_filelib.command.file.delete';
-    }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->file = $data['file'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'file' => $this->file,
-            )
-        );
     }
 }

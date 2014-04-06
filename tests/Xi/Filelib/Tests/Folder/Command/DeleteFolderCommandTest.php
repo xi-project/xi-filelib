@@ -3,8 +3,8 @@
 namespace Xi\Filelib\Tests\Folder\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Command\DeleteFolderCommand;
@@ -30,7 +30,7 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
     {
         $filelib = $this->getMockedFilelib();
 
-        $op = $this->getMockedFolderOperator();
+        $op = $this->getMockedFolderRepository();
 
         $ed = $this->getMockedEventDispatcher();
 
@@ -103,7 +103,7 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
                 )
             );
 
-        $fiop = $this->getMockedFileOperator();
+        $fiop = $this->getMockedFileRepository();
 
         $backend = $this->getMockedBackend();
 
@@ -119,21 +119,6 @@ class DeleteFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new DeleteFolderCommand($folder);
         $command->attachTo($filelib);
         $command->execute();
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMockedFolder();
-
-        $command = new DeleteFolderCommand($folder);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals($folder, 'folder', $command2);
     }
 
     /**

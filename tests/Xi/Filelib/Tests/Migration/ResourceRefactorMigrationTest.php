@@ -41,22 +41,15 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
      */
     public function executeShouldDoMigration($expectFail)
     {
-        $foop = $this->getMockedFolderOperator();
-        $fiop = $this->getMockedFileOperator();
+        $foop = $this->getMockedFolderRepository();
+        $fiop = $this->getMockedFileRepository();
         $resource = $this->getMockedResource();
         $storage = $this->getMockedStorage();
         $backend = $this->getMockedBackend();
         $profile = $this->getMockedFileProfile();
-        $filelib = $this->getMockedFilelib(null, $fiop, $foop);
-        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($storage));
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
+        $pm = $this->getMockedProfileManager();
 
-        /*
-        $retrieved = $this->filelib->getStorage()->retrieve($resource);
-        $resource->setHash(sha1_file($retrieved));
-        $resource->setVersions($profile->getFileVersions($file));
-        $this->filelib->getBackend()->updateResource($resource);
-        */
+        $filelib = $this->getMockedFilelib(null, $fiop, $foop, $storage, null, $backend, null, null, $pm);
 
         $rootFolder = $this->getMockedFolder();
         $childFolder = $this->getMockedFolder();
@@ -86,11 +79,10 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $foop->expects($this->any())->method('generateUuid')->will($this->returnValue('uuid'));
         $foop->expects($this->exactly(2))->method('update')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
 
-        $fiop->expects($this->any())->method('generateUuid')->will($this->returnValue('uuid'));
-        $fiop->expects($this->any())->method('getProfile')->with($this->isType('string'))
+        $pm->expects($this->any())->method('getProfile')->with($this->isType('string'))
              ->will($this->returnValue($profile));
 
-        $file = $this->getMock('Xi\Filelib\File\File');
+        $file = $this->getMockedFile();
 
         $fiop->expects($this->once())->method('findAll')
              ->will($this->returnValue(array($file)));
@@ -105,24 +97,7 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
 
         $migration = new ResourceRefactorMigration();
 
-        $filelib = $this->getMockedFilelib(null, $fiop, $foop, $storage);
-        $filelib->expects($this->any())->method('getBackend')->will($this->returnValue($backend));
-
         $migration->attachTo($filelib);
         $migration->execute();
     }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $command = new ResourceRefactorMigration();
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertInstanceOf('Xi\Filelib\Migration\ResourceRefactorMigration', $command2);
-    }
-
 }

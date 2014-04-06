@@ -64,7 +64,7 @@ class RandomizeNamePluginTest extends TestCase
     public function beforeUploadShouldRandomizeUploadFilename()
     {
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
         $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
@@ -86,7 +86,7 @@ class RandomizeNamePluginTest extends TestCase
 
         $this->assertEquals('jpg', $pinfo['extension']);
 
-        $this->assertEquals(27, strlen($upload2->getUploadFilename()));
+        $this->assertEquals(40, strlen($upload2->getUploadFilename()));
     }
 
     /**
@@ -97,7 +97,7 @@ class RandomizeNamePluginTest extends TestCase
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
         $upload->setOverrideFilename('tussinlussuttajankabaali');
 
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
         $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
@@ -116,7 +116,7 @@ class RandomizeNamePluginTest extends TestCase
         $pinfo = pathinfo($upload2->getUploadFilename());
 
         $this->assertArrayNotHasKey('extension', $pinfo);
-        $this->assertEquals(23, strlen($upload2->getUploadFilename()));
+        $this->assertEquals(36, strlen($upload2->getUploadFilename()));
     }
 
     public function providePrefixes()
@@ -141,7 +141,7 @@ class RandomizeNamePluginTest extends TestCase
         $plugin->setProfiles(array('tussi'));
 
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
         $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
@@ -151,7 +151,7 @@ class RandomizeNamePluginTest extends TestCase
         $upload2 = $event->getFileUpload();
 
         $this->assertStringStartsWith($prefix, $upload2->getUploadFilename());
-        $this->assertEquals(27 + strlen($prefix), strlen($upload2->getUploadFilename()));
+        $this->assertEquals(40 + strlen($prefix), strlen($upload2->getUploadFilename()));
     }
 
     /**

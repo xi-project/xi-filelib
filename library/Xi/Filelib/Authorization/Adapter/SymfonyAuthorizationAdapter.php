@@ -13,7 +13,7 @@ use Xi\Filelib\Authorization\AuthorizationAdapter;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\Folder\FolderRepository;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Acl\Model\AclProviderInterface;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
@@ -23,9 +23,9 @@ use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 class SymfonyAuthorizationAdapter implements AuthorizationAdapter
 {
     /**
-     * @var FolderOperator
+     * @var FolderRepository
      */
-    private $folderOperator;
+    private $folderRepository;
 
     /**
      * @var SecurityContextInterface
@@ -59,7 +59,7 @@ class SymfonyAuthorizationAdapter implements AuthorizationAdapter
 
     public function attachTo(FileLibrary $filelib)
     {
-        $this->folderOperator = $filelib->getFolderOperator();
+        $this->folderRepository = $filelib->getFolderRepository();
     }
 
 
@@ -179,6 +179,6 @@ class SymfonyAuthorizationAdapter implements AuthorizationAdapter
      */
     private function getFilesFolder(File $file)
     {
-        return $this->folderOperator->find($file->getFolderId());
+        return $this->folderRepository->find($file->getFolderId());
     }
 }

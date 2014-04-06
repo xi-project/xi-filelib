@@ -6,7 +6,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Authorization\AuthorizationPlugin;
 use Xi\Filelib\Events as CoreEvents;

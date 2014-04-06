@@ -11,7 +11,9 @@ namespace Xi\Filelib\File;
 
 use DateTime;
 use ArrayObject;
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
+use Xi\Filelib\IdentifiableDataContainer;
+use Xi\Filelib\Resource\Resource;
 
 class File implements Identifiable
 {
@@ -67,22 +69,23 @@ class File implements Identifiable
     private $status;
 
     /**
-     *
      * @var Resource
      */
     private $resource;
 
     /**
-     *
      * @var string
      */
     private $uuid;
 
     /**
-     *
      * @var ArrayObject
      */
     private $data;
+
+    private function __construct()
+    {
+    }
 
     /**
      * Sets id
@@ -307,7 +310,7 @@ class File implements Identifiable
             'status' => $this->getStatus(),
             'resource' => $this->getResource(),
             'uuid' => $this->getUuid(),
-            'data' => $this->getData(),
+            'data' => $this->getData()->toArray(),
         );
     }
 
@@ -342,21 +345,20 @@ class File implements Identifiable
     }
 
     /**
-     * @return ArrayObject
+     * @return IdentifiableDataContainer
      */
     public function getData()
     {
         if (!$this->data) {
-            $this->data = new ArrayObject();
+            $this->data = new IdentifiableDataContainer();
         }
-
         return $this->data;
     }
 
     public function setData($data)
     {
         if (is_array($data)) {
-            $data = new ArrayObject($data);
+            $data = new IdentifiableDataContainer($data);
         }
         $this->data = $data;
         return $this;
@@ -371,9 +373,7 @@ class File implements Identifiable
      */
     public function setVersions(array $versions = array())
     {
-        $data = $this->getData();
-        $data['versions'] = $versions;
-
+        $this->getData()->set('versions', $versions);
         return $this;
     }
 
@@ -384,11 +384,7 @@ class File implements Identifiable
      */
     public function getVersions()
     {
-        $data = $this->getData();
-        if (!isset($data['versions'])) {
-            $data['versions'] = array();
-        }
-        return $data['versions'];
+        return $this->getData()->get('versions', array());
     }
 
     /**

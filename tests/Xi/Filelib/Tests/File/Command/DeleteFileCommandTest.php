@@ -3,9 +3,9 @@
 namespace Xi\Filelib\Tests\File\Command;
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\Command\DeleteFileCommand;
 use Xi\Filelib\Events;
 
@@ -56,7 +56,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
                 $this->isInstanceOf('Xi\Filelib\Event\FileEvent')
             );
 
-        $op = $this->getMockedFileOperator(array('lussen'));
+        $op = $this->getMockedFileRepository();
 
         $file = File::create(array('id' => 1, 'profile' => 'lussen', 'resource' => Resource::create(array('exclusive' => $exclusiveResource))));
 
@@ -78,8 +78,8 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
         );
 
         if ($exclusiveResource) {
-            $storage->expects($this->once())->method('delete')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
-            $backend->expects($this->once())->method('deleteResource')->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
+            $storage->expects($this->once())->method('delete')->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'));
+            $backend->expects($this->once())->method('deleteResource')->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'));
         } else {
             $storage->expects($this->never())->method('delete');
             $backend->expects($this->never())->method('deleteResource');
@@ -88,22 +88,6 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $command = new DeleteFileCommand($file);
         $command->attachTo($filelib);
         $command->execute();
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $file = File::create(array('id' => 1, 'profile' => 'versioned'));
-        $command = new DeleteFileCommand($file);
-
-        $serialized = serialize($command);
-
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'fileOperator', $command2);
-        $this->assertAttributeEquals($file, 'file', $command2);
     }
 
     /**

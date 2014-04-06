@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Tool\MimeTypeResolver;
 
 use Xi\Filelib\Tests\TestCase as FilelibTestCase;
 
-class TestCase extends FilelibTestCase
+abstract class TestCase extends FilelibTestCase
 {
 
     protected $resolver;

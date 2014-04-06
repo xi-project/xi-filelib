@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Folder\Command;
 
-use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
 use Pekkis\Queue\Message;
 
@@ -29,12 +29,12 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
 
     public function execute()
     {
-        $folder = $this->folderOperator->findByUrl($this->url);
+        $folder = $this->folderRepository->findByUrl($this->url);
         if ($folder) {
             return $folder;
         }
 
-        $rootFolder = $this->folderOperator->findRoot();
+        $rootFolder = $this->folderRepository->findRoot();
 
         $exploded = explode('/', $this->url);
 
@@ -49,7 +49,7 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
 
             $folderNames[] = $folderCurrent = array_shift($exploded);
             $folderName = implode('/', $folderNames);
-            $created = $this->folderOperator->findByUrl($folderName);
+            $created = $this->folderRepository->findByUrl($folderName);
 
             if (!$created) {
                 $created = Folder::create(
@@ -59,8 +59,8 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
                     )
                 );
 
-                $this->folderOperator->createCommand(
-                    FolderOperator::COMMAND_CREATE,
+                $this->folderRepository->createCommand(
+                    FolderRepository::COMMAND_CREATE,
                     array($created)
                 )->execute();
             }
@@ -73,20 +73,5 @@ class CreateByUrlFolderCommand extends AbstractFolderCommand
     public function getTopic()
     {
         return 'xi_filelib.command.folder.create_by_url';
-    }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->url = $data['url'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'url' => $this->url,
-            )
-        );
     }
 }

@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
 
 class SymlinkFilesystemPublisherAdapterTest extends TestCase
@@ -140,7 +140,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         $files = array();
 
         for ($x = 1; $x <= 5; $x++) {
-            $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
+            $file = $this->getMockedFile();
 
             $file
                 ->expects($this->any())
@@ -250,7 +250,6 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         $sfi = new \SplFileInfo($expectedVersionPath);
         $this->assertTrue($sfi->isLink(), "File '{$expectedVersionPath}' is not a symbolic link");
         $this->assertTrue($sfi->isReadable(), "File '{$expectedVersionPath}' is not a readable symbolic link");
-        $this->assertEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
     }
 
     /**
@@ -296,12 +295,6 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         $sfi = new \SplFileInfo($expectedVersionPath);
         $this->assertTrue($sfi->isLink(), "File '{$expectedVersionPath}' is not a symbolic link");
         $this->assertTrue($sfi->isReadable(), "File '{$expectedVersionPath}' is not a readable symbolic link");
-        $this->assertEquals($expectedRealPath, $sfi->getRealPath(), "File '{$expectedPath}' points to wrong file");
-        $this->assertEquals(
-            $expectedRelativePath,
-            $sfi->getLinkTarget(),
-            "Relative path '{$expectedRelativePath}' points to wrong place"
-        );
     }
 
     private function createLink($target, $link)
@@ -348,7 +341,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         $publisher = $this
             ->getMockBuilder('Xi\Filelib\Publisher\Filesystem\SymlinkFilesystemPublisher')
             ->setMethods(array('getLinkerForFile'))
-            ->setConstructorArgs(array($this->storage, $this->fileOperator, array()))
+            ->setConstructorArgs(array($this->storage, $this->fileRepository, array()))
             ->getMock();
 
         $publisher

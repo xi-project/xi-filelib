@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Publisher\Adapter\Filesystem\CopyFilesystemPublisherAdapter;
 
 class CopyFilesystemPublisherAdapterTest extends TestCase
@@ -14,7 +14,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
         $files = array();
 
         for ($x = 1; $x <= 5; $x++) {
-            $file = $this->getMockBuilder('Xi\Filelib\File\File')->getMock();
+            $file = $this->getMockedFile();
 
             $file
                 ->expects($this->any())

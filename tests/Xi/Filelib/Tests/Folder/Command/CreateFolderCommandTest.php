@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Folder\Command;
 
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\FolderOperator;
+use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\Command\CreateFolderCommand;
 use Xi\Filelib\Events;
@@ -43,7 +43,7 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('dispatch')
             ->with(Events::FOLDER_AFTER_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FolderEvent'));
 
-        $op = $this->getMockedFolderOperator();
+        $op = $this->getMockedFolderRepository();
 
         $op->expects($this->once())->method('find')->with('lusser')->will($this->returnValue($this->getMockedFolder()));
 
@@ -101,26 +101,6 @@ class CreateFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $presetCommand = new CreateFolderCommand($folder);
         $presetCommand->setUuid('lipaiseppa-kvaakkua-artoseni');
         $this->assertSame('lipaiseppa-kvaakkua-artoseni', $presetCommand->getUuid());
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $uuid = Uuid::uuid4()->toString();
-
-        $command = new CreateFolderCommand($folder);
-        $command->setUuid($uuid);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals(null, 'folderOperator', $command2);
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeEquals($uuid, 'uuid', $command2);
-
     }
 
     /**

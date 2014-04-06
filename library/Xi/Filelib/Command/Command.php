@@ -10,9 +10,8 @@
 namespace Xi\Filelib\Command;
 
 use Xi\Filelib\Attacher;
-use Serializable;
 
-interface Command extends Attacher, Serializable
+interface Command extends Attacher
 {
     public function execute();
 

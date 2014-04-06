@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests;
 
-use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\FileLibrary;
 
 class TestCase extends \PHPUnit_Framework_TestCase
@@ -13,38 +13,64 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedFilelib(
         $methods = null,
-        $fiop = null,
-        $foop = null,
+        $fire = null,
+        $fore = null,
         $storage = null,
         $ed = null,
         $backend = null,
         $commander = null,
-        $queue = null
+        $queue = null,
+        $pm = null
     ) {
+
+        // Beautiful backwards compatible kludge. My best code evah!
+        $rere = null;
+        $args = func_get_args();
+        if (isset($args[1]) && is_array($args[1])) {
+            $defaults = array(
+                'fire' => null,
+                'fore' => null,
+                'rere' => null,
+                'storage' => null,
+                'ed' => null,
+                'backend' => null,
+                'commander' => null,
+                'queue' => null,
+                'pm' => null,
+            );
+
+            $mocks = array_merge($defaults, $args[1]);
+            extract($mocks, EXTR_OVERWRITE);
+        }
+
         $filelib = $this
             ->getMockBuilder('Xi\Filelib\FileLibrary')
             ->disableOriginalConstructor();
 
 
         if ($methods !== null) {
-            if ($fiop) {
-                $methods[] = 'getFileOperator';
+            if ($fire) {
+                $methods[] = 'getFileRepository';
             }
 
-            if ($foop) {
-                $methods[] = 'getFolderOperator';
+            if ($fore) {
+                $methods[] = 'getFolderRepository';
             }
             $filelib->setMethods(array_unique($methods));
         }
 
         $ret = $filelib->getMock();
 
-        if ($fiop) {
-            $ret->expects($this->any())->method('getFileOperator')->will($this->returnValue($fiop));
+        if ($fire) {
+            $ret->expects($this->any())->method('getFileRepository')->will($this->returnValue($fire));
         }
 
-        if ($foop) {
-            $ret->expects($this->any())->method('getFolderOperator')->will($this->returnValue($foop));
+        if ($fore) {
+            $ret->expects($this->any())->method('getFolderRepository')->will($this->returnValue($fore));
+        }
+
+        if ($rere) {
+            $ret->expects($this->any())->method('getResourceRepository')->will($this->returnValue($rere));
         }
 
         if ($storage) {
@@ -63,6 +89,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
             $ret->expects($this->any())->method('getQueue')->will($this->returnValue($queue));
         }
 
+        if ($pm) {
+            $ret->expects($this->any())->method('getProfileManager')->will($this->returnValue($pm));
+        }
+
         if (!$commander) {
             $commander = $this->getMockedCommander();
         }
@@ -71,26 +101,18 @@ class TestCase extends \PHPUnit_Framework_TestCase
         return $ret;
     }
 
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    public function getMockedFileOperator($profileNames = array(), $methods = array())
+    public function getMockedProfileManager($profileNames = array())
     {
+        $mock = $this->getMockBuilder('Xi\Filelib\Profile\ProfileManager')->disableOriginalConstructor()->getMock();
+
         $profiles = array();
         foreach ($profileNames as $key => $profileName) {
             $profiles[$profileName] = new FileProfile($profileName);
         }
 
-        $fileop = $this
-            ->getMockBuilder('Xi\Filelib\File\FileOperator')
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
-
         if ($profiles) {
-            $fileop->expects($this->any())->method('getProfiles')->will($this->returnValue($profiles));
-
-            $fileop
+            $mock->expects($this->any())->method('getProfiles')->will($this->returnValue($profiles));
+            $mock
                 ->expects($this->any())
                 ->method('getProfile')
                 ->will(
@@ -102,16 +124,46 @@ class TestCase extends \PHPUnit_Framework_TestCase
                 );
         }
 
+        return $mock;
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedFileRepository($methods = array())
+    {
+
+        $fileop = $this
+            ->getMockBuilder('Xi\Filelib\File\FileRepository')
+            ->disableOriginalConstructor()
+            ->setMethods($methods)
+            ->getMock();
+
         return $fileop;
     }
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedFolderOperator()
+    public function getMockedResourceRepository($methods = array())
+    {
+        $repo = $this
+            ->getMockBuilder('Xi\Filelib\Resource\ResourceRepository')
+            ->disableOriginalConstructor()
+            ->setMethods($methods)
+            ->getMock();
+
+        return $repo;
+    }
+
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedFolderRepository()
     {
         $folderop = $this
-            ->getMockBuilder('Xi\Filelib\Folder\FolderOperator')
+            ->getMockBuilder('Xi\Filelib\Folder\FolderRepository')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -179,9 +231,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedPlatform()
+    public function getMockedBackendAdapter()
     {
-        return $this->getMock('Xi\Filelib\Backend\Platform\Platform');
+        return $this->getMock('Xi\Filelib\Backend\Adapter\BackendAdapter');
     }
 
     /**
@@ -212,7 +264,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     public function getMockedFileProfile($name = null)
     {
         $profile = $this
-            ->getMockBuilder('Xi\Filelib\File\FileProfile')
+            ->getMockBuilder('Xi\Filelib\Profile\FileProfile')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -278,7 +330,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedFolder()
     {
-        return $this->getMock('Xi\Filelib\Folder\Folder');
+        return $this
+            ->getMockBuilder('Xi\Filelib\Folder\Folder')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -286,7 +341,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedFile($profile = 'versioned')
     {
-        $file = $this->getMock('Xi\Filelib\File\File');
+        $file = $this
+            ->getMockBuilder('Xi\Filelib\File\File')
+            ->disableOriginalConstructor()
+            ->getMock();
         $file
             ->expects($this->any())
             ->method('getProfile')
@@ -300,7 +358,17 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedResource()
     {
-        return $this->getMock('Xi\Filelib\File\Resource');
+        return $this->getMockBuilder('Xi\Filelib\Resource\Resource')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedCacheAdapter()
+    {
+        return $this->getMock('Xi\Filelib\Backend\Cache\Adapter\CacheAdapter');
     }
 
     public function assertClassExists($className)
@@ -331,7 +399,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedVersionProvider($identifier)
+    public function getMockedVersionProvider($identifier, $versions = array())
     {
         $versionProvider = $this
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
@@ -340,6 +408,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $versionProvider
             ->expects($this->any())->method('getIdentifier')
             ->will($this->returnValue($identifier));
+
+        $versionProvider
+            ->expects($this->any())
+            ->method('getVersions')
+            ->will($this->returnValue($versions));
 
         return $versionProvider;
     }

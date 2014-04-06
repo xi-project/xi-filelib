@@ -12,7 +12,7 @@ namespace Xi\Filelib\Authorization;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Events as CoreEvents;
 

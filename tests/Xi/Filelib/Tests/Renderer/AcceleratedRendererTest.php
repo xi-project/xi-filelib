@@ -48,11 +48,11 @@ class AcceleratedRendererTest extends RendererTest
         $file = File::create(array('resource' => $resource, 'name' => 'lussuti.pdf'));
 
         $this->ed
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('hasVersion')
             ->with($file, 'xooxer')
@@ -67,7 +67,7 @@ class AcceleratedRendererTest extends RendererTest
         $vp = $this->getMockedVersionProvider('xooxer');
         $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue($sharedVersions));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('getVersionProvider')
             ->with($file, 'xooxer')
@@ -139,11 +139,11 @@ class AcceleratedRendererTest extends RendererTest
             ->will($this->returnValue($serverSignature));
 
         $this->ed
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('hasVersion')
             ->with($file, 'xooxer')
@@ -158,7 +158,7 @@ class AcceleratedRendererTest extends RendererTest
         $vp = $this->getMockedVersionProvider('xooxer');
         $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue(true));
 
-        $this->fiop
+        $this->pm
             ->expects($this->once())
             ->method('getVersionProvider')
             ->with($file, 'xooxer')

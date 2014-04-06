@@ -21,7 +21,7 @@ class FolderEventTest extends \Xi\Filelib\Tests\TestCase
      */
     public function eventShouldInitializeCorrectly()
     {
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
         $event = new FolderEvent($folder);
         $folder2 = $event->getFolder();
         $this->assertSame($folder, $folder2);

@@ -3,6 +3,35 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. If you're using 0.9 or greater, good for you! If not, good luck. Trust me. I know.
 
+## From version 0.10.x to version 0.11.x
+
+* Data is backwards compatible. Hoorah!
+* Only AfterUploadFileCommand is async-capable.
+* Caching is available. Consider adding a memcache cache to your app via `Filelib::createCacheFromAdapter()`
+  to get moar speed.
+* All things operator related are renamed to repository. getFileOperator() -> getFileRepository() in your code.
+* Profiles moved to profile manager
+* Resource stuff moved from FileRepository to ResourceRepository
+* All identifiable (resource, file, folder) constructors are now private. Use create() function to instantiate.
+* RandomizeNamePlugin now uses Rhumsaa::uuid4() and generates an UUID based random name
+* Renamed Platform (under Backend) to BackendAdapter for consistency's sake (everything else already uses this)
+* Arbitrary data container API of resources and files has been refactored.
+* ZendSlugifier is gone. If you use beautifurls, use the following replacement slugifier to get
+  absolute 100% backwards compatibility.:
+
+```php
+use Xi\Filelib\Tool\Slugifier\Slugifier;
+use Xi\Filelib\Tool\Slugifier\Adapter\PreTransliterator;
+use Xi\Filelib\Tool\Slugifier\Adapter\CocurSlugifierAdapter;
+use Xi\Transliterator\IntlTransliterator;
+
+$slugifier = new Slugifier(new PreTransliterator(new IntlTransliterator(), new CocurSlugifierAdapter()));
+
+// This may just be enough, at least if you republish all files.
+$slugifier = new Slugifier();
+
+```
+
 ## From version 0.9.x to version 0.10.x
 
 * Data is backwards compatible. Hoorah!
@@ -20,22 +49,22 @@ was changed. When I do an actual migration for an actual client code, I will wri
 
 ### PostgreSQL
 
-ALTER TABLE xi_filelib_resource RENAME COLUMN versions TO data;
-ALTER TABLE xi_filelib_file RENAME COLUMN versions TO data;
-ALTER TABLE xi_filelib_file DROP COLUMN filelink;
+    ALTER TABLE xi_filelib_resource RENAME COLUMN versions TO data;
+    ALTER TABLE xi_filelib_file RENAME COLUMN versions TO data;
+    ALTER TABLE xi_filelib_file DROP COLUMN filelink;
 
 ### MySQL
 
-ALTER TABLE xi_filelib_resource CHANGE versions data longtext NOT NULL;
-ALTER TABLE xi_filelib_file CHANGE versions data longtext NOT NULL;
-ALTER TABLE xi_filelib_file DROP COLUMN filelink;
+    ALTER TABLE xi_filelib_resource CHANGE versions data longtext NOT NULL;
+    ALTER TABLE xi_filelib_file CHANGE versions data longtext NOT NULL;
+    ALTER TABLE xi_filelib_file DROP COLUMN filelink;
 
 ### MongoDB
 
-db.files.update( { }, { $rename : { "versions" : "data" } }, false, true );
-db.resources.update( { }, { $rename : { "versions" : "data" } }, false, true );
+    db.files.update( { }, { $rename : { "versions" : "data" } }, false, true );
+    db.resources.update( { }, { $rename : { "versions" : "data" } }, false, true );
 
-db.files.update( { }, { $unset: { link: "" } }, { multi: true });
+    db.files.update( { }, { $unset: { link: "" } }, { multi: true });
 
 ## From version 0.6.x to version 0.7.x
 

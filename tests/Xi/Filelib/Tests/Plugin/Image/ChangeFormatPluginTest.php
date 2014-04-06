@@ -27,18 +27,18 @@ class ChangeFormatPluginTest extends TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $fileOperator;
+    private $fileRepository;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->fileOperator = $this
-            ->getMockBuilder('Xi\Filelib\File\FileOperator')
+        $this->fileRepository = $this
+            ->getMockBuilder('Xi\Filelib\File\FileRepository')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $filelib = $this->getMockedFilelib(null, $this->fileOperator);
+        $filelib = $this->getMockedFilelib(null, $this->fileRepository);
         $filelib
             ->expects($this->once())
             ->method('getTempDir')
@@ -112,7 +112,7 @@ class ChangeFormatPluginTest extends TestCase
 
         $upload->expects($this->once())->method('getMimeType')->will($this->returnValue('video/lus'));
 
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
         $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);
@@ -154,7 +154,7 @@ class ChangeFormatPluginTest extends TestCase
                        ))
                        ->getMock();
 
-        $filelib = $this->getMockedFilelib(null, $this->fileOperator);
+        $filelib = $this->getMockedFilelib(null, $this->fileRepository);
         $filelib
             ->expects($this->once())
             ->method('getTempDir')
@@ -166,7 +166,7 @@ class ChangeFormatPluginTest extends TestCase
 
         $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
 
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $folder = $this->getMockedFolder();
         $profile = $this->getMockedFileProfile();
         $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
         $event = new FileUploadEvent($upload, $folder, $profile);

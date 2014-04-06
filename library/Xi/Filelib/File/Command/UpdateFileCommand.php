@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\File\Command;
 
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
@@ -44,20 +44,5 @@ class UpdateFileCommand extends AbstractFileCommand
     public function getTopic()
     {
         return 'xi_filelib.command.file.update';
-    }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->file = $data['file'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'file' => $this->file,
-            )
-        );
     }
 }

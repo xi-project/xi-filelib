@@ -9,10 +9,10 @@
 
 namespace Xi\Filelib\File\Command;
 
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\InvalidArgumentException;
 use DateTime;
@@ -105,7 +105,7 @@ class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
 
             $retrieved = $this->storage->retrieve($oldResource);
 
-            $resource = new Resource();
+            $resource = Resource::create();
             $resource->setDateCreated(new DateTime());
             $resource->setHash($oldResource->getHash());
             $resource->setSize($oldResource->getSize());
@@ -136,7 +136,7 @@ class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
         }
         $this->handleImpostorResource($impostor);
 
-        $found = $this->fileOperator->findByFilename($this->folder, $impostor->getName());
+        $found = $this->fileRepository->findByFilename($this->folder, $impostor->getName());
 
         if (!$found) {
             return $impostor;
@@ -144,7 +144,7 @@ class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
 
         do {
             $impostor->setName($this->getCopyName($impostor->getName()));
-            $found = $this->fileOperator->findByFilename($this->folder, $impostor->getName());
+            $found = $this->fileRepository->findByFilename($this->folder, $impostor->getName());
         } while ($found);
 
         $impostor->setFolderId($this->folder->getId());
@@ -167,7 +167,7 @@ class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
         $event = new FileCopyEvent($this->file, $impostor);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_COPY, $event);
 
-        return $this->fileOperator->createCommand(
+        return $this->fileRepository->createCommand(
             'Xi\Filelib\File\Command\AfterUploadFileCommand',
             array($impostor)
         )->execute();
@@ -176,24 +176,5 @@ class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
     public function getTopic()
     {
         return 'xi_filelib.command.file.copy';
-    }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->file = $data['file'];
-        $this->folder = $data['folder'];
-        $this->uuid = $data['uuid'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'file' => $this->file,
-                'folder' => $this->folder,
-                'uuid' => $this->uuid,
-            )
-        );
     }
 }

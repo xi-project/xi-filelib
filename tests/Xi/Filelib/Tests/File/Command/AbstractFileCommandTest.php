@@ -22,12 +22,12 @@ class AbstractFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function attachesFromFilelib()
     {
-        $fiop = $this->getMockedFileOperator();
+        $fiop = $this->getMockedFileRepository();
         $filelib = $this->getMockedFilelib(null, $fiop);
 
         $command = $this->getMockForAbstractClass('Xi\Filelib\File\Command\AbstractFileCommand');
         $command->attachTo($filelib);
 
-        $this->assertAttributeSame($fiop, 'fileOperator', $command);
+        $this->assertAttributeSame($fiop, 'fileRepository', $command);
     }
 }

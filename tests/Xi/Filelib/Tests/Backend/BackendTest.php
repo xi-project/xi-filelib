@@ -3,10 +3,10 @@
 namespace Xi\Filelib\Tests\Backend;
 
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\Backend\IdentityMapHelper;
-use Xi\Filelib\Backend\Platform\Platform;
-use Xi\Filelib\IdentityMap\IdentityMap;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Backend\Adapter\BackendAdapter;
+use Xi\Filelib\Backend\Cache\Cache;
+use Xi\Filelib\Backend\IdentityMap\IdentityMap;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Tests\TestCase;
@@ -32,11 +32,6 @@ class BackendTest extends TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $imhelper;
-
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
     private $platform;
 
     /**
@@ -46,14 +41,12 @@ class BackendTest extends TestCase
 
     public function setUp()
     {
-        $this->platform = $this->getMock('Xi\Filelib\Backend\Platform\Platform');
+        $this->platform = $this->getMock('Xi\Filelib\Backend\Adapter\BackendAdapter');
 
         $this->im = $this
-            ->getMockBuilder('Xi\Filelib\IdentityMap\IdentityMap')
+            ->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->imhelper = new IdentityMapHelper($this->im, $this->platform);
 
         $this->ed = $this
             ->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
@@ -64,7 +57,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function getNumberOfReferencesShouldDelegateToPlatform()
+    public function getNumberOfReferencesShouldDelegateToBackendAdapter()
     {
         $resource = Resource::create(array('id' => 1));
         $this->platform->expects($this->once())->method('getNumberOfReferences')->with($resource)
@@ -84,15 +77,15 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function getPlatformShouldReturnPlatform()
+    public function getBackendAdapterShouldReturnBackendAdapter()
     {
-        $this->assertSame($this->platform, $this->backend->getPlatform());
+        $this->assertSame($this->platform, $this->backend->getBackendAdapter());
     }
 
     /**
      * @test
      */
-    public function updateResourceShouldDelegateToPlatform()
+    public function updateResourceShouldDelegateToBackendAdapter()
     {
         $obj = Resource::create(array('id' => 1));
 
@@ -109,7 +102,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function updateFolderShouldDelegateToPlatform()
+    public function updateFolderShouldDelegateToBackendAdapter()
     {
         $obj = Folder::create(array('id' => 1));
         $this->platform->expects($this->once())->method('updateFolder')->with($obj)->will($this->returnValue(true));
@@ -147,7 +140,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function updateFileShouldDelegateToPlatform()
+    public function updateFileShouldDelegateToBackendAdapter()
     {
         $resource = Resource::create(array('id' => 2));
         $folder = Folder::create(array('id' => 666));
@@ -171,33 +164,29 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function createResourceShouldDelegateToPlatformAndAddToIdentityMap()
+    public function createResourceShouldDelegateToBackendAdapter()
     {
         $obj = Resource::create(array('id' => 1));
 
         $this->platform->expects($this->once())->method('createResource')
             ->with($obj)->will($this->returnArgument(0));
 
-        $this->im->expects($this->once())->method('add')->with($obj)->will($this->returnValue(true));
-
         $backend = $this->getMockedBackend();
 
         $ret = $backend->createResource($obj);
-        $this->assertNull($ret);
+        $this->assertSame($obj, $ret);
     }
 
     /**
      * @test
      */
-    public function createFolderShouldDelegateToPlatformAndAddToIdentityMap()
+    public function createFolderShouldDelegateToBackendAdapter()
     {
         $parent = Folder::create(array('id' => 66, 'parent_id' => null));
         $obj = Folder::create(array('id' => 1, 'parent_id' => 66));
 
         $this->platform->expects($this->once())->method('createFolder')
             ->with($obj)->will($this->returnArgument(0));
-
-        $this->im->expects($this->once())->method('add')->with($obj)->will($this->returnValue(true));
 
         $backend = $this->getMockedBackend(array('findById'));
 
@@ -209,7 +198,7 @@ class BackendTest extends TestCase
 
         $ret = $backend->createFolder($obj);
 
-        $this->assertNull($ret);
+        $this->assertSame($obj, $ret);
     }
 
     /**
@@ -267,7 +256,7 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function createFileShouldDelegateToPlatformAndAddToIdentityMap()
+    public function createFileShouldDelegateToBackendAdapter()
     {
         $backend = $this->getMockedBackend(array('findByFinder', 'getIdentityMapHelper'));
 
@@ -285,23 +274,19 @@ class BackendTest extends TestCase
             ->with($this->equalTo($finder))
             ->will($this->returnValue(new ArrayIterator(array())));
 
-        $this->im->expects($this->once())->method('add')->with($file)->will($this->returnValue(true));
-
         $ret = $backend->createFile($file, $folder);
-        $this->assertNull($ret);
+        $this->assertSame($file, $ret);
     }
 
     /**
      * @test
      */
-    public function deleteFolderShouldDelegateToPlatformAndRemoveFromIdentityMap()
+    public function deleteFolderShouldDelegateToBackendAdapterAndRemoveFromIdentityMap()
     {
         $obj = Folder::create(array('id' => 1, 'parent_id' => 66));
 
         $this->platform->expects($this->once())->method('deleteFolder')
             ->with($obj)->will($this->returnArgument(0));
-
-        $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
 
         $backend = $this->getMockedBackend(array('findByFinder'));
 
@@ -324,7 +309,7 @@ class BackendTest extends TestCase
             );
 
         $ret = $backend->deleteFolder($obj);
-        $this->assertNull($ret);
+        $this->assertSame($obj, $ret);
     }
 
     /**
@@ -375,19 +360,17 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function deleteFileShouldDelegateToPlatformAndRemoveFromIdentityMap()
+    public function deleteFileShouldDelegateToBackendAdapter()
     {
         $obj = File::create(array('id' => 1));
 
         $this->platform->expects($this->once())->method('deleteFile')
             ->with($obj)->will($this->returnArgument(0));
 
-        $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
-
         $backend = $this->getMockedBackend();
 
         $ret = $backend->deleteFile($obj);
-        $this->assertNull($ret);
+        $this->assertSame($obj, $ret);
     }
 
     /**
@@ -400,8 +383,6 @@ class BackendTest extends TestCase
         $obj = Resource::create(array('id' => 1));
 
         $this->platform->expects($this->never())->method('deleteResource');
-        $this->ed->expects($this->never())->method('dispatch');
-        $this->im->expects($this->never())->method('remove');
 
         $backend = $this->getMockedBackend(array('getNumberOfReferences'));
 
@@ -414,17 +395,12 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function deleteResourceShouldDelegateToPlatformAndRemoveFromIdentityMap()
+    public function deleteResourceShouldDelegateToBackendAdapter()
     {
         $obj = Resource::create(array('id' => 1));
 
         $this->platform->expects($this->once())->method('deleteResource')
             ->with($obj)->will($this->returnArgument(0));
-
-        $this->im->expects($this->once())->method('remove')->with($obj)->will($this->returnValue(true));
-
-        $this->ed->expects($this->once())->method('dispatch')
-            ->with(Events::RESOURCE_AFTER_DELETE, $this->isInstanceOf('Xi\Filelib\Event\ResourceEvent'));
 
         $backend = $this->getMockedBackend();
         $ret = $backend->deleteResource($obj);
@@ -448,45 +424,23 @@ class BackendTest extends TestCase
      * @dataProvider provideFinders
      * @param Finder $finder
      */
-    public function findByFinderShouldTryManyFromIdentityMapAndDelegateToPlatform(Finder $finder)
+    public function findByFinderShouldTryManyFromIdentityMapAndDelegateToBackendAdapter(Finder $finder)
     {
         $this->platform->expects($this->once())->method('findByFinder')
             ->with($finder)
             ->will($this->returnValue(array(1, 2, 3, 4, 5)));
 
         $this->platform->expects($this->once())->method('findByIds')
-            ->with(array(2, 4), $finder->getResultClass())
-            ->will($this->returnValue('lus'));
+            ->with($this->isInstanceOf('Xi\Filelib\Backend\FindByIdsRequest'))
+            ->will($this->returnArgument(0));
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
             ->setMethods(array('getIdentityMapHelper'))
             ->getMock();
 
-        $helper = $this->getMockBuilder('Xi\Filelib\Backend\IdentityMapHelper')
-            ->disableOriginalConstructor()->getMock();
-
-        $backend->expects($this->any())->method('getIdentityMapHelper')->will($this->returnValue($helper));
-
-        $platform = $this->platform;
-        $helper
-            ->expects($this->once())
-            ->method('tryManyFromIdentityMap')
-            ->with(
-                array(1, 2, 3, 4, 5),
-                $finder->getResultClass(),
-                $this->isInstanceOf('Closure')
-            )
-            ->will(
-                $this->returnCallback(
-                    function ($ids, $class, $callback) use ($platform) {
-                        return $callback($platform, array(2, 4));
-                    }
-                )
-            );
-
         $ret = $backend->findByFinder($finder);
-        $this->assertEquals('lus', $ret);
+        $this->assertInstanceOf('ArrayIterator', $ret);
     }
 
     /**
@@ -496,7 +450,7 @@ class BackendTest extends TestCase
     {
         return array(
             array('Xi\Filelib\File\File'),
-            array('Xi\Filelib\File\Resource'),
+            array('Xi\Filelib\Resource\Resource'),
             array('Xi\Filelib\Folder\Folder'),
         );
     }
@@ -506,49 +460,20 @@ class BackendTest extends TestCase
      * @dataProvider provideClassNames
      * @param string $className
      */
-    public function findByIdShouldTryOneFromIdentityMapAndDelegateToPlatform($className)
+    public function findByIdShouldDelegateToBackendAdapter($className)
     {
         $this->platform->expects($this->once())->method('findByIds')
-            ->with(array(1), $className)
-            ->will($this->returnValue('lus'));
+            ->with($this->isInstanceOf('Xi\Filelib\Backend\FindByIdsRequest'))
+            ->will($this->returnArgument(0));
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
             ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
             ->setMethods(array('getIdentityMapHelper'))
             ->getMock();
 
-        $helper = $this->getMockBuilder('Xi\Filelib\Backend\IdentityMapHelper')
-            ->disableOriginalConstructor()->getMock();
-
-        $backend->expects($this->any())->method('getIdentityMapHelper')->will($this->returnValue($helper));
-
-        $platform = $this->platform;
-        $helper
-            ->expects($this->once())->method('tryOneFromIdentityMap')
-            ->with(
-                1,
-                $className,
-                $this->isInstanceOf('Closure')
-            )
-            ->will(
-                $this->returnCallback(
-                    function ($id, $className, $callback) use ($platform) {
-                        return $callback($platform, $id, $className);
-                    }
-                )
-            );
-
         $ret = $backend->findById(1, $className);
 
-        $this->assertEquals('lus', $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function getIdentityMapHelperShouldReturnIdentityMapHelper()
-    {
-        $this->assertInstanceOf('Xi\Filelib\Backend\IdentityMapHelper', $this->backend->getIdentityMapHelper());
+        $this->assertNull($ret);
     }
 
 
@@ -567,12 +492,17 @@ class BackendTest extends TestCase
             ->setConstructorArgs(array($this->ed, $this->platform))
             ->getMock();
 
-        $backend
-            ->expects($this->any())
-            ->method('getIdentityMapHelper')
-            ->will($this->returnValue($this->imhelper));
-
         return $backend;
     }
 
+    /**
+     * @test
+     */
+    public function cacheCanBeSet()
+    {
+        $cache = new Cache($this->getMockedCacheAdapter());
+        $this->assertNull($this->backend->getCache());
+        $this->assertSame($this->backend, $this->backend->setCache($cache));
+        $this->assertSame($cache, $this->backend->getCache());
+    }
 }

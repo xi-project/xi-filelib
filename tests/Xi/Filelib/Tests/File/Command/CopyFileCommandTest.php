@@ -4,9 +4,9 @@ namespace Xi\Filelib\Tests\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\CopyFileCommand;
 use Xi\Filelib\Events;
@@ -20,11 +20,11 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->op = $this->getMockBuilder('Xi\Filelib\File\FileOperator')
+        $this->op = $this->getMockBuilder('Xi\Filelib\File\FileRepository')
                     ->disableOriginalConstructor()
-                    ->setMethods(array('getFolderOperator', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
+                    ->setMethods(array('getFolderRepository', 'findByFilename', 'getBackend', 'getEventDispatcher', 'getStorage', 'createCommand', 'generateUuid'))
                     ->getMock();
-        $this->folder = $this->getMock('Xi\Filelib\Folder\Folder');
+        $this->folder = $this->getMockedFolder();
     }
 
     /**
@@ -182,13 +182,13 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         if ($exclusiveResource) {
 
             $storage->expects($this->once())->method('retrieve')
-                     ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                     ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
                      ->will($this->returnValue('xooxoo'));
             $storage->expects($this->once())->method('store')
-                    ->with($this->isInstanceOf('Xi\Filelib\File\Resource'), $this->equalTo('xooxoo'));
+                    ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'), $this->equalTo('xooxoo'));
 
             $backend->expects($this->once())->method('createResource')
-                    ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+                    ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
                     ->will($this->returnArgument(0));
         } else {
             $storage->expects($this->never())->method('retrieve');
@@ -229,26 +229,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $file = $this->getMock('Xi\Filelib\File\File');
-        $uuid = Uuid::uuid4()->toString();
-
-        $command = new CopyFileCommand($file, $folder);
-        $command->setUuid($uuid);
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals($file, 'file', $command2);
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeEquals($uuid, 'uuid', $command2);
     }
 
     /**

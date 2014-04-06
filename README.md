@@ -49,13 +49,13 @@ so thanks for all past and present early adopters!
 <?php
 
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Backend\Platform\JsonPlatform;
+use Xi\Filelib\Backend\Adapter\JsonBackendAdapter;
 use Xi\Filelib\Storage\FilesystemStorage;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 
 $filelib = new FileLibrary(
     new FilesystemStorage(__DIR__ . '/files', new TimeDirectoryIdCalculator()),
-    new JsonPlatform(__DIR__ . '/filelib-example.json')
+    new JsonBackendAdapter(__DIR__ . '/filelib-example.json')
 );
 
 $file = $filelib->upload('/path/to/some/file.jpg');

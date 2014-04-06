@@ -4,9 +4,9 @@ namespace Xi\Filelib\Tests\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\UploadFileCommand;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -69,12 +69,9 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             ->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
         $storage = $this->getMockedStorage();
-        $storage
-            ->expects($this->once())
-            ->method('store')
-            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'));
 
-        $op = $this->getMockedFileOperator(array('versioned'));
+        $op = $this->getMockedFileRepository();
+        $pm = $this->getMockedProfileManager(array('versioned'));
 
         $afterUploadCommand = $this->getMockedExecutable();
         $afterUploadCommand
@@ -94,19 +91,24 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
                         ->setMethods(array('getResource'))
                         ->getMock();
 
+        $rere = $this->getMockedResourceRepository();
+
         $filelib = $this->getMockedFilelib(
             null,
-            $op,
-            null,
-            $storage,
-            $dispatcher,
-            $backend
+            array(
+                'fire' => $op,
+                'storage' => $storage,
+                'ed' => $dispatcher,
+                'backend' => $backend,
+                'pm' => $pm,
+                'rere' => $rere,
+            )
         );
 
         $command->attachTo($filelib);
 
-        $command
-            ->expects($this->once())->method('getResource')
+        $rere
+            ->expects($this->once())->method('findResourceForUpload')
             ->with(
                 $this->isInstanceOf('Xi\Filelib\File\File'),
                 $this->isInstanceOf('Xi\Filelib\File\Upload\FileUpload')
@@ -116,198 +118,6 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $ret = $command->execute();
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
     }
-
-    /**
-     * @test
-     */
-    public function getResourceShouldGenerateNewResourceIfProfileAllowsButNoResourceIsFound()
-    {
-        $file = File::create(array());
-
-        $op = $this->getMockedFileOperator(array('lussenhof'));
-        $backend = $this->getMockedBackend();
-
-        $profile = $this->getMockedFileProfile();
-
-        $op->expects($this->any())->method('getProfile')
-            ->with($this->equalTo('lussenhof'))
-            ->will($this->returnValue($profile));
-
-        $profile->expects($this->never())
-            ->method('isSharedResourceAllowed');
-
-        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpeg';
-        $profile = 'lussenhof';
-        $upload = new FileUpload($path);
-        $hash = sha1_file($upload->getRealPath());
-
-        $finder = new ResourceFinder(
-            array(
-                'hash' => $hash,
-            )
-        );
-        $backend->expects($this->once())->method('findByFinder')
-                ->with($this->equalTo($finder))
-                ->will($this->returnValue(new ArrayIterator(array())));
-
-        $folder = $this->getMockedFolder();
-
-        $filelib = $this->getMockedFilelib(
-            null,
-            $op,
-            null,
-            null,
-            null,
-            $backend
-        );
-
-        $command = new UploadFileCommand($upload, $folder, $profile);
-        $command->attachTo($filelib);
-        $ret = $command->getResource($file, $upload);
-
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
-        $this->assertSame($hash, $ret->getHash());
-    }
-
-    /**
-     * @test
-     */
-    public function getResourceShouldGenerateNewResourceIfProfileRequires()
-    {
-        $file = File::create(array());
-
-        $op = $this->getMockedFileOperator();
-
-        $backend = $this->getMockedBackend();
-
-        $profile = $this->getMockedFileProfile();
-
-        $op->expects($this->any())->method('getProfile')
-            ->with($this->equalTo('lussenhof'))
-            ->will($this->returnValue($profile));
-
-        $profile->expects($this->atLeastOnce())
-            ->method('isSharedResourceAllowed')
-            ->will($this->returnValue(false));
-
-        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpeg';
-        $profile = 'lussenhof';
-        $upload = new FileUpload($path);
-        $hash = sha1_file($upload->getRealPath());
-
-        $finder = new ResourceFinder(
-            array(
-                'hash' => $hash,
-            )
-        );
-        $backend->expects($this->once())->method('findByFinder')
-            ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array(
-                Resource::create(array('id' => 'first-id')),
-                Resource::create(array('id' => 'second-id')),
-            ))));
-
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-
-        $filelib = $this->getMockedFilelib(
-            null,
-            $op,
-            null,
-            null,
-            null,
-            $backend
-        );
-
-        $command = new UploadFileCommand($upload, $folder, $profile);
-        $command->attachTo($filelib);
-
-        $ret = $command->getResource($file, $upload);
-
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
-        $this->assertSame($hash, $ret->getHash());
-    }
-
-    /**
-     * @test
-     */
-    public function getResourceShouldReuseResourceIfProfileAllowsAndResourcesAreFound()
-    {
-        $file = File::create(array());
-
-        $op = $this->getMockedFileOperator();
-
-        $profile = $this->getMockedFileProfile();
-
-        $op->expects($this->any())->method('getProfile')
-           ->with($this->equalTo('lussenhof'))
-           ->will($this->returnValue($profile));
-
-        $profile->expects($this->once())
-                ->method('isSharedResourceAllowed')
-                ->will($this->returnValue(true));
-
-        $backend = $this->getMockedBackend();
-
-        $path = ROOT_TESTS . '/data/self-lussing-manatee.jpeg';
-        $profile = 'lussenhof';
-        $upload = new FileUpload($path);
-        $hash = sha1_file($upload->getRealPath());
-
-        $finder = new ResourceFinder(
-            array(
-                'hash' => $hash,
-            )
-        );
-        $backend->expects($this->once())->method('findByFinder')
-            ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array(
-            Resource::create(array('id' => 'first-id')),
-            Resource::create(array('id' => 'second-id')),
-        ))));
-
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-
-        $filelib = $this->getMockedFilelib(
-            null,
-            $op,
-            null,
-            null,
-            null,
-            $backend
-        );
-
-        $command = new UploadFileCommand($upload, $folder, $profile);
-        $command->attachTo($filelib);
-
-        $ret = $command->getResource($file, $upload);
-
-        $this->assertInstanceOf('Xi\Filelib\File\Resource', $ret);
-        $this->assertSame('first-id', $ret->getId());
-    }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $folder = $this->getMock('Xi\Filelib\Folder\Folder');
-        $profile = 'lussenhof';
-        $uuid = Uuid::uuid4()->toString();
-
-        $command = new UploadFileCommand($upload, $folder, $profile);
-        $command->setUuid($uuid);
-
-        $serialized = serialize($command);
-
-        $command2 = unserialize($serialized);
-
-        $this->assertAttributeEquals($folder, 'folder', $command2);
-        $this->assertAttributeEquals($profile, 'profile', $command2);
-        $this->assertAttributeInstanceof('Xi\Filelib\File\Upload\FileUpload', 'upload', $command2);
-        $this->assertAttributeEquals($uuid, 'uuid', $command2);
-    }
-
 
     /**
      * @test

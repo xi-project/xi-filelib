@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Xi\Filelib\File\FileProfile;
+use Xi\Filelib\Profile\FileProfile;
 
 /**
  * File profile event

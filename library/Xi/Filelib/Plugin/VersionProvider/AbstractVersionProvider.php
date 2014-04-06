@@ -10,7 +10,8 @@
 namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
@@ -30,7 +31,6 @@ use Xi\Filelib\File\FileObject;
 abstract class AbstractVersionProvider extends AbstractPlugin implements VersionProvider
 {
     protected static $subscribedEvents = array(
-        Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',
         Events::FILE_AFTER_AFTERUPLOAD => 'onAfterUpload',
         Events::FILE_AFTER_DELETE => 'onFileDelete',
         Events::RESOURCE_AFTER_DELETE => 'onResourceDelete',
@@ -52,9 +52,9 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected $storage;
 
     /**
-     * @var FileOperator
+     * @var ProfileManager
      */
-    protected $fileOperator;
+    protected $profiles;
 
     /**
      * @var array
@@ -77,8 +77,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function attachTo(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
-        $this->fileOperator = $filelib->getFileOperator();
-        $this->init();
+        $this->profiles = $filelib->getProfileManager();
     }
 
     public function createVersions(File $file)
@@ -90,7 +89,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
 
         foreach ($tmps as $version => $tmp) {
-            $this->getStorage()->storeVersion(
+            $this->storage->storeVersion(
                 $file->getResource(),
                 $version,
                 $tmp,
@@ -101,21 +100,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     }
 
     abstract public function createTemporaryVersions(File $file);
-
-    /**
-     * Registers a version to all profiles
-     */
-    public function init()
-    {
-        foreach ($this->fileOperator->getProfiles() as $profile) {
-
-            if ($this->hasProfile($profile->getIdentifier())) {
-                foreach ($this->getVersions() as $version) {
-                    $profile->addFileVersion($version, $this);
-                }
-            }
-        }
-    }
 
     /**
      * Returns identifier
@@ -139,16 +123,6 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
             return false;
         }
         return call_user_func($this->providesFor, $file);
-    }
-
-    /**
-     * Returns storage
-     *
-     * @return Storage
-     */
-    public function getStorage()
-    {
-        return $this->storage;
     }
 
     public function onAfterUpload(FileEvent $event)
@@ -185,8 +159,8 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function onResourceDelete(ResourceEvent $event)
     {
         foreach ($this->getVersions() as $version) {
-            if ($this->getStorage()->versionExists($event->getResource(), $version)) {
-                $this->getStorage()->deleteVersion($event->getResource(), $version);
+            if ($this->storage->versionExists($event->getResource(), $version)) {
+                $this->storage->deleteVersion($event->getResource(), $version);
             }
         }
     }
@@ -199,8 +173,8 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function deleteFileVersions(File $file)
     {
         foreach ($this->getVersions() as $version) {
-            if ($this->getStorage()->versionExists($file->getResource(), $version, $file)) {
-                $this->getStorage()->deleteVersion($file->getResource(), $version, $file);
+            if ($this->storage->versionExists($file->getResource(), $version, $file)) {
+                $this->storage->deleteVersion($file->getResource(), $version, $file);
             }
         }
     }

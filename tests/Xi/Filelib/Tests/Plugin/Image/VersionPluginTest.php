@@ -13,10 +13,10 @@ use Imagick;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Events;
 
 /**
@@ -34,18 +34,11 @@ class VersionPluginTest extends TestCase
      */
     private $storage;
 
-    /**
-     * @var FileOperator
-     */
-    private $fileOperator;
-
     public function setUp()
     {
         parent::setUp();
 
         $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
-
-        $this->fileOperator = $this->getMockedFileOperator(array('default'));
 
         $this->plugin = new VersionPlugin(
             'xooxer',
@@ -72,7 +65,7 @@ class VersionPluginTest extends TestCase
     {
         $filelib = new FileLibrary(
             $this->getMockedStorage(),
-            $this->getMockedPlatform()
+            $this->getMockedBackendAdapter()
         );
         $filelib->addPlugin($this->plugin);
 
@@ -127,7 +120,7 @@ class VersionPluginTest extends TestCase
         $this->storage
             ->expects($this->once())
             ->method('retrieve')
-            ->with($this->isInstanceOf('Xi\Filelib\File\Resource'))
+            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
             ->will($this->returnValue($retrievedPath));
 
         $helper = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ImageMagickHelper')->disableOriginalConstructor()->getMock();
@@ -149,7 +142,8 @@ class VersionPluginTest extends TestCase
                        ))
                        ->getMock();
 
-        $filelib = $this->getMockedFilelib(null, $this->fileOperator);
+        $pm = $this->getMockedProfileManager(array('xooxer'));
+        $filelib = $this->getMockedFilelib(null, null, null, null, null, null, null, null, $pm);
         $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
         $plugin->attachTo($filelib);
@@ -219,7 +213,7 @@ class VersionPluginTest extends TestCase
         $storage = $this->getMockedStorage();
         $filelib = new FileLibrary(
             $storage,
-            $this->getMockedPlatform()
+            $this->getMockedBackendAdapter()
         );
 
         $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\VersionPlugin')

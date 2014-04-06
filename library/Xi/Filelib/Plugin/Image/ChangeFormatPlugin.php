@@ -11,7 +11,7 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Event\FileUploadEvent;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -33,20 +33,13 @@ class ChangeFormatPlugin extends AbstractPlugin
     protected $targetExtension;
 
     /**
-     * @var FileOperator
-     */
-    private $fileOperator;
-
-    /**
      * @var string
      */
     private $tempDir;
 
     /**
-     * @param  FileOperator       $fileOperator
-     * @param  string             $tempDir
-     * @param  array              $options
-     * @return ChangeFormatPlugin
+     * @param string $targetExtension
+     * @param array $commandDefinitions
      */
     public function __construct($targetExtension, array $commandDefinitions = array())
     {
@@ -111,7 +104,6 @@ class ChangeFormatPlugin extends AbstractPlugin
      */
     public function attachTo(FileLibrary $filelib)
     {
-        $this->fileOperator = $filelib->getFileOperator();
         $this->tempDir = $filelib->getTempDir();
     }
 }

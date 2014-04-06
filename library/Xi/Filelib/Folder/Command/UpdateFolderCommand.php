@@ -9,8 +9,8 @@
 
 namespace Xi\Filelib\Folder\Command;
 
-use Xi\Filelib\Folder\FolderOperator;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
@@ -21,9 +21,9 @@ class UpdateFolderCommand extends AbstractFolderCommand
 {
     /**
      *
-     * @var FileOperator
+     * @var FileRepository
      */
-    private $fileOperator;
+    private $fileRepository;
 
     /**
      *
@@ -38,23 +38,23 @@ class UpdateFolderCommand extends AbstractFolderCommand
 
     public function execute()
     {
-        $route = $this->folderOperator->buildRoute($this->folder);
+        $route = $this->folderRepository->buildRoute($this->folder);
         $this->folder->setUrl($route);
 
         $this->backend->updateFolder($this->folder);
 
-        foreach ($this->folderOperator->findFiles($this->folder) as $file) {
-            $this->folderOperator->createCommand(
-                FileOperator::COMMAND_UPDATE,
+        foreach ($this->folderRepository->findFiles($this->folder) as $file) {
+            $this->folderRepository->createCommand(
+                FileRepository::COMMAND_UPDATE,
                 array(
                     $file
                 )
             )->execute();
         }
 
-        foreach ($this->folderOperator->findSubFolders($this->folder) as $subFolder) {
-            $this->folderOperator->createCommand(
-                FolderOperator::COMMAND_UPDATE,
+        foreach ($this->folderRepository->findSubFolders($this->folder) as $subFolder) {
+            $this->folderRepository->createCommand(
+                FolderRepository::COMMAND_UPDATE,
                 array(
                     $subFolder
                 )
@@ -68,26 +68,11 @@ class UpdateFolderCommand extends AbstractFolderCommand
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->fileOperator = $filelib->getFileOperator();
+        $this->fileRepository = $filelib->getFileRepository();
     }
 
     public function getTopic()
     {
         return 'xi_filelib.command.folder.update';
-    }
-
-    public function unserialize($serialized)
-    {
-        $data = unserialize($serialized);
-        $this->folder = $data['folder'];
-    }
-
-    public function serialize()
-    {
-        return serialize(
-            array(
-                'folder' => $this->folder,
-            )
-        );
     }
 }

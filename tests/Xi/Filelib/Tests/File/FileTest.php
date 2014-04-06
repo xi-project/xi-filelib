@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\File;
 
 use DateTime;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\Resource;
+use Xi\Filelib\Resource\Resource;
 use ArrayObject;
 
 class FileTest extends \Xi\Filelib\Tests\TestCase
@@ -41,7 +41,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function gettersAndSettersShouldWorkAsExpected()
     {
-        $file = new File();
+        $file = File::create();
 
         $val = 666;
         $this->assertNull($file->getId());
@@ -73,7 +73,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame($file, $file->setStatus($val));
         $this->assertEquals($val, $file->getStatus());
 
-        $val = new Resource();
+        $val = Resource::create();
         $this->assertNull($file->getResource());
         $this->assertSame($file, $file->setResource($val));
         $this->assertSame($val, $file->getResource());
@@ -108,7 +108,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
                     'date_created' => new \DateTime('2010-01-01 01:01:01'),
                     'status' => 8,
                     'uuid' => 'uuid-uuid',
-                    'resource' => new Resource(),
+                    'resource' => Resource::create(),
                     'versions' => array('watussi', 'lussi')
                 ),
             ),
@@ -128,7 +128,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function fromArrayShouldWorkAsExpected($data)
     {
-        $file = new File();
+        $file = File::create();
         $file->fromArray($data);
 
         $map = array(
@@ -163,7 +163,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function toArrayShouldWorkAsExpected()
     {
-        $file = new File();
+        $file = File::create();
         $file->setId(1);
         $file->setFolderId(655);
         $file->setProfile('unknown');
@@ -171,7 +171,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $file->setDateCreated(new \DateTime('1978-03-21'));
         $file->setStatus(54);
         $file->setUuid('tussi-poski');
-        $file->setResource(new Resource());
+        $file->setResource(Resource::create());
         $file->setVersions(array('lussi', 'xussi'));
 
         $this->assertEquals($file->toArray(), array(
@@ -182,11 +182,11 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'date_created' => new \DateTime('1978-03-21'),
             'status' => 54,
             'uuid' => 'tussi-poski',
-            'resource' => new Resource(),
-            'data' => new ArrayObject(array('versions' => array('lussi', 'xussi')))
+            'resource' => Resource::create(),
+            'data' => array('versions' => array('lussi', 'xussi'))
         ));
 
-        $file = new File();
+        $file = File::create();
         $this->assertEquals($file->toArray(), array(
             'id' => null,
             'folder_id' => null,
@@ -196,7 +196,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'status' => null,
             'uuid' => null,
             'resource' => null,
-            'data' => new ArrayObject(),
+            'data' => array(),
         ));
 
 
@@ -215,12 +215,11 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getDataShouldReturnACachedArrayObject()
     {
-        $file = new File();
+        $file = File::create();
         $data = $file->getData();
 
-        $this->assertInstanceOf('ArrayObject', $data);
-
-        $data['tussi'] = 'lussi';
+        $this->assertInstanceOf('Xi\Filelib\IdentifiableDataContainer', $data);
+        $data->set('tussi', 'lussi');
 
         $this->assertSame($data, $file->getData());
 
@@ -278,12 +277,12 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(array());
         $data = $file->getData();
-        $this->assertInstanceOf('ArrayObject', $data);
+        $this->assertInstanceOf('Xi\Filelib\IdentifiableDataContainer', $data);
 
         $file->setData(array('lusso' => 'magnifico'));
 
         $data = $file->getData();
-        $this->assertEquals('magnifico', $data['lusso']);
+        $this->assertEquals('magnifico', $data->get('lusso'));
     }
 
     /**
@@ -293,12 +292,12 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
     {
         $source = File::create();
         $sourceData = $source->getData();
-        $sourceData['lussutappa'] = 'tussia';
+        $sourceData->set('lussutappa', 'tussia');
 
         $target = clone $source;
         $targetData = $target->getData();
 
-        $this->assertEquals($source->getData()->getArrayCopy(), $target->getData()->getArrayCopy());
+        $this->assertEquals($source->getData()->toArray(), $target->getData()->toArray());
         $this->assertNotSame($sourceData, $targetData);
     }
 

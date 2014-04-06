@@ -21,9 +21,17 @@ class AsynchronousExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function executeShouldExecuteCommand()
+    public function executes()
     {
-        $command = $this->getMockedCommand('topic');
+        $command = $this
+            ->getMockBuilder('Xi\Filelib\File\Command\AfterUploadFileCommand')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $command
+            ->expects($this->once())
+            ->method('getTopic')
+            ->will($this->returnValue('topic'));
+
         $command
             ->expects($this->never())
             ->method('execute');
@@ -35,10 +43,38 @@ class AsynchronousExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
             ->with('topic', $command)
             ->will($this->returnValue('queue vadis?'));
 
-
         $strategy = new ASynchronousExecutionStrategy($queue);
         $ret = $strategy->execute($command);
 
         $this->assertSame('queue vadis?', $ret);
     }
+
+    /**
+     * @test
+     */
+    public function throwsUpWhenCommandNotSerializable()
+    {
+        $command = $this
+            ->getMockBuilder('Xi\Filelib\File\Command\UploadFileCommand')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $command
+            ->expects($this->never())
+            ->method('getTopic');
+
+        $command
+            ->expects($this->never())
+            ->method('execute');
+
+        $queue = $this->getMockedQueue();
+        $queue
+            ->expects($this->never())
+            ->method('enqueue');
+
+        $strategy = new ASynchronousExecutionStrategy($queue);
+
+        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
+        $strategy->execute($command);
+    }
+
 }

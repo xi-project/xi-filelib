@@ -6,7 +6,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Authorization\AccessDeniedException;
-use Xi\Filelib\File\FileOperator;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Storage\Storage;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
@@ -26,9 +26,9 @@ class Renderer
     protected $adapter;
 
     /**
-     * @var FileOperator
+     * @var FileRepository
      */
-    private $fileOperator;
+    private $fileRepository;
 
     /**
      * @var Storage
@@ -40,10 +40,16 @@ class Renderer
      */
     private $eventDispatcher;
 
+    /**
+     * @var ProfileManager
+     */
+    private $profiles;
+
     public function __construct(FileLibrary $filelib, RendererAdapter $adapter)
     {
         $this->adapter = $adapter;
-        $this->fileOperator = $filelib->getFileOperator();
+        $this->fileRepository = $filelib->getFileRepository();
+        $this->profiles = $filelib->getProfileManager();
         $this->storage = $filelib->getStorage();
         $this->eventDispatcher = $filelib->getEventDispatcher();
     }
@@ -61,7 +67,7 @@ class Renderer
         $response = new Response();
 
         if (!$file instanceof File) {
-            $file = $this->fileOperator->find($file);
+            $file = $this->fileRepository->find($file);
 
             if (!$file) {
                 return $this->adapter->returnResponse($response->setStatusCode(404));
@@ -82,7 +88,7 @@ class Renderer
 
         $options = $this->mergeOptions($options);
 
-        if (!$this->fileOperator->hasVersion($file, $version)) {
+        if (!$this->profiles->hasVersion($file, $version)) {
             return $this->adapter->returnResponse($response->setStatusCode(404));
         }
 
@@ -94,6 +100,9 @@ class Renderer
         $response->setHeader('Content-Type', $retrieved->getMimetype());
 
         $this->injectContentToResponse($retrieved, $response);
+
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::RENDERER_RENDER, $event);
         return $this->adapter->returnResponse($response);
     }
 
@@ -111,7 +120,7 @@ class Renderer
 
     private function retrieve(File $file, $version)
     {
-        $provider = $this->fileOperator->getVersionProvider($file, $version);
+        $provider = $this->profiles->getVersionProvider($file, $version);
 
         if ($provider->areSharedVersionsAllowed()) {
             $res = $this->storage->retrieveVersion($file->getResource(), $version);

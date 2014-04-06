@@ -16,18 +16,37 @@ use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
  */
 class CommandDefinition
 {
+    /**
+     * @var string
+     */
     private $class;
 
+    /**
+     * @var string
+     */
     private $strategy;
 
     /**
-     * @param string $name
+     * @var array
+     */
+    private $strategies = array();
+
+    /**
      * @param string $class
      * @param string $strategy
+     * @param array $strategies
      */
-    public function __construct($class, $strategy = ExecutionStrategy::STRATEGY_SYNCHRONOUS)
-    {
+    public function __construct(
+        $class,
+        $strategy = ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+        $strategies = array(
+            ExecutionStrategy::STRATEGY_SYNCHRONOUS,
+        )
+    ) {
+
         $this->class = $class;
+        $this->strategies = $strategies;
+
         $this->setStrategy($strategy);
     }
 
@@ -46,9 +65,9 @@ class CommandDefinition
     {
         if (!in_array(
             $strategy,
-            array(ExecutionStrategy::STRATEGY_ASYNCHRONOUS, ExecutionStrategy::STRATEGY_SYNCHRONOUS)
+            $this->strategies
         )) {
-            throw new \InvalidArgumentException("Invalid execution strategy '{$strategy}'");
+            throw new \InvalidArgumentException("Command does not support execution strategy '{$strategy}'");
         }
 
         $this->strategy = $strategy;

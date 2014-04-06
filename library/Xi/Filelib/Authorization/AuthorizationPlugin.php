@@ -12,7 +12,7 @@ namespace Xi\Filelib\Authorization;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\IdentityMap\Identifiable;
+use Xi\Filelib\Identifiable;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Events as CoreEvents;
