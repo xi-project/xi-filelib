@@ -7,7 +7,3 @@ nbproject
 /vendor/
 .idea
 .DS_Store
-dev/tools/data/private/*
-dev/tools/web/files/*
-dev/tools/php_errors.log
-tools/dev/filelib-lifecycle.json
