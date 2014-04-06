@@ -183,7 +183,7 @@ class JsonBackendAdapter implements BackendAdapter
             'date_created'  => $file->getDateCreated()->format('Y-m-d H:i:s'),
             'uuid'          => $file->getUuid(),
             'resource_id'   => $file->getResource()->getId(),
-            'data'      => $file->getData()->getArrayCopy(),
+            'data'      => $file->getData()->toArray(),
         );
 
         $document['id'] = $this->createId();
@@ -270,7 +270,7 @@ class JsonBackendAdapter implements BackendAdapter
             'mimetype' => $resource->getMimetype(),
             'size' => $resource->getSize(),
             'date_created' => $resource->getDateCreated()->format('Y-m-d H:i:s'),
-            'data' => $resource->getData(),
+            'data' => $resource->getData()->toArray(),
             'exclusive' => $resource->isExclusive(),
         );
 

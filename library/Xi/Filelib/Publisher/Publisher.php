@@ -118,20 +118,22 @@ class Publisher implements EventSubscriberInterface, Attacher
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_PUBLISH, $event);
 
-        $data = $file->getData();
+        $versionUrls = $file->getData()->get('publisher.version_url', array());
+
         foreach ($this->getVersions($file) as $version) {
 
             try {
                 $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
-                $data["publisher.version_url"][$version] = $this->getUrlVersion($file, $version);
-
+                $versionUrls[$version] = $this->getUrlVersion($file, $version);
             } catch (FileIOException $e) {
                 // Version does not exists, but it shall not stop us!
             }
 
         }
 
-        $data['publisher.published'] = 1;
+        $file->getData()->set('publisher.published', 1);
+        $file->getData()->set('publisher.version_url', $versionUrls);
+
         $this->fileRepository->update($file);
 
         $event = new FileEvent($file);
@@ -159,7 +161,8 @@ class Publisher implements EventSubscriberInterface, Attacher
         }
 
         $data = $file->getData();
-        $data['publisher.published'] = 0;
+        $data->set('publisher.published', 0);
+        $data->delete('publisher.version_url');
 
         $this->fileRepository->update($file);
 
@@ -167,10 +170,6 @@ class Publisher implements EventSubscriberInterface, Attacher
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
 
         $data = $file->getData();
-
-        if (isset($data["publisher.version_url"])) {
-            unset($data["publisher.version_url"]);
-        }
     }
 
     /**
@@ -179,8 +178,7 @@ class Publisher implements EventSubscriberInterface, Attacher
      */
     public function isPublished(File $file)
     {
-        $data = $file->getData();
-        if (isset($data['publisher.published']) && $data['publisher.published'] == 1) {
+        if ($file->getData()->get('publisher.published', 0)) {
             return true;
         }
         return false;
@@ -193,12 +191,9 @@ class Publisher implements EventSubscriberInterface, Attacher
      */
     public function getUrlVersion(File $file, $version)
     {
-        $data = $file->getData();
-
-        if ($data->offsetExists('publisher.version_url')) {
-            if (isset($data['publisher.version_url'][$version])) {
-                return $data["publisher.version_url"][$version];
-            }
+        $versionUrls = $file->getData()->get('publisher.version_url');
+        if (isset($versionUrls[$version])) {
+            return $versionUrls[$version];
         }
 
         $url = $this->adapter->getUrlVersion(
@@ -227,13 +222,7 @@ class Publisher implements EventSubscriberInterface, Attacher
         $target = $event->getTarget();
         $data = $target->getData();
 
-
-        if (isset($data['publisher.published'])) {
-            unset($data['publisher.published']);
-        }
-
-        if (isset($data['publisher.version_url'])) {
-            unset($data['publisher.version_url']);
-        }
+        $data->delete('publisher.published');
+        $data->delete('publisher.version_url');
     }
 }

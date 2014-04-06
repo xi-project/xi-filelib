@@ -58,7 +58,8 @@ class Folder implements Identifiable
     private $uuid;
 
     private function __construct()
-    { }
+    {
+    }
 
     /**
      * Sets id

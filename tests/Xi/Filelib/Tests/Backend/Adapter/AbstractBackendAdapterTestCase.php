@@ -446,10 +446,10 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
         $file = $this->findFile($id);
 
         $data = $file->getData();
-        $this->assertSame($expected, $data[$key]);
+        $this->assertSame($expected, $data->get($key));
 
         $sucklingData = array('suckling' => 'on a duckling');
-        $data['imaiseppa'] = $sucklingData;
+        $data->set('imaiseppa', $sucklingData);
 
         $this->backend->updateFile($file);
 

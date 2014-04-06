@@ -8,6 +8,7 @@
  */
 
 namespace Xi\Filelib\Tool\Slugifier;
+
 use Xi\Filelib\Tool\Slugifier\Adapter\CocurSlugifierAdapter;
 use Xi\Filelib\Tool\Slugifier\Adapter\SlugifierAdapter;
 
