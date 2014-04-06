@@ -100,18 +100,4 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $migration->attachTo($filelib);
         $migration->execute();
     }
-
-    /**
-     * @test
-     */
-    public function commandShouldSerializeAndUnserializeProperly()
-    {
-        $command = new ResourceRefactorMigration();
-
-        $serialized = serialize($command);
-        $command2 = unserialize($serialized);
-
-        $this->assertInstanceOf('Xi\Filelib\Migration\ResourceRefactorMigration', $command2);
-    }
-
 }

@@ -111,14 +111,4 @@ class ResourceRefactorMigration implements Command
     {
         return 'xi_filelib.command.migration.resource_refactor';
     }
-
-    public function serialize()
-    {
-        return serialize(array());
-    }
-
-    public function unserialize($data)
-    {
-
-    }
 }

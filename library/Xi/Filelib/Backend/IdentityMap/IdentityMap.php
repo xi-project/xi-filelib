@@ -184,14 +184,6 @@ class IdentityMap implements EventSubscriberInterface, FindByIdsRequestResolver
     /**
      * @param IdentifiableEvent $event
      */
-    public function onInstantiate(IdentifiableEvent $event)
-    {
-        $this->add($event->getIdentifiable());
-    }
-
-    /**
-     * @param IdentifiableEvent $event
-     */
     public function onDelete(IdentifiableEvent $event)
     {
         $this->remove($event->getIdentifiable());

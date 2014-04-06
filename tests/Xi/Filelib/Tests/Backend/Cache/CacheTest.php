@@ -4,6 +4,8 @@ namespace Xi\Filelib\Tests\Backend\Cache;
 
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Cache\Cache;
+use Xi\Filelib\Event\IdentifiableEvent;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Events;
@@ -129,5 +131,58 @@ class CacheTest extends TestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function onDeleteDeletes()
+    {
+        $cache = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Cache\Cache')
+            ->disableOriginalConstructor()
+            ->setMethods(array('delete', 'save'))
+            ->getMock();
+
+        $identifiable = Resource::create();
+        $event = new IdentifiableEvent($identifiable);
+
+        $cache->expects($this->once())->method('delete')->with($identifiable);
+        $cache->onDelete($event);
+    }
+
+    /**
+     * @test
+     */
+    public function onCreateSaves()
+    {
+        $cache = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Cache\Cache')
+            ->disableOriginalConstructor()
+            ->setMethods(array('delete', 'save'))
+            ->getMock();
+
+        $identifiable = Resource::create();
+        $event = new IdentifiableEvent($identifiable);
+
+        $cache->expects($this->once())->method('save')->with($identifiable);
+        $cache->onCreate($event);
+    }
+
+    /**
+     * @test
+     */
+    public function onInstantiateSaves()
+    {
+        $cache = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Cache\Cache')
+            ->disableOriginalConstructor()
+            ->setMethods(array('delete', 'save'))
+            ->getMock();
+
+        $identifiable = Resource::create();
+        $event = new IdentifiableEvent($identifiable);
+
+        $cache->expects($this->once())->method('save')->with($identifiable);
+        $cache->onInstantiate($event);
+    }
 
 }

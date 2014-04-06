@@ -150,7 +150,7 @@ class FindByIdsRequest
     /**
      * @param bool $isOrigin
      */
-    private function isOrigin($isOrigin)
+    public function isOrigin($isOrigin)
     {
         $this->isOrigin = $isOrigin;
     }
