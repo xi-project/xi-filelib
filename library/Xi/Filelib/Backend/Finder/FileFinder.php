@@ -18,6 +18,7 @@ class FileFinder extends AbstractFinder
         'id',
         'folder_id',
         'name',
+        'uuid',
     );
 
     protected $resultClass = 'Xi\Filelib\File\File';

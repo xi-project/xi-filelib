@@ -35,7 +35,7 @@ $publisher->publish($file);
             <h1>You just published a picture of a manatee</h1>
 
             <p>
-                <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
+                <img src="<?php echo $publisher->getUrl($file, 'original'); ?>" />
             </p>
 
         </div>

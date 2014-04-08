@@ -62,6 +62,7 @@ class DoctrineOrmBackendAdapter implements BackendAdapter
             'id' => 'id',
             'folder_id' => 'folder_id',
             'name' => 'filename',
+            'uuid' => 'uuid',
         ),
         'Xi\Filelib\Folder\Folder' => array(
             'id' => 'id',
