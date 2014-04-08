@@ -100,6 +100,7 @@ class FileRepository extends AbstractRepository
      *
      * @param  mixed      $id File id
      * @return File
+     * @todo switch uuid and id as internal primary id
      */
     public function find($id)
     {
@@ -111,6 +112,21 @@ class FileRepository extends AbstractRepository
 
         return $file;
     }
+
+    /**
+     * @param $uuid
+     * @return File
+     * @todo switch uuid and id as internal primary id
+     */
+    public function findByUuid($uuid)
+    {
+        $file = $this->backend->findByFinder(
+            new FileFinder(array('uuid' => $uuid))
+        )->current();
+
+        return $file ?: false;
+    }
+
 
     /**
      * Finds file by filename in a folder
@@ -125,11 +141,7 @@ class FileRepository extends AbstractRepository
             new FileFinder(array('folder_id' => $folder->getId(), 'name' => $filename))
         )->current();
 
-        if (!$file) {
-            return false;
-        }
-
-        return $file;
+        return $file ?: false;
     }
 
     /**

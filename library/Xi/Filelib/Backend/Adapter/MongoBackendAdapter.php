@@ -49,6 +49,7 @@ class MongoBackendAdapter implements BackendAdapter
             'id' => '_id',
             'folder_id' => 'folder_id',
             'name' => 'name',
+            'uuid' => 'uuid',
         ),
         'Xi\Filelib\Folder\Folder' => array(
             'id' => '_id',

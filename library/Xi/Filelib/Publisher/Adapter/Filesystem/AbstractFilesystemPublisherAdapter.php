@@ -101,7 +101,7 @@ abstract class AbstractFilesystemPublisherAdapter implements PublisherAdapter
      * @param Linker $linker
      * @return string
      */
-    public function getUrlVersion(File $file, $version, VersionProvider $versionProvider, Linker $linker)
+    public function getUrl(File $file, $version, VersionProvider $versionProvider, Linker $linker)
     {
         $url = $this->getBaseUrl() . '/';
         $url .= $linker->getLink(

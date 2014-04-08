@@ -75,11 +75,11 @@ $publisher->publish($file);
     <body>
         <h1>You just published a picture of a manatee and a cinemascope thumbnail. Aww!!!</h1>
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'original'); ?>" />
         </p>
 
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'cinemascope'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'cinemascope'); ?>" />
         </p>
 
     </body>

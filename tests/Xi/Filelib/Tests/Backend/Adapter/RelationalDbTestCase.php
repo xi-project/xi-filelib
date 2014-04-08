@@ -538,6 +538,10 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
             array(1, new ResourceFinder(array('hash' => 'hash-1'))),
             array(2, new ResourceFinder(array('hash' => 'hash-2'))),
 
+            array(1, new FileFinder(array('uuid' => 'uuid-4'))),
+            array(0, new FileFinder(array('uuid' => 'tenhusen-lipaisu-karmea-hipaisu'))),
+
+
         );
     }
 

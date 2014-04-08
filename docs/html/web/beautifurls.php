@@ -53,11 +53,11 @@ $publisher->publish($file);
         </p>
 
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'original'); ?>" />
         </p>
 
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'cinemascope'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'cinemascope'); ?>" />
         </p>
 
     </body>
