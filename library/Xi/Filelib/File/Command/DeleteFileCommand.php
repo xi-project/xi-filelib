@@ -14,6 +14,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
+use Xi\Filelib\Resource\ResourceRepository;
 
 class DeleteFileCommand extends AbstractFileCommand
 {
@@ -35,8 +36,13 @@ class DeleteFileCommand extends AbstractFileCommand
         $this->backend->deleteFile($this->file);
 
         if ($this->file->getResource()->isExclusive()) {
-            $this->storage->delete($this->file->getResource());
-            $this->backend->deleteResource($this->file->getResource());
+
+            $this->resourceRepository->createCommand(
+                ResourceRepository::COMMAND_DELETE,
+                array(
+                    $this->file->getResource()
+                )
+            )->execute();
         }
 
         $event = new FileEvent($this->file);

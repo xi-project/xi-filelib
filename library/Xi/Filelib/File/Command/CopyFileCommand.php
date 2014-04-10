@@ -21,6 +21,7 @@ use Xi\Filelib\Event\FolderEvent;
 use Pekkis\Queue\Message;
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\Queue\UuidReceiver;
+use Xi\Filelib\Resource\ResourceRepository;
 
 class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
 {
@@ -111,8 +112,10 @@ class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
             $resource->setSize($oldResource->getSize());
             $resource->setMimetype($oldResource->getMimetype());
 
-            $this->backend->createResource($resource);
-            $this->storage->store($resource, $retrieved);
+            $this->resourceRepository->createCommand(
+                ResourceRepository::COMMAND_CREATE,
+                array($resource)
+            )->execute();
 
             $file->setResource($resource);
         }

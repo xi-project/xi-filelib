@@ -213,6 +213,16 @@ class IdentityMap implements EventSubscriberInterface, FindByIdsRequestResolver
     }
 
     /**
+     * @return IdentityMap
+     */
+    public function clear()
+    {
+        $this->objectIdentifiers = array();
+        $this->objects = array();
+    }
+
+
+    /**
      * @param $id
      * @param $className
      * @return string

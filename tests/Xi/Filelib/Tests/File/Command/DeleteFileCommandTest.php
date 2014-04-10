@@ -8,6 +8,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\Command\DeleteFileCommand;
 use Xi\Filelib\Events;
+use Xi\Filelib\Resource\ResourceRepository;
 
 class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -68,22 +69,34 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $storage = $this->getMockedStorage();
 
-        $filelib = $this->getMockedFilelib(
-            null,
-            $op,
-            null,
-            $storage,
-            $ed,
-            $backend
-        );
+        $rere = $this->getMockedResourceRepository();
 
         if ($exclusiveResource) {
-            $storage->expects($this->once())->method('delete')->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'));
-            $backend->expects($this->once())->method('deleteResource')->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'));
+            $rere
+                ->expects($this->once())
+                ->method('createCommand')
+                ->with(
+                    ResourceRepository::COMMAND_DELETE,
+                    $this->isType('array')
+                )
+                ->will($this->returnValue($this->getMockedCommand('topic', true)));
         } else {
-            $storage->expects($this->never())->method('delete');
-            $backend->expects($this->never())->method('deleteResource');
+            $rere
+                ->expects($this->never())
+                ->method('createCommand');
         }
+
+
+        $filelib = $this->getMockedFilelib(
+            null,
+            array(
+                'fire' => $op,
+                'storage' => $storage,
+                'ed' => $ed,
+                'backend' => $backend,
+                'rere' => $rere,
+            )
+        );
 
         $command = new DeleteFileCommand($file);
         $command->attachTo($filelib);
