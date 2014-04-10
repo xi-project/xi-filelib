@@ -14,6 +14,7 @@ use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Command\Command;
 use Xi\Filelib\FileLibrary;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Resource\ResourceRepository;
 use Xi\Filelib\Storage\Storage;
 
 abstract class AbstractFileCommand implements Command
@@ -38,9 +39,18 @@ abstract class AbstractFileCommand implements Command
      */
     protected $storage;
 
+    /**
+     * @var ResourceRepository
+     */
+    protected $resourceRepository;
+
+    /**
+     * @param FileLibrary $filelib
+     */
     public function attachTo(FileLibrary $filelib)
     {
         $this->fileRepository = $filelib->getFileRepository();
+        $this->resourceRepository = $filelib->getResourceRepository();
         $this->eventDispatcher = $filelib->getEventDispatcher();
         $this->backend = $filelib->getBackend();
         $this->storage = $filelib->getStorage();

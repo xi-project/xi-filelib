@@ -144,4 +144,39 @@ class LifeCycleTest extends TestCase
         $this->assertTrue($file1->getResource()->hasVersion('cinemascope'));
     }
 
+    /**
+     * @test
+     */
+    public function updatingFileUpdatesResource()
+    {
+        $this->memcached->flush();
+
+        $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->upload(new FileUpload($manateePath));
+
+        $resource = $file->getResource();
+        $this->assertEquals(array('original', 'cinemascope'), $resource->getVersions());
+
+        $this->filelib->getBackend()->getIdentityMap()->clear();
+
+        $file2 = $this->filelib->getFileRepository()->find($file->getId());
+        $resource2 = $file2->getResource();
+
+        $this->assertNotSame($file, $file2);
+        $this->assertNotSame($resource, $resource2);
+
+        $this->assertEquals(array('original', 'cinemascope'), $resource2->getVersions());
+        $resource2->addVersion('lussogrande');
+
+        $this->filelib->getFileRepository()->update($file2);
+
+        $this->filelib->getBackend()->getIdentityMap()->clear();
+
+        $file3 = $this->filelib->getFileRepository()->find($file->getId());
+        $resource3 = $file3->getResource();
+
+        $this->assertNotSame($file2, $file3);
+        $this->assertNotSame($resource2, $resource3);
+        $this->assertEquals(array('original', 'cinemascope', 'lussogrande'), $resource3->getVersions());
+    }
 }

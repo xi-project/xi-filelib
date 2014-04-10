@@ -25,6 +25,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Imagick;
 use MongoDB;
+use Memcached;
 
 class TestCase extends \Xi\Filelib\Tests\TestCase
 {
@@ -48,6 +49,12 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
      * @var SimpleAuthorizationAdapter
      */
     protected $authorizationAdapter;
+
+    /**
+     * @var Memcached
+     */
+    protected $memcached;
+
 
     public function setUp()
     {
@@ -75,11 +82,12 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
             $ed
         );
 
-        $memcached = new \Memcached();
+        $memcached = new Memcached();
         $memcached->addServer('localhost', 11211);
         $filelib->createCacheFromAdapter(
             new MemcachedCacheAdapter($memcached)
         );
+        $this->memcached = $memcached;
 
         $filelib->addPlugin(new RandomizeNamePlugin());
 

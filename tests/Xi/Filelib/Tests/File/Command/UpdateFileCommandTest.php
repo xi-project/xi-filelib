@@ -8,6 +8,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Command\UpdateFileCommand;
 use Xi\Filelib\Events;
 use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ResourceRepository;
 
 class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -55,13 +56,24 @@ class UpdateFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         $backend->expects($this->once())->method('updateFile')->with($this->equalTo($file));
 
+        $rere = $this->getMockedResourceRepository();
+        $rere
+            ->expects($this->once())
+            ->method('createCommand')
+            ->with(
+                ResourceRepository::COMMAND_UPDATE,
+                $this->isType('array')
+            )
+            ->will($this->returnValue($this->getMockedCommand('topic', true)));
+
         $filelib = $this->getMockedFilelib(
             null,
-            $op,
-            null,
-            null,
-            $ed,
-            $backend
+            array(
+                'fire' => $op,
+                'ed' => $ed,
+                'backend' => $backend,
+                'rere' => $rere,
+            )
         );
 
         $command = new UpdateFileCommand($file);
