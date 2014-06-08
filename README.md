@@ -73,9 +73,19 @@ straight into the code.
 
 ## About integrating to your own software
 
-Experience has time and again proved that integration should be as light as possible. If one is using Doctrine ORM,
-it could seem appropriate to integrate via Filelib's entities. DON'T. It will bite you back. Just save Filelib
-ids / uids within your own data and use Filelib for everything else.
+Experience has time and again proved that integration should be light. If one is using Doctrine ORM, it
+*could* seem appropriate to integrate via Filelib's entities. DON'T DO IT. It will bite you back.
+
+All the stuff inside the backend platforms (and other deeper abstractions provided by Filelib) are the library's private
+parts and subject to change any time. So if you utilize these internals, be prepared to enter upgrade hell at some
+point. For example the entities in the ORM backend platform; they may go away for good some day.
+
+Just utilize Filelib's identifiables' (folders / files) ids / UUIDs within your own data and domain and use functionality
+provided by Filelib for everything else.
+
+FolderRepository and FileRepository *should* usually be as deep as you have to go but it may not yet be the case. For
+some "tougher" operations I've personally had to use Backend and ProfileManager, at least. These are things
+and use cases that are yet to be considered before 1.0 is reached.
 
 ## Framework integration
 
