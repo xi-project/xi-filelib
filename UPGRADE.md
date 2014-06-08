@@ -8,6 +8,7 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 * Data is backwards compatible. Hoorah!
 * FILE_BEFORE_CREATE event (FileUploadEvent) is now named FILE_UPLOAD.
 * FILE_BEFORE_CREATE is now a _new_ event (FileEvent) triggered before creation of files.
+* Refactorations and simplifications in plugins. Check your custom ones, they may require small changes.
 
 ## From version 0.10.x to version 0.11.x
 
