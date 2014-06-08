@@ -163,7 +163,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function getExtensionForShouldDigOutputsForTheCorrectExtension()
+    public function getExtensionShouldDigOutputsForTheCorrectExtension()
     {
         $outputs = array(
             'pygmi' => array(
@@ -186,10 +186,10 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $file = $this->getMockedFile();
 
-        $this->assertEquals('lussen', $this->plugin->getExtensionFor($file, 'pygmi'));
-        $this->assertEquals('dorfer', $this->plugin->getExtensionFor($file, 'watussi'));
+        $this->assertEquals('lussen', $this->plugin->getExtension($file, 'pygmi'));
+        $this->assertEquals('dorfer', $this->plugin->getExtension($file, 'watussi'));
 
-        $this->assertEquals('png', $this->plugin->getExtensionFor($file, 'watussi_thumbnail'));
+        $this->assertEquals('png', $this->plugin->getExtension($file, 'watussi_thumbnail'));
 
     }
 

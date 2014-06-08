@@ -26,7 +26,7 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
              ->will($this->returnValue('xoo'));
 
         $vp->expects($this->any())
-             ->method('getExtensionFor')
+             ->method('getExtension')
              ->with($this->isInstanceOf('Xi\Filelib\File\File'), 'xoo')
              ->will($this->returnValue('xoo'));
 
@@ -80,7 +80,7 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
             $linker->getLink(
                 $file,
                 'xoo',
-                $this->versionProvider->getExtensionFor($file, 'xoo')
+                $this->versionProvider->getExtension($file, 'xoo')
             )
         );
     }

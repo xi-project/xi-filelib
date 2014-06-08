@@ -41,7 +41,7 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
             $linker->getLink(
                 $file,
                 $version,
-                $versionProvider->getExtensionFor($file, $version)
+                $versionProvider->getExtension($file, $version)
             );
 
         if (!is_file($link)) {
@@ -69,7 +69,7 @@ class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter 
             $linker->getLink(
                 $file,
                 $version,
-                $versionProvider->getExtensionFor($file, $version)
+                $versionProvider->getExtension($file, $version)
             );
         if (is_file($link)) {
             unlink($link);

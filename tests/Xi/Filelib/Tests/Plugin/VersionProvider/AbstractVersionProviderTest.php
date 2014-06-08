@@ -423,9 +423,8 @@ class AbstractVersionProviderTest extends TestCase
     public function provideFiles()
     {
         return array(
-            array('jpg', ROOT_TESTS . '/data/self-lussing-manatee.jpeg'),
-            array('jpg', ROOT_TESTS . '/data/self-lussing-manatee.jpg'),
-            array('png', ROOT_TESTS . '/data/dporssi-screenshot.png'),
+            array('image/jpeg', ROOT_TESTS . '/data/self-lussing-manatee.jpeg'),
+            array('image/png', ROOT_TESTS . '/data/dporssi-screenshot.png'),
         );
     }
 
@@ -433,7 +432,7 @@ class AbstractVersionProviderTest extends TestCase
      * @test
      * @dataProvider provideFiles
      */
-    public function getExtensionForShouldQueryExtensionAndReplaceFugly($expected, $filename)
+    public function getMimeTypeReturnsMimeType($expected, $filename)
     {
         $this->plugin->attachTo($this->filelib);
 
@@ -451,7 +450,39 @@ class AbstractVersionProviderTest extends TestCase
             ->with($resource, 'xoox')
             ->will($this->returnValue($filename));
 
-        $extension = $this->plugin->getExtensionFor($file, 'xoox');
-        $this->assertSame($expected, $extension);
+        $mimeType = $this->plugin->getMimeType($file, 'xoox');
+        $this->assertSame($expected, $mimeType);
+    }
+
+
+    /**
+     * @test
+     * @dataProvider provideFiles
+     */
+    public function getExtensionShouldQueryExtensionAndReplaceFugly($expected, $filename)
+    {
+        $file = File::create();
+
+        $plugin = $this
+            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
+            ->setConstructorArgs(
+                array(
+                    'xooxer',
+                    function (File $file) {
+                        return (bool) preg_match("/^(image|video)/", $file->getMimetype());
+                    }
+                )
+            )
+            ->setMethods(array('getMimeType'))
+            ->getMockForAbstractClass();
+
+        $plugin
+            ->expects($this->once())
+            ->method('getMimeType')
+            ->with($file, 'xooxer')
+            ->will($this->returnValue('image/jpeg'));
+
+        $extension = $plugin->getExtension($file, 'xooxer');
+        $this->assertEquals('jpg', $extension);
     }
 }

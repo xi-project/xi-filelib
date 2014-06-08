@@ -195,7 +195,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      *
      * @param string $version
      */
-    public function getExtensionFor(File $file, $version)
+    public function getExtension(File $file, $version)
     {
         if (preg_match("#thumbnail$#", $version)) {
             return 'png';

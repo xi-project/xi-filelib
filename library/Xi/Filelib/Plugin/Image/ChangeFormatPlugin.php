@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
+use Xi\Filelib\File\MimeType;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\File\FileRepository;
@@ -17,20 +18,24 @@ use Xi\Filelib\Events;
 use Xi\Filelib\File\Upload\FileUpload;
 
 /**
- * Changes images' formats before uploading them.
+ * Changes images' formats before uploading
  *
  * @author pekkis
  */
 class ChangeFormatPlugin extends AbstractPlugin
 {
+    /**
+     * @var array
+     */
     protected static $subscribedEvents = array(
         Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',
-        Events::FILE_BEFORE_CREATE => 'beforeUpload'
+        Events::FILE_UPLOAD => 'beforeUpload'
     );
 
-    protected $imageMagickHelper;
-
-    protected $targetExtension;
+    /**
+     * @var ImageMagickHelper
+     */
+    protected $helper;
 
     /**
      * @var string
@@ -41,32 +46,14 @@ class ChangeFormatPlugin extends AbstractPlugin
      * @param string $targetExtension
      * @param array $commandDefinitions
      */
-    public function __construct($targetExtension, array $commandDefinitions = array())
+    public function __construct(array $commandDefinitions = array())
     {
-        $this->targetExtension = $targetExtension;
-        $this->imageMagickHelper = new ImageMagickHelper($commandDefinitions);
+        $this->helper = new ImageMagickHelper($commandDefinitions);
     }
 
     /**
-     * Returns ImageMagick helper
-     *
-     * @return ImageMagickHelper
+     * @param FileUploadEvent $event
      */
-    public function getImageMagickHelper()
-    {
-        return $this->imageMagickHelper;
-    }
-
-    /**
-     * Returns target file extension
-     *
-     * @return string
-     */
-    public function getTargetExtension()
-    {
-        return $this->targetExtension;
-    }
-
     public function beforeUpload(FileUploadEvent $event)
     {
         if (!$this->hasProfile($event->getProfile()->getIdentifier())) {
@@ -74,15 +61,12 @@ class ChangeFormatPlugin extends AbstractPlugin
         }
 
         $upload = $event->getFileUpload();
-
-        $mimetype = $upload->getMimeType();
-        if (!preg_match("/^image/", $mimetype)) {
+        if (!preg_match("/^image/", $upload->getMimeType())) {
             return;
         }
 
-        $img = $this->getImageMagickHelper()->createImagick($upload->getRealPath());
-        $this->getImageMagickHelper()->execute($img);
-
+        $img = $this->helper->createImagick($upload->getRealPath());
+        $this->helper->execute($img);
 
         $tempnam = $this->tempDir . '/' . uniqid('cfp', true);
         $img->writeImage($tempnam);
@@ -92,11 +76,10 @@ class ChangeFormatPlugin extends AbstractPlugin
         $nupload = new FileUpload($tempnam);
         $nupload->setTemporary(true);
 
-        $nupload->setOverrideFilename($pinfo['filename'] . '.' . $this->getTargetExtension());
+        $extension = array_shift(MimeType::mimeTypeToExtensions($nupload->getMimeType()));
+        $nupload->setOverrideFilename($pinfo['filename'] . '.' . $extension);
 
         $event->setFileUpload($nupload);
-
-        return $nupload;
     }
 
     /**

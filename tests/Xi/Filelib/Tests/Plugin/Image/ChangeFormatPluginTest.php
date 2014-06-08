@@ -13,6 +13,7 @@ use Xi\Filelib\Plugin\Image\ChangeFormatPlugin;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\Profile\FileProfile;
 
 /**
  * @group plugin
@@ -45,7 +46,6 @@ class ChangeFormatPluginTest extends TestCase
             ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
 
         $this->plugin = new ChangeFormatPlugin(
-            'lus',
             array()
         );
 
@@ -61,24 +61,6 @@ class ChangeFormatPluginTest extends TestCase
             'Xi\Filelib\Plugin\AbstractPlugin',
             class_parents($this->plugin)
         );
-    }
-
-    /**
-     * @test
-     */
-    public function gettersShouldWorkAsExpected()
-    {
-        $this->assertEquals('lus', $this->plugin->getTargetExtension());
-    }
-
-    /**
-     * @test
-     */
-    public function getImageMagickHelperShouldReturnImageMagickHelper()
-    {
-        $helper = $this->plugin->getImageMagickHelper();
-        $this->assertInstanceOf('Xi\Filelib\Plugin\Image\ImageMagickHelper', $helper);
-        $this->assertSame($helper, $this->plugin->getImageMagickHelper());
     }
 
     /**
@@ -129,30 +111,9 @@ class ChangeFormatPluginTest extends TestCase
     {
         $helper = $this->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
 
-        $mock = $this->getMock('Imagick');
-        $mock->expects($this->once())
-             ->method('writeImage')
-             ->with($this->matchesRegularExpression('#^' . ROOT_TESTS . '/data/temp#'))
-             ->will(
-                $this->returnCallback(
-                    function ($path) {
-                        copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path);
-                    }
-                )
-            );
-
-        $helper->expects($this->once())->method('createImagick')->will($this->returnValue($mock));
-
-        $helper->expects($this->once())->method('execute')->with($this->equalTo($mock));
-
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
 
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ChangeFormatPlugin')
-                       ->setMethods(array('getImageMagickHelper'))
-                       ->setConstructorArgs(array(
-                           'lus'
-                       ))
-                       ->getMock();
+        $plugin = new ChangeFormatPlugin();
 
         $filelib = $this->getMockedFilelib(null, $this->fileRepository);
         $filelib
@@ -164,19 +125,18 @@ class ChangeFormatPluginTest extends TestCase
 
         $plugin->setProfiles(array('tussi'));
 
-        $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
-
         $folder = $this->getMockedFolder();
-        $profile = $this->getMockedFileProfile();
-        $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
+
+        $profile = new FileProfile('tussi');
+
         $event = new FileUploadEvent($upload, $folder, $profile);
 
         $plugin->beforeUpload($event);
 
         $xupload = $event->getFileUpload();
-
         $this->assertInstanceOf('Xi\Filelib\File\Upload\FileUpload', $xupload);
         $this->assertNotSame($upload, $xupload);
+        $this->assertEquals('self-lussing-manatee.jpeg', $xupload->getUploadFilename());
     }
 
     /**
@@ -186,6 +146,6 @@ class ChangeFormatPluginTest extends TestCase
     {
         $events = ChangeFormatPlugin::getSubscribedEvents();
         $this->assertArrayHasKey(Events::PROFILE_AFTER_ADD, $events);
-        $this->assertArrayHasKey(Events::FILE_BEFORE_CREATE, $events);
+        $this->assertArrayHasKey(Events::FILE_UPLOAD, $events);
     }
 }

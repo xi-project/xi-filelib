@@ -19,22 +19,30 @@ use Xi\Filelib\FileLibrary;
  */
 class VersionPlugin extends AbstractVersionProvider
 {
+    /**
+     * @var ImageMagickHelper
+     */
     protected $imageMagickHelper;
 
     /**
-     * @var File extension for the version
+     * @var string Mime type of version provided
      */
-    protected $extension;
+    protected $mimeType;
 
     /**
      * @var string
      */
     protected $tempDir;
 
+    /**
+     * @param string $identifier
+     * @param array $commandDefinitions
+     * @param string $mimeType
+     */
     public function __construct(
         $identifier,
         $commandDefinitions = array(),
-        $extension = null
+        $mimeType = null
     ) {
         parent::__construct(
             $identifier,
@@ -43,9 +51,8 @@ class VersionPlugin extends AbstractVersionProvider
                 return (bool) preg_match("/^image/", $file->getMimetype());
             }
         );
-        $this->extension = $extension;
-
         $this->imageMagickHelper = new ImageMagickHelper($commandDefinitions);
+        $this->mimeType = $mimeType;
     }
 
     public function attachTo(FileLibrary $filelib)
@@ -72,7 +79,6 @@ class VersionPlugin extends AbstractVersionProvider
      */
     public function createTemporaryVersions(File $file)
     {
-        // Todo: optimize
         $retrieved = $this->storage->retrieve($file->getResource());
         $img = $this->getImageMagickHelper()->createImagick($retrieved);
 
@@ -81,31 +87,30 @@ class VersionPlugin extends AbstractVersionProvider
         $tmp = $this->tempDir . '/' . uniqid('', true);
         $img->writeImage($tmp);
 
-        return array($this->getIdentifier() => $tmp);
+        return array(
+            $this->getIdentifier() => $tmp
+        );
     }
 
+    /**
+     * @return array
+     */
     public function getVersions()
     {
         return array($this->identifier);
     }
 
     /**
-     * Returns the plugins file extension
-     *
+     * @param File $file
+     * @param string $version
      * @return string
      */
-    public function getExtension()
+    public function getExtension(File $file, $version)
     {
-        return $this->extension;
-    }
-
-    public function getExtensionFor(File $file, $version)
-    {
-        // Hard coded extension (the old way)
-        if ($extension = $this->getExtension()) {
-            return $extension;
+        if ($this->mimeType) {
+            return $this->getExtensionFromMimeType($this->mimeType);
         }
-        return parent::getExtensionFor($file, $version);
+        return parent::getExtension($file, $version);
     }
 
     public function isSharedResourceAllowed()
