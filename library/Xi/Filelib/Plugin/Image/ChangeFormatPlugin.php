@@ -76,7 +76,8 @@ class ChangeFormatPlugin extends AbstractPlugin
         $nupload = new FileUpload($tempnam);
         $nupload->setTemporary(true);
 
-        $extension = array_shift(MimeType::mimeTypeToExtensions($nupload->getMimeType()));
+        $extensions = MimeType::mimeTypeToExtensions($nupload->getMimeType());
+        $extension = array_shift($extensions);
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $extension);
 
         $event->setFileUpload($nupload);
