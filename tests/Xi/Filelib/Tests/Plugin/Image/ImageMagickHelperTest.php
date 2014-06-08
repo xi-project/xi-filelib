@@ -70,6 +70,7 @@ class ImageMagickHelperTest extends TestCase
         $this->assertEquals(array(), $helper->getCommands());
 
         $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
+        $mock->expects($this->once())->method('setHelper')->with($helper);
 
         $helper->addCommand($mock);
 

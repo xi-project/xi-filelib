@@ -36,6 +36,7 @@ class ImageMagickHelper
     public function addCommand(Command $command)
     {
         $this->commands[] = $command;
+        $command->setHelper($this);
     }
 
     /**
@@ -55,13 +56,19 @@ class ImageMagickHelper
         return $this->commands[$key];
     }
 
-    public function setCommand($key, $command)
+    /**
+     * @param $key
+     * @param Command $command
+     */
+    public function setCommand($key, Command $command)
     {
         $this->commands[$key] = $command;
     }
 
-
-    public function execute($img)
+    /**
+     * @param Imagick $img
+     */
+    public function execute(Imagick $img)
     {
         foreach ($this->getCommands() as $command) {
             $command->execute($img);

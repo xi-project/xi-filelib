@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Plugin\Image\Command;
 
 use Imagick;
+use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 
 /**
  * Interface for ImageMagick version plugin commands
@@ -26,11 +27,8 @@ interface Command
     public function execute(Imagick $imagick);
 
     /**
-     * Creates a new Imagick resource
-     *
-     * @param  string  $path Image path
-     * @return Imagick
-     * @todo This is not necessary
+     * @param ImageMagickHelper $helper
+     * @return Command
      */
-    public function createImagick($path);
+    public function setHelper(ImageMagickHelper $helper);
 }

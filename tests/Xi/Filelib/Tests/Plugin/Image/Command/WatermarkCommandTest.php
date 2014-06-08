@@ -74,22 +74,28 @@ class WatermarkCommandTest extends TestCase
                         ->disableOriginalConstructor()
                         ->getMock();
 
-        $imagick->expects($this->once())->method('getImageWidth')->will($this->returnValue($imagickO[0]));
-        $imagick->expects($this->once())->method('getImageHeight')->will($this->returnValue($imagickO[1]));
 
         $watermark = $this->getMockBuilder('\Imagick')
                         ->disableOriginalConstructor()
                         ->getMock();
 
+        $helper = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ImageMagickHelper')
+                        ->setMethods(array('createImagick'))
+                        ->setConstructorArgs(array())
+                        ->getMock();
+
+        $helper->expects($this->any())->method('createImagick')->will($this->returnValue($watermark));
+
         $watermark->expects($this->once())->method('getImageWidth')->will($this->returnValue($watermarkO[0]));
         $watermark->expects($this->once())->method('getImageHeight')->will($this->returnValue($watermarkO[1]));
 
-        $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
-                        ->setMethods(array('createImagick'))
-                        ->setConstructorArgs(array('tussi', $position, $padding))
-                        ->getMock();
+        $imagick->expects($this->once())->method('getImageWidth')->will($this->returnValue($imagickO[0]));
+        $imagick->expects($this->once())->method('getImageHeight')->will($this->returnValue($imagickO[1]));
 
-        $command->expects($this->any())->method('createImagick')->will($this->returnValue($watermark));
+
+        $command = new WatermarkCommand('tussi', $position, $padding);
+        $command->setHelper($helper);
+
         $ret = $command->calculateCoordinates($imagick);
 
         $this->assertEquals($expected, $ret);
@@ -104,18 +110,21 @@ class WatermarkCommandTest extends TestCase
                         ->disableOriginalConstructor()
                         ->getMock();
 
-        $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
-                        ->setMethods(array('createImagick'))
-                        ->setConstructorArgs(array('tussi', 'se', 7))
-                        ->getMock();
+        $helper = $this->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
+        $helper
+            ->expects($this->once())
+            ->method('createImagick')
+            ->with('tussi')
+            ->will($this->returnValue($watermark));
 
-        $command->expects($this->once())->method('createImagick')->will($this->returnValue($watermark));
+        $command = new WatermarkCommand('tussi', 'nw', 5);
+        $command->setHelper($helper);
+
+        $cached = $command->getWatermarkResource();
+        $this->assertInstanceOf('\Imagick', $cached);
 
         $res = $command->getWatermarkResource();
-        $this->assertInstanceOf('\Imagick', $res);
-
-        $res = $command->getWatermarkResource();
-        $this->assertInstanceOf('\Imagick', $res);
+        $this->assertSame($cached, $res);
     }
 
     /**
@@ -129,17 +138,14 @@ class WatermarkCommandTest extends TestCase
 
         $watermark->expects($this->once())->method('clear');
 
-        $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
-                        ->setMethods(array('createImagick'))
-                        ->setConstructorArgs(array('tussi', 'se', 7))
-                        ->getMock();
+        $helper = $this
+            ->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
+        $helper->expects($this->once())->method('createImagick')->will($this->returnValue($watermark));
 
-        $command->expects($this->once())->method('createImagick')->will($this->returnCallback(function() use ($watermark) {
-            return $watermark;
-        }));
+        $command = new WatermarkCommand('tussi', 'se', 7);
+        $command->setHelper($helper);
 
         $command->getWatermarkResource();
-
         $command->destroyWatermarkResource();
     }
 
@@ -154,27 +160,8 @@ class WatermarkCommandTest extends TestCase
 
         $watermark->expects($this->never())->method('destroy');
 
-        $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
-                        ->setMethods(array('createImagick'))
-                        ->setConstructorArgs(array('tussi', 'se', 7))
-                        ->getMock();
-
+        $command = new WatermarkCommand('tussi', 'se', 7);
         $command->destroyWatermarkResource();
-    }
-
-    /**
-     * @test
-     * @expectedException \InvalidArgumentException
-     */
-    public function executeShouldThrowExceptionWhenCreatingWatermarkResourceFails()
-    {
-        $command = new WatermarkCommand(ROOT_TESTS . '/data/illusive-manatee.jpg', 'sw', 3);
-
-        $imagick = $this->getMockBuilder('\Imagick')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-
-        $command->execute($imagick);
     }
 
     /**
@@ -205,15 +192,12 @@ class WatermarkCommandTest extends TestCase
         $watermark->expects($this->any())->method('getImageWidth')->will($this->returnValue(100));
         $watermark->expects($this->any())->method('getImageHeight')->will($this->returnValue(10));
 
-        $command = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\WatermarkCommand')
-                        ->setMethods(array('createImagick'))
-                        ->setConstructorArgs(array('tussi', 'nw', 1))
-                        ->getMock();
+        $helper = $this
+            ->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
+        $helper->expects($this->once())->method('createImagick')->will($this->returnValue($watermark));
 
-        $command->expects($this->any())->method('createImagick')->will($this->returnCallback(function() use ($watermark) {
-            return $watermark;
-        }));
-
+        $command = new WatermarkCommand('tussi', 'nw', 1);
+        $command->setHelper($helper);
         $command->execute($imagick);
     }
 }

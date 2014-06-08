@@ -182,33 +182,17 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
-    public function gettersAndSettersShouldWork()
+    public function getExtensionShouldUsePreDefinedMimeType()
     {
-        $extension = 'lus';
-        $this->assertSame('jpg', $this->plugin->getExtension());
+        $plugin = new VersionPlugin('xooxoo', array(), 'application/rpki-ghostbusters');
+        $ret = $plugin->getExtension($this->getMockedFile(), 'xooxoo');
+        $this->assertSame('gbr', $ret);
     }
 
     /**
      * @test
      */
-    public function getExtensionForShouldDelegateToGetExtension()
-    {
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\VersionPlugin')
-                       ->setMethods(array('getExtension'))
-                       ->disableOriginalConstructor()
-                       ->getMock();
-
-        $plugin->expects($this->once())->method('getExtension')->will($this->returnValue('lus'));
-
-        $ret = $plugin->getExtensionFor($this->getMockedFile(), 'xooxoo');
-
-        $this->assertSame('lus', $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function getExtensionForShouldDelegateToParentToAutodetectExtension()
+    public function getExtensionShouldDelegateToParentToAutodetectExtension()
     {
         $storage = $this->getMockedStorage();
         $filelib = new FileLibrary(
@@ -216,13 +200,8 @@ class VersionPluginTest extends TestCase
             $this->getMockedBackendAdapter()
         );
 
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\VersionPlugin')
-            ->setMethods(array('getExtension'))
-            ->disableOriginalConstructor()
-            ->getMock();
+        $plugin = new VersionPlugin('xooxoo', array(), null);
         $plugin->attachTo($filelib);
-
-        $plugin->expects($this->once())->method('getExtension')->will($this->returnValue(null));
 
         $resource = $this->getMockedResource();
         $file = File::create(array('resource' => $resource));
@@ -232,7 +211,7 @@ class VersionPluginTest extends TestCase
             ->with($resource, 'xooxoo', null)
             ->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
-        $ret = $plugin->getExtensionFor($file, 'xooxoo');
+        $ret = $plugin->getExtension($file, 'xooxoo');
 
         $this->assertSame('jpg', $ret);
     }

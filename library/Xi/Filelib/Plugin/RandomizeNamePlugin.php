@@ -10,8 +10,9 @@
 namespace Xi\Filelib\Plugin;
 
 use Rhumsaa\Uuid\Uuid;
-use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\File\File;
 
 /**
  * Randomizes all uploads' file names before uploading. Ensures that same file
@@ -23,41 +24,28 @@ class RandomizeNamePlugin extends AbstractPlugin
 {
     protected static $subscribedEvents = array(
         Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',
-        Events::FILE_BEFORE_CREATE => 'beforeUpload'
+        Events::FILE_BEFORE_CREATE => 'beforeCreate'
     );
 
-
-    /**
-     * @param string $prefix
-     */
-    public function __construct($prefix = '')
+    public function beforeCreate(FileEvent $event)
     {
-        $this->prefix = $prefix;
-    }
+        $file = $event->getFile();
 
-    /**
-     * @var string Prefix (for uniqid)
-     */
-    protected $prefix = '';
-
-    /**
-     * Returns prefix
-     *
-     * @return string
-     */
-    public function getPrefix()
-    {
-        return $this->prefix;
-    }
-
-    public function beforeUpload(FileUploadEvent $event)
-    {
-        if (!$this->hasProfile($event->getProfile()->getIdentifier())) {
+        if (!$this->hasProfile($file->getProfile())) {
             return;
         }
 
-        $upload = $event->getFileUpload();
-        $upload->setOverrideBasename($this->prefix . Uuid::uuid4());
-        return $upload;
+        $file->getData()->set(
+            'plugin.randomize_name.original_name',
+            $file->getName()
+        );
+
+
+        $pinfo = pathinfo($file->getName());
+        $newName = Uuid::uuid4()->toString();
+        if (isset($pinfo['extension']) && $pinfo['extension']) {
+            $newName .= '.' . $pinfo['extension'];
+        }
+        $file->setName($newName);
     }
 }

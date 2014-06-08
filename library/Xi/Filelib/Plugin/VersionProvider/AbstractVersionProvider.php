@@ -30,6 +30,9 @@ use Xi\Filelib\File\FileObject;
  */
 abstract class AbstractVersionProvider extends AbstractPlugin implements VersionProvider
 {
+    /**
+     * @var array
+     */
     protected static $subscribedEvents = array(
         Events::FILE_AFTER_AFTERUPLOAD => 'onAfterUpload',
         Events::FILE_AFTER_DELETE => 'onFileDelete',
@@ -37,12 +40,12 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     );
 
     /**
-     * @var string Version identifier
+     * @var string
      */
     protected $identifier;
 
     /**
-     * @var array Array of file types for which the plugin provides a version
+     * @var array
      */
     protected $providesFor;
 
@@ -196,8 +199,17 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         return false;
     }
 
-    public function getExtensionFor(File $file, $version)
+    /**
+     * Returns the mimetype of a version provided by this plugin via retrieving and inspecting.
+     * More specific plugins should override this for performance.
+     *
+     * @param File $file
+     * @param $version
+     * @return string
+     */
+    public function getMimeType(File $file, $version)
     {
+        // @todo: optimize (when doing the S3 would be wise)
         $retrieved = $this->storage->retrieveVersion(
             $file->getResource(),
             $version,
@@ -205,18 +217,38 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         );
 
         $fileObj = new FileObject($retrieved);
-        $extensions = MimeType::mimeTypeToExtensions($fileObj->getMimeType());
-
-        $ret = array_shift($extensions);
-        return $this->doExtensionReplacement($ret);
+        return $fileObj->getMimeType();
     }
 
     /**
-     * Apache parsings produce some unwanted results (jpeg). Switcheroo those
+     * Returns file extension for a version
+     *
+     * @param File $file
+     * @param string $version
+     * @return string
+     */
+    public function getExtension(File $file, $version)
+    {
+        $mimeType = $this->getMimeType($file, $version);
+        return $this->getExtensionFromMimeType($mimeType);
+    }
+
+    /**
+     * @param string $mimeType
+     * @return string
+     */
+    protected function getExtensionFromMimeType($mimeType)
+    {
+        $extensions = MimeType::mimeTypeToExtensions($mimeType);
+        return $this->doExtensionReplacement(array_shift($extensions));
+    }
+
+    /**
+     * Apache derived parsings produce unwanted results (jpeg). Switcheroo for those.
      *
      * @param string $extension
      * @return string
-     * @todo allow user to edit / add his own replacements
+     * @todo allow user to edit / add his own replacements?
      *
      */
     protected function doExtensionReplacement($extension)
