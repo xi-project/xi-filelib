@@ -121,15 +121,8 @@ class Renderer
     private function retrieve(File $file, $version)
     {
         $provider = $this->profiles->getVersionProvider($file, $version);
-
-        if ($provider->areSharedVersionsAllowed()) {
-            $res = $this->storage->retrieveVersion($file->getResource(), $version);
-        } else {
-            $res = $this->storage->retrieveVersion($file->getResource(), $version, $file);
-        }
-
-
-        return $res;
+        $versionable = $provider->areSharedVersionsAllowed() ? $file->getResource() : $file;
+        return $this->storage->retrieveVersion($versionable, $version);
     }
 
     protected function injectContentToResponse(FileObject $file, Response $response)

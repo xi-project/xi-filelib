@@ -90,10 +90,9 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
         foreach ($tmps as $version => $tmp) {
             $this->storage->storeVersion(
-                $file->getResource(),
+                $versionable,
                 $version,
-                $tmp,
-                $this->areSharedVersionsAllowed() ? null : $file
+                $tmp
             );
             unlink($tmp);
         }
@@ -163,8 +162,8 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function deleteProvidedVersions(File $file)
     {
         foreach ($this->getProvidedVersions() as $version) {
-            if ($this->storage->versionExists($file->getResource(), $version, $file)) {
-                $this->storage->deleteVersion($file->getResource(), $version, $file);
+            if ($this->storage->versionExists($file, $version)) {
+                $this->storage->deleteVersion($file, $version);
             }
         }
     }
@@ -196,11 +195,11 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function getMimeType(File $file, $version)
     {
-        // @todo: optimize (when doing the S3 would be wise)
+        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
+
         $retrieved = $this->storage->retrieveVersion(
-            $file->getResource(),
-            $version,
-            $this->areSharedVersionsAllowed() ? null : $file
+            $versionable,
+            $version
         );
 
         $fileObj = new FileObject($retrieved);

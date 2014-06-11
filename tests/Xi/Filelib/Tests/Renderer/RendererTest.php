@@ -182,7 +182,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xooxer', ($sharedVersions) ? null : $file)
+            ->with(($sharedVersions) ? $resource : $file, 'xooxer')
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider('xooxer');

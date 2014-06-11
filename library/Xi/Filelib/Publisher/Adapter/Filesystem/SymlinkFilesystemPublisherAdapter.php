@@ -81,10 +81,10 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
 
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
+        $versionable = $versionProvider->areSharedVersionsAllowed() ? $file->getResource() : $file;
         $retrieved = $this->storage->retrieveVersion(
-            $file->getResource(),
-            $version,
-            $versionProvider->areSharedVersionsAllowed() ? null : $file
+            $versionable,
+            $version
         );
 
         $path = preg_replace("[^{$this->storage->getRoot()}]", $relativePath, $retrieved);
@@ -133,11 +133,11 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
                 symlink($fp, $link);
                 chdir($oldCwd);
             } else {
+                $versionable = $versionProvider->areSharedVersionsAllowed() ? $file->getResource() : $file;
                 symlink(
                     $this->storage->retrieveVersion(
-                        $file->getResource(),
-                        $version,
-                        $versionProvider->areSharedVersionsAllowed() ? null: $file
+                        $versionable,
+                        $version
                     ),
                     $link
                 );

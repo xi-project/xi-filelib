@@ -122,7 +122,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         } else {
             $storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer', $file)
+                ->with($file, 'xooxer')
                 ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
         }
 
@@ -233,7 +233,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         } else {
             $this->storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer', $file)
+                ->with($file, 'xooxer')
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 
@@ -277,7 +277,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         } else {
             $this->storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer', $file)
+                ->with($file, 'xooxer')
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 

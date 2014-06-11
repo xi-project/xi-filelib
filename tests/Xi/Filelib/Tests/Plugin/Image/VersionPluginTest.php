@@ -216,7 +216,7 @@ class VersionPluginTest extends TestCase
 
         $storage->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xooxoo', null)
+            ->with($resource, 'xooxoo')
             ->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
         $ret = $plugin->getExtension($file, 'xooxoo');

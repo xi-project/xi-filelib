@@ -233,10 +233,9 @@ class AbstractVersionProviderTest extends TestCase
 
         $this->storage->expects($this->exactly(2))->method('storeVersion')
                 ->with(
-                    $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                    $sharedVersionsAllowed ? $this->isInstanceOf('Xi\Filelib\Resource\Resource') : $this->isInstanceOf('Xi\Filelib\File\File'),
                     $this->isType('string'),
-                    $this->isType('string'),
-                    $sharedVersionsAllowed ? $this->isNull() : $this->isInstanceOf('Xi\Filelib\File\File')
+                    $this->isType('string')
                 );
 
         $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'image/xoo'))));
