@@ -91,7 +91,6 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             ->getMock();
 
         $this->plugin = new ZencoderPlugin(
-            'xooxer',
             'api key',
             'aws key',
             'aws secret key',
@@ -196,11 +195,11 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function getVersionsShouldReturnCorrectVersions()
+    public function getProvidedVersionsShouldReturnCorrectVersions()
     {
         $this->assertEquals(
             array('pygmi', 'watussi', 'pygmi_thumbnail', 'watussi_thumbnail'),
-            $this->plugin->getVersions()
+            $this->plugin->getProvidedVersions()
         );
     }
 
@@ -236,7 +235,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         );
         $filelib->addPlugin($this->plugin);
 
-        $this->assertSame($expected, $this->plugin->providesFor($file));
+        $this->assertSame($expected, $this->plugin->isApplicableTo($file));
     }
 
 
@@ -266,7 +265,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function createVersionsShouldCreateVersions()
+    public function createProvidedVersionsShouldCreateVersions()
     {
         $this->setupStubsForZencoderService();
         $this->plugin->setClient($this->amazonService);
@@ -365,7 +364,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function createVersionsShouldThrowExceptionOnZencoderError()
+    public function createProvidedVersionsShouldThrowExceptionOnZencoderError()
     {
         $this->plugin->setClient($this->amazonService);
         $this->plugin->setService($this->zencoderService);

@@ -59,7 +59,6 @@ class AbstractVersionProviderTest extends TestCase
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
             ->setConstructorArgs(
                 array(
-                    'xooxer',
                     function (File $file) {
                         return (bool) preg_match("/^(image|video)/", $file->getMimetype());
                     }
@@ -89,7 +88,7 @@ class AbstractVersionProviderTest extends TestCase
      * @dataProvider provideVersions
      * @test
      */
-    public function areVersionsCreatedShouldReturnExpectedResults($resourceVersions, $pluginVersions, $sharedVersionsAllowed, $expectResourceGetVersions)
+    public function areProvidedVersionsCreatedShouldReturnExpectedResults($resourceVersions, $pluginVersions, $sharedVersionsAllowed, $expectResourceGetVersions)
     {
         $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
              ->will($this->returnValue($sharedVersionsAllowed));
@@ -102,7 +101,7 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->expects($this->atLeastOnce())->method('areSharedVersionsAllowed')
             ->will($this->returnValue(false));
 
-        $this->plugin->expects($this->any())->method('getVersions')->will($this->returnValue($pluginVersions));
+        $this->plugin->expects($this->any())->method('getProvidedVersions')->will($this->returnValue($pluginVersions));
 
         if ($expectResourceGetVersions) {
             $resource->expects($this->atLeastOnce())
@@ -116,7 +115,7 @@ class AbstractVersionProviderTest extends TestCase
                 ->will($this->returnValue(true));
         }
 
-        $this->assertEquals(true, $this->plugin->areVersionsCreated($file));
+        $this->assertEquals(true, $this->plugin->areProvidedVersionsCreated($file));
 
     }
 
@@ -135,7 +134,7 @@ class AbstractVersionProviderTest extends TestCase
      * @test
      * @dataProvider provideFilesForProvidesForMatching
      */
-    public function providesForShouldMatchAgainstFileProfileCorrectly($expected, $file)
+    public function isApplicableToShouldMatchAgainstFileProfileCorrectly($expected, $file)
     {
         $this->plugin->attachTo($this->filelib);
 
@@ -148,7 +147,7 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->setProfiles(array('tussi', 'lussi'));
 
 
-        $this->assertEquals($expected, $this->plugin->providesFor($file));
+        $this->assertEquals($expected, $this->plugin->isApplicableTo($file));
     }
 
     /**
@@ -157,7 +156,7 @@ class AbstractVersionProviderTest extends TestCase
     public function afterUploadShouldDoNothingWhenPluginDoesNotProvide()
     {
         $this->plugin->attachTo($this->filelib);
-        $this->plugin->expects($this->never())->method('createVersions');
+        $this->plugin->expects($this->never())->method('createProvidedVersions');
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
 
@@ -180,9 +179,9 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
             ->will($this->returnValue(true));
 
-        $this->plugin->expects($this->never())->method('createVersions');
+        $this->plugin->expects($this->never())->method('createProvidedVersions');
 
-        $this->plugin->expects($this->atLeastOnce())->method('getVersions')
+        $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
                      ->will($this->returnValue(array('reiska')));
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
@@ -219,14 +218,14 @@ class AbstractVersionProviderTest extends TestCase
             ->will($this->returnValue($sharedVersionsAllowed));
 
         $pluginVersions = array('xooxer', 'losobees');
-        $this->plugin->expects($this->any())->method('getVersions')->will($this->returnValue($pluginVersions));
+        $this->plugin->expects($this->any())->method('getProvidedVersions')->will($this->returnValue($pluginVersions));
 
         $this->plugin->expects($this->once())->method('createTemporaryVersions')
              ->with($this->isInstanceOf('Xi\Filelib\File\File'))
              ->will($this->returnValue(array('xooxer' => ROOT_TESTS . '/data/temp/life-is-my-enemy-xooxer.jpg', 'losobees' => ROOT_TESTS . '/data/temp/life-is-my-enemy-losobees.jpg')));
 
         if ($sharedVersionsAllowed) {
-            $this->plugin->expects($this->atLeastOnce())->method('getVersions')
+            $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
                 ->will($this->returnValue(array('reiska')));
         }
 
@@ -258,7 +257,7 @@ class AbstractVersionProviderTest extends TestCase
     {
         $this->plugin->attachTo($this->filelib);
 
-        $this->plugin->expects($this->never())->method('createVersions');
+        $this->plugin->expects($this->never())->method('createProvidedVersions');
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
 
@@ -334,7 +333,7 @@ class AbstractVersionProviderTest extends TestCase
             ->will($this->onConsecutiveCalls(false, true));
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
-        $this->plugin->expects($this->atLeastOnce())->method('getVersions')
+        $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
                      ->will($this->returnValue(array('xooxer', 'lusser')));
 
         $file = File::create(array(
@@ -389,7 +388,7 @@ class AbstractVersionProviderTest extends TestCase
             ->getMockForAbstractClass();
 
         $plugin->setIdentifier('xooxersson');
-        $plugin->expects($this->atLeastOnce())->method('getVersions')
+        $plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
                ->will($this->returnValue(array('xooxersson')));
 
         $plugin->deleteVersions($file);
@@ -402,7 +401,7 @@ class AbstractVersionProviderTest extends TestCase
     {
         $this->plugin->attachTo($this->filelib);
 
-        $this->plugin->expects($this->atLeastOnce())->method('getVersions')
+        $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
              ->will($this->returnValue(array('xooxer', 'lusser')));
 
         $this->storage->expects($this->exactly(2))->method('versionExists')
@@ -484,5 +483,26 @@ class AbstractVersionProviderTest extends TestCase
 
         $extension = $plugin->getExtension($file, 'xooxer');
         $this->assertEquals('jpg', $extension);
+    }
+
+    /**
+     * @test
+     */
+    public function isNotLazy()
+    {
+        $plugin = $this
+            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
+            ->setConstructorArgs(
+                array(
+                    'xooxer',
+                    function (File $file) {
+                        return (bool) preg_match("/^(image|video)/", $file->getMimetype());
+                    }
+                )
+            )
+            ->getMockForAbstractClass();
+
+        $this->assertFalse($plugin->canBeLazy());
+
     }
 }

@@ -32,26 +32,28 @@ interface VersionProvider extends Plugin
      * @param  File    $file File item
      * @return boolean
      */
-    public function providesFor(File $file);
+    public function isApplicableTo(File $file);
 
     /**
      * Returns an array of versions provided
      *
      * @return array
      */
-    public function getVersions();
+    public function getProvidedVersions();
 
     /**
      * (Re)create and store all versions provided by the plugin
      */
-    public function createVersions(File $file);
+    public function createProvidedVersions(File $file);
+
+    public function deleteProvidedVersions(File $file);
 
     /**
      * Returns whether all versions are already created for a resource
      *
      * @return bool
      */
-    public function areVersionsCreated(File $file);
+    public function areProvidedVersionsCreated(File $file);
 
     /**
      * Returns whether plugin allows sharing of resources
@@ -64,4 +66,10 @@ interface VersionProvider extends Plugin
      * @return bool
      */
     public function areSharedVersionsAllowed();
+
+    /**
+     * @return bool
+     */
+    public function canBeLazy();
+
 }

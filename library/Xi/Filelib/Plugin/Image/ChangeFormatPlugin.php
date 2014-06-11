@@ -56,7 +56,7 @@ class ChangeFormatPlugin extends AbstractPlugin
      */
     public function beforeUpload(FileUploadEvent $event)
     {
-        if (!$this->hasProfile($event->getProfile()->getIdentifier())) {
+        if (!$this->belongsToProfile($event->getProfile()->getIdentifier())) {
             return;
         }
 

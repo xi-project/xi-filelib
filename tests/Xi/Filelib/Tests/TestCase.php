@@ -419,7 +419,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         $versionProvider
             ->expects($this->any())
-            ->method('getVersions')
+            ->method('getProvidedVersions')
             ->will($this->returnValue($versions));
 
         return $versionProvider;

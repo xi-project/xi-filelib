@@ -50,6 +50,14 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
+    public function canBeLazy()
+    {
+        $this->assertTrue($this->plugin->canBeLazy());
+    }
+
+    /**
+     * @test
+     */
     public function classExtendsAbstractPlugin()
     {
         $this->assertArrayHasKey(
@@ -70,13 +78,13 @@ class VersionPluginTest extends TestCase
         $filelib->addPlugin($this->plugin);
 
         $this->assertFalse(
-            $this->plugin->providesFor(
+            $this->plugin->isApplicableTo(
                 File::create(array('resource' => Resource::create(array('mimetype' => 'video/avi'))))
             )
         );
 
         $this->assertTrue(
-            $this->plugin->providesFor(
+            $this->plugin->isApplicableTo(
                 File::create(array('resource' => Resource::create(array('mimetype' => 'image/png'))))
             )
         );
@@ -111,7 +119,7 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
-    public function createVersionsShouldCreateVersions()
+    public function createProvidedVersionsShouldCreateVersions()
     {
         $retrievedPath = ROOT_TESTS . '/data/illusive-manatee.jpg';
 
@@ -176,7 +184,7 @@ class VersionPluginTest extends TestCase
      */
     public function getVersionsShouldReturnArrayOfOneContainingIdentifier()
     {
-         $this->assertEquals(array('xooxer'), $this->plugin->getVersions());
+         $this->assertEquals(array('xooxer'), $this->plugin->getProvidedVersions());
     }
 
     /**
