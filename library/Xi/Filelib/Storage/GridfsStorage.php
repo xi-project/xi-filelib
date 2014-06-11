@@ -101,9 +101,9 @@ class GridfsStorage extends AbstractStorage implements Storage
     }
 
 
-    public function versionExists(Resource $resource, $version, File $file = null)
+    public function versionExists(Storable $storable, $version)
     {
-        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $filename = $this->getFilenameVersion($storable, $version);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
 
         return (bool) $file;
@@ -142,15 +142,15 @@ class GridfsStorage extends AbstractStorage implements Storage
         );
     }
 
-    protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
+    protected function doStoreVersion(Storable $storable, $version, $tempFile)
     {
-        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $filename = $this->getFilenameVersion($storable, $version);
         $this->getGridFS()->storeFile(
             $tempFile,
             array(
                 'filename' => $filename,
                 'metadata' => array(
-                    'id' => $resource->getId(),
+                    'id' => $storable->getId(),
                     'version' => $version
                 )
             )
@@ -165,9 +165,9 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $this->toTemp($file);
     }
 
-    protected function doRetrieveVersion(Resource $resource, $version, File $file = null)
+    protected function doRetrieveVersion(Storable $storable, $version)
     {
-        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $filename = $this->getFilenameVersion($storable, $version);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
 
         return $this->toTemp($file);
@@ -179,9 +179,9 @@ class GridfsStorage extends AbstractStorage implements Storage
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    protected function doDeleteVersion(Resource $resource, $version, File $file = null)
+    protected function doDeleteVersion(Storable $storable, $version)
     {
-        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $filename = $this->getFilenameVersion($storable, $version);
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
@@ -190,8 +190,10 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $resource->getId();
     }
 
-    private function getFilenameVersion(Resource $resource, $version, File $file = null)
+    private function getFilenameVersion(Storable $storable, $version)
     {
+        list($resource, $file) = $this->extractResourceAndFileFromStorable($storable);
+
         $path = $resource->getId() . '/' . $version;
         if ($file) {
             $path = '/' . $file->getId();

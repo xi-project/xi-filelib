@@ -15,7 +15,6 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Xi\Filelib\Identifiable;
 use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\LogicException;
 
@@ -79,9 +78,9 @@ class FilesystemStorage extends AbstractStorage implements Storage
      * @param  Resource $resource
      * @return string
      */
-    public function getDirectoryId(Identifiable $identifiable)
+    public function getDirectoryId(Storable $storable)
     {
-        return $this->getDirectoryIdCalculator()->calculateDirectoryId($identifiable);
+        return $this->getDirectoryIdCalculator()->calculateDirectoryId($storable);
     }
 
     /**
@@ -122,8 +121,10 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return $fileTarget;
     }
 
-    private function getVersionPathName(Resource $resource, $version, File $file = null)
+    private function getVersionPathName(Storable $storable, $version)
     {
+        list($resource, $file) = $this->extractResourceAndFileFromStorable($storable);
+
         $path = $this->getRoot() . '/' . $this->getDirectoryId($resource) . '/' . $version;
         if ($file) {
             $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file);
@@ -145,9 +146,9 @@ class FilesystemStorage extends AbstractStorage implements Storage
         chmod($pathName, $this->getFilePermission());
     }
 
-    protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
+    protected function doStoreVersion(Storable $storable, $version, $tempFile)
     {
-        $pathName = $this->getVersionPathName($resource, $version, $file);
+        $pathName = $this->getVersionPathName($storable, $version);
 
         if (!is_dir(dirname($pathName))) {
             // Sorry for the silencer but it is needed here
@@ -161,9 +162,9 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return $this->getPathName($resource);
     }
 
-    protected function doRetrieveVersion(Resource $resource, $version, File $file = null)
+    protected function doRetrieveVersion(Storable $storable, $version)
     {
-        return $this->getVersionPathName($resource, $version, $file);
+        return $this->getVersionPathName($storable, $version);
     }
 
     protected function doDelete(Resource $resource)
@@ -172,9 +173,9 @@ class FilesystemStorage extends AbstractStorage implements Storage
         unlink($path);
     }
 
-    protected function doDeleteVersion(Resource $resource, $version, File $file = null)
+    protected function doDeleteVersion(Storable $storable, $version)
     {
-        $path = $this->getVersionPathName($resource, $version, $file);
+        $path = $this->getVersionPathName($storable, $version);
         unlink($path);
     }
 
@@ -183,8 +184,8 @@ class FilesystemStorage extends AbstractStorage implements Storage
         return file_exists($this->getPathName($resource));
     }
 
-    public function versionExists(Resource $resource, $version, File $file = null)
+    public function versionExists(Storable $storable, $version)
     {
-        return file_exists($this->getVersionPathName($resource, $version, $file));
+        return file_exists($this->getVersionPathName($storable, $version));
     }
 }

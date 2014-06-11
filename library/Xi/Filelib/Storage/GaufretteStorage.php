@@ -89,8 +89,10 @@ class GaufretteStorage extends AbstractStorage implements Storage
         return $fileTarget;
     }
 
-    private function getVersionPathName(Resource $resource, $version, File $file = null)
+    private function getVersionPathName(Storable $storable, $version)
     {
+        list($resource, $file) = $this->extractResourceAndFileFromStorable($storable);
+
         $path = $this->getDirectoryId($resource) . '/' . $version;
         if ($file) {
             $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file);
@@ -106,9 +108,9 @@ class GaufretteStorage extends AbstractStorage implements Storage
         $this->filesystem->write($pathName, file_get_contents($tempFile));
     }
 
-    protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
+    protected function doStoreVersion(Storable $storable, $version, $tempFile)
     {
-        $pathName = $this->getVersionPathName($resource, $version, $file);
+        $pathName = $this->getVersionPathName($storable, $version);
         $this->filesystem->write($pathName, file_get_contents($tempFile));
     }
 
@@ -119,13 +121,13 @@ class GaufretteStorage extends AbstractStorage implements Storage
         return $tmp;
     }
 
-    protected function doRetrieveVersion(Resource $resource, $version, File $file = null)
+    protected function doRetrieveVersion(Storable $storable, $version)
     {
         $tmp = $this->tempFiles->getTemporaryFilename();
         file_put_contents(
             $tmp,
             $this->filesystem->get(
-                $this->getVersionPathName($resource, $version, $file)
+                $this->getVersionPathName($storable, $version)
             )->getContent()
         );
         return $tmp;
@@ -136,9 +138,9 @@ class GaufretteStorage extends AbstractStorage implements Storage
         $this->filesystem->delete($this->getPathName($resource));
     }
 
-    protected function doDeleteVersion(Resource $resource, $version, File $file = null)
+    protected function doDeleteVersion(Storable $storable, $version)
     {
-        $this->filesystem->delete($this->getVersionPathName($resource, $version, $file));
+        $this->filesystem->delete($this->getVersionPathName($storable, $version));
     }
 
     public function exists(Resource $resource)
@@ -146,8 +148,8 @@ class GaufretteStorage extends AbstractStorage implements Storage
         return $this->filesystem->has($this->getPathName($resource));
     }
 
-    public function versionExists(Resource $resource, $version, File $file = null)
+    public function versionExists(Storable $storable, $version)
     {
-        return $this->filesystem->has($this->getVersionPathName($resource, $version, $file));
+        return $this->filesystem->has($this->getVersionPathName($storable, $version));
     }
 }

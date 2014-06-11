@@ -37,7 +37,14 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
     public function setUp()
     {
         $this->resource = Resource::create(array('id' => 1, 'date_created' => new DateTime()));
-        $this->file = File::create(array('id' => 666, 'date_created' => new DateTime()));
+
+        $this->file = File::create(
+            array(
+                'id' => 666,
+                'date_created' => new DateTime(),
+                'resource' => $this->resource,
+            )
+        );
 
         $this->resourcePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
         $this->resourceVersionPath = ROOT_TESTS . '/data/self-lussing-manatee-mini.jpg';
@@ -106,25 +113,25 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $this->storage->storeVersion($this->resource, $this->version, $this->resourceVersionPath);
         $this->assertTrue($this->storage->versionExists($this->resource, $this->version));
-        $this->assertFalse($this->storage->versionExists($this->resource, $this->version, $this->file));
+        $this->assertFalse($this->storage->versionExists($this->file, $this->version));
 
-        $this->storage->storeVersion($this->resource, $this->version, $this->fileSpecificVersionPath, $this->file);
+        $this->storage->storeVersion($this->file, $this->version, $this->fileSpecificVersionPath);
         $this->assertTrue($this->storage->versionExists($this->resource, $this->version));
-        $this->assertTrue($this->storage->versionExists($this->resource, $this->version, $this->file));
+        $this->assertTrue($this->storage->versionExists($this->file, $this->version));
 
         $retrieved = $this->storage->retrieveVersion($this->resource, $this->version);
-        $retrieved2 = $this->storage->retrieveVersion($this->resource, $this->version, $this->file);
+        $retrieved2 = $this->storage->retrieveVersion($this->file, $this->version);
 
         $this->assertFileEquals($this->resourceVersionPath, $retrieved);
         $this->assertFileEquals($this->fileSpecificVersionPath, $retrieved2);
 
         $this->storage->deleteVersion($this->resource, $this->version);
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version));
-        $this->assertTrue($this->storage->versionExists($this->resource, $this->version, $this->file));
+        $this->assertTrue($this->storage->versionExists($this->file, $this->version));
 
-        $this->storage->deleteVersion($this->resource, $this->version, $this->file);
+        $this->storage->deleteVersion($this->file, $this->version);
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version));
-        $this->assertFalse($this->storage->versionExists($this->resource, $this->version, $this->file));
+        $this->assertFalse($this->storage->versionExists($this->file, $this->version));
 
     }
 }

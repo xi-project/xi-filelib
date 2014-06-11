@@ -18,7 +18,7 @@ use Xi\Filelib\InvalidArgumentException;
 class MultiStorage implements Storage
 {
     /**
-     * @var array
+     * @var Storage[]
      */
     private $storages = array();
 
@@ -39,7 +39,7 @@ class MultiStorage implements Storage
     /**
      * Returns an array of inner storages
      *
-     * @return array
+     * @return Storage[]
      */
     public function getStorages()
     {
@@ -88,10 +88,10 @@ class MultiStorage implements Storage
         }
     }
 
-    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
+    public function storeVersion(Storable $storable, $version, $tempFile)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->storeVersion($resource, $version, $tempFile, $file);
+            $storage->storeVersion($storable, $version, $tempFile);
         }
     }
 
@@ -100,9 +100,9 @@ class MultiStorage implements Storage
         return $this->getSessionStorage()->retrieve($resource);
     }
 
-    public function retrieveVersion(Resource $resource, $version, File $file = null)
+    public function retrieveVersion(Storable $storable, $version)
     {
-        return $this->getSessionStorage()->retrieveVersion($resource, $version, $file);
+        return $this->getSessionStorage()->retrieveVersion($storable, $version);
     }
 
     public function delete(Resource $resource)
@@ -112,10 +112,10 @@ class MultiStorage implements Storage
         }
     }
 
-    public function deleteVersion(Resource $resource, $version, File $file = null)
+    public function deleteVersion(Storable $storable, $version)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->deleteVersion($resource, $version, $file);
+            $storage->deleteVersion($storable, $version);
         }
     }
 
@@ -124,8 +124,8 @@ class MultiStorage implements Storage
         return $this->getSessionStorage()->exists($resource);
     }
 
-    public function versionExists(Resource $resource, $version, File $file = null)
+    public function versionExists(Storable $storable, $version)
     {
-        return $this->getSessionStorage()->versionExists($resource, $version, $file);
+        return $this->getSessionStorage()->versionExists($storable, $version);
     }
 }

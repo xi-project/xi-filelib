@@ -24,15 +24,15 @@ abstract class AbstractStorage implements Storage
 {
     abstract protected function doRetrieve(Resource $resource);
 
-    abstract protected function doRetrieveVersion(Resource $resource, $version, File $file = null);
+    abstract protected function doRetrieveVersion(Storable $storable, $version);
 
     abstract protected function doStore(Resource $resource, $tempFile);
 
-    abstract protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null);
+    abstract protected function doStoreVersion(Storable $storable, $version, $tempFile);
 
     abstract protected function doDelete(Resource $resource);
 
-    abstract protected function doDeleteVersion(Resource $resource, $version, File $file = null);
+    abstract protected function doDeleteVersion(Storable $storable, $version);
 
     public function retrieve(Resource $resource)
     {
@@ -41,16 +41,6 @@ abstract class AbstractStorage implements Storage
         }
 
         $retrieved = $this->doRetrieve($resource);
-        return $retrieved;
-    }
-
-    public function retrieveVersion(Resource $resource, $version, File $file = null)
-    {
-        if (!$this->versionExists($resource, $version, $file)) {
-            throw new FileIOException("File version '{$version}' for resource #{$resource->getId()} does not exist");
-        }
-
-        $retrieved = $this->doRetrieveVersion($resource, $version, $file);
         return $retrieved;
     }
 
@@ -63,15 +53,6 @@ abstract class AbstractStorage implements Storage
         return $this->doDelete($resource);
     }
 
-    public function deleteVersion(Resource $resource, $version, File $file = null)
-    {
-        if (!$this->versionExists($resource, $version, $file)) {
-            throw new FileIOException("File version '{$version}' for resource #{$resource->getId()} does not exist");
-        }
-
-        return $this->doDeleteVersion($resource, $version, $file);
-    }
-
     public function store(Resource $resource, $tempFile)
     {
         try {
@@ -81,16 +62,50 @@ abstract class AbstractStorage implements Storage
         }
     }
 
-    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
+    public function retrieveVersion(Storable $storable, $version)
+    {
+        if (!$this->versionExists($storable, $version)) {
+            throw new FileIOException("File version '{$version}' for resource #{$storable->getId()} does not exist");
+        }
+        $retrieved = $this->doRetrieveVersion($storable, $version);
+        return $retrieved;
+    }
+
+    public function deleteVersion(Storable $storable, $version)
+    {
+        if (!$this->versionExists($storable, $version)) {
+            throw new FileIOException("File version '{$version}' for resource #{$storable->getId()} does not exist");
+        }
+
+        return $this->doDeleteVersion($storable, $version);
+    }
+
+    public function storeVersion(Storable $storable, $version, $tempFile)
     {
         try {
-            return $this->doStoreVersion($resource, $version, $tempFile, $file);
+            return $this->doStoreVersion($storable, $version, $tempFile);
         } catch (\Exception $e) {
             throw new FileIOException(
-                "Could not store file version '{$version}' for resource #{$resource->getId()}",
+                "Could not store file version '{$version}' for resource #{$storable->getId()}",
                 500,
                 $e
             );
         }
+    }
+
+    /**
+     * @param Storable $storable
+     * @return array Tuple of storage and file (or null)
+     */
+    protected function extractResourceAndFileFromStorable(Storable $storable)
+    {
+        if ($storable instanceof File) {
+            $file = $storable;
+            $resource = $file->getResource();
+        } else {
+            $resource = $storable;
+            $file = null;
+        }
+        return array($resource, $file);
     }
 }

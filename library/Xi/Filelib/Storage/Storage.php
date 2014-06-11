@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Storage;
 
+use Xi\Filelib\Storage\Storable;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
@@ -30,17 +31,6 @@ interface Storage
     public function store(Resource $resource, $tempResource);
 
     /**
-     * Stores a version of a file
-     *
-     * @param  Resource         $resource
-     * @param  string           $version
-     * @param  string           $tempResource Resource to be stored
-     * @param  null|File        $file
-     * @throws FilelibException
-     */
-    public function storeVersion(Resource $resource, $version, $tempResource, File $file = null);
-
-    /**
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
      * @param Resource $resource
@@ -50,16 +40,12 @@ interface Storage
     public function retrieve(Resource $resource);
 
     /**
-     * Retrieves a version of a file and temporarily stores it somewhere so it can be read.
+     * Returns whether stored file exists
      *
-     * @param Resource $resource
-     * @param string $version
-     * @param null|File $file
-     * @return string
-     * @throws FilelibException
-     *
+     * @param  Resource $resource
+     * @return boolean
      */
-    public function retrieveVersion(Resource $resource, $version, File $file = null);
+    public function exists(Resource $resource);
 
     /**
      * Deletes a file
@@ -71,30 +57,31 @@ interface Storage
     public function delete(Resource $resource);
 
     /**
-     * Deletes a version of a file
-     *
-     * @param  Resource         $resource
-     * @param  string           $version
-     * @param  null|File        $file
-     * @throws FilelibException
+     * @param Storable $storable
+     * @param string $version
+     * @param string $tempResource
+     * @throws FileIOException
      */
-    public function deleteVersion(Resource $resource, $version, File $file = null);
+    public function storeVersion(Storable $storable, $version, $tempResource);
 
     /**
-     * Returns whether stored file exists
-     *
-     * @param  Resource $resource
-     * @return boolean
+     * @param Storable $storable
+     * @param string $version
+     * @throws FileIOException
      */
-    public function exists(Resource $resource);
+    public function retrieveVersion(Storable $storable, $version);
 
     /**
-     * Returns whether a stored version file exists
-     *
-     * @param Resource $resource
-     * @param $version
-     * @param  null|File $file
-     * @return boolean
+     * @param Storable $storable
+     * @param string $version
+     * @throws FileIOException
      */
-    public function versionExists(Resource $resource, $version, File $file = null);
+    public function deleteVersion(Storable $storable, $version);
+
+    /**
+     * @param Storable $storable
+     * @param string $version
+     * @throws FileIOException
+     */
+    public function versionExists(Storable $storable, $version);
 }
