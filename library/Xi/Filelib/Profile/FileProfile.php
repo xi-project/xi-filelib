@@ -75,7 +75,7 @@ class FileProfile implements EventSubscriberInterface
         $this->plugins[] = $plugin;
 
         if ($plugin instanceof VersionProvider) {
-            foreach ($plugin->getVersions() as $version) {
+            foreach ($plugin->getProvidedVersions() as $version) {
                 $this->addFileVersion($version, $plugin);
             }
         }
@@ -118,7 +118,7 @@ class FileProfile implements EventSubscriberInterface
         $ret = array();
         foreach ($this->fileVersions as $version => $versionProvider) {
             /** @var VersionProvider $versionProvider */
-            if ($versionProvider->providesFor($file)) {
+            if ($versionProvider->isApplicableTo($file)) {
                 $ret[] = $version;
             }
         }
@@ -134,7 +134,12 @@ class FileProfile implements EventSubscriberInterface
      */
     public function fileHasVersion(File $file, $version)
     {
-        return in_array($version, $this->getFileVersions($file));
+        try {
+            $this->getVersionProvider($file, $version);
+            return true;
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
     }
 
     /**
@@ -147,10 +152,12 @@ class FileProfile implements EventSubscriberInterface
      */
     public function getVersionProvider(File $file, $version)
     {
-        if (!$this->fileHasVersion($file, $version)) {
-            throw new InvalidArgumentException("File has no version '{$version}'");
+        $versions = $this->getFileVersions($file);
+
+        if (in_array($version, $versions)) {
+            return $this->fileVersions[$version];
         }
-        return $this->fileVersions[$version];
+        throw new InvalidArgumentException("File has no version '{$version}'");
     }
 
     /**
@@ -162,7 +169,7 @@ class FileProfile implements EventSubscriberInterface
     {
         $plugin = $event->getPlugin();
 
-        if ($plugin->hasProfile($this->getIdentifier())) {
+        if ($plugin->belongsToProfile($this->getIdentifier())) {
             $this->addPlugin($plugin);
         }
     }
@@ -177,7 +184,7 @@ class FileProfile implements EventSubscriberInterface
     {
         foreach ($this->getPlugins() as $plugin) {
             if ($plugin instanceof VersionProvider
-                && $plugin->providesFor($file)
+                && $plugin->isApplicableTo($file)
                 && !$plugin->isSharedResourceAllowed()
             ) {
                 return false;

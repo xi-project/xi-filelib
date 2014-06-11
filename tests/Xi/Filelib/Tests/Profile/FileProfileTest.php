@@ -46,7 +46,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
     public function onPluginAddShouldAddPluginIfPluginHasProfile()
     {
         $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
-        $plugin->expects($this->any())->method('hasProfile')->will($this->returnValue(true));
+        $plugin->expects($this->any())->method('belongsToProfile')->will($this->returnValue(true));
 
         $this->fileProfile->onPluginAdd(new PluginEvent($plugin));
 
@@ -59,7 +59,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
     public function onPluginAddShouldNotAddPluginIfPluginDoesNotHaveProfile()
     {
         $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
-        $plugin->expects($this->any())->method('hasProfile')->will($this->returnValue(false));
+        $plugin->expects($this->any())->method('belongsToProfile')->will($this->returnValue(false));
 
         $this->fileProfile->onPluginAdd(new PluginEvent($plugin));
 
@@ -103,7 +103,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $plugin1 = $this->getMockedVersionProvider('lussi', array('tenhunen', 'imaisee'));
         $plugin1
             ->expects($this->atLeastOnce())
-            ->method('providesFor')
+            ->method('isApplicableTo')
             ->with($file)
             ->will($this->returnValue(true));
 
@@ -218,26 +218,22 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
     private function addMockedVersionsToFileProfile()
     {
         $imageProvider = $this->getMock('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        $imageProvider->expects($this->any())->method('getIdentifier')->will($this->returnValue('imagenizer'));
-        $imageProvider->expects($this->any())->method('getVersions')->will($this->returnValue(array('imagenizer')));
+        $imageProvider->expects($this->any())->method('getProvidedVersions')->will($this->returnValue(array('imagenizer')));
         $imageProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(true));
-        $imageProvider->expects($this->any())->method('providesFor')->will($this->returnCallback(function(File $file) { return $file->getMimetype() == 'image/png'; }));
+        $imageProvider->expects($this->any())->method('isApplicableTo')->will($this->returnCallback(function(File $file) { return $file->getMimetype() == 'image/png'; }));
 
         $videoProvider = $this->getMock('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        $videoProvider->expects($this->any())->method('getIdentifier')->will($this->returnValue('videonizer'));
-        $videoProvider->expects($this->any())->method('getVersions')->will($this->returnValue(array('videonizer')));
+        $videoProvider->expects($this->any())->method('getProvidedVersions')->will($this->returnValue(array('videonizer')));
         $videoProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(false));
-        $videoProvider->expects($this->any())->method('providesFor')->will($this->returnCallback(function(File $file) { return $file->getMimetype() == 'video/lus'; }));
+        $videoProvider->expects($this->any())->method('isApplicableTo')->will($this->returnCallback(function(File $file) { return $file->getMimetype() == 'video/lus'; }));
 
         $globalProvider = $this->getMock('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        $globalProvider->expects($this->any())->method('getIdentifier')->will($this->returnValue('globalizer'));
-        $globalProvider->expects($this->any())->method('getVersions')->will($this->returnValue(array('globalizer')));
+        $globalProvider->expects($this->any())->method('getProvidedVersions')->will($this->returnValue(array('globalizer')));
         $globalProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(true));
-        $globalProvider->expects($this->any())->method('providesFor')->will($this->returnCallback(function(File $file) { return true; }));
+        $globalProvider->expects($this->any())->method('isApplicableTo')->will($this->returnCallback(function(File $file) { return true; }));
 
         $this->fileProfile->addFileVersion('imagenizer', $imageProvider);
         $this->fileProfile->addFileVersion('videonizer', $videoProvider);
-
         $this->fileProfile->addFileVersion('globalizer', $globalProvider);
 
         $this->fileProfile->addPlugin($imageProvider);

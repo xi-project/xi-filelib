@@ -32,14 +32,14 @@ interface VersionProvider extends Plugin
      * @param  File    $file File item
      * @return boolean
      */
-    public function providesFor(File $file);
+    public function isApplicableTo(File $file);
 
     /**
      * Returns an array of versions provided
      *
      * @return array
      */
-    public function getVersions();
+    public function getProvidedVersions();
 
     /**
      * (Re)create and store all versions provided by the plugin
@@ -64,4 +64,10 @@ interface VersionProvider extends Plugin
      * @return bool
      */
     public function areSharedVersionsAllowed();
+
+    /**
+     * @return bool
+     */
+    public function canBeLazy();
+
 }

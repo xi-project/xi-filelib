@@ -35,6 +35,16 @@ class VersionPlugin extends AbstractVersionProvider
     protected $tempDir;
 
     /**
+     * @var bool
+     */
+    protected $canBeLazy = true;
+
+    /**
+     * @var string
+     */
+    protected $identifier;
+
+    /**
      * @param string $identifier
      * @param array $commandDefinitions
      * @param string $mimeType
@@ -45,7 +55,6 @@ class VersionPlugin extends AbstractVersionProvider
         $mimeType = null
     ) {
         parent::__construct(
-            $identifier,
             function (File $file) {
                 // @todo: maybe some more complex mime type based checking
                 return (bool) preg_match("/^image/", $file->getMimetype());
@@ -53,6 +62,7 @@ class VersionPlugin extends AbstractVersionProvider
         );
         $this->imageMagickHelper = new ImageMagickHelper($commandDefinitions);
         $this->mimeType = $mimeType;
+        $this->identifier = $identifier;
     }
 
     public function attachTo(FileLibrary $filelib)
@@ -88,14 +98,14 @@ class VersionPlugin extends AbstractVersionProvider
         $img->writeImage($tmp);
 
         return array(
-            $this->getIdentifier() => $tmp
+            $this->identifier => $tmp
         );
     }
 
     /**
      * @return array
      */
-    public function getVersions()
+    public function getProvidedVersions()
     {
         return array($this->identifier);
     }

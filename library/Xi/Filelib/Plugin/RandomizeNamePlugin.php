@@ -31,7 +31,7 @@ class RandomizeNamePlugin extends AbstractPlugin
     {
         $file = $event->getFile();
 
-        if (!$this->hasProfile($file->getProfile())) {
+        if (!$this->belongsToProfile($file->getProfile())) {
             return;
         }
 

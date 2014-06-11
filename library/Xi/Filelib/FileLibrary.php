@@ -291,12 +291,13 @@ class FileLibrary
             };
         }
 
-        $plugin->setHasProfileResolver($resolverFunc);
+        $plugin->setBelongsToProfileResolver($resolverFunc);
         $plugin->attachTo($this);
-
         $this->getEventDispatcher()->addSubscriber($plugin);
+
         $event = new PluginEvent($plugin);
         $this->getEventDispatcher()->dispatch(Events::PLUGIN_AFTER_ADD, $event);
+
         return $this;
     }
 

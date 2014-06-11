@@ -55,7 +55,7 @@ abstract class AbstractPlugin implements Plugin
      * @param  string  $profile
      * @return boolean
      */
-    public function hasProfile($profile)
+    public function belongsToProfile($profile)
     {
         if (!$this->resolverFunc) {
             return false;
@@ -67,7 +67,7 @@ abstract class AbstractPlugin implements Plugin
     {
         $profile = $event->getProfile();
 
-        if ($this->hasProfile($profile->getIdentifier())) {
+        if ($this->belongsToProfile($profile->getIdentifier())) {
             $profile->addPlugin($this);
         }
     }
@@ -77,7 +77,7 @@ abstract class AbstractPlugin implements Plugin
 
     }
 
-    public function setHasProfileResolver($resolverFunc)
+    public function setBelongsToProfileResolver($resolverFunc)
     {
         if (!is_callable($resolverFunc)) {
             throw new InvalidArgumentException("Resolver must be a callable");
@@ -91,7 +91,7 @@ abstract class AbstractPlugin implements Plugin
      */
     public function setProfiles(array $profiles)
     {
-        $this->setHasProfileResolver(
+        $this->setBelongsToProfileResolver(
             function ($profile) use ($profiles) {
                 return (bool) in_array($profile, $profiles);
             }
