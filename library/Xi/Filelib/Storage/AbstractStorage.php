@@ -37,7 +37,7 @@ abstract class AbstractStorage implements Storage
     public function retrieve(Resource $resource)
     {
         if (!$this->exists($resource)) {
-            throw new FileIOException("File for resource #{$resource->getId()} does not exist");
+            throw new FileIOException("Physical file for resource #{$resource->getId()} does not exist");
         }
 
         $retrieved = $this->doRetrieve($resource);
@@ -47,7 +47,7 @@ abstract class AbstractStorage implements Storage
     public function delete(Resource $resource)
     {
         if (!$this->exists($resource)) {
-            throw new FileIOException("File for resource #{$resource->getId()} does not exist");
+            throw new FileIOException("Physical file for resource #{$resource->getId()} does not exist");
         }
 
         return $this->doDelete($resource);
@@ -58,14 +58,21 @@ abstract class AbstractStorage implements Storage
         try {
             return $this->doStore($resource, $tempFile);
         } catch (\Exception $e) {
-            throw new FileIOException("Could not store file for resource #{$resource->getId()}", 500, $e);
+            throw new FileIOException("Could not store physical file for resource #{$resource->getId()}", 500, $e);
         }
     }
 
     public function retrieveVersion(Storable $storable, $version)
     {
         if (!$this->versionExists($storable, $version)) {
-            throw new FileIOException("File version '{$version}' for resource #{$storable->getId()} does not exist");
+            throw new FileIOException(
+                sprintf(
+                    "Physical file for storable of class '%s', #%s, version '%s' does not exist",
+                    get_class($storable),
+                    $storable->getId(),
+                    $version
+                )
+            );
         }
         $retrieved = $this->doRetrieveVersion($storable, $version);
         return $retrieved;
@@ -74,7 +81,14 @@ abstract class AbstractStorage implements Storage
     public function deleteVersion(Storable $storable, $version)
     {
         if (!$this->versionExists($storable, $version)) {
-            throw new FileIOException("File version '{$version}' for resource #{$storable->getId()} does not exist");
+            throw new FileIOException(
+                sprintf(
+                    "Physical file for storable of class '%s', #%s, version '%s' does not exist",
+                    get_class($storable),
+                    $storable->getId(),
+                    $version
+                )
+            );
         }
 
         return $this->doDeleteVersion($storable, $version);
@@ -86,8 +100,13 @@ abstract class AbstractStorage implements Storage
             return $this->doStoreVersion($storable, $version, $tempFile);
         } catch (\Exception $e) {
             throw new FileIOException(
-                "Could not store file version '{$version}' for resource #{$storable->getId()}",
-                500,
+                sprintf(
+                    "Could not store physical file for storable of class '%s', #%s, version '%s'",
+                    get_class($storable),
+                    $storable->getId(),
+                    $version
+                ),
+                0,
                 $e
             );
         }
