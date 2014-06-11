@@ -80,7 +80,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         $this->profiles = $filelib->getProfileManager();
     }
 
-    public function createVersions(File $file)
+    public function createProvidedVersions(File $file)
     {
         $tmps = $this->createTemporaryVersions($file);
         $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
@@ -117,14 +117,13 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
     public function onAfterUpload(FileEvent $event)
     {
-
         $file = $event->getFile();
 
-        if (!$this->belongsToProfile($file->getProfile()) || !$this->isApplicableTo($file) || $this->areVersionsCreated($file)) {
+        if (!$this->belongsToProfile($file->getProfile()) || !$this->isApplicableTo($file) || $this->areProvidedVersionsCreated($file)) {
             return;
         }
 
-        $this->createVersions($file);
+        $this->createProvidedVersions($file);
     }
 
     public function onFileDelete(FileEvent $event)
@@ -138,7 +137,8 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         if (!$this->isApplicableTo($file)) {
             return;
         }
-        $this->deleteFileVersions($file);
+
+        $this->deleteProvidedVersions($file);
     }
 
     /**
@@ -160,7 +160,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      *
      * @param File $file
      */
-    public function deleteFileVersions(File $file)
+    public function deleteProvidedVersions(File $file)
     {
         foreach ($this->getProvidedVersions() as $version) {
             if ($this->storage->versionExists($file->getResource(), $version, $file)) {
@@ -169,7 +169,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         }
     }
 
-    public function areVersionsCreated(File $file)
+    public function areProvidedVersionsCreated(File $file)
     {
         $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
 

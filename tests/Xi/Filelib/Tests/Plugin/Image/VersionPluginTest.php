@@ -119,7 +119,7 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
-    public function createVersionsShouldCreateVersions()
+    public function createProvidedVersionsShouldCreateVersions()
     {
         $retrievedPath = ROOT_TESTS . '/data/illusive-manatee.jpg';
 

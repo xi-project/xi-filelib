@@ -88,7 +88,7 @@ class AbstractVersionProviderTest extends TestCase
      * @dataProvider provideVersions
      * @test
      */
-    public function areVersionsCreatedShouldReturnExpectedResults($resourceVersions, $pluginVersions, $sharedVersionsAllowed, $expectResourceGetVersions)
+    public function areProvidedVersionsCreatedShouldReturnExpectedResults($resourceVersions, $pluginVersions, $sharedVersionsAllowed, $expectResourceGetVersions)
     {
         $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
              ->will($this->returnValue($sharedVersionsAllowed));
@@ -115,7 +115,7 @@ class AbstractVersionProviderTest extends TestCase
                 ->will($this->returnValue(true));
         }
 
-        $this->assertEquals(true, $this->plugin->areVersionsCreated($file));
+        $this->assertEquals(true, $this->plugin->areProvidedVersionsCreated($file));
 
     }
 
@@ -156,7 +156,7 @@ class AbstractVersionProviderTest extends TestCase
     public function afterUploadShouldDoNothingWhenPluginDoesNotProvide()
     {
         $this->plugin->attachTo($this->filelib);
-        $this->plugin->expects($this->never())->method('createVersions');
+        $this->plugin->expects($this->never())->method('createProvidedVersions');
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
 
@@ -179,7 +179,7 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
             ->will($this->returnValue(true));
 
-        $this->plugin->expects($this->never())->method('createVersions');
+        $this->plugin->expects($this->never())->method('createProvidedVersions');
 
         $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
                      ->will($this->returnValue(array('reiska')));
@@ -257,7 +257,7 @@ class AbstractVersionProviderTest extends TestCase
     {
         $this->plugin->attachTo($this->filelib);
 
-        $this->plugin->expects($this->never())->method('createVersions');
+        $this->plugin->expects($this->never())->method('createProvidedVersions');
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
 

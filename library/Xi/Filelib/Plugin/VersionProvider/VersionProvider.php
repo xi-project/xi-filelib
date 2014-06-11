@@ -44,14 +44,16 @@ interface VersionProvider extends Plugin
     /**
      * (Re)create and store all versions provided by the plugin
      */
-    public function createVersions(File $file);
+    public function createProvidedVersions(File $file);
+
+    public function deleteProvidedVersions(File $file);
 
     /**
      * Returns whether all versions are already created for a resource
      *
      * @return bool
      */
-    public function areVersionsCreated(File $file);
+    public function areProvidedVersionsCreated(File $file);
 
     /**
      * Returns whether plugin allows sharing of resources

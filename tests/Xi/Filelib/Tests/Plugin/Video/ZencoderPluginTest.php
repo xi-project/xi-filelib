@@ -265,7 +265,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function createVersionsShouldCreateVersions()
+    public function createProvidedVersionsShouldCreateVersions()
     {
         $this->setupStubsForZencoderService();
         $this->plugin->setClient($this->amazonService);
@@ -364,7 +364,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function createVersionsShouldThrowExceptionOnZencoderError()
+    public function createProvidedVersionsShouldThrowExceptionOnZencoderError()
     {
         $this->plugin->setClient($this->amazonService);
         $this->plugin->setService($this->zencoderService);
