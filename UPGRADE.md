@@ -3,6 +3,18 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. If you're using 0.9 or greater, good for you! If not, good luck. Trust me. I know.
 
+## From version 0.11.x to version 0.12.x
+
+* Data is backwards compatible. Hoorah!
+* FILE_BEFORE_CREATE event (FileUploadEvent) is now named FILE_UPLOAD.
+* FILE_BEFORE_CREATE is now a _new_ event (FileEvent) triggered before creation of files.
+* Filelib's addPlugin() has an optional $name parameter. A name will be generated for you if you do not provide one.
+* Filelib has a getPlugin($name) method to fetch plugins by name.
+* AbstractVersionProvider doesn't have identifier attribute any more.
+* Minor other refactorations and simplifications in plugins. Check your custom ones, they may require small changes.
+* Reversible versions of creation time and sequential linkers and a ReversibleLinkerInterface interface.
+  It would be very wise to update to these (you'll have to unpublish and republish all your files).
+
 ## From version 0.10.x to version 0.11.x
 
 * Data is backwards compatible. Hoorah!

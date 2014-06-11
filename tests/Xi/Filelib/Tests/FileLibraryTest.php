@@ -241,8 +241,8 @@ class FileLibraryTest extends TestCase
 
         $this->assertContains($plugin, $filelib->getProfile('sucklee')->getPlugins());
 
-        $this->assertTrue($plugin->hasProfile('sucklee'));
-        $this->assertTrue($plugin->hasProfile('suckler'));
+        $this->assertTrue($plugin->belongsToProfile('sucklee'));
+        $this->assertTrue($plugin->belongsToProfile('suckler'));
     }
 
     /**
@@ -262,8 +262,8 @@ class FileLibraryTest extends TestCase
 
         $this->assertContains($plugin, $filelib->getProfile('sucklee')->getPlugins());
 
-        $this->assertTrue($plugin->hasProfile('sucklee'));
-        $this->assertFalse($plugin->hasProfile('suckler'));
+        $this->assertTrue($plugin->belongsToProfile('sucklee'));
+        $this->assertFalse($plugin->belongsToProfile('suckler'));
     }
 
     /**

@@ -72,7 +72,7 @@ class AbstractFilesystemPublisherAdapterTest extends TestCase
     /**
      * @test
      */
-    public function getUrlVersionShouldReturnCorrectUrlVersion()
+    public function getUrlShouldReturnCorrectUrlVersion()
     {
         $linker = $this->getMockedLinker();
         $linker
@@ -97,7 +97,7 @@ class AbstractFilesystemPublisherAdapterTest extends TestCase
 
         $this->assertEquals(
             'http://diktaattoriporssi.com/tussin/lussun/tussi-xooxer.jpg',
-            $publisher->getUrlVersion($file, 'xooxer', $versionProvider, $linker)
+            $publisher->getUrl($file, 'xooxer', $versionProvider, $linker)
         );
     }
 

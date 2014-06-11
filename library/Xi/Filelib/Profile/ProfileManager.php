@@ -39,6 +39,7 @@ class ProfileManager
      * @param  File            $file    File item
      * @param  string          $version Version
      * @return VersionProvider Provider
+     * @todo Where da fuq this belong?!?
      */
     public function getVersionProvider(File $file, $version)
     {

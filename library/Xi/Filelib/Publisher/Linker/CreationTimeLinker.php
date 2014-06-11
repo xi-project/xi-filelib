@@ -15,51 +15,25 @@ use Xi\Filelib\Publisher\Linker;
 
 /**
  * Calculates directory id by formatting an objects creation date
+ *
+ * @deprecated
  */
-class CreationTimeLinker implements Linker
+class CreationTimeLinker extends AbstractCreationTimeLinker implements Linker
 {
-    /**
-     * @param string $format
-     */
-    public function __construct($format = 'Y/m/d')
-    {
-        $this->format = $format;
-    }
-
-    /**
-     * @var string
-     */
-    private $format = 'Y/m/d';
-
-    /**
-     * Returns directory creation format
-     *
-     * @return string
-     */
-    public function getFormat()
-    {
-        return $this->format;
-    }
-
-    /**
-     * @param File $file
-     * @param string $version
-     * @param string $extension
-     * @return string
-     */
-    public function getLink(File $file, $version, $extension)
-    {
-        $pinfo = pathinfo($file->getName());
-
-        return $file->getDateCreated()->format($this->getFormat()) . '/' . $pinfo['filename']
-           . '-' . $version . '.' . $extension;
-    }
-
     /**
      * @param FileLibrary $filelib
      */
     public function attachTo(FileLibrary $filelib)
     {
 
+    }
+
+    /**
+     * @param File $file
+     * @return string
+     */
+    protected function getFileName(File $file)
+    {
+        return $file->getName();
     }
 }

@@ -43,6 +43,7 @@ class JsonBackendAdapter implements BackendAdapter
             'id' => 'id',
             'folder_id' => 'folder_id',
             'name' => 'name',
+            'uuid' => 'uuid',
         ),
         'Xi\Filelib\Folder\Folder' => array(
             'id' => 'id',

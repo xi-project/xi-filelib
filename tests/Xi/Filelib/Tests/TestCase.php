@@ -189,6 +189,14 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
+    public function getMockedReversibleLinker()
+    {
+        return $this->getMock('Xi\Filelib\Publisher\ReversibleLinker');
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
     public function getMockedQueue()
     {
         return $this
@@ -411,7 +419,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         $versionProvider
             ->expects($this->any())
-            ->method('getVersions')
+            ->method('getProvidedVersions')
             ->will($this->returnValue($versions));
 
         return $versionProvider;

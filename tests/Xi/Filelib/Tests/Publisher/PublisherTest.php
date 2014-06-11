@@ -197,7 +197,7 @@ class PublisherTest extends TestCase
 
         $this->adapter
             ->expects($this->once())
-            ->method('getUrlVersion')
+            ->method('getUrl')
             ->with(
                 $file,
                 'ankan',
@@ -206,7 +206,7 @@ class PublisherTest extends TestCase
             )
             ->will($this->returnValue('lussutusbansku'));
 
-        $ret = $this->publisher->getUrlVersion($file, 'ankan');
+        $ret = $this->publisher->getUrl($file, 'ankan');
         $this->assertEquals('lussutusbansku', $ret);
     }
 
@@ -226,13 +226,13 @@ class PublisherTest extends TestCase
 
         $this->adapter
             ->expects($this->never())
-            ->method('getUrlVersion');
+            ->method('getUrl');
 
         $this->fiop
             ->expects($this->never())
             ->method('update');
 
-        $ret = $this->publisher->getUrlVersion($file, 'ankan');
+        $ret = $this->publisher->getUrl($file, 'ankan');
         $this->assertEquals('kerran-tenhusen-lipaisema-lopullisesti-pilalla', $ret);
     }
 
@@ -264,7 +264,7 @@ class PublisherTest extends TestCase
 
         $this->adapter
             ->expects($this->at(1))
-            ->method('getUrlVersion')
+            ->method('getUrl')
             ->with(
                 $file,
                 'ankan',
@@ -285,7 +285,7 @@ class PublisherTest extends TestCase
 
         $this->adapter
             ->expects($this->at(3))
-            ->method('getUrlVersion')
+            ->method('getUrl')
             ->with(
                 $file,
                 'imaisu',
@@ -385,5 +385,40 @@ class PublisherTest extends TestCase
         $file = File::create(array('profile' => 'default', 'data' => array('publisher.published' => 1)));
         $this->adapter->expects($this->never())->method('publish');
         $this->publisher->publish($file);
+    }
+
+    /**
+     * @test
+     */
+    public function reverseUrlDelegatesToLinker()
+    {
+        $linker = $this->getMockedReversibleLinker();
+
+        $linker
+            ->expects($this->once())
+            ->method('reverseLink')
+            ->with('lussogrande-loso.lus')
+            ->will($this->returnValue(array(File::create(), 'loso')));
+
+        $publisher = new Publisher($this->adapter, $linker);
+
+        list ($file, $version) = $publisher->reverseUrl('lussogrande-loso.lus');
+
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
+        $this->assertEquals('loso', $version);
+
+    }
+
+    /**
+     * @test
+     */
+    public function reverseThrowsUpWithLegacyLinker()
+    {
+        $this->setExpectedException('Xi\Filelib\RuntimeException');
+
+        $linker = $this->getMockedLinker();
+        $publisher = new Publisher($this->adapter, $linker);
+
+        $publisher->reverseUrl('lussogrande-loso.lus');
     }
 }

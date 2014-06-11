@@ -45,5 +45,5 @@ interface PublisherAdapter extends Attacher
      * @param Linker $linker
      * @return string
      */
-    public function getUrlVersion(File $file, $version, VersionProvider $versionProvider, Linker $linker);
+    public function getUrl(File $file, $version, VersionProvider $versionProvider, Linker $linker);
 }

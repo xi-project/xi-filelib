@@ -198,6 +198,31 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
+    public function findByUuidsFindsWithFinder()
+    {
+        $finder = new FileFinder(
+            array(
+                'uuid' => 'tenhusen-hubriksen-uuid',
+            )
+        );
+
+        $this->backend
+            ->expects($this->once())
+            ->method('findByFinder')->with(
+                $this->equalTo($finder)
+            )
+            ->will($this->returnValue(new ArrayIterator(array(
+                File::create(array('uuid' => 'tenhusen-hubriksen-uuid'))
+            ))));
+
+        $ret = $this->op->findByUuid('tenhusen-hubriksen-uuid');
+        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
+    }
+
+
+    /**
+     * @test
+     */
     public function findByFilenameShouldReturnFileInstanceIfFileIsFound()
     {
         $id = 1;

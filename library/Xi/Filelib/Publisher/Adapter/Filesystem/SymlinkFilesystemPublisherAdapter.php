@@ -104,7 +104,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
             $linker->getLink(
                 $file,
                 $version,
-                $versionProvider->getExtensionFor($file, $version)
+                $versionProvider->getExtension($file, $version)
             );
 
         if (!is_link($link)) {
@@ -150,7 +150,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
     public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLink($file, $version, $versionProvider->getExtensionFor($file, $version));
+            $linker->getLink($file, $version, $versionProvider->getExtension($file, $version));
         if (is_link($link)) {
             unlink($link);
         }

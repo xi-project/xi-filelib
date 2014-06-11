@@ -12,7 +12,6 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Profile\ProfileManager;
-use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileEvent;
@@ -30,6 +29,9 @@ use Xi\Filelib\File\FileObject;
  */
 abstract class AbstractVersionProvider extends AbstractPlugin implements VersionProvider
 {
+    /**
+     * @var array
+     */
     protected static $subscribedEvents = array(
         Events::FILE_AFTER_AFTERUPLOAD => 'onAfterUpload',
         Events::FILE_AFTER_DELETE => 'onFileDelete',
@@ -37,14 +39,9 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     );
 
     /**
-     * @var string Version identifier
+     * @var array
      */
-    protected $identifier;
-
-    /**
-     * @var array Array of file types for which the plugin provides a version
-     */
-    protected $providesFor;
+    protected $isApplicableTo;
 
     /**
      * @var Storage
@@ -62,13 +59,16 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected $extensionReplacements = array('jpeg' => 'jpg');
 
     /**
-     * @param string $identifier
-     * @param callable $providesFor
+     * @var bool
      */
-    public function __construct($identifier, $providesFor)
+    protected $canBeLazy = false;
+
+    /**
+     * @param callable $isApplicableTo
+     */
+    public function __construct($isApplicableTo)
     {
-        $this->identifier = $identifier;
-        $this->providesFor = $providesFor;
+        $this->isApplicableTo = $isApplicableTo;
     }
 
     /**
@@ -80,7 +80,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         $this->profiles = $filelib->getProfileManager();
     }
 
-    public function createVersions(File $file)
+    public function createProvidedVersions(File $file)
     {
         $tmps = $this->createTemporaryVersions($file);
         $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
@@ -102,53 +102,43 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     abstract public function createTemporaryVersions(File $file);
 
     /**
-     * Returns identifier
-     *
-     * @return string
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
-    }
-
-    /**
      * Returns whether the plugin provides a version for a file.
      *
      * @param  File    $file File item
      * @return boolean
      */
-    public function providesFor(File $file)
+    public function isApplicableTo(File $file)
     {
-        if (!$this->hasProfile($file->getProfile())) {
+        if (!$this->belongsToProfile($file->getProfile())) {
             return false;
         }
-        return call_user_func($this->providesFor, $file);
+        return call_user_func($this->isApplicableTo, $file);
     }
 
     public function onAfterUpload(FileEvent $event)
     {
-
         $file = $event->getFile();
 
-        if (!$this->hasProfile($file->getProfile()) || !$this->providesFor($file) || $this->areVersionsCreated($file)) {
+        if (!$this->belongsToProfile($file->getProfile()) || !$this->isApplicableTo($file) || $this->areProvidedVersionsCreated($file)) {
             return;
         }
 
-        $this->createVersions($file);
+        $this->createProvidedVersions($file);
     }
 
     public function onFileDelete(FileEvent $event)
     {
         $file = $event->getFile();
 
-        if (!$this->hasProfile($file->getProfile())) {
+        if (!$this->belongsToProfile($file->getProfile())) {
             return;
         }
 
-        if (!$this->providesFor($file)) {
+        if (!$this->isApplicableTo($file)) {
             return;
         }
-        $this->deleteFileVersions($file);
+
+        $this->deleteProvidedVersions($file);
     }
 
     /**
@@ -158,7 +148,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function onResourceDelete(ResourceEvent $event)
     {
-        foreach ($this->getVersions() as $version) {
+        foreach ($this->getProvidedVersions() as $version) {
             if ($this->storage->versionExists($event->getResource(), $version)) {
                 $this->storage->deleteVersion($event->getResource(), $version);
             }
@@ -170,34 +160,43 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      *
      * @param File $file
      */
-    public function deleteFileVersions(File $file)
+    public function deleteProvidedVersions(File $file)
     {
-        foreach ($this->getVersions() as $version) {
+        foreach ($this->getProvidedVersions() as $version) {
             if ($this->storage->versionExists($file->getResource(), $version, $file)) {
                 $this->storage->deleteVersion($file->getResource(), $version, $file);
             }
         }
     }
 
-    public function areVersionsCreated(File $file)
+    public function areProvidedVersionsCreated(File $file)
     {
         $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
 
         $count = 0;
-        foreach ($this->getVersions() as $version) {
+        foreach ($this->getProvidedVersions() as $version) {
             if ($versionable->hasVersion($version)) {
                 $count++;
             }
         }
-        if ($count == count($this->getVersions())) {
+        if ($count == count($this->getProvidedVersions())) {
             return true;
         }
 
         return false;
     }
 
-    public function getExtensionFor(File $file, $version)
+    /**
+     * Returns the mimetype of a version provided by this plugin via retrieving and inspecting.
+     * More specific plugins should override this for performance.
+     *
+     * @param File $file
+     * @param $version
+     * @return string
+     */
+    public function getMimeType(File $file, $version)
     {
+        // @todo: optimize (when doing the S3 would be wise)
         $retrieved = $this->storage->retrieveVersion(
             $file->getResource(),
             $version,
@@ -205,18 +204,46 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
         );
 
         $fileObj = new FileObject($retrieved);
-        $extensions = MimeType::mimeTypeToExtensions($fileObj->getMimeType());
-
-        $ret = array_shift($extensions);
-        return $this->doExtensionReplacement($ret);
+        return $fileObj->getMimeType();
     }
 
     /**
-     * Apache parsings produce some unwanted results (jpeg). Switcheroo those
+     * Returns file extension for a version
+     *
+     * @param File $file
+     * @param string $version
+     * @return string
+     */
+    public function getExtension(File $file, $version)
+    {
+        $mimeType = $this->getMimeType($file, $version);
+        return $this->getExtensionFromMimeType($mimeType);
+    }
+
+    /**
+     * @return bool
+     */
+    public function canBeLazy()
+    {
+        return $this->canBeLazy;
+    }
+
+    /**
+     * @param string $mimeType
+     * @return string
+     */
+    protected function getExtensionFromMimeType($mimeType)
+    {
+        $extensions = MimeType::mimeTypeToExtensions($mimeType);
+        return $this->doExtensionReplacement(array_shift($extensions));
+    }
+
+    /**
+     * Apache derived parsings produce unwanted results (jpeg). Switcheroo for those.
      *
      * @param string $extension
      * @return string
-     * @todo allow user to edit / add his own replacements
+     * @todo allow user to edit / add his own replacements?
      *
      */
     protected function doExtensionReplacement($extension)

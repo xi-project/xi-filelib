@@ -31,7 +31,7 @@ class AbstractPluginTest extends TestCase
     /**
      * @test
      */
-    public function hasProfileShouldReturnWhetherPluginBelongsToAProfile()
+    public function belongsToProfileShouldReturnWhetherPluginBelongsToAProfile()
     {
         $plugin = $this
             ->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
@@ -39,22 +39,22 @@ class AbstractPluginTest extends TestCase
             ->getMockForAbstractClass();
         $plugin->attachTo($this->getMockedFilelib());
 
-        $plugin->setHasProfileResolver(
+        $plugin->setBelongsToProfileResolver(
             function ($profile) {
                 return (bool) in_array($profile, array('lussi', 'tussi'));
             }
         );
 
-        $this->assertFalse($plugin->hasProfile('xoo'));
-        $this->assertTrue($plugin->hasProfile('lussi'));
-        $this->assertTrue($plugin->hasProfile('tussi'));
-        $this->assertFalse($plugin->hasProfile('meisterhof'));
+        $this->assertFalse($plugin->belongsToProfile('xoo'));
+        $this->assertTrue($plugin->belongsToProfile('lussi'));
+        $this->assertTrue($plugin->belongsToProfile('tussi'));
+        $this->assertFalse($plugin->belongsToProfile('meisterhof'));
     }
 
     /**
      * @test
      */
-    public function setProfileShouldBeAShortCutToSetHasProfileResolver()
+    public function setProfileShouldBeAShortCutToSetBelongsToProfileResolver()
     {
         $plugin = $this
             ->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
@@ -64,9 +64,9 @@ class AbstractPluginTest extends TestCase
 
         $plugin->setProfiles(array('tussi', 'watussi'));
 
-        $this->assertTrue($plugin->hasProfile('tussi'));
-        $this->assertFalse($plugin->hasProfile('laamantiini'));
-        $this->assertTrue($plugin->hasProfile('watussi'));
+        $this->assertTrue($plugin->belongsToProfile('tussi'));
+        $this->assertFalse($plugin->belongsToProfile('laamantiini'));
+        $this->assertTrue($plugin->belongsToProfile('watussi'));
     }
 
     /**
@@ -81,7 +81,7 @@ class AbstractPluginTest extends TestCase
             ->setMethods(array())
             ->getMockForAbstractClass();
 
-        $plugin->setHasProfileResolver('libaiseb le tussi');
+        $plugin->setBelongsToProfileResolver('libaiseb le tussi');
     }
 
     /**

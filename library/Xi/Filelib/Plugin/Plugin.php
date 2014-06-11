@@ -24,7 +24,7 @@ interface Plugin extends EventSubscriberInterface, Attacher
      * @param callable $resolverFunc
      * @return Plugin
      */
-    public function setHasProfileResolver($resolverFunc);
+    public function setBelongsToProfileResolver($resolverFunc);
 
     /**
      * Returns whether plugin has a certain profile
@@ -32,5 +32,5 @@ interface Plugin extends EventSubscriberInterface, Attacher
      * @param  string  $profile
      * @return boolean
      */
-    public function hasProfile($profile);
+    public function belongsToProfile($profile);
 }

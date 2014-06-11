@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Tests\Plugin\Image\Command;
 
+use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 use Xi\Filelib\Tests\Plugin\Image\TestCase;
 
 /**
@@ -19,44 +20,12 @@ class AbstractCommandTest extends TestCase
     /**
      * @test
      */
-    public function createImagickShouldReturnNewImagickObject()
+    public function addHelperReturnsSelf()
     {
-        $mock = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\AbstractCommand')
-                     ->setMethods(array('execute'))
-                     ->getMock();
+        $helper = new ImageMagickHelper();
 
-        $imagick = $mock->createImagick(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-
-        $this->assertInstanceOf('Imagick', $imagick);
+        $command = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Image\Command\AbstractCommand');
+        $this->assertSame($command, $command->setHelper($helper));
     }
 
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function createImagickShouldFailWithNonExistingFile()
-    {
-        $mock = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\AbstractCommand')
-                     ->setMethods(array('execute'))
-                     ->getMock();
-
-        $imagick = $mock->createImagick(ROOT_TESTS . '/data/illusive-manatee.jpg');
-
-        $this->assertInstanceOf('Imagick', $imagick);
-    }
-
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function createImagickShouldFailWithInvalidFile()
-    {
-        $mock = $this->getMockBuilder('Xi\Filelib\Plugin\Image\Command\AbstractCommand')
-                     ->setMethods(array('execute'))
-                     ->getMock();
-
-        $imagick = $mock->createImagick(ROOT_TESTS . '/data/20th.wav');
-
-        $this->assertInstanceOf('\Imagick', $imagick);
-    }
 }

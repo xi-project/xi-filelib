@@ -22,15 +22,20 @@ class OriginalVersionPlugin extends AbstractVersionProvider
      */
     private $tempDir;
 
+    /**
+     * @var string
+     */
+    private $identifier;
+
     public function __construct(
         $identifier
     ) {
         parent::__construct(
-            $identifier = 'original',
             function (File $file) {
                 return true;
             }
         );
+        $this->identifier = $identifier;
     }
 
     public function attachTo(FileLibrary $filelib)
@@ -53,11 +58,11 @@ class OriginalVersionPlugin extends AbstractVersionProvider
         copy($retrieved, $tmp);
 
         return array(
-            $this->getIdentifier() => $tmp,
+            $this->identifier => $tmp,
         );
     }
 
-    public function getVersions()
+    public function getProvidedVersions()
     {
         return array($this->identifier);
     }
@@ -68,6 +73,11 @@ class OriginalVersionPlugin extends AbstractVersionProvider
     }
 
     public function areSharedVersionsAllowed()
+    {
+        return true;
+    }
+
+    public function canBeLazy()
     {
         return true;
     }

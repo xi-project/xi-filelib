@@ -136,7 +136,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $versionProvider = $this->getMock('\Xi\Filelib\Plugin\VersionProvider\VersionProvider');
         $versionProvider->expects($this->any())
-                        ->method('getExtensionFor')
+                        ->method('getExtension')
                         ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->equalTo('xoo'))
                         ->will($this->returnValue('xoo'));
 
@@ -145,7 +145,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
             $linker->getLink(
                 $file,
                 'xoo',
-                $versionProvider->getExtensionFor($file, 'xoo')
+                $versionProvider->getExtension($file, 'xoo')
             )
         );
     }

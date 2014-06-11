@@ -9,6 +9,8 @@
 
 namespace Xi\Filelib\Tests\Plugin;
 
+use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\File\File;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
@@ -20,15 +22,6 @@ use Xi\Filelib\Events;
  */
 class RandomizeNamePluginTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function gettersShouldWorkAsExpected()
-    {
-        $plugin = new RandomizeNamePlugin('xooxers');
-        $this->assertEquals('xooxers', $plugin->getPrefix());
-    }
-
     public function provideOverrideFilenames()
     {
         return array(
@@ -41,117 +34,61 @@ class RandomizeNamePluginTest extends TestCase
     /**
      * @test
      */
-    public function beforeUploadShouldExitEarlyIfPluginDoesntHaveProfile()
+    public function nameShouldRemainTheSameIfPluginDoesntHaveProfile()
     {
-        $profile = $this->getMockedFileProfile();
+        $file = File::create(
+            array(
+                'name' => 'ankka-sanoo-kvaak.lus',
+                'profile' => 'helistin',
+            )
+        );
 
-        $event = $this->getMockBuilder('Xi\Filelib\Event\FileUploadEvent')
-                      ->disableOriginalConstructor()
-                      ->getMock();
-
-        $event->expects($this->once())->method('getProfile')->will($this->returnValue($profile));
-
-        $event->expects($this->never())->method('getFileUpload');
+        $profile = $this->getMockedFileProfile('xooxer');
+        $event = new FileEvent($file);
 
         $plugin = new RandomizeNamePlugin();
-
-        $plugin->beforeUpload($event);
+        $plugin->beforeCreate($event);
+        $this->assertEquals('ankka-sanoo-kvaak.lus', $file->getName());
     }
 
-    /**
-     * @test
-     */
-    public function beforeUploadShouldRandomizeUploadFilename()
-    {
-        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $folder = $this->getMockedFolder();
-        $profile = $this->getMockedFileProfile();
-        $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
-        $event = new FileUploadEvent($upload, $folder, $profile);
-
-        $plugin = new RandomizeNamePlugin();
-        $plugin->setProfiles(array('tussi'));
-
-        $plugin->beforeUpload($event);
-
-        $upload2 = $event->getFileUpload();
-
-        $this->assertSame($upload, $upload2);
-
-        $this->assertNotEquals('self-lussing-manatee', $upload2->getUploadFilename());
-
-        $pinfo = pathinfo($upload2->getUploadFilename());
-
-        $this->assertArrayHasKey('extension', $pinfo);
-
-        $this->assertEquals('jpg', $pinfo['extension']);
-
-        $this->assertEquals(40, strlen($upload2->getUploadFilename()));
-    }
-
-    /**
-     * @test
-     */
-    public function beforeUploadShouldRandomizeOverriddenUploadFilename()
-    {
-        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $upload->setOverrideFilename('tussinlussuttajankabaali');
-
-        $folder = $this->getMockedFolder();
-        $profile = $this->getMockedFileProfile();
-        $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
-        $event = new FileUploadEvent($upload, $folder, $profile);
-
-        $plugin = new RandomizeNamePlugin();
-        $plugin->setProfiles(array('tussi'));
-
-        $plugin->beforeUpload($event);
-
-        $upload2 = $event->getFileUpload();
-
-        $this->assertEquals($upload, $upload2);
-
-        $this->assertNotEquals('self-lussing-manatee', $upload2->getUploadFilename());
-
-        $pinfo = pathinfo($upload2->getUploadFilename());
-
-        $this->assertArrayNotHasKey('extension', $pinfo);
-        $this->assertEquals(36, strlen($upload2->getUploadFilename()));
-    }
-
-    public function providePrefixes()
+    public function provideFilenames()
     {
         return array(
-            array('tussi'),
-            array('helistin'),
-            array('bansku'),
-            array('johtaja'),
+            array('tenhunen-lipaisee', ''),
+            array('tenhunen-imaisee-ankkaa.kvaak', 'kvaak')
         );
     }
 
     /**
      * @test
-     * @dataProvider providePrefixes
+     * @dataProvider provideFilenames
      */
-    public function beforeUploadShouldPrefixRandomizedName($prefix)
+    public function beforeUploadShouldRandomizeUploadFilename($name, $expectedExtension)
     {
-        $plugin = new RandomizeNamePlugin($prefix);
-        $plugin->attachTo($this->getMockedFilelib());
+        $file = File::create(
+            array(
+                'name' => $name,
+                'profile' => 'tussi'
+            )
+        );
 
+        $event = new FileEvent($file);
+
+        $plugin = new RandomizeNamePlugin();
         $plugin->setProfiles(array('tussi'));
 
-        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-        $folder = $this->getMockedFolder();
-        $profile = $this->getMockedFileProfile();
-        $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
-        $event = new FileUploadEvent($upload, $folder, $profile);
+        $plugin->beforeCreate($event);
 
-        $plugin->beforeUpload($event);
+        $this->assertNotEquals($name, $file->getName());
 
-        $upload2 = $event->getFileUpload();
+        $pinfo = pathinfo($file->getName());
+        $this->assertUuid($pinfo['basename']);
 
-        $this->assertStringStartsWith($prefix, $upload2->getUploadFilename());
-        $this->assertEquals(40 + strlen($prefix), strlen($upload2->getUploadFilename()));
+        if ($expectedExtension) {
+            $this->assertEquals($expectedExtension, $pinfo['extension']);
+        } else {
+            $this->assertArrayNotHasKey('extension', $pinfo);
+        }
     }
 
     /**
