@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib\Storage\Adapter;
 
 class TemporaryFileContainer
 {

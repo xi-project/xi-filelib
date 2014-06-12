@@ -11,6 +11,7 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\Plugin;
+use Xi\Filelib\Storage\Storable;
 
 /**
  * Interface for version providing plugins
@@ -46,7 +47,7 @@ interface VersionProvider extends Plugin
      */
     public function createProvidedVersions(File $file);
 
-    public function deleteProvidedVersions(File $file);
+    public function deleteProvidedVersions(Storable $storable);
 
     /**
      * Returns whether all versions are already created for a resource

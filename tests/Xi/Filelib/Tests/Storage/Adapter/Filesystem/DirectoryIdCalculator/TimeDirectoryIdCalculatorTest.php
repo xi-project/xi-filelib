@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Storage\Filesystem\DirectoryIdCalculator;
+namespace Xi\Filelib\Tests\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
 use DateTime;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\Resource\Resource;
 
 /**

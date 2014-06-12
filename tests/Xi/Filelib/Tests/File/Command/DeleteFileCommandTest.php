@@ -66,7 +66,7 @@ class DeleteFileCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('deleteFile')
             ->with($this->equalTo($file));
 
-        $storage = $this->getMockedStorage();
+        $storage = $this->getMockedStorageAdapter();
 
         $filelib = $this->getMockedFilelib(
             null,

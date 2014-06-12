@@ -42,7 +42,7 @@ class DeleteResourceCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('deleteResource')
             ->with($this->equalTo($resource));
 
-        $storage = $this->getMockedStorage();
+        $storage = $this->getMockedStorageAdapter();
 
         $filelib = $this->getMockedFilelib(
             null,

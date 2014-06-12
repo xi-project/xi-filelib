@@ -38,7 +38,7 @@ class VersionPluginTest extends TestCase
     {
         parent::setUp();
 
-        $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $this->storage = $this->getMockedStorageAdapter();
 
         $this->plugin = new VersionPlugin(
             'xooxer',
@@ -72,7 +72,7 @@ class VersionPluginTest extends TestCase
     public function pluginShouldProvideForImage()
     {
         $filelib = new FileLibrary(
-            $this->getMockedStorage(),
+            $this->getMockedStorageAdapter(),
             $this->getMockedBackendAdapter()
         );
         $filelib->addPlugin($this->plugin);
@@ -202,7 +202,7 @@ class VersionPluginTest extends TestCase
      */
     public function getExtensionShouldDelegateToParentToAutodetectExtension()
     {
-        $storage = $this->getMockedStorage();
+        $storage = $this->getMockedStorageAdapter();
         $filelib = new FileLibrary(
             $storage,
             $this->getMockedBackendAdapter()

@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Storage\Filesystem\DirectoryIdCalculator;
+namespace Xi\Filelib\Tests\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
 use Xi\Filelib\Resource\Resource;
 
 /**

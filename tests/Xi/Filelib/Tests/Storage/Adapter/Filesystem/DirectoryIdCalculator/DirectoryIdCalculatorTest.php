@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Storage\Filesystem\DirectoryIdCalculator;
+namespace Xi\Filelib\Tests\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
 use Xi\Filelib\Tests\TestCase;
 
@@ -21,6 +21,6 @@ class DirectoryIdCalculatorTest extends TestCase
      */
     public function interfaceShouldExist()
     {
-        $this->assertTrue(interface_exists('Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator'));
+        $this->assertTrue(interface_exists('Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator'));
     }
 }

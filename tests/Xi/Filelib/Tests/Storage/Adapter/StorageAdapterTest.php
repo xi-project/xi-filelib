@@ -7,18 +7,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Storage;
+namespace Xi\Filelib\Tests\Storage\Adapter;
 
 /**
  * @group storage
  */
-class StorageTest extends \Xi\Filelib\Tests\TestCase
+class StorageAdapterTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
      * @test
      */
     public function interfaceShouldExist()
     {
-        $this->assertTrue(interface_exists('Xi\Filelib\Storage\Storage'));
+        $this->assertInterfaceExists('Xi\Filelib\Storage\Adapter\StorageAdapter');
     }
 }

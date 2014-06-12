@@ -7,23 +7,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib\Storage\Adapter;
 
 use MongoDB;
 use MongoGridFS;
 use MongoGridFSFile;
-use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\Storage\Storable;
 
 /**
  * Stores files in MongoDB's GridFS filesystem
  *
  * @author pekkis
  */
-class GridfsStorage extends AbstractStorage implements Storage
+class GridfsStorageAdapter extends AbstractStorageAdapter
 {
     /**
      * @var MongoDB Mongo reference

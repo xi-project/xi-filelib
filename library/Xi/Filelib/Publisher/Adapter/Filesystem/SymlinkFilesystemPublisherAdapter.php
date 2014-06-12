@@ -14,7 +14,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Storage\FilesystemStorage;
+use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\LogicException;
@@ -26,7 +26,7 @@ use Xi\Filelib\InvalidArgumentException;
 class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter implements PublisherAdapter
 {
     /**
-     * @var FilesystemStorage
+     * @var FilesystemStorageAdapter
      */
     private $storage;
 
@@ -49,7 +49,8 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
     public function attachTo(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
-        if (!$this->storage instanceof FilesystemStorage) {
+
+        if (!$this->storage instanceof FilesystemStorageAdapter) {
             throw new InvalidArgumentException("Symlink filesystem publisher requires filesystem storage");
         }
     }

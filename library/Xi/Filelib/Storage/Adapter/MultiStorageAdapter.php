@@ -7,18 +7,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib\Storage\Adapter;
 
-use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\LogicException;
 use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\Storage\Storable;
 
-class MultiStorage implements Storage
+class MultiStorageAdapter implements StorageAdapter
 {
     /**
-     * @var Storage[]
+     * @var StorageAdapter[]
      */
     private $storages = array();
 
@@ -27,9 +27,9 @@ class MultiStorage implements Storage
      */
     private $sessionStorageId;
 
-    public function addStorage(Storage $storage)
+    public function addStorage(StorageAdapter $storage)
     {
-        if ($storage instanceof MultiStorage) {
+        if ($storage instanceof MultiStorageAdapter) {
             throw new InvalidArgumentException('MultiStorage cannot contain a MultiStorage');
         }
 
@@ -39,7 +39,7 @@ class MultiStorage implements Storage
     /**
      * Returns an array of inner storages
      *
-     * @return Storage[]
+     * @return StorageAdapter[]
      */
     public function getStorages()
     {
@@ -63,7 +63,7 @@ class MultiStorage implements Storage
     /**
      * Returns session storage
      *
-     * @return Storage
+     * @return StorageAdapter
      */
     public function getSessionStorage()
     {

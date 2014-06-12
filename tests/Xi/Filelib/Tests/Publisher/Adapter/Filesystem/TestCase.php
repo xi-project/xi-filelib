@@ -73,7 +73,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->versionProvider = $versionProvider;
         $this->version = 'xooxer';
 
-        $storage = $this->getMockedStorage();
+        $storage = $this->getMockedStorageAdapter();
         $storage
             ->expects($this->any())
             ->method('getRoot')
@@ -167,9 +167,9 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedStorage()
+    public function getMockedStorageAdapter()
     {
-        $ret = $this->getMockBuilder('Xi\Filelib\Storage\FilesystemStorage')->disableOriginalConstructor()->getMock();
+        $ret = $this->getMockBuilder('Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter')->disableOriginalConstructor()->getMock();
         return $ret;
     }
 

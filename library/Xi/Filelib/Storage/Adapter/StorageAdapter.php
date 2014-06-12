@@ -7,8 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib\Storage\Adapter;
 
+use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Storage\Storable;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
@@ -19,7 +20,7 @@ use Xi\Filelib\File\FileObject;
  * Storage interface
  *
  */
-interface Storage
+interface StorageAdapter
 {
     /**
      * Stores an uploaded file

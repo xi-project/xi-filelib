@@ -159,7 +159,7 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
     public function commandShouldExecute($exclusiveResource)
     {
         $backend = $this->getMockedBackend();
-        $storage = $this->getMockedStorage();
+        $storage = $this->getMockedStorageAdapter();
         $eventDispatcher = $this->getMockedEventDispatcher();
 
         $file = File::create(

@@ -7,23 +7,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib\Storage\Adapter;
 
-use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\LogicException;
+use Xi\Filelib\Storage\Storable;
 
 /**
  * Stores files in a filesystem
  *
  * @author pekkis
  */
-class FilesystemStorage extends AbstractStorage implements Storage
+class FilesystemStorageAdapter extends AbstractStorageAdapter
 {
     /**
      * @var string Physical root

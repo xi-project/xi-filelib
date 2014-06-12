@@ -12,7 +12,7 @@ namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\FileLibrary;
@@ -26,7 +26,7 @@ use Xi\Filelib\FileLibrary;
 class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter implements PublisherAdapter
 {
     /**
-     * @var Storage
+     * @var StorageAdapter
      */
     private $storage;
 

@@ -1,13 +1,13 @@
 <?php
 
-namespace Xi\Filelib\Tests\Storage;
+namespace Xi\Filelib\Tests\Storage\Adapter;
 
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Storage\FileIOException;
 use DateTime;
 
-class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
+class AbstractStorageAdapterTest extends \Xi\Filelib\Tests\TestCase
 {
 
     private $storage;
@@ -16,7 +16,7 @@ class AbstractStorageTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->storage = $this->getMockBuilder('Xi\Filelib\Storage\AbstractStorage')
+        $this->storage = $this->getMockBuilder('Xi\Filelib\Storage\Adapter\AbstractStorageAdapter')
                               ->setMethods(array('exists', 'versionExists', 'doRetrieve', 'doRetrieveVersion',
                                                  'doDelete', 'doDeleteVersion', 'doStore', 'doStoreVersion'))
                               ->getMock();

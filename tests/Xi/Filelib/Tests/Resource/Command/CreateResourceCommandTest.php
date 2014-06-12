@@ -42,7 +42,7 @@ class CreateResourceCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('createResource')
             ->with($this->equalTo($resource));
 
-        $storage = $this->getMockedStorage();
+        $storage = $this->getMockedStorageAdapter();
 
         $filelib = $this->getMockedFilelib(
             null,

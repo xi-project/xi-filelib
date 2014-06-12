@@ -7,20 +7,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib\Storage\Adapter;
 
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Storage\Storage;
 use Exception;
-use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\Storage\FileIOException;
+use Xi\Filelib\Storage\Storable;
 
 /**
  * Abstract storage convenience base class with common methods implemented
  *
  * @author pekkis
  */
-abstract class AbstractStorage implements Storage
+abstract class AbstractStorageAdapter implements StorageAdapter
 {
     abstract protected function doRetrieve(Resource $resource);
 
@@ -98,7 +98,7 @@ abstract class AbstractStorage implements Storage
     {
         try {
             return $this->doStoreVersion($storable, $version, $tempFile);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new FileIOException(
                 sprintf(
                     "Could not store physical file for storable of class '%s', #%s, version '%s'",

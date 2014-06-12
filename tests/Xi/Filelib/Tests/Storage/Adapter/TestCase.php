@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Filelib\Tests\Storage;
+namespace Xi\Filelib\Tests\Storage\Adapter;
 
-use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use RecursiveIteratorIterator;
@@ -24,13 +24,13 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
     protected $version;
 
     /**
-     * @var Storage
+     * @var StorageAdapter
      */
     protected $storage;
 
     /**
      * @abstract
-     * @return Storage
+     * @return StorageAdapter
      */
     abstract protected function getStorage();
 

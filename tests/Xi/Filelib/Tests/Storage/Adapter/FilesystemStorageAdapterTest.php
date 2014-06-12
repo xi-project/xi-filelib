@@ -7,25 +7,26 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Storage;
+namespace Xi\Filelib\Tests\Storage\Adapter;
 
-use Xi\Filelib\Storage\FilesystemStorage;
-use Xi\Filelib\Exception\FileIOException;
+use Xi\Filelib\LogicException;
+use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
+use Xi\Filelib\Storage\FileIOException;
 
 /**
  * @group storage
  */
-class FilesystemStorageTest extends TestCase
+class FilesystemStorageAdapterTest extends TestCase
 {
     protected function getStorage()
     {
-        $dc = $this->getMock('\Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+        $dc = $this->getMock('\Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
 
         $dc->expects($this->any())
              ->method('calculateDirectoryId')
              ->will($this->returnValue('1'));
 
-        $storage = new FilesystemStorage(ROOT_TESTS . '/data/files', $dc);
+        $storage = new FilesystemStorageAdapter(ROOT_TESTS . '/data/files', $dc);
 
         return $storage;
     }
@@ -37,11 +38,11 @@ class FilesystemStorageTest extends TestCase
     {
         $root = ROOT_TESTS . '/data/files';
 
-        $storage = new FilesystemStorage($root);
+        $storage = new FilesystemStorageAdapter($root);
         $this->assertSame(0700, $storage->getDirectoryPermission());
         $this->assertSame(0600, $storage->getFilePermission());
         $this->assertInstanceOf(
-            'Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator',
+            'Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator',
             $storage->getDirectoryIdCalculator()
         );
         $this->assertEquals($root, $storage->getRoot());
@@ -54,6 +55,6 @@ class FilesystemStorageTest extends TestCase
     public function rootMustBeWritableToInstantiate()
     {
         $root = ROOT_TESTS . '/data/illusive_directory';
-        $storage = new FilesystemStorage($root);
+        $storage = new FilesystemStorageAdapter($root);
     }
 }

@@ -44,7 +44,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->ed = $this->getMockedEventDispatcher();
         $this->fiop = $this->getMockedFileRepository();
-        $this->storage = $this->getMockedStorage();
+        $this->storage = $this->getMockedStorageAdapter();
         $this->pm = $this->getMockedProfileManager();
         $this->filelib = $this->getMockedFilelib(
             null,

@@ -51,7 +51,7 @@ class AbstractVersionProviderTest extends TestCase
     {
         parent::setUp();
 
-        $this->storage = $this->getMockedStorage();
+        $this->storage = $this->getMockedStorageAdapter();
 
         $this->pm = $this->getMockedProfileManager(array('tussi', 'lussi'));
 
@@ -276,48 +276,42 @@ class AbstractVersionProviderTest extends TestCase
     /**
      * @test
      */
-    public function onFileDeleteShouldDoNothingWhenPluginDoesNotProvide()
+    public function onFileDeleteDelegates()
     {
-        $this->plugin->attachTo($this->filelib);
+        $plugin = $this
+            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
+            ->disableOriginalConstructor()
+            ->setMethods(array('deleteProvidedVersions'))
+            ->getMockForAbstractClass();
 
-        $this->storage->expects($this->never())->method('deleteVersions');
-
-        $this->plugin->setProfiles(array('tussi', 'lussi'));
-
-        $file = File::create(array(
-            'profile' => 'tussi',
-            'resource' => Resource::create(array('mimetype' => 'iimage/xoo'))
-        ));
+        $file = File::create();
         $event = new FileEvent($file);
-
-        $this->plugin->onFileDelete($event);
+        $plugin->expects($this->once())->method('deleteProvidedVersions')->with($file);
+        $plugin->onFileDelete($event);
     }
 
     /**
      * @test
      */
-    public function onFileDeleteShouldExitEarlyWhenPluginDoesntHaveProfile()
+    public function onResourceDeleteDelegates()
     {
-        $this->plugin->attachTo($this->filelib);
+        $plugin = $this
+            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider')
+            ->disableOriginalConstructor()
+            ->setMethods(array('deleteProvidedVersions'))
+            ->getMockForAbstractClass();
 
-        $this->storage->expects($this->never())->method('deleteVersions');
-
-        $this->plugin->setProfiles(array('tussi', 'lussi'));
-
-        $file = File::create(array(
-            'profile' => 'xooxer',
-            'resource' => Resource::create(array('mimetype' => 'image/png'))
-        ));
-        $event = new FileEvent($file);
-
-        $this->plugin->onFileDelete($event);
+        $resource = Resource::create();
+        $event = new ResourceEvent($resource);
+        $plugin->expects($this->once())->method('deleteProvidedVersions')->with($resource);
+        $plugin->onResourceDelete($event);
     }
+
 
     /**
      * @test
-     * @group watussi
      */
-    public function onFileDeleteShouldDeleteWhenPluginProvides()
+    public function deleteProvidedVersionsIterates()
     {
         $this->plugin->attachTo($this->filelib);
 
@@ -335,13 +329,8 @@ class AbstractVersionProviderTest extends TestCase
         $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
                      ->will($this->returnValue(array('xooxer', 'lusser')));
 
-        $file = File::create(array(
-            'profile' => 'tussi',
-            'resource' => Resource::create(array('mimetype' => 'image/png'))
-        ));
-        $event = new FileEvent($file);
-
-        $this->plugin->onFileDelete($event);
+        $resource = Resource::create(array('mimetype' => 'image/png'));
+        $this->plugin->deleteProvidedVersions($resource);
     }
 
     private function createMockedTemporaryFiles()

@@ -173,9 +173,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedStorage()
+    public function getMockedStorageAdapter()
     {
-        return $this->getMock('Xi\Filelib\Storage\Storage');
+        return $this->getMock('Xi\Filelib\Storage\Adapter\StorageAdapter');
     }
 
     /**
