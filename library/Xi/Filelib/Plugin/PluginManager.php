@@ -5,9 +5,7 @@ namespace Xi\Filelib\Plugin;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Events;
 
 class PluginManager
