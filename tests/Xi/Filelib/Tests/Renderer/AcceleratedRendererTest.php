@@ -61,7 +61,7 @@ class AcceleratedRendererTest extends RendererTest
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xooxer', ($sharedVersions) ? null : $file)
+            ->with($sharedVersions ? $resource : $file, 'xooxer')
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider('xooxer');
@@ -152,7 +152,7 @@ class AcceleratedRendererTest extends RendererTest
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xooxer', null)
+            ->with($resource, 'xooxer')
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider('xooxer');

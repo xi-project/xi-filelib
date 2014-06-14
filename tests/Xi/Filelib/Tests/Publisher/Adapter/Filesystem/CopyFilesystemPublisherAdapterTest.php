@@ -113,7 +113,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
             $this->storage
                 ->expects($this->once())
                 ->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer', $file)
+                ->with($file, 'xooxer')
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 

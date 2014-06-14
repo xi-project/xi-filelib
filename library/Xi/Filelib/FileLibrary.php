@@ -19,7 +19,6 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Resource\ResourceRepository;
-use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Profile\FileProfile;
@@ -31,6 +30,8 @@ use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
 use Pekkis\Queue\Queue;
 use Xi\Filelib\Command\CommandDataSerializer;
 use Xi\Filelib\Profile\ProfileManager;
+use Xi\Filelib\Storage\Adapter\StorageAdapter;
+use Xi\Filelib\Storage\Storage;
 
 /**
  * File library
@@ -52,7 +53,7 @@ class FileLibrary
     private $backend;
 
     /**
-     * @var Storage
+     * @var StorageAdapter
      */
     private $storage;
 
@@ -102,7 +103,7 @@ class FileLibrary
     private $profileManager;
 
     public function __construct(
-        Storage $storage,
+        StorageAdapter $storageAdapter,
         BackendAdapter $platform,
         EventDispatcherInterface $eventDispatcher = null,
         Commander $commander = null
@@ -115,7 +116,6 @@ class FileLibrary
             $commander = new Commander($this);
         }
 
-        $this->storage = $storage;
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
         $this->profileManager = new ProfileManager($this->eventDispatcher);
@@ -125,6 +125,11 @@ class FileLibrary
             $this->getEventDispatcher(),
             $this->platform
         );
+
+        $this->storage = new Storage(
+            $storageAdapter
+        );
+        $this->storage->attachTo($this);
 
         $this->addProfile(new FileProfile('default'));
     }

@@ -7,23 +7,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib\Storage\Adapter;
 
 use MongoDB;
 use MongoGridFS;
 use MongoGridFSFile;
-use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\Storage\Storable;
 
 /**
  * Stores files in MongoDB's GridFS filesystem
  *
  * @author pekkis
  */
-class GridfsStorage extends AbstractStorage implements Storage
+class GridfsStorageAdapter extends AbstractStorageAdapter
 {
     /**
      * @var MongoDB Mongo reference
@@ -101,9 +100,9 @@ class GridfsStorage extends AbstractStorage implements Storage
     }
 
 
-    public function versionExists(Resource $resource, $version, File $file = null)
+    public function versionExists(Storable $storable, $version)
     {
-        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $filename = $this->getFilenameVersion($storable, $version);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
 
         return (bool) $file;
@@ -127,7 +126,7 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $tmp;
     }
 
-    protected function doStore(Resource $resource, $tempFile)
+    public function store(Resource $resource, $tempFile)
     {
         $filename = $this->getFilename($resource);
         $this->getGridFS()->storeFile(
@@ -142,22 +141,22 @@ class GridfsStorage extends AbstractStorage implements Storage
         );
     }
 
-    protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
+    public function storeVersion(Storable $storable, $version, $tempFile)
     {
-        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $filename = $this->getFilenameVersion($storable, $version);
         $this->getGridFS()->storeFile(
             $tempFile,
             array(
                 'filename' => $filename,
                 'metadata' => array(
-                    'id' => $resource->getId(),
+                    'id' => $storable->getId(),
                     'version' => $version
                 )
             )
         );
     }
 
-    protected function doRetrieve(Resource $resource)
+    public function retrieve(Resource $resource)
     {
         $filename = $this->getFilename($resource);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
@@ -165,23 +164,23 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $this->toTemp($file);
     }
 
-    protected function doRetrieveVersion(Resource $resource, $version, File $file = null)
+    public function retrieveVersion(Storable $storable, $version)
     {
-        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $filename = $this->getFilenameVersion($storable, $version);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
 
         return $this->toTemp($file);
     }
 
-    protected function doDelete(Resource $resource)
+    public function delete(Resource $resource)
     {
         $filename = $this->getFilename($resource);
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    protected function doDeleteVersion(Resource $resource, $version, File $file = null)
+    public function deleteVersion(Storable $storable, $version)
     {
-        $filename = $this->getFilenameVersion($resource, $version, $file);
+        $filename = $this->getFilenameVersion($storable, $version);
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
@@ -190,8 +189,10 @@ class GridfsStorage extends AbstractStorage implements Storage
         return $resource->getId();
     }
 
-    private function getFilenameVersion(Resource $resource, $version, File $file = null)
+    private function getFilenameVersion(Storable $storable, $version)
     {
+        list($resource, $file) = $this->extractResourceAndFileFromStorable($storable);
+
         $path = $resource->getId() . '/' . $version;
         if ($file) {
             $path = '/' . $file->getId();

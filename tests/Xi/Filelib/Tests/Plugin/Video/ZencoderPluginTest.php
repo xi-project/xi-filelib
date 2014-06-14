@@ -230,7 +230,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         );
 
         $filelib = new FileLibrary(
-            $this->getMockedStorage(),
+            $this->getMockedStorageAdapter(),
             $this->getMockedBackendAdapter()
         );
         $filelib->addPlugin($this->plugin);

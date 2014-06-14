@@ -7,17 +7,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Storage;
+namespace Xi\Filelib\Tests\Storage\Adapter;
 
 use MongoClient;
 use MongoDB;
 use MongoConnectionException;
-use Xi\Filelib\Storage\GridfsStorage;
+use Xi\Filelib\Storage\Adapter\GridfsStorageAdapter;
 
 /**
  * @group storage
  */
-class GridFsStorageTest extends TestCase
+class GridFsStorageAdapterTest extends TestCase
 {
     /**
      * @var MongoDB
@@ -37,7 +37,7 @@ class GridFsStorageTest extends TestCase
         }
 
         $this->mongo = $mongo->filelib_tests;
-        $storage = new GridfsStorage($this->mongo, ROOT_TESTS . '/data/temp');
+        $storage = new GridfsStorageAdapter($this->mongo, ROOT_TESTS . '/data/temp');
 
         return $storage;
     }
@@ -56,7 +56,7 @@ class GridFsStorageTest extends TestCase
      */
     public function defaultsShouldProvideSaneStorage()
     {
-        $storage = new GridfsStorage($this->getMockBuilder('MongoDB')->disableOriginalConstructor()->getMock());
+        $storage = new GridfsStorageAdapter($this->getMockBuilder('MongoDB')->disableOriginalConstructor()->getMock());
         $this->assertSame('xi_filelib', $storage->getPrefix());
     }
 

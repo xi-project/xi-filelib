@@ -7,18 +7,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib\Storage\Adapter;
 
-use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\LogicException;
 use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\Storage\Storable;
 
-class MultiStorage implements Storage
+class MultiStorageAdapter implements StorageAdapter
 {
     /**
-     * @var array
+     * @var StorageAdapter[]
      */
     private $storages = array();
 
@@ -27,9 +27,9 @@ class MultiStorage implements Storage
      */
     private $sessionStorageId;
 
-    public function addStorage(Storage $storage)
+    public function addStorage(StorageAdapter $storage)
     {
-        if ($storage instanceof MultiStorage) {
+        if ($storage instanceof MultiStorageAdapter) {
             throw new InvalidArgumentException('MultiStorage cannot contain a MultiStorage');
         }
 
@@ -39,7 +39,7 @@ class MultiStorage implements Storage
     /**
      * Returns an array of inner storages
      *
-     * @return array
+     * @return StorageAdapter[]
      */
     public function getStorages()
     {
@@ -63,7 +63,7 @@ class MultiStorage implements Storage
     /**
      * Returns session storage
      *
-     * @return Storage
+     * @return StorageAdapter
      */
     public function getSessionStorage()
     {
@@ -88,10 +88,10 @@ class MultiStorage implements Storage
         }
     }
 
-    public function storeVersion(Resource $resource, $version, $tempFile, File $file = null)
+    public function storeVersion(Storable $storable, $version, $tempFile)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->storeVersion($resource, $version, $tempFile, $file);
+            $storage->storeVersion($storable, $version, $tempFile);
         }
     }
 
@@ -100,9 +100,9 @@ class MultiStorage implements Storage
         return $this->getSessionStorage()->retrieve($resource);
     }
 
-    public function retrieveVersion(Resource $resource, $version, File $file = null)
+    public function retrieveVersion(Storable $storable, $version)
     {
-        return $this->getSessionStorage()->retrieveVersion($resource, $version, $file);
+        return $this->getSessionStorage()->retrieveVersion($storable, $version);
     }
 
     public function delete(Resource $resource)
@@ -112,10 +112,10 @@ class MultiStorage implements Storage
         }
     }
 
-    public function deleteVersion(Resource $resource, $version, File $file = null)
+    public function deleteVersion(Storable $storable, $version)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->deleteVersion($resource, $version, $file);
+            $storage->deleteVersion($storable, $version);
         }
     }
 
@@ -124,8 +124,8 @@ class MultiStorage implements Storage
         return $this->getSessionStorage()->exists($resource);
     }
 
-    public function versionExists(Resource $resource, $version, File $file = null)
+    public function versionExists(Storable $storable, $version)
     {
-        return $this->getSessionStorage()->versionExists($resource, $version, $file);
+        return $this->getSessionStorage()->versionExists($storable, $version);
     }
 }

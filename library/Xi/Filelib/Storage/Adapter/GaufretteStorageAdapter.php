@@ -7,26 +7,25 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib\Storage\Adapter;
 
-use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Storage\AbstractStorage;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
 use Xi\Filelib\Identifiable;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\LogicException;
 
 use Gaufrette\Filesystem;
+use Xi\Filelib\Storage\Storable;
 
 /**
  * Stores files in a filesystem
  *
  * @author pekkis
  */
-class GaufretteStorage extends AbstractStorage implements Storage
+class GaufretteStorageAdapter extends AbstractStorageAdapter
 {
     /**
      * @var Filesystem
@@ -89,8 +88,10 @@ class GaufretteStorage extends AbstractStorage implements Storage
         return $fileTarget;
     }
 
-    private function getVersionPathName(Resource $resource, $version, File $file = null)
+    private function getVersionPathName(Storable $storable, $version)
     {
+        list($resource, $file) = $this->extractResourceAndFileFromStorable($storable);
+
         $path = $this->getDirectoryId($resource) . '/' . $version;
         if ($file) {
             $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file);
@@ -100,45 +101,45 @@ class GaufretteStorage extends AbstractStorage implements Storage
         return $path;
     }
 
-    protected function doStore(Resource $resource, $tempFile)
+    public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
         $this->filesystem->write($pathName, file_get_contents($tempFile));
     }
 
-    protected function doStoreVersion(Resource $resource, $version, $tempFile, File $file = null)
+    public function storeVersion(Storable $storable, $version, $tempFile)
     {
-        $pathName = $this->getVersionPathName($resource, $version, $file);
+        $pathName = $this->getVersionPathName($storable, $version);
         $this->filesystem->write($pathName, file_get_contents($tempFile));
     }
 
-    protected function doRetrieve(Resource $resource)
+    public function retrieve(Resource $resource)
     {
         $tmp = $this->tempFiles->getTemporaryFilename();
         file_put_contents($tmp, $this->filesystem->get($this->getPathName($resource))->getContent());
         return $tmp;
     }
 
-    protected function doRetrieveVersion(Resource $resource, $version, File $file = null)
+    public function retrieveVersion(Storable $storable, $version)
     {
         $tmp = $this->tempFiles->getTemporaryFilename();
         file_put_contents(
             $tmp,
             $this->filesystem->get(
-                $this->getVersionPathName($resource, $version, $file)
+                $this->getVersionPathName($storable, $version)
             )->getContent()
         );
         return $tmp;
     }
 
-    protected function doDelete(Resource $resource)
+    public function delete(Resource $resource)
     {
         $this->filesystem->delete($this->getPathName($resource));
     }
 
-    protected function doDeleteVersion(Resource $resource, $version, File $file = null)
+    public function deleteVersion(Storable $storable, $version)
     {
-        $this->filesystem->delete($this->getVersionPathName($resource, $version, $file));
+        $this->filesystem->delete($this->getVersionPathName($storable, $version));
     }
 
     public function exists(Resource $resource)
@@ -146,8 +147,8 @@ class GaufretteStorage extends AbstractStorage implements Storage
         return $this->filesystem->has($this->getPathName($resource));
     }
 
-    public function versionExists(Resource $resource, $version, File $file = null)
+    public function versionExists(Storable $storable, $version)
     {
-        return $this->filesystem->has($this->getVersionPathName($resource, $version, $file));
+        return $this->filesystem->has($this->getVersionPathName($storable, $version));
     }
 }

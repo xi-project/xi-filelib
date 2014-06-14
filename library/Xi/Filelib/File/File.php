@@ -14,8 +14,9 @@ use ArrayObject;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
 use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Storage\Storable;
 
-class File implements Identifiable
+class File implements Identifiable, Storable
 {
     const STATUS_RAW = 1;
     const STATUS_COMPLETED = 2;

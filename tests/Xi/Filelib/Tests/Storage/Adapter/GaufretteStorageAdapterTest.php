@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Storage;
+namespace Xi\Filelib\Tests\Storage\Adapter;
 
 use Aws\S3\S3Client;
-use Xi\Filelib\Storage\GaufretteStorage;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\GaufretteStorageAdapter;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Gaufrette\Filesystem;
 
 use Gaufrette\Adapter\Local as LocalAdapter;
@@ -20,7 +20,7 @@ use Gaufrette\Adapter\AwsS3 as AwsAdapter;
 /**
  * @group storage
  */
-class GaufretteStorageTest extends TestCase
+class GaufretteStorageAdapterTest extends TestCase
 {
     /**
      * @return Filesystem
@@ -61,7 +61,7 @@ class GaufretteStorageTest extends TestCase
         $filesystem = $this->getFilesystem();
 
         $dc = new TimeDirectoryIdCalculator();
-        $storage = new GaufretteStorage($filesystem, $dc);
+        $storage = new GaufretteStorageAdapter($filesystem, $dc);
 
         return $storage;
     }

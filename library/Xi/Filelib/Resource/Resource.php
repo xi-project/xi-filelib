@@ -13,11 +13,12 @@ use DateTime;
 use Xi\Filelib\Identifiable;
 use ArrayObject;
 use Xi\Filelib\IdentifiableDataContainer;
+use Xi\Filelib\Storage\Storable;
 
 /**
  * Resource
  */
-class Resource implements Identifiable
+class Resource implements Identifiable, Storable
 {
     /**
      * Key to method mapping for fromArray

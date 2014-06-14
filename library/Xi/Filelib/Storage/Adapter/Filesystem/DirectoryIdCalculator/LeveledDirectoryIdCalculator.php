@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator;
+namespace Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
 use Xi\Filelib\LogicException;
 use Xi\Filelib\InvalidArgumentException;

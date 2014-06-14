@@ -7,31 +7,37 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Storage;
+namespace Xi\Filelib\Tests\Storage\Adapter;
 
-use Xi\Filelib\Storage\MultiStorage;
+use Xi\Filelib\Storage\Adapter\MultiStorageAdapter;
 use Xi\Filelib\Resource\Resource;
 
 /**
  * @group storage
  */
-class MultiStorageTest extends \Xi\Filelib\Tests\TestCase
+class MultiStorageAdapterTest extends \Xi\Filelib\Tests\TestCase
 {
+    /**
+     * @var MultiStorageAdapter
+     */
     protected $storage;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject[]
+     */
     protected $mockStorages = array();
 
     protected $resource;
 
     public function setUp()
     {
-        $mockStorage = $this->getMock('Xi\Filelib\Storage\Storage');
-        $mockStorage2 = $this->getMock('Xi\Filelib\Storage\Storage');
+        $mockStorage = $this->getMockedStorageAdapter();
+        $mockStorage2 = $this->getMockedStorageAdapter();
 
         $this->mockStorages[] = $mockStorage;
         $this->mockStorages[] = $mockStorage2;
 
-        $multiStorage = new MultiStorage();
+        $multiStorage = new MultiStorageAdapter();
         $multiStorage->addStorage($mockStorage);
         $multiStorage->addStorage($mockStorage2);
 
@@ -109,7 +115,7 @@ class MultiStorageTest extends \Xi\Filelib\Tests\TestCase
     {
         $sessionStorage = $this->storage->getSessionStorage();
 
-        $this->assertInstanceOf('\\Xi\\Filelib\\Storage\\Storage', $sessionStorage);
+        $this->assertInstanceOf('Xi\Filelib\Storage\Adapter\StorageAdapter', $sessionStorage);
 
         for ($x = 1; $x <= 10; $x++) {
             $this->assertEquals($sessionStorage, $this->storage->getSessionStorage());
@@ -138,7 +144,7 @@ class MultiStorageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function whenNoStoragesGetSessionStorageShouldThrowException()
     {
-        $storage = new MultiStorage();
+        $storage = new MultiStorageAdapter();
 
         $sessionStorage = $storage->getSessionStorage();
     }
@@ -185,7 +191,7 @@ class MultiStorageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function addStorageShouldThrowExceptionWhenAddingMultiStorage()
     {
-        $this->storage->addStorage(new MultiStorage());
+        $this->storage->addStorage(new MultiStorageAdapter());
     }
 
     /**

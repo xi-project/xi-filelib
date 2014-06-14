@@ -16,6 +16,8 @@ use Xi\Filelib\Plugin\AbstractPlugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
+use Xi\Filelib\Storage\Adapter\StorageAdapter;
+use Xi\Filelib\Storage\Storable;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events;
@@ -44,7 +46,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     protected $isApplicableTo;
 
     /**
-     * @var Storage
+     * @var StorageAdapter
      */
     protected $storage;
 
@@ -83,6 +85,7 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     public function createProvidedVersions(File $file)
     {
         $tmps = $this->createTemporaryVersions($file);
+
         $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
         foreach (array_keys($tmps) as $version) {
             $versionable->addVersion($version);
@@ -90,10 +93,9 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
 
         foreach ($tmps as $version => $tmp) {
             $this->storage->storeVersion(
-                $file->getResource(),
+                $versionable,
                 $version,
-                $tmp,
-                $this->areSharedVersionsAllowed() ? null : $file
+                $tmp
             );
             unlink($tmp);
         }
@@ -119,52 +121,41 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     {
         $file = $event->getFile();
 
-        if (!$this->belongsToProfile($file->getProfile()) || !$this->isApplicableTo($file) || $this->areProvidedVersionsCreated($file)) {
+        if (!$this->belongsToProfile($file->getProfile())
+            || !$this->isApplicableTo($file)
+            || $this->areProvidedVersionsCreated($file)) {
             return;
         }
 
         $this->createProvidedVersions($file);
     }
 
+    /**
+     * @param FileEvent $event
+     */
     public function onFileDelete(FileEvent $event)
     {
-        $file = $event->getFile();
-
-        if (!$this->belongsToProfile($file->getProfile())) {
-            return;
-        }
-
-        if (!$this->isApplicableTo($file)) {
-            return;
-        }
-
-        $this->deleteProvidedVersions($file);
+        $this->deleteProvidedVersions($event->getFile());
     }
 
     /**
-     * Deletes resource versions
-     *
      * @param ResourceEvent $event
      */
     public function onResourceDelete(ResourceEvent $event)
     {
-        foreach ($this->getProvidedVersions() as $version) {
-            if ($this->storage->versionExists($event->getResource(), $version)) {
-                $this->storage->deleteVersion($event->getResource(), $version);
-            }
-        }
+        $this->deleteProvidedVersions($event->getResource());
     }
 
     /**
-     * Deletes file versions
+     * Deletes storable versions
      *
      * @param File $file
      */
-    public function deleteProvidedVersions(File $file)
+    public function deleteProvidedVersions(Storable $storable)
     {
         foreach ($this->getProvidedVersions() as $version) {
-            if ($this->storage->versionExists($file->getResource(), $version, $file)) {
-                $this->storage->deleteVersion($file->getResource(), $version, $file);
+            if ($this->storage->versionExists($storable, $version)) {
+                $this->storage->deleteVersion($storable, $version);
             }
         }
     }
@@ -196,11 +187,11 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
      */
     public function getMimeType(File $file, $version)
     {
-        // @todo: optimize (when doing the S3 would be wise)
+        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
+
         $retrieved = $this->storage->retrieveVersion(
-            $file->getResource(),
-            $version,
-            $this->areSharedVersionsAllowed() ? null : $file
+            $versionable,
+            $version
         );
 
         $fileObj = new FileObject($retrieved);

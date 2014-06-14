@@ -28,7 +28,7 @@ class OriginalVersionPlugin extends AbstractVersionProvider
     private $identifier;
 
     public function __construct(
-        $identifier
+        $identifier = 'original'
     ) {
         parent::__construct(
             function (File $file) {

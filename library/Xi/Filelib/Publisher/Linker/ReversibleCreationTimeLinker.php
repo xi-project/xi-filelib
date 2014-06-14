@@ -54,5 +54,4 @@ class ReversibleCreationTimeLinker extends AbstractCreationTimeLinker implements
         $file = $this->fileRepository->findByUuid($uuid);
         return array($file, $version);
     }
-
 }

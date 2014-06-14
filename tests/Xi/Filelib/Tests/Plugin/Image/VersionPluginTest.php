@@ -38,7 +38,7 @@ class VersionPluginTest extends TestCase
     {
         parent::setUp();
 
-        $this->storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $this->storage = $this->getMockedStorage();
 
         $this->plugin = new VersionPlugin(
             'xooxer',
@@ -72,7 +72,7 @@ class VersionPluginTest extends TestCase
     public function pluginShouldProvideForImage()
     {
         $filelib = new FileLibrary(
-            $this->getMockedStorage(),
+            $this->getMockedStorageAdapter(),
             $this->getMockedBackendAdapter()
         );
         $filelib->addPlugin($this->plugin);
@@ -203,9 +203,12 @@ class VersionPluginTest extends TestCase
     public function getExtensionShouldDelegateToParentToAutodetectExtension()
     {
         $storage = $this->getMockedStorage();
-        $filelib = new FileLibrary(
-            $storage,
-            $this->getMockedBackendAdapter()
+
+        $filelib = $this->getMockedFilelib(
+            null,
+            array(
+                'storage' => $storage
+            )
         );
 
         $plugin = new VersionPlugin('xooxoo', array(), null);
@@ -216,7 +219,7 @@ class VersionPluginTest extends TestCase
 
         $storage->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xooxoo', null)
+            ->with($resource, 'xooxoo')
             ->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
         $ret = $plugin->getExtension($file, 'xooxoo');
