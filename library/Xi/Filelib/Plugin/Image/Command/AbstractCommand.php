@@ -8,6 +8,7 @@
  */
 
 namespace Xi\Filelib\Plugin\Image\Command;
+
 use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 
 /**

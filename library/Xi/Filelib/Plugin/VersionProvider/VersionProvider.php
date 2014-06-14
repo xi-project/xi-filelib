@@ -47,6 +47,11 @@ interface VersionProvider extends Plugin
      */
     public function createProvidedVersions(File $file);
 
+    /**
+     * Deletes all provided versions of a storable
+     *
+     * @param Storable $storable
+     */
     public function deleteProvidedVersions(Storable $storable);
 
     /**
@@ -72,5 +77,4 @@ interface VersionProvider extends Plugin
      * @return bool
      */
     public function canBeLazy();
-
 }

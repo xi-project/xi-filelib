@@ -121,7 +121,9 @@ abstract class AbstractVersionProvider extends AbstractPlugin implements Version
     {
         $file = $event->getFile();
 
-        if (!$this->belongsToProfile($file->getProfile()) || !$this->isApplicableTo($file) || $this->areProvidedVersionsCreated($file)) {
+        if (!$this->belongsToProfile($file->getProfile())
+            || !$this->isApplicableTo($file)
+            || $this->areProvidedVersionsCreated($file)) {
             return;
         }
 
