@@ -101,26 +101,26 @@ class GaufretteStorageAdapter extends AbstractStorageAdapter
         return $path;
     }
 
-    protected function doStore(Resource $resource, $tempFile)
+    public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
         $this->filesystem->write($pathName, file_get_contents($tempFile));
     }
 
-    protected function doStoreVersion(Storable $storable, $version, $tempFile)
+    public function storeVersion(Storable $storable, $version, $tempFile)
     {
         $pathName = $this->getVersionPathName($storable, $version);
         $this->filesystem->write($pathName, file_get_contents($tempFile));
     }
 
-    protected function doRetrieve(Resource $resource)
+    public function retrieve(Resource $resource)
     {
         $tmp = $this->tempFiles->getTemporaryFilename();
         file_put_contents($tmp, $this->filesystem->get($this->getPathName($resource))->getContent());
         return $tmp;
     }
 
-    protected function doRetrieveVersion(Storable $storable, $version)
+    public function retrieveVersion(Storable $storable, $version)
     {
         $tmp = $this->tempFiles->getTemporaryFilename();
         file_put_contents(
@@ -132,12 +132,12 @@ class GaufretteStorageAdapter extends AbstractStorageAdapter
         return $tmp;
     }
 
-    protected function doDelete(Resource $resource)
+    public function delete(Resource $resource)
     {
         $this->filesystem->delete($this->getPathName($resource));
     }
 
-    protected function doDeleteVersion(Storable $storable, $version)
+    public function deleteVersion(Storable $storable, $version)
     {
         $this->filesystem->delete($this->getVersionPathName($storable, $version));
     }

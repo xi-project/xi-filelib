@@ -51,7 +51,7 @@ class AbstractVersionProviderTest extends TestCase
     {
         parent::setUp();
 
-        $this->storage = $this->getMockedStorageAdapter();
+        $this->storage = $this->getMockedStorage();
 
         $this->pm = $this->getMockedProfileManager(array('tussi', 'lussi'));
 

@@ -77,15 +77,6 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function deletingUnexistingResourceShouldThrowException()
-    {
-        $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
-        $this->storage->delete($this->resource);
-    }
-
-    /**
-     * @test
-     */
     public function storeAndRetrieveAndDeleteShouldWorkInHarmony()
     {
         $this->assertFalse($this->storage->exists($this->resource));

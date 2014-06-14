@@ -14,6 +14,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
     protected $storage;
 
+    protected $adapter;
+
     protected $version;
 
     protected $fileRepository;
@@ -73,13 +75,13 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->versionProvider = $versionProvider;
         $this->version = 'xooxer';
 
-        $storage = $this->getMockedStorageAdapter();
-        $storage
+        $adapter = $this->getMockedStorageAdapter();
+        $adapter
             ->expects($this->any())
             ->method('getRoot')
             ->will($this->returnValue(ROOT_TESTS . '/data/publisher/private'));
 
-        $storage
+        $adapter
             ->expects($this->any())
             ->method('getDirectoryId')
             ->will(
@@ -102,9 +104,11 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
                 )
             );
 
-        $this->storage = $storage;
+        $this->adapter = $adapter;
 
-        $this->filelib = $this->getMockedFilelib(null, null, null, $storage);
+        $this->storage = $this->getMockedStorage($this->adapter);
+
+        $this->filelib = $this->getMockedFilelib(null, null, null, $this->storage);
 
         $plinker = $this->getMockedLinker();
 

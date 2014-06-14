@@ -6,8 +6,9 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 ## From version 0.11.x to version 0.12.x
 
 * Data is backwards compatible. Hoorah!
-* Refactored storage subcomponent. If you don't delve deep in the secrets of Filebanksta in your own code, you should
-  notice nothing. If you do, take the brown pill and see how deep the refactorings go.
+* Refactored storage subcomponent.
+    * Storages are now named StorageAdapters, wrapped by a common Storage (same interface as before)
+    * Via storage events it is now possible to hook into the storing of files (to crypt/decrypt them, for example)
 * FILE_BEFORE_CREATE event (FileUploadEvent) is now named FILE_UPLOAD.
 * FILE_BEFORE_CREATE is now a _new_ event (FileEvent) triggered before creation of files.
 * Filelib's addPlugin() has an optional $name parameter. A name will be generated for you if you do not provide one.

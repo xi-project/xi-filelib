@@ -27,10 +27,10 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
     /**
      * @test
      */
-    public function attachToShouldFailWithNonFilesystemStorage()
+    public function attachToFailsWithNonFilesystemStorage()
     {
         $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
-        $storage = $this->getMock('Xi\Filelib\Storage\Adapter\StorageAdapter');
+        $storage = $this->getMockedStorage();
         $filelib = $this->getMockedFilelib(null, null, null, $storage);
         $publisher = new SymlinkFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
 
@@ -94,8 +94,10 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         $versionProviderAllowsSharedResources
     ) {
 
-        $storage = $this->getMockedStorageAdapter();
-        $storage->expects($this->any())->method('getRoot')->will($this->returnValue('/tussin/lussu'));
+        $adapter = $this->getMockedStorageAdapter();
+        $adapter->expects($this->any())->method('getRoot')->will($this->returnValue('/tussin/lussu'));
+        $storage = $this->getMockedStorage($adapter);
+
         $filelib = $this->getMockedFilelib(null, null, null, $storage);
 
 

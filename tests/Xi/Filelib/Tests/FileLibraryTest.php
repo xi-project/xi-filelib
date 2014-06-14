@@ -47,7 +47,7 @@ class FileLibraryTest extends TestCase
     public function storageGetterShouldWork()
     {
         $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
-        $this->assertInstanceOf('Xi\Filelib\Storage\Adapter\StorageAdapter', $filelib->getStorage());
+        $this->assertInstanceOf('Xi\Filelib\Storage\Storage', $filelib->getStorage());
     }
 
     /**

@@ -31,6 +31,7 @@ use Pekkis\Queue\Queue;
 use Xi\Filelib\Command\CommandDataSerializer;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
+use Xi\Filelib\Storage\Storage;
 
 /**
  * File library
@@ -102,7 +103,7 @@ class FileLibrary
     private $profileManager;
 
     public function __construct(
-        StorageAdapter $storage,
+        StorageAdapter $storageAdapter,
         BackendAdapter $platform,
         EventDispatcherInterface $eventDispatcher = null,
         Commander $commander = null
@@ -115,7 +116,6 @@ class FileLibrary
             $commander = new Commander($this);
         }
 
-        $this->storage = $storage;
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
         $this->profileManager = new ProfileManager($this->eventDispatcher);
@@ -125,6 +125,11 @@ class FileLibrary
             $this->getEventDispatcher(),
             $this->platform
         );
+
+        $this->storage = new Storage(
+            $storageAdapter
+        );
+        $this->storage->attachTo($this);
 
         $this->addProfile(new FileProfile('default'));
     }
@@ -224,7 +229,7 @@ class FileLibrary
     /**
      * Returns storage
      *
-     * @return StorageAdapter
+     * @return Storage
      */
     public function getStorage()
     {

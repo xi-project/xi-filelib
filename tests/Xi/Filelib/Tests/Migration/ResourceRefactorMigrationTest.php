@@ -44,7 +44,7 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $foop = $this->getMockedFolderRepository();
         $fiop = $this->getMockedFileRepository();
         $resource = $this->getMockedResource();
-        $storage = $this->getMockedStorageAdapter();
+        $storage = $this->getMockedStorage();
         $backend = $this->getMockedBackend();
         $profile = $this->getMockedFileProfile();
         $pm = $this->getMockedProfileManager();

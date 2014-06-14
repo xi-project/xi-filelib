@@ -126,7 +126,7 @@ class GridfsStorageAdapter extends AbstractStorageAdapter
         return $tmp;
     }
 
-    protected function doStore(Resource $resource, $tempFile)
+    public function store(Resource $resource, $tempFile)
     {
         $filename = $this->getFilename($resource);
         $this->getGridFS()->storeFile(
@@ -141,7 +141,7 @@ class GridfsStorageAdapter extends AbstractStorageAdapter
         );
     }
 
-    protected function doStoreVersion(Storable $storable, $version, $tempFile)
+    public function storeVersion(Storable $storable, $version, $tempFile)
     {
         $filename = $this->getFilenameVersion($storable, $version);
         $this->getGridFS()->storeFile(
@@ -156,7 +156,7 @@ class GridfsStorageAdapter extends AbstractStorageAdapter
         );
     }
 
-    protected function doRetrieve(Resource $resource)
+    public function retrieve(Resource $resource)
     {
         $filename = $this->getFilename($resource);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
@@ -164,7 +164,7 @@ class GridfsStorageAdapter extends AbstractStorageAdapter
         return $this->toTemp($file);
     }
 
-    protected function doRetrieveVersion(Storable $storable, $version)
+    public function retrieveVersion(Storable $storable, $version)
     {
         $filename = $this->getFilenameVersion($storable, $version);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
@@ -172,13 +172,13 @@ class GridfsStorageAdapter extends AbstractStorageAdapter
         return $this->toTemp($file);
     }
 
-    protected function doDelete(Resource $resource)
+    public function delete(Resource $resource)
     {
         $filename = $this->getFilename($resource);
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    protected function doDeleteVersion(Storable $storable, $version)
+    public function deleteVersion(Storable $storable, $version)
     {
         $filename = $this->getFilenameVersion($storable, $version);
         $this->getGridFS()->remove(array('filename' => $filename));

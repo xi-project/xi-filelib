@@ -79,7 +79,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $this->storage = $this->getMockedStorageAdapter();
+        $this->storage = $this->getMockedStorage();
 
         $this->amazonService = $this->getMockedAwsService();
 

@@ -73,7 +73,7 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
             ->method('createFile')
             ->with($this->isInstanceOf('Xi\Filelib\File\File'));
 
-        $storage = $this->getMockedStorageAdapter();
+        $storage = $this->getMockedStorage();
 
         $op = $this->getMockedFileRepository();
         $pm = $this->getMockedProfileManager(array('versioned'));

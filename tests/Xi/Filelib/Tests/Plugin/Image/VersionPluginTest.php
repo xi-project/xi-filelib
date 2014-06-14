@@ -38,7 +38,7 @@ class VersionPluginTest extends TestCase
     {
         parent::setUp();
 
-        $this->storage = $this->getMockedStorageAdapter();
+        $this->storage = $this->getMockedStorage();
 
         $this->plugin = new VersionPlugin(
             'xooxer',
@@ -202,10 +202,13 @@ class VersionPluginTest extends TestCase
      */
     public function getExtensionShouldDelegateToParentToAutodetectExtension()
     {
-        $storage = $this->getMockedStorageAdapter();
-        $filelib = new FileLibrary(
-            $storage,
-            $this->getMockedBackendAdapter()
+        $storage = $this->getMockedStorage();
+
+        $filelib = $this->getMockedFilelib(
+            null,
+            array(
+                'storage' => $storage
+            )
         );
 
         $plugin = new VersionPlugin('xooxoo', array(), null);

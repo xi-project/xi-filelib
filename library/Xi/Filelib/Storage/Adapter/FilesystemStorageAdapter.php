@@ -133,7 +133,7 @@ class FilesystemStorageAdapter extends AbstractStorageAdapter
         return $path;
     }
 
-    protected function doStore(Resource $resource, $tempFile)
+    public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
 
@@ -145,7 +145,7 @@ class FilesystemStorageAdapter extends AbstractStorageAdapter
         chmod($pathName, $this->getFilePermission());
     }
 
-    protected function doStoreVersion(Storable $storable, $version, $tempFile)
+    public function storeVersion(Storable $storable, $version, $tempFile)
     {
         $pathName = $this->getVersionPathName($storable, $version);
 
@@ -156,23 +156,23 @@ class FilesystemStorageAdapter extends AbstractStorageAdapter
         copy($tempFile, $pathName);
     }
 
-    protected function doRetrieve(Resource $resource)
+    public function retrieve(Resource $resource)
     {
         return $this->getPathName($resource);
     }
 
-    protected function doRetrieveVersion(Storable $storable, $version)
+    public function retrieveVersion(Storable $storable, $version)
     {
         return $this->getVersionPathName($storable, $version);
     }
 
-    protected function doDelete(Resource $resource)
+    public function delete(Resource $resource)
     {
         $path = $this->getPathName($resource);
         unlink($path);
     }
 
-    protected function doDeleteVersion(Storable $storable, $version)
+    public function deleteVersion(Storable $storable, $version)
     {
         $path = $this->getVersionPathName($storable, $version);
         unlink($path);
