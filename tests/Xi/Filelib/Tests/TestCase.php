@@ -3,7 +3,6 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Profile\FileProfile;
-use Xi\Filelib\FileLibrary;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
@@ -428,11 +427,8 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         $versionProvider = $this
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
+            ->disableOriginalConstructor()
             ->getMock();
-
-        $versionProvider
-            ->expects($this->any())->method('getIdentifier')
-            ->will($this->returnValue($identifier));
 
         $versionProvider
             ->expects($this->any())

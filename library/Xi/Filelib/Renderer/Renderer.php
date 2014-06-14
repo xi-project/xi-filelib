@@ -7,6 +7,8 @@ use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Storage\Storage;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
@@ -96,6 +98,7 @@ class Renderer
             $response->setHeader('Content-disposition', "attachment; filename={$file->getName()}");
         }
 
+
         $retrieved = new FileObject($this->retrieve($file, $version));
         $response->setHeader('Content-Type', $retrieved->getMimetype());
 
@@ -120,8 +123,16 @@ class Renderer
 
     private function retrieve(File $file, $version)
     {
+        /** @var VersionProvider $provider */
         $provider = $this->profiles->getVersionProvider($file, $version);
         $versionable = $provider->areSharedVersionsAllowed() ? $file->getResource() : $file;
+
+        if ($provider instanceof LazyVersionProvider) {
+            if (!$versionable->hasVersion($version)) {
+                $provider->createProvidedVersions($file);
+            }
+        }
+
         return $this->storage->retrieveVersion($versionable, $version);
     }
 

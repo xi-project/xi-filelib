@@ -26,7 +26,8 @@
         "rhumsaa/uuid": "~2.3",
         "pekkis/queue": "0.4.*",
         "cocur/slugify": "v0.5",
-        "xi/transliterator": "0.5.*"
+        "xi/transliterator": "0.5.*",
+        "xi/collections": "0.3.*"
     },
 
     "require-dev": {

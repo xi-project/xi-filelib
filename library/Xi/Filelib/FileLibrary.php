@@ -25,7 +25,6 @@ use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Profile\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
 use Pekkis\Queue\Queue;
@@ -54,7 +53,7 @@ class FileLibrary
     private $backend;
 
     /**
-     * @var StorageAdapter
+     * @var Storage
      */
     private $storage;
 

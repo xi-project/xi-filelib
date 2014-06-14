@@ -39,13 +39,4 @@ class OriginalVersionPluginTest extends TestCase
         $plugin = new OriginalVersionPlugin();
         $this->assertTrue($plugin->isSharedResourceAllowed());
     }
-
-    /**
-     * @test
-     */
-    public function canBeLazy()
-    {
-        $plugin = new OriginalVersionPlugin();
-        $this->assertTrue($plugin->canBeLazy());
-    }
 }

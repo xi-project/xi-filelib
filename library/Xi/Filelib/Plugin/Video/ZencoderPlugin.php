@@ -15,13 +15,12 @@ use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\RuntimeException;
 use Aws\S3\S3Client;
 
-class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
+class ZencoderPlugin extends VersionProvider
 {
     /**
      * @var ZencoderService
