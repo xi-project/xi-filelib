@@ -93,7 +93,7 @@ class AbstractFilesystemPublisherAdapterTest extends TestCase
             ROOT_TESTS . '/data/publisher/public', "777", "666", 'http://diktaattoriporssi.com'
         );
 
-        $versionProvider = $this->getMockedVersionProvider('xooxer');
+        $versionProvider = $this->getMockedVersionProvider();
 
         $this->assertEquals(
             'http://diktaattoriporssi.com/tussin/lussun/tussi-xooxer.jpg',

@@ -55,7 +55,7 @@ class ProfileManagerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getVersionProviderShouldDelegateToProfile()
     {
-        $vp = $this->getMockedVersionProvider('lux');
+        $vp = $this->getMockedVersionProvider();
         $file = File::create(array('profile' => 'meisterlus'));
 
         $profile = $this->getMockedFileProfile('meisterlus');

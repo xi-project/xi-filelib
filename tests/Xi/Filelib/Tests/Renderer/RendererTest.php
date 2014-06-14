@@ -185,7 +185,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
             ->with(($sharedVersions) ? $resource : $file, 'xooxer')
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
-        $vp = $this->getMockedVersionProvider('xooxer');
+        $vp = $this->getMockedVersionProvider();
         $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue($sharedVersions));
 
         $this->pm

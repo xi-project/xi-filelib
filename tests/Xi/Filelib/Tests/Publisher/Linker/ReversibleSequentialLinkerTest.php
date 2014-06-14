@@ -20,10 +20,7 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
 {
     public function setUp()
     {
-        $vp = $this->getMock('\Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        $vp->expects($this->any())
-             ->method('getIdentifier')
-             ->will($this->returnValue('xoo'));
+        $vp = $this->getMockedVersionProvider();
 
         $vp->expects($this->any())
              ->method('getExtension')

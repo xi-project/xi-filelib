@@ -64,7 +64,7 @@ class AcceleratedRendererTest extends RendererTest
             ->with($sharedVersions ? $resource : $file, 'xooxer')
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
-        $vp = $this->getMockedVersionProvider('xooxer');
+        $vp = $this->getMockedVersionProvider();
         $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue($sharedVersions));
 
         $this->pm
@@ -155,7 +155,7 @@ class AcceleratedRendererTest extends RendererTest
             ->with($resource, 'xooxer')
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
-        $vp = $this->getMockedVersionProvider('xooxer');
+        $vp = $this->getMockedVersionProvider();
         $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue(true));
 
         $this->pm

@@ -100,7 +100,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create();
 
-        $plugin1 = $this->getMockedVersionProvider('lussi', array('tenhunen', 'imaisee'));
+        $plugin1 = $this->getMockedVersionProvider(array('tenhunen', 'imaisee'));
         $plugin1
             ->expects($this->atLeastOnce())
             ->method('isApplicableTo')
@@ -119,7 +119,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function addFileVersionShouldAddFileVersion()
     {
-        $versionProvider = $this->getMockForAbstractClass('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
+        $versionProvider = $this->getMockedVersionProvider();
 
         $this->assertSame(
             $this->fileProfile,
@@ -217,18 +217,15 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
     private function addMockedVersionsToFileProfile()
     {
-        $imageProvider = $this->getMock('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        $imageProvider->expects($this->any())->method('getProvidedVersions')->will($this->returnValue(array('imagenizer')));
+        $imageProvider = $this->getMockedVersionProvider(array('imagenizer'));
         $imageProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(true));
         $imageProvider->expects($this->any())->method('isApplicableTo')->will($this->returnCallback(function(File $file) { return $file->getMimetype() == 'image/png'; }));
 
-        $videoProvider = $this->getMock('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        $videoProvider->expects($this->any())->method('getProvidedVersions')->will($this->returnValue(array('videonizer')));
+        $videoProvider = $this->getMockedVersionProvider(array('videonizer'));
         $videoProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(false));
         $videoProvider->expects($this->any())->method('isApplicableTo')->will($this->returnCallback(function(File $file) { return $file->getMimetype() == 'video/lus'; }));
 
-        $globalProvider = $this->getMock('Xi\Filelib\Plugin\VersionProvider\VersionProvider');
-        $globalProvider->expects($this->any())->method('getProvidedVersions')->will($this->returnValue(array('globalizer')));
+        $globalProvider = $this->getMockedVersionProvider(array('globalizer'));
         $globalProvider->expects($this->any())->method('isSharedResourceAllowed')->will($this->returnValue(true));
         $globalProvider->expects($this->any())->method('isApplicableTo')->will($this->returnCallback(function(File $file) { return true; }));
 
