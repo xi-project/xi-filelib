@@ -18,6 +18,7 @@ use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\Plugin\PluginManager;
 use Xi\Filelib\Resource\ResourceRepository;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Plugin\Plugin;
@@ -88,11 +89,6 @@ class FileLibrary
     private $platform;
 
     /**
-     * @var array
-     */
-    private $plugins = array();
-
-    /**
      * @var Commander
      */
     private $commander;
@@ -101,6 +97,11 @@ class FileLibrary
      * @var ProfileManager
      */
     private $profileManager;
+
+    /**
+     * @var PluginManager
+     */
+    private $pluginManager;
 
     public function __construct(
         StorageAdapter $storageAdapter,
@@ -119,6 +120,7 @@ class FileLibrary
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
         $this->profileManager = new ProfileManager($this->eventDispatcher);
+        $this->pluginManager = new PluginManager($this->eventDispatcher);
         $this->commander = $commander;
 
         $this->backend = new Backend(
@@ -148,6 +150,14 @@ class FileLibrary
     public function getProfileManager()
     {
         return $this->profileManager;
+    }
+
+    /**
+     * @return PluginManager
+     */
+    public function getPluginManager()
+    {
+        return $this->pluginManager;
     }
 
     /**
@@ -276,33 +286,15 @@ class FileLibrary
     }
 
     /**
-     * Adds a plugin
-     *
-     * @param  Plugin      $plugin
+     * @param Plugin $plugin
+     * @param array $profiles Profiles to add to, empty array to add to all profiles
+     * @param string $name
      * @return FileLibrary
-     *
      */
-    public function addPlugin(Plugin $plugin, $profiles = array())
+    public function addPlugin(Plugin $plugin, $profiles = array(), $name = null)
     {
-        $this->plugins[] = $plugin;
-
-        if (!$profiles) {
-            $resolverFunc = function ($profile) {
-                return true;
-            };
-        } else {
-            $resolverFunc = function ($profile) use ($profiles) {
-                return (bool) in_array($profile, $profiles);
-            };
-        }
-
-        $plugin->setBelongsToProfileResolver($resolverFunc);
         $plugin->attachTo($this);
-        $this->getEventDispatcher()->addSubscriber($plugin);
-
-        $event = new PluginEvent($plugin);
-        $this->getEventDispatcher()->dispatch(Events::PLUGIN_AFTER_ADD, $event);
-
+        $this->pluginManager->addPlugin($plugin, $profiles, $name);
         return $this;
     }
 

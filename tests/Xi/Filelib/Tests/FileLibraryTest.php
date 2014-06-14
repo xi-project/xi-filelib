@@ -5,6 +5,7 @@ namespace Xi\Filelib\Tests;
 use Xi\Filelib\Authorization\AuthorizationPlugin;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
 
@@ -227,44 +228,16 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function addPluginShouldAddToAllProfilesIfNoProfilesAreProvided()
+    public function addPluginDelegates()
     {
         $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
+        $plugin = new RandomizeNamePlugin();
 
-        $plugin = new AuthorizationPlugin($this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter'));
+        $this->assertSame($filelib, $filelib->addPlugin($plugin, array(), 'lusso'));
 
-        $filelib->addPlugin($plugin);
-
-        $this->assertContains($plugin, $filelib->getProfile('default')->getPlugins());
-
-        $filelib->addProfile(new FileProfile('sucklee'));
-
-        $this->assertContains($plugin, $filelib->getProfile('sucklee')->getPlugins());
-
-        $this->assertTrue($plugin->belongsToProfile('sucklee'));
-        $this->assertTrue($plugin->belongsToProfile('suckler'));
+        $this->assertCount(1, $filelib->getPluginManager()->getPlugins());
     }
 
-    /**
-     * @test
-     */
-    public function addPluginShouldAddToOnlyProfilesProvided()
-    {
-        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
-
-        $plugin = new AuthorizationPlugin($this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter'));
-
-        $filelib->addPlugin($plugin, array('sucklee', 'ducklee'));
-
-        $this->assertNotContains($plugin, $filelib->getProfile('default')->getPlugins());
-
-        $filelib->addProfile(new FileProfile('sucklee'));
-
-        $this->assertContains($plugin, $filelib->getProfile('sucklee')->getPlugins());
-
-        $this->assertTrue($plugin->belongsToProfile('sucklee'));
-        $this->assertFalse($plugin->belongsToProfile('suckler'));
-    }
 
     /**
      * @test
