@@ -50,14 +50,6 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
-    public function canBeLazy()
-    {
-        $this->assertTrue($this->plugin->canBeLazy());
-    }
-
-    /**
-     * @test
-     */
     public function classExtendsAbstractPlugin()
     {
         $this->assertArrayHasKey(

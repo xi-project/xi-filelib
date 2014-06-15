@@ -1,7 +1,15 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Plugin;
 
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\File\File;
@@ -26,11 +34,11 @@ class PluginManager
     }
 
     /**
-     * @return Plugin[]
+     * @return ArrayCollection
      */
     public function getPlugins()
     {
-        return $this->plugins;
+        return ArrayCollection::create($this->plugins);
     }
 
     /**

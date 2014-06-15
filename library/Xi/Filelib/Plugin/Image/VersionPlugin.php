@@ -11,13 +11,13 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
+use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\FileLibrary;
 
 /**
  * Versions an image
  */
-class VersionPlugin extends AbstractVersionProvider
+class VersionPlugin extends LazyVersionProvider
 {
     /**
      * @var ImageMagickHelper
@@ -33,11 +33,6 @@ class VersionPlugin extends AbstractVersionProvider
      * @var string
      */
     protected $tempDir;
-
-    /**
-     * @var bool
-     */
-    protected $canBeLazy = true;
 
     /**
      * @var string

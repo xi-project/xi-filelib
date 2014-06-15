@@ -404,7 +404,7 @@ class JsonBackendAdapter implements BackendAdapter
 
             $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
 
-            $resource = $this->findByIds($request)->getResult()->current();
+            $resource = $this->findByIds($request)->getResult()->first();
 
             $ret->append(
                 File::create(

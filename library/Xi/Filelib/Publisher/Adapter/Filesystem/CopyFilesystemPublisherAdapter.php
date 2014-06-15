@@ -12,10 +12,10 @@ namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Storage\Storage;
 
 /**
  * Publishes files in a filesystem by retrieving them from storage and creating a copy
@@ -26,7 +26,7 @@ use Xi\Filelib\FileLibrary;
 class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter implements PublisherAdapter
 {
     /**
-     * @var StorageAdapter
+     * @var Storage
      */
     private $storage;
 

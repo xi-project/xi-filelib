@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Backend;
 
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\Backend\IdentityMap\IdentityMap;
@@ -20,9 +21,6 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Filelib\Event\ResourceEvent;
-use ArrayIterator;
-use Xi\Filelib\Events;
 
 class Backend
 {
@@ -113,7 +111,7 @@ class Backend
      * Finds objects via finder
      *
      * @param  Finder        $finder
-     * @return ArrayIterator
+     * @return ArrayCollection
      */
     public function findByFinder(Finder $finder)
     {
@@ -132,14 +130,14 @@ class Backend
      *
      * @param  mixed              $id
      * @param  string             $className
-     * @return Identifiable|false
+     * @return Identifiable
      */
     public function findById($id, $className)
     {
         $request = new FindByIdsRequest($id, $className, $this->eventDispatcher);
         $request->resolve($this->getResolvers());
         $this->identityMap->addMany($request->getResult());
-        return $request->getResult()->current();
+        return $request->getResult()->first();
     }
 
     /**

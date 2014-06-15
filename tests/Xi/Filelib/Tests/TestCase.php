@@ -3,7 +3,6 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Profile\FileProfile;
-use Xi\Filelib\FileLibrary;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
@@ -424,15 +423,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedVersionProvider($identifier, $versions = array())
+    public function getMockedVersionProvider($versions = array(), $lazy = false)
     {
-        $versionProvider = $this
-            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
-            ->getMock();
+        $class = $lazy ? 'Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider'
+            : 'Xi\Filelib\Plugin\VersionProvider\VersionProvider';
 
-        $versionProvider
-            ->expects($this->any())->method('getIdentifier')
-            ->will($this->returnValue($identifier));
+        $versionProvider = $this
+            ->getMockBuilder($class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $versionProvider
             ->expects($this->any())

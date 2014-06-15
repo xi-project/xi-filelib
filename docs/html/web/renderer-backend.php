@@ -6,7 +6,6 @@ require_once __DIR__ . '/../renderer-common.php';
 use Xi\Filelib\Renderer\AcceleratedRenderer;
 use Xi\Filelib\Renderer\Adapter\SymfonyRendererAdapter;
 use Symfony\Component\HttpFoundation\Request;
-use Xi\Filelib\Renderer\Adapter\SimpleRendererAdapter;
 
 // Set this to true to enable acceleration
 $enableAcceleration = false;

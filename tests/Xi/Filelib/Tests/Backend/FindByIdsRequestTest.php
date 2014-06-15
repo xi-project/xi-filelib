@@ -6,6 +6,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Events;
+use Xi\Collections\Collection\ArrayCollection;
 
 class FindByIdsRequestTest extends TestCase
 {
@@ -68,9 +69,9 @@ class FindByIdsRequestTest extends TestCase
 
         $result = $request->getResult();
 
-        $this->assertInstanceOf('\ArrayIterator', $result);
+        $this->assertInstanceOf('Xi\Collections\Collection\ArrayCollection', $result);
         $this->assertCount(1, $result);
-        $this->assertSame($resource, $result->current());
+        $this->assertSame($resource, $result->first());
     }
 
     /**
@@ -98,7 +99,7 @@ class FindByIdsRequestTest extends TestCase
         $ed = $this->getMockedEventDispatcher();
         $request = new FindByIdsRequest(array(1, 2, 3), 'Xi\Filelib\Resource\Resource', $ed);
 
-        $iter = new \ArrayIterator(
+        $iter = ArrayCollection::create(
             array(
                 Resource::create(array('id' => 1)),
                 Resource::create(array('id' => 3)),

@@ -15,7 +15,6 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Backend\Finder\Finder;
-use ArrayIterator;
 use Xi\Filelib\Backend\FindByIdsRequest;
 
 /**

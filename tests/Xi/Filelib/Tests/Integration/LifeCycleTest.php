@@ -33,7 +33,7 @@ class LifeCycleTest extends TestCase
 
         $allFiles = $this->filelib->getFileRepository()->findAll();
         $this->assertCount(1, $allFiles);
-        $this->assertSame($file, $allFiles->current());
+        $this->assertSame($file, $allFiles->first());
 
         $this->filelib->getFileRepository()->delete($file);
 
@@ -57,7 +57,7 @@ class LifeCycleTest extends TestCase
         $this->assertStorageFileCount(3);
         $this->assertPublisherFileCount(0);
 
-        $this->filelib->getResourceRepository()->delete($allResources->current());
+        $this->filelib->getResourceRepository()->delete($allResources->first());
         $this->assertStorageFileCount(0);
 
         $allResources = $this->filelib->getResourceRepository()->findAll();

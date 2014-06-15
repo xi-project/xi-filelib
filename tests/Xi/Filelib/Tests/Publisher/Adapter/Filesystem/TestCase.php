@@ -63,13 +63,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
                 )
             );
 
-        $versionProvider = $this
-            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
-            ->getMock();
-        $versionProvider
-            ->expects($this->any())
-            ->method('getIdentifier')
-            ->will($this->returnValue('lusser'));
+        $versionProvider = $this->getMockedVersionProvider();
 
         $this->linker = $linker;
         $this->versionProvider = $versionProvider;

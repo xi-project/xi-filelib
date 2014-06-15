@@ -12,4 +12,10 @@ namespace Xi\Filelib\Storage;
 interface Storable
 {
     public function getId();
+
+    public function getVersions();
+
+    public function addVersion($version);
+
+    public function removeVersion($version);
 }

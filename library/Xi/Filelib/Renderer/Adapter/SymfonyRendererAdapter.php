@@ -72,6 +72,10 @@ class SymfonyRendererAdapter implements AcceleratedRendererAdapter
             $iResponse->getHeaders()
         );
 
+        if ($this->request) {
+            $response->prepare($this->request);
+        }
+
         if ($response->getStatusCode() !== 200) {
             $response->setContent(Response::$statusTexts[$response->getStatusCode()]);
             return $response;

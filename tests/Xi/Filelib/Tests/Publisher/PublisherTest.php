@@ -67,7 +67,7 @@ class PublisherTest extends TestCase
             ->with('default')
             ->will($this->returnValue($this->profile));
 
-        $this->provider = $this->getMockedVersionProvider('lipsautus');
+        $this->provider = $this->getMockedVersionProvider();
 
         $this->pm
             ->expects($this->any())

@@ -15,7 +15,7 @@ use Xi\Filelib\FileLibrary;
 /**
  * Mirrors the original file as a version
  */
-class OriginalVersionPlugin extends AbstractVersionProvider
+class OriginalVersionPlugin extends VersionProvider
 {
     /**
      * @var string
@@ -73,11 +73,6 @@ class OriginalVersionPlugin extends AbstractVersionProvider
     }
 
     public function areSharedVersionsAllowed()
-    {
-        return true;
-    }
-
-    public function canBeLazy()
     {
         return true;
     }
