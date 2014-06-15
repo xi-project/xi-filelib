@@ -15,7 +15,7 @@ use Xi\Filelib\FileLibrary;
 /**
  * Mirrors the original file as a version
  */
-class OriginalVersionPlugin extends LazyVersionProvider
+class OriginalVersionPlugin extends VersionProvider
 {
     /**
      * @var string

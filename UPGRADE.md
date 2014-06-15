@@ -21,6 +21,10 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 * Minor other refactorations and simplifications in plugins. Check your custom ones, they may require small changes.
 * Reversible versions of creation time and sequential linkers and a ReversibleLinkerInterface interface.
   It would be very wise to update to these (you'll have to unpublish and republish all your files).
+* Plugins may now support lazy operations via extending LazyVersionProvider instead of VersionProvider.
+  Lazy versions can be used to save space in large systems by deleting old / rarely used / whatever versions.
+  They are then recreated when needed. When used in combination with the publisher, redirecting not-found
+  published files to PHP backend must of course be done. (see docs/ for examples).
 
 ## From version 0.10.x to version 0.11.x
 

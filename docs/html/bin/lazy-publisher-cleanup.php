@@ -5,7 +5,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\Plugin;
 
 require_once __DIR__ . '/../bootstrap.php';
-require_once __DIR__ . '/../renderer-common.php';
+require_once __DIR__ . '/../lazy-publisher-common.php';
 
 $filelib->getFileRepository()->findAll()->each(
 

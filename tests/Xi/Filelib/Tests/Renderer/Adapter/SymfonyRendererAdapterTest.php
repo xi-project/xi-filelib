@@ -72,6 +72,7 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         $iResponse->setHeader('gran', 'oculusso');
 
         $adapter = new SymfonyRendererAdapter();
+        $adapter->setRequest(new Request());
         $response = $adapter->returnResponse($iResponse);
 
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
