@@ -423,10 +423,13 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedVersionProvider($versions = array())
+    public function getMockedVersionProvider($versions = array(), $lazy = false)
     {
+        $class = $lazy ? 'Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider'
+            : 'Xi\Filelib\Plugin\VersionProvider\VersionProvider';
+
         $versionProvider = $this
-            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
+            ->getMockBuilder($class)
             ->disableOriginalConstructor()
             ->getMock();
 

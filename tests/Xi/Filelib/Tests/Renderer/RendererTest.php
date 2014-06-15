@@ -6,6 +6,7 @@ use Xi\Filelib\Renderer\Renderer;
 use Xi\Filelib\Renderer\Events;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Resource\Resource;
 
 
 class RendererTest extends \Xi\Filelib\Tests\TestCase
@@ -148,8 +149,12 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
     public function provideOptions()
     {
         return array(
-            array(false, true),
-            array(true, false),
+            array(false, true, false, true),
+            array(true, false, false, false),
+            array(false, true, true, false),
+            array(true, false, true, true),
+            array(false, true, true, false),
+            array(true, false, true, true),
         );
     }
 
@@ -158,10 +163,15 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
      * @test
      * @dataProvider provideOptions
      */
-    public function shouldSetupResponseCorrectly($download, $sharedVersions)
+    public function shouldSetupResponseCorrectly($download, $sharedVersions, $lazy, $doVersionsExist)
     {
-        $resource = $this->getMockedResource();
+        $resource = Resource::create();
         $file = File::create(array('resource' => $resource, 'name' => 'lussuti.pdf'));
+
+        if ($doVersionsExist) {
+            $file->addVersion('xooxer');
+            $resource->addVersion('xooxer');
+        }
 
         $this->ed
             ->expects($this->at(0))
@@ -185,7 +195,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
             ->with(($sharedVersions) ? $resource : $file, 'xooxer')
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
-        $vp = $this->getMockedVersionProvider();
+        $vp = $this->getMockedVersionProvider(array('xooxer'), $lazy);
         $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue($sharedVersions));
 
         $this->pm
@@ -193,6 +203,14 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
             ->method('getVersionProvider')
             ->with($file, 'xooxer')
             ->will($this->returnValue($vp));
+
+        if ($lazy) {
+            if ($doVersionsExist) {
+                $vp->expects($this->never())->method('createProvidedVersions');
+            } else {
+                $vp->expects($this->once())->method('createProvidedVersions')->with($file);
+            }
+        }
 
         $ret = $this->renderer->render($file, 'xooxer', array('download' => $download));
 

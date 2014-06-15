@@ -7,16 +7,17 @@ use Xi\Filelib\Plugin\Plugin;
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../renderer-common.php';
 
-foreach ($filelib->getFileRepository()->findAll() as $file) {
+$filelib->getFileRepository()->findAll()->each(
 
-    /** @var File $file */
+    function (File $file) use ($filelib) {
 
-    $filelib->getPluginManager()->getPlugins()->filter(function (Plugin $plugin) {
-        return $plugin instanceof LazyVersionProvider;
-    })->each(function (LazyVersionProvider $plugin, $key, $file) {
-        $plugin->deleteProvidedVersions($file);
-        $plugin->deleteProvidedVersions($file->getResource());
-    }, $file);
+        $filelib->getPluginManager()->getPlugins()->filter(function (Plugin $plugin) {
+            return $plugin instanceof LazyVersionProvider;
+        })->each(function (LazyVersionProvider $plugin, $key, $file) {
+                $plugin->deleteProvidedVersions($file);
+                $plugin->deleteProvidedVersions($file->getResource());
+            }, $file);
 
-    $filelib->getFileRepository()->update($file);
-}
+        $filelib->getFileRepository()->update($file);
+    }
+);

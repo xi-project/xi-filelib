@@ -3,9 +3,7 @@
 namespace Xi\Filelib\Tests\Backend;
 
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
-use Xi\Filelib\Backend\IdentityMap\IdentityMap;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
@@ -14,8 +12,7 @@ use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
-use ArrayIterator;
-use Xi\Filelib\Events;
+use Xi\Collections\Collection\ArrayCollection;
 
 class BackendTest extends TestCase
 {
@@ -242,7 +239,7 @@ class BackendTest extends TestCase
             ->expects($this->once())
             ->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array($nonUniqueFile))));
+            ->will($this->returnValue(ArrayCollection::create(array($nonUniqueFile))));
 
         $this->setExpectedException(
             'Xi\Filelib\Backend\NonUniqueFileException',
@@ -272,7 +269,7 @@ class BackendTest extends TestCase
             ->expects($this->once())
             ->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array())));
+            ->will($this->returnValue(ArrayCollection::create(array())));
 
         $ret = $backend->createFile($file, $folder);
         $this->assertSame($file, $ret);
@@ -303,7 +300,7 @@ class BackendTest extends TestCase
                         );
                         $self->assertEquals($expectedParams, $finder->getParameters());
 
-                        return new ArrayIterator(array());
+                        return ArrayCollection::create(array());
                     }
                 )
             );
@@ -348,7 +345,7 @@ class BackendTest extends TestCase
                         );
                         $self->assertEquals($expectedParams, $finder->getParameters());
 
-                        return new ArrayIterator($files);
+                        return ArrayCollection::create($files);
                     }
                 )
             );
@@ -440,7 +437,7 @@ class BackendTest extends TestCase
             ->getMock();
 
         $ret = $backend->findByFinder($finder);
-        $this->assertInstanceOf('ArrayIterator', $ret);
+        $this->assertInstanceOf('Traversable', $ret);
     }
 
     /**
@@ -472,8 +469,7 @@ class BackendTest extends TestCase
             ->getMock();
 
         $ret = $backend->findById(1, $className);
-
-        $this->assertNull($ret);
+        $this->assertFalse($ret);
     }
 
 

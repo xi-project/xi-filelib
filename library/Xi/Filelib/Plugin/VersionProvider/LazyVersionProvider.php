@@ -25,7 +25,7 @@ abstract class LazyVersionProvider extends VersionProvider
     /**
      * @param bool $enabled
      */
-    public function enableLazyMode($enabled)
+    public function enableLazyMode($enabled = true)
     {
         $this->lazyMode = $enabled;
     }

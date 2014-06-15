@@ -1,7 +1,15 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Profile;
 
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
@@ -88,11 +96,11 @@ class ProfileManager
     /**
      * Returns all file profiles
      *
-     * @return FileProfile[] Array of file profiles
+     * @return ArrayCollection
      */
     public function getProfiles()
     {
-        return $this->profiles;
+        return ArrayCollection::create($this->profiles);
     }
 
     /**

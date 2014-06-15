@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\File;
 
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Command\CommandDefinition;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use Xi\Filelib\FileLibrary;
@@ -19,7 +20,6 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use ArrayIterator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -122,7 +122,7 @@ class FileRepository extends AbstractRepository
     {
         $file = $this->backend->findByFinder(
             new FileFinder(array('uuid' => $uuid))
-        )->current();
+        )->first();
 
         return $file ?: false;
     }
@@ -139,7 +139,7 @@ class FileRepository extends AbstractRepository
     {
         $file = $this->backend->findByFinder(
             new FileFinder(array('folder_id' => $folder->getId(), 'name' => $filename))
-        )->current();
+        )->first();
 
         return $file ?: false;
     }
@@ -147,7 +147,7 @@ class FileRepository extends AbstractRepository
     /**
      * Finds and returns all files
      *
-     * @return ArrayIterator
+     * @return ArrayCollection
      */
     public function findAll()
     {

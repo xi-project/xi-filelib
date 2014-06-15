@@ -79,7 +79,7 @@ class ProfileManagerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function addProfileShouldAddProfile()
     {
-        $this->assertEquals(array(), $this->manager->getProfiles());
+        $this->assertCount(0, $this->manager->getProfiles());
 
         $profile = $this->getMockedFileProfile('xooxer');
 

@@ -56,7 +56,7 @@ class VersionProviderTest extends TestCase
         $this->pm = $this->getMockedProfileManager(array('tussi', 'lussi'));
 
         $this->plugin = $this
-            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
+            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider')
             ->setConstructorArgs(
                 array(
                     function (File $file) {
@@ -197,6 +197,35 @@ class VersionProviderTest extends TestCase
         $this->plugin->onAfterUpload($event);
 
     }
+
+    /**
+     * @test
+     */
+    public function afterUploadDoesAbsolutelyNothingWhenLazyModeEnabled()
+    {
+        $this->plugin->attachTo($this->filelib);
+
+        $this->plugin->enableLazyMode(true);
+
+        $this->plugin->expects($this->any())->method('areSharedVersionsAllowed')
+            ->will($this->returnValue(false));
+
+        $this->plugin->expects($this->never())->method('createProvidedVersions');
+        $this->plugin->expects($this->never())->method('getProvidedVersions');
+
+        $this->plugin->setProfiles(array('tussi', 'lussi'));
+
+        $file = File::create(
+            array(
+                'resource' => Resource::create(array('mimetype' => 'image/xoo', 'versions' => array('reiska'))),
+                'profile' => 'tussi',
+            )
+        );
+        $event = new FileEvent($file);
+
+        $this->plugin->onAfterUpload($event);
+    }
+
 
     public function provideSharedVersionsAllowed()
     {

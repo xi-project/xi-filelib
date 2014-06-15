@@ -2,14 +2,12 @@
 
 namespace Xi\Filelib\Tests\Folder;
 
-use Xi\Filelib\Command\Commander;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
-use ArrayIterator;
+use Xi\Collections\Collection\ArrayCollection;
 
 class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -90,7 +88,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function findFilesShouldReturnEmptyArrayIteratorWhenNoFilesAreFound()
+    public function findFilesShouldReturnEmptyTraversableWhenNoFilesAreFound()
     {
         $finder = new FileFinder(
             array(
@@ -98,7 +96,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $folders = new ArrayIterator(array());
+        $folders = ArrayCollection::create(array());
 
         $this->backend
             ->expects($this->once())
@@ -110,14 +108,14 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
         $files = $this->op->findFiles($folder);
 
-        $this->assertInstanceOf('ArrayIterator', $files);
+        $this->assertInstanceOf('Traversable', $files);
         $this->assertCount(0, $files);
     }
 
     /**
      * @test
      */
-    public function findFilesShouldReturnNonEmptyArrayIteratorWhenFilesAreFound()
+    public function findFilesShouldReturnNonEmptyTraversableWhenFilesAreFound()
     {
         $finder = new FileFinder(
             array(
@@ -125,7 +123,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $files = new ArrayIterator(
+        $files = ArrayCollection::create(
             array(
                 File::create(),
                 File::create(),
@@ -143,7 +141,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
         $files = $this->op->findFiles($folder);
 
-        $this->assertInstanceOf('ArrayIterator', $files);
+        $this->assertInstanceOf('Traversable', $files);
         $this->assertCount(3, $files);
 
     }
@@ -204,7 +202,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function findSubFoldersShouldReturnEmptyArrayIteratorWhenNoSubFoldersAreFound()
+    public function findSubFoldersShouldReturnEmptyCollectionnWhenNoSubFoldersAreFound()
     {
         $finder = new FolderFinder(
             array(
@@ -212,7 +210,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $folders = new ArrayIterator(array());
+        $folders = ArrayCollection::create(array());
 
         $this->backend
             ->expects($this->once())
@@ -225,14 +223,14 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
         $files = $this->op->findSubFolders($folder);
 
-        $this->assertInstanceOf('ArrayIterator', $files);
+        $this->assertInstanceOf('Traversable', $files);
         $this->assertCount(0, $files);
     }
 
     /**
      * @test
      */
-    public function findSubFoldersShouldReturnNonEmptyArrayIteratorWhenSubFoldersAreFound()
+    public function findSubFoldersShouldReturnNonEmptyTraversableWhenSubFoldersAreFound()
     {
        $finder = new FolderFinder(
             array(
@@ -240,7 +238,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $folders = new ArrayIterator(
+        $folders = ArrayCollection::create(
             array(
                 Folder::create(),
                 Folder::create(),
@@ -258,7 +256,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
         $files = $this->op->findSubFolders($folder);
 
-        $this->assertInstanceOf('ArrayIterator', $files);
+        $this->assertInstanceOf('Traversable', $files);
         $this->assertCount(3, $files);
     }
 
@@ -273,7 +271,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $folders = new ArrayIterator(
+        $folders = ArrayCollection::create(
             array(
                 Folder::create(),
             )
@@ -320,7 +318,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $folders = new ArrayIterator(
+        $folders = ArrayCollection::create(
             array(
             )
         );
@@ -350,7 +348,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $folders = new ArrayIterator(
+        $folders = ArrayCollection::create(
             array(
                 Folder::create(),
             )

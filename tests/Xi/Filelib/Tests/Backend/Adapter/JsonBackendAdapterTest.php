@@ -11,7 +11,6 @@ use Xi\Filelib\Backend\Adapter\JsonBackendAdapter;
 
 /**
  * @group backend
- * @group mongo
  */
 class JsonBackendAdapterTest extends AbstractBackendAdapterTestCase
 {
