@@ -114,9 +114,11 @@ class IdentityMap implements EventSubscriberInterface, FindByIdsRequestResolver
     public function addMany(Collection $iterator)
     {
         $self = $this;
-        $iterator->each(function (Identifiable $identifiable) use ($self) {
-            $self->add($identifiable);
-        });
+        $iterator->each(
+            function (Identifiable $identifiable) use ($self) {
+                $self->add($identifiable);
+            }
+        );
     }
 
     /**
@@ -127,9 +129,11 @@ class IdentityMap implements EventSubscriberInterface, FindByIdsRequestResolver
     public function removeMany(Collection $iterator)
     {
         $self = $this;
-        $iterator->each(function (Identifiable $identifiable) use ($self) {
-            $self->remove($identifiable);
-        });
+        $iterator->each(
+            function (Identifiable $identifiable) use ($self) {
+                $self->remove($identifiable);
+            }
+        );
     }
     /**
      * Removes an identifiable

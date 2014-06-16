@@ -25,7 +25,7 @@ class RenderEventTest extends \Xi\Filelib\Tests\TestCase
         $response = new Response();
         $adaptedResponse = new AdaptedResponse();
 
-        $event = new RenderEvent($file, 'gran-tenhunen', $response, $adaptedResponse);
+        $event = new RenderEvent($response, $adaptedResponse, 'gran-tenhunen', $file);
 
         $this->assertSame($file, $event->getFile());
         $this->assertEquals('gran-tenhunen', $event->getVersion());

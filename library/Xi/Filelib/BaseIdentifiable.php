@@ -75,5 +75,4 @@ abstract class BaseIdentifiable
             $this->data = clone $this->data;
         }
     }
-
 }

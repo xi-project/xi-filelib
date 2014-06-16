@@ -69,5 +69,4 @@ abstract class BaseStorable extends BaseIdentifiable
     {
         return in_array($version, $this->getVersions());
     }
-
 }

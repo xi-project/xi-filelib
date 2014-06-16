@@ -8,6 +8,7 @@
  */
 
 namespace Xi\Filelib\Plugin\VersionProvider;
+
 use Xi\Filelib\Event\FileEvent;
 
 /**
@@ -48,5 +49,4 @@ abstract class LazyVersionProvider extends VersionProvider
         }
         parent::onAfterUpload($event);
     }
-
 }

@@ -75,9 +75,9 @@ class Renderer
 
             if (!$file) {
                 return $this->adaptResponse(
-                    null,
+                    $response->setStatusCode(404),
                     $version,
-                    $response->setStatusCode(404)
+                    null
                 );
             }
         }
@@ -88,9 +88,9 @@ class Renderer
             $this->eventDispatcher->dispatch(Events::RENDERER_BEFORE_RENDER, $event);
         } catch (AccessDeniedException $e) {
             return $this->adaptResponse(
-                $file,
+                $response->setStatusCode(403),
                 $version,
-                $response->setStatusCode(403)
+                $file
             );
         }
 
@@ -98,9 +98,9 @@ class Renderer
 
         if (!$this->profiles->hasVersion($file, $version)) {
             return $this->adaptResponse(
-                $file,
+                $response->setStatusCode(404),
                 $version,
-                $response->setStatusCode(404)
+                $file
             );
         }
 
@@ -114,9 +114,9 @@ class Renderer
 
         $this->injectContentToResponse($retrieved, $response);
         return $this->adaptResponse(
-            $file,
+            $response,
             $version,
-            $response
+            $file
         );
     }
 
@@ -161,14 +161,13 @@ class Renderer
      * @param Response $response
      * @return mixed
      */
-    protected function adaptResponse(File $file = null, $version, Response $response)
+    protected function adaptResponse(Response $response, $version, File $file = null)
     {
         $adaptedResponse = $this->adapter->adaptResponse($response);
 
-        $event = new RenderEvent($file, $version, $response, $adaptedResponse);
+        $event = new RenderEvent($response, $adaptedResponse, $version, $file);
         $this->eventDispatcher->dispatch(Events::RENDERER_RENDER, $event);
 
         return $adaptedResponse;
     }
-
 }

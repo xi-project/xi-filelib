@@ -124,8 +124,7 @@ abstract class VersionProvider extends BasePlugin
 
         if (!$this->belongsToProfile($file->getProfile())
             || !$this->isApplicableTo($file)
-            || $this->areProvidedVersionsCreated($file))
-        {
+            || $this->areProvidedVersionsCreated($file)) {
             return;
         }
 

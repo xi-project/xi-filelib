@@ -44,12 +44,12 @@ class RenderEvent extends Event
      * @param Response $internalResponse
      * @param mixed $adaptedResponse
      */
-    public function __construct(File $file = null, $version, Response $internalResponse, $adaptedResponse)
+    public function __construct(Response $internalResponse, $adaptedResponse, $version, File $file = null)
     {
-        $this->file = $file;
-        $this->version = $version;
         $this->internalResponse = $internalResponse;
         $this->adaptedResponse = $adaptedResponse;
+        $this->version = $version;
+        $this->file = $file;
     }
 
     /**

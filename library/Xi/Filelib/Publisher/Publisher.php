@@ -73,6 +73,7 @@ class Publisher implements EventSubscriberInterface, Attacher
         $this->profiles = $filelib->getProfileManager();
         $this->eventDispatcher = $filelib->getEventDispatcher();
         $this->eventDispatcher->addSubscriber($this);
+
         $this->adapter->attachTo($filelib);
         $this->linker->attachTo($filelib);
     }

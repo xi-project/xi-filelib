@@ -38,5 +38,4 @@ interface Storable
      * @return bool
      */
     public function hasVersion($version);
-
 }
