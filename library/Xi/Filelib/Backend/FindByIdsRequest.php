@@ -48,12 +48,8 @@ class FindByIdsRequest
      * @param string $className
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct($ids, $className, EventDispatcherInterface $eventDispatcher = null)
+    public function __construct(array $ids, $className, EventDispatcherInterface $eventDispatcher = null)
     {
-        if (!is_array($ids)) {
-            $ids = array($ids);
-        }
-
         $this->notFoundIds = $ids;
         $this->foundIds = array();
         $this->className = $className;

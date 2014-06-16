@@ -126,18 +126,28 @@ class Backend
     }
 
     /**
-     * Finds an object via id and class
-     *
-     * @param  mixed              $id
-     * @param  string             $className
+     * @param mixed $id
+     * @param string $className
      * @return Identifiable
      */
     public function findById($id, $className)
     {
-        $request = new FindByIdsRequest($id, $className, $this->eventDispatcher);
+        return $this->findByIds(array($id), $className)->first();
+    }
+
+    /**
+     * Finds objects via ids and class
+     *
+     * @param array $ids
+     * @param string $className
+     * @return ArrayCollection
+     */
+    public function findByIds(array $ids, $className)
+    {
+        $request = new FindByIdsRequest($ids, $className, $this->eventDispatcher);
         $request->resolve($this->getResolvers());
         $this->identityMap->addMany($request->getResult());
-        return $request->getResult()->first();
+        return $request->getResult();
     }
 
     /**

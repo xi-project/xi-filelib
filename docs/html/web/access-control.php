@@ -52,7 +52,7 @@ $filelib->addPlugin($versionPlugin);
 $folder = $filelib->getFolderRepository()->createByUrl('pictures/of/very beaütiful manatees');
 
 try {
-    $file = $filelib->upload(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
+    $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
     $publisher->publish($file);
 
 } catch (AccessDeniedException $e) {

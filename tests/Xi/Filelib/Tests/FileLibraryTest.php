@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Authorization\AuthorizationPlugin;
 use Xi\Filelib\Backend\Cache\Cache;
+use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Profile\FileProfile;
@@ -252,11 +253,10 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function uploadShortcutShouldDelegate()
+    public function uploadFileDelegates()
     {
         $filelib = $this->getMockedFilelib(array('getFileRepository'));
         $fop = $this->getMockedFileRepository();
-
         $filelib->expects($this->any())->method('getFileRepository')->will($this->returnValue($fop));
 
         $folder = $this->getMockedFolder();
@@ -267,9 +267,94 @@ class FileLibraryTest extends TestCase
             ->with('lussutus', $folder, 'tussi')
             ->will($this->returnValue('xooxer'));
 
-        $ret = $filelib->upload('lussutus', $folder, 'tussi');
+        $ret = $filelib->uploadFile('lussutus', $folder, 'tussi');
         $this->assertSame('xooxer', $ret);
     }
+
+    /**
+     * @test
+     */
+    public function findFileDelegates()
+    {
+        $filelib = $this->getMockedFilelib(array('getFileRepository'));
+        $fop = $this->getMockedFileRepository();
+        $filelib->expects($this->any())->method('getFileRepository')->will($this->returnValue($fop));
+
+        $id = 'lussendorf';
+
+        $fop
+            ->expects($this->once())
+            ->method('find')
+            ->with($id)
+            ->will($this->returnValue('xooxer'));
+
+        $ret = $filelib->findFile($id);
+        $this->assertSame('xooxer', $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function findFilesDelegates()
+    {
+        $filelib = $this->getMockedFilelib(array('getFileRepository'));
+        $fop = $this->getMockedFileRepository();
+        $filelib->expects($this->any())->method('getFileRepository')->will($this->returnValue($fop));
+
+        $ids = array('lussendorf', 'lussenford');
+
+        $fop
+            ->expects($this->once())
+            ->method('findMany')
+            ->with($ids)
+            ->will($this->returnValue('xooxer'));
+
+        $ret = $filelib->findFiles($ids);
+        $this->assertSame('xooxer', $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function findFilesByDelegates()
+    {
+        $filelib = $this->getMockedFilelib(array('getFileRepository'));
+        $fop = $this->getMockedFileRepository();
+        $filelib->expects($this->any())->method('getFileRepository')->will($this->returnValue($fop));
+
+        $finder = new FileFinder();
+
+        $fop
+            ->expects($this->once())
+            ->method('findBy')
+            ->with($finder)
+            ->will($this->returnValue('xooxer'));
+
+        $ret = $filelib->findFilesBy($finder);
+        $this->assertSame('xooxer', $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function createFolderByUrlDelegates()
+    {
+        $filelib = $this->getMockedFilelib(array('getFolderRepository', 'getFileRepository'));
+        $fop = $this->getMockedFolderRepository();
+        $filelib->expects($this->any())->method('getFolderRepository')->will($this->returnValue($fop));
+
+        $url = '/tenhunen/imaiseppa/tappion/karvas/kalkki';
+
+        $fop
+            ->expects($this->once())
+            ->method('createByUrl')
+            ->with($url)
+            ->will($this->returnValue('xooxer'));
+
+        $ret = $filelib->createFolderByUrl($url);
+        $this->assertEquals('xooxer', $ret);
+    }
+
 
     /**
      * @test

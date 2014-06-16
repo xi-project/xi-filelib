@@ -96,22 +96,33 @@ class FileRepository extends AbstractRepository
     }
 
     /**
-     * Finds a file
+     * Finds file by id
      *
-     * @param  mixed      $id File id
+     * @param  mixed $id File id or array of file ids
      * @return File
-     * @todo switch uuid and id as internal primary id
      */
     public function find($id)
     {
-        $file = $this->backend->findById($id, 'Xi\Filelib\File\File');
-
-        if (!$file) {
-            return false;
-        }
-
-        return $file;
+        return $this->findMany(array($id))->first();
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function findMany($ids)
+    {
+        return $this->backend->findByIds($ids, 'Xi\Filelib\File\File');
+    }
+
+    /**
+     * @param FileFinder $finder
+     * @return ArrayCollection
+     */
+    public function findBy(FileFinder $finder)
+    {
+        return $this->backend->findByFinder($finder);
+    }
+
 
     /**
      * @param $uuid
@@ -120,11 +131,7 @@ class FileRepository extends AbstractRepository
      */
     public function findByUuid($uuid)
     {
-        $file = $this->backend->findByFinder(
-            new FileFinder(array('uuid' => $uuid))
-        )->first();
-
-        return $file ?: false;
+        return $this->findBy(new FileFinder(array('uuid' => $uuid)))->first();
     }
 
 
@@ -137,11 +144,9 @@ class FileRepository extends AbstractRepository
      */
     public function findByFilename(Folder $folder, $filename)
     {
-        $file = $this->backend->findByFinder(
+        return $this->backend->findByFinder(
             new FileFinder(array('folder_id' => $folder->getId(), 'name' => $filename))
         )->first();
-
-        return $file ?: false;
     }
 
     /**
@@ -151,9 +156,7 @@ class FileRepository extends AbstractRepository
      */
     public function findAll()
     {
-        $files = $this->backend->findByFinder(new FileFinder());
-
-        return $files;
+        return $this->backend->findByFinder(new FileFinder());
     }
 
     /**
