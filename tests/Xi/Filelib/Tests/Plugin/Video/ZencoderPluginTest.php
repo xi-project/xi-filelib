@@ -111,11 +111,11 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             return;
         }
 
-        if (!S3_KEY) {
+        if (!getenv('S3_KEY')) {
             $this->markTestSkipped('S3 not configured');
         }
 
-        if (!ZENCODER_KEY) {
+        if (!getenv('ZENCODER_KEY')) {
             $this->markTestSkipped('Zencoder service not configured');
         }
     }

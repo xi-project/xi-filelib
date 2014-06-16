@@ -38,11 +38,11 @@ class AmazonS3PublisherTest extends TestCase
 
     public function setUp()
     {
-        if (!S3_KEY) {
+        if (!getenv('S3_KEY')) {
             $this->markTestSkipped('S3 not configured');
             return;
         }
-        $this->adapter = new AmazonS3PublisherAdapter(S3_KEY, S3_SECRETKEY, S3_BUCKET);
+        $this->adapter = new AmazonS3PublisherAdapter(getenv('S3_KEY'), getenv('S3_SECRETKEY'), getenv('S3_BUCKET'));
 
         $this->storage = $this->getMockedStorage();
 
@@ -95,10 +95,15 @@ class AmazonS3PublisherTest extends TestCase
 
     public function tearDown()
     {
+        if (!getenv('S3_KEY')) {
+            $this->markTestSkipped('S3 not configured');
+            return;
+        }
+
         $client = $this->adapter->getClient();
         $client->deleteObject(
             array(
-                'Bucket' => S3_BUCKET,
+                'Bucket' => getenv('S3_BUCKET'),
                 'Key' => $this->path,
             )
         );
@@ -119,13 +124,13 @@ class AmazonS3PublisherTest extends TestCase
     public function publishesAndUnpublishes()
     {
         $client = $this->adapter->getClient();
-        $this->assertFalse($client->doesObjectExist(S3_BUCKET, $this->path));
+        $this->assertFalse($client->doesObjectExist(getenv('S3_BUCKET'), $this->path));
 
         $this->adapter->publish($this->file, 'xooxer', $this->vp, $this->linker);
-        $this->assertTrue($client->doesObjectExist(S3_BUCKET, $this->path));
+        $this->assertTrue($client->doesObjectExist(getenv('S3_BUCKET'), $this->path));
 
         $this->adapter->unpublish($this->file, 'xooxer', $this->vp, $this->linker);
-        $this->assertFalse($client->doesObjectExist(S3_BUCKET, $this->path));
+        $this->assertFalse($client->doesObjectExist(getenv('S3_BUCKET'), $this->path));
     }
 
     /**
@@ -136,7 +141,7 @@ class AmazonS3PublisherTest extends TestCase
         $url = $this->adapter->getUrl($this->file, 'xooxer', $this->vp, $this->linker);
 
         $this->assertEquals(
-            'https://' . S3_BUCKET . '.s3.amazonaws.com/' . $this->path,
+            'https://' . getenv('S3_BUCKET') . '.s3.amazonaws.com/' . $this->path,
             $url
         );
     }
