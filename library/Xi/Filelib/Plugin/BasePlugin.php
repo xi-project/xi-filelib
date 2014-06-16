@@ -19,7 +19,7 @@ use Xi\Filelib\InvalidArgumentException;
  *
  * @author pekkis
  */
-abstract class AbstractPlugin implements Plugin
+abstract class BasePlugin implements Plugin
 {
     /**
      * @var array Array of profiles

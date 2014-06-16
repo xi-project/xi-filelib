@@ -20,7 +20,7 @@ use Xi\Filelib\File\File;
  *
  * @author pekkis
  */
-class RandomizeNamePlugin extends AbstractPlugin
+class RandomizeNamePlugin extends BasePlugin
 {
     protected static $subscribedEvents = array(
         Events::PROFILE_AFTER_ADD => 'onFileProfileAdd',

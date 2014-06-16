@@ -12,7 +12,7 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Profile\ProfileManager;
-use Xi\Filelib\Plugin\AbstractPlugin;
+use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Storage\Storable;
@@ -27,7 +27,7 @@ use Xi\Filelib\Storage\Storage;
  *
  * @author pekkis
  */
-abstract class VersionProvider extends AbstractPlugin
+abstract class VersionProvider extends BasePlugin
 {
     /**
      * @var array
