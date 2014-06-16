@@ -64,7 +64,7 @@ class SymfonyRendererAdapter implements AcceleratedRendererAdapter
      * @param InternalResponse $iResponse
      * @return Response
      */
-    public function returnResponse(InternalResponse $iResponse)
+    public function adaptResponse(InternalResponse $iResponse)
     {
         $response = new Response(
             $iResponse->getContent(),

@@ -64,7 +64,7 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnResponseShouldConvertInternalOKResponseToSymfonyResponse()
+    public function adaptResponseShouldConvertInternalOKResponseToSymfonyResponse()
     {
         $iResponse = new InternalResponse();
         $iResponse->setContent('tussi');
@@ -73,7 +73,7 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
 
         $adapter = new SymfonyRendererAdapter();
         $adapter->setRequest(new Request());
-        $response = $adapter->returnResponse($iResponse);
+        $response = $adapter->adaptResponse($iResponse);
 
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
         $this->assertTrue($response->headers->has('gran'));
@@ -84,7 +84,7 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function returnResponseShouldConvertInternalErrorResponseToSymfonyResponse()
+    public function adaptResponseShouldConvertInternalErrorResponseToSymfonyResponse()
     {
         $iResponse = new InternalResponse();
         $iResponse->setContent('tussi');
@@ -92,7 +92,7 @@ class SymfonyRendererTest extends \Xi\Filelib\Tests\TestCase
         $iResponse->setHeader('gran', 'oculusso');
 
         $adapter = new SymfonyRendererAdapter();
-        $response = $adapter->returnResponse($iResponse);
+        $response = $adapter->adaptResponse($iResponse);
 
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
         $this->assertTrue($response->headers->has('gran'));

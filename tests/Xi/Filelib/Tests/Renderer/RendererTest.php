@@ -62,7 +62,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
         $this->adapter = $this->getAdapter();
         $this->adapter
             ->expects($this->any())
-            ->method('returnResponse')
+            ->method('adaptResponse')
             ->with($this->isInstanceOf('Xi\Filelib\Renderer\Response'))
             ->will($this->returnArgument(0));
 
@@ -102,10 +102,15 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnValue($file));
 
         $this->ed
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'))
             ->will($this->throwException(new AccessDeniedException('Game over man, game over')));
+
+        $this->ed
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(Events::RENDERER_RENDER, $this->isInstanceOf('Xi\Filelib\Event\RenderEvent'));
 
         $ret = $this->renderer->render('xooxoo', 'xooxer');
 
@@ -124,9 +129,14 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
         $file = $this->getMockedFile();
 
         $this->ed
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+
+        $this->ed
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with(Events::RENDERER_RENDER, $this->isInstanceOf('Xi\Filelib\Event\RenderEvent'));
 
         $this->pm
             ->expects($this->once())
@@ -181,7 +191,7 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
         $this->ed
             ->expects($this->at(1))
             ->method('dispatch')
-            ->with(Events::RENDERER_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+            ->with(Events::RENDERER_RENDER, $this->isInstanceOf('Xi\Filelib\Event\RenderEvent'));
 
         $this->pm
             ->expects($this->once())
