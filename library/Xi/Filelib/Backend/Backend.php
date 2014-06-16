@@ -67,6 +67,15 @@ class Backend
     }
 
     /**
+     * @return IdentityMap
+     */
+    public function getIdentityMap()
+    {
+        return $this->identityMap;
+    }
+
+
+    /**
      * @param Cache $cache
      * @return Backend
      */
@@ -234,7 +243,6 @@ class Backend
                 sprintf('Folder was not found with id "%s"', $file->getFolderId())
             );
         }
-        $this->updateResource($file->getResource());
         $this->getBackendAdapter()->updateFile($file);
     }
 

@@ -10,6 +10,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\CopyFileCommand;
 use Xi\Filelib\Events;
+use Xi\Filelib\Resource\ResourceRepository;
 
 class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -162,15 +163,20 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $storage = $this->getMockedStorage();
         $eventDispatcher = $this->getMockedEventDispatcher();
 
+        $resource = Resource::create(
+            array(
+                'exclusive' => $exclusiveResource
+            )
+        );
+
         $file = File::create(
             array(
                 'name' => 'tohtori-vesala.jpg',
-                'resource' => Resource::create(
-                    array(
-                        'exclusive' => $exclusiveResource)
-                )
+                'resource' => $resource
             )
         );
+
+        $rere = $this->getMockedResourceRepository();
 
         $backend
             ->expects($this->once())
@@ -184,16 +190,19 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
             $storage->expects($this->once())->method('retrieve')
                      ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
                      ->will($this->returnValue('xooxoo'));
-            $storage->expects($this->once())->method('store')
-                    ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'), $this->equalTo('xooxoo'));
 
-            $backend->expects($this->once())->method('createResource')
-                    ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
-                    ->will($this->returnArgument(0));
+            $rere
+                ->expects($this->once())
+                ->method('createCommand')
+                ->with(
+                    ResourceRepository::COMMAND_CREATE,
+                    $this->isType('array')
+                )
+                ->will($this->returnValue($this->getMockedCommand('topic', true)));
+
         } else {
             $storage->expects($this->never())->method('retrieve');
             $storage->expects($this->never())->method('store');
-            $backend->expects($this->never())->method('createResource');
         }
 
         $eventDispatcher
@@ -225,7 +234,22 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $afterUploadCommand->expects($this->once())->method('execute')->will($this->returnValue($file));
 
         $command = new CopyFileCommand($file, $this->folder);
-        $command->attachTo($this->getMockedFilelib(null, $this->op, null, $storage, $eventDispatcher, $backend));
+
+
+        $command->attachTo(
+            $this->getMockedFilelib(
+                null,
+                array(
+                    'fire' => $this->op,
+                    'storage' => $storage,
+                    'ed' => $eventDispatcher,
+                    'backend' => $backend,
+                    'rere' => $rere
+                )
+            )
+        );
+
+
         $ret = $command->execute();
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $ret);

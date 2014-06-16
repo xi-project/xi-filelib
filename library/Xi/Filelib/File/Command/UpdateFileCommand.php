@@ -14,6 +14,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
+use Xi\Filelib\Resource\ResourceRepository;
 
 class UpdateFileCommand extends BaseFileCommand
 {
@@ -32,6 +33,13 @@ class UpdateFileCommand extends BaseFileCommand
     {
         $event = new FileEvent($this->file);
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UPDATE, $event);
+
+        $this->resourceRepository->createCommand(
+            ResourceRepository::COMMAND_UPDATE,
+            array(
+                $this->file->getResource()
+            )
+        )->execute();
 
         $this->backend->updateFile($this->file);
 

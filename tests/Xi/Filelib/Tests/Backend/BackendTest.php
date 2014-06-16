@@ -151,8 +151,6 @@ class BackendTest extends TestCase
         $backend->expects($this->once())->method('findById')->with($file->getFolderId(), 'Xi\Filelib\Folder\Folder')
             ->will($this->returnValue($folder));
 
-        $backend->expects($this->once())->method('updateResource')->with($resource);
-
         $this->platform->expects($this->once())->method('updateFile')->with($file)->will($this->returnValue(true));
         $ret = $backend->updateFile($file);
         $this->assertNull($ret);
@@ -520,5 +518,13 @@ class BackendTest extends TestCase
         $this->assertNull($this->backend->getCache());
         $this->assertSame($this->backend, $this->backend->setCache($cache));
         $this->assertSame($cache, $this->backend->getCache());
+    }
+
+    /**
+     * @test
+     */
+    public function getsIdentityMap()
+    {
+        $this->assertInstanceOf('Xi\Filelib\Backend\IdentityMap\IdentityMap', $this->backend->getIdentityMap());
     }
 }

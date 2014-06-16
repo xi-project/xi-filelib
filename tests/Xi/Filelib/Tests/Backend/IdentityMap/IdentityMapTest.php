@@ -357,4 +357,21 @@ class IdentityMapTest extends TestCase
         $ret = $this->im->remove($object);
         $this->assertFalse($ret);
     }
+
+    /**
+     * @test
+     */
+    public function clears()
+    {
+        $resource = Resource::create(array('id' => 'xooxers'));
+
+        $this->im->add($resource);
+        $this->assertTrue($this->im->has($resource));
+
+        $this->im->clear();
+
+        $this->assertFalse($this->im->has($resource));
+        $this->assertAttributeEquals(array(), 'objects', $this->im);
+        $this->assertAttributeEquals(array(), 'objectIdentifiers', $this->im);
+    }
 }
