@@ -10,35 +10,31 @@
 namespace Xi\Filelib;
 
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Backend\Cache\Adapter\CacheAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
+use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Command\Commander;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\Plugin\PluginManager;
 use Xi\Filelib\Resource\ResourceRepository;
-use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Profile\FileProfile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
 use Pekkis\Queue\Queue;
 use Xi\Filelib\Command\CommandDataSerializer;
 use Xi\Filelib\Profile\ProfileManager;
+use Xi\Filelib\Storage\Adapter\StorageAdapter;
+use Xi\Filelib\Storage\Storage;
 
-/**
- * File library
- *
- * @author pekkis
- * @todo Refactor to configuration / contain common methods (getFile etc)
- *
- */
 class FileLibrary
 {
     /**
@@ -87,11 +83,6 @@ class FileLibrary
     private $platform;
 
     /**
-     * @var array
-     */
-    private $plugins = array();
-
-    /**
      * @var Commander
      */
     private $commander;
@@ -101,8 +92,13 @@ class FileLibrary
      */
     private $profileManager;
 
+    /**
+     * @var PluginManager
+     */
+    private $pluginManager;
+
     public function __construct(
-        Storage $storage,
+        StorageAdapter $storageAdapter,
         BackendAdapter $platform,
         EventDispatcherInterface $eventDispatcher = null,
         Commander $commander = null
@@ -115,10 +111,10 @@ class FileLibrary
             $commander = new Commander($this);
         }
 
-        $this->storage = $storage;
         $this->platform = $platform;
         $this->eventDispatcher = $eventDispatcher;
         $this->profileManager = new ProfileManager($this->eventDispatcher);
+        $this->pluginManager = new PluginManager($this->eventDispatcher);
         $this->commander = $commander;
 
         $this->backend = new Backend(
@@ -126,7 +122,63 @@ class FileLibrary
             $this->platform
         );
 
+        $this->storage = new Storage(
+            $storageAdapter
+        );
+        $this->storage->attachTo($this);
+
         $this->addProfile(new FileProfile('default'));
+    }
+
+    /**
+     * Uploads a file to filelib
+     *
+     * @param string|FileUpload $file
+     * @param Folder $folder Folder or null for root folder
+     * @param string $profile File profile name
+     * @return File
+     */
+    public function uploadFile($file, $folder = null, $profile = 'default')
+    {
+        return $this->getFileRepository()->upload($file, $folder, $profile);
+    }
+
+    /**
+     * Returns a folder by url. Creates one if one does not exist.
+     *
+     * @param string $url
+     * @return Folder
+     */
+    public function createFolderByUrl($url)
+    {
+        return $this->getFolderRepository()->createByUrl($url);
+    }
+
+    /**
+     * @param mixed $id
+     * @return File
+     */
+    public function findFile($id)
+    {
+        return $this->getFileRepository()->find($id);
+    }
+
+    /**
+     * @param array $ids
+     * @return ArrayCollection
+     */
+    public function findFiles(array $ids = array())
+    {
+        return $this->getFileRepository()->findMany($ids);
+    }
+
+    /**
+     * @param FileFinder $finder
+     * @return ArrayCollection
+     */
+    public function findFilesBy(FileFinder $finder)
+    {
+        return $this->getFileRepository()->findBy($finder);
     }
 
     /**
@@ -143,6 +195,14 @@ class FileLibrary
     public function getProfileManager()
     {
         return $this->profileManager;
+    }
+
+    /**
+     * @return PluginManager
+     */
+    public function getPluginManager()
+    {
+        return $this->pluginManager;
     }
 
     /**
@@ -271,32 +331,15 @@ class FileLibrary
     }
 
     /**
-     * Adds a plugin
-     *
-     * @param  Plugin      $plugin
+     * @param Plugin $plugin
+     * @param array $profiles Profiles to add to, empty array to add to all profiles
+     * @param string $name
      * @return FileLibrary
-     *
      */
-    public function addPlugin(Plugin $plugin, $profiles = array())
+    public function addPlugin(Plugin $plugin, $profiles = array(), $name = null)
     {
-        $this->plugins[] = $plugin;
-
-        if (!$profiles) {
-            $resolverFunc = function ($profile) {
-                return true;
-            };
-        } else {
-            $resolverFunc = function ($profile) use ($profiles) {
-                return (bool) in_array($profile, $profiles);
-            };
-        }
-
-        $plugin->setHasProfileResolver($resolverFunc);
         $plugin->attachTo($this);
-
-        $this->getEventDispatcher()->addSubscriber($plugin);
-        $event = new PluginEvent($plugin);
-        $this->getEventDispatcher()->dispatch(Events::PLUGIN_AFTER_ADD, $event);
+        $this->pluginManager->addPlugin($plugin, $profiles, $name);
         return $this;
     }
 
@@ -347,17 +390,6 @@ class FileLibrary
     public function getCommander()
     {
         return $this->commander;
-    }
-
-    /**
-     * @param string|FileUpload $file
-     * @param Folder $folder
-     * @param string $profile
-     * @return File
-     */
-    public function upload($file, $folder = null, $profile = 'default')
-    {
-        return $this->getFileRepository()->upload($file, $folder, $profile);
     }
 
     /**

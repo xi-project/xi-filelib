@@ -41,6 +41,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
             'id' => 'id',
             'folder_id' => 'folder_id',
             'name' => 'filename',
+            'uuid' => 'uuid',
         ),
         'Xi\Filelib\Folder\Folder' => array(
             'id' => 'id',
@@ -144,6 +145,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
                 'foldername' => $folder->getName(),
                 'folderurl' => $folder->getUrl(),
                 'uuid' => $folder->getUuid(),
+                'data' => json_encode($folder->getdata()->toArray())
             )
         );
 
@@ -159,7 +161,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
     {
         $sql = "
         UPDATE xi_filelib_folder
-        SET parent_id = :parentId, foldername = :name, folderurl = :url, uuid = :uuid
+        SET parent_id = :parentId, foldername = :name, folderurl = :url, uuid = :uuid, data = :data
         WHERE id = :id
         ";
 
@@ -172,6 +174,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
                 'url' => $folder->getUrl(),
                 'uuid' => $folder->getUuid(),
                 'id' => $folder->getId(),
+                'data' => json_encode($folder->getdata()->toArray())
             )
         );
 
@@ -387,6 +390,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
                         'name' => $folder['foldername'],
                         'url' => $folder['folderurl'],
                         'uuid' => $folder['uuid'],
+                        'data' => json_decode($folder['data'], true),
                     )
                 )
             );
@@ -405,7 +409,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
         foreach ($iter as $file) {
 
             $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
-            $resource = $this->findByIds($request)->getResult()->current();
+            $resource = $this->findByIds($request)->getResult()->first();
 
             $ret->append(
                 File::create(
@@ -469,7 +473,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
 
 
     /**
-     * @param AbstractBackendAdapter $platform
+     * @param AbstractPlatform $platform
      * @return bool
      */
     private function isPlatformSupported(AbstractPlatform $platform)

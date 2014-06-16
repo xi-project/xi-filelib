@@ -9,9 +9,7 @@
 
 namespace Xi\Filelib\Plugin\Image\Command;
 
-use Imagick;
-use ImagickException;
-use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 
 /**
  * @author pekkis
@@ -19,22 +17,17 @@ use Xi\Filelib\InvalidArgumentException;
 abstract class AbstractCommand implements Command
 {
     /**
-     * Creates a new Imagick resource from path
-     *
-     * @param  string                   $path Image path
-     * @return Imagick
-     * @throws InvalidArgumentException
+     * @var ImageMagickHelper
      */
-    public function createImagick($path)
+    protected $helper;
+
+    /**
+     * @param ImageMagickHelper $helper
+     * @return Command
+     */
+    public function setHelper(ImageMagickHelper $helper)
     {
-        try {
-            return new Imagick($path);
-        } catch (ImagickException $e) {
-            throw new InvalidArgumentException(
-                sprintf("ImageMagick could not be created from path '%s'", $path),
-                500,
-                $e
-            );
-        }
+        $this->helper = $helper;
+        return $this;
     }
 }

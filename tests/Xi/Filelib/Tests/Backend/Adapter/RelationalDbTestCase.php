@@ -421,6 +421,11 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'folderurl'  => '',
                         'foldername' => 'root',
                         'uuid' => 'uuid-f-1',
+                        'data'      => json_encode(array(
+                            'lusso' => array(
+                                'gran-tusso' => 'libaisu',
+                            ))
+                        )
                     ),
                     array(
                         'id'         => 2,
@@ -428,6 +433,11 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'folderurl'  => 'lussuttaja',
                         'foldername' => 'lussuttaja',
                         'uuid' => 'uuid-f-2',
+                        'data'      => json_encode(array(
+                            'lusso' => array(
+                                'gran-tusso' => 'libaisu',
+                            ))
+                        )
                     ),
                     array(
                         'id'         => 3,
@@ -435,6 +445,11 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'folderurl'  => 'lussuttaja/tussin',
                         'foldername' => 'tussin',
                         'uuid' => 'uuid-f-3',
+                        'data'      => json_encode(array(
+                            'lusso' => array(
+                                'gran-tusso' => 'libaisu',
+                            ))
+                        )
                     ),
                     array(
                         'id'         => 4,
@@ -442,6 +457,11 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'folderurl'  => 'lussuttaja/banskun',
                         'foldername' => 'banskun',
                         'uuid' => 'uuid-f-4',
+                        'data'      => json_encode(array(
+                            'lusso' => array(
+                                'gran-tusso' => 'libaisu',
+                            ))
+                        )
                     ),
                     array(
                         'id'         => 5,
@@ -449,6 +469,11 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'folderurl'  => 'lussuttaja/tiedoton-kansio',
                         'foldername' => 'tiedoton-kansio',
                         'uuid' => 'uuid-f-5',
+                        'data'      => json_encode(array(
+                            'lusso' => array(
+                                'gran-tusso' => 'libaisu',
+                            ))
+                        )
                     ),
                 ),
                 'xi_filelib_file' => array(
@@ -537,6 +562,10 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
             array(0, new ResourceFinder(array('hash' => 'unexisting-hash'))),
             array(1, new ResourceFinder(array('hash' => 'hash-1'))),
             array(2, new ResourceFinder(array('hash' => 'hash-2'))),
+
+            array(1, new FileFinder(array('uuid' => 'uuid-4'))),
+            array(0, new FileFinder(array('uuid' => 'tenhusen-lipaisu-karmea-hipaisu'))),
+
 
         );
     }

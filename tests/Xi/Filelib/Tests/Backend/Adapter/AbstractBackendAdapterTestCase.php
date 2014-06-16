@@ -80,6 +80,9 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
             'size' => 6000,
             'mimetype' => 'lussuta/tussia',
             'exclusive' => true,
+            'data' => array(
+                'grande' => 'lusso'
+            )
         );
 
         $resource = Resource::create($data);
@@ -107,8 +110,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $this->findResource($resourceId));
 
         $this->assertTrue($this->backend->deleteResource($resource));
-
-        $this->assertNull($this->findResource($resourceId));
+        $this->assertFalse($this->findResource($resourceId));
     }
 
     /**
@@ -215,7 +217,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $this->findFolder($folderId));
         $this->assertTrue($this->backend->deleteFolder($folder));
-        $this->assertNull($this->findFolder($folderId));
+        $this->assertFalse($this->findFolder($folderId));
     }
 
     /**
@@ -260,10 +262,16 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
                 'url' => 'lussuttaja/tussin',
                 'name' => 'tussin',
                 'uuid' => 'uuid-f-' . $folderId,
+                'data' => array(
+                    'lusso' => array(
+                        'gran-tusso' => 'libaisu',
+                    )
+                )
             )
         );
 
         $this->assertEquals($data, $this->findFolder($folderId));
+
 
         $updateData = array(
             'id' => $folderId,
@@ -271,6 +279,9 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
             'url' => 'lussuttaja/lussander',
             'name' => 'lussander',
             'uuid' => 'sika-uuid',
+            'data' => array(
+                'tenhusta' => 'mina ylistan koska han on suurin kaikista suurempi kuin kim jong un'
+            )
         );
         $folder = Folder::create($updateData);
 
@@ -374,7 +385,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
         $file = File::create(array('id' => $fileId));
 
         $this->assertTrue($this->backend->deleteFile($file));
-        $this->assertNull($this->findFile($fileId));
+        $this->assertFalse($this->findFile($fileId));
     }
 
     /**
@@ -488,7 +499,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject
+     * @return \PHPUnit_Framework_MockObject_MockObject
      */
     protected function getMockAndDisableOriginalConstructor($className)
     {
@@ -499,34 +510,34 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 
     /**
      * @param $id
-     * @return mixed
+     * @return Resource
      */
     public function findResource($id)
     {
         $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Resource\Resource');
         $ret = $this->backend->findByIds($request);
-        return $ret->getResult()->current();
+        return $ret->getResult()->first();
     }
 
     /**
      * @param $id
-     * @return mixed
+     * @return File
      */
     public function findFile($id)
     {
         $request = new FindByIdsRequest(array($id), 'Xi\Filelib\File\File');
         $ret = $this->backend->findByIds($request);
-        return $ret->getResult()->current();
+        return $ret->getResult()->first();
     }
 
     /**
      * @param $id
-     * @return mixed
+     * @return Folder
      */
     public function findFolder($id)
     {
         $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Folder\Folder');
         $ret = $this->backend->findByIds($request);
-        return $ret->getResult()->current();
+        return $ret->getResult()->first();
     }
 }

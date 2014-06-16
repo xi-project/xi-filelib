@@ -4,9 +4,9 @@ namespace Xi\Filelib\Tests\Integration;
 
 use Xi\Filelib\Backend\Adapter\MongoBackendAdapter;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Storage\FilesystemStorage;
+use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
-use Xi\Filelib\Storage\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\Backend\Cache\Adapter\MemcachedCacheAdapter;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -75,7 +75,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
         $ed = new TraceableEventDispatcher(new EventDispatcher(), $stopwatch);
 
         $filelib = new FileLibrary(
-            new FilesystemStorage(ROOT_TESTS . '/data/files', new TimeDirectoryIdCalculator()),
+            new FilesystemStorageAdapter(ROOT_TESTS . '/data/files', new TimeDirectoryIdCalculator()),
             new MongoBackendAdapter(
                 $this->mongo
             ),

@@ -11,6 +11,7 @@ namespace Xi\Filelib;
 
 class Events
 {
+    const FILE_UPLOAD = 'xi_filelib.file.upload';
     const FILE_BEFORE_CREATE = 'xi_filelib.file.before_create';
     const FILE_AFTER_CREATE = 'xi_filelib.file.after_create';
     const FILE_BEFORE_DELETE = 'xi_filelib.file.before_delete';

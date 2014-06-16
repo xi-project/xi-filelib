@@ -22,5 +22,5 @@ interface RendererAdapter
      * @param Response $response
      * @return mixed
      */
-    public function returnResponse(Response $response);
+    public function adaptResponse(Response $response);
 }

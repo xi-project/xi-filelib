@@ -3,7 +3,6 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Profile\FileProfile;
-use Xi\Filelib\FileLibrary;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
@@ -173,10 +172,27 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedStorage()
+    public function getMockedStorageAdapter()
     {
-        return $this->getMock('Xi\Filelib\Storage\Storage');
+        return $this->getMock('Xi\Filelib\Storage\Adapter\StorageAdapter');
     }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedStorage($adapter = null)
+    {
+        $storage = $this->getMockBuilder('Xi\Filelib\Storage\Storage')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        if ($adapter) {
+            $storage->expects($this->any())->method('getAdapter')->will($this->returnValue($adapter));
+        }
+
+        return $storage;
+    }
+
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
@@ -184,6 +200,14 @@ class TestCase extends \PHPUnit_Framework_TestCase
     public function getMockedLinker()
     {
         return $this->getMock('Xi\Filelib\Publisher\Linker');
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getMockedReversibleLinker()
+    {
+        return $this->getMock('Xi\Filelib\Publisher\ReversibleLinker');
     }
 
     /**
@@ -399,19 +423,19 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedVersionProvider($identifier, $versions = array())
+    public function getMockedVersionProvider($versions = array(), $lazy = false)
     {
+        $class = $lazy ? 'Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider'
+            : 'Xi\Filelib\Plugin\VersionProvider\VersionProvider';
+
         $versionProvider = $this
-            ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\VersionProvider')
+            ->getMockBuilder($class)
+            ->disableOriginalConstructor()
             ->getMock();
 
         $versionProvider
-            ->expects($this->any())->method('getIdentifier')
-            ->will($this->returnValue($identifier));
-
-        $versionProvider
             ->expects($this->any())
-            ->method('getVersions')
+            ->method('getProvidedVersions')
             ->will($this->returnValue($versions));
 
         return $versionProvider;

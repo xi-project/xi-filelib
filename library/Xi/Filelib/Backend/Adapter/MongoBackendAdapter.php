@@ -49,6 +49,7 @@ class MongoBackendAdapter implements BackendAdapter
             'id' => '_id',
             'folder_id' => 'folder_id',
             'name' => 'name',
+            'uuid' => 'uuid',
         ),
         'Xi\Filelib\Folder\Folder' => array(
             'id' => '_id',
@@ -358,6 +359,7 @@ class MongoBackendAdapter implements BackendAdapter
                         'name'      => $folder['name'],
                         'url'       => $folder['url'],
                         'uuid'      => $folder['uuid'],
+                        'data'      => $folder['data'],
                     )
                 )
             );
@@ -378,7 +380,7 @@ class MongoBackendAdapter implements BackendAdapter
         foreach ($iter as $file) {
 
             $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
-            $resource = $this->findByIds($request)->getResult()->current();
+            $resource = $this->findByIds($request)->getResult()->first();
 
             $ret->append(
                 File::create(

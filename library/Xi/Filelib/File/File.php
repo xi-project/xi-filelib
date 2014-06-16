@@ -10,12 +10,12 @@
 namespace Xi\Filelib\File;
 
 use DateTime;
-use ArrayObject;
+use Xi\Filelib\BaseStorable;
 use Xi\Filelib\Identifiable;
-use Xi\Filelib\IdentifiableDataContainer;
 use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Storage\Storable;
 
-class File implements Identifiable
+class File extends BaseStorable implements Identifiable, Storable
 {
     const STATUS_RAW = 1;
     const STATUS_COMPLETED = 2;
@@ -37,11 +37,6 @@ class File implements Identifiable
         'versions' => 'setVersions',
         'data' => 'setData'
     );
-
-    /**
-     * @var mixed
-     */
-    private $id;
 
     /**
      * @var mixed
@@ -77,38 +72,6 @@ class File implements Identifiable
      * @var string
      */
     private $uuid;
-
-    /**
-     * @var ArrayObject
-     */
-    private $data;
-
-    private function __construct()
-    {
-    }
-
-    /**
-     * Sets id
-     *
-     * @param  mixed $id
-     * @return File
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Returns id
-     *
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Sets folder id
@@ -315,6 +278,18 @@ class File implements Identifiable
     }
 
     /**
+     * Creates an instance with data
+     *
+     * @param  array $data
+     * @return self
+     */
+    public static function create(array $data = array())
+    {
+        $obj = new self();
+        return $obj->fromArray($data);
+    }
+
+    /**
      * Sets data from array
      *
      * @param  array $data
@@ -329,105 +304,5 @@ class File implements Identifiable
         }
 
         return $this;
-    }
-
-    /**
-     * Creates an instance with data
-     *
-     * @param  array $data
-     * @return File
-     */
-    public static function create(array $data = array())
-    {
-        $file = new self();
-
-        return $file->fromArray($data);
-    }
-
-    /**
-     * @return IdentifiableDataContainer
-     */
-    public function getData()
-    {
-        if (!$this->data) {
-            $this->data = new IdentifiableDataContainer();
-        }
-        return $this->data;
-    }
-
-    public function setData($data)
-    {
-        if (is_array($data)) {
-            $data = new IdentifiableDataContainer($data);
-        }
-        $this->data = $data;
-        return $this;
-    }
-
-
-    /**
-     * Sets currently created versions
-     *
-     * @param  array    $versions
-     * @return Resource
-     */
-    public function setVersions(array $versions = array())
-    {
-        $this->getData()->set('versions', $versions);
-        return $this;
-    }
-
-    /**
-     * Returns currently created versions
-     *
-     * @return array
-     */
-    public function getVersions()
-    {
-        return $this->getData()->get('versions', array());
-    }
-
-    /**
-     * Adds version
-     *
-     * @param string $version
-     */
-    public function addVersion($version)
-    {
-        $versions = $this->getVersions();
-        if (!in_array($version, $versions)) {
-            array_push($versions, $version);
-            $this->setVersions($versions);
-        }
-    }
-
-    /**
-     * Removes a version
-     *
-     * @param string $version
-     */
-    public function removeVersion($version)
-    {
-        $versions = $this->getVersions();
-        $versions = array_diff($versions, array($version));
-        $this->setVersions($versions);
-    }
-
-    /**
-     * Returns whether resource has version
-     *
-     * @param  string  $version
-     * @return boolean
-     */
-    public function hasVersion($version)
-    {
-        return in_array($version, $this->getVersions());
-    }
-
-    public function __clone()
-    {
-        if ($this->data) {
-            $this->data = clone $this->data;
-        }
     }
 }

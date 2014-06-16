@@ -25,7 +25,7 @@ class LifeCycleTest extends TestCase
 
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
 
-        $file = $this->filelib->upload($manateePath, $folder);
+        $file = $this->filelib->uploadFile($manateePath, $folder);
         $this->assertEquals(File::STATUS_COMPLETED, $file->getStatus());
         $this->assertPublisherFileCount(0);
 
@@ -33,7 +33,7 @@ class LifeCycleTest extends TestCase
 
         $allFiles = $this->filelib->getFileRepository()->findAll();
         $this->assertCount(1, $allFiles);
-        $this->assertSame($file, $allFiles->current());
+        $this->assertSame($file, $allFiles->first());
 
         $this->filelib->getFileRepository()->delete($file);
 
@@ -46,7 +46,7 @@ class LifeCycleTest extends TestCase
         $allResources = $this->filelib->getResourceRepository()->findAll();
         $this->assertCount(1, $allResources);
 
-        $secondFile =  $this->filelib->upload($manateePath);
+        $secondFile =  $this->filelib->uploadFile($manateePath);
         $this->assertSame($file->getResource(), $secondFile->getResource());
 
         $this->publisher->publish($secondFile);
@@ -57,7 +57,7 @@ class LifeCycleTest extends TestCase
         $this->assertStorageFileCount(3);
         $this->assertPublisherFileCount(0);
 
-        $this->filelib->getResourceRepository()->delete($allResources->current());
+        $this->filelib->getResourceRepository()->delete($allResources->first());
         $this->assertStorageFileCount(0);
 
         $allResources = $this->filelib->getResourceRepository()->findAll();
@@ -76,7 +76,7 @@ class LifeCycleTest extends TestCase
         $this->filelib->addPlugin($automaticPublisherPlugin);
 
         $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $file =  $this->filelib->upload($manateePath);
+        $file =  $this->filelib->uploadFile($manateePath);
 
         $this->assertPublisherFileCount(2);
     }
@@ -111,7 +111,7 @@ class LifeCycleTest extends TestCase
         );
 
         $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $file = $this->filelib->upload($manateePath);
+        $file = $this->filelib->uploadFile($manateePath);
         $this->assertEquals(File::STATUS_RAW, $file->getStatus());
 
         $msg = $queue->dequeue();
@@ -130,8 +130,8 @@ class LifeCycleTest extends TestCase
         $this->filelib->addProfile(new FileProfile('unspoiled'));
 
         $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $file1 = $this->filelib->upload(new FileUpload($manateePath));
-        $file2 = $this->filelib->upload($manateePath, null, 'unspoiled');
+        $file1 = $this->filelib->uploadFile(new FileUpload($manateePath));
+        $file2 = $this->filelib->uploadFile($manateePath, null, 'unspoiled');
 
         // @todo Why profile manager of all places?
         $this->assertTrue($this->filelib->getProfileManager()->hasVersion($file1, 'cinemascope'));
@@ -152,7 +152,7 @@ class LifeCycleTest extends TestCase
         $this->memcached->flush();
 
         $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $file = $this->filelib->upload(new FileUpload($manateePath));
+        $file = $this->filelib->uploadFile(new FileUpload($manateePath));
 
         $resource = $file->getResource();
         $this->assertEquals(array('original', 'cinemascope'), $resource->getVersions());

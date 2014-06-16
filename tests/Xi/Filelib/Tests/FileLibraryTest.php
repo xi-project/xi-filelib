@@ -4,7 +4,9 @@ namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Authorization\AuthorizationPlugin;
 use Xi\Filelib\Backend\Cache\Cache;
+use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
 
@@ -46,7 +48,7 @@ class FileLibraryTest extends TestCase
      */
     public function storageGetterShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
         $this->assertInstanceOf('Xi\Filelib\Storage\Storage', $filelib->getStorage());
     }
 
@@ -62,7 +64,7 @@ class FileLibraryTest extends TestCase
             ->with($this->isInstanceOf('Pekkis\Queue\SymfonyBridge\EventDispatchingQueue'));
 
         $filelib = new FileLibrary(
-            $this->getMockedStorage(),
+            $this->getMockedStorageAdapter(),
             $this->getMockedBackendAdapter(),
             $this->getMockedEventDispatcher(),
             $commander
@@ -79,7 +81,7 @@ class FileLibraryTest extends TestCase
      */
     public function platformGetterShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
         $this->assertInstanceOf('Xi\Filelib\Backend\Adapter\BackendAdapter', $filelib->getBackendAdapter());
     }
 
@@ -88,7 +90,7 @@ class FileLibraryTest extends TestCase
      */
     public function backendGetterShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
         $this->assertInstanceOf('Xi\Filelib\Backend\Backend', $filelib->getBackend());
     }
 
@@ -97,7 +99,7 @@ class FileLibraryTest extends TestCase
      */
     public function tempDirShouldDefaultToSystemTempDir()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
         $this->assertEquals(sys_get_temp_dir(), $filelib->getTempDir());
     }
 
@@ -106,7 +108,7 @@ class FileLibraryTest extends TestCase
      */
     public function setTempDirShouldFailWhenDirectoryDoesNotExists()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
 
         $this->setExpectedException(
             'InvalidArgumentException',
@@ -128,7 +130,7 @@ class FileLibraryTest extends TestCase
         $this->assertTrue(is_dir($this->dirname));
         $this->assertFalse(is_writable($this->dirname));
 
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
 
         $this->setExpectedException(
             'InvalidArgumentException',
@@ -146,7 +148,7 @@ class FileLibraryTest extends TestCase
      */
     public function getsResourceRepository()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
         $rere = $filelib->getResourceRepository();
         $this->assertInstanceOf('Xi\Filelib\Resource\ResourceRepository', $rere);
     }
@@ -156,7 +158,7 @@ class FileLibraryTest extends TestCase
      */
     public function getFileRepositoryShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
         $fop = $filelib->getFileRepository();
 
         $this->assertInstanceOf('Xi\Filelib\File\FileRepository', $fop);
@@ -167,7 +169,7 @@ class FileLibraryTest extends TestCase
      */
     public function getFolderRepositoryShouldWork()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
         $fop = $filelib->getFolderRepository();
 
         $this->assertInstanceOf('Xi\Filelib\Folder\FolderRepository', $fop);
@@ -178,7 +180,7 @@ class FileLibraryTest extends TestCase
      */
     public function addedProfileShouldBeReturned()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
 
         $this->assertCount(1, $filelib->getProfiles());
 
@@ -204,7 +206,7 @@ class FileLibraryTest extends TestCase
     public function addPluginShouldFirePluginAddEventAndAddPluginAsSubscriber()
     {
         $ed = $this->getMockedEventDispatcher();
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter(), $ed);
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter(), $ed);
 
         $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
 
@@ -227,44 +229,16 @@ class FileLibraryTest extends TestCase
     /**
      * @test
      */
-    public function addPluginShouldAddToAllProfilesIfNoProfilesAreProvided()
+    public function addPluginDelegates()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
+        $plugin = new RandomizeNamePlugin();
 
-        $plugin = new AuthorizationPlugin($this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter'));
+        $this->assertSame($filelib, $filelib->addPlugin($plugin, array(), 'lusso'));
 
-        $filelib->addPlugin($plugin);
-
-        $this->assertContains($plugin, $filelib->getProfile('default')->getPlugins());
-
-        $filelib->addProfile(new FileProfile('sucklee'));
-
-        $this->assertContains($plugin, $filelib->getProfile('sucklee')->getPlugins());
-
-        $this->assertTrue($plugin->hasProfile('sucklee'));
-        $this->assertTrue($plugin->hasProfile('suckler'));
+        $this->assertCount(1, $filelib->getPluginManager()->getPlugins());
     }
 
-    /**
-     * @test
-     */
-    public function addPluginShouldAddToOnlyProfilesProvided()
-    {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
-
-        $plugin = new AuthorizationPlugin($this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter'));
-
-        $filelib->addPlugin($plugin, array('sucklee', 'ducklee'));
-
-        $this->assertNotContains($plugin, $filelib->getProfile('default')->getPlugins());
-
-        $filelib->addProfile(new FileProfile('sucklee'));
-
-        $this->assertContains($plugin, $filelib->getProfile('sucklee')->getPlugins());
-
-        $this->assertTrue($plugin->hasProfile('sucklee'));
-        $this->assertFalse($plugin->hasProfile('suckler'));
-    }
 
     /**
      * @test
@@ -272,18 +246,17 @@ class FileLibraryTest extends TestCase
     public function getEventDispatcherShouldWork()
     {
         $ed = $this->getMockedEventDispatcher();
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter(), $ed);
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter(), $ed);
         $this->assertSame($ed, $filelib->getEventDispatcher());
     }
 
     /**
      * @test
      */
-    public function uploadShortcutShouldDelegate()
+    public function uploadFileDelegates()
     {
         $filelib = $this->getMockedFilelib(array('getFileRepository'));
         $fop = $this->getMockedFileRepository();
-
         $filelib->expects($this->any())->method('getFileRepository')->will($this->returnValue($fop));
 
         $folder = $this->getMockedFolder();
@@ -294,16 +267,101 @@ class FileLibraryTest extends TestCase
             ->with('lussutus', $folder, 'tussi')
             ->will($this->returnValue('xooxer'));
 
-        $ret = $filelib->upload('lussutus', $folder, 'tussi');
+        $ret = $filelib->uploadFile('lussutus', $folder, 'tussi');
         $this->assertSame('xooxer', $ret);
     }
 
     /**
      * @test
      */
+    public function findFileDelegates()
+    {
+        $filelib = $this->getMockedFilelib(array('getFileRepository'));
+        $fop = $this->getMockedFileRepository();
+        $filelib->expects($this->any())->method('getFileRepository')->will($this->returnValue($fop));
+
+        $id = 'lussendorf';
+
+        $fop
+            ->expects($this->once())
+            ->method('find')
+            ->with($id)
+            ->will($this->returnValue('xooxer'));
+
+        $ret = $filelib->findFile($id);
+        $this->assertSame('xooxer', $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function findFilesDelegates()
+    {
+        $filelib = $this->getMockedFilelib(array('getFileRepository'));
+        $fop = $this->getMockedFileRepository();
+        $filelib->expects($this->any())->method('getFileRepository')->will($this->returnValue($fop));
+
+        $ids = array('lussendorf', 'lussenford');
+
+        $fop
+            ->expects($this->once())
+            ->method('findMany')
+            ->with($ids)
+            ->will($this->returnValue('xooxer'));
+
+        $ret = $filelib->findFiles($ids);
+        $this->assertSame('xooxer', $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function findFilesByDelegates()
+    {
+        $filelib = $this->getMockedFilelib(array('getFileRepository'));
+        $fop = $this->getMockedFileRepository();
+        $filelib->expects($this->any())->method('getFileRepository')->will($this->returnValue($fop));
+
+        $finder = new FileFinder();
+
+        $fop
+            ->expects($this->once())
+            ->method('findBy')
+            ->with($finder)
+            ->will($this->returnValue('xooxer'));
+
+        $ret = $filelib->findFilesBy($finder);
+        $this->assertSame('xooxer', $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function createFolderByUrlDelegates()
+    {
+        $filelib = $this->getMockedFilelib(array('getFolderRepository', 'getFileRepository'));
+        $fop = $this->getMockedFolderRepository();
+        $filelib->expects($this->any())->method('getFolderRepository')->will($this->returnValue($fop));
+
+        $url = '/tenhunen/imaiseppa/tappion/karvas/kalkki';
+
+        $fop
+            ->expects($this->once())
+            ->method('createByUrl')
+            ->with($url)
+            ->will($this->returnValue('xooxer'));
+
+        $ret = $filelib->createFolderByUrl($url);
+        $this->assertEquals('xooxer', $ret);
+    }
+
+
+    /**
+     * @test
+     */
     public function cacheCanBeSet()
     {
-        $filelib = new FileLibrary($this->getMockedStorage(), $this->getMockedBackendAdapter());
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
 
         $adapter = $this->getMockedCacheAdapter();
         $this->assertNull($filelib->getCache());

@@ -20,6 +20,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\Profile\ProfileManager;
+use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Storage\FileIOException;
 
 /**
@@ -124,7 +125,7 @@ class Publisher implements EventSubscriberInterface, Attacher
 
             try {
                 $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
-                $versionUrls[$version] = $this->getUrlVersion($file, $version);
+                $versionUrls[$version] = $this->getUrl($file, $version);
             } catch (FileIOException $e) {
                 // Version does not exists, but it shall not stop us!
             }
@@ -189,14 +190,14 @@ class Publisher implements EventSubscriberInterface, Attacher
      * @param string $version
      * @return string
      */
-    public function getUrlVersion(File $file, $version)
+    public function getUrl(File $file, $version)
     {
         $versionUrls = $file->getData()->get('publisher.version_url');
         if (isset($versionUrls[$version])) {
             return $versionUrls[$version];
         }
 
-        $url = $this->adapter->getUrlVersion(
+        $url = $this->adapter->getUrl(
             $file,
             $version,
             $this->getVersionProvider($file, $version),
@@ -204,6 +205,15 @@ class Publisher implements EventSubscriberInterface, Attacher
         );
         return $url;
     }
+
+    public function reverseUrl($url)
+    {
+        if (!$this->linker instanceof ReversibleLinker) {
+            throw new RuntimeException("Reversable linker needed to reverse an url");
+        }
+        return $this->linker->reverseLink($url);
+    }
+
 
     /**
      * @param FileEvent $event

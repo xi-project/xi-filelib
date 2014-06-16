@@ -27,7 +27,7 @@ class AbstractRepositoryTest extends TestCase
         $this->commander = $this->getMockedCommander();
 
         $filelib = new FileLibrary(
-            $this->getMockedStorage(),
+            $this->getMockedStorageAdapter(),
             $this->getMockedBackendAdapter(),
             $this->getMockedEventDispatcher(),
             $this->commander

@@ -2,7 +2,6 @@
 
 namespace Xi\Filelib\Tests\Event;
 
-use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\File\Upload\FileUpload;
 

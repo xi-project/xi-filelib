@@ -52,10 +52,15 @@ class UploadFileCommandTest extends \Xi\Filelib\Tests\TestCase
         $dispatcher
             ->expects($this->at(1))
             ->method('dispatch')
-            ->with(Events::FILE_BEFORE_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
+            ->with(Events::FILE_UPLOAD, $this->isInstanceOf('Xi\Filelib\Event\FileUploadEvent'));
 
         $dispatcher
             ->expects($this->at(2))
+            ->method('dispatch')
+            ->with(Events::FILE_BEFORE_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+
+        $dispatcher
+            ->expects($this->at(3))
             ->method('dispatch')
             ->with(Events::FILE_AFTER_CREATE, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 

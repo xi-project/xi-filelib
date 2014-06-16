@@ -14,7 +14,7 @@ use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
 
-class CreateResourceCommand extends AbstractResourceCommand
+class CreateResourceCommand extends BaseResourceCommand
 {
     /**
      * @var Resource

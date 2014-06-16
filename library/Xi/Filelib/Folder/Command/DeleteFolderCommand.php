@@ -17,7 +17,7 @@ use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
 
-class DeleteFolderCommand extends AbstractFolderCommand
+class DeleteFolderCommand extends BaseFolderCommand
 {
     /**
      *

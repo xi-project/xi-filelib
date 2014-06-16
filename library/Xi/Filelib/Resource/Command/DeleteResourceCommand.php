@@ -14,7 +14,7 @@ use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
 
-class DeleteResourceCommand extends AbstractResourceCommand
+class DeleteResourceCommand extends BaseResourceCommand
 {
     /**
      * @var Resource

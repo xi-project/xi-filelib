@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Tests\Plugin\VersionProvider;
 
+use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Tests\TestCase;
 
 class OriginalVersionPluginTest extends TestCase
@@ -19,5 +20,23 @@ class OriginalVersionPluginTest extends TestCase
     public function interfaceShouldExist()
     {
         $this->assertClassExists('Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin');
+    }
+
+    /**
+     * @test
+     */
+    public function sharedVersionsAllowed()
+    {
+        $plugin = new OriginalVersionPlugin();
+        $this->assertTrue($plugin->areSharedVersionsAllowed());
+    }
+
+    /**
+     * @test
+     */
+    public function sharedResourceAllowed()
+    {
+        $plugin = new OriginalVersionPlugin();
+        $this->assertTrue($plugin->isSharedResourceAllowed());
     }
 }

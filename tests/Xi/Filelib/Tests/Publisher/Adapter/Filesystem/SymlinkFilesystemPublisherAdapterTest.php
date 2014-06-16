@@ -27,11 +27,10 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
     /**
      * @test
      */
-    public function attachToShouldFailWithNonFilesystemStorage()
+    public function attachToFailsWithNonFilesystemStorage()
     {
         $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
-
-        $storage = $this->getMock('Xi\Filelib\Storage\Storage');
+        $storage = $this->getMockedStorage();
         $filelib = $this->getMockedFilelib(null, null, null, $storage);
         $publisher = new SymlinkFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
 
@@ -95,15 +94,17 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         $versionProviderAllowsSharedResources
     ) {
 
-        $storage = $this->getMockedStorage();
-        $storage->expects($this->any())->method('getRoot')->will($this->returnValue('/tussin/lussu'));
+        $adapter = $this->getMockedStorageAdapter();
+        $adapter->expects($this->any())->method('getRoot')->will($this->returnValue('/tussin/lussu'));
+        $storage = $this->getMockedStorage($adapter);
+
         $filelib = $this->getMockedFilelib(null, null, null, $storage);
 
 
         $this->versionProvider
             ->expects($this->atLeastOnce())
-            ->method('areSharedVersionsAllowed')
-            ->will($this->returnValue($versionProviderAllowsSharedResources));
+            ->method('getApplicableStorable')
+            ->will($this->returnValue($versionProviderAllowsSharedResources ? $file->getResource() : $file));
 
         $publisher = new SymlinkFilesystemPublisherAdapter(
             ROOT_TESTS . '/data/publisher/public',
@@ -122,7 +123,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         } else {
             $storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer', $file)
+                ->with($file, 'xooxer')
                 ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
         }
 
@@ -222,8 +223,8 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
     ) {
         $this->versionProvider
             ->expects($this->atLeastOnce())
-            ->method('areSharedVersionsAllowed')
-            ->will($this->returnValue($allowSharedVersions));
+            ->method('getApplicableStorable')
+            ->will($this->returnValue($allowSharedVersions ? $file->getResource() : $file));
 
         if ($allowSharedVersions) {
             $this->storage
@@ -233,7 +234,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         } else {
             $this->storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer', $file)
+                ->with($file, 'xooxer')
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 
@@ -266,8 +267,8 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
     ) {
         $this->versionProvider
             ->expects($this->atLeastOnce())
-            ->method('areSharedVersionsAllowed')
-            ->will($this->returnValue($allowSharedVersions));
+            ->method('getApplicableStorable')
+            ->will($this->returnValue($allowSharedVersions ? $file->getResource() : $file));
 
         if ($allowSharedVersions) {
             $this->storage
@@ -277,7 +278,7 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         } else {
             $this->storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer', $file)
+                ->with($file, 'xooxer')
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 

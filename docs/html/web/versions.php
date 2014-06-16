@@ -63,7 +63,7 @@ $versionPlugin = new VersionPlugin(
 );
 $filelib->addPlugin($versionPlugin, array('default'));
 
-$file = $filelib->upload(__DIR__ . '/../manatees/manatus-12.jpg');
+$file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-12.jpg');
 $publisher->publish($file);
 
 ?>
@@ -75,11 +75,11 @@ $publisher->publish($file);
     <body>
         <h1>You just published a picture of a manatee and a cinemascope thumbnail. Aww!!!</h1>
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'original'); ?>" />
         </p>
 
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'cinemascope'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'cinemascope'); ?>" />
         </p>
 
     </body>

@@ -10,7 +10,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\FolderEvent;
-use ArrayIterator;
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Events;
 
 class IdentityMapTest extends TestCase
@@ -203,7 +203,7 @@ class IdentityMapTest extends TestCase
             Folder::create(array('id' => 6)),
             File::create(array('id' => 6)),
         );
-        $iter = new ArrayIterator($array);
+        $iter = ArrayCollection::create($array);
 
         $im = $this
             ->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
@@ -220,7 +220,7 @@ class IdentityMapTest extends TestCase
 
         $im->addMany($iter);
 
-        $this->assertSame($first, $iter->current());
+        $this->assertSame($first, $iter->first());
     }
 
     /**
@@ -234,7 +234,7 @@ class IdentityMapTest extends TestCase
             Folder::create(array('id' => 6)),
             File::create(array('id' => 6)),
         );
-        $iter = new ArrayIterator($array);
+        $iter = ArrayCollection::create($array);
 
         $im = $this
             ->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
@@ -248,7 +248,7 @@ class IdentityMapTest extends TestCase
             ->with($this->isInstanceOf('Xi\Filelib\Identifiable'));
 
         $im->removeMany($iter);
-        $this->assertSame($first, $iter->current());
+        $this->assertSame($first, $iter->first());
     }
 
     /**

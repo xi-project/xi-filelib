@@ -3,9 +3,7 @@
 namespace Xi\Filelib\Tests\Backend;
 
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
-use Xi\Filelib\Backend\IdentityMap\IdentityMap;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
@@ -14,8 +12,7 @@ use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
-use ArrayIterator;
-use Xi\Filelib\Events;
+use Xi\Collections\Collection\ArrayCollection;
 
 class BackendTest extends TestCase
 {
@@ -240,7 +237,7 @@ class BackendTest extends TestCase
             ->expects($this->once())
             ->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array($nonUniqueFile))));
+            ->will($this->returnValue(ArrayCollection::create(array($nonUniqueFile))));
 
         $this->setExpectedException(
             'Xi\Filelib\Backend\NonUniqueFileException',
@@ -270,7 +267,7 @@ class BackendTest extends TestCase
             ->expects($this->once())
             ->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array())));
+            ->will($this->returnValue(ArrayCollection::create(array())));
 
         $ret = $backend->createFile($file, $folder);
         $this->assertSame($file, $ret);
@@ -301,7 +298,7 @@ class BackendTest extends TestCase
                         );
                         $self->assertEquals($expectedParams, $finder->getParameters());
 
-                        return new ArrayIterator(array());
+                        return ArrayCollection::create(array());
                     }
                 )
             );
@@ -346,7 +343,7 @@ class BackendTest extends TestCase
                         );
                         $self->assertEquals($expectedParams, $finder->getParameters());
 
-                        return new ArrayIterator($files);
+                        return ArrayCollection::create($files);
                     }
                 )
             );
@@ -438,7 +435,7 @@ class BackendTest extends TestCase
             ->getMock();
 
         $ret = $backend->findByFinder($finder);
-        $this->assertInstanceOf('ArrayIterator', $ret);
+        $this->assertInstanceOf('Traversable', $ret);
     }
 
     /**
@@ -458,7 +455,7 @@ class BackendTest extends TestCase
      * @dataProvider provideClassNames
      * @param string $className
      */
-    public function findByIdShouldDelegateToBackendAdapter($className)
+    public function findByIdDelegatesToFindByIds($className)
     {
         $this->platform->expects($this->once())->method('findByIds')
             ->with($this->isInstanceOf('Xi\Filelib\Backend\FindByIdsRequest'))
@@ -471,9 +468,28 @@ class BackendTest extends TestCase
 
         $ret = $backend->findById(1, $className);
 
-        $this->assertNull($ret);
+        $this->assertFalse($ret);
     }
 
+    /**
+     * @test
+     * @dataProvider provideClassNames
+     * @param string $className
+     */
+    public function findByIdsDelegatesToPlatform($className)
+    {
+        $this->platform->expects($this->once())->method('findByIds')
+            ->with($this->isInstanceOf('Xi\Filelib\Backend\FindByIdsRequest'))
+            ->will($this->returnArgument(0));
+
+        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
+            ->setMethods(array('getIdentityMapHelper'))
+            ->getMock();
+
+        $ret = $backend->findByIds(array(1), $className);
+        $this->assertInstanceOf('Xi\Collections\Collection\ArrayCollection', $ret);
+    }
 
     public function getMockedBackend($methods = array())
     {

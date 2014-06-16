@@ -15,22 +15,27 @@ use Xi\Filelib\FileLibrary;
 /**
  * Mirrors the original file as a version
  */
-class OriginalVersionPlugin extends AbstractVersionProvider
+class OriginalVersionPlugin extends VersionProvider
 {
     /**
      * @var string
      */
     private $tempDir;
 
+    /**
+     * @var string
+     */
+    private $identifier;
+
     public function __construct(
-        $identifier
+        $identifier = 'original'
     ) {
         parent::__construct(
-            $identifier = 'original',
             function (File $file) {
                 return true;
             }
         );
+        $this->identifier = $identifier;
     }
 
     public function attachTo(FileLibrary $filelib)
@@ -53,11 +58,11 @@ class OriginalVersionPlugin extends AbstractVersionProvider
         copy($retrieved, $tmp);
 
         return array(
-            $this->getIdentifier() => $tmp,
+            $this->identifier => $tmp,
         );
     }
 
-    public function getVersions()
+    public function getProvidedVersions()
     {
         return array($this->identifier);
     }

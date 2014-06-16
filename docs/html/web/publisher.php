@@ -16,7 +16,7 @@ $publisher->attachTo($filelib);
 $originalPlugin = new OriginalVersionPlugin('original');
 $filelib->addPlugin($originalPlugin, array('default'));
 
-$file = $filelib->upload(__DIR__ . '/../manatees/manatus-09.jpg');
+$file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-09.jpg');
 $publisher->publish($file);
 
 ?>
@@ -35,7 +35,7 @@ $publisher->publish($file);
             <h1>You just published a picture of a manatee</h1>
 
             <p>
-                <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
+                <img src="<?php echo $publisher->getUrl($file, 'original'); ?>" />
             </p>
 
         </div>

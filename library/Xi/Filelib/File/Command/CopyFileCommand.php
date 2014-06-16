@@ -23,7 +23,7 @@ use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\Queue\UuidReceiver;
 use Xi\Filelib\Resource\ResourceRepository;
 
-class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
+class CopyFileCommand extends BaseFileCommand implements UuidReceiver
 {
     /**
      *
