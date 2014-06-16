@@ -5,7 +5,8 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 
 ## From version 0.11.x to version 0.12.x
 
-* Data is backwards compatible. Hoorah!
+* Uh oh. Data is not backwards compatible. This is the last time, I promise! See changes below.
+* Folders now have a data container object.
 * Filelib's upload() shortcut is now uploadFile().
 * Filelib has other convenient repository shortcuts (findFile(), findFiles() etc).
 * FileRepository has some new nice finder methods (for example findMany()).
@@ -28,6 +29,22 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
   Lazy versions can be used to save space in large systems by deleting old / rarely used / whatever versions.
   They are then recreated when needed. When used in combination with the publisher, redirecting not-found
   published files to PHP backend must of course be done. (see docs/ for examples).
+
+### PostgreSQL migration
+
+```sql
+ALTER TABLE xi_filelib_folder ADD COLUMN data TEXT NOT NULL DEFAULT '{}';
+```
+
+### MySQL migration
+
+```sql
+ALTER TABLE xi_filelib_folder ADD COLUMN data TEXT NOT NULL DEFAULT '{}';
+```
+
+### MongoDB migration
+
+Todo.
 
 ## From version 0.10.x to version 0.11.x
 

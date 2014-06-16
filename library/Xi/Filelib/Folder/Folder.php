@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Folder;
 
+use Xi\Filelib\BaseIdentifiable;
 use Xi\Filelib\Identifiable;
 
 /**
@@ -17,7 +18,7 @@ use Xi\Filelib\Identifiable;
  * @author pekkis
  *
  */
-class Folder implements Identifiable
+class Folder extends BaseIdentifiable implements Identifiable
 {
     /**
      * Key to method mapping for fromArray
@@ -30,12 +31,8 @@ class Folder implements Identifiable
         'name' => 'setName',
         'url' => 'setUrl',
         'uuid' => 'setUuid',
+        'data' => 'setData',
     );
-
-    /**
-     * @var mixed
-     */
-    private $id;
 
     /**
      * @var mixed
@@ -56,31 +53,6 @@ class Folder implements Identifiable
      * @var string
      */
     private $uuid;
-
-    private function __construct()
-    {
-    }
-
-    /**
-     * Sets id
-     *
-     * @param mixed $id
-     * @return Folder
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      *
@@ -171,6 +143,7 @@ class Folder implements Identifiable
             'name' => $this->getName(),
             'url' => $this->getUrl(),
             'uuid' => $this->getUuid(),
+            'data' => $this->getData()->toArray()
         );
     }
 

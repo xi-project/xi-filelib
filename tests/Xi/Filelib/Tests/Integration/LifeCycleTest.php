@@ -152,7 +152,7 @@ class LifeCycleTest extends TestCase
         $this->memcached->flush();
 
         $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $file = $this->filelib->upload(new FileUpload($manateePath));
+        $file = $this->filelib->uploadFile(new FileUpload($manateePath));
 
         $resource = $file->getResource();
         $this->assertEquals(array('original', 'cinemascope'), $resource->getVersions());

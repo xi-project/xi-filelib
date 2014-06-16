@@ -15,15 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="xi_filelib_folder")
  */
-class Folder
+class Folder extends BaseEntity
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
     /**
      * @ORM\Column(name="foldername", type="string", length=255)
      */
@@ -49,16 +42,6 @@ class Folder
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set name

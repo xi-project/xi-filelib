@@ -16,15 +16,8 @@ use DateTime;
  * @ORM\Entity
  * @ORM\Table(name="xi_filelib_resource")
  */
-class Resource
+class Resource extends BaseEntity
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
     /**
      * @ORM\Column(name="hash", type="string", length=255, nullable=false)
      */
@@ -54,19 +47,6 @@ class Resource
      * @ORM\OneToMany(targetEntity="File", mappedBy="resource")
      **/
     private $files;
-
-    /**
-     * @ORM\Column(name="data", type="json_array")
-     */
-    private $data = array();
-
-    /**
-     * Get id
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set hash
@@ -180,23 +160,5 @@ class Resource
         $this->dateCreated = $dateCreated;
 
         return $this;
-    }
-
-    /**
-     * @param array $data
-     * @return $this
-     */
-    public function setData(array $data)
-    {
-        $this->data = $data;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
     }
 }

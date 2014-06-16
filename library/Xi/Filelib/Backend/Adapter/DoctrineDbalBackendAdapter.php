@@ -145,6 +145,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
                 'foldername' => $folder->getName(),
                 'folderurl' => $folder->getUrl(),
                 'uuid' => $folder->getUuid(),
+                'data' => json_encode($folder->getdata()->toArray())
             )
         );
 
@@ -160,7 +161,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
     {
         $sql = "
         UPDATE xi_filelib_folder
-        SET parent_id = :parentId, foldername = :name, folderurl = :url, uuid = :uuid
+        SET parent_id = :parentId, foldername = :name, folderurl = :url, uuid = :uuid, data = :data
         WHERE id = :id
         ";
 
@@ -173,6 +174,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
                 'url' => $folder->getUrl(),
                 'uuid' => $folder->getUuid(),
                 'id' => $folder->getId(),
+                'data' => json_encode($folder->getdata()->toArray())
             )
         );
 
@@ -388,6 +390,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
                         'name' => $folder['foldername'],
                         'url' => $folder['folderurl'],
                         'uuid' => $folder['uuid'],
+                        'data' => json_decode($folder['data'], true),
                     )
                 )
             );
