@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\Folder\Command;
 
-class AbstractFolderCommandTest extends \Xi\Filelib\Tests\TestCase
+class BaseFolderCommandTest extends \Xi\Filelib\Tests\TestCase
 {
 
     /**
@@ -10,10 +10,10 @@ class AbstractFolderCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertClassExists('Xi\Filelib\Folder\Command\AbstractFolderCommand');
+        $this->assertClassExists('Xi\Filelib\Folder\Command\BaseFolderCommand');
         $this->assertImplements(
             'Xi\Filelib\Command\Command',
-            'Xi\Filelib\Folder\Command\AbstractFolderCommand'
+            'Xi\Filelib\Folder\Command\BaseFolderCommand'
         );
     }
 
@@ -25,7 +25,7 @@ class AbstractFolderCommandTest extends \Xi\Filelib\Tests\TestCase
         $foop = $this->getMockedFolderRepository();
         $filelib = $this->getMockedFilelib(null, null, $foop);
 
-        $command = $this->getMockForAbstractClass('Xi\Filelib\Folder\Command\AbstractFolderCommand');
+        $command = $this->getMockForAbstractClass('Xi\Filelib\Folder\Command\BaseFolderCommand');
         $command->attachTo($filelib);
 
         $this->assertAttributeSame($foop, 'folderRepository', $command);

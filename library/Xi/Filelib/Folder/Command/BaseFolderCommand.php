@@ -15,7 +15,7 @@ use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\FileLibrary;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-abstract class AbstractFolderCommand implements Command
+abstract class BaseFolderCommand implements Command
 {
     /**
      *
