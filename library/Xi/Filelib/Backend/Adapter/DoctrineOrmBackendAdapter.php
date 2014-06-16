@@ -190,6 +190,7 @@ class DoctrineOrmBackendAdapter implements BackendAdapter
         $folderEntity->setName($folder->getName());
         $folderEntity->setUrl($folder->getUrl());
         $folderEntity->setUuid($folder->getUuid());
+        $folderEntity->setData($folder->getData()->toArray());
 
         $this->em->persist($folderEntity);
         $this->em->flush($folderEntity);
@@ -218,6 +219,7 @@ class DoctrineOrmBackendAdapter implements BackendAdapter
             $folderRow->setName($folder->getName());
             $folderRow->setUrl($folder->getUrl());
             $folderRow->setUuid($folder->getUuid());
+            $folderRow->setData($folder->getData()->toArray());
 
             $this->em->flush($folderRow);
 
@@ -439,6 +441,7 @@ class DoctrineOrmBackendAdapter implements BackendAdapter
                         'name' => $folder->getName(),
                         'url' => $folder->getUrl(),
                         'uuid' => $folder->getUuid(),
+                        'data' => $folder->getData(),
                     )
                 )
             );

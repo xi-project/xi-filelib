@@ -147,6 +147,11 @@ class JsonBackendAdapterTest extends AbstractBackendAdapterTestCase
                     'url'       => '',
                     'name'      => 'root',
                     'uuid'      => 'uuid-f-49a7011a05c677b9a9166101',
+                    'data'      => array(
+                        'lusso' => array(
+                            'gran-tusso' => 'libaisu',
+                        )
+                    )
                 ),
                 array(
                     'id'       => '49a7011a05c677b9a9166102',
@@ -154,6 +159,11 @@ class JsonBackendAdapterTest extends AbstractBackendAdapterTestCase
                     'url'       => 'lussuttaja',
                     'name'      => 'lussuttaja',
                     'uuid'      => 'uuid-f-49a7011a05c677b9a9166102',
+                    'data'      => array(
+                        'lusso' => array(
+                            'gran-tusso' => 'libaisu',
+                        )
+                    )
                 ),
                 array(
                     'id'       => '49a7011a05c677b9a9166103',
@@ -161,6 +171,11 @@ class JsonBackendAdapterTest extends AbstractBackendAdapterTestCase
                     'url'       => 'lussuttaja/tussin',
                     'name'      => 'tussin',
                     'uuid'      => 'uuid-f-49a7011a05c677b9a9166103',
+                    'data'      => array(
+                        'lusso' => array(
+                            'gran-tusso' => 'libaisu',
+                        )
+                    )
                 ),
                 array(
                     'id'       => '49a7011a05c677b9a9166104',
@@ -168,6 +183,11 @@ class JsonBackendAdapterTest extends AbstractBackendAdapterTestCase
                     'url'       => 'lussuttaja/banskun',
                     'name'      => 'banskun',
                     'uuid'      => 'uuid-f-49a7011a05c677b9a9166104',
+                    'data'      => array(
+                        'lusso' => array(
+                            'gran-tusso' => 'libaisu',
+                        )
+                    )
                 ),
                 array(
                     'id'       => '49a7011a05c677b9a9166105',
@@ -175,6 +195,11 @@ class JsonBackendAdapterTest extends AbstractBackendAdapterTestCase
                     'url'       => 'lussuttaja/tiedoton-kansio',
                     'name'      => 'tiedoton-kansio',
                     'uuid'      => 'uuid-f-49a7011a05c677b9a9166105',
+                    'data'      => array(
+                        'lusso' => array(
+                            'gran-tusso' => 'libaisu',
+                        )
+                    )
                 ),
             ),
             'files' => array(

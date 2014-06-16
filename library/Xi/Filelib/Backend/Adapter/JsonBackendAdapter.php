@@ -383,6 +383,7 @@ class JsonBackendAdapter implements BackendAdapter
                         'name'      => $folder['name'],
                         'url'       => $folder['url'],
                         'uuid'      => $folder['uuid'],
+                        'data'      => $folder['data'],
                     )
                 )
             );

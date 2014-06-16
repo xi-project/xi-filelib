@@ -31,6 +31,7 @@ class Folder extends BaseIdentifiable implements Identifiable
         'name' => 'setName',
         'url' => 'setUrl',
         'uuid' => 'setUuid',
+        'data' => 'setData',
     );
 
     /**
@@ -142,6 +143,7 @@ class Folder extends BaseIdentifiable implements Identifiable
             'name' => $this->getName(),
             'url' => $this->getUrl(),
             'uuid' => $this->getUuid(),
+            'data' => $this->getData()->toArray()
         );
     }
 

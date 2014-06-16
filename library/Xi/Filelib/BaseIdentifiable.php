@@ -31,7 +31,6 @@ abstract class BaseIdentifiable
         $this->data = new IdentifiableDataContainer();
     }
 
-
     /**
      * @param  mixed $id
      * @return self
@@ -58,9 +57,6 @@ abstract class BaseIdentifiable
      */
     public function getData()
     {
-        if (!$this->data) {
-            $this->data = new IdentifiableDataContainer();
-        }
         return $this->data;
     }
 
