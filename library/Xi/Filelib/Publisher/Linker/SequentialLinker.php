@@ -20,7 +20,7 @@ use Xi\Filelib\Publisher\Linker;
  * @author Petri Mahanen
  * @deprecated
  */
-class SequentialLinker extends AbstractSequentialLinker implements Linker
+class SequentialLinker extends BaseSequentialLinker implements Linker
 {
     /**
      * @param File $file

@@ -18,7 +18,7 @@ use Xi\Filelib\Publisher\Linker;
  *
  * @deprecated
  */
-class CreationTimeLinker extends AbstractCreationTimeLinker implements Linker
+class CreationTimeLinker extends BaseCreationTimeLinker implements Linker
 {
     /**
      * @param FileLibrary $filelib
