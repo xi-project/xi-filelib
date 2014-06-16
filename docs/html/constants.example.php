@@ -8,3 +8,4 @@ define('ZENCODER_KEY', 'zencoder api key');
 define('ZENCODER_BUCKET', 's3 bucket');
 define('S3_KEY', 's3 key');
 define('S3_SECRETKEY', 's3 secret key');
+define('S3_BUCKET', 's3 bucket name');
