@@ -25,7 +25,7 @@ use Xi\Filelib\Storage\Storable;
  *
  * @author pekkis
  */
-class GaufretteStorageAdapter extends AbstractStorageAdapter
+class GaufretteStorageAdapter extends BaseStorageAdapter
 {
     /**
      * @var Filesystem

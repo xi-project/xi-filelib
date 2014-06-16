@@ -18,7 +18,7 @@ use Xi\Filelib\Storage\Storable;
  *
  * @author pekkis
  */
-abstract class AbstractStorageAdapter implements StorageAdapter
+abstract class BaseStorageAdapter implements StorageAdapter
 {
     /**
      * @param Storable $storable
