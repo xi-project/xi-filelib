@@ -15,7 +15,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
 
-class DeleteFileCommand extends AbstractFileCommand
+class DeleteFileCommand extends BaseFileCommand
 {
     /**
      * @var File

@@ -22,7 +22,7 @@ use Pekkis\Queue\Message;
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\Queue\UuidReceiver;
 
-class CopyFileCommand extends AbstractFileCommand implements UuidReceiver
+class CopyFileCommand extends BaseFileCommand implements UuidReceiver
 {
     /**
      *

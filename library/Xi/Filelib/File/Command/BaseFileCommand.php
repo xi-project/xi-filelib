@@ -16,7 +16,7 @@ use Xi\Filelib\FileLibrary;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Storage\Storage;
 
-abstract class AbstractFileCommand implements Command
+abstract class BaseFileCommand implements Command
 {
     /**
      * @var FileRepository
