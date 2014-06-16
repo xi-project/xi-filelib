@@ -106,6 +106,21 @@
                         <span class="label label-info">RabbitMQ</span> <span class="label label-info">Zencoder</span>
                     </dd>
 
+                    <dt><a href="lazy-publisher.php">Lazy publisher</a></dt>
+                    <dd>
+                        <p>
+                            When deciding to operate in lazy mode with version provider plugins that support this
+                            (image version plugins, for example), nothing needs to be processed in front. Versions
+                            are created on demand. You can clean up space by deleting old, rarely accessed files
+                            from the file system and if by chance someone needs them once more they are recreated.
+                        </p>
+
+                        <p>
+                            When working with publishers and lazy mode you must of course hook your HTTP server
+                            to forward all non-found filelib files to the backend who can then use reversible
+                            linkers to create and render the version.
+                        </p>
+                    </dd>
                 </dl>
 
             </div>

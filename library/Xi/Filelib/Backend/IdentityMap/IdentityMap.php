@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\FindByIdsRequestResolver;
 use Xi\Filelib\Event\IdentifiableEvent;
-use Iterator;
+use Xi\Collections\Collection;
 use Xi\Filelib\Events;
 use Xi\Filelib\Identifiable;
 
@@ -109,27 +109,31 @@ class IdentityMap implements EventSubscriberInterface, FindByIdsRequestResolver
     /**
      * Adds many identifiables to identity map
      *
-     * @param Iterator $iterator
+     * @param Collection $iterator
      */
-    public function addMany(Iterator $iterator)
+    public function addMany(Collection $iterator)
     {
-        foreach ($iterator as $object) {
-            $this->add($object);
-        }
-        $iterator->rewind();
+        $self = $this;
+        $iterator->each(
+            function (Identifiable $identifiable) use ($self) {
+                $self->add($identifiable);
+            }
+        );
     }
 
     /**
      * Removes many identifiables from identity map
      *
-     * @param Iterator $iterator
+     * @param Collection $iterator
      */
-    public function removeMany(Iterator $iterator)
+    public function removeMany(Collection $iterator)
     {
-        foreach ($iterator as $object) {
-            $this->remove($object);
-        }
-        $iterator->rewind();
+        $self = $this;
+        $iterator->each(
+            function (Identifiable $identifiable) use ($self) {
+                $self->remove($identifiable);
+            }
+        );
     }
     /**
      * Removes an identifiable

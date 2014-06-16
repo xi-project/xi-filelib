@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Authorization;
 
-use Xi\Filelib\Plugin\AbstractPlugin;
+use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\File\FileRepository;
@@ -19,7 +19,7 @@ use Xi\Filelib\Events as CoreEvents;
 /**
  * Automatically publishes all anonymous-readable files, emulating the pre-0.8 behavior
  */
-class AutomaticPublisherPlugin extends AbstractPlugin
+class AutomaticPublisherPlugin extends BasePlugin
 {
     /**
      * @var Publisher

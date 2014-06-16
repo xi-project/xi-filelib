@@ -17,7 +17,7 @@ use Xi\Filelib\Events;
 use Xi\Filelib\FileLibrary;
 use Pekkis\Queue\Message;
 
-class UpdateFolderCommand extends AbstractFolderCommand
+class UpdateFolderCommand extends BaseFolderCommand
 {
     /**
      *

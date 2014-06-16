@@ -15,13 +15,12 @@ use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\AbstractVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\RuntimeException;
 use Aws\S3\S3Client;
 
-class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
+class ZencoderPlugin extends VersionProvider
 {
     /**
      * @var ZencoderService
@@ -69,7 +68,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     private $sleepyTime = 5;
 
     public function __construct(
-        $identifier,
         $apiKey,
         $awsKey,
         $awsSecretKey,
@@ -77,7 +75,6 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
         $outputs = array()
     ) {
         parent::__construct(
-            $identifier,
             function (File $file) {
                 // @todo: maybe some more complex mime type based checking
                 return (bool) preg_match("/^video/", $file->getMimetype());
@@ -195,7 +192,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      *
      * @param string $version
      */
-    public function getExtensionFor(File $file, $version)
+    public function getExtension(File $file, $version)
     {
         if (preg_match("#thumbnail$#", $version)) {
             return 'png';
@@ -208,7 +205,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
      *
      * @return array
      */
-    public function getVersions()
+    public function getProvidedVersions()
     {
         $versions = $this->getVideoVersions();
         foreach ($versions as $version) {
@@ -228,7 +225,7 @@ class ZencoderPlugin extends AbstractVersionProvider implements VersionProvider
     /**
      * @param  File             $file
      * @return array
-     * @throws FilelibException
+     * @throws RuntimeException
      */
     public function createTemporaryVersions(File $file)
     {

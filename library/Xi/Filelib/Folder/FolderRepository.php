@@ -9,14 +9,13 @@
 
 namespace Xi\Filelib\Folder;
 
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Command\CommandDefinition;
-use Xi\Filelib\Command\CommanderClient;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use ArrayIterator;
 
 class FolderRepository extends AbstractRepository
 {
@@ -105,7 +104,7 @@ class FolderRepository extends AbstractRepository
     {
         $folder = $this->backend->findByFinder(
             new FolderFinder(array('parent_id' => null))
-        )->current();
+        )->first();
 
         if (!$folder) {
             $folder = $this->createRoot();
@@ -142,7 +141,7 @@ class FolderRepository extends AbstractRepository
     {
         $folder = $this->backend->findByFinder(
             new FolderFinder(array('url' => $url))
-        )->current();
+        )->first();
 
         return $folder;
     }
@@ -158,7 +157,7 @@ class FolderRepository extends AbstractRepository
      * Finds subfolders
      *
      * @param  Folder        $folder
-     * @return ArrayIterator
+     * @return ArrayCollection
      */
     public function findSubFolders(Folder $folder)
     {
@@ -188,7 +187,7 @@ class FolderRepository extends AbstractRepository
 
     /**
      * @param  Folder        $folder Folder
-     * @return ArrayIterator Collection of file items
+     * @return ArrayCollection
      */
     public function findFiles(Folder $folder)
     {

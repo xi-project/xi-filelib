@@ -2,21 +2,24 @@
 
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
-use Xi\Filelib\Publisher\Linker\CreationTimeLinker;
+use Xi\Filelib\Publisher\Adapter\AmazonS3PublisherAdapter;
+use Xi\Filelib\Publisher\Linker\ReversibleCreationTimeLinker;
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../constants.php';
 
 $publisher = new Publisher(
     new SymlinkFilesystemPublisherAdapter(__DIR__ . '/files', '600', '700', 'files'),
-    new CreationTimeLinker()
+    // new AmazonS3PublisherAdapter(S3_KEY, S3_SECRETKEY, S3_BUCKET),
+    new ReversibleCreationTimeLinker()
 );
 $publisher->attachTo($filelib);
 
 $originalPlugin = new OriginalVersionPlugin('original');
 $filelib->addPlugin($originalPlugin, array('default'));
 
-$file = $filelib->upload(__DIR__ . '/../manatees/manatus-09.jpg');
+$file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-09.jpg');
 $publisher->publish($file);
 
 ?>
@@ -35,7 +38,7 @@ $publisher->publish($file);
             <h1>You just published a picture of a manatee</h1>
 
             <p>
-                <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
+                <img src="<?php echo $publisher->getUrl($file, 'original'); ?>" />
             </p>
 
         </div>

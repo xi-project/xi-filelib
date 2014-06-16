@@ -19,7 +19,7 @@ use Xi\Filelib\LogicException;
 use Pekkis\Queue\Message;
 use Xi\Filelib\Queue\UuidReceiver;
 
-class CreateFolderCommand extends AbstractFolderCommand implements UuidReceiver
+class CreateFolderCommand extends BaseFolderCommand implements UuidReceiver
 {
     /**
      * @var Folder

@@ -9,6 +9,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Events;
+use Xi\Collections\Collection\ArrayCollection;
 
 class CacheTest extends TestCase
 {
@@ -54,7 +55,7 @@ class CacheTest extends TestCase
         $request = new FindByIdsRequest($arr, $class);
         $ret = $this->cache->findByIds($request);
 
-        $this->assertEquals(new \ArrayIterator(array($file)), $ret->getResult());
+        $this->assertEquals(ArrayCollection::create(array($file)), $ret->getResult());
     }
 
     /**

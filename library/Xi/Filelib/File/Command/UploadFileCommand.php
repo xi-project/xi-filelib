@@ -28,7 +28,7 @@ use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Queue\UuidReceiver;
 use Xi\Filelib\Resource\ResourceRepository;
 
-class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
+class UploadFileCommand extends BaseFileCommand implements UuidReceiver
 {
     /**
      * @var ProfileManager
@@ -101,7 +101,7 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
 
         $profileObj = $this->profiles->getProfile($profile);
         $event = new FileUploadEvent($upload, $folder, $profileObj);
-        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_CREATE, $event);
+        $this->eventDispatcher->dispatch(Events::FILE_UPLOAD, $event);
 
         $upload = $event->getFileUpload();
 
@@ -121,6 +121,9 @@ class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
 
         $resource = $this->resourceRepository->findResourceForUpload($file, $upload);
         $file->setResource($resource);
+
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_CREATE, $event);
 
         $this->backend->createFile($file, $folder);
 

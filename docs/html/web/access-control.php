@@ -52,7 +52,7 @@ $filelib->addPlugin($versionPlugin);
 $folder = $filelib->getFolderRepository()->createByUrl('pictures/of/very beaütiful manatees');
 
 try {
-    $file = $filelib->upload(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
+    $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
     $publisher->publish($file);
 
 } catch (AccessDeniedException $e) {
@@ -76,11 +76,11 @@ try {
     <body>
         <h1>You just published a picture of a manatee and a cinemascope thumbnail. Aww!!!</h1>
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'original'); ?>" />
         </p>
 
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'cinemascope'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'cinemascope'); ?>" />
         </p>
 
     </body>

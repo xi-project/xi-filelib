@@ -9,10 +9,23 @@
 
 namespace Xi\Filelib;
 
+use Xi\Filelib\IdentifiableDataContainer;
+
 /**
  * Interface for identifiable objects
  */
 interface Identifiable
 {
     public function getId();
+
+    /**
+     * @return IdentifiableDataContainer
+     */
+    public function getData();
+
+    /**
+     * @param IdentifiableDataContainer|array $data
+     * @return Identifiable
+     */
+    public function setData($data);
 }

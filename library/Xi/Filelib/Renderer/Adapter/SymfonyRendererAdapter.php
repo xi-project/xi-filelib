@@ -64,13 +64,17 @@ class SymfonyRendererAdapter implements AcceleratedRendererAdapter
      * @param InternalResponse $iResponse
      * @return Response
      */
-    public function returnResponse(InternalResponse $iResponse)
+    public function adaptResponse(InternalResponse $iResponse)
     {
         $response = new Response(
             $iResponse->getContent(),
             $iResponse->getStatusCode(),
             $iResponse->getHeaders()
         );
+
+        if ($this->request) {
+            $response->prepare($this->request);
+        }
 
         if ($response->getStatusCode() !== 200) {
             $response->setContent(Response::$statusTexts[$response->getStatusCode()]);

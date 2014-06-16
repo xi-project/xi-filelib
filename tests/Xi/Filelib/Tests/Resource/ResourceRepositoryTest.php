@@ -14,7 +14,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
-use ArrayIterator;
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Resource\ResourceRepository;
 
 class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
@@ -124,7 +124,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array())));
+            ->will($this->returnValue(ArrayCollection::create(array())));
 
         $files = $this->rere->findAll();
         $this->assertCount(0, $files);
@@ -138,7 +138,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
     {
         $finder = new ResourceFinder();
 
-        $iter = new ArrayIterator(array(
+        $iter = ArrayCollection::create(array(
             Resource::create(),
             Resource::create(),
             Resource::create(),
@@ -256,7 +256,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
         );
         $backend->expects($this->once())->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array())));
+            ->will($this->returnValue(ArrayCollection::create(array())));
 
         $folder = $this->getMockedFolder();
 
@@ -317,7 +317,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
         );
         $backend->expects($this->once())->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array(
+            ->will($this->returnValue(ArrayCollection::create(array(
                 Resource::create(array('id' => 'first-id')),
                 Resource::create(array('id' => 'second-id')),
             ))));
@@ -381,7 +381,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
         );
         $backend->expects($this->once())->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array(
+            ->will($this->returnValue(ArrayCollection::create(array(
                 Resource::create(array('id' => 'first-id')),
                 Resource::create(array('id' => 'second-id')),
             ))));

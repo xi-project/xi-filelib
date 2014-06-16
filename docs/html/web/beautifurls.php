@@ -36,7 +36,7 @@ $filelib->addPlugin($versionPlugin);
 
 $folder = $filelib->getFolderRepository()->createByUrl('pictures/of/very beaütiful manatees');
 
-$file = $filelib->upload(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
+$file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
 $publisher->publish($file);
 
 ?>
@@ -53,11 +53,11 @@ $publisher->publish($file);
         </p>
 
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'original'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'original'); ?>" />
         </p>
 
         <p>
-            <img src="<?php echo $publisher->getUrlVersion($file, 'cinemascope'); ?>" />
+            <img src="<?php echo $publisher->getUrl($file, 'cinemascope'); ?>" />
         </p>
 
     </body>

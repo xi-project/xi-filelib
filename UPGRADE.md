@@ -3,6 +3,49 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. If you're using 0.9 or greater, good for you! If not, good luck. Trust me. I know.
 
+## From version 0.11.x to version 0.12.x
+
+* Uh oh. Data is not backwards compatible. This is the last time, I promise! See changes below.
+* Folders now have a data container object.
+* Filelib's upload() shortcut is now uploadFile().
+* Filelib has other convenient repository shortcuts (findFile(), findFiles() etc).
+* FileRepository has some new nice finder methods (for example findMany()).
+* "Find many" type of operations now return collections (xi/collections) instead of ArrayIterators,
+  making nice functional style of programming possible out of the box.
+* Refactored storage subcomponent.
+    * Storages are now named StorageAdapters, wrapped by a common Storage (same interface as before)
+    * Via storage events it is now possible to hook into the storing of files (to crypt/decrypt them, for example)
+* FILE_BEFORE_CREATE event (FileUploadEvent) is now named FILE_UPLOAD.
+* FILE_BEFORE_CREATE is now a _new_ event (FileEvent) triggered before creation of files.
+* Filelib's addPlugin() has an optional $name parameter. A name will be generated for you if you do not provide one.
+* Added a plugin manager
+    * Has a getPlugin($name) method to fetch added plugins by name.
+    * Has other more or less useful plugin related methods.
+* AbstractVersionProvider doesn't have an identifier attribute any more.
+* Minor other refactorations and simplifications in plugins. Check your custom ones, they may require small changes.
+* Reversible versions of creation time and sequential linkers and a ReversibleLinkerInterface interface.
+  It would be very wise to update to these (you'll have to unpublish and republish all your files).
+* Plugins may now support lazy operations via extending LazyVersionProvider instead of VersionProvider.
+  Lazy versions can be used to save space in large systems by deleting old / rarely used / whatever versions.
+  They are then recreated when needed. When used in combination with the publisher, redirecting not-found
+  published files to PHP backend must of course be done. (see docs/ for examples).
+
+### PostgreSQL migration
+
+```sql
+ALTER TABLE xi_filelib_folder ADD COLUMN data TEXT NOT NULL DEFAULT '{}';
+```
+
+### MySQL migration
+
+```sql
+ALTER TABLE xi_filelib_folder ADD COLUMN data TEXT NOT NULL DEFAULT '{}';
+```
+
+### MongoDB migration
+
+Todo.
+
 ## From version 0.10.x to version 0.11.x
 
 * Data is backwards compatible. Hoorah!

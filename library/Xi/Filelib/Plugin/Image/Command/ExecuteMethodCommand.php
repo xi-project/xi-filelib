@@ -14,10 +14,20 @@ use BadMethodCallException;
 
 class ExecuteMethodCommand extends AbstractCommand
 {
-    private $method = null;
+    /**
+     * @var string
+     */
+    private $method;
 
+    /**
+     * @var array
+     */
     private $parameters = array();
 
+    /**
+     * @param string $method
+     * @param array $parameters
+     */
     public function __construct($method, $parameters = array())
     {
         $this->method = $method;
@@ -25,20 +35,29 @@ class ExecuteMethodCommand extends AbstractCommand
         if (!is_array($parameters)) {
             $parameters = array($parameters);
         }
-
         $this->parameters = $parameters;
     }
 
+    /**
+     * @return string
+     */
     public function getMethod()
     {
         return $this->method;
     }
 
+    /**
+     * @return array
+     */
     public function getParameters()
     {
         return $this->parameters;
     }
 
+    /**
+     * @param Imagick $imagick
+     * @throws \BadMethodCallException
+     */
     public function execute(Imagick $imagick)
     {
         $callable = array($imagick, $this->getMethod());
@@ -55,13 +74,18 @@ class ExecuteMethodCommand extends AbstractCommand
         call_user_func_array($callable, $this->getParameters());
     }
 
-
+    /**
+     * @param string $method
+     */
     public function setMethod($method)
     {
         $this->method = $method;
     }
 
-    public function setParameters($parameters)
+    /**
+     * @param array $parameters
+     */
+    public function setParameters(array $parameters)
     {
         $this->parameters = $parameters;
     }

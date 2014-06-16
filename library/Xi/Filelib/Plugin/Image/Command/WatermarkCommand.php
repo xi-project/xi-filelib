@@ -11,12 +11,8 @@ namespace Xi\Filelib\Plugin\Image\Command;
 
 use Imagick;
 use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 
-/**
- * Watermarks an image version
- *
- * @author pekkis
- */
 class WatermarkCommand extends AbstractCommand
 {
     /**
@@ -38,6 +34,11 @@ class WatermarkCommand extends AbstractCommand
      * @var \Imagick
      */
     protected $watermark = null;
+
+    /**
+     * @var ImageMagickHelper
+     */
+    protected $helper;
 
     public function __construct($image, $position, $padding)
     {
@@ -102,6 +103,9 @@ class WatermarkCommand extends AbstractCommand
         return $this->padding;
     }
 
+    /**
+     * @param Imagick $imagick
+     */
     public function execute(Imagick $imagick)
     {
         $coordinates = $this->calculateCoordinates($imagick);
@@ -114,6 +118,11 @@ class WatermarkCommand extends AbstractCommand
         );
     }
 
+    /**
+     * @param Imagick $img
+     * @return array
+     * @throws InvalidArgumentException
+     */
     public function calculateCoordinates(Imagick $img)
     {
         $watermark = $this->getWatermarkResource();
@@ -138,6 +147,7 @@ class WatermarkCommand extends AbstractCommand
                 $y = 0 + $this->getWatermarkPadding();
                 break;
             case 'se':
+            default:
                 $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
                 $x = $imageWidth - $wWidth - $this->getWatermarkPadding();
                 break;
@@ -147,22 +157,17 @@ class WatermarkCommand extends AbstractCommand
     }
 
     /**
-     * Returns watermark Imagick resource
-     *
      * @return Imagick
      */
     public function getWatermarkResource()
     {
         if (!$this->watermark) {
-            $this->watermark = $this->createImagick($this->getWatermarkImage());
+            $this->watermark = $this->helper->createImagick($this->getWatermarkImage());
         }
 
         return $this->watermark;
     }
 
-    /**
-     * Destroys watermark resource if it exists
-     */
     public function destroyWatermarkResource()
     {
         if ($this->watermark) {

@@ -9,15 +9,13 @@
 
 namespace Xi\Filelib\Tests\File;
 
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use ArrayIterator;
-use Xi\Filelib\Profile\FileProfile;
-use Xi\Filelib\Events;
 
 class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -142,9 +140,9 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $this->backend
             ->expects($this->once())
-            ->method('findById')
-            ->with($id, 'Xi\Filelib\File\File')
-            ->will($this->returnValue(false));
+            ->method('findByIds')
+            ->with(array($id), 'Xi\Filelib\File\File')
+            ->will($this->returnValue(ArrayCollection::create(array())));
 
 
         $file = $this->op->find($id);
@@ -162,13 +160,34 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $this->backend
             ->expects($this->once())
-            ->method('findById')
-            ->with($this->equalTo($id))
-            ->will($this->returnValue($file));
+            ->method('findByIds')
+            ->with(array($id))
+            ->will($this->returnValue(ArrayCollection::create(array($file))));
 
         $ret = $this->op->find($id);
         $this->assertSame($file, $ret);
     }
+
+    /**
+     * @test
+     */
+    public function findManyDelegatesToBackend()
+    {
+        $ids = array(1, 666);
+
+        $file = File::create();
+        $coll = ArrayCollection::create(array($file));
+
+        $this->backend
+            ->expects($this->once())
+            ->method('findByIds')
+            ->with($this->equalTo($ids))
+            ->will($this->returnValue($coll));
+
+        $ret = $this->op->findMany($ids);
+        $this->assertSame($coll, $ret);
+    }
+
 
     /**
      * @test
@@ -189,11 +208,36 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
             ->method('findByFinder')->with(
                 $this->equalTo($finder)
             )
-            ->will($this->returnValue(new ArrayIterator(array())));
+            ->will($this->returnValue(ArrayCollection::create(array())));
 
         $ret = $this->op->findByFilename($folder, 'lussname');
         $this->assertFalse($ret);
     }
+
+    /**
+     * @test
+     */
+    public function findByUuidsFindsWithFinder()
+    {
+        $finder = new FileFinder(
+            array(
+                'uuid' => 'tenhusen-hubriksen-uuid',
+            )
+        );
+
+        $this->backend
+            ->expects($this->once())
+            ->method('findByFinder')->with(
+                $this->equalTo($finder)
+            )
+            ->will($this->returnValue(ArrayCollection::create(array(
+                File::create(array('uuid' => 'tenhusen-hubriksen-uuid'))
+            ))));
+
+        $ret = $this->op->findByUuid('tenhusen-hubriksen-uuid');
+        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
+    }
+
 
     /**
      * @test
@@ -218,7 +262,7 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
             ->method('findByFinder')->with(
                 $this->equalTo($finder)
             )
-            ->will($this->returnValue(new ArrayIterator(array($file))));
+            ->will($this->returnValue(ArrayCollection::create(array($file))));
 
         $ret = $this->op->findByFilename($folder, 'lussname');
         $this->assertSame($file, $ret);
@@ -235,7 +279,7 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
             ->expects($this->once())
             ->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(new ArrayIterator(array())));
+            ->will($this->returnValue(ArrayCollection::create(array())));
 
         $files = $this->op->findAll();
         $this->assertCount(0, $files);
@@ -249,7 +293,7 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
     {
         $finder = new FileFinder();
 
-        $iter = new ArrayIterator(array(
+        $iter = ArrayCollection::create(array(
             File::create(),
             File::create(),
             File::create(),

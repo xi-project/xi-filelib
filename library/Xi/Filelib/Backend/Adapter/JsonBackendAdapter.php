@@ -43,6 +43,7 @@ class JsonBackendAdapter implements BackendAdapter
             'id' => 'id',
             'folder_id' => 'folder_id',
             'name' => 'name',
+            'uuid' => 'uuid',
         ),
         'Xi\Filelib\Folder\Folder' => array(
             'id' => 'id',
@@ -382,6 +383,7 @@ class JsonBackendAdapter implements BackendAdapter
                         'name'      => $folder['name'],
                         'url'       => $folder['url'],
                         'uuid'      => $folder['uuid'],
+                        'data'      => $folder['data'],
                     )
                 )
             );
@@ -403,7 +405,7 @@ class JsonBackendAdapter implements BackendAdapter
 
             $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
 
-            $resource = $this->findByIds($request)->getResult()->current();
+            $resource = $this->findByIds($request)->getResult()->first();
 
             $ret->append(
                 File::create(

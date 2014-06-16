@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\File;
 
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Command\CommandDefinition;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use Xi\Filelib\FileLibrary;
@@ -19,7 +20,6 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use ArrayIterator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -96,21 +96,44 @@ class FileRepository extends AbstractRepository
     }
 
     /**
-     * Finds a file
+     * Finds file by id
      *
-     * @param  mixed      $id File id
+     * @param  mixed $id File id or array of file ids
      * @return File
      */
     public function find($id)
     {
-        $file = $this->backend->findById($id, 'Xi\Filelib\File\File');
-
-        if (!$file) {
-            return false;
-        }
-
-        return $file;
+        return $this->findMany(array($id))->first();
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function findMany($ids)
+    {
+        return $this->backend->findByIds($ids, 'Xi\Filelib\File\File');
+    }
+
+    /**
+     * @param FileFinder $finder
+     * @return ArrayCollection
+     */
+    public function findBy(FileFinder $finder)
+    {
+        return $this->backend->findByFinder($finder);
+    }
+
+
+    /**
+     * @param $uuid
+     * @return File
+     * @todo switch uuid and id as internal primary id
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->findBy(new FileFinder(array('uuid' => $uuid)))->first();
+    }
+
 
     /**
      * Finds file by filename in a folder
@@ -121,27 +144,19 @@ class FileRepository extends AbstractRepository
      */
     public function findByFilename(Folder $folder, $filename)
     {
-        $file = $this->backend->findByFinder(
+        return $this->backend->findByFinder(
             new FileFinder(array('folder_id' => $folder->getId(), 'name' => $filename))
-        )->current();
-
-        if (!$file) {
-            return false;
-        }
-
-        return $file;
+        )->first();
     }
 
     /**
      * Finds and returns all files
      *
-     * @return ArrayIterator
+     * @return ArrayCollection
      */
     public function findAll()
     {
-        $files = $this->backend->findByFinder(new FileFinder());
-
-        return $files;
+        return $this->backend->findByFinder(new FileFinder());
     }
 
     /**

@@ -14,7 +14,8 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Storage\FilesystemStorage;
+use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
+use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\LogicException;
@@ -23,12 +24,17 @@ use Xi\Filelib\InvalidArgumentException;
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage
  */
-class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter implements PublisherAdapter
+class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter implements PublisherAdapter
 {
     /**
-     * @var FilesystemStorage
+     * @var Storage
      */
     private $storage;
+
+    /**
+     * @var FilesystemStorageAdapter
+     */
+    private $adapter;
 
     /**
      * @var string Relative path from publisher root to storage root
@@ -49,7 +55,9 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
     public function attachTo(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
-        if (!$this->storage instanceof FilesystemStorage) {
+        $this->adapter = $filelib->getStorage()->getAdapter();
+
+        if (!$this->adapter instanceof FilesystemStorageAdapter) {
             throw new InvalidArgumentException("Symlink filesystem publisher requires filesystem storage");
         }
     }
@@ -82,12 +90,11 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
         $retrieved = $this->storage->retrieveVersion(
-            $file->getResource(),
-            $version,
-            $versionProvider->areSharedVersionsAllowed() ? null : $file
+            $versionProvider->getApplicableStorable($file),
+            $version
         );
 
-        $path = preg_replace("[^{$this->storage->getRoot()}]", $relativePath, $retrieved);
+        $path = preg_replace("[^{$this->adapter->getRoot()}]", $relativePath, $retrieved);
 
         return $path;
     }
@@ -104,7 +111,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
             $linker->getLink(
                 $file,
                 $version,
-                $versionProvider->getExtensionFor($file, $version)
+                $versionProvider->getExtension($file, $version)
             );
 
         if (!is_link($link)) {
@@ -135,9 +142,8 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
             } else {
                 symlink(
                     $this->storage->retrieveVersion(
-                        $file->getResource(),
-                        $version,
-                        $versionProvider->areSharedVersionsAllowed() ? null: $file
+                        $versionProvider->getApplicableStorable($file),
+                        $version
                     ),
                     $link
                 );
@@ -150,7 +156,7 @@ class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapt
     public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
-            $linker->getLink($file, $version, $versionProvider->getExtensionFor($file, $version));
+            $linker->getLink($file, $version, $versionProvider->getExtension($file, $version));
         if (is_link($link)) {
             unlink($link);
         }

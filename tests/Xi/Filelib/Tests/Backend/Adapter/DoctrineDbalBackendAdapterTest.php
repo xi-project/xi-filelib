@@ -7,6 +7,9 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
+/**
+ * @group backend
+ */
 class DoctrineDbalBackendAdapterTest extends RelationalDbTestCase
 {
 

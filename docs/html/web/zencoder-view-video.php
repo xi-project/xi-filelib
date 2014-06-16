@@ -51,9 +51,9 @@ if ($file->getStatus() == File::STATUS_COMPLETED) {
 
     <?php if ($file->getStatus() === File::STATUS_COMPLETED): ?>
 
-    <video poster="<?php echo $publisher->getUrlVersion($file, '720p_webm_thumbnail'); ?>" controls=true>
-        <source src="<?php echo $publisher->getUrlVersion($file, '720p_webm'); ?>" type='video/webm; codecs="vp8.0, vorbis"'/>
-        <source src="<?php echo $publisher->getUrlVersion($file, '720p_ogv'); ?>" type='video/ogg; codecs="theora, vorbis"'/>
+    <video poster="<?php echo $publisher->getUrl($file, '720p_webm_thumbnail'); ?>" controls=true>
+        <source src="<?php echo $publisher->getUrl($file, '720p_webm'); ?>" type='video/webm; codecs="vp8.0, vorbis"'/>
+        <source src="<?php echo $publisher->getUrl($file, '720p_ogv'); ?>" type='video/ogg; codecs="theora, vorbis"'/>
         <p>Oh noes, video not playable!</p>
     </video>
 

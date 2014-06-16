@@ -13,15 +13,12 @@
         <const name="PDO_USERNAME" value="postgres" />
         <const name="PDO_PASSWORD" value="" />
         <const name="MONGO_DNS" value="mongodb://localhost:27017/" />
-        <const name="S3_KEY" value="" />
-        <const name="S3_SECRETKEY" value="" />
-        <const name="S3_BUCKET" value="" />
+        <env name="S3_BUCKET" value="puuppafilelib" />
         <const name="RABBITMQ_HOST" value="localhost" />
         <const name="RABBITMQ_PORT" value="5672" />
         <const name="RABBITMQ_VHOST" value="/" />
         <const name="RABBITMQ_USERNAME" value="guest" />
         <const name="RABBITMQ_PASSWORD" value="guest" />
-        <const name="ZENCODER_KEY" value="" />
-        <const name="ZENCODER_S3_BUCKET" value="" />
+        <const name="ZENCODER_S3_BUCKET" value="puuppafilelibzencoder" />
     </php>
 </phpunit>

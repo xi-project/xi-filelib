@@ -16,7 +16,7 @@ use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
 use Xi\Filelib\Resource\ResourceRepository;
 
-class UpdateFileCommand extends AbstractFileCommand
+class UpdateFileCommand extends BaseFileCommand
 {
     /**
      *

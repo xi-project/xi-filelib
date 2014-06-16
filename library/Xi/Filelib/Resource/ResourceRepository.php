@@ -16,7 +16,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
-use ArrayIterator;
+use Xi\Collections\Collection\ArrayCollection;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Profile\ProfileManager;
 use DateTime;
@@ -105,7 +105,7 @@ class ResourceRepository extends AbstractRepository
     /**
      * Finds and returns all resources
      *
-     * @return ArrayIterator
+     * @return ArrayCollection
      */
     public function findAll()
     {

@@ -18,14 +18,8 @@ use DateTime;
  *     uniqueConstraints={@ORM\UniqueConstraint(name="folderid_filename_unique",columns={"folder_id","filename"})}
  * )
  */
-class File
+class File extends BaseEntity
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @ORM\Column(name="fileprofile", type="string", length=255)
@@ -64,18 +58,6 @@ class File
      **/
     private $resource;
 
-    /**
-     * @ORM\Column(name="data", type="json_array")
-     */
-    private $data = array();
-
-    /**
-     * Get id
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set profile
@@ -230,23 +212,5 @@ class File
         $this->resource = $resource;
 
         return $this;
-    }
-
-    /**
-     * @param  array $data
-     * @return File
-     */
-    public function setData(array $data)
-    {
-        $this->data = $data;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
     }
 }
