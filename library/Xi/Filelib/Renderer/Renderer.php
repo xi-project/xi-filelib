@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Renderer;
 
+use Xi\Filelib\Event\RenderEvent;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
@@ -9,6 +10,7 @@ use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Storage;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
@@ -72,26 +74,34 @@ class Renderer
             $file = $this->fileRepository->find($file);
 
             if (!$file) {
-                return $this->adapter->returnResponse($response->setStatusCode(404));
+                return $this->adaptResponse(
+                    null,
+                    $version,
+                    $response->setStatusCode(404)
+                );
             }
         }
 
-        // Supports authorization component
+        // Authorization component support
         try {
-
             $event = new FileEvent($file);
             $this->eventDispatcher->dispatch(Events::RENDERER_BEFORE_RENDER, $event);
-
         } catch (AccessDeniedException $e) {
-            return $this->adapter->returnResponse($response->setStatusCode(403));
+            return $this->adaptResponse(
+                $file,
+                $version,
+                $response->setStatusCode(403)
+            );
         }
-
-
 
         $options = $this->mergeOptions($options);
 
         if (!$this->profiles->hasVersion($file, $version)) {
-            return $this->adapter->returnResponse($response->setStatusCode(404));
+            return $this->adaptResponse(
+                $file,
+                $version,
+                $response->setStatusCode(404)
+            );
         }
 
         if ($options['download'] == true) {
@@ -103,10 +113,11 @@ class Renderer
         $response->setHeader('Content-Type', $retrieved->getMimetype());
 
         $this->injectContentToResponse($retrieved, $response);
-
-        $event = new FileEvent($file);
-        $this->eventDispatcher->dispatch(Events::RENDERER_RENDER, $event);
-        return $this->adapter->returnResponse($response);
+        return $this->adaptResponse(
+            $file,
+            $version,
+            $response
+        );
     }
 
 
@@ -144,4 +155,21 @@ class Renderer
             }
         );
     }
+
+    /**
+     * @param File $file
+     * @param string $version
+     * @param Response $response
+     * @return mixed
+     */
+    protected function adaptResponse(File $file = null, $version, Response $response)
+    {
+        $adaptedResponse = $this->adapter->adaptResponse($response);
+
+        $event = new RenderEvent($file, $version, $response, $adaptedResponse);
+        $this->eventDispatcher->dispatch(Events::RENDERER_RENDER, $event);
+
+        return $adaptedResponse;
+    }
+
 }
