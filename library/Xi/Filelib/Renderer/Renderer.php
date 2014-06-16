@@ -136,8 +136,7 @@ class Renderer
     {
         /** @var VersionProvider $provider */
         $provider = $this->profiles->getVersionProvider($file, $version);
-        $versionable = $provider->areSharedVersionsAllowed() ? $file->getResource() : $file;
-
+        $versionable = $provider->getApplicableStorable($file);
         if ($provider instanceof LazyVersionProvider) {
             if (!$versionable->hasVersion($version)) {
                 $provider->createProvidedVersions($file);

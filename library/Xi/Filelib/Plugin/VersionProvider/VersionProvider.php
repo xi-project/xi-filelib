@@ -87,7 +87,7 @@ abstract class VersionProvider extends BasePlugin
     {
         $tmps = $this->createTemporaryVersions($file);
 
-        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
+        $versionable = $this->getApplicableStorable($file);
         foreach (array_keys($tmps) as $version) {
             $versionable->addVersion($version);
         }
@@ -165,7 +165,7 @@ abstract class VersionProvider extends BasePlugin
 
     public function areProvidedVersionsCreated(File $file)
     {
-        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
+        $versionable = $this->getApplicableStorable($file);
 
         $count = 0;
         foreach ($this->getProvidedVersions() as $version) {
@@ -190,10 +190,8 @@ abstract class VersionProvider extends BasePlugin
      */
     public function getMimeType(File $file, $version)
     {
-        $versionable = $this->areSharedVersionsAllowed() ? $file->getResource() : $file;
-
         $retrieved = $this->storage->retrieveVersion(
-            $versionable,
+            $this->getApplicableStorable($file),
             $version
         );
 
@@ -212,6 +210,17 @@ abstract class VersionProvider extends BasePlugin
     {
         $mimeType = $this->getMimeType($file, $version);
         return $this->getExtensionFromMimeType($mimeType);
+    }
+
+    /**
+     * Returns the applicable storable for this plugin
+     *
+     * @param File $file
+     * @return Storable
+     */
+    public function getApplicableStorable(File $file)
+    {
+        return ($this->areSharedVersionsAllowed()) ? $file->getResource() : $file;
     }
 
     /**

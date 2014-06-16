@@ -103,8 +103,8 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
 
         $this->versionProvider
             ->expects($this->atLeastOnce())
-            ->method('areSharedVersionsAllowed')
-            ->will($this->returnValue($versionProviderAllowsSharedResources));
+            ->method('getApplicableStorable')
+            ->will($this->returnValue($versionProviderAllowsSharedResources ? $file->getResource() : $file));
 
         $publisher = new SymlinkFilesystemPublisherAdapter(
             ROOT_TESTS . '/data/publisher/public',
@@ -223,8 +223,8 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
     ) {
         $this->versionProvider
             ->expects($this->atLeastOnce())
-            ->method('areSharedVersionsAllowed')
-            ->will($this->returnValue($allowSharedVersions));
+            ->method('getApplicableStorable')
+            ->will($this->returnValue($allowSharedVersions ? $file->getResource() : $file));
 
         if ($allowSharedVersions) {
             $this->storage
@@ -267,8 +267,8 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
     ) {
         $this->versionProvider
             ->expects($this->atLeastOnce())
-            ->method('areSharedVersionsAllowed')
-            ->will($this->returnValue($allowSharedVersions));
+            ->method('getApplicableStorable')
+            ->will($this->returnValue($allowSharedVersions ? $file->getResource() : $file));
 
         if ($allowSharedVersions) {
             $this->storage
