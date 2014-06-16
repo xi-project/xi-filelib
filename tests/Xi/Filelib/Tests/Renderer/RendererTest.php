@@ -206,7 +206,10 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider(array('xooxer'), $lazy);
-        $vp->expects($this->any())->method('areSharedVersionsAllowed')->will($this->returnValue($sharedVersions));
+        $vp
+            ->expects($this->any())
+            ->method('getApplicableStorable')
+            ->will($this->returnValue($sharedVersions ? $resource : $file));
 
         $this->pm
             ->expects($this->once())
