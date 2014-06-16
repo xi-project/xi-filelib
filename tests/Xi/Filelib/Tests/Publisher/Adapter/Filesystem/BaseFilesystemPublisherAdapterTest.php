@@ -3,10 +3,10 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Publisher\Adapter\Filesystem\AbstractFilesystemPublisherAdapter;
+use Xi\Filelib\Publisher\Adapter\Filesystem\BaseFilesystemPublisherAdapter;
 use Xi\Filelib\Tests\TestCase;
 
-class AbstractFilesystemPublisherAdapterTest extends TestCase
+class BaseFilesystemPublisherAdapterTest extends TestCase
 {
 
     public function setUp()
@@ -106,12 +106,12 @@ class AbstractFilesystemPublisherAdapterTest extends TestCase
      * @param int $filePermission
      * @param int $directoryPermission
      * @param string $baseUrl
-     * @return AbstractFilesystemPublisherAdapter
+     * @return BaseFilesystemPublisherAdapter
      */
     public function getMockedAdapter($publicRoot, $filePermission = "600", $directoryPermission = "700", $baseUrl = '')
     {
         $adapter = $this
-            ->getMockBuilder('Xi\Filelib\Publisher\Adapter\Filesystem\AbstractFilesystemPublisherAdapter')
+            ->getMockBuilder('Xi\Filelib\Publisher\Adapter\Filesystem\BaseFilesystemPublisherAdapter')
             ->setMethods(
                 array(
                     'publish',

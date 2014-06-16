@@ -24,7 +24,7 @@ use Xi\Filelib\InvalidArgumentException;
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage
  */
-class SymlinkFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter implements PublisherAdapter
+class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter implements PublisherAdapter
 {
     /**
      * @var Storage
