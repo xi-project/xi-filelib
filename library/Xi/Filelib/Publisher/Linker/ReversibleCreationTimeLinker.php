@@ -17,7 +17,7 @@ use Xi\Filelib\Publisher\ReversibleLinker;
 /**
  * Calculates directory id by formatting an objects creation date
  */
-class ReversibleCreationTimeLinker extends AbstractCreationTimeLinker implements ReversibleLinker
+class ReversibleCreationTimeLinker extends BaseCreationTimeLinker implements ReversibleLinker
 {
     /**
      * @var FileRepository

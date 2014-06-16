@@ -28,7 +28,7 @@ use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Queue\UuidReceiver;
 use Xi\Filelib\Resource\ResourceRepository;
 
-class UploadFileCommand extends AbstractFileCommand implements UuidReceiver
+class UploadFileCommand extends BaseFileCommand implements UuidReceiver
 {
     /**
      * @var ProfileManager

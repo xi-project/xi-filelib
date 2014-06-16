@@ -15,7 +15,7 @@ use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
 use Pekkis\Queue\Message;
 
-class UpdateFileCommand extends AbstractFileCommand
+class UpdateFileCommand extends BaseFileCommand
 {
     /**
      *

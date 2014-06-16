@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\File\MimeType;
-use Xi\Filelib\Plugin\AbstractPlugin;
+use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
@@ -22,7 +22,7 @@ use Xi\Filelib\File\Upload\FileUpload;
  *
  * @author pekkis
  */
-class ChangeFormatPlugin extends AbstractPlugin
+class ChangeFormatPlugin extends BasePlugin
 {
     /**
      * @var array

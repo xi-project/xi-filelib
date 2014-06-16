@@ -22,7 +22,7 @@ use Xi\Filelib\Storage\Storable;
  *
  * @author pekkis
  */
-class GridfsStorageAdapter extends AbstractStorageAdapter
+class GridfsStorageAdapter extends BaseStorageAdapter
 {
     /**
      * @var MongoDB Mongo reference

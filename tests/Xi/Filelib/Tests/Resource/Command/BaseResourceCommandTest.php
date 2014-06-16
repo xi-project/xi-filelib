@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\File\Command;
 
-class AbstractResourceCommandTest extends \Xi\Filelib\Tests\TestCase
+class BaseResourceCommandTest extends \Xi\Filelib\Tests\TestCase
 {
 
     /**
@@ -10,10 +10,10 @@ class AbstractResourceCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function classShouldExist()
     {
-        $this->assertClassExists('Xi\Filelib\Resource\Command\AbstractResourceCommand');
+        $this->assertClassExists('Xi\Filelib\Resource\Command\BaseResourceCommand');
         $this->assertImplements(
             'Xi\Filelib\Command\Command',
-            'Xi\Filelib\Resource\Command\AbstractResourceCommand'
+            'Xi\Filelib\Resource\Command\BaseResourceCommand'
         );
     }
 
@@ -30,7 +30,7 @@ class AbstractResourceCommandTest extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $command = $this->getMockForAbstractClass('Xi\Filelib\Resource\Command\AbstractResourceCommand');
+        $command = $this->getMockForAbstractClass('Xi\Filelib\Resource\Command\BaseResourceCommand');
         $command->attachTo($filelib);
 
         $this->assertAttributeSame($rere, 'resourceRepository', $command);

@@ -18,7 +18,7 @@ $publisher->publish($file);
 
         <div class="container">
 
-            <h1>You just published a picture of a manatee</h1>
+            <h1>You just published a picture of a lazy manatee (are there other kinds?)</h1>
 
             <p>
                 <img src="<?php echo $publisher->getUrl($file, 'original'); ?>" />

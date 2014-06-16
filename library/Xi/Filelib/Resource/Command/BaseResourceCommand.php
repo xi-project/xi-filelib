@@ -16,7 +16,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Resource\ResourceRepository;
 use Xi\Filelib\Storage\Storage;
 
-abstract class AbstractResourceCommand implements Command
+abstract class BaseResourceCommand implements Command
 {
     /**
      * @var ResourceRepository

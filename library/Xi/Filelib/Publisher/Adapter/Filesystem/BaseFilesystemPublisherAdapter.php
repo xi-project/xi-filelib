@@ -19,7 +19,7 @@ use Xi\Filelib\InvalidArgumentException;
  * Abstract filesystem publisher convenience class
  *
  */
-abstract class AbstractFilesystemPublisherAdapter implements PublisherAdapter
+abstract class BaseFilesystemPublisherAdapter implements PublisherAdapter
 {
     /**
      * @var integer Octal representation for directory permissions

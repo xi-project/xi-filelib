@@ -20,7 +20,7 @@ use Xi\Filelib\Publisher\ReversibleLinker;
  * @author pekkis
  * @author Petri Mahanen
  */
-class ReversibleSequentialLinker extends AbstractSequentialLinker implements ReversibleLinker
+class ReversibleSequentialLinker extends BaseSequentialLinker implements ReversibleLinker
 {
     /**
      * @var FileRepository

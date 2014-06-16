@@ -10,22 +10,22 @@
 namespace Xi\Filelib\Tests\Plugin;
 
 use Xi\Filelib\Tests\TestCase;
-use Xi\Filelib\Plugin\AbstractPlugin;
+use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Events;
 
 /**
  * @group plugin
  */
-class AbstractPluginTest extends TestCase
+class BasePluginTest extends TestCase
 {
     /**
      * @test
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Plugin\AbstractPlugin'));
-        $this->assertContains('Xi\Filelib\Plugin\Plugin', class_implements('Xi\Filelib\Plugin\AbstractPlugin'));
+        $this->assertTrue(class_exists('Xi\Filelib\Plugin\BasePlugin'));
+        $this->assertContains('Xi\Filelib\Plugin\Plugin', class_implements('Xi\Filelib\Plugin\BasePlugin'));
     }
 
     /**
@@ -34,7 +34,7 @@ class AbstractPluginTest extends TestCase
     public function belongsToProfileShouldReturnWhetherPluginBelongsToAProfile()
     {
         $plugin = $this
-            ->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+            ->getMockBuilder('Xi\Filelib\Plugin\BasePlugin')
             ->setMethods(array())
             ->getMockForAbstractClass();
         $plugin->attachTo($this->getMockedFilelib());
@@ -57,7 +57,7 @@ class AbstractPluginTest extends TestCase
     public function setProfileShouldBeAShortCutToSetBelongsToProfileResolver()
     {
         $plugin = $this
-            ->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+            ->getMockBuilder('Xi\Filelib\Plugin\BasePlugin')
             ->setMethods(array())
             ->getMockForAbstractClass();
         $plugin->attachTo($this->getMockedFilelib());
@@ -77,7 +77,7 @@ class AbstractPluginTest extends TestCase
         $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
 
         $plugin = $this
-            ->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+            ->getMockBuilder('Xi\Filelib\Plugin\BasePlugin')
             ->setMethods(array())
             ->getMockForAbstractClass();
 
@@ -89,7 +89,7 @@ class AbstractPluginTest extends TestCase
      */
     public function getSubscribedEventsShouldContainProfileAddEvent()
     {
-        $events = AbstractPlugin::getSubscribedEvents();
+        $events = BasePlugin::getSubscribedEvents();
         $this->assertArrayHasKey(Events::PROFILE_AFTER_ADD, $events);
     }
 
@@ -98,7 +98,7 @@ class AbstractPluginTest extends TestCase
      */
     public function onFileProfileAddShouldAddPluginToProfileIfPluginHasProfile()
     {
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\BasePlugin')
                        ->setMethods(array())
                        ->getMockForAbstractClass();
         $plugin->setProfiles(array('lussen', 'hofer'));
@@ -116,7 +116,7 @@ class AbstractPluginTest extends TestCase
      */
     public function onFileProfileAddShouldNotAddPluginToProfileIfPluginDoesNotHaveProfile()
     {
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\AbstractPlugin')
+        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\BasePlugin')
                        ->setMethods(array())
                        ->getMockForAbstractClass();
         $plugin->setProfiles(array('lussen', 'hofer'));

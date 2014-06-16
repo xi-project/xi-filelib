@@ -50,10 +50,10 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
-    public function classExtendsAbstractPlugin()
+    public function classExtendsBasePlugin()
     {
         $this->assertArrayHasKey(
-            'Xi\Filelib\Plugin\AbstractPlugin',
+            'Xi\Filelib\Plugin\BasePlugin',
             class_parents($this->plugin)
         );
     }

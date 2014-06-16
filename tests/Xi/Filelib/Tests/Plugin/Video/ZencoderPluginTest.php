@@ -259,7 +259,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\Plugin\Video\ZencoderPlugin'));
-        $this->assertArrayHasKey('Xi\Filelib\Plugin\AbstractPlugin', class_parents('Xi\Filelib\Plugin\Video\ZencoderPlugin'));
+        $this->assertArrayHasKey('Xi\Filelib\Plugin\BasePlugin', class_parents('Xi\Filelib\Plugin\Video\ZencoderPlugin'));
     }
 
     /**

@@ -22,7 +22,7 @@ use Xi\Filelib\Storage\Storable;
  *
  * @author pekkis
  */
-class FilesystemStorageAdapter extends AbstractStorageAdapter
+class FilesystemStorageAdapter extends BaseStorageAdapter
 {
     /**
      * @var string Physical root

@@ -23,7 +23,7 @@ use Xi\Filelib\Storage\Storage;
  * @author pekkis
  *
  */
-class CopyFilesystemPublisherAdapter extends AbstractFilesystemPublisherAdapter implements PublisherAdapter
+class CopyFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter implements PublisherAdapter
 {
     /**
      * @var Storage

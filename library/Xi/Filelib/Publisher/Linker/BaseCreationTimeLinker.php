@@ -15,7 +15,7 @@ use Xi\Filelib\Publisher\Linker;
 /**
  * Calculates directory id by formatting an objects creation date
  */
-abstract class AbstractCreationTimeLinker
+abstract class BaseCreationTimeLinker
 {
     /**
      * @param string $format

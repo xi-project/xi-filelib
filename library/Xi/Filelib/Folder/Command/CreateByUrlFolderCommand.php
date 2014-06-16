@@ -13,7 +13,7 @@ use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
 use Pekkis\Queue\Message;
 
-class CreateByUrlFolderCommand extends AbstractFolderCommand
+class CreateByUrlFolderCommand extends BaseFolderCommand
 {
 
     /**
