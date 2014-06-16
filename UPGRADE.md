@@ -6,6 +6,9 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 ## From version 0.11.x to version 0.12.x
 
 * Data is backwards compatible. Hoorah!
+* Filelib's upload() shortcut is now uploadFile().
+* Filelib has other convenient repository shortcuts (findFile(), findFiles() etc).
+* FileRepository has some new nice finder methods (for example findMany()).
 * "Find many" type of operations now return collections (xi/collections) instead of ArrayIterators,
   making nice functional style of programming possible out of the box.
 * Refactored storage subcomponent.

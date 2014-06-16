@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../bootstrap.php';
 
 // Upload a picture of a manatee
-$file = $filelib->upload(__DIR__ . '/../manatees/manatus-02.jpg');
+$file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-02.jpg');
 
 // Display the image
 header("Content-Type: " . $file->getMimetype());

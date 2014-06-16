@@ -21,7 +21,7 @@ $filelib->getFileRepository()->setExecutionStrategy(
     ExecutionStrategy::STRATEGY_ASYNCHRONOUS
 );
 
-$file = $filelib->getFileRepository()->upload($path);
+$file = $filelib->uploadFile($path);
 
 header('Location: zencoder-view-video.php?id=' . $file->getId());
 

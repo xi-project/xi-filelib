@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../lazy-publisher-common.php';
 
-$file = $filelib->upload(__DIR__ . '/../manatees/manatus-25.jpg');
+$file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-25.jpg');
 $publisher->publish($file);
 ?>
 

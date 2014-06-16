@@ -9,7 +9,7 @@ require_once __DIR__ . '/../renderer-common.php';
 $folder = $filelib->getFolderRepository()->createByUrl('pictures/of/very beaütiful manatees');
 
 try {
-    $file = $filelib->upload(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
+    $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
 
 } catch (AccessDeniedException $e) {
 

@@ -58,7 +58,7 @@ $filelib = new FileLibrary(
     new JsonBackendAdapter(__DIR__ . '/filelib-example.json')
 );
 
-$file = $filelib->upload('/path/to/some/file.jpg');
+$file = $filelib->uploadFile('/path/to/some/file.jpg');
 
 // Display the image
 header("Content-Type: " . $file->getMimetype());

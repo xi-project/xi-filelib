@@ -457,7 +457,7 @@ class BackendTest extends TestCase
      * @dataProvider provideClassNames
      * @param string $className
      */
-    public function findByIdShouldDelegateToBackendAdapter($className)
+    public function findByIdDelegatesToFindByIds($className)
     {
         $this->platform->expects($this->once())->method('findByIds')
             ->with($this->isInstanceOf('Xi\Filelib\Backend\FindByIdsRequest'))
@@ -469,9 +469,29 @@ class BackendTest extends TestCase
             ->getMock();
 
         $ret = $backend->findById(1, $className);
+
         $this->assertFalse($ret);
     }
 
+    /**
+     * @test
+     * @dataProvider provideClassNames
+     * @param string $className
+     */
+    public function findByIdsDelegatesToPlatform($className)
+    {
+        $this->platform->expects($this->once())->method('findByIds')
+            ->with($this->isInstanceOf('Xi\Filelib\Backend\FindByIdsRequest'))
+            ->will($this->returnArgument(0));
+
+        $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
+            ->setConstructorArgs(array($this->ed, $this->platform, $this->im))
+            ->setMethods(array('getIdentityMapHelper'))
+            ->getMock();
+
+        $ret = $backend->findByIds(array(1), $className);
+        $this->assertInstanceOf('Xi\Collections\Collection\ArrayCollection', $ret);
+    }
 
     public function getMockedBackend($methods = array())
     {

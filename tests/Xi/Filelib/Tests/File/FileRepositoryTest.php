@@ -140,9 +140,9 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $this->backend
             ->expects($this->once())
-            ->method('findById')
-            ->with($id, 'Xi\Filelib\File\File')
-            ->will($this->returnValue(false));
+            ->method('findByIds')
+            ->with(array($id), 'Xi\Filelib\File\File')
+            ->will($this->returnValue(ArrayCollection::create(array())));
 
 
         $file = $this->op->find($id);
@@ -160,13 +160,34 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $this->backend
             ->expects($this->once())
-            ->method('findById')
-            ->with($this->equalTo($id))
-            ->will($this->returnValue($file));
+            ->method('findByIds')
+            ->with(array($id))
+            ->will($this->returnValue(ArrayCollection::create(array($file))));
 
         $ret = $this->op->find($id);
         $this->assertSame($file, $ret);
     }
+
+    /**
+     * @test
+     */
+    public function findManyDelegatesToBackend()
+    {
+        $ids = array(1, 666);
+
+        $file = File::create();
+        $coll = ArrayCollection::create(array($file));
+
+        $this->backend
+            ->expects($this->once())
+            ->method('findByIds')
+            ->with($this->equalTo($ids))
+            ->will($this->returnValue($coll));
+
+        $ret = $this->op->findMany($ids);
+        $this->assertSame($coll, $ret);
+    }
+
 
     /**
      * @test

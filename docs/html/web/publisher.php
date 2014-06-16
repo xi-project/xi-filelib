@@ -16,7 +16,7 @@ $publisher->attachTo($filelib);
 $originalPlugin = new OriginalVersionPlugin('original');
 $filelib->addPlugin($originalPlugin, array('default'));
 
-$file = $filelib->upload(__DIR__ . '/../manatees/manatus-09.jpg');
+$file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-09.jpg');
 $publisher->publish($file);
 
 ?>

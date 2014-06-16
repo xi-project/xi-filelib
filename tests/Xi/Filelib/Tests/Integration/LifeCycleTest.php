@@ -25,7 +25,7 @@ class LifeCycleTest extends TestCase
 
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
 
-        $file = $this->filelib->upload($manateePath, $folder);
+        $file = $this->filelib->uploadFile($manateePath, $folder);
         $this->assertEquals(File::STATUS_COMPLETED, $file->getStatus());
         $this->assertPublisherFileCount(0);
 
@@ -46,7 +46,7 @@ class LifeCycleTest extends TestCase
         $allResources = $this->filelib->getResourceRepository()->findAll();
         $this->assertCount(1, $allResources);
 
-        $secondFile =  $this->filelib->upload($manateePath);
+        $secondFile =  $this->filelib->uploadFile($manateePath);
         $this->assertSame($file->getResource(), $secondFile->getResource());
 
         $this->publisher->publish($secondFile);
@@ -76,7 +76,7 @@ class LifeCycleTest extends TestCase
         $this->filelib->addPlugin($automaticPublisherPlugin);
 
         $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $file =  $this->filelib->upload($manateePath);
+        $file =  $this->filelib->uploadFile($manateePath);
 
         $this->assertPublisherFileCount(2);
     }
@@ -111,7 +111,7 @@ class LifeCycleTest extends TestCase
         );
 
         $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $file = $this->filelib->upload($manateePath);
+        $file = $this->filelib->uploadFile($manateePath);
         $this->assertEquals(File::STATUS_RAW, $file->getStatus());
 
         $msg = $queue->dequeue();
@@ -130,8 +130,8 @@ class LifeCycleTest extends TestCase
         $this->filelib->addProfile(new FileProfile('unspoiled'));
 
         $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $file1 = $this->filelib->upload(new FileUpload($manateePath));
-        $file2 = $this->filelib->upload($manateePath, null, 'unspoiled');
+        $file1 = $this->filelib->uploadFile(new FileUpload($manateePath));
+        $file2 = $this->filelib->uploadFile($manateePath, null, 'unspoiled');
 
         // @todo Why profile manager of all places?
         $this->assertTrue($this->filelib->getProfileManager()->hasVersion($file1, 'cinemascope'));

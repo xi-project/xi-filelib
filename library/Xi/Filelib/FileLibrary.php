@@ -10,8 +10,10 @@
 namespace Xi\Filelib;
 
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Backend\Cache\Adapter\CacheAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
+use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Command\Commander;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
@@ -33,13 +35,6 @@ use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\Storage\Storage;
 
-/**
- * File library
- *
- * @author pekkis
- * @todo Refactor to configuration / contain common methods (getFile etc)
- *
- */
 class FileLibrary
 {
     /**
@@ -133,6 +128,57 @@ class FileLibrary
         $this->storage->attachTo($this);
 
         $this->addProfile(new FileProfile('default'));
+    }
+
+    /**
+     * Uploads a file to filelib
+     *
+     * @param string|FileUpload $file
+     * @param Folder $folder Folder or null for root folder
+     * @param string $profile File profile name
+     * @return File
+     */
+    public function uploadFile($file, $folder = null, $profile = 'default')
+    {
+        return $this->getFileRepository()->upload($file, $folder, $profile);
+    }
+
+    /**
+     * Returns a folder by url. Creates one if one does not exist.
+     *
+     * @param string $url
+     * @return Folder
+     */
+    public function createFolderByUrl($url)
+    {
+        return $this->getFolderRepository()->createByUrl($url);
+    }
+
+    /**
+     * @param mixed $id
+     * @return File
+     */
+    public function findFile($id)
+    {
+        return $this->getFileRepository()->find($id);
+    }
+
+    /**
+     * @param array $ids
+     * @return ArrayCollection
+     */
+    public function findFiles(array $ids = array())
+    {
+        return $this->getFileRepository()->findMany($ids);
+    }
+
+    /**
+     * @param FileFinder $finder
+     * @return ArrayCollection
+     */
+    public function findFilesBy(FileFinder $finder)
+    {
+        return $this->getFileRepository()->findBy($finder);
     }
 
     /**
@@ -344,17 +390,6 @@ class FileLibrary
     public function getCommander()
     {
         return $this->commander;
-    }
-
-    /**
-     * @param string|FileUpload $file
-     * @param Folder $folder
-     * @param string $profile
-     * @return File
-     */
-    public function upload($file, $folder = null, $profile = 'default')
-    {
-        return $this->getFileRepository()->upload($file, $folder, $profile);
     }
 
     /**
