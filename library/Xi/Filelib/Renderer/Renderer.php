@@ -139,7 +139,8 @@ class Renderer
         $versionable = $provider->getApplicableStorable($file);
         if ($provider instanceof LazyVersionProvider) {
             if (!$versionable->hasVersion($version)) {
-                $provider->createProvidedVersions($file);
+                $provider->createProvidedVersions($file, $version);
+                $this->fileRepository->update($file);
             }
         }
 

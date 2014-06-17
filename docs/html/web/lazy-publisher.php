@@ -28,6 +28,10 @@ $publisher->publish($file);
                 <img src="<?php echo $publisher->getUrl($file, 'cinemascope'); ?>" />
             </p>
 
+            <p>
+                <img src="<?php echo $publisher->getUrl($file, 'arbitrary:x=500'); ?>" />
+            </p>
+
         </div>
     </body>
 </html>

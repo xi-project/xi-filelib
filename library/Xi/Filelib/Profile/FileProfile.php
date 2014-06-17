@@ -16,6 +16,7 @@ use Xi\Filelib\Event\PluginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Events;
+use Xi\Filelib\VersionId;
 
 class FileProfile implements EventSubscriberInterface
 {
@@ -152,11 +153,16 @@ class FileProfile implements EventSubscriberInterface
      */
     public function getVersionProvider(File $file, $version)
     {
+        $version = VersionId::get($version);
+
         $versions = $this->getFileVersions($file);
 
-        if (in_array($version, $versions)) {
-            return $this->fileVersions[$version];
+        if (in_array($version->getVersion(), $versions)) {
+            return $this->fileVersions[$version->getVersion()];
         }
+
+
+
         throw new InvalidArgumentException("File has no version '{$version}'");
     }
 

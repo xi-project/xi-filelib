@@ -83,9 +83,13 @@ abstract class VersionProvider extends BasePlugin
         $this->profiles = $filelib->getProfileManager();
     }
 
-    public function createProvidedVersions(File $file)
+    /**
+     * @param File $file
+     * @param null $requestedVersion
+     */
+    public function createProvidedVersions(File $file, $requestedVersion = null)
     {
-        $tmps = $this->createTemporaryVersions($file);
+        $tmps = $this->createTemporaryVersions($file, $requestedVersion);
 
         $versionable = $this->getApplicableStorable($file);
         foreach (array_keys($tmps) as $version) {
