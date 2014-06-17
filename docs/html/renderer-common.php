@@ -30,14 +30,28 @@ $originalPlugin = new OriginalVersionPlugin('original');
 $filelib->addPlugin($originalPlugin);
 
 $versionPlugin = new VersionPlugin(
-    'cinemascope',
     array(
-        array('setImageCompression',Imagick::COMPRESSION_JPEG),
-        array('setImageFormat', 'jpg'),
-        array('setImageCompressionQuality', 50),
-        array('cropThumbnailImage', array(800, 200)),
-        array('sepiaToneImage', 90),
-        'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(__DIR__ . '/watermark.png', 'se', 10),
+        'cinemascope' => array(
+            array(
+                array('setImageCompression',Imagick::COMPRESSION_JPEG),
+                array('setImageFormat', 'jpg'),
+                array('setImageCompressionQuality', 50),
+                array('cropThumbnailImage', array(800, 200)),
+                array('sepiaToneImage', 90),
+                'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(__DIR__ . '/watermark.png', 'se', 10),
+            ),
+            'image/jpeg'
+        ),
+        'croppo' => array(
+            array(
+                array('setImageCompression',Imagick::COMPRESSION_JPEG),
+                array('setImageFormat', 'jpg'),
+                array('setImageCompressionQuality', 20),
+                array('cropThumbnailImage', array(400, 400)),
+                'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(__DIR__ . '/watermark.png', 'nw', 5),
+            ),
+            'image/jpeg'
+        )
     )
 );
 $filelib->addPlugin($versionPlugin);

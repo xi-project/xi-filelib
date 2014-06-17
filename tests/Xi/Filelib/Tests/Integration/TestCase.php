@@ -114,14 +114,17 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
         $filelib->addPlugin($originalPlugin, array('default'));
 
         $versionPlugin = new VersionPlugin(
-            'cinemascope',
             array(
-                array('setImageCompression',Imagick::COMPRESSION_JPEG),
-                array('setImageFormat', 'jpg'),
-                array('setImageCompressionQuality', 50),
-                array('cropThumbnailImage', array(800, 200)),
-                array('sepiaToneImage', 90),
-                'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(ROOT_TESTS . '/data/watermark.png', 'se', 10),
+                'cinemascope' => array(
+                    array(
+                        array('setImageCompression',Imagick::COMPRESSION_JPEG),
+                        array('setImageFormat', 'jpg'),
+                        array('setImageCompressionQuality', 50),
+                        array('cropThumbnailImage', array(800, 200)),
+                        array('sepiaToneImage', 90),
+                        'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(ROOT_TESTS . '/data/watermark.png', 'se', 10),
+                    )
+                )
             )
         );
         $filelib->addPlugin($versionPlugin, array('default'));

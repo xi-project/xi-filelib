@@ -20,24 +20,15 @@ use Xi\Filelib\FileLibrary;
 class VersionPlugin extends LazyVersionProvider
 {
     /**
-     * @var ImageMagickHelper
-     */
-    protected $imageMagickHelper;
-
-    /**
-     * @var string Mime type of version provided
-     */
-    protected $mimeType;
-
-    /**
      * @var string
      */
     protected $tempDir;
 
     /**
-     * @var string
+     * @var VersionPluginVersion[]
      */
-    protected $identifier;
+    protected $versions;
+
 
     /**
      * @param string $identifier
@@ -45,9 +36,7 @@ class VersionPlugin extends LazyVersionProvider
      * @param string $mimeType
      */
     public function __construct(
-        $identifier,
-        $commandDefinitions = array(),
-        $mimeType = null
+        $versionDefinitions = array()
     ) {
         parent::__construct(
             function (File $file) {
@@ -55,25 +44,21 @@ class VersionPlugin extends LazyVersionProvider
                 return (bool) preg_match("/^image/", $file->getMimetype());
             }
         );
-        $this->imageMagickHelper = new ImageMagickHelper($commandDefinitions);
-        $this->mimeType = $mimeType;
-        $this->identifier = $identifier;
+
+        foreach ($versionDefinitions as $key => $definition) {
+            $this->versions[$key] = new VersionPluginVersion(
+                $key,
+                $definition[0],
+                isset($definition[1]) ? $definition[1] : null
+            );
+        }
+
     }
 
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
         $this->tempDir = $filelib->getTempDir();
-    }
-
-    /**
-     * Returns ImageMagick helper
-     *
-     * @return ImageMagickHelper
-     */
-    public function getImageMagickHelper()
-    {
-        return $this->imageMagickHelper;
     }
 
     /**
@@ -84,17 +69,23 @@ class VersionPlugin extends LazyVersionProvider
      */
     public function createTemporaryVersions(File $file)
     {
-        $retrieved = $this->storage->retrieve($file->getResource());
-        $img = $this->getImageMagickHelper()->createImagick($retrieved);
-
-        $this->getImageMagickHelper()->execute($img);
-
-        $tmp = $this->tempDir . '/' . uniqid('', true);
-        $img->writeImage($tmp);
-
-        return array(
-            $this->identifier => $tmp
+        $retrieved = $this->storage->retrieve(
+            $file->getResource()
         );
+
+        $ret = array();
+
+        foreach ($this->versions as $key => $version) {
+
+            $img = $version->getHelper()->createImagick($retrieved);
+            $version->getHelper()->execute($img);
+            $tmp = $this->tempDir . '/' . uniqid('', true);
+            $img->writeImage($tmp);
+
+            $ret[$version->getIdentifier()] = $tmp;
+        }
+
+        return $ret;
     }
 
     /**
@@ -102,7 +93,12 @@ class VersionPlugin extends LazyVersionProvider
      */
     public function getProvidedVersions()
     {
-        return array($this->identifier);
+        $ret = array();
+        foreach ($this->versions as $version) {
+            $ret[] = $version->getIdentifier();
+        }
+
+        return $ret;
     }
 
     /**
@@ -112,8 +108,8 @@ class VersionPlugin extends LazyVersionProvider
      */
     public function getExtension(File $file, $version)
     {
-        if ($this->mimeType) {
-            return $this->getExtensionFromMimeType($this->mimeType);
+        if ($mimeType = $this->versions[$version]->getMimeType()) {
+            return $this->getExtensionFromMimeType($mimeType);
         }
         return parent::getExtension($file, $version);
     }

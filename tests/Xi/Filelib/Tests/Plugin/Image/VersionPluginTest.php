@@ -36,14 +36,25 @@ class VersionPluginTest extends TestCase
 
     public function setUp()
     {
+        if (!class_exists('Imagick')) {
+            return $this->markTestSkipped('Imagick required');
+        }
+
         parent::setUp();
 
         $this->storage = $this->getMockedStorage();
 
         $this->plugin = new VersionPlugin(
-            'xooxer',
-            array(),
-            'jpg'
+            array(
+                'xooxer' => array(
+                    array(),
+                    null,
+                ),
+                'tooxer' => array(
+                    array(),
+                    null
+                )
+            )
         );
     }
 
@@ -101,19 +112,9 @@ class VersionPluginTest extends TestCase
     /**
      * @test
      */
-    public function getImageMagickHelperShouldReturnImageMagickHelper()
-    {
-        $helper = $this->plugin->getImageMagickHelper();
-        $this->assertInstanceOf('Xi\Filelib\Plugin\Image\ImageMagickHelper', $helper);
-        $this->assertSame($helper, $this->plugin->getImageMagickHelper());
-    }
-
-    /**
-     * @test
-     */
     public function createProvidedVersionsShouldCreateVersions()
     {
-        $retrievedPath = ROOT_TESTS . '/data/illusive-manatee.jpg';
+        $retrievedPath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
@@ -123,35 +124,17 @@ class VersionPluginTest extends TestCase
             ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
             ->will($this->returnValue($retrievedPath));
 
-        $helper = $this->getMockBuilder('Xi\Filelib\Plugin\Image\ImageMagickHelper')->disableOriginalConstructor()->getMock();
-
-        $mock = $this->getMock('Imagick');
-        $mock->expects($this->once())
-             ->method('writeImage')
-             ->with($this->matchesRegularExpression('#^' . ROOT_TESTS . '/data/temp#'));
-
-        $helper->expects($this->once())->method('createImagick')->with($this->equalTo($retrievedPath))->will($this->returnValue($mock));
-        $helper->expects($this->once())->method('execute')->with($this->equalTo($mock));
-
-        $plugin = $this->getMockBuilder('Xi\Filelib\Plugin\Image\VersionPlugin')
-                       ->setMethods(array('getImageMagickHelper'))
-                       ->setConstructorArgs(array(
-                           'tussi',
-                           array(),
-                           'jpg'
-                       ))
-                       ->getMock();
-
         $pm = $this->getMockedProfileManager(array('xooxer'));
-        $filelib = $this->getMockedFilelib(null, null, null, null, null, null, null, null, $pm);
-        $filelib->expects($this->any())->method('getStorage')->will($this->returnValue($this->storage));
+        $filelib = $this->getMockedFilelib(
+            null, array(
+                'storage' => $this->storage,
+                'pm' => $pm
+            )
+        );
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
-        $plugin->attachTo($filelib);
 
-        $plugin->expects($this->any())->method('getImageMagickHelper')->will($this->returnValue($helper));
-
-        $ret = $plugin->createTemporaryVersions($file);
-
+        $this->plugin->attachTo($filelib);
+        $ret = $this->plugin->createTemporaryVersions($file);
         $this->assertInternalType('array', $ret);
 
         foreach ($ret as $version => $tmp) {
@@ -176,7 +159,7 @@ class VersionPluginTest extends TestCase
      */
     public function getVersionsShouldReturnArrayOfOneContainingIdentifier()
     {
-         $this->assertEquals(array('xooxer'), $this->plugin->getProvidedVersions());
+         $this->assertEquals(array('xooxer', 'tooxer'), $this->plugin->getProvidedVersions());
     }
 
     /**
@@ -184,7 +167,14 @@ class VersionPluginTest extends TestCase
      */
     public function getExtensionShouldUsePreDefinedMimeType()
     {
-        $plugin = new VersionPlugin('xooxoo', array(), 'application/rpki-ghostbusters');
+        $plugin = new VersionPlugin(
+            array(
+                'xooxoo' => array(
+                    array(),
+                    'application/rpki-ghostbusters'
+                )
+            )
+        );
         $ret = $plugin->getExtension($this->getMockedFile(), 'xooxoo');
         $this->assertSame('gbr', $ret);
     }
@@ -203,7 +193,14 @@ class VersionPluginTest extends TestCase
             )
         );
 
-        $plugin = new VersionPlugin('xooxoo', array(), null);
+        $plugin = new VersionPlugin(
+            array(
+                'xooxoo' => array(
+                    array(),
+                    null
+                )
+            )
+        );
         $plugin->attachTo($filelib);
 
         $resource = $this->getMockedResource();

@@ -41,6 +41,10 @@ try {
         </p>
 
         <p>
+            <img src="renderer-backend.php?id=<?php echo $file->getId(); ?>&version=croppo" />
+        </p>
+
+        <p>
             <img src="renderer-backend.php?id=<?php echo $file->getId(); ?>&version=nonexistant" />
         </p>
 
