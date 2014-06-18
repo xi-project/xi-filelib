@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\Attacher;
@@ -24,26 +25,28 @@ interface PublisherAdapter extends Attacher
 {
     /**
      * @param File $file
-     * @param string $version
-     * @param VersionProvider $version
+     * @param Version $version
+     * @param VersionProvider $versionProvider
      * @param Linker $linker
      * @return bool
      */
-    public function publish(File $file, $version, VersionProvider $versionProvider, Linker $linker);
+    public function publish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker);
 
     /**
      * @param File $file
-     * @param VersionProvider $version
+     * @param Version $version
+     * @param VersionProvider $versionProvider
      * @param Linker $linker
      * @return bool
      */
-    public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker);
+    public function unpublish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker);
 
     /**
      * @param File $file
-     * @param VersionProvider $version
+     * @param Version $version
+     * @param VersionProvider $versionProvider
      * @param Linker $linker
      * @return string
      */
-    public function getUrl(File $file, $version, VersionProvider $versionProvider, Linker $linker);
+    public function getUrl(File $file, Version $version, VersionProvider $versionProvider, Linker $linker);
 }

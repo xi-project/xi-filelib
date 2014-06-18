@@ -10,6 +10,10 @@
 namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Event\VersionProviderEvent;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Plugin\VersionProvider\InvalidVersionException;
 
 /**
  * Lazy version provider
@@ -49,4 +53,23 @@ abstract class LazyVersionProvider extends VersionProvider
         }
         parent::onAfterUpload($event);
     }
+
+    public function provideVersion(File $file, $version)
+    {
+        $version = Version::get($version);
+        if (!$this->isValidVersion($version)) {
+            throw new InvalidVersionException('Invalid version');
+        }
+
+        $versionable = $this->getApplicableStorable($file);
+        $versionable->addVersion($version);
+        $tmp = $this->createTemporaryVersion($file, $version);
+        $this->storage->storeVersion($versionable, $version, $tmp);
+        unlink($tmp);
+
+        $event = new VersionProviderEvent($this, $file, array($version));
+        $this->eventDispatcher->dispatch(Events::VERSIONS_PROVIDED, $event);
+    }
+
+    abstract public function createTemporaryVersion(File $file, $version);
 }

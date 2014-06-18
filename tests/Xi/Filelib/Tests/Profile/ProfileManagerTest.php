@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Profile;
 
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\File\File;
@@ -34,6 +35,7 @@ class ProfileManagerTest extends \Xi\Filelib\Tests\TestCase
     public function hasVersionShouldDelegateToProfile()
     {
         $file = File::create(array('profile' => 'meisterlus'));
+        $version = Version::get('kloo');
 
         $profile = $this->getMockedFileProfile('meisterlus');
         $profile
@@ -41,12 +43,12 @@ class ProfileManagerTest extends \Xi\Filelib\Tests\TestCase
             ->method('fileHasVersion')
             ->with(
                 $file,
-                'kloo'
+                $version
             )
             ->will($this->returnValue(true));
 
         $this->manager->addProfile($profile);
-        $hasVersion = $this->manager->hasVersion($file, 'kloo');
+        $hasVersion = $this->manager->hasVersion($file, $version);
         $this->assertTrue($hasVersion);
     }
 
@@ -57,6 +59,7 @@ class ProfileManagerTest extends \Xi\Filelib\Tests\TestCase
     {
         $vp = $this->getMockedVersionProvider();
         $file = File::create(array('profile' => 'meisterlus'));
+        $version = Version::get('kloo');
 
         $profile = $this->getMockedFileProfile('meisterlus');
         $profile
@@ -64,12 +67,12 @@ class ProfileManagerTest extends \Xi\Filelib\Tests\TestCase
             ->method('getVersionProvider')
             ->with(
                 $file,
-                'kloo'
+                $version
             )
             ->will($this->returnValue($vp));
 
         $this->manager->addProfile($profile);
-        $ret = $this->manager->getVersionProvider($file, 'kloo');
+        $ret = $this->manager->getVersionProvider($file, $version);
 
         $this->assertSame($vp, $ret);
     }

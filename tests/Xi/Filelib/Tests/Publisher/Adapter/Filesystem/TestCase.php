@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {
@@ -67,7 +68,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $this->linker = $linker;
         $this->versionProvider = $versionProvider;
-        $this->version = 'xooxer';
+        $this->version = Version::get('xooxer');
 
         $adapter = $this->getMockedStorageAdapter();
         $adapter

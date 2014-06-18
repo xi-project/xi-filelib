@@ -9,20 +9,10 @@
 
 namespace Xi\Filelib;
 
+use Xi\Filelib\Plugin\VersionProvider\Version;
+
 abstract class BaseStorable extends BaseIdentifiable
 {
-    /**
-     * Sets currently created versions
-     *
-     * @param  array    $versions
-     * @return Resource
-     */
-    public function setVersions(array $versions = array())
-    {
-        $this->getData()->set('versions', $versions);
-        return $this;
-    }
-
     /**
      * Returns currently created versions
      *
@@ -36,37 +26,52 @@ abstract class BaseStorable extends BaseIdentifiable
     /**
      * Adds version
      *
-     * @param string $version
+     * @param Version $version
+     * @return self
      */
-    public function addVersion($version)
+    public function addVersion(Version $version)
     {
         $versions = $this->getVersions();
-        if (!in_array($version, $versions)) {
-            array_push($versions, $version);
+        if (!in_array($version->toString(), $versions)) {
+            array_push($versions, $version->toString());
             $this->setVersions($versions);
         }
+
+        return $this;
     }
 
     /**
      * Removes a version
      *
-     * @param string $version
+     * @param Version $version
+     * @return self
      */
-    public function removeVersion($version)
+    public function removeVersion(Version $version)
     {
         $versions = $this->getVersions();
-        $versions = array_diff($versions, array($version));
-        $this->setVersions($versions);
+        $versions = array_diff($versions, array($version->toString()));
+        return $this->setVersions($versions);
     }
 
     /**
      * Returns whether resource has version
      *
-     * @param  string  $version
+     * @param Version $version
      * @return boolean
      */
-    public function hasVersion($version)
+    public function hasVersion(Version $version)
     {
         return in_array($version, $this->getVersions());
     }
+
+    /**
+     * @param array $versions
+     * @return self
+     */
+    protected function setVersions($versions)
+    {
+        $this->getData()->set('versions', $versions);
+        return $this;
+    }
+
 }

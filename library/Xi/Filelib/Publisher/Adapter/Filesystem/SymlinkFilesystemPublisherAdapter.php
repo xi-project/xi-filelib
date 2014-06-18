@@ -13,6 +13,7 @@ use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Storage\Storage;
@@ -79,7 +80,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
      * @return string
      * @throws FilelibException
      */
-    public function getRelativePathToVersion(File $file, $version, VersionProvider $versionProvider, $levelsDown = 0)
+    public function getRelativePathToVersion(File $file, Version $version, VersionProvider $versionProvider, $levelsDown = 0)
     {
         $relativePath = $this->getRelativePathToRoot();
 
@@ -99,13 +100,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
         return $path;
     }
 
-    /**
-     * @param File            $file
-     * @param string          $version
-     * @param VersionProvider $versionProvider
-     * @todo Refactor. Puuppa code smells.
-     */
-    public function publish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
+    public function publish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
             $linker->getLink(
@@ -153,7 +148,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
 
     }
 
-    public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
+    public function unpublish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
             $linker->getLink($file, $version, $versionProvider->getExtension($file, $version));

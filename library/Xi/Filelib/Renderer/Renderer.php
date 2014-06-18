@@ -14,6 +14,7 @@ use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Storage;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\FilelibException;
 
 class Renderer
 {
@@ -96,7 +97,7 @@ class Renderer
 
         $options = $this->mergeOptions($options);
 
-        if (!$this->profiles->hasVersion($file, $version)) {
+        if (!$this->versionIsObtainable($file, $version)) {
             return $this->adaptResponse(
                 $response->setStatusCode(404),
                 $version,
@@ -107,7 +108,6 @@ class Renderer
         if ($options['download'] == true) {
             $response->setHeader('Content-disposition', "attachment; filename={$file->getName()}");
         }
-
 
         $retrieved = new FileObject($this->retrieve($file, $version));
         $response->setHeader('Content-Type', $retrieved->getMimetype());
@@ -132,19 +132,45 @@ class Renderer
         return array_merge($this->defaultOptions, $options);
     }
 
-    private function retrieve(File $file, $version)
+    protected function versionIsObtainable(File $file, $version)
     {
-        /** @var VersionProvider $provider */
-        $provider = $this->profiles->getVersionProvider($file, $version);
-        $versionable = $provider->getApplicableStorable($file);
-        if ($provider instanceof LazyVersionProvider) {
-            if (!$versionable->hasVersion($version)) {
-                $provider->createProvidedVersions($file, $version);
-                $this->fileRepository->update($file);
-            }
+        if (!$this->profiles->hasVersion($file, $version)) {
+            return false;
         }
 
-        return $this->storage->retrieveVersion($versionable, $version);
+        $provider = $this->profiles->getVersionProvider($file, $version);
+        $versionable = $provider->getApplicableStorable($file);
+
+        if ($versionable->hasVersion($version)) {
+
+            return true;
+        }
+
+        if (!$provider instanceof LazyVersionProvider) {
+            return false;
+        }
+
+        /** @var LazyVersionProvider $provider */
+
+        if (!$provider->isValidVersion($version)) {
+            return false;
+        }
+
+        try {
+            $provider->provideVersion($file, $version);
+            $this->fileRepository->update($file);
+            return true;
+        } catch (FilelibException $e) {
+            return false;
+        }
+    }
+
+    private function retrieve(File $file, $version)
+    {
+        return $this->storage->retrieveVersion(
+            $this->profiles->getVersionProvider($file, $version)->getApplicableStorable($file),
+            $version
+        );
     }
 
     protected function injectContentToResponse(FileObject $file, Response $response)

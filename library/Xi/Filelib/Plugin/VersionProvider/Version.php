@@ -1,8 +1,8 @@
 <?php
 
-namespace Xi\Filelib;
+namespace Xi\Filelib\Plugin\VersionProvider;
 
-class VersionId
+class Version
 {
     /**
      * @var string
@@ -33,11 +33,11 @@ class VersionId
 
     /**
      * @param $rawVersion
-     * @return VersionId
+     * @return Version
      */
     public static function get($version)
     {
-        if ($version instanceof VersionId) {
+        if ($version instanceof Version) {
             return $version;
         }
 
@@ -49,7 +49,7 @@ class VersionId
         $split = explode(':', $rawVersion);
 
         if (!isset($split[1])) {
-            return new VersionId($split[0]);
+            return new Version($split[0]);
         }
 
         $params = array();
@@ -59,11 +59,11 @@ class VersionId
             $params[$key] = $value;
         }
 
-        return new VersionId($split[0], $params);
+        return new Version($split[0], $params);
     }
 
 
-    public function __toString()
+    public function toString()
     {
         if (!$this->params) {
             return $this->version;
@@ -75,6 +75,11 @@ class VersionId
         }
 
         return $this->version . ':' . implode(';', $paramsStr);
+    }
+
+    public function __toString()
+    {
+        return $this->toString();
     }
 
 

@@ -15,14 +15,16 @@ use MongoGridFSFile;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 /**
  * Stores files in MongoDB's GridFS filesystem
  *
  * @author pekkis
  */
-class GridfsStorageAdapter extends BaseStorageAdapter
+class GridfsStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
 {
     /**
      * @var MongoDB Mongo reference
@@ -45,14 +47,13 @@ class GridfsStorageAdapter extends BaseStorageAdapter
     private $tempFiles = array();
 
     /**
-     * @param  MongoDB       $mongo   A MongoDB instance
-     * @param  string        $tempDir Temporary directory
-     * @return GridfsStorage
+     * @param MongoDB $mongo
+     * @param string $prefix
+     * @param null $tempDir
      */
     public function __construct(MongoDB $mongo, $prefix = 'xi_filelib', $tempDir = null)
     {
         $this->mongo = $mongo;
-        $this->tempFiles = new TemporaryFileContainer($tempDir);
         $this->prefix = $prefix;
     }
 
@@ -100,7 +101,7 @@ class GridfsStorageAdapter extends BaseStorageAdapter
     }
 
 
-    public function versionExists(Storable $storable, $version)
+    public function versionExists(Storable $storable, Version $version)
     {
         $filename = $this->getFilenameVersion($storable, $version);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
@@ -118,12 +119,9 @@ class GridfsStorageAdapter extends BaseStorageAdapter
      */
     private function toTemp(MongoGridFSFile $file)
     {
-        $tmp = $this->tempFiles->getTemporaryFilename();
-
+        $tmp = $this->getTemporaryFilename();
         $file->write($tmp);
-        $this->tempFiles->registerTemporaryFile($tmp);
-
-        return $tmp;
+        return new Retrieved($tmp, true);
     }
 
     public function store(Resource $resource, $tempFile)
@@ -141,7 +139,7 @@ class GridfsStorageAdapter extends BaseStorageAdapter
         );
     }
 
-    public function storeVersion(Storable $storable, $version, $tempFile)
+    public function storeVersion(Storable $storable, Version $version, $tempFile)
     {
         $filename = $this->getFilenameVersion($storable, $version);
         $this->getGridFS()->storeFile(
@@ -150,7 +148,7 @@ class GridfsStorageAdapter extends BaseStorageAdapter
                 'filename' => $filename,
                 'metadata' => array(
                     'id' => $storable->getId(),
-                    'version' => $version
+                    'version' => $version->toString()
                 )
             )
         );
@@ -164,7 +162,7 @@ class GridfsStorageAdapter extends BaseStorageAdapter
         return $this->toTemp($file);
     }
 
-    public function retrieveVersion(Storable $storable, $version)
+    public function retrieveVersion(Storable $storable, Version $version)
     {
         $filename = $this->getFilenameVersion($storable, $version);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
@@ -178,7 +176,7 @@ class GridfsStorageAdapter extends BaseStorageAdapter
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    public function deleteVersion(Storable $storable, $version)
+    public function deleteVersion(Storable $storable, Version $version)
     {
         $filename = $this->getFilenameVersion($storable, $version);
         $this->getGridFS()->remove(array('filename' => $filename));
@@ -189,11 +187,11 @@ class GridfsStorageAdapter extends BaseStorageAdapter
         return $resource->getId();
     }
 
-    private function getFilenameVersion(Storable $storable, $version)
+    private function getFilenameVersion(Storable $storable, Version $version)
     {
         list($resource, $file) = $this->extractResourceAndFileFromStorable($storable);
 
-        $path = $resource->getId() . '/' . $version;
+        $path = $resource->getId() . '/' . $version->toString();
         if ($file) {
             $path = '/' . $file->getId();
         }

@@ -9,18 +9,22 @@
 
 namespace Xi\Filelib\Plugin\VersionProvider;
 
+use Xi\Filelib\Event\VersionProviderEvent;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Storable;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Events;
+use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\File\MimeType;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Plugin\VersionProvider\Version;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Base version provider
@@ -33,9 +37,9 @@ abstract class VersionProvider extends BasePlugin
      * @var array
      */
     protected static $subscribedEvents = array(
-        Events::FILE_AFTER_AFTERUPLOAD => 'onAfterUpload',
-        Events::FILE_AFTER_DELETE => 'onFileDelete',
-        Events::RESOURCE_AFTER_DELETE => 'onResourceDelete',
+        CoreEvents::FILE_AFTER_AFTERUPLOAD => 'onAfterUpload',
+        CoreEvents::FILE_AFTER_DELETE => 'onFileDelete',
+        CoreEvents::RESOURCE_AFTER_DELETE => 'onResourceDelete',
     );
 
     /**
@@ -59,6 +63,11 @@ abstract class VersionProvider extends BasePlugin
     protected $extensionReplacements = array('jpeg' => 'jpg');
 
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
      * @param callable $isApplicableTo
      */
     public function __construct($isApplicableTo)
@@ -72,7 +81,7 @@ abstract class VersionProvider extends BasePlugin
 
     abstract public function getProvidedVersions();
 
-    abstract public function createTemporaryVersions(File $file);
+    abstract public function createAllTemporaryVersions(File $file);
 
     /**
      * @param FileLibrary $filelib
@@ -81,35 +90,26 @@ abstract class VersionProvider extends BasePlugin
     {
         $this->storage = $filelib->getStorage();
         $this->profiles = $filelib->getProfileManager();
+        $this->eventDispatcher = $filelib->getEventDispatcher();
     }
 
-    /**
-     * @param File $file
-     * @param null $requestedVersion
-     */
-    public function createProvidedVersions(File $file, $requestedVersion = null)
+    public function provideAllVersions(File $file)
     {
-        $tmps = $this->createTemporaryVersions($file, $requestedVersion);
-
         $versionable = $this->getApplicableStorable($file);
-        foreach (array_keys($tmps) as $version) {
-            $versionable->addVersion($version);
-        }
 
-        foreach ($tmps as $version => $tmp) {
-            $this->storage->storeVersion(
-                $versionable,
-                $version,
-                $tmp
-            );
+        $versions = $this->createAllTemporaryVersions($file);
+        foreach ($versions as $version => $tmp) {
+            $this->storage->storeVersion($versionable, $version, $tmp);
+            $versionable->addVersion($version);
             unlink($tmp);
         }
+
+        $event = new VersionProviderEvent($this, $file, array_keys($versions));
+        $this->eventDispatcher->dispatch(Events::VERSIONS_PROVIDED, $event);
     }
 
-
-
     /**
-     * Returns whether the plugin provides a version for a file.
+     * Returns whether the plugin provides versions for a file.
      *
      * @param  File    $file File item
      * @return boolean
@@ -122,6 +122,8 @@ abstract class VersionProvider extends BasePlugin
         return call_user_func($this->isApplicableTo, $file);
     }
 
+    abstract public function isValidVersion(Version $version);
+
     public function onAfterUpload(FileEvent $event)
     {
         $file = $event->getFile();
@@ -132,7 +134,7 @@ abstract class VersionProvider extends BasePlugin
             return;
         }
 
-        $this->createProvidedVersions($file);
+        $this->provideAllVersions($file);
     }
 
     /**

@@ -47,6 +47,8 @@ class VersionProviderTest extends TestCase
 
     private $filelib;
 
+    private $ed;
+
     public function setUp()
     {
         parent::setUp();
@@ -54,6 +56,8 @@ class VersionProviderTest extends TestCase
         $this->storage = $this->getMockedStorage();
 
         $this->pm = $this->getMockedProfileManager(array('tussi', 'lussi'));
+
+        $this->ed = $this->getMockedEventDispatcher();
 
         $this->plugin = $this
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider')
@@ -67,10 +71,15 @@ class VersionProviderTest extends TestCase
             ->getMockForAbstractClass();
 
 
-        $filelib = $this->getMockedFilelib(null, null, null, $this->storage, null, null, null, null, $this->pm);
-
+        $filelib = $this->getMockedFilelib(
+            null,
+            array(
+                'storage' => $this->storage,
+                'pm' => $this->pm,
+                'ed' => $this->ed
+            )
+        );
         $this->filelib = $filelib;
-
     }
 
     /**
@@ -249,7 +258,7 @@ class VersionProviderTest extends TestCase
         $pluginVersions = array('xooxer', 'losobees');
         $this->plugin->expects($this->any())->method('getProvidedVersions')->will($this->returnValue($pluginVersions));
 
-        $this->plugin->expects($this->once())->method('createTemporaryVersions')
+        $this->plugin->expects($this->once())->method('createAllTemporaryVersions')
              ->with($this->isInstanceOf('Xi\Filelib\File\File'))
              ->will($this->returnValue(array('xooxer' => ROOT_TESTS . '/data/temp/life-is-my-enemy-xooxer.jpg', 'losobees' => ROOT_TESTS . '/data/temp/life-is-my-enemy-losobees.jpg')));
 

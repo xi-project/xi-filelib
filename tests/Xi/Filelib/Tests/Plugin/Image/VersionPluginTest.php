@@ -119,22 +119,25 @@ class VersionPluginTest extends TestCase
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $this->storage
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('retrieve')
             ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
             ->will($this->returnValue($retrievedPath));
+
+        $ed = $this->getMockedEventDispatcher();
 
         $pm = $this->getMockedProfileManager(array('xooxer'));
         $filelib = $this->getMockedFilelib(
             null, array(
                 'storage' => $this->storage,
-                'pm' => $pm
+                'pm' => $pm,
+                'ed' => $ed
             )
         );
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
 
         $this->plugin->attachTo($filelib);
-        $ret = $this->plugin->createTemporaryVersions($file);
+        $ret = $this->plugin->createAllTemporaryVersions($file);
         $this->assertInternalType('array', $ret);
 
         foreach ($ret as $version => $tmp) {

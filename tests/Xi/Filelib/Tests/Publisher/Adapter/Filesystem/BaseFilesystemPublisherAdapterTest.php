@@ -3,16 +3,21 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Publisher\Adapter\Filesystem\BaseFilesystemPublisherAdapter;
 use Xi\Filelib\Tests\TestCase;
 
 class BaseFilesystemPublisherAdapterTest extends TestCase
 {
 
+    protected $version;
+
     public function setUp()
     {
         parent::setUp();
         chmod(ROOT_TESTS . '/data/publisher/unwritable_dir', 0444);
+
+        $this->version = Version::get('xooxer');
 
     }
 
@@ -81,7 +86,7 @@ class BaseFilesystemPublisherAdapterTest extends TestCase
             ->will(
                 $this->returnCallback(
                     function ($file, $version, $extension) {
-                        return 'tussin/lussun/tussi-' . $version . '.jpg';
+                        return 'tussin/lussun/tussi-' . $version->toString() . '.jpg';
                     }
                 )
             );
@@ -97,7 +102,7 @@ class BaseFilesystemPublisherAdapterTest extends TestCase
 
         $this->assertEquals(
             'http://diktaattoriporssi.com/tussin/lussun/tussi-xooxer.jpg',
-            $publisher->getUrl($file, 'xooxer', $versionProvider, $linker)
+            $publisher->getUrl($file, $this->version, $versionProvider, $linker)
         );
     }
 

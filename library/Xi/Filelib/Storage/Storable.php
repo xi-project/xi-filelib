@@ -9,6 +9,8 @@
 
 namespace Xi\Filelib\Storage;
 
+use Xi\Filelib\Plugin\VersionProvider\Version;
+
 interface Storable
 {
     /**
@@ -22,20 +24,20 @@ interface Storable
     public function getVersions();
 
     /**
-     * @param string $version
+     * @param Version $version
      * @return self
      */
-    public function addVersion($version);
+    public function addVersion(Version $version);
 
     /**
-     * @param string $version
+     * @param Version $version
      * @return self
      */
-    public function removeVersion($version);
+    public function removeVersion(Version $version);
 
     /**
-     * @param string $version
+     * @param Version $version
      * @return bool
      */
-    public function hasVersion($version);
+    public function hasVersion(Version $version);
 }

@@ -19,6 +19,7 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\RuntimeException;
 use Aws\S3\S3Client;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 class ZencoderPlugin extends VersionProvider
 {
@@ -227,10 +228,8 @@ class ZencoderPlugin extends VersionProvider
      * @return array
      * @throws RuntimeException
      */
-    public function createTemporaryVersions(File $file)
+    public function createAllTemporaryVersions(File $file)
     {
-        $awsPath = $this->getAwsBucket() . '/' . $file->getUuid();
-
         $retrieved = $this->storage->retrieve($file->getResource());
 
         /** @var Model $result */
@@ -357,6 +356,14 @@ class ZencoderPlugin extends VersionProvider
     public function areSharedVersionsAllowed()
     {
         return true;
+    }
+
+    public function isValidVersion(Version $version)
+    {
+        return in_array(
+            $version->toString(),
+            $this->getProvidedVersions()
+        );
     }
 
     private function waitUntilJobFinished(Job $job)

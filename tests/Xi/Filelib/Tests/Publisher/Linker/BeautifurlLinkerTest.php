@@ -11,6 +11,7 @@ namespace Xi\Filelib\Tests\Publisher\Linker;
 
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
 
@@ -28,8 +29,12 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
     private $slugifier;
 
+    private $version;
+
     public function setUp()
     {
+        $this->version = Version::get('xoo');
+
         $foop = $this->getMockedFolderRepository();
         $foop->expects($this->any())
              ->method('find')
@@ -137,15 +142,15 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
         $versionProvider = $this->getMockedVersionProvider();
         $versionProvider->expects($this->any())
                         ->method('getExtension')
-                        ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->equalTo('xoo'))
+                        ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->version)
                         ->will($this->returnValue('xoo'));
 
         $this->assertEquals(
             $beautifurl[1],
             $linker->getLink(
                 $file,
-                'xoo',
-                $versionProvider->getExtension($file, 'xoo')
+                $this->version,
+                $versionProvider->getExtension($file, $this->version)
             )
         );
     }
@@ -155,6 +160,8 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function linkerShouldExcludeRootProperly()
     {
+        $version = Version::get('lus');
+
         $file = File::create(array(
             'name' => 'lamantiini.lus',
             'folder_id' => 2,
@@ -164,12 +171,18 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
         $linker = new BeautifurlLinker($this->slugifier, false);
         $linker->attachTo($this->filelib);
 
-        $this->assertEquals('root/lussuttaja/lamantiini-loso.lus', $linker->getLink($file, 'loso', 'lus'));
+        $this->assertEquals(
+            'root/lussuttaja/lamantiini-loso.lus',
+            $linker->getLink($file, Version::get('loso'), $version)
+        );
 
         $linker = new BeautifurlLinker($this->slugifier, true);
         $linker->attachTo($this->filelib);
 
-        $this->assertEquals('lussuttaja/lamantiini-loso.lus', $linker->getLink($file, 'loso', 'lus'));
+        $this->assertEquals(
+            'lussuttaja/lamantiini-loso.lus',
+            $linker->getLink($file, Version::get('loso'), $version)
+        );
     }
 
     /**
@@ -188,7 +201,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals(
             'root/lussuttaja/banaanin/sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú/lamantiini-loso.lus',
-             $linker->getLink($file, 'loso', 'lus')
+             $linker->getLink($file, Version::get('loso'), Version::get('lus'))
         );
     }
 

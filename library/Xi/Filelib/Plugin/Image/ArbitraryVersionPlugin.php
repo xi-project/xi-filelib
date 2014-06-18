@@ -11,9 +11,12 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\Plugin\VersionProvider\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\FileLibrary;
 use Closure;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 /**
  * Versions an image
@@ -32,6 +35,13 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
      */
     private $commandDefinitionsGetter;
 
+    private $paramsValidityChecker;
+
+    private $defaultParamsGetter;
+
+    /**
+     * @var string
+     */
     private $mimeType;
 
     /**
@@ -41,6 +51,8 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
      */
     public function __construct(
         $identifier,
+        \Closure $defaultParamsGetter,
+        \Closure $paramsValidityChecker,
         \Closure $commandDefinitionsGetter,
         $mimeType
     ) {
@@ -52,7 +64,10 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         );
 
         $this->identifier = $identifier;
+        $this->defaultParamsGetter = $defaultParamsGetter;
+        $this->paramsValidityChecker = $paramsValidityChecker;
         $this->commandDefinitionsGetter = $commandDefinitionsGetter;
+
         $this->mimeType = $mimeType;
 
         /*
@@ -81,17 +96,34 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
      * @param  File  $file
      * @return array
      */
-    public function createTemporaryVersions(File $file, $requestedVersion = null)
+    public function createAllTemporaryVersions(File $file)
     {
+        return array(
+            $this->identifier => $this->createTemporaryVersion($file, $this->identifier)
+        );
+    }
+
+    public function createTemporaryVersion(File $file, $version)
+    {
+        $version = Version::get($version);
+        if (!$this->isValidVersion($version)) {
+            throw new InvalidVersionException('Invalid version');
+        }
+
         $retrieved = $this->storage->retrieve(
             $file->getResource()
         );
 
-        $func = $this->commandDefinitionsGetter;
-        $commandDefinitions = $func($requestedVersion->getParams());
+        $commandDefinitions = call_user_func_array(
+            $this->commandDefinitionsGetter,
+            array(
+                $file,
+                $this->getParams($version)
+            )
+        );
 
         $vpv = new VersionPluginVersion(
-            $requestedVersion,
+            $version,
             $commandDefinitions,
             $this->mimeType
         );
@@ -101,9 +133,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         $tmp = $this->tempDir . '/' . uniqid('', true);
         $img->writeImage($tmp);
 
-        return array(
-            $requestedVersion->__toString() => $tmp
-        );
+        return $tmp;
     }
 
     /**
@@ -131,11 +161,27 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
 
     public function isSharedResourceAllowed()
     {
-        return true;
+        return false;
     }
 
     public function areSharedVersionsAllowed()
     {
-        return true;
+        return false;
     }
+
+    public function isValidVersion(Version $version)
+    {
+        if (!in_array(
+            $version->getVersion(),
+            $this->getProvidedVersions()
+        )) return false;
+
+        return call_user_func_array($this->paramsValidityChecker, array($this->getParams($version)));
+    }
+
+    private function getParams(Version $version)
+    {
+        return $version->getParams() ?: call_user_func($this->defaultParamsGetter);
+    }
+
 }

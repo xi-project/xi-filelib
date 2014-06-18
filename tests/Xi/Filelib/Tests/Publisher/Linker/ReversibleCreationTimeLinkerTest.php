@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Tests\Publisher\Linker;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Publisher\Linker\ReversibleCreationTimeLinker;
 use DateTime;
 
@@ -53,7 +54,7 @@ class ReversibleCreationTimeLinkerTest extends \Xi\Filelib\Tests\TestCase
         );
         $linker = new ReversibleCreationTimeLinker($format);
 
-        $this->assertSame($expected, $linker->getLink($file, 'lubster', 'tussi'));
+        $this->assertSame($expected, $linker->getLink($file, Version::get('lubster'), 'tussi'));
     }
 
     /**
@@ -79,11 +80,13 @@ class ReversibleCreationTimeLinkerTest extends \Xi\Filelib\Tests\TestCase
             ->with('uuid-lusso-grande')
             ->will($this->returnValue($file));
 
-        $link = '2014/11/12/uuid-lusso-grande-xoo.jpg';
+        $link = '2014/11/12/uuid-lusso-grande-xoo:lusso=tussi.jpg';
 
         list ($reversed, $version) = $linker->reverseLink($link);
 
+        $this->assertInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version', $version);
+        $expectedVersion = new Version('xoo', array('lusso' => 'tussi'));
         $this->assertSame($file, $reversed);
-        $this->assertEquals('xoo', $version);
+        $this->assertEquals($expectedVersion, $version);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Profile;
 
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
@@ -109,8 +110,8 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
 
         $this->fileProfile->addPlugin($plugin1);
 
-        $this->assertSame($plugin1, $this->fileProfile->getVersionProvider($file, 'tenhunen'));
-        $this->assertSame($plugin1, $this->fileProfile->getVersionProvider($file, 'imaisee'));
+        $this->assertSame($plugin1, $this->fileProfile->getVersionProvider($file, Version::get('tenhunen')));
+        $this->assertSame($plugin1, $this->fileProfile->getVersionProvider($file, Version::get('imaisee')));
     }
 
 
@@ -178,6 +179,8 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
      */
     public function fileHasVersionShouldWorkAsExpected($expected, $versionId, $mimetype)
     {
+        $versionId = Version::get($versionId);
+
         $this->addMockedVersionsToFileProfile();
 
         $file = File::create(array(
@@ -196,7 +199,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $file = File::create(array(
             'resource' => Resource::create(array('mimetype' => 'xoo/lus'))
         ));
-        $this->fileProfile->getVersionProvider($file, 'globalizer');
+        $this->fileProfile->getVersionProvider($file, Version::get('globalizer'));
     }
 
     /**
@@ -210,7 +213,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
             'resource' => Resource::create(array('mimetype' => 'video/lus'))
         ));
 
-        $vp = $this->fileProfile->getVersionProvider($file, 'globalizer');
+        $vp = $this->fileProfile->getVersionProvider($file, Version::get('globalizer'));
 
         $this->assertSame($versionProviders['global'], $vp);
     }

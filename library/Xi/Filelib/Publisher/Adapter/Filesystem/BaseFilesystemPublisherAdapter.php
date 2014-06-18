@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
@@ -97,11 +98,11 @@ abstract class BaseFilesystemPublisherAdapter implements PublisherAdapter
 
     /**
      * @param File $file
-     * @param string $version
+     * @param Version $version
      * @param Linker $linker
      * @return string
      */
-    public function getUrl(File $file, $version, VersionProvider $versionProvider, Linker $linker)
+    public function getUrl(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)
     {
         $url = $this->getBaseUrl() . '/';
         $url .= $linker->getLink(

@@ -9,11 +9,13 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\LogicException;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 class MultiStorageAdapter implements StorageAdapter
 {
@@ -26,6 +28,10 @@ class MultiStorageAdapter implements StorageAdapter
      * @var integer Session storage id for fetch operations
      */
     private $sessionStorageId;
+
+    public function attachTo(FileLibrary $filelib)
+    {
+    }
 
     public function addStorage(StorageAdapter $storage)
     {
@@ -88,7 +94,7 @@ class MultiStorageAdapter implements StorageAdapter
         }
     }
 
-    public function storeVersion(Storable $storable, $version, $tempFile)
+    public function storeVersion(Storable $storable, Version $version, $tempFile)
     {
         foreach ($this->getStorages() as $storage) {
             $storage->storeVersion($storable, $version, $tempFile);
@@ -100,7 +106,7 @@ class MultiStorageAdapter implements StorageAdapter
         return $this->getSessionStorage()->retrieve($resource);
     }
 
-    public function retrieveVersion(Storable $storable, $version)
+    public function retrieveVersion(Storable $storable, Version $version)
     {
         return $this->getSessionStorage()->retrieveVersion($storable, $version);
     }
@@ -112,7 +118,7 @@ class MultiStorageAdapter implements StorageAdapter
         }
     }
 
-    public function deleteVersion(Storable $storable, $version)
+    public function deleteVersion(Storable $storable, Version $version)
     {
         foreach ($this->getStorages() as $storage) {
             $storage->deleteVersion($storable, $version);
@@ -124,7 +130,7 @@ class MultiStorageAdapter implements StorageAdapter
         return $this->getSessionStorage()->exists($resource);
     }
 
-    public function versionExists(Storable $storable, $version)
+    public function versionExists(Storable $storable, Version $version)
     {
         return $this->getSessionStorage()->versionExists($storable, $version);
     }

@@ -2,12 +2,18 @@
 
 namespace Xi\Filelib\Tests\File;
 
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Resource\Resource;
 use DateTime;
-use ArrayObject;
+use Xi\Filelib\Tests\BaseStorableTestCase;
 
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class ResourceTest extends BaseStorableTestCase
 {
+
+    public function getClassName()
+    {
+        return 'Xi\Filelib\Resource\Resource';
+    }
 
     /**
      * @test
@@ -40,7 +46,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($val, $resource->getSize());
 
         $val = new DateTime('1978-01-02');
-        $this->assertNull($resource->getDateCreated());
+        $this->assertInstanceOf('DateTime', $resource->getDateCreated());
         $this->assertSame($resource, $resource->setDateCreated($val));
         $this->assertSame($val, $resource->getDateCreated());
 
@@ -54,71 +60,34 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($resource, $resource->setExclusive($val));
         $this->assertTrue($val, $resource->getHash());
 
-        $val = array('lussen', 'le', 'tussen');
-        $this->assertEquals(array(), $resource->getVersions());
-        $this->assertSame($resource, $resource->setVersions($val));
-        $this->assertEquals($val, $resource->getVersions());
-
-    }
-
-    public function fromArrayProvider()
-    {
-        return array(
-            array(
-                array(
-                    'id' => 1,
-                    'hash' => 'lussenhofer',
-                    'date_created' => new \DateTime('2010-01-01 01:01:01'),
-                    'versions' => array('tussenhof', 'luslus'),
-                    'size' => 1234,
-                    'mimetype' => 'image/lus',
-                    'exclusive' => true,
-                ),
-            ),
-            array(
-                array(
-                    'hash' => 'lussenhoff',
-                ),
-            ),
-
-        );
     }
 
     /**
-     * @dataProvider fromArrayProvider
      * @test
      */
-    public function fromArrayShouldWorkAsExpected($data)
+    public function createInitializesValues()
     {
-        $resource = Resource::create();
-        $resource->fromArray($data);
-
-        $map = array(
-            'id' => 'getId',
-            'hash' => 'getHash',
-            'date_created' => 'getDateCreated',
-            'versions' => 'getVersions',
-            'mimetype' => 'getMimetype',
-            'size' => 'getSize',
-            'exclusive' => 'isExclusive',
+        $data = array(
+            'id' => 1,
+            'hash' => 'lussenhofer',
+            'date_created' => new \DateTime('2010-01-01 01:01:01'),
+            'data' => array(
+                'versions' => array('tussenhof', 'luslus')
+            ),
+            'size' => 1234,
+            'mimetype' => 'image/lus',
+            'exclusive' => true,
         );
 
-        foreach ($map as $key => $method) {
-            if (isset($data[$key])) {
-                $this->assertEquals($data[$key], $resource->$method());
-            } else {
+        $resource = Resource::create($data);
 
-                if ($key == 'versions') {
-                    $this->assertEquals(array(), $resource->$method());
-
-                } elseif ($key == 'exclusive') {
-                    $this->assertFalse($resource->$method());
-                } else {
-                    $this->assertNull($resource->$method());
-                }
-            }
-        }
-
+        $this->assertEquals($data['id'], $resource->getId());
+        $this->assertEquals($data['hash'], $resource->getHash());
+        $this->assertSame($data['date_created'], $resource->getDateCreated());
+        $this->assertEquals($data['data'], $resource->getData()->toArray());
+        $this->assertEquals($data['size'], $resource->getSize());
+        $this->assertEquals($data['mimetype'], $resource->getMimetype());
+        $this->assertEquals($data['exclusive'], $resource->isExclusive());
     }
 
     /**
@@ -130,10 +99,12 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $resource->setHash('hashisen-kone');
         $resource->setId(655);
         $resource->setDateCreated(new \DateTime('1978-03-21'));
-        $resource->setVersions(array('kraa', 'xoo'));
         $resource->setMimetype('video/lus');
         $resource->setSize(5678);
         $resource->setExclusive(true);
+
+        $resource->addVersion(Version::get('kraa'));
+        $resource->addVersion(Version::get('xoo'));
 
         $this->assertEquals(array(
             'id' => 655,
@@ -144,17 +115,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'mimetype' => 'video/lus',
             'exclusive' => true,
         ), $resource->toArray());
-
-        $resource = Resource::create();
-        $this->assertEquals(array(
-            'id' => null,
-            'hash' => null,
-            'date_created' => null,
-            'data' => array(),
-            'size' => null,
-            'mimetype' => null,
-            'exclusive' => false,
-        ), $resource->toArray());
     }
 
     /**
@@ -163,65 +123,5 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     public function createShouldCreateNewInstance()
     {
         $this->assertInstanceOf('Xi\Filelib\Resource\Resource', Resource::create(array()));
-    }
-
-    /**
-     * @test
-     */
-    public function addVersionShouldAddVersion()
-    {
-        $resource = Resource::create(array('versions' => array('tussi', 'watussi')));
-        $resource->addVersion('lussi');
-
-        $this->assertEquals(array('tussi', 'watussi', 'lussi'), $resource->getVersions());
-    }
-
-    /**
-     * @test
-     */
-    public function addVersionShouldNotAddVersionIfVersionExists()
-    {
-        $resource = Resource::create(array('versions' => array('tussi', 'watussi')));
-        $resource->addVersion('watussi');
-
-        $this->assertEquals(array('tussi', 'watussi'), $resource->getVersions());
-    }
-
-    /**
-     * @test
-     */
-    public function removeVersionShouldRemoveVersion()
-    {
-        $resource = Resource::create(array('versions' => array('tussi', 'watussi')));
-        $resource->removeVersion('watussi');
-
-        $this->assertEquals(array('tussi'), $resource->getVersions());
-    }
-
-    /**
-     * @test
-     */
-    public function hasVersionShouldReturnWhetherResourceHasVersion()
-    {
-        $resource = Resource::create(array('versions' => array('tussi', 'watussi')));
-
-        $this->assertTrue($resource->hasVersion('tussi'));
-        $this->assertTrue($resource->hasVersion('watussi'));
-        $this->assertFalse($resource->hasVersion('lussi'));
-    }
-
-    /**
-     * @test
-     */
-    public function gettingAndSettingDataWorks()
-    {
-        $res = Resource::create(array());
-        $data = $res->getData();
-        $this->assertInstanceOf('Xi\Filelib\IdentifiableDataContainer', $data);
-
-        $res->setData(array('lusso' => 'magnifico'));
-
-        $data = $res->getData();
-        $this->assertEquals('magnifico', $data->get('lusso'));
     }
 }

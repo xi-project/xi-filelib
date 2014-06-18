@@ -8,6 +8,7 @@ use Xi\Filelib\File\File;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use DateTime;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {
@@ -27,6 +28,11 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      * @var StorageAdapter
      */
     protected $storage;
+
+    /**
+     * @var bool
+     */
+    protected $retrievesTemporarily;
 
     /**
      * @abstract
@@ -50,9 +56,9 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->resourceVersionPath = ROOT_TESTS . '/data/self-lussing-manatee-mini.jpg';
         $this->fileSpecificVersionPath = ROOT_TESTS . '/data/self-lussing-manatee-file-specific.jpg';
 
-        $this->version = 'xoo';
+        $this->version = Version::get('xoo');
 
-        $this->storage = $this->getStorage();
+        list ($this->storage, $this->retrievesTemporarily) = $this->getStorage();
 
     }
 
@@ -85,9 +91,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertTrue($this->storage->exists($this->resource), 'Storage did not store');
 
         $retrieved = $this->storage->retrieve($this->resource);
-        $this->assertInternalType('string', $retrieved);
-
-        $this->assertFileEquals($this->resourcePath, $retrieved);
+        $this->assertInstanceOf('Xi\Filelib\Storage\Retrieved', $retrieved);
+        $this->assertFileEquals($this->resourcePath, $retrieved->getPath());
 
         $this->storage->delete($this->resource);
         $this->assertFalse($this->storage->exists($this->resource));
@@ -113,8 +118,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $retrieved = $this->storage->retrieveVersion($this->resource, $this->version);
         $retrieved2 = $this->storage->retrieveVersion($this->file, $this->version);
 
-        $this->assertFileEquals($this->resourceVersionPath, $retrieved);
-        $this->assertFileEquals($this->fileSpecificVersionPath, $retrieved2);
+        $this->assertFileEquals($this->resourceVersionPath, $retrieved->getPath());
+        $this->assertFileEquals($this->fileSpecificVersionPath, $retrieved2->getPath());
 
         $this->storage->deleteVersion($this->resource, $this->version);
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version));

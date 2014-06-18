@@ -13,6 +13,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 /**
  * Versions an image
@@ -67,22 +68,34 @@ class VersionPlugin extends LazyVersionProvider
      * @param  File  $file
      * @return array
      */
-    public function createTemporaryVersions(File $file)
+    public function createTemporaryVersion(File $file, $version)
     {
+        $version = Version::get($version)->getVersion();
+
         $retrieved = $this->storage->retrieve(
             $file->getResource()
         );
 
+        $version = $this->versions[$version];
+
+        $img = $version->getHelper()->createImagick($retrieved);
+        $version->getHelper()->execute($img);
+        $tmp = $this->tempDir . '/' . uniqid('', true);
+
+        $img->writeImage($tmp);
+
+        return $tmp;
+    }
+
+    /**
+     * @param File $file
+     * @return array
+     */
+    public function createAllTemporaryVersions(File $file)
+    {
         $ret = array();
-
-        foreach ($this->versions as $key => $version) {
-
-            $img = $version->getHelper()->createImagick($retrieved);
-            $version->getHelper()->execute($img);
-            $tmp = $this->tempDir . '/' . uniqid('', true);
-            $img->writeImage($tmp);
-
-            $ret[$version->getIdentifier()] = $tmp;
+        foreach ($this->getProvidedVersions() as $version) {
+            $ret[] = $this->createTemporaryVersion($file, $version);
         }
 
         return $ret;
@@ -123,4 +136,13 @@ class VersionPlugin extends LazyVersionProvider
     {
         return true;
     }
+
+    public function isValidVersion(Version $version)
+    {
+        return in_array(
+            $version->toString(),
+            $this->getProvidedVersions()
+        );
+    }
+
 }

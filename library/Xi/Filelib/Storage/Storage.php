@@ -17,6 +17,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Exception;
 use Xi\Filelib\Storage\FileIOException;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 class Storage implements Attacher
 {
@@ -30,14 +31,22 @@ class Storage implements Attacher
      */
     private $eventDispatcher;
 
-    public function __construct(StorageAdapter $adapter)
+    private $cache;
+
+    public function __construct(StorageAdapter $adapter, RetrievedCache $cache = null)
     {
         $this->adapter = $adapter;
+
+        if (!$cache) {
+            $cache = new RetrievedCache();
+        }
+        $this->cache = $cache;
     }
 
     public function attachTo(FileLibrary $filelib)
     {
         $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->adapter->attachTo($filelib);
     }
 
     /**
@@ -50,6 +59,10 @@ class Storage implements Attacher
 
     public function retrieve(Resource $resource)
     {
+        if ($retrieved = $this->cache->get($resource)) {
+            return $retrieved->getPath();
+        }
+
         if (!$this->exists($resource)) {
             throw new FileIOException("Physical file for resource #{$resource->getId()} does not exist");
         }
@@ -58,7 +71,8 @@ class Storage implements Attacher
         $event = new StorageEvent($retrieved);
         $this->eventDispatcher->dispatch(Events::AFTER_RETRIEVE, $event);
 
-        return $retrieved;
+        $this->cache->set($resource, $retrieved);
+        return $retrieved->getPath();
     }
 
     public function delete(Resource $resource)
@@ -67,6 +81,7 @@ class Storage implements Attacher
             throw new FileIOException("Physical file for resource #{$resource->getId()} does not exist");
         }
 
+        $this->cache->delete($resource);
         return $this->adapter->delete($resource);
     }
 
@@ -81,8 +96,12 @@ class Storage implements Attacher
         }
     }
 
-    public function retrieveVersion(Storable $storable, $version)
+    public function retrieveVersion(Storable $storable, Version $version)
     {
+        if ($retrieved = $this->cache->getVersion($storable, $version)) {
+            return $retrieved->getPath();
+        }
+
         if (!$this->versionExists($storable, $version)) {
             throw new FileIOException(
                 sprintf(
@@ -98,10 +117,11 @@ class Storage implements Attacher
         $event = new StorageEvent($retrieved);
         $this->eventDispatcher->dispatch(Events::AFTER_RETRIEVE, $event);
 
-        return $retrieved;
+        $this->cache->setVersion($storable, $version, $retrieved);
+        return $retrieved->getPath();
     }
 
-    public function deleteVersion(Storable $storable, $version)
+    public function deleteVersion(Storable $storable, Version $version)
     {
         if (!$this->versionExists($storable, $version)) {
             throw new FileIOException(
@@ -114,6 +134,7 @@ class Storage implements Attacher
             );
         }
 
+        $this->cache->deleteVersion($storable, $version);
         return $this->adapter->deleteVersion($storable, $version);
     }
 
@@ -149,10 +170,10 @@ class Storage implements Attacher
 
     /**
      * @param Storable $storable
-     * @param string $version
+     * @param Version $version
      * @return bool
      */
-    public function versionExists(Storable $storable, $version)
+    public function versionExists(Storable $storable, Version $version)
     {
         return $this->adapter->versionExists($storable, $version);
     }

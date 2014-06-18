@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Storage\Storable;
@@ -20,6 +21,10 @@ use Xi\Filelib\Storage\Storable;
  */
 abstract class BaseStorageAdapter implements StorageAdapter
 {
+    public function attachTo(FileLibrary $filelib)
+    {
+    }
+
     /**
      * @param Storable $storable
      * @return array Tuple of storage and file (or null)
@@ -35,4 +40,7 @@ abstract class BaseStorageAdapter implements StorageAdapter
         }
         return array($resource, $file);
     }
+
+
+
 }

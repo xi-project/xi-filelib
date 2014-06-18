@@ -5,6 +5,7 @@ namespace Xi\Filelib\Tests\Publisher;
 use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Events as CoreEvents;
@@ -111,13 +112,13 @@ class PublisherTest extends TestCase
     public function onBeforeDeleteShouldUnpublish()
     {
         $publisher = $this->getMockBuilder('Xi\Filelib\Publisher\Publisher')
-            ->setMethods(array('unpublish', 'publish'))
+            ->setMethods(array('unpublishAllVersions', 'publishAllVersions'))
             ->disableOriginalConstructor()
             ->getMock();
 
         $file = File::create();
 
-        $publisher->expects($this->once())->method('unpublish')->with($file);
+        $publisher->expects($this->once())->method('unpublishAllVersions')->with($file);
 
         $event = new FileEvent($file);
         $publisher->onBeforeDelete($event);
@@ -130,7 +131,6 @@ class PublisherTest extends TestCase
     {
         $source = File::create();
         $sourceData = $source->getData();
-        $sourceData->set('publisher.published', 1);
 
         $sourceData->set(
             'publisher.version_url',
@@ -146,8 +146,6 @@ class PublisherTest extends TestCase
 
         $this->assertNotSame($sourceData, $targetData);
 
-        $this->assertArrayHasKey('publisher.published', $sourceData->toArray());
-        $this->assertArrayHasKey('publisher.published', $targetData->toArray());
         $this->assertArrayHasKey('publisher.version_url', $sourceData->toArray());
         $this->assertArrayHasKey('publisher.version_url', $targetData->toArray());
 
@@ -156,8 +154,7 @@ class PublisherTest extends TestCase
         $event = new FileCopyEvent($source, $target);
         $publisher->onBeforeCopy($event);
 
-        $this->assertArrayHasKey('publisher.published', $sourceData->toArray());
-        $this->assertArrayNotHasKey('publisher.published', $targetData->toArray());
+        $this->assertArrayHasKey('publisher.version_url', $sourceData->toArray());
         $this->assertArrayNotHasKey('publisher.version_url', $targetData->toArray());
     }
 
@@ -165,19 +162,25 @@ class PublisherTest extends TestCase
     /**
      * @test
      */
-    public function isPublishedShouldReferFileData()
+    public function getNumberOfPublishedVersionsShouldDigToFileData()
     {
         $file = File::create();
-        $this->assertFalse($this->publisher->isPublished($file));
+        $this->assertEquals(0, $this->publisher->getNumberOfPublishedVersions($file));
 
         $data = $file->getData();
-        $this->assertFalse($this->publisher->isPublished($file));
 
-        $data->set('publisher.published', 0);
-        $this->assertFalse($this->publisher->isPublished($file));
+        $data->set('publisher.version_url', array(
+            'lusso' => 'grande'
+        ));
 
-        $data->set('publisher.published', 1);
-        $this->assertTrue($this->publisher->isPublished($file));
+        $this->assertEquals(1, $this->publisher->getNumberOfPublishedVersions($file));
+
+        $data->set('publisher.version_url', array(
+            'lusso' => 'grande',
+            'tenhusen' => 'suuruus',
+        ));
+
+        $this->assertEquals(2, $this->publisher->getNumberOfPublishedVersions($file));
     }
 
     /**
@@ -242,6 +245,9 @@ class PublisherTest extends TestCase
      */
     public function publishShouldPublish()
     {
+        $version1 = Version::get('ankan');
+        $version2 = Version::get('imaisu');
+
         $file = File::create(array('profile' => 'default'));
 
         $this->fiop->expects($this->once())->method('update')->with($file);
@@ -249,15 +255,14 @@ class PublisherTest extends TestCase
         $this->ed
             ->expects($this->at(0))
             ->method('dispatch')
-            ->with(Events::FILE_BEFORE_PUBLISH, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
-
+            ->with(Events::FILE_BEFORE_PUBLISH, $this->isInstanceOf('Xi\Filelib\Event\PublisherEvent'));
 
         $this->adapter
             ->expects($this->at(0))
             ->method('publish')
             ->with(
                 $file,
-                'ankan',
+                $version1,
                 $this->provider,
                 $this->linker
             );
@@ -267,7 +272,7 @@ class PublisherTest extends TestCase
             ->method('getUrl')
             ->with(
                 $file,
-                'ankan',
+                $version1,
                 $this->provider,
                 $this->linker
             )
@@ -278,7 +283,7 @@ class PublisherTest extends TestCase
             ->method('publish')
             ->with(
                 $file,
-                'imaisu',
+                $version2,
                 $this->provider,
                 $this->linker
             );
@@ -288,7 +293,7 @@ class PublisherTest extends TestCase
             ->method('getUrl')
             ->with(
                 $file,
-                'imaisu',
+                $version2,
                 $this->provider,
                 $this->linker
             )
@@ -297,9 +302,9 @@ class PublisherTest extends TestCase
         $this->ed
             ->expects($this->at(1))
             ->method('dispatch')
-            ->with(Events::FILE_AFTER_PUBLISH, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+            ->with(Events::FILE_AFTER_PUBLISH, $this->isInstanceOf('Xi\Filelib\Event\PublisherEvent'));
 
-        $this->publisher->publish($file);
+        $this->publisher->publishAllVersions($file);
 
         $versionUrls = $file->getData()->get('publisher.version_url');
         $this->assertEquals('tenhusen-suuruuden-ylistyksen-url', $versionUrls['ankan']);
@@ -319,27 +324,31 @@ class PublisherTest extends TestCase
         $data->set(
             'publisher.version_url',
             array(
-                'ankan' => 'kvaak-kvaak'
+                'ankan' => 'kvaak-kvaak',
+                'imaisu' => 'laarilaa'
             )
         );
 
+        $version1 = Version::get('ankan');
+        $version2 = Version::get('imaisu');
+
         $this->assertArrayHasKey('publisher.version_url', $data->toArray());
 
-        $this->assertTrue($this->publisher->isPublished($file));
+        $this->assertEquals(2, $this->publisher->getNumberOfPublishedVersions($file));
 
         $this->fiop->expects($this->once())->method('update')->with($file);
 
         $this->ed
             ->expects($this->at(0))
             ->method('dispatch')
-            ->with(Events::FILE_BEFORE_UNPUBLISH, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+            ->with(Events::FILE_BEFORE_UNPUBLISH, $this->isInstanceOf('Xi\Filelib\Event\PublisherEvent'));
 
         $this->adapter
             ->expects($this->at(0))
             ->method('unpublish')
             ->with(
                 $file,
-                'ankan',
+                $version1,
                 $this->provider,
                 $this->linker
             );
@@ -349,7 +358,7 @@ class PublisherTest extends TestCase
             ->method('unpublish')
             ->with(
                 $file,
-                'imaisu',
+                $version2,
                 $this->provider,
                 $this->linker
             );
@@ -358,33 +367,11 @@ class PublisherTest extends TestCase
         $this->ed
             ->expects($this->at(1))
             ->method('dispatch')
-            ->with(Events::FILE_AFTER_UNPUBLISH, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
+            ->with(Events::FILE_AFTER_UNPUBLISH, $this->isInstanceOf('Xi\Filelib\Event\PublisherEvent'));
 
-        $this->publisher->unpublish($file);
+        $this->publisher->unpublishAllVersions($file);
 
-        $this->assertFalse($this->publisher->isPublished($file));
-
-        $this->assertArrayNotHasKey('publisher.version_url', $data->toArray());
-    }
-
-    /**
-     * @test
-     */
-    public function unpublishedFileIsNotUnpublishedAgain()
-    {
-        $file = File::create(array('profile' => 'default'));
-        $this->adapter->expects($this->never())->method('unpublish');
-        $this->publisher->unpublish($file);
-    }
-
-    /**
-     * @test
-     */
-    public function publishedFileIsNotPublishedAgain()
-    {
-        $file = File::create(array('profile' => 'default', 'data' => array('publisher.published' => 1)));
-        $this->adapter->expects($this->never())->method('publish');
-        $this->publisher->publish($file);
+        $this->assertEquals(0, $this->publisher->getNumberOfPublishedVersions($file));
     }
 
     /**

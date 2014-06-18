@@ -14,6 +14,7 @@ use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 /**
  * Creates beautifurls(tm) from the virtual directory structure and file names.
@@ -83,15 +84,16 @@ class BeautifurlLinker implements Linker
      * Returns link for a version of a file
      *
      * @param  File   $file
-     * @param  string $version   Version identifier
+     * @param  Version $version   Version identifier
      * @param  string $extension Extension
      * @return string Versioned link
      */
-    public function getLink(File $file, $version, $extension)
+    public function getLink(File $file, Version $version, $extension)
     {
         $link = $this->getBaseLink($file);
         $pinfo = pathinfo($link);
-        $link = ($pinfo['dirname'] === '.' ? '' : $pinfo['dirname'] . '/') . $pinfo['filename'] . '-' . $version;
+        $link = ($pinfo['dirname'] === '.'
+                ? '' : $pinfo['dirname'] . '/') . $pinfo['filename'] . '-' . $version->toString();
 
         $link .= '.' . $extension;
 

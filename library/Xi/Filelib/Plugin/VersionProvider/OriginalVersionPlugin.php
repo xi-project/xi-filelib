@@ -11,6 +11,7 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 /**
  * Mirrors the original file as a version
@@ -44,13 +45,7 @@ class OriginalVersionPlugin extends VersionProvider
         $this->tempDir = $filelib->getTempDir();
     }
 
-    /**
-     * Creates and stores version
-     *
-     * @param  File  $file
-     * @return array
-     */
-    public function createTemporaryVersions(File $file)
+    public function createAllTemporaryVersions(File $file)
     {
         $retrieved = $this->storage->retrieve($file->getResource());
         $tmp = $this->tempDir . '/' . uniqid('', true);
@@ -64,7 +59,9 @@ class OriginalVersionPlugin extends VersionProvider
 
     public function getProvidedVersions()
     {
-        return array($this->identifier);
+        return array(
+            $this->identifier
+        );
     }
 
     public function isSharedResourceAllowed()
@@ -76,4 +73,10 @@ class OriginalVersionPlugin extends VersionProvider
     {
         return true;
     }
+
+    public function isValidVersion(Version $version)
+    {
+        return ($version->toString() === $this->identifier);
+    }
+
 }

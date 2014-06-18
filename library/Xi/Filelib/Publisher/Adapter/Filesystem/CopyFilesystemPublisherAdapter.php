@@ -12,6 +12,7 @@ namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\FileLibrary;
@@ -35,7 +36,7 @@ class CopyFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter impl
         $this->storage = $filelib->getStorage();
     }
 
-    public function publish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
+    public function publish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
             $linker->getLink(
@@ -62,7 +63,7 @@ class CopyFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter impl
         }
     }
 
-    public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
+    public function unpublish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)
     {
         $link = $this->getPublicRoot() . '/' .
             $linker->getLink(

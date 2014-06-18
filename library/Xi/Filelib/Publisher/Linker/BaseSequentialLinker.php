@@ -12,6 +12,7 @@ namespace Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\File\File;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Publisher\Linker;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 /**
  * Base class for sequential linkers
@@ -74,16 +75,16 @@ abstract class BaseSequentialLinker
      * Returns link for a version of a file
      *
      * @param  File   $file
-     * @param  string $version   Version identifier
+     * @param  Version $version   Version identifier
      * @param  string $extension Extension
      * @return string Versioned link
      */
-    public function getLink(File $file, $version, $extension)
+    public function getLink(File $file, Version $version, $extension)
     {
 
         $link = $this->getBaseLink($file);
         $pinfo = pathinfo($link);
-        $link = $pinfo['dirname'] . '/' . $pinfo['filename'] . '-' . $version;
+        $link = $pinfo['dirname'] . '/' . $pinfo['filename'] . '-' . $version->toString();
         $link .= '.' . $extension;
 
         return $link;

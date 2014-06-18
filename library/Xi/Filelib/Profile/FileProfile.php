@@ -16,7 +16,7 @@ use Xi\Filelib\Event\PluginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Events;
-use Xi\Filelib\VersionId;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 class FileProfile implements EventSubscriberInterface
 {
@@ -129,11 +129,11 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Returns whether a file has a certain version
      *
-     * @param  File    $file    File item
-     * @param  string  $version Version
+     * @param File $file
+     * @param Version $version
      * @return boolean
      */
-    public function fileHasVersion(File $file, $version)
+    public function fileHasVersion(File $file, Version $version)
     {
         try {
             $this->getVersionProvider($file, $version);
@@ -146,22 +146,17 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Returns version provider for a file/version
      *
-     * @param  File                     $file    File item
-     * @param  string                   $version Version
-     * @return VersionProvider          Provider
+     * @param File $file
+     * @param Version $version
+     * @return VersionProvider
      * @throws InvalidArgumentException
      */
-    public function getVersionProvider(File $file, $version)
+    public function getVersionProvider(File $file, Version $version)
     {
-        $version = VersionId::get($version);
-
         $versions = $this->getFileVersions($file);
-
         if (in_array($version->getVersion(), $versions)) {
             return $this->fileVersions[$version->getVersion()];
         }
-
-
 
         throw new InvalidArgumentException("File has no version '{$version}'");
     }

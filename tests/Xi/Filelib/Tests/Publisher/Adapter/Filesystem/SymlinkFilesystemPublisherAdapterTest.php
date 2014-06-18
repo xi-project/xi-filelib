@@ -8,6 +8,11 @@ use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
 
 class SymlinkFilesystemPublisherAdapterTest extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
     /**
      * @test
      */
@@ -118,12 +123,12 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         if ($versionProviderAllowsSharedResources) {
             $storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer')
+                ->with($file->getResource(), $this->version)
                 ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
         } else {
             $storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file, 'xooxer')
+                ->with($file, $this->version)
                 ->will($this->returnValue('/tussin/lussu/lussutustiedosto'));
         }
 
@@ -229,12 +234,12 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         if ($allowSharedVersions) {
             $this->storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer')
+                ->with($file->getResource(), $this->version)
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         } else {
             $this->storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file, 'xooxer')
+                ->with($file, $this->version)
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 
@@ -273,12 +278,12 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
         if ($allowSharedVersions) {
             $this->storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer')
+                ->with($file->getResource(), $this->version)
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         } else {
             $this->storage
                 ->expects($this->once())->method('retrieveVersion')
-                ->with($file, 'xooxer')
+                ->with($file, $this->version)
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 

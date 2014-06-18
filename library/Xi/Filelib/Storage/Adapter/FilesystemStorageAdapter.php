@@ -15,7 +15,9 @@ use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\LogicException;
+use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 /**
  * Stores files in a filesystem
@@ -120,11 +122,11 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         return $fileTarget;
     }
 
-    private function getVersionPathName(Storable $storable, $version)
+    private function getVersionPathName(Storable $storable, Version $version)
     {
         list($resource, $file) = $this->extractResourceAndFileFromStorable($storable);
 
-        $path = $this->getRoot() . '/' . $this->getDirectoryId($resource) . '/' . $version;
+        $path = $this->getRoot() . '/' . $this->getDirectoryId($resource) . '/' . $version->toString();
         if ($file) {
             $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file);
         }
@@ -145,7 +147,7 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         chmod($pathName, $this->getFilePermission());
     }
 
-    public function storeVersion(Storable $storable, $version, $tempFile)
+    public function storeVersion(Storable $storable, Version $version, $tempFile)
     {
         $pathName = $this->getVersionPathName($storable, $version);
 
@@ -158,12 +160,14 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
 
     public function retrieve(Resource $resource)
     {
-        return $this->getPathName($resource);
+        return new Retrieved($this->getPathName($resource), false);
     }
 
-    public function retrieveVersion(Storable $storable, $version)
+    public function retrieveVersion(Storable $storable, Version $version)
     {
-        return $this->getVersionPathName($storable, $version);
+        return new Retrieved(
+            $this->getVersionPathName($storable, $version), false
+        );
     }
 
     public function delete(Resource $resource)
@@ -172,7 +176,7 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         unlink($path);
     }
 
-    public function deleteVersion(Storable $storable, $version)
+    public function deleteVersion(Storable $storable, Version $version)
     {
         $path = $this->getVersionPathName($storable, $version);
         unlink($path);
@@ -183,7 +187,7 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         return file_exists($this->getPathName($resource));
     }
 
-    public function versionExists(Storable $storable, $version)
+    public function versionExists(Storable $storable, Version $version)
     {
         return file_exists($this->getVersionPathName($storable, $version));
     }

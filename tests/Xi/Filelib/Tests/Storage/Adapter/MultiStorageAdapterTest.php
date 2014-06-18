@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Storage\Adapter\MultiStorageAdapter;
 use Xi\Filelib\Resource\Resource;
 
@@ -43,7 +44,7 @@ class MultiStorageAdapterTest extends \Xi\Filelib\Tests\TestCase
 
         $this->storage = $multiStorage;
         $this->resource = Resource::create(array('id' => 1));
-        $this->version = 'xoo';
+        $this->version = Version::get('xoo');
 
     }
 
