@@ -5,6 +5,7 @@ namespace Xi\Filelib\Tests\Renderer;
 use Xi\Filelib\Renderer\AcceleratedRenderer;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Renderer\Events;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 class AcceleratedRendererTest extends RendererTest
 {
@@ -61,7 +62,7 @@ class AcceleratedRendererTest extends RendererTest
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
-            ->with($sharedVersions ? $resource : $file, 'xooxer')
+            ->with($sharedVersions ? $resource : $file, Version::get('xooxer'))
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider();
@@ -73,10 +74,10 @@ class AcceleratedRendererTest extends RendererTest
         $this->pm
             ->expects($this->once())
             ->method('getVersionProvider')
-            ->with($file, 'xooxer')
+            ->with($file, Version::get('xooxer'))
             ->will($this->returnValue($vp));
 
-        $ret = $this->renderer->render($file, 'xooxer', array('download' => $download));
+        $ret = $this->renderer->render($file, Version::get('xooxer'), array('download' => $download));
 
         $this->assertInstanceOf('Xi\Filelib\Renderer\Response', $ret);
         $this->assertNotSame('', $ret->getContent());
@@ -149,13 +150,13 @@ class AcceleratedRendererTest extends RendererTest
         $this->pm
             ->expects($this->once())
             ->method('hasVersion')
-            ->with($file, 'xooxer')
+            ->with($file, Version::get('xooxer'))
             ->will($this->returnValue(true));
 
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xooxer')
+            ->with($resource, Version::get('xooxer'))
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider();
@@ -167,10 +168,10 @@ class AcceleratedRendererTest extends RendererTest
         $this->pm
             ->expects($this->once())
             ->method('getVersionProvider')
-            ->with($file, 'xooxer')
+            ->with($file, Version::get('xooxer'))
             ->will($this->returnValue($vp));
 
-        $ret = $this->renderer->render($file, 'xooxer', array('download' => $download));
+        $ret = $this->renderer->render($file, Version::get('xooxer'), array('download' => $download));
 
         $this->assertInstanceOf('Xi\Filelib\Renderer\Response', $ret);
 

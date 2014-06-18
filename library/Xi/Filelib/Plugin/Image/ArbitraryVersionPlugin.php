@@ -103,9 +103,8 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         );
     }
 
-    public function createTemporaryVersion(File $file, $version)
+    public function createTemporaryVersion(File $file, Version $version)
     {
-        $version = Version::get($version);
         if (!$this->isValidVersion($version)) {
             throw new InvalidVersionException('Invalid version');
         }
@@ -151,7 +150,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
      * @param string $version
      * @return string
      */
-    public function getExtension(File $file, $version)
+    public function getExtension(File $file, Version $version)
     {
         if ($this->mimeType) {
             return $this->getExtensionFromMimeType($this->mimeType);

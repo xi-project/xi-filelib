@@ -14,6 +14,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Resource\Resource;
@@ -178,7 +179,7 @@ class VersionPluginTest extends TestCase
                 )
             )
         );
-        $ret = $plugin->getExtension($this->getMockedFile(), 'xooxoo');
+        $ret = $plugin->getExtension($this->getMockedFile(), Version::get('xooxoo'));
         $this->assertSame('gbr', $ret);
     }
 
@@ -214,7 +215,7 @@ class VersionPluginTest extends TestCase
             ->with($resource, 'xooxoo')
             ->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
-        $ret = $plugin->getExtension($file, 'xooxoo');
+        $ret = $plugin->getExtension($file, Version::get('xooxoo'));
 
         $this->assertSame('jpg', $ret);
     }

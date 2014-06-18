@@ -65,7 +65,7 @@ class AutomaticPublisherPlugin extends BasePlugin
         }
 
         $this->executing = true;
-        $this->publisher->publish($event->getFile());
+        $this->publisher->publishAllVersions($event->getFile());
         $this->executing = false;
     }
 
@@ -79,7 +79,7 @@ class AutomaticPublisherPlugin extends BasePlugin
         }
 
         $this->executing = true;
-        $this->publisher->unpublish($event->getFile());
+        $this->publisher->unpublishAllVersions($event->getFile());
         $this->executing = false;
     }
 }

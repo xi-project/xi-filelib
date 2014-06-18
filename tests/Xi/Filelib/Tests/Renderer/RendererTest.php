@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Renderer;
 
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Renderer\Renderer;
 use Xi\Filelib\Renderer\Events;
 use Xi\Filelib\Authorization\AccessDeniedException;
@@ -179,8 +180,8 @@ class RendererTest extends \Xi\Filelib\Tests\TestCase
         $file = File::create(array('resource' => $resource, 'name' => 'lussuti.pdf'));
 
         if ($doVersionsExist) {
-            $file->addVersion('xooxer');
-            $resource->addVersion('xooxer');
+            $file->addVersion(Version::get('xooxer'));
+            $resource->addVersion(Version::get('xooxer'));
         }
 
         $this->ed

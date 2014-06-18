@@ -54,9 +54,8 @@ abstract class LazyVersionProvider extends VersionProvider
         parent::onAfterUpload($event);
     }
 
-    public function provideVersion(File $file, $version)
+    public function provideVersion(File $file, Version $version)
     {
-        $version = Version::get($version);
         if (!$this->isValidVersion($version)) {
             throw new InvalidVersionException('Invalid version');
         }
@@ -71,5 +70,5 @@ abstract class LazyVersionProvider extends VersionProvider
         $this->eventDispatcher->dispatch(Events::VERSIONS_PROVIDED, $event);
     }
 
-    abstract public function createTemporaryVersion(File $file, $version);
+    abstract public function createTemporaryVersion(File $file, Version $version);
 }

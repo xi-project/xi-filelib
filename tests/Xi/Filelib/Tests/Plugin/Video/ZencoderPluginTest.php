@@ -14,6 +14,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Events;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 /**
  * @group plugin
@@ -185,10 +186,10 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $file = $this->getMockedFile();
 
-        $this->assertEquals('lussen', $this->plugin->getExtension($file, 'pygmi'));
-        $this->assertEquals('dorfer', $this->plugin->getExtension($file, 'watussi'));
+        $this->assertEquals('lussen', $this->plugin->getExtension($file, Version::get('pygmi')));
+        $this->assertEquals('dorfer', $this->plugin->getExtension($file, Version::get('watussi')));
 
-        $this->assertEquals('png', $this->plugin->getExtension($file, 'watussi_thumbnail'));
+        $this->assertEquals('png', $this->plugin->getExtension($file, Version::get('watussi_thumbnail')));
 
     }
 

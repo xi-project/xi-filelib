@@ -73,7 +73,7 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->publisher
             ->expects($this->once())
-            ->method('publish')
+            ->method('publishAllVersions')
             ->with($this->file);
 
         $event = new FileEvent($this->file);
@@ -93,7 +93,7 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->publisher
             ->expects($this->never())
-            ->method('publish');
+            ->method('publishAllVersions');
 
         $event = new FileEvent($this->file);
         $this->plugin->doPublish($event);
@@ -105,11 +105,9 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
      */
     public function pluginShouldAutomaticallyUnpublishIfPublished()
     {
-        $this->expectFilePublished(true);
-
         $this->publisher
             ->expects($this->once())
-            ->method('unpublish')
+            ->method('unpublishAllVersions')
             ->with($this->file);
 
         $event = new FileEvent($this->file);
@@ -134,7 +132,7 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->publisher
             ->expects($this->once())
-            ->method('publish')
+            ->method('publishAllVersions')
             ->with($this->file)
             ->will(
                 $this->returnCallback(
@@ -164,7 +162,7 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->publisher
             ->expects($this->once())
-            ->method('unpublish')
+            ->method('unpublishAllVersions')
             ->with($file)
             ->will(
                 $this->returnCallback(
@@ -176,15 +174,5 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $event = new FileEvent($file);
         $this->plugin->doUnpublish($event);
-    }
-
-
-    private function expectFilePublished($ret)
-    {
-        $this->publisher
-            ->expects($this->any())
-            ->method('isPublished')
-            ->with($this->file)
-            ->will($this->returnValue($ret));
     }
 }

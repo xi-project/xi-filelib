@@ -18,7 +18,7 @@ $file = $filelib->getFileRepository()->find($id);
 
 if ($file->getStatus() == File::STATUS_COMPLETED) {
     if (!$publisher->isPublished($file)) {
-        $publisher->publish($file);
+        $publisher->publishAllVersions($file);
     }
 }
 

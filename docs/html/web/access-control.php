@@ -57,7 +57,7 @@ $folder = $filelib->getFolderRepository()->createByUrl('pictures/of/very beaüti
 
 try {
     $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-12.jpg', $folder);
-    $publisher->publish($file);
+    $publisher->publishAllVersions($file);
 
 } catch (AccessDeniedException $e) {
 

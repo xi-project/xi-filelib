@@ -99,6 +99,7 @@ abstract class VersionProvider extends BasePlugin
 
         $versions = $this->createAllTemporaryVersions($file);
         foreach ($versions as $version => $tmp) {
+            $version = Version::get($version);
             $this->storage->storeVersion($versionable, $version, $tmp);
             $versionable->addVersion($version);
             unlink($tmp);
@@ -161,6 +162,7 @@ abstract class VersionProvider extends BasePlugin
     public function deleteProvidedVersions(Storable $storable)
     {
         foreach ($this->getProvidedVersions() as $version) {
+            $version = Version::get($version);
             $storable->removeVersion($version);
             if ($this->storage->versionExists($storable, $version)) {
                 $this->storage->deleteVersion($storable, $version);
@@ -174,7 +176,7 @@ abstract class VersionProvider extends BasePlugin
 
         $count = 0;
         foreach ($this->getProvidedVersions() as $version) {
-            if ($versionable->hasVersion($version)) {
+            if ($versionable->hasVersion(Version::get($version))) {
                 $count++;
             }
         }
@@ -190,10 +192,10 @@ abstract class VersionProvider extends BasePlugin
      * More specific plugins should override this for performance.
      *
      * @param File $file
-     * @param $version
+     * @param Version $version
      * @return string
      */
-    public function getMimeType(File $file, $version)
+    public function getMimeType(File $file, Version $version)
     {
         $retrieved = $this->storage->retrieveVersion(
             $this->getApplicableStorable($file),
@@ -208,10 +210,10 @@ abstract class VersionProvider extends BasePlugin
      * Returns file extension for a version
      *
      * @param File $file
-     * @param string $version
+     * @param Version $version
      * @return string
      */
-    public function getExtension(File $file, $version)
+    public function getExtension(File $file, Version $version)
     {
         $mimeType = $this->getMimeType($file, $version);
         return $this->getExtensionFromMimeType($mimeType);

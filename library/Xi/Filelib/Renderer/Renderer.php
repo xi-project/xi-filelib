@@ -9,6 +9,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Storage;
@@ -63,12 +64,14 @@ class Renderer
      * Renders a file to a response
      *
      * @param mixed $file
-     * @param string $version
+     * @param mixed $version Version string or object
      * @param array $options
      * @return mixed
      */
     public function render($file, $version, array $options = array())
     {
+        $version = Version::get($version);
+
         $response = new Response();
 
         if (!$file instanceof File) {

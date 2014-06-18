@@ -68,15 +68,13 @@ class VersionPlugin extends LazyVersionProvider
      * @param  File  $file
      * @return array
      */
-    public function createTemporaryVersion(File $file, $version)
+    public function createTemporaryVersion(File $file, Version $version)
     {
-        $version = Version::get($version)->getVersion();
-
         $retrieved = $this->storage->retrieve(
             $file->getResource()
         );
 
-        $version = $this->versions[$version];
+        $version = $this->versions[$version->getVersion()];
 
         $img = $version->getHelper()->createImagick($retrieved);
         $version->getHelper()->execute($img);
@@ -95,7 +93,7 @@ class VersionPlugin extends LazyVersionProvider
     {
         $ret = array();
         foreach ($this->getProvidedVersions() as $version) {
-            $ret[] = $this->createTemporaryVersion($file, $version);
+            $ret[] = $this->createTemporaryVersion($file, Version::get($version));
         }
 
         return $ret;
@@ -119,9 +117,9 @@ class VersionPlugin extends LazyVersionProvider
      * @param string $version
      * @return string
      */
-    public function getExtension(File $file, $version)
+    public function getExtension(File $file, Version $version)
     {
-        if ($mimeType = $this->versions[$version]->getMimeType()) {
+        if ($mimeType = $this->versions[$version->getVersion()]->getMimeType()) {
             return $this->getExtensionFromMimeType($mimeType);
         }
         return parent::getExtension($file, $version);

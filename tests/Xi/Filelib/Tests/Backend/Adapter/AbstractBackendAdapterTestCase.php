@@ -7,6 +7,7 @@ use DateTime;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;
@@ -149,12 +150,15 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
         $this->assertNotEquals($versions, $resource->getVersions());
         $this->assertTrue($resource->isExclusive());
 
-        $resource->setVersions($versions);
+        $expectedVersions = array_merge($resource->getVersions(), $versions);
+        foreach ($versions as $version) {
+            $resource->addVersion(Version::get($version));
+        }
         $resource->setExclusive(false);
         $this->assertTrue($this->backend->updateResource($resource));
 
         $resource2 = $this->findResource($resourceId);
-        $this->assertEquals($versions, $resource2->getVersions());
+        $this->assertEquals($expectedVersions, $resource2->getVersions());
         $this->assertFalse($resource2->isExclusive());
     }
 

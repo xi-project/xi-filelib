@@ -10,6 +10,7 @@ use Xi\Filelib\File\File;
 use Pekkis\Queue\Adapter\PhpAMQPAdapter;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Profile\FileProfile;
 
 class LifeCycleTest extends TestCase
@@ -49,7 +50,7 @@ class LifeCycleTest extends TestCase
         $secondFile =  $this->filelib->uploadFile($manateePath);
         $this->assertSame($file->getResource(), $secondFile->getResource());
 
-        $this->publisher->publish($secondFile);
+        $this->publisher->publishAllVersions($secondFile);
         $this->assertStorageFileCount(3);
         $this->assertPublisherFileCount(2);
 
@@ -134,14 +135,14 @@ class LifeCycleTest extends TestCase
         $file2 = $this->filelib->uploadFile($manateePath, null, 'unspoiled');
 
         // @todo Why profile manager of all places?
-        $this->assertTrue($this->filelib->getProfileManager()->hasVersion($file1, 'cinemascope'));
-        $this->assertFalse($this->filelib->getProfileManager()->hasVersion($file2, 'cinemascope'));
+        $this->assertTrue($this->filelib->getProfileManager()->hasVersion($file1, Version::get('cinemascope')));
+        $this->assertFalse($this->filelib->getProfileManager()->hasVersion($file2, Version::get('cinemascope')));
 
-        $this->assertFalse($file1->hasVersion('cinemascope'));
-        $this->assertFalse($file2->hasVersion('cinemascope'));
+        $this->assertFalse($file1->hasVersion(Version::get('cinemascope')));
+        $this->assertFalse($file2->hasVersion(Version::get('cinemascope')));
 
         $this->assertSame($file1->getResource(), $file2->getResource());
-        $this->assertTrue($file1->getResource()->hasVersion('cinemascope'));
+        $this->assertTrue($file1->getResource()->hasVersion(Version::get('cinemascope')));
     }
 
     /**

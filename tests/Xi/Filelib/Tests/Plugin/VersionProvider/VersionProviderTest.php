@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Tests\Plugin\VersionProvider;
 
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
@@ -115,12 +116,12 @@ class VersionProviderTest extends TestCase
         if ($expectResourceGetVersions) {
             $resource->expects($this->atLeastOnce())
                 ->method('hasVersion')
-                ->with($this->isType('string'))
+                ->with($this->equalTo(Version::get('tussi')))
                 ->will($this->returnValue(true));
         } else {
             $file->expects($this->atLeastOnce())
                 ->method('hasVersion')
-                ->with($this->isType('string'))
+                ->with($this->equalTo(Version::get('tussi')))
                 ->will($this->returnValue(true));
         }
 
@@ -197,10 +198,18 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(
                     array(
-                        'resource' => Resource::create(array('mimetype' => 'image/xoo', 'versions' => array('reiska'))),
-                        'profile' => 'tussi',
+                        'resource' => Resource::create(
+                            array(
+                                'mimetype' => 'image/xoo',
+                                'data' => array(
+                                    'versions' => array('reiska')
+                                )
+                            )
+                        ),
+                        'profile' => 'tussi'
                     )
                 );
+
         $event = new FileEvent($file);
 
         $this->plugin->onAfterUpload($event);
@@ -272,7 +281,7 @@ class VersionProviderTest extends TestCase
         $this->storage->expects($this->exactly(2))->method('storeVersion')
                 ->with(
                     $sharedVersionsAllowed ? $this->isInstanceOf('Xi\Filelib\Resource\Resource') : $this->isInstanceOf('Xi\Filelib\File\File'),
-                    $this->isType('string'),
+                    $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version'),
                     $this->isType('string')
                 );
 
@@ -356,11 +365,16 @@ class VersionProviderTest extends TestCase
         $this->storage->expects($this->once())->method('deleteVersion')
              ->with(
                      $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
-                     $this->equalTo('lusser')
+                     $this->equalTo(Version::get('lusser'))
               );
 
-        $this->storage->expects($this->exactly(2))->method('versionExists')
-            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'), $this->isType('string'))
+        $this->storage
+            ->expects($this->exactly(2))
+            ->method('versionExists')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version')
+            )
             ->will($this->onConsecutiveCalls(false, true));
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
@@ -430,14 +444,20 @@ class VersionProviderTest extends TestCase
         $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
              ->will($this->returnValue(array('xooxer', 'lusser')));
 
-        $this->storage->expects($this->exactly(2))->method('versionExists')
-             ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'),
-                    $this->isType('string'))
-             ->will($this->onConsecutiveCalls(true, false));
+        $this->storage
+            ->expects($this->exactly(2))->method('versionExists')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version')
+            )
+            ->will($this->onConsecutiveCalls(true, false));
 
         $this->storage->expects($this->once())
-             ->method('deleteVersion')
-             ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'), $this->isType('string'));
+            ->method('deleteVersion')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version')
+            );
 
         $resource = Resource::create(array('mimetype' => 'image/png'));
         $event = new ResourceEvent($resource);
@@ -475,7 +495,7 @@ class VersionProviderTest extends TestCase
             ->with($resource, 'xoox')
             ->will($this->returnValue($filename));
 
-        $mimeType = $this->plugin->getMimeType($file, 'xoox');
+        $mimeType = $this->plugin->getMimeType($file, Version::get('xoox'));
         $this->assertSame($expected, $mimeType);
     }
 
@@ -507,7 +527,7 @@ class VersionProviderTest extends TestCase
             ->with($file, 'xooxer')
             ->will($this->returnValue('image/jpeg'));
 
-        $extension = $plugin->getExtension($file, 'xooxer');
+        $extension = $plugin->getExtension($file, Version::get('xooxer'));
         $this->assertEquals('jpg', $extension);
     }
 

@@ -9,16 +9,10 @@
 
 namespace Xi\Filelib\Event;
 
-use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\File;
 
-class PublisherEvent extends Event
+class PublisherEvent extends FileEvent
 {
-    /**
-     * @var File
-     */
-    private $file;
-
     /**
      * @var array
      */
@@ -26,16 +20,8 @@ class PublisherEvent extends Event
 
     public function __construct(File $file, array $versions)
     {
-        $this->file = $file;
+        parent::__construct($file);
         $this->versions = $versions;
-    }
-
-    /**
-     * @return File
-     */
-    public function getFile()
-    {
-        return $this->file;
     }
 
     /**

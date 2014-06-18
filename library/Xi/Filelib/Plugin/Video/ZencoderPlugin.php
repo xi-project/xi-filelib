@@ -193,12 +193,12 @@ class ZencoderPlugin extends VersionProvider
      *
      * @param string $version
      */
-    public function getExtension(File $file, $version)
+    public function getExtension(File $file, Version $version)
     {
-        if (preg_match("#thumbnail$#", $version)) {
+        if (preg_match("#thumbnail$#", $version->toString())) {
             return 'png';
         }
-        return $this->outputs[$version]['extension'];
+        return $this->outputs[$version->toString()]['extension'];
     }
 
     /**
