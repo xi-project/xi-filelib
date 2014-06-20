@@ -73,7 +73,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
         $vp->expects($this->any())
              ->method('getExtension')
              ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->version)
-             ->will($this->returnValue($this->version));
+             ->will($this->returnValue('xoo'));
 
         $this->versionProvider = $vp;
     }

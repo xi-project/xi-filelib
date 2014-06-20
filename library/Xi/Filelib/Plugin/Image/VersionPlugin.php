@@ -93,9 +93,8 @@ class VersionPlugin extends LazyVersionProvider
     {
         $ret = array();
         foreach ($this->getProvidedVersions() as $version) {
-            $ret[] = $this->createTemporaryVersion($file, Version::get($version));
+            $ret[$version] = $this->createTemporaryVersion($file, Version::get($version));
         }
-
         return $ret;
     }
 

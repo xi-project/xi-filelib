@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Publisher\Adapter\Filesystem\CopyFilesystemPublisherAdapter;
 
@@ -107,13 +108,13 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
             $this->storage
                 ->expects($this->once())
                 ->method('retrieveVersion')
-                ->with($file->getResource(), 'xooxer')
+                ->with($file->getResource(), Version::get('xooxer'))
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         } else {
             $this->storage
                 ->expects($this->once())
                 ->method('retrieveVersion')
-                ->with($file, 'xooxer')
+                ->with($file, Version::get('xooxer'))
                 ->will($this->returnValue($this->resourcePaths[$file->getResource()->getId()]));
         }
 

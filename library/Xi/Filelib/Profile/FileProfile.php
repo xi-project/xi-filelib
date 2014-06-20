@@ -158,7 +158,12 @@ class FileProfile implements EventSubscriberInterface
             return $this->fileVersions[$version->getVersion()];
         }
 
-        throw new InvalidArgumentException("File has no version '{$version}'");
+        throw new InvalidArgumentException(
+            sprintf(
+                "File has no version '%s'",
+                $version->toString()
+            )
+        );
     }
 
     /**

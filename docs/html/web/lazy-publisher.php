@@ -29,7 +29,7 @@ $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-25.jpg');
             </p>
 
             <p>
-                <img src="<?php echo $publisher->getUrl($file, 'arbitrary:x=500'); ?>" />
+                <img src="<?php echo $publisher->getUrl($file, 'arbitrary::x:500'); ?>" />
             </p>
 
         </div>

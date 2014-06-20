@@ -50,7 +50,7 @@ $arbitraryPlugin = new ArbitraryVersionPlugin(
 
         return true;
     },
-    function (File $file, array $params) {
+    function (File $file, array $params, ArbitraryVersionPlugin $plugin) {
         return array(
             array('setImageCompression',Imagick::COMPRESSION_JPEG),
             array('setImageFormat', 'jpg'),

@@ -61,7 +61,7 @@ abstract class BaseStorable extends BaseIdentifiable
      */
     public function hasVersion(Version $version)
     {
-        return in_array($version, $this->getVersions());
+        return in_array($version->toString(), $this->getVersions());
     }
 
     /**
@@ -73,5 +73,4 @@ abstract class BaseStorable extends BaseIdentifiable
         $this->getData()->set('versions', $versions);
         return $this;
     }
-
 }

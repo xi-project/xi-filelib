@@ -17,6 +17,7 @@ use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\FileLibrary;
 use Closure;
 use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Storage\Storage;
 
 /**
  * Versions an image
@@ -117,7 +118,8 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
             $this->commandDefinitionsGetter,
             array(
                 $file,
-                $this->getParams($version)
+                $this->getParams($file, $version),
+                $this
             )
         );
 
@@ -143,6 +145,14 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         return array(
             $this->identifier
         );
+    }
+
+    /**
+     * @return Storage
+     */
+    public function getStorage()
+    {
+        return $this->storage;
     }
 
     /**
@@ -175,12 +185,12 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
             $this->getProvidedVersions()
         )) return false;
 
-        return call_user_func_array($this->paramsValidityChecker, array($this->getParams($version)));
+        return call_user_func_array($this->paramsValidityChecker, array($version->getParams()));
     }
 
-    private function getParams(Version $version)
+    private function getParams(File $file, Version $version)
     {
-        return $version->getParams() ?: call_user_func($this->defaultParamsGetter);
+        return $version->getParams() ?: call_user_func_array($this->defaultParamsGetter, array($file, $this));
     }
 
 }

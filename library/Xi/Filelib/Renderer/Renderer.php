@@ -145,7 +145,6 @@ class Renderer
         $versionable = $provider->getApplicableStorable($file);
 
         if ($versionable->hasVersion($version)) {
-
             return true;
         }
 

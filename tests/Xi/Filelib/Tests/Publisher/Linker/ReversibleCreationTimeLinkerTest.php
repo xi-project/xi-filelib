@@ -80,7 +80,7 @@ class ReversibleCreationTimeLinkerTest extends \Xi\Filelib\Tests\TestCase
             ->with('uuid-lusso-grande')
             ->will($this->returnValue($file));
 
-        $link = '2014/11/12/uuid-lusso-grande-xoo:lusso=tussi.jpg';
+        $link = '2014/11/12/uuid-lusso-grande-xoo::lusso:tussi.jpg';
 
         list ($reversed, $version) = $linker->reverseLink($link);
 

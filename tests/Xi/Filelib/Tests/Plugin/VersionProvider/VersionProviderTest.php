@@ -492,7 +492,7 @@ class VersionProviderTest extends TestCase
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xoox')
+            ->with($resource, Version::get('xoox'))
             ->will($this->returnValue($filename));
 
         $mimeType = $this->plugin->getMimeType($file, Version::get('xoox'));
@@ -524,7 +524,7 @@ class VersionProviderTest extends TestCase
         $plugin
             ->expects($this->once())
             ->method('getMimeType')
-            ->with($file, 'xooxer')
+            ->with($file, Version::get('xooxer'))
             ->will($this->returnValue('image/jpeg'));
 
         $extension = $plugin->getExtension($file, Version::get('xooxer'));

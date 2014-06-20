@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Event;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 class PublisherEvent extends FileEvent
 {
@@ -21,7 +22,9 @@ class PublisherEvent extends FileEvent
     public function __construct(File $file, array $versions)
     {
         parent::__construct($file);
-        $this->versions = $versions;
+        $this->versions = array_map(function ($version) {
+            return Version::get($version);
+        }, $versions);
     }
 
     /**

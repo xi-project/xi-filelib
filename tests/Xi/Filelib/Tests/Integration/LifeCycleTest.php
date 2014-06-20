@@ -27,6 +27,8 @@ class LifeCycleTest extends TestCase
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
 
         $file = $this->filelib->uploadFile($manateePath, $folder);
+
+
         $this->assertEquals(File::STATUS_COMPLETED, $file->getStatus());
         $this->assertPublisherFileCount(0);
 
@@ -167,7 +169,7 @@ class LifeCycleTest extends TestCase
         $this->assertNotSame($resource, $resource2);
 
         $this->assertEquals(array('original', 'cinemascope'), $resource2->getVersions());
-        $resource2->addVersion('lussogrande');
+        $resource2->addVersion(Version::get('lussogrande'));
 
         $this->filelib->getFileRepository()->update($file2);
 

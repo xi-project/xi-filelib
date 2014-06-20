@@ -73,7 +73,7 @@ class PublisherTest extends TestCase
         $this->pm
             ->expects($this->any())
             ->method('getVersionProvider')
-            ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->logicalOr('ankan', 'imaisu'))
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->logicalOr(Version::get('ankan'), Version::get('imaisu')))
             ->will($this->returnValue($this->provider));
 
         $this->ed = $this->getMockedEventDispatcher();
@@ -203,13 +203,13 @@ class PublisherTest extends TestCase
             ->method('getUrl')
             ->with(
                 $file,
-                'ankan',
+                Version::get('ankan'),
                 $this->provider,
                 $this->linker
             )
             ->will($this->returnValue('lussutusbansku'));
 
-        $ret = $this->publisher->getUrl($file, 'ankan');
+        $ret = $this->publisher->getUrl($file, Version::get('ankan'));
         $this->assertEquals('lussutusbansku', $ret);
     }
 
@@ -235,7 +235,7 @@ class PublisherTest extends TestCase
             ->expects($this->never())
             ->method('update');
 
-        $ret = $this->publisher->getUrl($file, 'ankan');
+        $ret = $this->publisher->getUrl($file, Version::get('ankan'));
         $this->assertEquals('kerran-tenhusen-lipaisema-lopullisesti-pilalla', $ret);
     }
 

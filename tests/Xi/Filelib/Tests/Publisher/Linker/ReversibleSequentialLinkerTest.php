@@ -25,7 +25,7 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $vp->expects($this->any())
              ->method('getExtension')
-             ->with($this->isInstanceOf('Xi\Filelib\File\File'), 'xoo')
+             ->with($this->isInstanceOf('Xi\Filelib\File\File'), Version::get('xoo'))
              ->will($this->returnValue('xoo'));
 
         $this->versionProvider = $vp;
@@ -106,7 +106,7 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
             ->with('uuid-lusso-grande')
             ->will($this->returnValue($file));
 
-        $link = '1/9/58/1457/uuid-lusso-grande-xoo:narf=archive;year=1666.jpg';
+        $link = '1/9/58/1457/uuid-lusso-grande-xoo::narf:archive;year:1666.jpg';
 
         list ($reversed, $version) = $linker->reverseLink($link);
 

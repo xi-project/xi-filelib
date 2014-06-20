@@ -96,8 +96,8 @@ abstract class VersionProvider extends BasePlugin
     public function provideAllVersions(File $file)
     {
         $versionable = $this->getApplicableStorable($file);
-
         $versions = $this->createAllTemporaryVersions($file);
+
         foreach ($versions as $version => $tmp) {
             $version = Version::get($version);
             $this->storage->storeVersion($versionable, $version, $tmp);

@@ -161,6 +161,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
     public function linkerShouldExcludeRootProperly()
     {
         $version = Version::get('lus');
+        $extension = 'lus';
 
         $file = File::create(array(
             'name' => 'lamantiini.lus',
@@ -173,7 +174,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals(
             'root/lussuttaja/lamantiini-loso.lus',
-            $linker->getLink($file, Version::get('loso'), $version)
+            $linker->getLink($file, Version::get('loso'), $extension)
         );
 
         $linker = new BeautifurlLinker($this->slugifier, true);
@@ -181,7 +182,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals(
             'lussuttaja/lamantiini-loso.lus',
-            $linker->getLink($file, Version::get('loso'), $version)
+            $linker->getLink($file, Version::get('loso'), $extension)
         );
     }
 
@@ -201,7 +202,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals(
             'root/lussuttaja/banaanin/sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú/lamantiini-loso.lus',
-             $linker->getLink($file, Version::get('loso'), Version::get('lus'))
+             $linker->getLink($file, Version::get('loso'), 'lus')
         );
     }
 

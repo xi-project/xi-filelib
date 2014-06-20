@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests\Event;
 
 use Xi\Filelib\Event\PublisherEvent;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 class PublisherEventTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -20,6 +21,16 @@ class PublisherEventTest extends \Xi\Filelib\Tests\TestCase
 
         $event = new PublisherEvent($file, $versions);
         $this->assertSame($file, $event->getFile());
-        $this->assertEquals($versions, $event->getVersions());
+
+        $versions = $event->getVersions();
+        $this->assertCount(2, $versions);
+
+        $this->assertEquals(
+            array(
+                Version::get('tussi'),
+                Version::get('lussi')
+            ),
+            $versions
+        );
     }
 }

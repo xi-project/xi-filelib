@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests\Event;
 
 use Xi\Filelib\Event\VersionProviderEvent;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 class VersionProviderEventTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -14,6 +15,7 @@ class VersionProviderEventTest extends \Xi\Filelib\Tests\TestCase
     {
         $vp = $this->getMockedVersionProvider();
         $file = File::create();
+
         $versions = array(
             'tussi',
             'lussi'
@@ -22,6 +24,12 @@ class VersionProviderEventTest extends \Xi\Filelib\Tests\TestCase
         $event = new VersionProviderEvent($vp, $file, $versions);
         $this->assertSame($file, $event->getFile());
         $this->assertSame($vp, $event->getProvider());
-        $this->assertEquals($versions, $event->getVersions());
+        $this->assertEquals(
+            array(
+                Version::get('tussi'),
+                Version::get('lussi')
+            ),
+            $event->getVersions()
+        );
     }
 }

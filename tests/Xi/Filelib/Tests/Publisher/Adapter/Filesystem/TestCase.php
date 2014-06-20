@@ -115,7 +115,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
             ->will(
                 $this->returnCallback(
                     function ($file, $version) use ($self) {
-                        return $self->linkPaths[$file->getId()] . '/' . $file->getId() . '-' . $version . '.lus';
+                        return $self->linkPaths[$file->getId()] . '/' . $file->getId() . '-' . $version->toString() . '.lus';
                     }
                 )
             );

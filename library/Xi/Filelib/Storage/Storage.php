@@ -64,7 +64,12 @@ class Storage implements Attacher
         }
 
         if (!$this->exists($resource)) {
-            throw new FileIOException("Physical file for resource #{$resource->getId()} does not exist");
+            throw new FileIOException(
+                sprintf(
+                    "Physical file for resource #%s does not exist",
+                    $resource->getId()
+                )
+            );
         }
 
         $retrieved = $this->adapter->retrieve($resource);
@@ -78,7 +83,12 @@ class Storage implements Attacher
     public function delete(Resource $resource)
     {
         if (!$this->exists($resource)) {
-            throw new FileIOException("Physical file for resource #{$resource->getId()} does not exist");
+            throw new FileIOException(
+                sprintf(
+                    "Physical file for resource #%s does not exist",
+                    $resource->getId()
+                )
+            );
         }
 
         $this->cache->delete($resource);
@@ -92,7 +102,14 @@ class Storage implements Attacher
             $this->eventDispatcher->dispatch(Events::BEFORE_STORE, $event);
             return $this->adapter->store($resource, $tempFile);
         } catch (\Exception $e) {
-            throw new FileIOException("Could not store physical file for resource #{$resource->getId()}", 500, $e);
+            throw new FileIOException(
+                sprintf(
+                    "Could not store physical file for resource #%s",
+                    $resource->getId()
+                )
+                , 500,
+                $e
+            );
         }
     }
 
@@ -108,7 +125,7 @@ class Storage implements Attacher
                     "Physical file for storable of class '%s', #%s, version '%s' does not exist",
                     get_class($storable),
                     $storable->getId(),
-                    $version
+                    $version->toString()
                 )
             );
         }
@@ -129,7 +146,7 @@ class Storage implements Attacher
                     "Physical file for storable of class '%s', #%s, version '%s' does not exist",
                     get_class($storable),
                     $storable->getId(),
-                    $version
+                    $version->toString()
                 )
             );
         }
@@ -138,7 +155,7 @@ class Storage implements Attacher
         return $this->adapter->deleteVersion($storable, $version);
     }
 
-    public function storeVersion(Storable $storable, $version, $tempFile)
+    public function storeVersion(Storable $storable, Version $version, $tempFile)
     {
         try {
             $event = new StorageEvent($tempFile);
@@ -151,7 +168,7 @@ class Storage implements Attacher
                     "Could not store physical file for storable of class '%s', #%s, version '%s'",
                     get_class($storable),
                     $storable->getId(),
-                    $version
+                    $version->toString()
                 ),
                 0,
                 $e

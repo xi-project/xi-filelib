@@ -244,13 +244,11 @@ class Publisher implements EventSubscriberInterface, Attacher
 
     /**
      * @param File $file
-     * @param string $version
+     * @param Version $version
      * @return string
      */
-    public function getUrl(File $file, $version)
+    public function getUrl(File $file, Version $version)
     {
-        $version = Version::get($version);
-
         $versionUrls = $file->getData()->get('publisher.version_url');
         if (isset($versionUrls[$version->toString()])) {
             return $versionUrls[$version->toString()];

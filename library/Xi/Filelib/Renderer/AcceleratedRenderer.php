@@ -113,7 +113,6 @@ class AcceleratedRenderer extends Renderer
     protected function injectContentToResponse(FileObject $file, Response $response)
     {
         if (!$this->canAccelerate()) {
-
             parent::injectContentToResponse($file, $response);
             return;
         }
