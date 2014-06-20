@@ -61,6 +61,54 @@ class ArbitraryVersionPluginTest extends TestCase
         );
 
         $this->assertTrue($plugin->lazyModeEnabled());
+        $this->assertEquals('image/png', $plugin->getMimeType(File::create(), Version::get('tussi')));
     }
+
+    /**
+     * @test
+     */
+    public function mimeTypeGetterIsDefined()
+    {
+        $file = File::create();
+        $version = Version::get('losofeie');
+
+        $func = function (File $file, Version $version) {
+            $this->assertInstanceOf('Xi\Filelib\File\File', $file);
+            $this->assertInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version', $version);
+            return 'lusso/tus';
+        };
+
+        $plugin = new ArbitraryVersionPlugin(
+            'arbitrage',
+            function () { },
+            function () { },
+            function () { },
+            $func
+        );
+
+        $this->assertEquals('lusso/tus', $plugin->getMimeType($file, $version));
+    }
+
+    /**
+     * @test
+     */
+    public function throwsUpWhenMimeTypeIsNotGot()
+    {
+        $this->setExpectedException('Xi\Filelib\RuntimeException');
+
+        $plugin = new ArbitraryVersionPlugin(
+            'arbitrage',
+            function () { },
+            function () { },
+            function () { },
+            function () {
+                return null;
+            }
+        );
+
+        $plugin->getMimeType(File::create(), Version::get('xooxoxx'));
+
+    }
+
 
 }

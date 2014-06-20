@@ -11,12 +11,12 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Plugin\VersionProvider\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\FileLibrary;
 use Closure;
 use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Storage\Storage;
 
 /**
@@ -41,11 +41,6 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
     private $defaultParamsGetter;
 
     /**
-     * @var string
-     */
-    private $mimeType;
-
-    /**
      * @param string $identifier
      * @param array $commandDefinitions
      * @param string $mimeType
@@ -55,7 +50,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         \Closure $defaultParamsGetter,
         \Closure $paramsValidityChecker,
         \Closure $commandDefinitionsGetter,
-        $mimeType
+        $mimeTypeGetter
     ) {
         parent::__construct(
             function (File $file) {
@@ -69,7 +64,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         $this->paramsValidityChecker = $paramsValidityChecker;
         $this->commandDefinitionsGetter = $commandDefinitionsGetter;
 
-        $this->mimeType = $mimeType;
+        $this->mimeTypeGetter = $this->createMimeTypeGetter($mimeTypeGetter);
 
         /*
         foreach ($versionDefinitions as $key => $definition) {
@@ -118,7 +113,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
             $this->commandDefinitionsGetter,
             array(
                 $file,
-                $this->getParams($file, $version),
+                $this->getParams($version),
                 $this
             )
         );
@@ -126,7 +121,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         $vpv = new VersionPluginVersion(
             $version,
             $commandDefinitions,
-            $this->mimeType
+            null
         );
 
         $img = $vpv->getHelper()->createImagick($retrieved);
@@ -155,18 +150,14 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         return $this->storage;
     }
 
-    /**
-     * @param File $file
-     * @param string $version
-     * @return string
-     */
-    public function getExtension(File $file, Version $version)
+    public function getMimeType(File $file, Version $version)
     {
-        if ($this->mimeType) {
-            return $this->getExtensionFromMimeType($this->mimeType);
+        if ($mimeType = call_user_func_array($this->mimeTypeGetter, array($file, $version))) {
+            return $mimeType;
         }
-        return parent::getExtension($file, $version);
+        throw new RuntimeException("Mime type not definable");
     }
+
 
     public function isSharedResourceAllowed()
     {
@@ -183,14 +174,36 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         if (!in_array(
             $version->getVersion(),
             $this->getProvidedVersions()
-        )) return false;
+        )) {
+            return false;
+        }
 
-        return call_user_func_array($this->paramsValidityChecker, array($version->getParams()));
+        return call_user_func_array(
+            $this->paramsValidityChecker,
+            array(
+                $this->getParams($version)
+            )
+        );
     }
 
-    private function getParams(File $file, Version $version)
+    private function getParams(Version $version)
     {
-        return $version->getParams() ?: call_user_func_array($this->defaultParamsGetter, array($file, $this));
+        return array_merge(
+            call_user_func($this->defaultParamsGetter),
+            $version->getParams()
+        );
     }
+
+    private function createMimeTypeGetter($mimeTypeGetter)
+    {
+        if (is_callable($mimeTypeGetter)) {
+            return $mimeTypeGetter;
+        }
+
+        return function () use ($mimeTypeGetter) {
+            return $mimeTypeGetter;
+        };
+    }
+
 
 }

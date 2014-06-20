@@ -31,7 +31,7 @@ class Version
     /**
      * @var array
      */
-    private $params;
+    private $params = array();
 
     /**
      * @param string $version

@@ -194,7 +194,19 @@ class PublisherTest extends TestCase
     /**
      * @test
      */
-    public function getUrlShouldDelegateToAdapterIfNoCachedData()
+    public function provideVersions()
+    {
+        return array(
+            array('ankan'),
+            array(Version::get('ankan'))
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideVersions
+     */
+    public function getUrlShouldDelegateToAdapterIfNoCachedData($version)
     {
         $file = File::create();
 
@@ -209,14 +221,15 @@ class PublisherTest extends TestCase
             )
             ->will($this->returnValue('lussutusbansku'));
 
-        $ret = $this->publisher->getUrl($file, Version::get('ankan'));
+        $ret = $this->publisher->getUrl($file, $version);
         $this->assertEquals('lussutusbansku', $ret);
     }
 
     /**
      * @test
+     * @dataProvider provideVersions
      */
-    public function getUrlShouldUseCachedDataWhenAvailable()
+    public function getUrlShouldUseCachedDataWhenAvailable($version)
     {
         $file = File::create();
         $data = $file->getData();
@@ -235,7 +248,7 @@ class PublisherTest extends TestCase
             ->expects($this->never())
             ->method('update');
 
-        $ret = $this->publisher->getUrl($file, Version::get('ankan'));
+        $ret = $this->publisher->getUrl($file, $version);
         $this->assertEquals('kerran-tenhusen-lipaisema-lopullisesti-pilalla', $ret);
     }
 

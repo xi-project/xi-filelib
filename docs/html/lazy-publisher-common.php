@@ -32,7 +32,7 @@ $filelib->getEventDispatcher()->addListener(
 $arbitraryPlugin = new ArbitraryVersionPlugin(
     'arbitrary',
     function () {
-        return array('x' => 666);
+        return array('x' => 800);
     },
     function (array $params) {
 

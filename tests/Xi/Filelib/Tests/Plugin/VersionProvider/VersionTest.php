@@ -86,5 +86,13 @@ class VersionTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * @test
+     */
+    public function paramsDefaultToArray()
+    {
+        $version = new Version('tenhusen-egon-ylistyksen-artikkeli');
+        $this->assertEquals(array(), $version->getParams());
+    }
 
 }
