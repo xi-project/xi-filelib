@@ -77,7 +77,8 @@ class ExecuteMethodCommandTest extends TestCase
      */
     public function getMockedImagick()
     {
-        $imagick = $this->getMockBuilder('\Imagick')->disableOriginalConstructor()
+        $imagick = $this->getMockBuilder('\Imagick')
+            ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
             ->setMethods(array('cropThumbnailImage'))
             ->getMock();
 
