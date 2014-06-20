@@ -5,7 +5,10 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 
 ## From version 0.11.x to version 0.12.x
 
-* Uh oh. Data is not backwards compatible. This is the last time, I promise! See changes below.
+* Feature freeze. No more stuff before 1.0!
+* Uh oh. Data is not backwards compatible. This is the last time before 1.0.
+* All version identifiers are now classes of Xi\Filelib\Plugin\VersionProvider\Version.
+* Publisher was heavily refactored. publish() is now publishAllVersions(). Functionality changed: read it through.
 * Folders now have a data container object.
 * Filelib's upload() shortcut is now uploadFile().
 * Filelib has other convenient repository shortcuts (findFile(), findFiles() etc).
@@ -13,7 +16,7 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 * "Find many" type of operations now return collections (xi/collections) instead of ArrayIterators,
   making nice functional style of programming possible out of the box.
 * Refactored storage subcomponent.
-    * Storages are now named StorageAdapters, wrapped by a common Storage (same interface as before)
+    * Storages are now named StorageAdapters, wrapped by a common Storage class (basically the same interface as before)
     * Via storage events it is now possible to hook into the storing of files (to crypt/decrypt them, for example)
 * FILE_BEFORE_CREATE event (FileUploadEvent) is now named FILE_UPLOAD.
 * FILE_BEFORE_CREATE is now a _new_ event (FileEvent) triggered before creation of files.

@@ -51,7 +51,7 @@ class GridfsStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
      * @param string $prefix
      * @param null $tempDir
      */
-    public function __construct(MongoDB $mongo, $prefix = 'xi_filelib', $tempDir = null)
+    public function __construct(MongoDB $mongo, $prefix = 'xi_filelib')
     {
         $this->mongo = $mongo;
         $this->prefix = $prefix;

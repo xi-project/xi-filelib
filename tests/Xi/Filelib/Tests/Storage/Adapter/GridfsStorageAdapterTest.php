@@ -37,7 +37,7 @@ class GridFsStorageAdapterTest extends TestCase
         }
 
         $this->mongo = $mongo->filelib_tests;
-        $storage = new GridfsStorageAdapter($this->mongo, ROOT_TESTS . '/data/temp');
+        $storage = new GridfsStorageAdapter($this->mongo);
 
         return array($storage, true);
     }
@@ -56,7 +56,7 @@ class GridFsStorageAdapterTest extends TestCase
      */
     public function defaultsShouldProvideSaneStorage()
     {
-        $storage = new GridfsStorageAdapter($this->getMockBuilder('MongoDB')->disableOriginalConstructor()->getMock());
+        list ($storage,) = $this->getStorage();
         $this->assertSame('xi_filelib', $storage->getPrefix());
     }
 }
