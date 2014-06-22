@@ -12,7 +12,7 @@ namespace Xi\Filelib\Storage\Adapter;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Storage\Versionable;
+use Xi\Filelib\Versionable;
 
 /**
  * Abstract storage convenience base class with common methods implemented

@@ -4,6 +4,7 @@ namespace Xi\Filelib\Storage;
 
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Version;
+use Xi\Filelib\Versionable;
 
 class RetrievedCache
 {

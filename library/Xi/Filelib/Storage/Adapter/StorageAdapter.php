@@ -12,7 +12,7 @@ namespace Xi\Filelib\Storage\Adapter;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Storage\Retrieved;
-use Xi\Filelib\Storage\Versionable;
+use Xi\Filelib\Versionable;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;

@@ -16,7 +16,7 @@ use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalcu
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\LogicException;
 use Xi\Filelib\Storage\Retrieved;
-use Xi\Filelib\Storage\Versionable;
+use Xi\Filelib\Versionable;
 use Xi\Filelib\Version;
 
 /**

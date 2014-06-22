@@ -17,7 +17,7 @@ use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Versionable;
+use Xi\Filelib\Versionable;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\File\MimeType;

@@ -13,7 +13,7 @@ use DateTime;
 use Xi\Filelib\BaseVersionable;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
-use Xi\Filelib\Storage\Versionable;
+use Xi\Filelib\Versionable;
 
 /**
  * Resource

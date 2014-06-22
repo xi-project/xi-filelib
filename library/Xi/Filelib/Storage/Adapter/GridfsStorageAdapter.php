@@ -16,7 +16,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Retrieved;
-use Xi\Filelib\Storage\Versionable;
+use Xi\Filelib\Versionable;
 use Xi\Filelib\Version;
 
 /**

@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Version;
-use Xi\Filelib\Storage\Versionable;
+use Xi\Filelib\Versionable;
 
 abstract class BaseVersionableTestCase extends BaseIdentifiableTestCase
 {
