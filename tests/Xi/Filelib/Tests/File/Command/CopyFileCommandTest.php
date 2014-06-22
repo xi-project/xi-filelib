@@ -3,7 +3,6 @@
 namespace Xi\Filelib\Tests\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
@@ -11,6 +10,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\CopyFileCommand;
 use Xi\Filelib\Events;
 use Xi\Filelib\Resource\ResourceRepository;
+use Xi\Filelib\Plugin\VersionProvider\Version;
 
 class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -83,7 +83,11 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getImpostorShouldReturnEqualFileIfOriginalFileIsNotFoundInFolder()
     {
-        $file = File::create(array('name' => 'tohtori-vesala.jpg', 'versions' => array('tussi', 'lussi')));
+        $file = File::create(
+            array(
+                'name' => 'tohtori-vesala.jpg'
+            )
+        )->addVersion(Version::get('tussi'))->addVersion(Version::get('lussi'));
 
         $this->op->expects($this->once())->method('findByFilename')
              ->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'), $this->equalTo('tohtori-vesala.jpg'))
@@ -109,7 +113,19 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getImpostorShouldIterateUntilFileIsNotFoundInFolder()
     {
-        $file = File::create(array('name' => 'tohtori-vesala.jpg', 'versions' => array('tussi', 'lussi')));
+        $file = File::create(
+            array(
+                'name' => 'tohtori-vesala.jpg',
+            )
+        )->addVersion(Version::get('tussi'))->addVersion(Version::get('lussi'));
+
+        $this->assertEquals(
+            array(
+                'tussi',
+                'lussi',
+            ),
+            $file->getVersions()
+        );
 
         $this->folder->expects($this->any())->method('getId')->will($this->returnValue(666));
 

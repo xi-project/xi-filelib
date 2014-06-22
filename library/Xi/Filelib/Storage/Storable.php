@@ -24,20 +24,20 @@ interface Storable
     public function getVersions();
 
     /**
-     * @param Version $version
+     * @param mixed $version
      * @return self
      */
-    public function addVersion(Version $version);
+    public function addVersion($version);
 
     /**
-     * @param Version $version
+     * @param mixed $version
      * @return self
      */
-    public function removeVersion(Version $version);
+    public function removeVersion($version);
 
     /**
-     * @param Version $version
+     * @param mixed $version
      * @return bool
      */
-    public function hasVersion(Version $version);
+    public function hasVersion($version);
 }

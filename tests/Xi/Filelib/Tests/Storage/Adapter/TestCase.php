@@ -2,6 +2,8 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Storage\Adapter\BaseTemporaryRetrievingStorageAdapter;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
@@ -34,6 +36,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     protected $retrievesTemporarily;
 
+    protected $filelib;
+
     /**
      * @abstract
      * @return StorageAdapter
@@ -60,6 +64,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
         list ($this->storage, $this->retrievesTemporarily) = $this->getStorage();
 
+        $this->filelib = $this->getMockedFilelib();
+
     }
 
     protected function tearDown()
@@ -85,6 +91,15 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function storeAndRetrieveAndDeleteShouldWorkInHarmony()
     {
+        if ($this->storage instanceof BaseTemporaryRetrievingStorageAdapter) {
+            $this->filelib
+                ->expects($this->once())
+                ->method('getTempDir')
+                ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
+        }
+
+        $this->storage->attachTo($this->filelib);
+
         $this->assertFalse($this->storage->exists($this->resource));
         $this->storage->store($this->resource, $this->resourcePath);
 
@@ -104,6 +119,14 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function versionStoreAndRetrieveAndDeleteShouldWorkInHarmony()
     {
+        if ($this->storage instanceof BaseTemporaryRetrievingStorageAdapter) {
+            $this->filelib
+                ->expects($this->once())
+                ->method('getTempDir')
+                ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
+        }
+        $this->storage->attachTo($this->filelib);
+
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version));
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version, $this->file));
 

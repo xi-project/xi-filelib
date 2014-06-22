@@ -26,11 +26,13 @@ abstract class BaseStorable extends BaseIdentifiable
     /**
      * Adds version
      *
-     * @param Version $version
+     * @param mixed $version
      * @return self
      */
-    public function addVersion(Version $version)
+    public function addVersion($version)
     {
+        $version = Version::get($version);
+
         $versions = $this->getVersions();
         if (!in_array($version->toString(), $versions)) {
             array_push($versions, $version->toString());
@@ -43,11 +45,13 @@ abstract class BaseStorable extends BaseIdentifiable
     /**
      * Removes a version
      *
-     * @param Version $version
+     * @param mixed $version
      * @return self
      */
-    public function removeVersion(Version $version)
+    public function removeVersion($version)
     {
+        $version = Version::get($version);
+
         $versions = $this->getVersions();
         $versions = array_diff($versions, array($version->toString()));
         return $this->setVersions($versions);
@@ -56,11 +60,13 @@ abstract class BaseStorable extends BaseIdentifiable
     /**
      * Returns whether resource has version
      *
-     * @param Version $version
+     * @param mixed $version
      * @return boolean
      */
-    public function hasVersion(Version $version)
+    public function hasVersion($version)
     {
+        $version = Version::get($version);
+
         return in_array($version->toString(), $this->getVersions());
     }
 

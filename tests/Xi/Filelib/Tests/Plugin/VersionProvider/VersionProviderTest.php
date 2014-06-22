@@ -235,10 +235,11 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(
             array(
-                'resource' => Resource::create(array('mimetype' => 'image/xoo', 'versions' => array('reiska'))),
+                'resource' => Resource::create(array('mimetype' => 'image/xoo')),
                 'profile' => 'tussi',
             )
-        );
+        )->addVersion(Version::get('reiska'));
+
         $event = new FileEvent($file);
 
         $this->plugin->onAfterUpload($event);

@@ -112,7 +112,6 @@ class UploadFileCommand extends BaseFileCommand implements UuidReceiver
                 'profile' => $profile,
                 'date_created' => $upload->getDateUploaded(),
                 'uuid' => $this->getUuid(),
-                'versions' => array()
             )
         );
 
