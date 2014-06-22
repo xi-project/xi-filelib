@@ -34,6 +34,8 @@ class VersionPluginVersion
      */
     protected $identifier;
 
+    protected $commandDefinitions;
+
     /**
      * @param string $identifier
      * @param array $commandDefinitions
@@ -44,17 +46,17 @@ class VersionPluginVersion
         array $commandDefinitions = array(),
         $mimeType = null
     ) {
-        $this->helper = new ImageMagickHelper($commandDefinitions);
         $this->mimeType = $mimeType;
         $this->identifier = $identifier;
+        $this->commandDefinitions = $commandDefinitions;
     }
 
     /**
      * @return ImageMagickHelper
      */
-    public function getHelper()
+    public function getHelper($source, $outputDir)
     {
-        return $this->helper;
+        return new ImageMagickHelper($source, $outputDir, $this->commandDefinitions);
     }
 
     /**

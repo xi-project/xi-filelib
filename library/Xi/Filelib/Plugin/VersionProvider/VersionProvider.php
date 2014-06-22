@@ -81,7 +81,12 @@ abstract class VersionProvider extends BasePlugin
 
     abstract public function getProvidedVersions();
 
-    abstract public function createAllTemporaryVersions(File $file);
+    abstract protected function doCreateAllTemporaryVersions(File $file);
+
+    public function createAllTemporaryVersions(File $file)
+    {
+        return $this->doCreateAllTemporaryVersions($file);
+    }
 
     /**
      * @param FileLibrary $filelib

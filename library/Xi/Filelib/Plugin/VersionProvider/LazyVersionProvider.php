@@ -70,5 +70,11 @@ abstract class LazyVersionProvider extends VersionProvider
         $this->eventDispatcher->dispatch(Events::VERSIONS_PROVIDED, $event);
     }
 
-    abstract public function createTemporaryVersion(File $file, Version $version);
+    public function createTemporaryVersion(File $file, Version $version)
+    {
+        return $this->doCreateTemporaryVersion($file, $version);
+    }
+
+    abstract protected function doCreateTemporaryVersion(File $file, Version $version);
+
 }

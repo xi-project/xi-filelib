@@ -92,14 +92,14 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
      * @param  File  $file
      * @return array
      */
-    public function createAllTemporaryVersions(File $file)
+    protected function doCreateAllTemporaryVersions(File $file)
     {
         return array(
             $this->identifier => $this->createTemporaryVersion($file, $this->identifier)
         );
     }
 
-    public function createTemporaryVersion(File $file, Version $version)
+    protected function doCreateTemporaryVersion(File $file, Version $version)
     {
         if (!$this->isValidVersion($version)) {
             throw new InvalidVersionException('Invalid version');
@@ -118,18 +118,8 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
             )
         );
 
-        $vpv = new VersionPluginVersion(
-            $version,
-            $commandDefinitions,
-            null
-        );
-
-        $img = $vpv->getHelper()->createImagick($retrieved);
-        $vpv->getHelper()->execute($img);
-        $tmp = $this->tempDir . '/' . uniqid('', true);
-        $img->writeImage($tmp);
-
-        return $tmp;
+        $helper = new ImageMagickHelper($retrieved, $this->tempDir, $commandDefinitions);
+        return $helper->execute();
     }
 
     /**

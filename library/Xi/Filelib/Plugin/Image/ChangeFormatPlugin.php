@@ -33,9 +33,9 @@ class ChangeFormatPlugin extends BasePlugin
     );
 
     /**
-     * @var ImageMagickHelper
+     * @var array
      */
-    protected $helper;
+    protected $commandDefinitions;
 
     /**
      * @var string
@@ -48,7 +48,7 @@ class ChangeFormatPlugin extends BasePlugin
      */
     public function __construct(array $commandDefinitions = array())
     {
-        $this->helper = new ImageMagickHelper($commandDefinitions);
+        $this->commandDefinitions = $commandDefinitions;
     }
 
     /**
@@ -65,11 +65,12 @@ class ChangeFormatPlugin extends BasePlugin
             return;
         }
 
-        $img = $this->helper->createImagick($upload->getRealPath());
-        $this->helper->execute($img);
-
-        $tempnam = $this->tempDir . '/' . uniqid('cfp', true);
-        $img->writeImage($tempnam);
+        $helper = new ImageMagickHelper(
+            $upload->getRealPath(),
+            $this->tempDir,
+            $this->commandDefinitions
+        );
+        $tempnam = $helper->execute();
 
         $pinfo = pathinfo($upload->getUploadFilename());
 

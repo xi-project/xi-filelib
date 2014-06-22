@@ -68,28 +68,21 @@ class VersionPlugin extends LazyVersionProvider
      * @param  File  $file
      * @return array
      */
-    public function createTemporaryVersion(File $file, Version $version)
+    protected function doCreateTemporaryVersion(File $file, Version $version)
     {
         $retrieved = $this->storage->retrieve(
             $file->getResource()
         );
 
         $version = $this->versions[$version->getVersion()];
-
-        $img = $version->getHelper()->createImagick($retrieved);
-        $version->getHelper()->execute($img);
-        $tmp = $this->tempDir . '/' . uniqid('', true);
-
-        $img->writeImage($tmp);
-
-        return $tmp;
+        return $version->getHelper($retrieved, $this->tempDir)->execute();
     }
 
     /**
      * @param File $file
      * @return array
      */
-    public function createAllTemporaryVersions(File $file)
+    protected function doCreateAllTemporaryVersions(File $file)
     {
         $ret = array();
         foreach ($this->getProvidedVersions() as $version) {

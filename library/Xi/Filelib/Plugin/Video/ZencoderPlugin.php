@@ -228,7 +228,7 @@ class ZencoderPlugin extends VersionProvider
      * @return array
      * @throws RuntimeException
      */
-    public function createAllTemporaryVersions(File $file)
+    protected function doCreateAllTemporaryVersions(File $file)
     {
         $retrieved = $this->storage->retrieve($file->getResource());
 

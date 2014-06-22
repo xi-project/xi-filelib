@@ -67,7 +67,7 @@ class AmazonS3PublisherTest extends TestCase
 
         $this->vp
             ->expects($this->any())
-            ->method('getMimetype')
+            ->method('getMimeType')
             ->with($this->file, $this->version)
             ->will($this->returnValue('image/jpeg'));
 

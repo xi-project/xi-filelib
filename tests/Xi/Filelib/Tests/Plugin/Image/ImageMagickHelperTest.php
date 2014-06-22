@@ -20,98 +20,33 @@ class ImageMagickHelperTest extends TestCase
     /**
      * @test
      */
-    public function classShouldExist()
+    public function smoke()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Plugin\Image\ImageMagickHelper'));
+        $this->assertClassExists('Xi\Filelib\Plugin\Image\ImageMagickHelper');
     }
 
     /**
      * @test
      */
-    public function createImagickShouldReturnNewImagickObject()
-    {
-        $mock = new ImageMagickHelper();
-
-        $imagick = $mock->createImagick(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-
-        $this->assertInstanceOf('Imagick', $imagick);
-    }
-
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function createImagickShouldFailWithNonExistingFile()
-    {
-        $mock = new ImageMagickHelper();
-        $imagick = $mock->createImagick(ROOT_TESTS . '/data/illusive-manatee.jpg');
-
-        $this->assertInstanceOf('Imagick', $imagick);
-    }
-
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function createImagickShouldFailWithInvalidFile()
-    {
-        $mock = new ImageMagickHelper();
-        $imagick = $mock->createImagick(ROOT_TESTS . '/data/20th.wav');
-        $this->assertInstanceOf('Imagick', $imagick);
-    }
-
-    /**
-     * @test
-     */
-    public function addCommandShouldAddCommand()
-    {
-        $helper = new ImageMagickHelper();
-
-        $this->assertEquals(array(), $helper->getCommands());
-
-        $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
-        $mock->expects($this->once())->method('setHelper')->with($helper);
-
-        $helper->addCommand($mock);
-
-        $commands = $helper->getCommands();
-
-        $this->assertEquals(1, count($commands));
-
-        $this->assertSame($mock, array_pop($commands));
-
-        $mock2 = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
-        $helper->addCommand($mock2);
-
-        $this->assertEquals(2, sizeof($helper->getCommands()));
-    }
-
-    /**
-     * @test
-     */
-    public function executeShouldExecuteAllAddedCommands()
-    {
-        $helper = new ImageMagickHelper();
-
-        $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
-        $mock->expects($this->once())->method('execute');
-
-        $mock2 = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
-        $mock2->expects($this->once())->method('execute');
-
-        $helper->addCommand($mock);
-        $helper->addCommand($mock2);
-
-        $imagick = $this->getMock('\Imagick');
-        $helper->execute($imagick);
-    }
-
-    /**
-     * @test
-     */
-    public function instantiationShouldParseCommandDefinitions()
+    public function initializes()
     {
         $helper = new ImageMagickHelper(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp'
+        );
+
+        $this->assertFalse($helper->isExecuted());
+        $this->assertCount(0, $helper->getCommands());
+    }
+
+    /**
+     * @test
+     */
+    public function initializesWithCommands()
+    {
+        $helper = new ImageMagickHelper(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp',
             array(
                 array('setImageGreenPrimary', array(6, 66)),
                 array('setImageScene', 4),
@@ -123,6 +58,96 @@ class ImageMagickHelperTest extends TestCase
         $this->assertCount(4, $helper->getCommands());
     }
 
+
+    /**
+     * @test
+     */
+    public function addCommandShouldAddCommand()
+    {
+        $helper = new ImageMagickHelper(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp'
+        );
+
+        $this->assertCount(0, $helper->getCommands());
+
+        $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
+        $mock->expects($this->once())->method('setHelper')->with($helper);
+
+        $helper->addCommand($mock);
+
+        $commands = $helper->getCommands();
+        $this->assertCount(1, $commands);
+
+        $this->assertSame($mock, array_pop($commands));
+
+        $mock2 = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
+        $helper->addCommand($mock2);
+
+        $this->assertCount(2, $helper->getCommands());
+    }
+
+    /**
+     * @test
+     */
+    public function executeShouldExecuteAllAddedCommands()
+    {
+        $helper = new ImageMagickHelper(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp'
+        );
+
+        $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
+        $mock
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->isInstanceOf('Imagick'));
+
+        $mock2 = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
+        $mock2
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->isInstanceOf('Imagick'));
+
+        $helper->addCommand($mock);
+        $helper->addCommand($mock2);
+
+        $ret = $helper->execute();
+
+        $this->assertStringStartsWith(ROOT_TESTS . '/data/temp/', $ret);
+        $this->assertFileExists($ret);
+    }
+
+    /**
+     * @test
+     */
+    public function doubleExecutionIsForbidden()
+    {
+        $helper = new ImageMagickHelper(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp'
+        );
+
+        $helper->execute();
+
+        $this->setExpectedException('Xi\Filelib\RuntimeException');
+        $helper->execute();
+    }
+
+    /**
+     * @test
+     */
+    public function throwsUpWithInvalidSource()
+    {
+        $helper = new ImageMagickHelper(
+            ROOT_TESTS . '/data/illusive-manatee.jpg',
+            ROOT_TESTS . '/data/temp'
+        );
+
+        $this->setExpectedException('Xi\Filelib\RuntimeException');
+        $helper->execute();
+    }
+
     /**
      * @test
      */
@@ -132,7 +157,14 @@ class ImageMagickHelperTest extends TestCase
         $second = new ExecuteMethodCommand('setGranLusso');
         $third = new ExecuteMethodCommand('setAstroLusso');
 
-        $helper = new ImageMagickHelper(array($first, $second));
+        $helper = new ImageMagickHelper(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp',
+            array(
+                $first,
+                $second
+            )
+        );
 
         $this->assertSame($second, $helper->getCommand(1));
 

@@ -162,7 +162,7 @@ class WatermarkCommand extends AbstractCommand
     public function getWatermarkResource()
     {
         if (!$this->watermark) {
-            $this->watermark = $this->helper->createImagick($this->getWatermarkImage());
+            $this->watermark = new Imagick($this->getWatermarkImage());
         }
 
         return $this->watermark;

@@ -210,6 +210,17 @@ class TestCase extends \PHPUnit_Framework_TestCase
         return $this->getMock('Xi\Filelib\Publisher\ReversibleLinker');
     }
 
+    public function getMockedImagick($path = null)
+    {
+        if (!$path) {
+            $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        }
+        return $this
+            ->getMockBuilder('\Imagick')
+            ->setConstructorArgs(array($path))
+            ->getMock();
+    }
+
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
@@ -423,15 +434,26 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedVersionProvider($versions = array(), $lazy = false)
-    {
+    public function getMockedVersionProvider(
+        $versions = array(),
+        $lazy = false,
+        $methods = array(
+            'getMimeType',
+            'getApplicableStorable',
+            'getExtension',
+            'provideVersions',
+            'provideVersion',
+            'isApplicableTo',
+        )
+    ) {
         $class = $lazy ? 'Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider'
             : 'Xi\Filelib\Plugin\VersionProvider\VersionProvider';
 
         $versionProvider = $this
             ->getMockBuilder($class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->setMethods($methods)
+            ->getMockForAbstractClass();
 
         $versionProvider
             ->expects($this->any())

@@ -45,7 +45,7 @@ class OriginalVersionPlugin extends VersionProvider
         $this->tempDir = $filelib->getTempDir();
     }
 
-    public function createAllTemporaryVersions(File $file)
+    protected function doCreateAllTemporaryVersions(File $file)
     {
         $retrieved = $this->storage->retrieve($file->getResource());
         $tmp = $this->tempDir . '/' . uniqid('', true);

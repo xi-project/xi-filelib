@@ -45,16 +45,16 @@ class WatermarkCommandTest extends TestCase
                 array('x' => 0, 'y' => 0), array(800, 600), array(100, 100), 'nw', 0,
             ),
             array(
-                array('x' => 909, 'y' => 15), array(1024, 768), array(100, 20), 'ne', 15,
+                array('x' => 193, 'y' => 15), array(1024, 768), array(100, 20), 'ne', 15,
             ),
             array(
-                array('x' => 20, 'y' => 950), array(400, 1000), array(30, 30), 'sw', 20,
+                array('x' => 20, 'y' => 305), array(400, 1000), array(30, 30), 'sw', 20,
             ),
             array(
-                array('x' =>700, 'y' => 500), array(800, 600), array(50, 50), 'se', 50,
+                array('x' => 158, 'y' => 275), array(800, 600), array(50, 50), 'se', 50,
             ),
             array(
-                array('x' => -54, 'y' => 36), array(50, 50), array(100, 10), 'se', 4,
+                array('x' => 204, 'y' => 321), array(50, 50), array(100, 10), 'se', 4,
             ),
         );
     }
@@ -70,34 +70,11 @@ class WatermarkCommandTest extends TestCase
      */
     public function calculateCoordinatesShouldCalculateCoordinatesCorrectly($expected, $imagickO, $watermarkO, $position, $padding)
     {
-        $imagick = $this
-            ->getMockBuilder('\Imagick')
-            ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
-            ->getMock();
+        $command = new WatermarkCommand(
+            ROOT_TESTS . '/data/watermark.png', $position, $padding
+        );
 
-
-        $watermark = $this
-            ->getMockBuilder('\Imagick')
-            ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
-            ->getMock();
-
-        $helper = $this
-            ->getMockBuilder('Xi\Filelib\Plugin\Image\ImageMagickHelper')
-            ->setMethods(array('createImagick'))
-            ->setConstructorArgs(array())
-            ->getMock();
-
-        $helper->expects($this->any())->method('createImagick')->will($this->returnValue($watermark));
-
-        $watermark->expects($this->once())->method('getImageWidth')->will($this->returnValue($watermarkO[0]));
-        $watermark->expects($this->once())->method('getImageHeight')->will($this->returnValue($watermarkO[1]));
-
-        $imagick->expects($this->once())->method('getImageWidth')->will($this->returnValue($imagickO[0]));
-        $imagick->expects($this->once())->method('getImageHeight')->will($this->returnValue($imagickO[1]));
-
-
-        $command = new WatermarkCommand('tussi', $position, $padding);
-        $command->setHelper($helper);
+        $imagick = new Imagick(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
 
         $ret = $command->calculateCoordinates($imagick);
 
@@ -109,19 +86,11 @@ class WatermarkCommandTest extends TestCase
      */
     public function getWatermarkShouldReturnImagickResourceAndCacheIt()
     {
-        $watermark = $this->getMockBuilder('\Imagick')
-            ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
-            ->getMock();
-
-        $helper = $this->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
-        $helper
-            ->expects($this->once())
-            ->method('createImagick')
-            ->with('tussi')
-            ->will($this->returnValue($watermark));
-
-        $command = new WatermarkCommand('tussi', 'nw', 5);
-        $command->setHelper($helper);
+        $command = new WatermarkCommand(
+            ROOT_TESTS . '/data/watermark.png',
+            'nw',
+            5
+        );
 
         $cached = $command->getWatermarkResource();
         $this->assertInstanceOf('\Imagick', $cached);
@@ -133,78 +102,48 @@ class WatermarkCommandTest extends TestCase
     /**
      * @test
      */
-    public function destructWatermarkResourceShouldDestroyImagickResource()
+    public function destructClearsWatermarkResource()
     {
-        $watermark = $this->getMockBuilder('\Imagick')
-                        ->setMethods(array('destroy', 'clear'))
-                        ->getMock();
+        $command = new WatermarkCommand(
+            ROOT_TESTS . '/data/watermark.png',
+            'nw',
+            5
+        );
 
-        $watermark->expects($this->once())->method('clear');
+        $res = $command->getWatermarkResource();
 
-        $helper = $this
-            ->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
-        $helper->expects($this->once())->method('createImagick')->will($this->returnValue($watermark));
-
-        $command = new WatermarkCommand('tussi', 'se', 7);
-        $command->setHelper($helper);
-
-        $command->getWatermarkResource();
         $command->destroyWatermarkResource();
+
+        $this->assertNotSame($res, $command->getWatermarkResource());
+
+        unset($command);
     }
 
-    /**
-     * @test
-     */
-    public function destructWatermarkShouldDoNothingWhenImagickResourceDoesNotExist()
-    {
-        $watermark = $this
-            ->getMockBuilder('\Imagick')
-            ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
-            ->setMethods(array('destroy', 'clear'))
-            ->getMock();
-
-        $watermark->expects($this->never())->method('destroy');
-
-        $command = new WatermarkCommand('tussi', 'se', 7);
-        $command->destroyWatermarkResource();
-    }
 
     /**
      * @test
      */
     public function executeShouldExecuteCorrectly()
     {
-        $imagick = $this
-            ->getMockBuilder('\Imagick')
-            ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
-            ->getMock();
+        $imagick = $this->getMockedImagick(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
+        );
 
         $imagick->expects($this->any())->method('getImageWidth')->will($this->returnValue(1024));
         $imagick->expects($this->any())->method('getImageHeight')->will($this->returnValue(768));
 
-        $imagick->expects($this->once())
-                 ->method('compositeImage')
-                 ->with(
-                     $this->isInstanceOf('\Imagick'),
-                     $this->equalTo(Imagick::COMPOSITE_OVER),
-                     $this->equalTo(1),
-                     $this->equalTo(1)
-                  );
+        $imagick
+            ->expects($this->once())
+            ->method('compositeImage')
+            ->with(
+                $this->isInstanceOf('Imagick'),
+                Imagick::COMPOSITE_OVER,
+                $this->equalTo(1),
+                $this->equalTo(1)
+            );
 
-        $watermark = $this
-            ->getMockBuilder('\Imagick')
-            ->setConstructorArgs(array(ROOT_TESTS . '/data/self-lussing-manatee.jpg'))
-            ->getMock();
 
-        $watermark->expects($this->any())->method('getImageWidth')->will($this->returnValue(100));
-        $watermark->expects($this->any())->method('getImageHeight')->will($this->returnValue(10));
-
-        $helper = $this
-            ->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
-        $helper->expects($this->once())->method('createImagick')->will($this->returnValue($watermark));
-
-        $command = new WatermarkCommand('tussi', 'nw', 1);
-        $command->setHelper($helper);
+        $command = new WatermarkCommand(ROOT_TESTS . '/data/watermark.png', 'nw', 1);
         $command->execute($imagick);
     }
 }
