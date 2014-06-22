@@ -26,6 +26,11 @@ class Version
     /**
      * @var string
      */
+    private static $modifierSeparator = '@';
+
+    /**
+     * @var string
+     */
     private $version;
 
     /**
@@ -34,13 +39,20 @@ class Version
     private $params = array();
 
     /**
+     * @var array
+     */
+    private $modifiers = array();
+
+    /**
      * @param string $version
      * @param array $params
      */
-    public function __construct($version, array $params = array())
+    public function __construct($version, array $params = array(), $modifiers = array())
     {
-        $this->setVersion($version);
-        $this->setParams($params);
+        $this
+            ->setVersion($version)
+            ->setParams($params)
+            ->setModifiers($modifiers);
     }
 
     /**
@@ -58,6 +70,12 @@ class Version
     {
         return $this->params;
     }
+
+    public function getModifiers()
+    {
+        return $this->modifiers;
+    }
+
 
     /**
      * @param $rawVersion Version|string
@@ -79,7 +97,11 @@ class Version
      */
     private static function parse($rawVersion)
     {
-        $split = explode(self::$separator, $rawVersion);
+        $modifierSplit = explode(self::$modifierSeparator, $rawVersion);
+
+        $modifiers = (isset($modifierSplit[1])) ? explode(self::$paramSeparator, $modifierSplit[1]) : array();
+
+        $split = explode(self::$separator, $modifierSplit[0]);
 
         if (!isset($split[1])) {
             return new Version($split[0]);
@@ -101,7 +123,7 @@ class Version
             list ($key, $value) = $splitKeyValue;
             $params[$key] = $value;
         }
-        return new Version($split[0], $params);
+        return new Version($split[0], $params, $modifiers);
     }
 
     /**
@@ -109,22 +131,30 @@ class Version
      */
     public function toString()
     {
-        if (!$this->params) {
+        if (!$this->params && !$this->modifiers) {
             return $this->version;
         }
 
         ksort($this->params);
+        sort($this->modifiers);
 
         $paramsStr = array();
         foreach ($this->params as $key => $value) {
             $paramsStr[] = $key . self::$paramKeyValueSeparator . $value;
         }
 
-        return $this->version . self::$separator . implode(self::$paramSeparator, $paramsStr);
+        $ret = $this->version . self::$separator . implode(self::$paramSeparator, $paramsStr);
+
+        if ($modifiers = $this->getModifiers()) {
+            $ret .= self::$modifierSeparator . implode(self::$paramSeparator, $modifiers);
+        };
+
+        return $ret;
     }
 
     /**
      * @param string $version
+     * @return Version
      * @throws InvalidVersionException
      */
     private function setVersion($version)
@@ -139,17 +169,36 @@ class Version
             );
         }
         $this->version = $version;
+
+        return $this;
     }
 
     /**
      * @param array $params
+     * @return Version
      */
     private function setParams(array $params)
     {
         foreach ($params as $key => $value) {
             $this->setParam($key, $value);
         }
+
+        return $this;
     }
+
+    /**
+     * @param array $modifiers
+     * @return Version
+     */
+    private function setModifiers(array $modifiers)
+    {
+        foreach ($modifiers as $modifier) {
+            $this->addModifier($modifier);
+        }
+
+        return $this;
+    }
+
 
     /**
      * @param string $key
@@ -179,5 +228,24 @@ class Version
         }
 
         $this->params[$key] = $value;
+    }
+
+    /**
+     * @param string $modifier
+     * @throws InvalidVersionException
+     */
+    private function addModifier($modifier)
+    {
+        if (!preg_match(self::PATTERN_VALUE, $modifier)) {
+            throw new InvalidVersionException(
+                sprintf(
+                    "Parameter value '%s' does not match the pattern '%s'",
+                    $modifier,
+                    self::PATTERN_VALUE
+                )
+            );
+        }
+
+        $this->modifiers[] = $modifier;
     }
 }

@@ -19,12 +19,26 @@ class VersionTest extends \PHPUnit_Framework_TestCase
             array(
                 'tenhunen',
                 array('imaiseepi' => 'pannaanin'),
+                array(),
                 'tenhunen::imaiseepi:pannaanin'
             ),
             array(
                 'tenhunen',
                 array('imaiseepi' => 'pannaanin', 'anolan' => 'sankari'),
+                array(),
                 'tenhunen::anolan:sankari;imaiseepi:pannaanin'
+            ),
+            array(
+                'retina-tenhunen',
+                array('imaiseepi' => 'pannaanin', 'mahtava' => 'reso'),
+                array('x2'),
+                'retina-tenhunen::imaiseepi:pannaanin;mahtava:reso@x2'
+            ),
+            array(
+                'retina-tenhunen',
+                array('imaiseepi' => 'pannaanin', 'mahtava' => 'reso'),
+                array('x2', 'mega-tenhunen'),
+                'retina-tenhunen::imaiseepi:pannaanin;mahtava:reso@mega-tenhunen;x2'
             ),
         );
     }
@@ -33,9 +47,9 @@ class VersionTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider provideVersionOptions
      */
-    public function convertsToString($versionName, $options, $expected)
+    public function convertsToString($versionName, $options, $modifiers, $expected)
     {
-        $version = new Version($versionName, $options);
+        $version = new Version($versionName, $options, $modifiers);
         $this->assertEquals($expected, $version->toString());
     }
 
@@ -64,7 +78,10 @@ class VersionTest extends \PHPUnit_Framework_TestCase
             array('lussogrande::;tusso;nusso:6500', false),
             array('lussogrande::nusso:-6000;tusso:_6500', true),
             array('lussogrande::nusso:-6000;tusso:&_6500', false),
+            array('lussogrande::nusso:-6000;&tusso:_6500', false),
             array('x::y:1;z:0', true),
+            array('lussogrande::nusso:-6000;tusso:_6500@x2;y5', true),
+            array('lussogrande::nusso:-6000;tusso:_6500@@x2:y5', false),
         );
 
     }

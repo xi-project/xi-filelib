@@ -11,6 +11,7 @@ namespace Xi\Filelib\Tests\Plugin\VersionProvider;
 
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Tests\TestCase;
+use Xi\Filelib\Version;
 
 class OriginalVersionPluginTest extends TestCase
 {
@@ -39,4 +40,29 @@ class OriginalVersionPluginTest extends TestCase
         $plugin = new OriginalVersionPlugin();
         $this->assertTrue($plugin->isSharedResourceAllowed());
     }
+
+    /**
+     * @return array
+     */
+    public function provideVersionsAndValidities()
+    {
+        return array(
+            array('originale', true),
+            array('originalle', false),
+            array('originale::param:value', false),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideVersionsAndValidities
+     */
+    public function checksVersionValidity($version, $expected)
+    {
+        $version = Version::get($version);
+        $plugin = new OriginalVersionPlugin('originale');
+        $this->assertEquals($expected, $plugin->isValidVersion($version));
+    }
+
+
 }

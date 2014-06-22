@@ -268,10 +268,6 @@ class File extends BaseVersionable implements Identifiable, Versionable
      */
     public static function create(array $data = array())
     {
-        if (isset($data['versions'])) {
-            throw new \Exception('Gaa gaa');
-        }
-
         $defaults = array(
             'id' => null,
             'folder_id' => null,

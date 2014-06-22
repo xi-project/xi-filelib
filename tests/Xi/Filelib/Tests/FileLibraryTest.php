@@ -32,7 +32,14 @@ class FileLibraryTest extends TestCase
     {
         parent::tearDown();
         chmod($this->dirname, 0755);
+    }
 
+    /**
+     * @test
+     */
+    public function correctVersion()
+    {
+        $this->assertEquals('0.12.0-dev', FileLibrary::VERSION);
     }
 
     /**

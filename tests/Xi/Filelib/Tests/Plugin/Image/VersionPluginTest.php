@@ -220,8 +220,6 @@ class VersionPluginTest extends TestCase
         $this->assertSame('jpg', $ret);
     }
 
-
-
     /**
      * @test
      */
@@ -229,5 +227,36 @@ class VersionPluginTest extends TestCase
     {
         $filelib = $this->getMockedFilelib();
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue('lussutushovi'));
+    }
+
+    /**
+     * @return array
+     */
+    public function provideVersionsAndValidities()
+    {
+        return array(
+            array('valid-version', true),
+            array('valid-versionn', false),
+            array('valid-version::lusso:tusso', false),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideVersionsAndValidities
+     */
+    public function checksVersionValidity($version, $expected)
+    {
+        $plugin = new VersionPlugin(
+            array(
+                'valid-version' => array(
+                    array(),
+                    null
+                )
+            )
+        );
+
+        $version = Version::get($version);
+        $this->assertEquals($expected, $plugin->isValidVersion($version));
     }
 }

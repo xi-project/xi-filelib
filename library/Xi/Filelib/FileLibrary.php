@@ -37,6 +37,8 @@ use Xi\Filelib\Storage\Storage;
 
 class FileLibrary
 {
+    const VERSION = '0.12.0-dev';
+
     /**
      * @var EventDispatcherInterface
      */

@@ -456,4 +456,29 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         return $details;
     }
 
+    /**
+     * @return array
+     */
+    public function provideVersionsAndValidities()
+    {
+        return array(
+            array('pygmi', true),
+            array('watussi', true),
+            array('watussi::xoo:xoo', false),
+            array('watussix', false),
+            array('watussi_thumbnail', true),
+            array('watussi__thumbnail', false),
+            array('pygmi_thumbnailx', false),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideVersionsAndValidities
+     */
+    public function checksVersionValidity($version, $expected)
+    {
+        $version = Version::get($version);
+        $this->assertEquals($expected, $this->plugin->isValidVersion($version));
+    }
 }
