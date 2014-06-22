@@ -218,7 +218,7 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
         $vp = $this->getMockedVersionProvider(array('xooxer'), $lazy);
         $vp
             ->expects($this->any())
-            ->method('getApplicableStorable')
+            ->method('getApplicableVersionable')
             ->will($this->returnValue($sharedVersions ? $resource : $file));
 
         $vp->expects($this->any())

@@ -3,12 +3,12 @@
 namespace Xi\Filelib\Tests;
 
 use Xi\Filelib\Version;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Storage\Versionable;
 
-abstract class BaseStorableTestCase extends BaseIdentifiableTestCase
+abstract class BaseVersionableTestCase extends BaseIdentifiableTestCase
 {
     /**
-     * @return Storable
+     * @return Versionable
      */
     public function getInstance($args = array())
     {

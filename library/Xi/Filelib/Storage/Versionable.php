@@ -11,7 +11,7 @@ namespace Xi\Filelib\Storage;
 
 use Xi\Filelib\Version;
 
-interface Storable
+interface Versionable
 {
     /**
      * @return mixed

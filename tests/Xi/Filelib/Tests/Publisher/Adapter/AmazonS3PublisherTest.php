@@ -79,7 +79,7 @@ class AmazonS3PublisherTest extends TestCase
 
         $this->vp
             ->expects($this->any())
-            ->method('getApplicableStorable')
+            ->method('getApplicableVersionable')
             ->with($this->file)
             ->will($this->returnValue($this->resource));
 

@@ -55,24 +55,24 @@ class RetrievedCacheTest extends TestCase
     {
         $id = 'tusso con lusso';
         $version = Version::get('tenhunizer');
-        $storable = File::create(array('id' => $id));
-        $storable2 = Resource::create(array('id' => $id));
+        $versionable = File::create(array('id' => $id));
+        $versionable2 = Resource::create(array('id' => $id));
 
-        $this->assertFalse($this->cache->getVersion($storable, $version));
+        $this->assertFalse($this->cache->getVersion($versionable, $version));
 
-        $this->cache->setVersion($storable, $version, $this->retrieved);
-        $this->cache->setVersion($storable2, $version, $this->retrieved2);
+        $this->cache->setVersion($versionable, $version, $this->retrieved);
+        $this->cache->setVersion($versionable2, $version, $this->retrieved2);
 
-        $this->assertSame($this->retrieved, $this->cache->getVersion($storable, $version));
-        $this->assertSame($this->retrieved2, $this->cache->getVersion($storable2, $version));
+        $this->assertSame($this->retrieved, $this->cache->getVersion($versionable, $version));
+        $this->assertSame($this->retrieved2, $this->cache->getVersion($versionable2, $version));
 
         $this->assertNotSame(
-            $this->cache->getVersion($storable, $version),
-            $this->cache->getVersion($storable2, $version)
+            $this->cache->getVersion($versionable, $version),
+            $this->cache->getVersion($versionable2, $version)
         );
 
-        $this->cache->deleteVersion($storable, $version);
-        $this->assertFalse($this->cache->getVersion($storable, $version));
-        $this->assertSame($this->retrieved2, $this->cache->getVersion($storable2, $version));
+        $this->cache->deleteVersion($versionable, $version);
+        $this->assertFalse($this->cache->getVersion($versionable, $version));
+        $this->assertSame($this->retrieved2, $this->cache->getVersion($versionable2, $version));
     }
 }

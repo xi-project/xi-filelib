@@ -81,7 +81,7 @@ class AmazonS3PublisherAdapter implements PublisherAdapter
                 'Bucket' => $this->bucket,
                 'Key'    => $linker->getLink($file, $version, $versionProvider->getExtension($file, $version)),
                 'SourceFile' => $this->storage->retrieveVersion(
-                    $versionProvider->getApplicableStorable($file),
+                    $versionProvider->getApplicableVersionable($file),
                     $version
                 ),
                 'ACL' => CannedAcl::PUBLIC_READ,

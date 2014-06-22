@@ -91,7 +91,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
         $retrieved = $this->storage->retrieveVersion(
-            $versionProvider->getApplicableStorable($file),
+            $versionProvider->getApplicableVersionable($file),
             $version
         );
 
@@ -137,7 +137,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
             } else {
                 symlink(
                     $this->storage->retrieveVersion(
-                        $versionProvider->getApplicableStorable($file),
+                        $versionProvider->getApplicableVersionable($file),
                         $version
                     ),
                     $link

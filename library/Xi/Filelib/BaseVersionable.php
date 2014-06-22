@@ -11,7 +11,7 @@ namespace Xi\Filelib;
 
 use Xi\Filelib\Version;
 
-abstract class BaseStorable extends BaseIdentifiable
+abstract class BaseVersionable extends BaseIdentifiable
 {
     /**
      * Returns currently created versions

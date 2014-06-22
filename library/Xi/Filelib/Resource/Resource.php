@@ -10,15 +10,15 @@
 namespace Xi\Filelib\Resource;
 
 use DateTime;
-use Xi\Filelib\BaseStorable;
+use Xi\Filelib\BaseVersionable;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Storage\Versionable;
 
 /**
  * Resource
  */
-class Resource extends BaseStorable implements Identifiable, Storable
+class Resource extends BaseVersionable implements Identifiable, Versionable
 {
     /**
      * @var string

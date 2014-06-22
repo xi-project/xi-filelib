@@ -10,13 +10,13 @@
 namespace Xi\Filelib\File;
 
 use DateTime;
-use Xi\Filelib\BaseStorable;
+use Xi\Filelib\BaseVersionable;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Storage\Versionable;
 
-class File extends BaseStorable implements Identifiable, Storable
+class File extends BaseVersionable implements Identifiable, Versionable
 {
     const STATUS_RAW = 1;
     const STATUS_COMPLETED = 2;

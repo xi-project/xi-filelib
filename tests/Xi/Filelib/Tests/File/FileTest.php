@@ -6,9 +6,9 @@ use DateTime;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Tests\BaseStorableTestCase;
+use Xi\Filelib\Tests\BaseVersionableTestCase;
 
-class FileTest extends BaseStorableTestCase
+class FileTest extends BaseVersionableTestCase
 {
     /**
      * @test

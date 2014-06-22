@@ -101,7 +101,7 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
     ) {
         $this->versionProvider
             ->expects($this->atLeastOnce())
-            ->method('getApplicableStorable')
+            ->method('getApplicableVersionable')
             ->will($this->returnValue($allowSharedVersions ? $file->getResource() : $file));
 
         if ($allowSharedVersions) {

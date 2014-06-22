@@ -33,25 +33,25 @@ class RetrievedCache
     }
 
     /**
-     * @param Storable $storable
+     * @param Versionable $versionable
      * @param Version $version
      * @return Retrieved
      */
-    public function getVersion(Storable $storable, Version $version)
+    public function getVersion(Versionable $versionable, Version $version)
     {
-        return (isset($this->retrievedVersions[get_class($storable)][$storable->getId()][$version->toString()]))
-            ? $this->retrievedVersions[get_class($storable)][$storable->getId()][$version->toString()] : false;
+        return (isset($this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()]))
+            ? $this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()] : false;
     }
 
-    public function setVersion(Storable $storable, Version $version, Retrieved $retrieved)
+    public function setVersion(Versionable $versionable, Version $version, Retrieved $retrieved)
     {
-        $this->retrievedVersions[get_class($storable)][$storable->getId()][$version->toString()] = $retrieved;
+        $this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()] = $retrieved;
     }
 
-    public function deleteVersion(Storable $storable, Version $version)
+    public function deleteVersion(Versionable $versionable, Version $version)
     {
-        if (isset($this->retrievedVersions[get_class($storable)][$storable->getId()][$version->toString()])) {
-            unset($this->retrievedVersions[get_class($storable)][$storable->getId()][$version->toString()]);
+        if (isset($this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()])) {
+            unset($this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()]);
         }
     }
 }

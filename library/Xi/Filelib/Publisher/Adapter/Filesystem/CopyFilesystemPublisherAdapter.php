@@ -54,7 +54,7 @@ class CopyFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter impl
             }
 
             $tmp = $this->storage->retrieveVersion(
-                $versionProvider->getApplicableStorable($file),
+                $versionProvider->getApplicableVersionable($file),
                 $version
             );
 

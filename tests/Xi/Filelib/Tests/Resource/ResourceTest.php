@@ -5,9 +5,9 @@ namespace Xi\Filelib\Tests\File;
 use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
 use DateTime;
-use Xi\Filelib\Tests\BaseStorableTestCase;
+use Xi\Filelib\Tests\BaseVersionableTestCase;
 
-class ResourceTest extends BaseStorableTestCase
+class ResourceTest extends BaseVersionableTestCase
 {
 
     public function getClassName()

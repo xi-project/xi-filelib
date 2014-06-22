@@ -60,7 +60,7 @@ abstract class LazyVersionProvider extends VersionProvider
             throw new InvalidVersionException('Invalid version');
         }
 
-        $versionable = $this->getApplicableStorable($file);
+        $versionable = $this->getApplicableVersionable($file);
         $versionable->addVersion($version);
         $tmp = $this->createTemporaryVersion($file, $version);
         $this->storage->storeVersion($versionable, $version, $tmp);

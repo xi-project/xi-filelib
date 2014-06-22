@@ -142,7 +142,7 @@ class Renderer
         }
 
         $provider = $this->profiles->getVersionProvider($file, $version);
-        $versionable = $provider->getApplicableStorable($file);
+        $versionable = $provider->getApplicableVersionable($file);
 
         if ($versionable->hasVersion($version)) {
             return true;
@@ -170,7 +170,7 @@ class Renderer
     private function retrieve(File $file, $version)
     {
         return $this->storage->retrieveVersion(
-            $this->profiles->getVersionProvider($file, $version)->getApplicableStorable($file),
+            $this->profiles->getVersionProvider($file, $version)->getApplicableVersionable($file),
             $version
         );
     }

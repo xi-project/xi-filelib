@@ -65,7 +65,7 @@ class AcceleratedRendererTest extends RendererTestCase
         $vp = $this->getMockedVersionProvider();
         $vp
             ->expects($this->any())
-            ->method('getApplicableStorable')
+            ->method('getApplicableVersionable')
             ->will($this->returnValue($sharedVersions ? $resource : $file));
 
         $this->pm
@@ -165,7 +165,7 @@ class AcceleratedRendererTest extends RendererTestCase
         $vp = $this->getMockedVersionProvider();
         $vp
             ->expects($this->any())
-            ->method('getApplicableStorable')
+            ->method('getApplicableVersionable')
             ->will($this->returnValue($resource));
 
         $vp->expects($this->any())

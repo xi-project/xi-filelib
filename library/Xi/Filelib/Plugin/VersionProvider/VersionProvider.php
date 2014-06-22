@@ -17,7 +17,7 @@ use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Storage\Versionable;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\File\MimeType;
@@ -100,7 +100,7 @@ abstract class VersionProvider extends BasePlugin
 
     public function provideAllVersions(File $file)
     {
-        $versionable = $this->getApplicableStorable($file);
+        $versionable = $this->getApplicableVersionable($file);
         $versions = $this->createAllTemporaryVersions($file);
 
         foreach ($versions as $version => $tmp) {
@@ -164,20 +164,20 @@ abstract class VersionProvider extends BasePlugin
      *
      * @param File $file
      */
-    public function deleteProvidedVersions(Storable $storable)
+    public function deleteProvidedVersions(Versionable $versionable)
     {
         foreach ($this->getProvidedVersions() as $version) {
             $version = Version::get($version);
-            $storable->removeVersion($version);
-            if ($this->storage->versionExists($storable, $version)) {
-                $this->storage->deleteVersion($storable, $version);
+            $versionable->removeVersion($version);
+            if ($this->storage->versionExists($versionable, $version)) {
+                $this->storage->deleteVersion($versionable, $version);
             }
         }
     }
 
     public function areProvidedVersionsCreated(File $file)
     {
-        $versionable = $this->getApplicableStorable($file);
+        $versionable = $this->getApplicableVersionable($file);
 
         $count = 0;
         foreach ($this->getProvidedVersions() as $version) {
@@ -203,7 +203,7 @@ abstract class VersionProvider extends BasePlugin
     public function getMimeType(File $file, Version $version)
     {
         $retrieved = $this->storage->retrieveVersion(
-            $this->getApplicableStorable($file),
+            $this->getApplicableVersionable($file),
             $version
         );
 
@@ -228,9 +228,9 @@ abstract class VersionProvider extends BasePlugin
      * Returns the applicable storable for this plugin
      *
      * @param File $file
-     * @return Storable
+     * @return Versionable
      */
-    public function getApplicableStorable(File $file)
+    public function getApplicableVersionable(File $file)
     {
         return ($this->areSharedVersionsAllowed()) ? $file->getResource() : $file;
     }

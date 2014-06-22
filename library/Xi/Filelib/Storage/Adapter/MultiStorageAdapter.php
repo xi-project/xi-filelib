@@ -14,7 +14,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\LogicException;
 use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Storage\Versionable;
 use Xi\Filelib\Version;
 
 class MultiStorageAdapter implements StorageAdapter
@@ -94,10 +94,10 @@ class MultiStorageAdapter implements StorageAdapter
         }
     }
 
-    public function storeVersion(Storable $storable, Version $version, $tempFile)
+    public function storeVersion(Versionable $versionable, Version $version, $tempFile)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->storeVersion($storable, $version, $tempFile);
+            $storage->storeVersion($versionable, $version, $tempFile);
         }
     }
 
@@ -106,9 +106,9 @@ class MultiStorageAdapter implements StorageAdapter
         return $this->getSessionStorage()->retrieve($resource);
     }
 
-    public function retrieveVersion(Storable $storable, Version $version)
+    public function retrieveVersion(Versionable $versionable, Version $version)
     {
-        return $this->getSessionStorage()->retrieveVersion($storable, $version);
+        return $this->getSessionStorage()->retrieveVersion($versionable, $version);
     }
 
     public function delete(Resource $resource)
@@ -118,10 +118,10 @@ class MultiStorageAdapter implements StorageAdapter
         }
     }
 
-    public function deleteVersion(Storable $storable, Version $version)
+    public function deleteVersion(Versionable $versionable, Version $version)
     {
         foreach ($this->getStorages() as $storage) {
-            $storage->deleteVersion($storable, $version);
+            $storage->deleteVersion($versionable, $version);
         }
     }
 
@@ -130,8 +130,8 @@ class MultiStorageAdapter implements StorageAdapter
         return $this->getSessionStorage()->exists($resource);
     }
 
-    public function versionExists(Storable $storable, Version $version)
+    public function versionExists(Versionable $versionable, Version $version)
     {
-        return $this->getSessionStorage()->versionExists($storable, $version);
+        return $this->getSessionStorage()->versionExists($versionable, $version);
     }
 }
