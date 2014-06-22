@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Event;
 
 use Xi\Filelib\Event\RenderEvent;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Renderer\Response;
 use Symfony\Component\HttpFoundation\Response as AdaptedResponse;
 

@@ -12,7 +12,7 @@ namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\FileLibrary;

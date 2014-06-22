@@ -13,7 +13,7 @@ use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Storage\Storage;

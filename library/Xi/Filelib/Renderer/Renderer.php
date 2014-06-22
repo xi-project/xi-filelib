@@ -9,7 +9,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Storage;

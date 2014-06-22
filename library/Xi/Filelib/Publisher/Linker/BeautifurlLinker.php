@@ -14,7 +14,7 @@ use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 /**
  * Creates beautifurls(tm) from the virtual directory structure and file names.

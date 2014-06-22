@@ -11,7 +11,7 @@ namespace Xi\Filelib\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 
 class VersionProviderEvent extends Event

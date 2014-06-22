@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;

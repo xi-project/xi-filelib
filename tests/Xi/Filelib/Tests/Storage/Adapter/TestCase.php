@@ -10,7 +10,7 @@ use Xi\Filelib\File\File;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use DateTime;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {

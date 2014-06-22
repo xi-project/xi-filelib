@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\Adapter\AmazonS3PublisherAdapter;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Tests\TestCase;

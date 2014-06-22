@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\Linker\SequentialLinker;
 use Xi\Filelib\Folder\Folder;
 

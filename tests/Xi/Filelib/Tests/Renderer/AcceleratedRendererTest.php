@@ -5,7 +5,7 @@ namespace Xi\Filelib\Tests\Renderer;
 use Xi\Filelib\Renderer\AcceleratedRenderer;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Renderer\Events;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
 
 class AcceleratedRendererTest extends RendererTestCase

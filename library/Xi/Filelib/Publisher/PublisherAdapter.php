@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\Attacher;

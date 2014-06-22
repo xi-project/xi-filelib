@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Storage;
 
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 class RetrievedCache
 {

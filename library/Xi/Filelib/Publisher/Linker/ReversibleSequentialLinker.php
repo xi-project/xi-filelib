@@ -12,7 +12,7 @@ namespace Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\ReversibleLinker;
 
 /**

@@ -12,7 +12,7 @@ namespace Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\File\File;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Publisher\Linker;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 /**
  * Base class for sequential linkers

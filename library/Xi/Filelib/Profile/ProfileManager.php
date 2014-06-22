@@ -12,7 +12,7 @@ namespace Xi\Filelib\Profile;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileProfileEvent;

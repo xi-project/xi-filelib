@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib;
 
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 abstract class BaseStorable extends BaseIdentifiable
 {

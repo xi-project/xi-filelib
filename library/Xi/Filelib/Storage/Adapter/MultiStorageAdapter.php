@@ -15,7 +15,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\LogicException;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Storage\Storable;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 class MultiStorageAdapter implements StorageAdapter
 {

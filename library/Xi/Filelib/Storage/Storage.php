@@ -17,7 +17,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Exception;
 use Xi\Filelib\Storage\FileIOException;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 class Storage implements Attacher
 {

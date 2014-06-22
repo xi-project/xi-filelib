@@ -16,7 +16,7 @@ use Xi\Filelib\Event\PluginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Events;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 class FileProfile implements EventSubscriberInterface
 {

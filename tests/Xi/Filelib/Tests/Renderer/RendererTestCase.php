@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\Renderer;
 
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Renderer\Renderer;
 use Xi\Filelib\Renderer\Events;
 use Xi\Filelib\Authorization\AccessDeniedException;

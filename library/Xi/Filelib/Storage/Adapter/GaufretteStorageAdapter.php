@@ -18,7 +18,7 @@ use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdC
 use Gaufrette\Filesystem;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Storage\Storable;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 /**
  * Stores files in a filesystem

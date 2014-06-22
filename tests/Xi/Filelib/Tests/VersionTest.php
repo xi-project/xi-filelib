@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Plugin\VersionProvider;
+namespace Xi\Filelib\Tests;
 
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 class VersionTest extends \PHPUnit_Framework_TestCase
 {
@@ -76,7 +76,7 @@ class VersionTest extends \PHPUnit_Framework_TestCase
     public function invalidVersionsThrowUp($identifier, $valid)
     {
         if (!$valid) {
-            $this->setExpectedException('Xi\Filelib\Plugin\VersionProvider\InvalidVersionException');
+            $this->setExpectedException('Xi\Filelib\InvalidVersionException');
         }
         $version = Version::get($identifier);
 

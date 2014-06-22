@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Tests\Plugin\VersionProvider;
 
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
@@ -282,7 +282,7 @@ class VersionProviderTest extends TestCase
         $this->storage->expects($this->exactly(2))->method('storeVersion')
                 ->with(
                     $sharedVersionsAllowed ? $this->isInstanceOf('Xi\Filelib\Resource\Resource') : $this->isInstanceOf('Xi\Filelib\File\File'),
-                    $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version'),
+                    $this->isInstanceOf('Xi\Filelib\Version'),
                     $this->isType('string')
                 );
 
@@ -374,7 +374,7 @@ class VersionProviderTest extends TestCase
             ->method('versionExists')
             ->with(
                 $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
-                $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version')
+                $this->isInstanceOf('Xi\Filelib\Version')
             )
             ->will($this->onConsecutiveCalls(false, true));
 
@@ -449,7 +449,7 @@ class VersionProviderTest extends TestCase
             ->expects($this->exactly(2))->method('versionExists')
             ->with(
                 $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
-                $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version')
+                $this->isInstanceOf('Xi\Filelib\Version')
             )
             ->will($this->onConsecutiveCalls(true, false));
 
@@ -457,7 +457,7 @@ class VersionProviderTest extends TestCase
             ->method('deleteVersion')
             ->with(
                 $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
-                $this->isInstanceOf('Xi\Filelib\Plugin\VersionProvider\Version')
+                $this->isInstanceOf('Xi\Filelib\Version')
             );
 
         $resource = Resource::create(array('mimetype' => 'image/png'));

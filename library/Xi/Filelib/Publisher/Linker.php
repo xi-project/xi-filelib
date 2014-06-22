@@ -11,7 +11,7 @@ namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Attacher;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 /**
  * Linker interface

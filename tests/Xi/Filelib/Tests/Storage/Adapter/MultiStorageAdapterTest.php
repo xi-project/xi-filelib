@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Storage\Adapter\MultiStorageAdapter;
 use Xi\Filelib\Resource\Resource;
 

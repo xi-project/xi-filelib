@@ -6,7 +6,7 @@ use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\ArbitraryVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Publisher\Linker\ReversibleCreationTimeLinker;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\Events as VersionProviderEvents;
 use Xi\Filelib\Event\VersionProviderEvent;

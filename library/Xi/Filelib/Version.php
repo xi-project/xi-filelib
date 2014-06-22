@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Plugin\VersionProvider;
+namespace Xi\Filelib;
 
 class Version
 {

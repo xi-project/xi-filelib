@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Storage;
 
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 interface Storable
 {

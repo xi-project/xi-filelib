@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Publisher\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\Linker\CreationTimeLinker;
 use DateTime;
 

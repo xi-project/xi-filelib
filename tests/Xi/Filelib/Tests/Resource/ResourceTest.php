@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\File;
 
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
 use DateTime;
 use Xi\Filelib\Tests\BaseStorableTestCase;

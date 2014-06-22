@@ -23,7 +23,7 @@ use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\File\MimeType;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**

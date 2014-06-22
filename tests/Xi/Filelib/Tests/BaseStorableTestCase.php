@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests;
 
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 use Xi\Filelib\Storage\Storable;
 
 abstract class BaseStorableTestCase extends BaseIdentifiableTestCase

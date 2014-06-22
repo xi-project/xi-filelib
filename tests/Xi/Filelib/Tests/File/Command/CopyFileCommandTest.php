@@ -10,7 +10,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Command\CopyFileCommand;
 use Xi\Filelib\Events;
 use Xi\Filelib\Resource\ResourceRepository;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 {

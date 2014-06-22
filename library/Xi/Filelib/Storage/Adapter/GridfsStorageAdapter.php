@@ -17,7 +17,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Storage\Storable;
-use Xi\Filelib\Plugin\VersionProvider\Version;
+use Xi\Filelib\Version;
 
 /**
  * Stores files in MongoDB's GridFS filesystem
