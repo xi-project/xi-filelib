@@ -236,8 +236,10 @@ class VersionPluginTest extends TestCase
     {
         return array(
             array('valid-version', true),
+            array('valid-version@mod', false),
             array('valid-versionn', false),
             array('valid-version::lusso:tusso', false),
+            array('valid-version::lusso:tusso@xoo', false),
         );
     }
 
@@ -247,6 +249,10 @@ class VersionPluginTest extends TestCase
      */
     public function checksVersionValidity($version, $expected)
     {
+        if (!$expected) {
+            $this->setExpectedException('Xi\Filelib\InvalidVersionException');
+        }
+
         $plugin = new VersionPlugin(
             array(
                 'valid-version' => array(
@@ -257,6 +263,8 @@ class VersionPluginTest extends TestCase
         );
 
         $version = Version::get($version);
-        $this->assertEquals($expected, $plugin->isValidVersion($version));
+        $version2 = $plugin->ensureValidVersion($version);
+        $this->assertSame($version, $version2);
+        $this->assertInstanceOf('Xi\Filelib\Version', $version2);
     }
 }

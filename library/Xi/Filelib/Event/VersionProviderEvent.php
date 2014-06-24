@@ -35,9 +35,12 @@ class VersionProviderEvent extends Event
     {
         $this->provider = $provider;
         $this->file = $file;
-        $this->versions = array_map(function ($version) {
-            return Version::get($version);
-        }, $versions);
+        $this->versions = array_map(
+            function ($version) {
+                return Version::get($version);
+            },
+            $versions
+        );
     }
 
     /**

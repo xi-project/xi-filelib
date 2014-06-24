@@ -48,6 +48,7 @@ class OriginalVersionPluginTest extends TestCase
     {
         return array(
             array('originale', true),
+            array('originale@x2', false),
             array('originalle', false),
             array('originale::param:value', false),
         );
@@ -59,10 +60,16 @@ class OriginalVersionPluginTest extends TestCase
      */
     public function checksVersionValidity($version, $expected)
     {
-        $version = Version::get($version);
-        $plugin = new OriginalVersionPlugin('originale');
-        $this->assertEquals($expected, $plugin->isValidVersion($version));
-    }
+        if (!$expected) {
+            $this->setExpectedException('Xi\Filelib\InvalidVersionException');
+        }
 
+        $plugin = new OriginalVersionPlugin('originale');
+
+        $version = Version::get($version);
+        $version2 = $plugin->ensureValidVersion($version);
+        $this->assertSame($version, $version2);
+        $this->assertInstanceOf('Xi\Filelib\Version', $version2);
+    }
 
 }

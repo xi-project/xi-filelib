@@ -68,6 +68,13 @@ class AcceleratedRendererTest extends RendererTestCase
             ->method('getApplicableVersionable')
             ->will($this->returnValue($sharedVersions ? $resource : $file));
 
+        $vp
+            ->expects($this->any())
+            ->method('ensureValidVersion')
+            ->with($this->isInstanceOf('Xi\Filelib\Version'))
+            ->will($this->returnArgument(0));
+
+
         $this->pm
             ->expects($this->any())
             ->method('getVersionProvider')
@@ -169,9 +176,9 @@ class AcceleratedRendererTest extends RendererTestCase
             ->will($this->returnValue($resource));
 
         $vp->expects($this->any())
-            ->method('isValidVersion')
+            ->method('ensureValidVersion')
             ->with($this->equalTo(Version::get('xooxer')))
-            ->will($this->returnValue(true));
+            ->will($this->returnArgument(0));
 
         $this->pm
             ->expects($this->any())

@@ -127,38 +127,6 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
     }
 
     /**
-     * @test
-     */
-    public function versionNotFoundShouldLeadTo404()
-    {
-        $file = $this->getMockedFile();
-
-        $this->ed
-            ->expects($this->at(0))
-            ->method('dispatch')
-            ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
-
-        $this->ed
-            ->expects($this->at(1))
-            ->method('dispatch')
-            ->with(Events::RENDERER_RENDER, $this->isInstanceOf('Xi\Filelib\Event\RenderEvent'));
-
-        $this->pm
-            ->expects($this->once())
-            ->method('hasVersion')
-            ->with($file, Version::get('xooxer'))
-            ->will($this->returnValue(false));
-
-        $ret = $this->renderer->render($file, 'xooxer');
-
-        $this->assertInstanceOf('Xi\Filelib\Renderer\Response', $ret);
-        $this->assertSame('', $ret->getContent());
-        $this->assertSame(404, $ret->getStatusCode());
-        $this->assertEquals(array(), $ret->getHeaders());
-
-    }
-
-    /**
      * @return array
      */
     public function provideOptions()
@@ -222,9 +190,9 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnValue($sharedVersions ? $resource : $file));
 
         $vp->expects($this->any())
-            ->method('isValidVersion')
+            ->method('ensureValidVersion')
             ->with($this->equalTo(Version::get('xooxer')))
-            ->will($this->returnValue(true));
+            ->will($this->returnArgument(0));
 
         $this->pm
             ->expects($this->any())

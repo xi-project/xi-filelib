@@ -34,6 +34,9 @@ class VersionPluginVersion
      */
     protected $identifier;
 
+    /**
+     * @var array
+     */
     protected $commandDefinitions;
 
     /**

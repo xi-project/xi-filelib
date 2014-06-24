@@ -12,6 +12,7 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 use Xi\Filelib\Event\VersionProviderEvent;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\FileEvent;
@@ -128,7 +129,26 @@ abstract class VersionProvider extends BasePlugin
         return call_user_func($this->isApplicableTo, $file);
     }
 
-    abstract public function isValidVersion(Version $version);
+    /**
+     * @param Version $version
+     * @return Version
+     * @throws InvalidVersionException
+     */
+    public function ensureValidVersion(Version $version)
+    {
+        if (!in_array(
+            $version->getVersion(),
+            $this->getProvidedVersions()
+        )) {
+            throw new InvalidVersionException(
+                sprintf(
+                    "Invalid base version string '%s'",
+                    $version->getVersion()
+                )
+            );
+        }
+        return $version;
+    }
 
     public function onAfterUpload(FileEvent $event)
     {

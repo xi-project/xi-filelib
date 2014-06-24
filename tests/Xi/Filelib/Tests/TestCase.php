@@ -36,6 +36,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
                 'commander' => null,
                 'queue' => null,
                 'pm' => null,
+                'tempDir' => null,
             );
 
             $mocks = array_merge($defaults, $args[1]);
@@ -59,6 +60,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
         }
 
         $ret = $filelib->getMock();
+
+        if (isset($tempDir)) {
+            $ret->expects($this->any())->method('getTempDir')->will($this->returnValue($tempDir));
+        }
 
         if ($fire) {
             $ret->expects($this->any())->method('getFileRepository')->will($this->returnValue($fire));
@@ -444,6 +449,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
             'provideVersions',
             'provideVersion',
             'isApplicableTo',
+            'ensureValidVersion',
         )
     ) {
         $class = $lazy ? 'Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider'

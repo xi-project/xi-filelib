@@ -32,9 +32,23 @@ $filelib->getEventDispatcher()->addListener(
 $arbitraryPlugin = new ArbitraryVersionPlugin(
     'arbitrary',
     function () {
-        return array('x' => 800);
+        return array(
+            'x'
+        );
     },
-    function (array $params) {
+    function () {
+        return array(
+            'x2'
+        );
+    },
+    function () {
+        return array(
+            'x' => 800
+        );
+    },
+    function (Version $version) {
+
+        $params = $version->getParams();
 
         if (!is_numeric($params['x'])) {
             return false;
@@ -50,13 +64,19 @@ $arbitraryPlugin = new ArbitraryVersionPlugin(
 
         return true;
     },
-    function (File $file, array $params, ArbitraryVersionPlugin $plugin) {
+    function (File $file, Version $version, ArbitraryVersionPlugin $plugin) {
+
+        $params = $version->getParams();
+
+        if ($version->hasModifier('x2')) {
+            $params['x'] = $params['x'] * 2;
+        }
+
         return array(
             array('setImageCompression',Imagick::COMPRESSION_JPEG),
             array('setImageFormat', 'jpg'),
-            array('setImageCompressionQuality', 50),
+            array('setImageCompressionQuality', 80),
             array('cropThumbnailImage', array($params['x'], round($params['x'] / 4))),
-            array('sepiaToneImage', 90),
             'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(__DIR__ . '/watermark.png', 'se', 10),
         );
     },

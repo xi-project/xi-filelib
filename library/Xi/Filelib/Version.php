@@ -49,11 +49,26 @@ class Version
      */
     public function __construct($version, array $params = array(), $modifiers = array())
     {
-        $this
-            ->setVersion($version)
-            ->setParams($params)
-            ->setModifiers($modifiers);
+        $this->doSetVersion($version);
+
+        foreach ($params as $key => $value) {
+            $this->doSetParam($key, $value);
+        }
+
+        foreach ($modifiers as $modifier) {
+            $this->doAddModifier($modifier);
+        }
     }
+
+    /**
+     * @param string $modifier
+     * @return bool
+     */
+    public function hasModifier($modifier)
+    {
+        return in_array($modifier, $this->modifiers);
+    }
+
 
     /**
      * @return string
@@ -71,11 +86,69 @@ class Version
         return $this->params;
     }
 
+    /**
+     * @return array
+     */
     public function getModifiers()
     {
         return $this->modifiers;
     }
 
+    /**
+     * @param string $version
+     * @return Version
+     */
+    public function setVersion($version)
+    {
+        $self = clone $this;
+        $self->doSetVersion($version);
+        return $self;
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     * @return Version
+     */
+    public function setParam($key, $value)
+    {
+        $self = clone $this;
+        $self->doSetParam($key, $value);
+        return $self;
+    }
+
+    /**
+     * @param string $key
+     * @return Version
+     */
+    public function removeParam($key)
+    {
+        $self = clone $this;
+        $self->doRemoveParam($key);
+        return $self;
+    }
+
+    /**
+     * @param string $modifier
+     * @return Version
+     */
+    public function addModifier($modifier)
+    {
+        $self = clone $this;
+        $self->doAddModifier($modifier);
+        return $self;
+    }
+
+    /**
+     * @param string $modifier
+     * @return Version
+     */
+    public function removeModifier($modifier)
+    {
+        $self = clone $this;
+        $self->doRemoveModifier($modifier);
+        return $self;
+    }
 
     /**
      * @param $rawVersion Version|string
@@ -104,7 +177,7 @@ class Version
         $split = explode(self::$separator, $modifierSplit[0]);
 
         if (!isset($split[1])) {
-            return new Version($split[0]);
+            return new Version($split[0], array(), $modifiers);
         }
 
         $params = array();
@@ -143,7 +216,11 @@ class Version
             $paramsStr[] = $key . self::$paramKeyValueSeparator . $value;
         }
 
-        $ret = $this->version . self::$separator . implode(self::$paramSeparator, $paramsStr);
+        $ret = $this->version;
+
+        if ($paramsStr) {
+            $ret .= self::$separator . implode(self::$paramSeparator, $paramsStr);
+        }
 
         if ($modifiers = $this->getModifiers()) {
             $ret .= self::$modifierSeparator . implode(self::$paramSeparator, $modifiers);
@@ -157,7 +234,7 @@ class Version
      * @return Version
      * @throws InvalidVersionException
      */
-    private function setVersion($version)
+    private function doSetVersion($version)
     {
         if (!preg_match(self::PATTERN_NAME, $version)) {
             throw new InvalidVersionException(
@@ -173,39 +250,13 @@ class Version
         return $this;
     }
 
-    /**
-     * @param array $params
-     * @return Version
-     */
-    private function setParams(array $params)
-    {
-        foreach ($params as $key => $value) {
-            $this->setParam($key, $value);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param array $modifiers
-     * @return Version
-     */
-    private function setModifiers(array $modifiers)
-    {
-        foreach ($modifiers as $modifier) {
-            $this->addModifier($modifier);
-        }
-
-        return $this;
-    }
-
 
     /**
      * @param string $key
      * @param string $value
      * @throws InvalidVersionException
      */
-    private function setParam($key, $value)
+    private function doSetParam($key, $value)
     {
         if (!preg_match(self::PATTERN_NAME, $key)) {
             throw new InvalidVersionException(
@@ -231,10 +282,30 @@ class Version
     }
 
     /**
+     * @param string $key
+     */
+    private function doRemoveParam($key)
+    {
+        unset($this->params[$key]);
+    }
+
+    /**
+     * @param string $modifier
+     */
+    private function doRemoveModifier($modifier)
+    {
+        $key = array_search($modifier, $this->modifiers, true);
+        if ($key !== false) {
+            unset($this->modifiers[$key]);
+        }
+        $this->modifiers = array_values($this->modifiers);
+    }
+
+    /**
      * @param string $modifier
      * @throws InvalidVersionException
      */
-    private function addModifier($modifier)
+    private function doAddModifier($modifier)
     {
         if (!preg_match(self::PATTERN_VALUE, $modifier)) {
             throw new InvalidVersionException(
@@ -246,6 +317,8 @@ class Version
             );
         }
 
-        $this->modifiers[] = $modifier;
+        if (!in_array($modifier, $this->modifiers)) {
+            $this->modifiers[] = $modifier;
+        }
     }
 }

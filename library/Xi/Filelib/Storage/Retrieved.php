@@ -50,7 +50,7 @@ class Retrieved
     public function __destruct()
     {
         if ($this->isTemporary()) {
-            unlink ($this->getPath());
+            unlink($this->getPath());
         }
     }
 }

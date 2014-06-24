@@ -107,8 +107,8 @@ class Storage implements Attacher
                 sprintf(
                     "Could not store physical file for resource #%s",
                     $resource->getId()
-                )
-                , 500,
+                ),
+                500,
                 $e
             );
         }

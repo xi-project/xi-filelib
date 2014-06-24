@@ -166,7 +166,8 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
     public function retrieveVersion(Versionable $versionable, Version $version)
     {
         return new Retrieved(
-            $this->getVersionPathName($versionable, $version), false
+            $this->getVersionPathName($versionable, $version),
+            false
         );
     }
 

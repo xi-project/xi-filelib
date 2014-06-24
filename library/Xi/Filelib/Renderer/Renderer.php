@@ -8,9 +8,9 @@ use Xi\Filelib\File\FileObject;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\Version;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Storage;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -71,7 +71,6 @@ class Renderer
     public function render($file, $version, array $options = array())
     {
         $version = Version::get($version);
-
         $response = new Response();
 
         if (!$file instanceof File) {
@@ -86,6 +85,7 @@ class Renderer
             }
         }
 
+
         // Authorization component support
         try {
             $event = new FileEvent($file);
@@ -95,6 +95,20 @@ class Renderer
                 $response->setStatusCode(403),
                 $version,
                 $file
+            );
+        }
+
+        try {
+            $provider = $this->profiles->getVersionProvider($file, $version);
+            $version = $provider->ensureValidVersion($version);
+
+
+        } catch (InvalidVersionException $e) {
+
+            return $this->adaptResponse(
+                $response->setStatusCode(404),
+                $version,
+                null
             );
         }
 
@@ -144,6 +158,7 @@ class Renderer
         $provider = $this->profiles->getVersionProvider($file, $version);
         $versionable = $provider->getApplicableVersionable($file);
 
+
         if ($versionable->hasVersion($version)) {
             return true;
         }
@@ -152,13 +167,8 @@ class Renderer
             return false;
         }
 
-        /** @var LazyVersionProvider $provider */
-
-        if (!$provider->isValidVersion($version)) {
-            return false;
-        }
-
         try {
+
             $provider->provideVersion($file, $version);
             $this->fileRepository->update($file);
             return true;

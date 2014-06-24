@@ -56,13 +56,11 @@ abstract class LazyVersionProvider extends VersionProvider
 
     public function provideVersion(File $file, Version $version)
     {
-        if (!$this->isValidVersion($version)) {
-            throw new InvalidVersionException('Invalid version');
-        }
+        $version = $this->ensureValidVersion($version);
 
         $versionable = $this->getApplicableVersionable($file);
         $versionable->addVersion($version);
-        $tmp = $this->createTemporaryVersion($file, $version);
+        list($versionStr, $tmp) = $this->createTemporaryVersion($file, $version);
         $this->storage->storeVersion($versionable, $version, $tmp);
         unlink($tmp);
 
@@ -76,5 +74,4 @@ abstract class LazyVersionProvider extends VersionProvider
     }
 
     abstract protected function doCreateTemporaryVersion(File $file, Version $version);
-
 }

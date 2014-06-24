@@ -463,6 +463,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     {
         return array(
             array('pygmi', true),
+            array('pygmi@mod', false),
             array('watussi', true),
             array('watussi::xoo:xoo', false),
             array('watussix', false),
@@ -478,7 +479,16 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
      */
     public function checksVersionValidity($version, $expected)
     {
+        if (!$expected) {
+            $this->setExpectedException('Xi\Filelib\InvalidVersionException');
+        }
+
+        $plugin = $this->plugin;
+
         $version = Version::get($version);
-        $this->assertEquals($expected, $this->plugin->isValidVersion($version));
+        $version2 = $plugin->ensureValidVersion($version);
+        $this->assertSame($version, $version2);
+        $this->assertInstanceOf('Xi\Filelib\Version', $version2);
     }
+
 }

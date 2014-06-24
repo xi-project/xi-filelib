@@ -40,7 +40,4 @@ abstract class BaseStorageAdapter implements StorageAdapter
         }
         return array($resource, $file);
     }
-
-
-
 }

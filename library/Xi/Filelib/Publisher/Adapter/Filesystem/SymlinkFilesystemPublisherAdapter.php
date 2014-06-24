@@ -80,8 +80,12 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
      * @return string
      * @throws FilelibException
      */
-    public function getRelativePathToVersion(File $file, Version $version, VersionProvider $versionProvider, $levelsDown = 0)
-    {
+    public function getRelativePathToVersion(
+        File $file,
+        Version $version,
+        VersionProvider $versionProvider,
+        $levelsDown = 0
+    ) {
         $relativePath = $this->getRelativePathToRoot();
 
         if (!$relativePath) {
@@ -143,9 +147,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
                     $link
                 );
             }
-
         }
-
     }
 
     public function unpublish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)

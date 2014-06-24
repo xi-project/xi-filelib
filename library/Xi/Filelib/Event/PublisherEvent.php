@@ -22,9 +22,12 @@ class PublisherEvent extends FileEvent
     public function __construct(File $file, array $versions)
     {
         parent::__construct($file);
-        $this->versions = array_map(function ($version) {
-            return Version::get($version);
-        }, $versions);
+        $this->versions = array_map(
+            function ($version) {
+                return Version::get($version);
+            },
+            $versions
+        );
     }
 
     /**

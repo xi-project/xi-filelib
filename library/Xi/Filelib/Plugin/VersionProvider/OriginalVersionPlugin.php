@@ -11,6 +11,7 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Version;
 
 /**
@@ -74,9 +75,18 @@ class OriginalVersionPlugin extends VersionProvider
         return true;
     }
 
-    public function isValidVersion(Version $version)
+    public function ensureValidVersion(Version $version)
     {
-        return ($version->toString() === $this->identifier);
-    }
+        $version = parent::ensureValidVersion($version);
 
+        if (count($version->getParams())) {
+            throw new InvalidVersionException("Version has parameters");
+        }
+
+        if (count($version->getModifiers())) {
+            throw new InvalidVersionException("Version has modifiers");
+        }
+
+        return $version;
+    }
 }

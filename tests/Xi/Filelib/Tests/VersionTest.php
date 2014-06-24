@@ -40,6 +40,12 @@ class VersionTest extends \PHPUnit_Framework_TestCase
                 array('x2', 'mega-tenhunen'),
                 'retina-tenhunen::imaiseepi:pannaanin;mahtava:reso@mega-tenhunen;x2'
             ),
+            array(
+                'modifoitu-super-kyborgi-tenhunen',
+                array(),
+                array('x1000'),
+                'modifoitu-super-kyborgi-tenhunen@x1000'
+            ),
         );
     }
 
@@ -56,7 +62,10 @@ class VersionTest extends \PHPUnit_Framework_TestCase
     public function provideVersionIdentifiers()
     {
         return array(
-            array('tenhunen', true),
+            array(
+                'tenhunen',
+                true
+            ),
             array('tenhunen-on-numero-yksi', true),
             array('tehnunen1', true),
             array('tehnunen-1', true),
@@ -82,6 +91,7 @@ class VersionTest extends \PHPUnit_Framework_TestCase
             array('x::y:1;z:0', true),
             array('lussogrande::nusso:-6000;tusso:_6500@x2;y5', true),
             array('lussogrande::nusso:-6000;tusso:_6500@@x2:y5', false),
+            array('lussogrande@x2', true),
         );
 
     }
@@ -112,4 +122,97 @@ class VersionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $version->getParams());
     }
 
+    /**
+     * @test
+     */
+    public function canNotAddModifierTwice()
+    {
+        $version = new Version('tenhunen', array('suuruus' => 'ylistetty'), array('x5'));
+
+        $this->assertEquals(
+            array('x5'),
+            $version->getModifiers()
+        );
+
+        $ret = $version->addModifier('x5');
+        $this->assertEquals(
+            array('x5'),
+            $ret->getModifiers()
+        );
+
+        $this->assertNotSame($version, $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function removesParam()
+    {
+        $version = new Version('tenhunen', array('suuruus' => 'ylistetty'), array('x5'));
+        $ret = $version->removeParam('suuruus');
+
+        $this->assertEquals(array(), $ret->getParams());
+        $this->assertNotSame($version, $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function addsParam()
+    {
+        $version = new Version('tenhunen', array('suuruus' => 'ylistetty'), array('x5'));
+        $ret = $version->setParam('imaisun', 'mehevyys');
+
+        $this->assertEquals(
+            array('suuruus' => 'ylistetty', 'imaisun' => 'mehevyys'),
+            $ret->getParams()
+        );
+        $this->assertNotSame($version, $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function replacesParam()
+    {
+        $version = new Version('tenhunen', array('suuruus' => 'ylistetty'), array('x5'));
+        $ret = $version->setParam('suuruus', 'alistettu');
+
+        $this->assertEquals(
+            array('suuruus' => 'alistettu'),
+            $ret->getParams()
+        );
+        $this->assertNotSame($version, $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function removesmodifier()
+    {
+        $version = new Version('tenhunen', array('suuruus' => 'ylistetty'), array('x5', 'x6'));
+
+        $this->assertTrue($version->hasModifier('x5'));
+        $this->assertTrue($version->hasModifier('x6'));
+
+        $ret = $version->removeModifier('x5');
+
+        $this->assertNotSame($version, $ret);
+        $this->assertEquals(array('x6'), $ret->getModifiers());
+        $this->assertFalse($ret->hasModifier('x5'));
+        $this->assertTrue($ret->hasModifier('x6'));
+    }
+
+    /**
+     * @test
+     */
+    public function setsVersion()
+    {
+        $version = new Version('tenhunen', array('suuruus' => 'ylistetty'), array('x5', 'x6'));
+        $this->assertEquals('tenhunen', $version->getVersion());
+
+        $ret = $version->setVersion('tenhunizer');
+        $this->assertNotSame($version, $ret);
+        $this->assertEquals('tenhunizer', $ret->getVersion());
+    }
 }

@@ -11,6 +11,7 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Version;
@@ -30,11 +31,8 @@ class VersionPlugin extends LazyVersionProvider
      */
     protected $versions;
 
-
     /**
-     * @param string $identifier
-     * @param array $commandDefinitions
-     * @param string $mimeType
+     * @param array $versionDefinitions
      */
     public function __construct(
         $versionDefinitions = array()
@@ -56,6 +54,9 @@ class VersionPlugin extends LazyVersionProvider
 
     }
 
+    /**
+     * @param FileLibrary $filelib
+     */
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
@@ -63,9 +64,8 @@ class VersionPlugin extends LazyVersionProvider
     }
 
     /**
-     * Creates temporary version
-     *
-     * @param  File  $file
+     * @param File $file
+     * @param Version $version
      * @return array
      */
     protected function doCreateTemporaryVersion(File $file, Version $version)
@@ -74,8 +74,12 @@ class VersionPlugin extends LazyVersionProvider
             $file->getResource()
         );
 
-        $version = $this->versions[$version->getVersion()];
-        return $version->getHelper($retrieved, $this->tempDir)->execute();
+        $versionVersion = $this->versions[$version->getVersion()];
+
+        return array(
+            $version->toString(),
+            $versionVersion->getHelper($retrieved, $this->tempDir)->execute(),
+        );
     }
 
     /**
@@ -86,7 +90,8 @@ class VersionPlugin extends LazyVersionProvider
     {
         $ret = array();
         foreach ($this->getProvidedVersions() as $version) {
-            $ret[$version] = $this->createTemporaryVersion($file, Version::get($version));
+            list ($identifier, $path) = $this->createTemporaryVersion($file, Version::get($version));
+            $ret[$identifier] = $path;
         }
         return $ret;
     }
@@ -106,7 +111,7 @@ class VersionPlugin extends LazyVersionProvider
 
     /**
      * @param File $file
-     * @param string $version
+     * @param Version $version
      * @return string
      */
     public function getExtension(File $file, Version $version)
@@ -117,22 +122,39 @@ class VersionPlugin extends LazyVersionProvider
         return parent::getExtension($file, $version);
     }
 
+    /**
+     * @return bool
+     */
     public function isSharedResourceAllowed()
     {
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function areSharedVersionsAllowed()
     {
         return true;
     }
 
-    public function isValidVersion(Version $version)
+    /**
+     * @param Version $version
+     * @return Version
+     * @throws InvalidVersionException
+     */
+    public function ensureValidVersion(Version $version)
     {
-        return in_array(
-            $version->toString(),
-            $this->getProvidedVersions()
-        );
-    }
+        $version = parent::ensureValidVersion($version);
 
+        if (count($version->getParams())) {
+            throw new InvalidVersionException("Version has parameters");
+        }
+
+        if (count($version->getModifiers())) {
+            throw new InvalidVersionException("Version has modifiers");
+        }
+
+        return $version;
+    }
 }

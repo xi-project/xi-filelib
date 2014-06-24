@@ -29,28 +29,60 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
      */
     protected $tempDir;
 
+    /**
+     * @var string
+     */
     private $identifier;
 
     /**
-     * @var Closure
+     * @var callable
+     */
+    private $allowedParamsGetter;
+
+    /**
+     * @var callable
+     */
+    private $allowedModifiersGetter;
+
+    /**
+     * @var callable
      */
     private $commandDefinitionsGetter;
 
-    private $paramsValidityChecker;
+    /**
+     * @var callable
+     */
+    private $versionValidityChecker;
 
+    /**
+     * @var callable
+     */
     private $defaultParamsGetter;
 
     /**
-     * @param string $identifier
-     * @param array $commandDefinitions
-     * @param string $mimeType
+     * @var bool
+     */
+    private $allowSharedVersions;
+
+    /**
+     * @param callable $identifier
+     * @param callable $allowedParamsGetter
+     * @param callable $allowedModifiersGetter
+     * @param callable $defaultParamsGetter
+     * @param callable $versionValidityChecker
+     * @param callable $commandDefinitionsGetter
+     * @param string|callable $mimeTypeGetter
+     * @param bool $allowSharedVersions
      */
     public function __construct(
         $identifier,
+        \Closure $allowedParamsGetter,
+        \Closure $allowedModifiersGetter,
         \Closure $defaultParamsGetter,
-        \Closure $paramsValidityChecker,
+        \Closure $versionValidityChecker,
         \Closure $commandDefinitionsGetter,
-        $mimeTypeGetter
+        $mimeTypeGetter,
+        $allowSharedVersions = true
     ) {
         parent::__construct(
             function (File $file) {
@@ -58,28 +90,20 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
                 return (bool) preg_match("/^image/", $file->getMimetype());
             }
         );
-
         $this->identifier = $identifier;
+        $this->allowedParamsGetter = $allowedParamsGetter;
+        $this->allowedModifiersGetter = $allowedModifiersGetter;
         $this->defaultParamsGetter = $defaultParamsGetter;
-        $this->paramsValidityChecker = $paramsValidityChecker;
+        $this->versionValidityChecker = $versionValidityChecker;
         $this->commandDefinitionsGetter = $commandDefinitionsGetter;
-
         $this->mimeTypeGetter = $this->createMimeTypeGetter($mimeTypeGetter);
-
-        /*
-        foreach ($versionDefinitions as $key => $definition) {
-            $this->versions[$key] = new VersionPluginVersion(
-                $key,
-                $definition[0],
-                isset($definition[1]) ? $definition[1] : null
-            );
-        }
-        */
-
-        // The whole plugin does not make any sense if it's not lazy so it self-enables
+        $this->allowSharedVersions = $allowSharedVersions;
         $this->enableLazyMode(true);
     }
 
+    /**
+     * @param FileLibrary $filelib
+     */
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
@@ -87,23 +111,25 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
     }
 
     /**
-     * Creates temporary version
-     *
-     * @param  File  $file
+     * @param File $file
      * @return array
      */
     protected function doCreateAllTemporaryVersions(File $file)
     {
+        list ($identifier, $path) = $this->doCreateTemporaryVersion($file, Version::get($this->identifier));
         return array(
-            $this->identifier => $this->createTemporaryVersion($file, $this->identifier)
+            $identifier => $path
         );
     }
 
+    /**
+     * @param File $file
+     * @param Version $version
+     * @return array
+     */
     protected function doCreateTemporaryVersion(File $file, Version $version)
     {
-        if (!$this->isValidVersion($version)) {
-            throw new InvalidVersionException('Invalid version');
-        }
+        $version = $this->ensureValidVersion($version);
 
         $retrieved = $this->storage->retrieve(
             $file->getResource()
@@ -113,13 +139,17 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
             $this->commandDefinitionsGetter,
             array(
                 $file,
-                $this->getParams($version),
+                $version,
                 $this
             )
         );
 
         $helper = new ImageMagickHelper($retrieved, $this->tempDir, $commandDefinitions);
-        return $helper->execute();
+
+        return array(
+            $version->toString(),
+            $helper->execute()
+        );
     }
 
     /**
@@ -140,6 +170,12 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         return $this->storage;
     }
 
+    /**
+     * @param File $file
+     * @param Version $version
+     * @return string
+     * @throws RuntimeException
+     */
     public function getMimeType(File $file, Version $version)
     {
         if ($mimeType = call_user_func_array($this->mimeTypeGetter, array($file, $version))) {
@@ -148,42 +184,103 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         throw new RuntimeException("Mime type not definable");
     }
 
-
+    /**
+     * @return bool
+     */
     public function isSharedResourceAllowed()
     {
-        return false;
+        return true;
     }
 
+    /**
+     * @return bool
+     */
     public function areSharedVersionsAllowed()
     {
-        return false;
+        return $this->allowSharedVersions;
     }
 
-    public function isValidVersion(Version $version)
+    /**
+     * @param Version $version
+     * @return Version
+     * @throws InvalidVersionException
+     */
+    public function ensureValidVersion(Version $version)
     {
-        if (!in_array(
-            $version->getVersion(),
-            $this->getProvidedVersions()
-        )) {
-            return false;
-        }
+        $version = parent::ensureValidVersion($version);
 
-        return call_user_func_array(
-            $this->paramsValidityChecker,
-            array(
-                $this->getParams($version)
+        $unknownParams = array_map(
+            function ($param) {
+                return '\'' . $param . '\'';
+            },
+            array_diff(
+                array_keys($version->getParams()),
+                call_user_func($this->allowedParamsGetter)
             )
         );
-    }
 
-    private function getParams(Version $version)
-    {
-        return array_merge(
+        if (count($unknownParams)) {
+            throw new InvalidVersionException(
+                sprintf(
+                    "Unknown version parameters: %s",
+                    implode(', ', $unknownParams)
+                )
+            );
+        }
+
+        $unknownModifiers = array_map(
+            function ($param) {
+                return '\'' . $param . '\'';
+            },
+            array_diff(
+                $version->getModifiers(),
+                call_user_func($this->allowedModifiersGetter)
+            )
+        );
+
+        if (count($unknownModifiers)) {
+            throw new InvalidVersionException(
+                sprintf(
+                    "Unknown version modifiers: %s",
+                    implode(', ', $unknownModifiers)
+                )
+            );
+        }
+
+        $newParams = array_merge(
             call_user_func($this->defaultParamsGetter),
             $version->getParams()
         );
+
+        $version = new Version(
+            $version->getVersion(),
+            $newParams,
+            $version->getModifiers()
+        );
+
+        $isValid = call_user_func_array(
+            $this->versionValidityChecker,
+            array(
+                $version
+            )
+        );
+
+        if (!$isValid) {
+            throw new InvalidVersionException(
+                sprintf(
+                    "Invalid version '%s'",
+                    $version->toString()
+                )
+            );
+        }
+
+        return $version;
     }
 
+    /**
+     * @param mixed $mimeTypeGetter
+     * @return callable
+     */
     private function createMimeTypeGetter($mimeTypeGetter)
     {
         if (is_callable($mimeTypeGetter)) {
@@ -194,6 +291,4 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
             return $mimeTypeGetter;
         };
     }
-
-
 }

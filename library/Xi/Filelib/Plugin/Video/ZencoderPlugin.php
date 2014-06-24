@@ -15,6 +15,7 @@ use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
+use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\RuntimeException;
@@ -358,12 +359,19 @@ class ZencoderPlugin extends VersionProvider
         return true;
     }
 
-    public function isValidVersion(Version $version)
+    public function ensureValidVersion(Version $version)
     {
-        return in_array(
-            $version->toString(),
-            $this->getProvidedVersions()
-        );
+        $version = parent::ensureValidVersion($version);
+
+        if (count($version->getParams())) {
+            throw new InvalidVersionException("Version has parameters");
+        }
+
+        if (count($version->getModifiers())) {
+            throw new InvalidVersionException("Version has modifiers");
+        }
+
+        return $version;
     }
 
     private function waitUntilJobFinished(Job $job)
