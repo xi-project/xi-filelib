@@ -59,4 +59,17 @@ class SlugifierTest extends TestCase
         $this->assertEquals('tussi/tussi/tussi/tussi/tussi', $ret);
     }
 
+    /**
+     * @test
+     */
+    public function defaultsToCocur()
+    {
+        $slugifier = new Slugifier();
+        $this->assertAttributeInstanceOf(
+            'Xi\Filelib\Tool\Slugifier\Adapter\CocurSlugifierAdapter',
+            'adapter',
+            $slugifier
+        );
+    }
+
 }

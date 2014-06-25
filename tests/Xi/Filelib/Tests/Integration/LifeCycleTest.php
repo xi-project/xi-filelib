@@ -17,6 +17,7 @@ class LifeCycleTest extends TestCase
 {
     /**
      * @test
+     * @coversNothing
      */
     public function nothingIsFoundAfterDeleting()
     {
@@ -69,6 +70,7 @@ class LifeCycleTest extends TestCase
 
     /**
      * @test
+     * @coversNothing
      */
     public function automaticPublisherPublishesAutomatically()
     {
@@ -86,6 +88,7 @@ class LifeCycleTest extends TestCase
 
     /**
      * @test
+     * @coversNothing
      */
     public function canUploadAsynchronouslyWithQueue()
     {
@@ -127,6 +130,7 @@ class LifeCycleTest extends TestCase
 
     /**
      * @test
+     * @coversNothing
      */
     public function uploadsToUnspoiledProfile()
     {
@@ -149,6 +153,7 @@ class LifeCycleTest extends TestCase
 
     /**
      * @test
+     * @coversNothing
      */
     public function updatingFileUpdatesResource()
     {

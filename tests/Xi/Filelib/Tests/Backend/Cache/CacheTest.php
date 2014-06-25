@@ -171,6 +171,24 @@ class CacheTest extends TestCase
     /**
      * @test
      */
+    public function onUpdateSaves()
+    {
+        $cache = $this
+            ->getMockBuilder('Xi\Filelib\Backend\Cache\Cache')
+            ->disableOriginalConstructor()
+            ->setMethods(array('delete', 'save'))
+            ->getMock();
+
+        $identifiable = Resource::create();
+        $event = new IdentifiableEvent($identifiable);
+
+        $cache->expects($this->once())->method('save')->with($identifiable);
+        $cache->onUpdate($event);
+    }
+
+    /**
+     * @test
+     */
     public function onInstantiateSaves()
     {
         $cache = $this
@@ -186,4 +204,11 @@ class CacheTest extends TestCase
         $cache->onInstantiate($event);
     }
 
+    /**
+     * @test
+     */
+    public function isNotOrigin()
+    {
+        $this->assertFalse($this->cache->isOrigin());
+    }
 }

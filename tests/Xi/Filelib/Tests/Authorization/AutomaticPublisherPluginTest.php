@@ -7,7 +7,6 @@ use Xi\Filelib\Event\VersionProviderEvent;
 use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\Plugin\VersionProvider\Events;
 use Xi\Filelib\Event\FileEvent;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Filelib\File\File;
 
 class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase

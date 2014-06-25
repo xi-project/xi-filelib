@@ -23,7 +23,7 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\RuntimeException;
-use Xi\Filelib\Storage\FileIOException;
+use Xi\Filelib\FilelibException;
 
 /**
  * Publisher
@@ -138,12 +138,14 @@ class Publisher implements EventSubscriberInterface, Attacher
         $event = new PublisherEvent($file, array($version->toString()));
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_PUBLISH, $event);
 
-        $this->versionPublisher($file, $version);
-        $file->getData()->set('publisher.published', true);
-        $this->fileRepository->update($file);
+        if ($this->versionPublisher($file, $version)) {
+            $this->fileRepository->update($file);
+            $event = new PublisherEvent($file, array($version->toString()));
+            $this->eventDispatcher->dispatch(Events::FILE_AFTER_PUBLISH, $event);
+            return true;
+        }
 
-        $event = new PublisherEvent($file, array($version->toString()));
-        $this->eventDispatcher->dispatch(Events::FILE_AFTER_PUBLISH, $event);
+        return false;
     }
 
 
@@ -155,7 +157,7 @@ class Publisher implements EventSubscriberInterface, Attacher
             $versionUrls[$version->toString()] = $this->getUrl($file, $version);
             $file->getData()->set('publisher.version_url', $versionUrls);
             return true;
-        } catch (FileIOException $e) {
+        } catch (FilelibException $e) {
             return false;
         }
     }
@@ -168,7 +170,7 @@ class Publisher implements EventSubscriberInterface, Attacher
             unset($versionUrls[$version->toString()]);
             $file->getData()->set('publisher.version_url', $versionUrls);
             return true;
-        } catch (FileIOException $e) {
+        } catch (FilelibException $e) {
             return false;
         }
     }
@@ -223,13 +225,16 @@ class Publisher implements EventSubscriberInterface, Attacher
         $event = new PublisherEvent($file, array($version));
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UNPUBLISH, $event);
 
-        $this->versionUnpublisher($file, $version);
-        $this->fileRepository->update($file);
+        if ($this->versionUnpublisher($file, $version)) {
+            $this->fileRepository->update($file);
 
-        $event = new PublisherEvent($file, array($version));
-        $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
+            $event = new PublisherEvent($file, array($version));
+            $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
 
-        return true;
+            return true;
+        }
+
+        return false;
     }
 
     /**

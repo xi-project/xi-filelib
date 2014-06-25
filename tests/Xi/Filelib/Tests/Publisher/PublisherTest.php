@@ -5,6 +5,7 @@ namespace Xi\Filelib\Tests\Publisher;
 use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\File;
+use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Tests\TestCase;
@@ -420,5 +421,133 @@ class PublisherTest extends TestCase
         $publisher = new Publisher($this->adapter, $linker);
 
         $publisher->reverseUrl('lussogrande-loso.lus');
+    }
+
+    /**
+     * @test
+     */
+    public function publishesVersion()
+    {
+        $file = File::create();
+        $version = Version::get('ankan');
+
+        $this->adapter
+            ->expects($this->at(0))
+            ->method('publish')
+            ->with(
+                $file,
+                $version,
+                $this->provider,
+                $this->linker
+            );
+
+        $this->fiop
+            ->expects($this->once())
+            ->method('update')
+            ->with(
+                $file
+            );
+
+        $this->ed
+            ->expects($this->exactly(2))
+            ->method('dispatch');
+
+        $ret = $this->publisher->publishVersion($file, $version);
+        $this->assertTrue($ret);
+    }
+
+    /**
+     * @test
+     */
+    public function doesntPublishVersionWhenAdapterThrowsUp()
+    {
+        $file = File::create();
+        $version = Version::get('ankan');
+
+        $this->adapter
+            ->expects($this->at(0))
+            ->method('publish')
+            ->with(
+                $file,
+                $version,
+                $this->provider,
+                $this->linker
+            )
+            ->will($this->throwException(new RuntimeException()));
+
+        $this->fiop
+            ->expects($this->never())
+            ->method('update');
+
+        $this->ed
+            ->expects($this->exactly(1))
+            ->method('dispatch');
+
+        $ret = $this->publisher->publishVersion($file, $version);
+        $this->assertFalse($ret);
+    }
+
+    /**
+     * @test
+     */
+    public function unpublishesVersion()
+    {
+        $file = File::create();
+        $version = Version::get('ankan');
+
+        $this->adapter
+            ->expects($this->at(0))
+            ->method('unpublish')
+            ->with(
+                $file,
+                $version,
+                $this->provider,
+                $this->linker
+            );
+
+        $this->fiop
+            ->expects($this->once())
+            ->method('update')
+            ->with(
+                $file
+            );
+
+        $this->ed
+            ->expects($this->exactly(2))
+            ->method('dispatch');
+
+        $ret = $this->publisher->unpublishVersion($file, $version);
+        $this->assertTrue($ret);
+    }
+
+    /**
+     * @test
+     */
+    public function doesntUnpublishVersionWhenAdapterThrowsUp()
+    {
+        $file = File::create();
+        $version = Version::get('ankan');
+
+        $this->adapter
+            ->expects($this->at(0))
+            ->method('unpublish')
+            ->with(
+                $file,
+                $version,
+                $this->provider,
+                $this->linker
+            )
+            ->will($this->throwException(new RuntimeException()));
+
+        $this->fiop
+            ->expects($this->never())
+            ->method('update');
+
+        $this->ed
+            ->expects($this->exactly(1))
+            ->method('dispatch');
+
+        $ret = $this->publisher->unpublishVersion($file, $version);
+        $this->assertFalse($ret);
     }
 }
