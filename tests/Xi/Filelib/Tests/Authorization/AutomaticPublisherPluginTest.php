@@ -3,7 +3,9 @@
 namespace Xi\Filelib\Tests\Authorization;
 
 use Xi\Filelib\Authorization\AutomaticPublisherPlugin;
-use Xi\Filelib\Events;
+use Xi\Filelib\Event\VersionProviderEvent;
+use Xi\Filelib\Events as CoreEvents;
+use Xi\Filelib\Plugin\VersionProvider\Events;
 use Xi\Filelib\Event\FileEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Filelib\File\File;
@@ -33,7 +35,13 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
         $this->adapter = $this->getMock('Xi\Filelib\Authorization\AuthorizationAdapter');
 
         $this->plugin = new AutomaticPublisherPlugin($this->publisher, $this->adapter);
-        $this->file = $this->getMockedFile();
+        $this->file = File::create(
+            [
+                'data' => [
+                    'versions' => ['tusso', 'lusso', 'xusso']
+                ]
+            ]
+        );
     }
 
     /**
@@ -51,10 +59,10 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->assertEquals(
             array(
-                Events::FILE_AFTER_AFTERUPLOAD => 'doPublish',
-                Events::FILE_BEFORE_UPDATE => 'doUnpublish',
-                Events::FILE_AFTER_UPDATE => 'doPublish',
-                Events::PROFILE_AFTER_ADD => 'onFileProfileAdd'
+                CoreEvents::FILE_AFTER_UPDATE => 'doPermissionsCheck',
+                CoreEvents::PROFILE_AFTER_ADD => 'onFileProfileAdd',
+                Events::VERSIONS_DELETED => 'doUnpublish',
+                Events::VERSIONS_PROVIDED => 'doPublish',
             ),
             AutomaticPublisherPlugin::getSubscribedEvents()
         );
@@ -72,11 +80,13 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnValue(true));
 
         $this->publisher
-            ->expects($this->once())
-            ->method('publishAllVersions')
-            ->with($this->file);
+            ->expects($this->exactly(2))
+            ->method('publishVersion')
+            ->with($this->file, $this->isInstanceOf('Xi\Filelib\Version'));
 
-        $event = new FileEvent($this->file);
+        $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
+
+        $event = new VersionProviderEvent($vp, $this->file, array('lusso', 'con-tusso'));
         $this->plugin->doPublish($event);
     }
 
@@ -93,9 +103,10 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->publisher
             ->expects($this->never())
-            ->method('publishAllVersions');
+            ->method('publishVersion');
 
-        $event = new FileEvent($this->file);
+        $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
+        $event = new VersionProviderEvent($vp, $this->file, array('lusso', 'con-tusso'));
         $this->plugin->doPublish($event);
     }
 
@@ -106,18 +117,39 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
     public function pluginShouldAutomaticallyUnpublishIfPublished()
     {
         $this->publisher
-            ->expects($this->once())
-            ->method('unpublishAllVersions')
-            ->with($this->file);
+            ->expects($this->exactly(3))
+            ->method('unpublishVersion')
+            ->with($this->file, $this->isInstanceOf('Xi\Filelib\Version'));
 
-        $event = new FileEvent($this->file);
+        $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
+        $event = new VersionProviderEvent($vp, $this->file, array('lusso', 'con-tusso', 'loso'));
         $this->plugin->doUnpublish($event);
     }
 
     /**
      * @test
      */
-    public function pluginShouldNotPublishRecursively()
+    public function unpublishesOnRemovedAuthorization()
+    {
+        $this->adapter
+            ->expects($this->once())
+            ->method('isFileReadableByAnonymous')
+            ->with($this->isInstanceOf('Xi\Filelib\File\File'))
+            ->will($this->returnValue(false));
+
+        $this->publisher
+            ->expects($this->once())
+            ->method('unpublishAllVersions')
+            ->with($this->file);
+
+        $event = new FileEvent($this->file);
+        $this->plugin->doPermissionsCheck($event);
+    }
+
+    /**
+     * @test
+     */
+    public function doesNotUnpublisOnUnchangedAuthorization()
     {
         $this->adapter
             ->expects($this->once())
@@ -125,54 +157,12 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
             ->with($this->isInstanceOf('Xi\Filelib\File\File'))
             ->will($this->returnValue(true));
 
-        $ed = new EventDispatcher();
-        $ed->addSubscriber($this->plugin);
-
-        $file = $this->file;
-
         $this->publisher
-            ->expects($this->once())
-            ->method('publishAllVersions')
-            ->with($this->file)
-            ->will(
-                $this->returnCallback(
-                    function () use ($ed, $file) {
-                        $ed->dispatch(Events::FILE_AFTER_UPDATE, new FileEvent($file));
-                    }
-                )
-            );
+            ->expects($this->never())
+            ->method('unpublishAllVersions');
 
         $event = new FileEvent($this->file);
-        $this->plugin->doPublish($event);
+        $this->plugin->doPermissionsCheck($event);
     }
 
-    /**
-     * @test
-     */
-    public function pluginShouldNotUnpublishRecursively()
-    {
-        $this->adapter
-            ->expects($this->never())
-            ->method('isFileReadableByAnonymous');
-
-        $ed = new EventDispatcher();
-        $ed->addSubscriber($this->plugin);
-
-        $file = File::create(array('data' => array('publisher.published' => 1)));
-
-        $this->publisher
-            ->expects($this->once())
-            ->method('unpublishAllVersions')
-            ->with($file)
-            ->will(
-                $this->returnCallback(
-                    function () use ($ed, $file) {
-                        $ed->dispatch(Events::FILE_BEFORE_UPDATE, new FileEvent($file));
-                    }
-                )
-            );
-
-        $event = new FileEvent($file);
-        $this->plugin->doUnpublish($event);
-    }
 }
