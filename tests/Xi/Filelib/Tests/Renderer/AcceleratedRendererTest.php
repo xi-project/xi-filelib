@@ -50,12 +50,6 @@ class AcceleratedRendererTest extends RendererTestCase
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $this->pm
-            ->expects($this->once())
-            ->method('hasVersion')
-            ->with($file, Version::get('xooxer'))
-            ->will($this->returnValue(true));
-
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
@@ -156,12 +150,6 @@ class AcceleratedRendererTest extends RendererTestCase
             ->expects($this->at(0))
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
-
-        $this->pm
-            ->expects($this->once())
-            ->method('hasVersion')
-            ->with($file, Version::get('xooxer'))
-            ->will($this->returnValue(true));
 
         $this->storage
             ->expects($this->once())

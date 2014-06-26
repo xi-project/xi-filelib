@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Profile;
 
+use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
@@ -149,7 +150,7 @@ class FileProfile implements EventSubscriberInterface
      * @param File $file
      * @param Version $version
      * @return VersionProvider
-     * @throws InvalidArgumentException
+     * @throws InvalidVersionException
      */
     public function getVersionProvider(File $file, Version $version)
     {
@@ -158,7 +159,7 @@ class FileProfile implements EventSubscriberInterface
             return $this->fileVersions[$version->getVersion()];
         }
 
-        throw new InvalidArgumentException(
+        throw new InvalidVersionException(
             sprintf(
                 "File has no version '%s'",
                 $version->toString()

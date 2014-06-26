@@ -2,6 +2,8 @@
 
 namespace Xi\Filelib\Tests\Renderer;
 
+use Xi\Filelib\InvalidVersionException;
+use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Version;
 use Xi\Filelib\Renderer\Renderer;
 use Xi\Filelib\Renderer\Events;
@@ -170,13 +172,6 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
             ->method('dispatch')
             ->with(Events::RENDERER_RENDER, $this->isInstanceOf('Xi\Filelib\Event\RenderEvent'));
 
-        $this->pm
-            ->expects($this->once())
-            ->method('hasVersion')
-            ->with($file, Version::get('xooxer')
-            )
-            ->will($this->returnValue(true));
-
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
@@ -208,6 +203,11 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
                     ->expects($this->once())
                     ->method('provideVersion')
                     ->with($file, $this->equalTo(Version::get('xooxer')));
+
+                $this->fiop
+                    ->expects($this->once())
+                    ->method('update')
+                    ->with($file);
             }
         }
 
@@ -228,5 +228,158 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals($expectedHeaders, $ret->getHeaders());
 
     }
+
+    /**
+     * @test
+     */
+    public function invalidVersionReturns404()
+    {
+        $resource = Resource::create();
+        $file = File::create(
+            array(
+                'resource' => $resource,
+                'name' => 'lussuti.pdf',
+            )
+        );
+
+        $vp = $this->getMockedVersionProvider(array('xooxer'), true);
+
+        $this->pm
+            ->expects($this->any())
+            ->method('getVersionProvider')
+            ->with($file, Version::get('xooxer'))
+            ->will($this->returnValue($vp));
+
+        $vp
+            ->expects($this->never())
+            ->method('getApplicableVersionable');
+
+        $vp->expects($this->any())
+            ->method('ensureValidVersion')
+            ->with($this->equalTo(Version::get('xooxer')))
+            ->will($this->throwException(new InvalidVersionException('Gaa gaa')));
+
+        $ret = $this->renderer->render($file, 'xooxer');
+
+        $this->assertInstanceOf('Xi\Filelib\Renderer\Response', $ret);
+        $this->assertEquals(404, $ret->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function profileDoesntHaveVersionReturns404()
+    {
+        $resource = Resource::create();
+        $file = File::create(
+            array(
+                'resource' => $resource,
+                'name' => 'lussuti.pdf',
+            )
+        );
+
+        $vp = $this->getMockedVersionProvider(array('xooxer'), true);
+
+        $this->pm
+            ->expects($this->any())
+            ->method('getVersionProvider')
+            ->with($file, Version::get('xooxer'))
+            ->will($this->throwException(new InvalidVersionException('Guu guu')));
+
+        $vp
+            ->expects($this->never())
+            ->method('getApplicableVersionable');
+
+        $vp->expects($this->never())
+            ->method('ensureValidVersion');
+
+        $ret = $this->renderer->render($file, 'xooxer');
+
+        $this->assertInstanceOf('Xi\Filelib\Renderer\Response', $ret);
+        $this->assertEquals(404, $ret->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function notLazyProviderCantProvideLazily()
+    {
+        $resource = Resource::create();
+        $file = File::create(
+            array(
+                'resource' => $resource,
+                'name' => 'lussuti.pdf',
+            )
+        );
+
+        $vp = $this->getMockedVersionProvider(array('xooxer'), false);
+
+        $this->pm
+            ->expects($this->any())
+            ->method('getVersionProvider')
+            ->with($file, Version::get('xooxer'))
+            ->will($this->returnValue($vp));
+
+        $vp
+            ->expects($this->atLeastOnce())
+            ->method('getApplicableVersionable')
+            ->will($this->returnValue($resource));
+
+        $vp->expects($this->atLeastOnce())
+            ->method('ensureValidVersion')
+            ->will($this->returnArgument(0));
+
+        $ret = $this->renderer->render($file, 'xooxer');
+
+        $this->assertInstanceOf('Xi\Filelib\Renderer\Response', $ret);
+        $this->assertEquals(404, $ret->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function failedProviderFails()
+    {
+        $resource = Resource::create();
+        $file = File::create(
+            array(
+                'resource' => $resource,
+                'name' => 'lussuti.pdf',
+            )
+        );
+
+        $vp = $this->getMockedVersionProvider(array('xooxer'), true);
+
+        $this->pm
+            ->expects($this->any())
+            ->method('getVersionProvider')
+            ->with($file, Version::get('xooxer'))
+            ->will($this->returnValue($vp));
+
+        $vp
+            ->expects($this->atLeastOnce())
+            ->method('getApplicableVersionable')
+            ->will($this->returnValue($resource));
+
+        $vp->expects($this->atLeastOnce())
+            ->method('ensureValidVersion')
+            ->will($this->returnArgument(0));
+
+        $vp
+            ->expects($this->once())
+            ->method('provideVersion')
+            ->with($file, Version::get('xooxer'))
+            ->will($this->throwException(new RuntimeException('Oh noes')));
+
+        $this->fiop
+            ->expects($this->never())
+            ->method('update');
+
+        $ret = $this->renderer->render($file, 'xooxer');
+
+        $this->assertInstanceOf('Xi\Filelib\Renderer\Response', $ret);
+        $this->assertEquals(404, $ret->getStatusCode());
+    }
+
 
 }

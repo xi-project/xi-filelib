@@ -51,6 +51,10 @@ class Renderer
      */
     private $profiles;
 
+    /**
+     * @param FileLibrary $filelib
+     * @param RendererAdapter $adapter
+     */
     public function __construct(FileLibrary $filelib, RendererAdapter $adapter)
     {
         $this->adapter = $adapter;
@@ -85,8 +89,7 @@ class Renderer
             }
         }
 
-
-        // Authorization component support
+        // Renderer / authorization evil tag team
         try {
             $event = new FileEvent($file);
             $this->eventDispatcher->dispatch(Events::RENDERER_BEFORE_RENDER, $event);
@@ -101,18 +104,13 @@ class Renderer
         try {
             $provider = $this->profiles->getVersionProvider($file, $version);
             $version = $provider->ensureValidVersion($version);
-
-
         } catch (InvalidVersionException $e) {
-
             return $this->adaptResponse(
                 $response->setStatusCode(404),
                 $version,
                 null
             );
         }
-
-        $options = $this->mergeOptions($options);
 
         if (!$this->versionIsObtainable($file, $version)) {
             return $this->adaptResponse(
@@ -122,10 +120,11 @@ class Renderer
             );
         }
 
+        $options = $this->mergeOptions($options);
+
         if ($options['download'] == true) {
             $response->setHeader('Content-disposition', "attachment; filename={$file->getName()}");
         }
-
         $retrieved = new FileObject($this->retrieve($file, $version));
         $response->setHeader('Content-Type', $retrieved->getMimetype());
 
@@ -149,15 +148,17 @@ class Renderer
         return array_merge($this->defaultOptions, $options);
     }
 
-    protected function versionIsObtainable(File $file, $version)
+    /**
+     * Defines whether a version is obtainable by some means to render it
+     *
+     * @param File $file
+     * @param Version $version
+     * @return bool
+     */
+    protected function versionIsObtainable(File $file, Version $version)
     {
-        if (!$this->profiles->hasVersion($file, $version)) {
-            return false;
-        }
-
         $provider = $this->profiles->getVersionProvider($file, $version);
         $versionable = $provider->getApplicableVersionable($file);
-
 
         if ($versionable->hasVersion($version)) {
             return true;
@@ -168,7 +169,6 @@ class Renderer
         }
 
         try {
-
             $provider->provideVersion($file, $version);
             $this->fileRepository->update($file);
             return true;
@@ -177,7 +177,12 @@ class Renderer
         }
     }
 
-    private function retrieve(File $file, $version)
+    /**
+     * @param File $file
+     * @param Version $version
+     * @return string
+     */
+    private function retrieve(File $file, Version $version)
     {
         return $this->storage->retrieveVersion(
             $this->profiles->getVersionProvider($file, $version)->getApplicableVersionable($file),
@@ -185,6 +190,10 @@ class Renderer
         );
     }
 
+    /**
+     * @param FileObject $file
+     * @param Response $response
+     */
     protected function injectContentToResponse(FileObject $file, Response $response)
     {
         $response->setContent(
@@ -195,12 +204,12 @@ class Renderer
     }
 
     /**
-     * @param File $file
-     * @param string $version
      * @param Response $response
+     * @param Version $version
+     * @param File $file
      * @return mixed
      */
-    protected function adaptResponse(Response $response, $version, File $file = null)
+    protected function adaptResponse(Response $response, Version $version, File $file = null)
     {
         $adaptedResponse = $this->adapter->adaptResponse($response);
 

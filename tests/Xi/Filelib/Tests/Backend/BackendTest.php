@@ -527,4 +527,52 @@ class BackendTest extends TestCase
     {
         $this->assertInstanceOf('Xi\Filelib\Backend\IdentityMap\IdentityMap', $this->backend->getIdentityMap());
     }
+
+    /**
+     * @test
+     */
+    public function resolversWithoutCache()
+    {
+        $adapter = $this->getMockedBackendAdapter();
+        $ed = $this->getMockedEventDispatcher();
+        $backend = new Backend(
+            $ed,
+            $adapter
+        );
+
+        $this->assertSame(
+            array(
+                $backend->getIdentityMap(),
+                $adapter
+            ),
+            $backend->getResolvers()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function resolversWithCache()
+    {
+        $adapter = $this->getMockedBackendAdapter();
+        $ed = $this->getMockedEventDispatcher();
+        $cache = new Cache($this->getMockedCacheAdapter());
+
+        $backend = new Backend(
+            $ed,
+            $adapter
+        );
+
+        $backend->setCache($cache);
+
+        $this->assertSame(
+            array(
+                $backend->getIdentityMap(),
+                $cache,
+                $adapter,
+            ),
+            $backend->getResolvers()
+        );
+    }
+
 }
