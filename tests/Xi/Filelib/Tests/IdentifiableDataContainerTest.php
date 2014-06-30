@@ -43,4 +43,26 @@ class IdentifiableDataContainerTest extends TestCase
 
         $this->assertEquals('lipaiseepi', $data->get('tenhunen'));
     }
+
+    /**
+     * @test
+     */
+    public function has()
+    {
+        $data = new IdentifiableDataContainer();
+        $this->assertFalse($data->has('tenhunen'));
+
+        $data->set('tenhunen', 'suurmies');
+        $this->assertTrue($data->has('tenhunen'));
+    }
+
+    /**
+     * @test
+     */
+    public function invalidKeyThrowsUp()
+    {
+        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
+        $data = new IdentifiableDataContainer();
+        $data->set('tenhusen suuruus on käsittämätön', 'potenssiin kolme!');
+    }
 }

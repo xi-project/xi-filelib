@@ -147,18 +147,17 @@ class PublisherTest extends TestCase
 
         $this->assertNotSame($sourceData, $targetData);
 
-        $this->assertArrayHasKey('publisher.version_url', $sourceData->toArray());
-        $this->assertArrayHasKey('publisher.version_url', $targetData->toArray());
+        $this->assertTrue($sourceData->has('publisher.version_url'));
+        $this->assertTrue($targetData->has('publisher.version_url'));
 
         $publisher = new Publisher($this->getMockedPublisherAdapter(), $this->getMockedLinker());
 
         $event = new FileCopyEvent($source, $target);
         $publisher->onBeforeCopy($event);
 
-        $this->assertArrayHasKey('publisher.version_url', $sourceData->toArray());
-        $this->assertArrayNotHasKey('publisher.version_url', $targetData->toArray());
+        $this->assertTrue($sourceData->has('publisher.version_url'));
+        $this->assertFalse($targetData->has('publisher.version_url'));
     }
-
 
     /**
      * @test
@@ -262,7 +261,14 @@ class PublisherTest extends TestCase
         $version1 = Version::get('ankan');
         $version2 = Version::get('imaisu');
 
-        $file = File::create(array('profile' => 'default'));
+        $file = File::create(
+            array(
+                'profile' => 'default',
+                'data' => array(
+                    'versions' => array('ankan', 'imaisu')
+                )
+            )
+        );
 
         $this->fiop->expects($this->once())->method('update')->with($file);
 
@@ -346,7 +352,7 @@ class PublisherTest extends TestCase
         $version1 = Version::get('ankan');
         $version2 = Version::get('imaisu');
 
-        $this->assertArrayHasKey('publisher.version_url', $data->toArray());
+        $this->assertTrue($data->has('publisher.version_url'));
 
         $this->assertEquals(2, $this->publisher->getNumberOfPublishedVersions($file));
 
@@ -385,6 +391,7 @@ class PublisherTest extends TestCase
 
         $this->publisher->unpublishAllVersions($file);
 
+        $this->assertEquals(array(), $data->get('publisher.version_url'));
         $this->assertEquals(0, $this->publisher->getNumberOfPublishedVersions($file));
     }
 

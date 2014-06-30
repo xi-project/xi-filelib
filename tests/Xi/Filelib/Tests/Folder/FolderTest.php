@@ -113,7 +113,7 @@ class FolderTest extends BaseIdentifiableTestCase
         $folder->setUrl('/lussen/hofen');
         $folder->setUuid('luss3r');
         $folder->setData(array(
-            'tenhusta suurempi' => 'on vain tenhunen'
+            'tenhusta-suurempi' => 'on vain tenhunen'
         ));
 
         $this->assertEquals($folder->toArray(), array(
@@ -123,7 +123,7 @@ class FolderTest extends BaseIdentifiableTestCase
             'url' => '/lussen/hofen',
             'uuid' => 'luss3r',
             'data' => array(
-                'tenhusta suurempi' => 'on vain tenhunen'
+                'tenhusta-suurempi' => 'on vain tenhunen'
             )
         ));
 

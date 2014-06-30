@@ -147,7 +147,6 @@ class WatermarkCommand extends AbstractCommand
                 $y = 0 + $this->getWatermarkPadding();
                 break;
             case 'se':
-            default:
                 $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
                 $x = $imageWidth - $wWidth - $this->getWatermarkPadding();
                 break;
