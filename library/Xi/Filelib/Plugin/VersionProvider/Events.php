@@ -12,5 +12,5 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 class Events
 {
     const VERSIONS_PROVIDED = 'xi_filelib.plugins.version_provider.versions_provided';
-    const VERSIONS_DELETED = 'xi_filelib.plugins.version_provider.versions_deleted';
+    const VERSIONS_UNPROVIDED = 'xi_filelib.plugins.version_provider.versions_unprovided';
 }

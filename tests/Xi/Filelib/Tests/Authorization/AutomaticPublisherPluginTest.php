@@ -8,6 +8,7 @@ use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\Plugin\VersionProvider\Events;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Resource\Resource;
 
 class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -60,7 +61,7 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
             array(
                 CoreEvents::FILE_AFTER_UPDATE => 'doPermissionsCheck',
                 CoreEvents::PROFILE_AFTER_ADD => 'onFileProfileAdd',
-                Events::VERSIONS_DELETED => 'doUnpublish',
+                Events::VERSIONS_UNPROVIDED => 'doUnpublish',
                 Events::VERSIONS_PROVIDED => 'doPublish',
             ),
             AutomaticPublisherPlugin::getSubscribedEvents()
@@ -86,6 +87,24 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
         $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
 
         $event = new VersionProviderEvent($vp, $this->file, array('lusso', 'con-tusso'));
+        $this->plugin->doPublish($event);
+    }
+
+    /**
+     * @test
+     */
+    public function publishExitsEarlyIfResource()
+    {
+        $this->adapter
+            ->expects($this->never())
+            ->method('isFileReadableByAnonymous');
+
+        $this->publisher
+            ->expects($this->never())
+            ->method('publishVersion');
+
+        $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
+        $event = new VersionProviderEvent($vp, Resource::create(), array('lusso', 'con-tusso'));
         $this->plugin->doPublish($event);
     }
 
@@ -124,6 +143,21 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
         $event = new VersionProviderEvent($vp, $this->file, array('lusso', 'con-tusso', 'loso'));
         $this->plugin->doUnpublish($event);
     }
+
+    /**
+     * @test
+     */
+    public function unpublishExitsEarlyIfResource()
+    {
+        $this->publisher
+            ->expects($this->never())
+            ->method('unpublishVersion');
+
+        $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
+        $event = new VersionProviderEvent($vp, Resource::create(), array('lusso', 'con-tusso', 'loso'));
+        $this->plugin->doUnpublish($event);
+    }
+
 
     /**
      * @test

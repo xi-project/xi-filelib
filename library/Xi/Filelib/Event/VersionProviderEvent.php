@@ -10,9 +10,9 @@
 namespace Xi\Filelib\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Xi\Filelib\File\File;
 use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Versionable;
 
 class VersionProviderEvent extends Event
 {
@@ -22,19 +22,19 @@ class VersionProviderEvent extends Event
     private $provider;
 
     /**
-     * @var File
+     * @var Versionable
      */
-    private $file;
+    private $versionable;
 
     /**
      * @var array
      */
     private $versions;
 
-    public function __construct(VersionProvider $provider, File $file, $versions = array())
+    public function __construct(VersionProvider $provider, Versionable $versionable, $versions = array())
     {
         $this->provider = $provider;
-        $this->file = $file;
+        $this->versionable = $versionable;
         $this->versions = array_map(
             function ($version) {
                 return Version::get($version);
@@ -52,11 +52,11 @@ class VersionProviderEvent extends Event
     }
 
     /**
-     * @return File
+     * @return Versionable
      */
-    public function getFile()
+    public function getVersionable()
     {
-        return $this->file;
+        return $this->versionable;
     }
 
     /**

@@ -24,7 +24,7 @@ $filelib->getEventDispatcher()->addListener(
     VersionProviderEvents::VERSIONS_PROVIDED,
     function(VersionProviderEvent $event) use ($publisher) {
         foreach ($event->getVersions() as $version) {
-            $publisher->publishVersion($event->getFile(), Version::get($version));
+            $publisher->publishVersion($event->getVersionable(), Version::get($version));
         }
     }
 );

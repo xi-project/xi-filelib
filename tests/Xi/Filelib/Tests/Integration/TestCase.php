@@ -124,6 +124,9 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
                         array('sepiaToneImage', 90),
                         'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(ROOT_TESTS . '/data/watermark.png', 'se', 10),
                     )
+                ),
+                'croppo' => array(
+
                 )
             )
         );

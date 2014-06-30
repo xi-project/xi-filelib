@@ -22,7 +22,7 @@ class VersionProviderEventTest extends \Xi\Filelib\Tests\TestCase
         );
 
         $event = new VersionProviderEvent($vp, $file, $versions);
-        $this->assertSame($file, $event->getFile());
+        $this->assertSame($file, $event->getVersionable());
         $this->assertSame($vp, $event->getProvider());
         $this->assertEquals(
             array(

@@ -40,7 +40,7 @@ class AutomaticPublisherPlugin extends BasePlugin
      */
     protected static $subscribedEvents = [
         VPEvents::VERSIONS_PROVIDED => 'doPublish',
-        VPEvents::VERSIONS_DELETED => 'doUnpublish',
+        VPEvents::VERSIONS_UNPROVIDED => 'doUnpublish',
         CoreEvents::FILE_AFTER_UPDATE => 'doPermissionsCheck',
     ];
 
@@ -58,12 +58,17 @@ class AutomaticPublisherPlugin extends BasePlugin
      */
     public function doPublish(VersionProviderEvent $event)
     {
-        if (!$this->adapter->isFileReadableByAnonymous($event->getFile())) {
+        $versionable = $event->getVersionable();
+        if (!$versionable instanceof File) {
+            return;
+        }
+
+        if (!$this->adapter->isFileReadableByAnonymous($versionable)) {
             return;
         }
 
         foreach ($event->getVersions() as $version) {
-            $this->publisher->publishVersion($event->getFile(), $version);
+            $this->publisher->publishVersion($versionable, $version);
         }
     }
 
@@ -72,8 +77,13 @@ class AutomaticPublisherPlugin extends BasePlugin
      */
     public function doUnpublish(VersionProviderEvent $event)
     {
+        $versionable = $event->getVersionable();
+        if (!$versionable instanceof File) {
+            return;
+        }
+
         foreach ($event->getVersions() as $version) {
-            $this->publisher->unpublishVersion($event->getFile(), $version);
+            $this->publisher->unpublishVersion($versionable, $version);
         }
     }
 

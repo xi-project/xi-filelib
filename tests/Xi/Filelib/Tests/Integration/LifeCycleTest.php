@@ -29,7 +29,6 @@ class LifeCycleTest extends TestCase
 
         $file = $this->filelib->uploadFile($manateePath, $folder);
 
-
         $this->assertEquals(File::STATUS_COMPLETED, $file->getStatus());
         $this->assertPublisherFileCount(0);
 
@@ -150,6 +149,25 @@ class LifeCycleTest extends TestCase
         $this->assertSame($file1->getResource(), $file2->getResource());
         $this->assertTrue($file1->getResource()->hasVersion(Version::get('cinemascope')));
     }
+
+    /**
+     * @test
+     * @coversNothing
+     */
+    public function versionsMatch()
+    {
+        $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->uploadFile(new FileUpload($manateePath));
+
+        $resource = $file->getResource();
+
+        var_dump($resource);
+
+        // $this->assertTrue($resource->hasVersion(Version::get('cinemascope')));
+
+        // die('xoo');
+    }
+
 
     /**
      * @test

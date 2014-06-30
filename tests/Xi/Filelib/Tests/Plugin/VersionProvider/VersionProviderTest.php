@@ -382,11 +382,28 @@ class VersionProviderTest extends TestCase
             )
             ->will($this->onConsecutiveCalls(false, true));
 
+        $resource = Resource::create(array('mimetype' => 'image/png'));
+
+        $this->ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                VPEvents::VERSIONS_UNPROVIDED,
+                new VersionProviderEvent(
+                    $this->plugin,
+                    $resource,
+                    array(
+                        Version::get('xooxer'),
+                        Version::get('lusser')
+                    )
+                )
+            );
+
         $this->plugin->setProfiles(array('tussi', 'lussi'));
         $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
                      ->will($this->returnValue(array('xooxer', 'lusser')));
 
-        $resource = Resource::create(array('mimetype' => 'image/png'));
+
         $this->plugin->deleteProvidedVersions($resource);
     }
 

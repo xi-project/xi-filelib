@@ -20,9 +20,7 @@ class IdentifiableDataContainer
      */
     public function __construct($data = array())
     {
-        foreach ($data as $key => $value) {
-            $this->set($key, $value);
-        }
+        $this->data = array();
     }
 
     /**

@@ -186,13 +186,18 @@ abstract class VersionProvider extends BasePlugin
      */
     public function deleteProvidedVersions(Versionable $versionable)
     {
-        foreach ($this->getProvidedVersions() as $version) {
+        $versions = $this->getProvidedVersions();
+
+        foreach ($versions as $version) {
             $version = Version::get($version);
             $versionable->removeVersion($version);
             if ($this->storage->versionExists($versionable, $version)) {
                 $this->storage->deleteVersion($versionable, $version);
             }
         }
+
+        $event = new VersionProviderEvent($this, $versionable, $versions);
+        $this->eventDispatcher->dispatch(Events::VERSIONS_UNPROVIDED, $event);
     }
 
     public function areProvidedVersionsCreated(File $file)
