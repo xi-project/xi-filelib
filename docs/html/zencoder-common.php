@@ -1,11 +1,9 @@
 <?php
 
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
-use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
 use Xi\Filelib\Publisher\Linker\CreationTimeLinker;
-use Xi\Filelib\Authorization\AutomaticPublisherPlugin;
-use Xi\Filelib\Authorization\Adapter\SimpleAuthorizationAdapter;
+use Xi\Filelib\Publisher\Publisher;
 
 $zencoderPlugin = new ZencoderPlugin(
     'zencoder',

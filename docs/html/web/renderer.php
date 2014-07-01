@@ -1,6 +1,5 @@
 <?php
 
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Authorization\AccessDeniedException;
 
 require_once __DIR__ . '/../bootstrap.php';

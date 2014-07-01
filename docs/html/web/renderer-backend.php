@@ -3,12 +3,12 @@
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../renderer-common.php';
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Xi\Filelib\Event\RenderEvent;
 use Xi\Filelib\Renderer\AcceleratedRenderer;
 use Xi\Filelib\Renderer\Adapter\SymfonyRendererAdapter;
-use Symfony\Component\HttpFoundation\Request;
 use Xi\Filelib\Renderer\Events;
-use Xi\Filelib\Event\RenderEvent;
-use Symfony\Component\HttpFoundation\Response;
 
 // Hook into the render loop and replace error with a more funny version
 $filelib->getEventDispatcher()->addListener(

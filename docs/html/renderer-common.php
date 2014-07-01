@@ -1,13 +1,13 @@
 <?php
 
-use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
-use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
-use Xi\Filelib\Tool\Slugifier\Slugifier;
-use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
-use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Authorization\Adapter\SimpleAuthorizationAdapter;
 use Xi\Filelib\Authorization\AuthorizationPlugin;
+use Xi\Filelib\Plugin\Image\VersionPlugin;
+use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
+use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
+use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
+use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\Tool\Slugifier\Slugifier;
 
 $AuthorizationAdapter = new SimpleAuthorizationAdapter();
 $AuthorizationPlugin = new AuthorizationPlugin($AuthorizationAdapter);

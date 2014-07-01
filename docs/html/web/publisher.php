@@ -1,10 +1,9 @@
 <?php
 
-use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
-use Xi\Filelib\Publisher\Adapter\AmazonS3PublisherAdapter;
-use Xi\Filelib\Publisher\Linker\ReversibleCreationTimeLinker;
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
+use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
+use Xi\Filelib\Publisher\Linker\ReversibleCreationTimeLinker;
+use Xi\Filelib\Publisher\Publisher;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../constants.php';
