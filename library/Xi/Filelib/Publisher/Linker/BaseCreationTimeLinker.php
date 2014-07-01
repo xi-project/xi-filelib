@@ -10,7 +10,6 @@
 namespace Xi\Filelib\Publisher\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\Version;
 
 /**
