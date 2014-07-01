@@ -66,10 +66,14 @@ echo file_get_contents($filelib->getStorage()->retrieve($file->getResource()));
 
 ```
 
+### Documentation
+
+TODO!
+
 ### Examples and use cases
 
-̈́`docs/examples/web/index.php` contains a lot of coded examples. Checkout the code, configure a web server and dive
-straight into the code.
+https://github.com/xi-project/xi-filelib-examples contains a lot of examples from very simple to very complex
+use cases. Clone the repo, configure a web server and dive straight into the code!
 
 ## About integrating to your own software
 
