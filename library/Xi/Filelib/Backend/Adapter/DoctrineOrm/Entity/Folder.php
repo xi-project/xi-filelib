@@ -33,6 +33,11 @@ class Folder extends BaseEntity
     private $uuid;
 
     /**
+     * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent")
+     */
+    private $children;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Folder", inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
