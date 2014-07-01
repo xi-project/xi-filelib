@@ -170,7 +170,6 @@ class Renderer
 
         try {
             $provider->provideVersion($file, $version);
-            $this->fileRepository->update($file);
             return true;
         } catch (FilelibException $e) {
             return false;

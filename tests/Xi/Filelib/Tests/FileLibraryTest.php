@@ -369,9 +369,7 @@ class FileLibraryTest extends TestCase
     public function cacheCanBeSet()
     {
         $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
-
         $adapter = $this->getMockedCacheAdapter();
-        $this->assertNull($filelib->getCache());
         $this->assertSame($filelib, $filelib->createCacheFromAdapter($adapter));
         $this->assertInstanceOf('Xi\Filelib\Backend\Cache\Cache', $filelib->getCache());
     }

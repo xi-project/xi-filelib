@@ -205,9 +205,8 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
                     ->with($file, $this->equalTo(Version::get('xooxer')));
 
                 $this->fiop
-                    ->expects($this->once())
-                    ->method('update')
-                    ->with($file);
+                    ->expects($this->never())
+                    ->method('update');
             }
         }
 

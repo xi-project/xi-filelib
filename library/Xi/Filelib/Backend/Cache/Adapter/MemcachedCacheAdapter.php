@@ -100,4 +100,9 @@ class MemcachedCacheAdapter implements CacheAdapter
     {
         return $this->prefix . $className . '___' . $id;
     }
+
+    public function clear()
+    {
+        $this->memcached->flush();
+    }
 }

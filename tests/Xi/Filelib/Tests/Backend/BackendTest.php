@@ -515,7 +515,6 @@ class BackendTest extends TestCase
     public function cacheCanBeSet()
     {
         $cache = new Cache($this->getMockedCacheAdapter());
-        $this->assertNull($this->backend->getCache());
         $this->assertSame($this->backend, $this->backend->setCache($cache));
         $this->assertSame($cache, $this->backend->getCache());
     }
@@ -575,4 +574,20 @@ class BackendTest extends TestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function cacheDefaultsToNullCache()
+    {
+        $adapter = $this->getMockedBackendAdapter();
+        $ed = $this->getMockedEventDispatcher();
+
+        $backend = new Backend(
+            $ed,
+            $adapter
+        );
+
+        $cache = $backend->getCache();
+        $this->assertInstanceOf('Xi\Filelib\Backend\Cache\Adapter\NullCacheAdapter', $cache->getAdapter());
+    }
 }

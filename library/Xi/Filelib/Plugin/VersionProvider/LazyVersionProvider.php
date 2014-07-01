@@ -64,6 +64,8 @@ abstract class LazyVersionProvider extends VersionProvider
         $this->storage->storeVersion($versionable, $version, $tmp);
         unlink($tmp);
 
+        $this->fileRepository->update($file);
+
         $event = new VersionProviderEvent($this, $file, array($version));
         $this->eventDispatcher->dispatch(Events::VERSIONS_PROVIDED, $event);
     }

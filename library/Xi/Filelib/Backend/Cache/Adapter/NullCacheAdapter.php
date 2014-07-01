@@ -11,32 +11,44 @@ namespace Xi\Filelib\Backend\Cache\Adapter;
 
 use Xi\Filelib\Identifiable;
 
-interface CacheAdapter
+class NullCacheAdapter implements CacheAdapter
 {
     /**
      * @param $id
      * @param $className
      * @return Identifiable
      */
-    public function findById($id, $className);
+    public function findById($id, $className)
+    {
+        return false;
+    }
 
     /**
      * @param array $ids
      * @param $className
      * @return Identifiable[]
      */
-    public function findByIds(array $ids, $className);
+    public function findByIds(array $ids, $className)
+    {
+        return array();
+    }
 
     /**
      * @param Identifiable $identifiable
      */
-    public function save(Identifiable $identifiable);
+    public function save(Identifiable $identifiable)
+    {
+    }
 
     /**
      * @param Identifiable $identifiable
      * @return mixed
      */
-    public function delete(Identifiable $identifiable);
+    public function delete(Identifiable $identifiable)
+    {
+    }
 
-    public function clear();
+    public function clear()
+    {
+    }
 }

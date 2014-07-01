@@ -51,7 +51,15 @@ class VersionProviderTest extends TestCase
 
     private $filelib;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $ed;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $fire;
 
     public function setUp()
     {
@@ -62,6 +70,8 @@ class VersionProviderTest extends TestCase
         $this->pm = $this->getMockedProfileManager(array('tussi', 'lussi'));
 
         $this->ed = $this->getMockedEventDispatcher();
+
+        $this->fire = $this->getMockedFileRepository();
 
         $this->plugin = $this
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider')
@@ -81,7 +91,8 @@ class VersionProviderTest extends TestCase
                 'storage' => $this->storage,
                 'pm' => $this->pm,
                 'ed' => $this->ed,
-                'tempDir' => ROOT_TESTS . '/data/temp'
+                'tempDir' => ROOT_TESTS . '/data/temp',
+                'fire' => $this->fire,
             )
         );
         $this->filelib = $filelib;
@@ -609,6 +620,12 @@ class VersionProviderTest extends TestCase
                 ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
             );
 
+        $this->fire
+            ->expects($this->once())
+            ->method('update')
+            ->with(
+                $file
+            );
 
         $this->ed
             ->expects($this->once())
@@ -627,6 +644,96 @@ class VersionProviderTest extends TestCase
             ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
         );
     }
+
+
+    /**
+     * @test
+     */
+    public function providesAllVersions()
+    {
+        copy(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+        );
+
+        copy(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp/temporary-manatee2.jpg'
+        );
+
+        $this->assertFileExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+        );
+
+        $this->assertFileExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee2.jpg'
+        );
+
+        $file = File::create(
+            array(
+                'resource' => Resource::create(),
+            )
+        );
+
+        $this->plugin->attachTo($this->filelib);
+
+        $this->plugin
+            ->expects($this->any())
+            ->method('getProvidedVersions')
+            ->will($this->returnValue(array('tooxer', 'mooxer')));
+
+        $this->plugin
+            ->expects($this->once())
+            ->method('doCreateAllTemporaryVersions')
+            ->will($this->returnValue(
+                array(
+                    'tooxer' => ROOT_TESTS . '/data/temp/temporary-manatee.jpg',
+                    'mooxer' => ROOT_TESTS . '/data/temp/temporary-manatee2.jpg'
+                )
+            ));
+
+        $this->plugin
+            ->expects($this->exactly(1))
+            ->method('areSharedVersionsAllowed')
+            ->will($this->returnValue(false));
+
+        $this->storage
+            ->expects($this->exactly(2))
+            ->method('storeVersion')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\File\File'),
+                $this->isInstanceOf('Xi\Filelib\Version'),
+                $this->isType('string')
+            );
+
+        $this->fire
+            ->expects($this->once())
+            ->method('update')
+            ->with(
+                $file
+            );
+
+        $this->ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                VPEvents::VERSIONS_PROVIDED,
+                new VersionProviderEvent($this->plugin, $file, array(Version::get('tooxer'), Version::get('mooxer')))
+            );
+
+        $this->plugin->provideAllVersions(
+            $file
+        );
+
+        $this->assertFileNotExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+        );
+
+        $this->assertFileNotExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee2.jpg'
+        );
+    }
+
 
     /**
      * @test

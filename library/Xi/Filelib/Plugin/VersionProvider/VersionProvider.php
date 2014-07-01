@@ -69,6 +69,11 @@ abstract class VersionProvider extends BasePlugin
     protected $eventDispatcher;
 
     /**
+     * @var FileRepository
+     */
+    protected $fileRepository;
+
+    /**
      * @param callable $isApplicableTo
      */
     public function __construct($isApplicableTo)
@@ -97,6 +102,7 @@ abstract class VersionProvider extends BasePlugin
         $this->storage = $filelib->getStorage();
         $this->profiles = $filelib->getProfileManager();
         $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->fileRepository = $filelib->getFileRepository();
     }
 
     public function provideAllVersions(File $file)
@@ -110,6 +116,8 @@ abstract class VersionProvider extends BasePlugin
             $versionable->addVersion($version);
             unlink($tmp);
         }
+
+        $this->fileRepository->update($file);
 
         $event = new VersionProviderEvent($this, $file, array_keys($versions));
         $this->eventDispatcher->dispatch(Events::VERSIONS_PROVIDED, $event);

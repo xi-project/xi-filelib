@@ -20,7 +20,7 @@ class IdentifiableDataContainer
      */
     public function __construct($data = array())
     {
-        $this->data = array();
+        $this->data = $data;
     }
 
     /**
