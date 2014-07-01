@@ -44,11 +44,6 @@ class Resource extends BaseEntity
     private $dateCreated;
 
     /**
-     * @ORM\OneToMany(targetEntity="File", mappedBy="resource")
-     **/
-    private $files;
-
-    /**
      * Set hash
      *
      * @param  string   $hash

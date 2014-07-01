@@ -34,11 +34,6 @@ class BeautifurlLinker implements Linker
     private $slugifier;
 
     /**
-     * @var boolean
-     */
-    private $slugify = true;
-
-    /**
      * @var FolderRepository
      */
     private $folderRepository;

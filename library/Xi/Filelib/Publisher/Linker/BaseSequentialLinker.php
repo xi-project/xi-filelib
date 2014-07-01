@@ -133,10 +133,8 @@ abstract class BaseSequentialLinker
             $arr[] = floor($lus) + 1;
         }
 
-        $puuppa = array_pop($arr);
-
+        array_pop($arr);
         return implode(DIRECTORY_SEPARATOR, $arr);
-
     }
 
     /**
