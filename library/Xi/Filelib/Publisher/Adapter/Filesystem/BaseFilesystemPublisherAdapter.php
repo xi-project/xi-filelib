@@ -9,12 +9,12 @@
 
 namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 
-use Xi\Filelib\Version;
-use Xi\Filelib\Publisher\PublisherAdapter;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Publisher\Linker;
+use Xi\Filelib\Publisher\PublisherAdapter;
+use Xi\Filelib\Version;
 
 /**
  * Abstract filesystem publisher convenience class

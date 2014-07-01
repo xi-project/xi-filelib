@@ -9,11 +9,11 @@
 
 namespace Xi\Filelib\Folder\Command;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Command\Command;
-use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\FileLibrary;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Folder\FolderRepository;
 
 abstract class BaseFolderCommand implements Command
 {

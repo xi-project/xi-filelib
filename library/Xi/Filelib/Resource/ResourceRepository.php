@@ -9,17 +9,16 @@
 
 namespace Xi\Filelib\Resource;
 
-use Xi\Filelib\Command\CommandDefinition;
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\AbstractRepository;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\Backend\Finder\ResourceFinder;
-use Xi\Collections\Collection\ArrayCollection;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Filelib\Profile\ProfileManager;
 use DateTime;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Collections\Collection\ArrayCollection;
+use Xi\Filelib\AbstractRepository;
+use Xi\Filelib\Backend\Finder\ResourceFinder;
+use Xi\Filelib\Command\CommandDefinition;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Profile\ProfileManager;
 
 /**
  * Resource repository

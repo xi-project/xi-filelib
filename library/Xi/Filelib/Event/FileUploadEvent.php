@@ -11,8 +11,8 @@ namespace Xi\Filelib\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Profile\FileProfile;
 
 /**
  * File upload event

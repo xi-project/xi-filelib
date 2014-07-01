@@ -9,10 +9,10 @@
 
 namespace Xi\Filelib\Authorization\Adapter;
 
-use Xi\Filelib\File\File;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Authorization\AuthorizationAdapter;
+use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Folder\Folder;
 
 /**
  * Simple ACL for development / testing / simplest of actual use cases

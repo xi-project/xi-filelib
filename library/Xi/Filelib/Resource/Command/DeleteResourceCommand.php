@@ -9,10 +9,9 @@
 
 namespace Xi\Filelib\Resource\Command;
 
-use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Events;
-use Pekkis\Queue\Message;
+use Xi\Filelib\Resource\Resource;
 
 class DeleteResourceCommand extends BaseResourceCommand
 {

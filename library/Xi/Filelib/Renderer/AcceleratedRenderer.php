@@ -9,9 +9,8 @@
 
 namespace Xi\Filelib\Renderer;
 
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Renderer\AcceleratedRendererAdapter;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\FileLibrary;
 
 class AcceleratedRenderer extends Renderer
 {

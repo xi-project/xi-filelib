@@ -10,10 +10,9 @@
 namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Version;
 
 /**
@@ -39,7 +38,6 @@ class VersionPlugin extends LazyVersionProvider
     ) {
         parent::__construct(
             function (File $file) {
-                // @todo: maybe some more complex mime type based checking
                 return (bool) preg_match("/^image/", $file->getMimetype());
             }
         );

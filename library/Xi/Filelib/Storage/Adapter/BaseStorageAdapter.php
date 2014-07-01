@@ -9,9 +9,8 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Versionable;
 
 /**

@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
-use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 
 interface DirectoryIdCalculator

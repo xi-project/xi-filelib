@@ -10,20 +10,15 @@
 namespace Xi\Filelib\File\Command;
 
 use Rhumsaa\Uuid\Uuid;
+use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\Event\FolderEvent;
+use Xi\Filelib\Events;
+use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Event\FileUploadEvent;
-use Xi\Filelib\Event\FileEvent;
-use Xi\Filelib\Event\FolderEvent;
-use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\FilelibException;
-use Xi\Filelib\Backend\Finder\ResourceFinder;
-use DateTime;
-use Xi\Filelib\Events;
-use Pekkis\Queue\Message;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Queue\UuidReceiver;
 use Xi\Filelib\Resource\ResourceRepository;
@@ -115,7 +110,6 @@ class UploadFileCommand extends BaseFileCommand implements UuidReceiver
             )
         );
 
-        // @todo: actual statuses
         $file->setStatus(File::STATUS_RAW);
 
         $resource = $this->resourceRepository->findResourceForUpload($file, $upload);

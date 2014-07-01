@@ -9,8 +9,8 @@
 
 namespace Xi\Filelib\Backend\Cache\Adapter;
 
-use Xi\Filelib\Identifiable;
 use Memcached;
+use Xi\Filelib\Identifiable;
 use Xi\Filelib\RuntimeException;
 
 class MemcachedCacheAdapter implements CacheAdapter

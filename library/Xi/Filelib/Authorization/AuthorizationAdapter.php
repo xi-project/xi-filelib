@@ -9,9 +9,9 @@
 
 namespace Xi\Filelib\Authorization;
 
+use Xi\Filelib\Attacher;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Attacher;
 
 /**
  * ACL adapter interface

@@ -12,7 +12,6 @@ namespace Xi\Filelib;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Command\Commander;
 use Xi\Filelib\Command\CommanderClient;
-use Xi\Filelib\FileLibrary;
 
 abstract class AbstractRepository implements Attacher, CommanderClient
 {

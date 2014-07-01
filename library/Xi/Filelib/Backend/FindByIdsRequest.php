@@ -10,11 +10,11 @@
 namespace Xi\Filelib\Backend;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Traversable;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Event\IdentifiableEvent;
-use Xi\Filelib\Identifiable;
-use Traversable;
 use Xi\Filelib\Events;
+use Xi\Filelib\Identifiable;
 
 class FindByIdsRequest
 {

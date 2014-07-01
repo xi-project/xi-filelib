@@ -9,15 +9,13 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
+use Xi\Filelib\FilelibException;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Storage\Retrieved;
-use Xi\Filelib\Versionable;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\File\File;
-use Xi\Filelib\FilelibException;
-use Xi\Filelib\File\FileObject;
 use Xi\Filelib\Version;
+use Xi\Filelib\Versionable;
 
 /**
  * Storage interface

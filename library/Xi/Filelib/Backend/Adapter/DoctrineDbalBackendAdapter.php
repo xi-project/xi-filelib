@@ -9,17 +9,17 @@
 
 namespace Xi\Filelib\Backend\Adapter;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Xi\Filelib\Backend\FindByIdsRequest;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Backend\Finder\Finder;
-use Doctrine\DBAL\Connection;
-use PDO;
 use ArrayIterator;
-use Iterator;
 use DateTime;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Iterator;
+use PDO;
+use Xi\Filelib\Backend\FindByIdsRequest;
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Resource\Resource;
 
 /**
  * Doctrine Dbal backend for filelib. Only supports postgresql and mysql because of portability stuff.

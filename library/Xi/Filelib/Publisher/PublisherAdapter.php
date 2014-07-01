@@ -9,11 +9,11 @@
 
 namespace Xi\Filelib\Publisher;
 
+use Xi\Filelib\Attacher;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Linker;
-use Xi\Filelib\Attacher;
+use Xi\Filelib\Version;
 
 /**
  * Publisher adapter interface

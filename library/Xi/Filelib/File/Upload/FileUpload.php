@@ -9,8 +9,8 @@
 
 namespace Xi\Filelib\File\Upload;
 
-use Xi\Filelib\File\FileObject;
 use DateTime;
+use Xi\Filelib\File\FileObject;
 use Xi\Filelib\RuntimeException;
 
 /**

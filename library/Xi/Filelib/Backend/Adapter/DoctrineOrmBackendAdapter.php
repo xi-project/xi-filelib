@@ -9,16 +9,16 @@
 
 namespace Xi\Filelib\Backend\Adapter;
 
-use Xi\Filelib\Backend\FindByIdsRequest;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Folder\Folder;
+use ArrayIterator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
-use Xi\Filelib\Backend\Finder\Finder;
-use PDO;
 use Iterator;
-use ArrayIterator;
+use PDO;
+use Xi\Filelib\Backend\FindByIdsRequest;
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Resource\Resource;
 
 /**
  * Doctrine 2 backend for filelib

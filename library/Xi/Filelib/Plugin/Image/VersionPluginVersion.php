@@ -9,9 +9,6 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileRepository;
-
 class VersionPluginVersion
 {
     /**

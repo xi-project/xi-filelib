@@ -9,12 +9,12 @@
 
 namespace Xi\Filelib\Backend\IdentityMap;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Xi\Collections\Collection;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\FindByIdsRequestResolver;
 use Xi\Filelib\Event\IdentifiableEvent;
-use Xi\Collections\Collection;
 use Xi\Filelib\Events;
 use Xi\Filelib\Identifiable;
 

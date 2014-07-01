@@ -9,12 +9,11 @@
 
 namespace Xi\Filelib\Plugin;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Event\PluginEvent;
-use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\File\File;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Events;
+use Xi\Filelib\InvalidArgumentException;
 
 class PluginManager
 {

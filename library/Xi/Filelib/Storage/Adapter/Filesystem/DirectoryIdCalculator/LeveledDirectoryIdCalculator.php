@@ -9,8 +9,8 @@
 
 namespace Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
-use Xi\Filelib\LogicException;
 use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\LogicException;
 
 /**
  * Creates directories in a leveled hierarchy based on a numeric file id

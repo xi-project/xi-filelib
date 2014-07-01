@@ -9,16 +9,16 @@
 
 namespace Xi\Filelib\Authorization\Adapter;
 
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
+use Symfony\Component\Security\Acl\Model\AclProviderInterface;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 use Xi\Filelib\Authorization\AuthorizationAdapter;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\FolderRepository;
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use Symfony\Component\Security\Acl\Model\AclProviderInterface;
-use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
-use Symfony\Component\Security\Acl\Permission\MaskBuilder;
-use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 
 class SymfonyAuthorizationAdapter implements AuthorizationAdapter
 {

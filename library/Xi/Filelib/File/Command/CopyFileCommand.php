@@ -9,18 +9,16 @@
 
 namespace Xi\Filelib\File\Command;
 
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Event\FileCopyEvent;
-use Xi\Filelib\InvalidArgumentException;
 use DateTime;
-use Xi\Filelib\Events;
-use Xi\Filelib\Event\FolderEvent;
-use Pekkis\Queue\Message;
 use Rhumsaa\Uuid\Uuid;
+use Xi\Filelib\Event\FileCopyEvent;
+use Xi\Filelib\Event\FolderEvent;
+use Xi\Filelib\Events;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Queue\UuidReceiver;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Resource\ResourceRepository;
 
 class CopyFileCommand extends BaseFileCommand implements UuidReceiver
