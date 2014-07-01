@@ -55,27 +55,27 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
 
     public function __construct()
     {
-        $this->fileReadable = function (File $file) {
+        $this->fileReadable = function () {
             return true;
         };
 
-        $this->fileReadableByAnonymous = function (File $file) {
+        $this->fileReadableByAnonymous = function () {
             return true;
         };
 
-        $this->fileWritable = function (File $file) {
+        $this->fileWritable = function () {
             return true;
         };
 
-        $this->folderReadableByAnonymous = function (Folder $folder) {
+        $this->folderReadableByAnonymous = function () {
             return true;
         };
 
-        $this->folderReadable = function (Folder $folder) {
+        $this->folderReadable = function () {
             return true;
         };
 
-        $this->folderWritable = function (Folder $folder) {
+        $this->folderWritable = function () {
             return true;
         };
     }
