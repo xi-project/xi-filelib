@@ -9,12 +9,15 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\FileIOException;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Storage\Retrieved;
+use Xi\Filelib\Versionable;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\Version;
 
 /**
  * Storage interface
@@ -22,6 +25,8 @@ use Xi\Filelib\File\FileObject;
  */
 interface StorageAdapter
 {
+    public function attachTo(FileLibrary $filelib);
+
     /**
      * Stores an uploaded file
      *
@@ -35,7 +40,7 @@ interface StorageAdapter
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
      * @param Resource $resource
-     * @return string
+     * @return Retrieved
      * @throws FilelibException
      */
     public function retrieve(Resource $resource);
@@ -58,31 +63,32 @@ interface StorageAdapter
     public function delete(Resource $resource);
 
     /**
-     * @param Storable $storable
-     * @param string $version
+     * @param Versionable $versionable
+     * @param Version $version
      * @param string $tempResource
      * @throws FileIOException
      */
-    public function storeVersion(Storable $storable, $version, $tempResource);
+    public function storeVersion(Versionable $versionable, Version $version, $tempResource);
 
     /**
-     * @param Storable $storable
-     * @param string $version
+     * @param Versionable $versionable
+     * @param Version $version
+     * @return Retrieved
      * @throws FileIOException
      */
-    public function retrieveVersion(Storable $storable, $version);
+    public function retrieveVersion(Versionable $versionable, Version $version);
 
     /**
-     * @param Storable $storable
-     * @param string $version
+     * @param Versionable $versionable
+     * @param Version $version
      * @throws FileIOException
      */
-    public function deleteVersion(Storable $storable, $version);
+    public function deleteVersion(Versionable $versionable, Version $version);
 
     /**
-     * @param Storable $storable
-     * @param string $version
+     * @param Versionable $versionable
+     * @param Version $version
      * @throws FileIOException
      */
-    public function versionExists(Storable $storable, $version);
+    public function versionExists(Versionable $versionable, Version $version);
 }

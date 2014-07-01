@@ -11,8 +11,10 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Version;
 
 /**
  * Versions an image
@@ -29,11 +31,8 @@ class VersionPlugin extends LazyVersionProvider
      */
     protected $versions;
 
-
     /**
-     * @param string $identifier
-     * @param array $commandDefinitions
-     * @param string $mimeType
+     * @param array $versionDefinitions
      */
     public function __construct(
         $versionDefinitions = array()
@@ -55,6 +54,9 @@ class VersionPlugin extends LazyVersionProvider
 
     }
 
+    /**
+     * @param FileLibrary $filelib
+     */
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
@@ -62,29 +64,35 @@ class VersionPlugin extends LazyVersionProvider
     }
 
     /**
-     * Creates temporary version
-     *
-     * @param  File  $file
+     * @param File $file
+     * @param Version $version
      * @return array
      */
-    public function createTemporaryVersions(File $file)
+    protected function doCreateTemporaryVersion(File $file, Version $version)
     {
         $retrieved = $this->storage->retrieve(
             $file->getResource()
         );
 
+        $versionVersion = $this->versions[$version->getVersion()];
+
+        return array(
+            $version->toString(),
+            $versionVersion->getHelper($retrieved, $this->tempDir)->execute(),
+        );
+    }
+
+    /**
+     * @param File $file
+     * @return array
+     */
+    protected function doCreateAllTemporaryVersions(File $file)
+    {
         $ret = array();
-
-        foreach ($this->versions as $key => $version) {
-
-            $img = $version->getHelper()->createImagick($retrieved);
-            $version->getHelper()->execute($img);
-            $tmp = $this->tempDir . '/' . uniqid('', true);
-            $img->writeImage($tmp);
-
-            $ret[$version->getIdentifier()] = $tmp;
+        foreach ($this->getProvidedVersions() as $version) {
+            list ($identifier, $path) = $this->createTemporaryVersion($file, Version::get($version));
+            $ret[$identifier] = $path;
         }
-
         return $ret;
     }
 
@@ -103,24 +111,50 @@ class VersionPlugin extends LazyVersionProvider
 
     /**
      * @param File $file
-     * @param string $version
+     * @param Version $version
      * @return string
      */
-    public function getExtension(File $file, $version)
+    public function getExtension(File $file, Version $version)
     {
-        if ($mimeType = $this->versions[$version]->getMimeType()) {
+        if ($mimeType = $this->versions[$version->getVersion()]->getMimeType()) {
             return $this->getExtensionFromMimeType($mimeType);
         }
         return parent::getExtension($file, $version);
     }
 
+    /**
+     * @return bool
+     */
     public function isSharedResourceAllowed()
     {
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function areSharedVersionsAllowed()
     {
         return true;
+    }
+
+    /**
+     * @param Version $version
+     * @return Version
+     * @throws InvalidVersionException
+     */
+    public function ensureValidVersion(Version $version)
+    {
+        $version = parent::ensureValidVersion($version);
+
+        if (count($version->getParams())) {
+            throw new InvalidVersionException("Version has parameters");
+        }
+
+        if (count($version->getModifiers())) {
+            throw new InvalidVersionException("Version has modifiers");
+        }
+
+        return $version;
     }
 }

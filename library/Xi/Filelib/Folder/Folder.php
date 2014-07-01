@@ -11,6 +11,7 @@ namespace Xi\Filelib\Folder;
 
 use Xi\Filelib\BaseIdentifiable;
 use Xi\Filelib\Identifiable;
+use Xi\Filelib\IdentifiableDataContainer;
 
 /**
  * Folder
@@ -20,20 +21,6 @@ use Xi\Filelib\Identifiable;
  */
 class Folder extends BaseIdentifiable implements Identifiable
 {
-    /**
-     * Key to method mapping for fromArray
-     *
-     * @var array
-     */
-    protected static $map = array(
-        'id' => 'setId',
-        'parent_id' => 'setParentId',
-        'name' => 'setName',
-        'url' => 'setUrl',
-        'uuid' => 'setUuid',
-        'data' => 'setData',
-    );
-
     /**
      * @var mixed
      */
@@ -152,25 +139,26 @@ class Folder extends BaseIdentifiable implements Identifiable
      * @param  array  $data
      * @return Folder
      */
-    public function fromArray(array $data)
-    {
-        foreach (static::$map as $key => $method) {
-            if (isset($data[$key])) {
-                $this->$method($data[$key]);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param  array  $data
-     * @return Folder
-     */
     public static function create(array $data = array())
     {
-        $folder = new self();
-        return $folder->fromArray($data);
+        $defaults = array(
+            'id' => null,
+            'parent_id' => null,
+            'name' => null,
+            'url' => null,
+            'uuid' => null,
+            'data' => new IdentifiableDataContainer(array())
+        );
+        $data = array_merge($defaults, $data);
+
+        $obj = new self();
+        $obj->setId($data['id']);
+        $obj->setParentId($data['parent_id']);
+        $obj->setName($data['name']);
+        $obj->setUrl($data['url']);
+        $obj->setUuid($data['uuid']);
+        $obj->setData($data['data']);
+
+        return $obj;
     }
 }

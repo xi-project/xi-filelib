@@ -2,12 +2,15 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Storage\Adapter\BaseTemporaryRetrievingStorageAdapter;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use DateTime;
+use Xi\Filelib\Version;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {
@@ -27,6 +30,13 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      * @var StorageAdapter
      */
     protected $storage;
+
+    /**
+     * @var bool
+     */
+    protected $retrievesTemporarily;
+
+    protected $filelib;
 
     /**
      * @abstract
@@ -50,9 +60,11 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->resourceVersionPath = ROOT_TESTS . '/data/self-lussing-manatee-mini.jpg';
         $this->fileSpecificVersionPath = ROOT_TESTS . '/data/self-lussing-manatee-file-specific.jpg';
 
-        $this->version = 'xoo';
+        $this->version = Version::get('xoo');
 
-        $this->storage = $this->getStorage();
+        list ($this->storage, $this->retrievesTemporarily) = $this->getStorage();
+
+        $this->filelib = $this->getMockedFilelib();
 
     }
 
@@ -79,15 +91,23 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function storeAndRetrieveAndDeleteShouldWorkInHarmony()
     {
+        if ($this->storage instanceof BaseTemporaryRetrievingStorageAdapter) {
+            $this->filelib
+                ->expects($this->once())
+                ->method('getTempDir')
+                ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
+        }
+
+        $this->storage->attachTo($this->filelib);
+
         $this->assertFalse($this->storage->exists($this->resource));
         $this->storage->store($this->resource, $this->resourcePath);
 
         $this->assertTrue($this->storage->exists($this->resource), 'Storage did not store');
 
         $retrieved = $this->storage->retrieve($this->resource);
-        $this->assertInternalType('string', $retrieved);
-
-        $this->assertFileEquals($this->resourcePath, $retrieved);
+        $this->assertInstanceOf('Xi\Filelib\Storage\Retrieved', $retrieved);
+        $this->assertFileEquals($this->resourcePath, $retrieved->getPath());
 
         $this->storage->delete($this->resource);
         $this->assertFalse($this->storage->exists($this->resource));
@@ -99,6 +119,14 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function versionStoreAndRetrieveAndDeleteShouldWorkInHarmony()
     {
+        if ($this->storage instanceof BaseTemporaryRetrievingStorageAdapter) {
+            $this->filelib
+                ->expects($this->once())
+                ->method('getTempDir')
+                ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
+        }
+        $this->storage->attachTo($this->filelib);
+
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version));
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version, $this->file));
 
@@ -113,8 +141,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $retrieved = $this->storage->retrieveVersion($this->resource, $this->version);
         $retrieved2 = $this->storage->retrieveVersion($this->file, $this->version);
 
-        $this->assertFileEquals($this->resourceVersionPath, $retrieved);
-        $this->assertFileEquals($this->fileSpecificVersionPath, $retrieved2);
+        $this->assertFileEquals($this->resourceVersionPath, $retrieved->getPath());
+        $this->assertFileEquals($this->fileSpecificVersionPath, $retrieved2->getPath());
 
         $this->storage->deleteVersion($this->resource, $this->version);
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version));

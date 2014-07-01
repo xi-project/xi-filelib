@@ -28,7 +28,7 @@ class FilesystemStorageAdapterTest extends TestCase
 
         $storage = new FilesystemStorageAdapter(ROOT_TESTS . '/data/files', $dc);
 
-        return $storage;
+        return array($storage, false);
     }
 
     /**

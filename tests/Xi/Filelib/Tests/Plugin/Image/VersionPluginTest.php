@@ -14,6 +14,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\Version;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Resource\Resource;
@@ -119,22 +120,25 @@ class VersionPluginTest extends TestCase
         $file = File::create(array('id' => 1, 'resource' => Resource::create()));
 
         $this->storage
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('retrieve')
             ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
             ->will($this->returnValue($retrievedPath));
+
+        $ed = $this->getMockedEventDispatcher();
 
         $pm = $this->getMockedProfileManager(array('xooxer'));
         $filelib = $this->getMockedFilelib(
             null, array(
                 'storage' => $this->storage,
-                'pm' => $pm
+                'pm' => $pm,
+                'ed' => $ed
             )
         );
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
 
         $this->plugin->attachTo($filelib);
-        $ret = $this->plugin->createTemporaryVersions($file);
+        $ret = $this->plugin->createAllTemporaryVersions($file);
         $this->assertInternalType('array', $ret);
 
         foreach ($ret as $version => $tmp) {
@@ -175,7 +179,7 @@ class VersionPluginTest extends TestCase
                 )
             )
         );
-        $ret = $plugin->getExtension($this->getMockedFile(), 'xooxoo');
+        $ret = $plugin->getExtension($this->getMockedFile(), Version::get('xooxoo'));
         $this->assertSame('gbr', $ret);
     }
 
@@ -208,15 +212,13 @@ class VersionPluginTest extends TestCase
 
         $storage->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xooxoo')
+            ->with($resource, Version::get('xooxoo'))
             ->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
-        $ret = $plugin->getExtension($file, 'xooxoo');
+        $ret = $plugin->getExtension($file, Version::get('xooxoo'));
 
         $this->assertSame('jpg', $ret);
     }
-
-
 
     /**
      * @test
@@ -225,5 +227,44 @@ class VersionPluginTest extends TestCase
     {
         $filelib = $this->getMockedFilelib();
         $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue('lussutushovi'));
+    }
+
+    /**
+     * @return array
+     */
+    public function provideVersionsAndValidities()
+    {
+        return array(
+            array('valid-version', true),
+            array('valid-version@mod', false),
+            array('valid-versionn', false),
+            array('valid-version::lusso:tusso', false),
+            array('valid-version::lusso:tusso@xoo', false),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideVersionsAndValidities
+     */
+    public function checksVersionValidity($version, $expected)
+    {
+        if (!$expected) {
+            $this->setExpectedException('Xi\Filelib\InvalidVersionException');
+        }
+
+        $plugin = new VersionPlugin(
+            array(
+                'valid-version' => array(
+                    array(),
+                    null
+                )
+            )
+        );
+
+        $version = Version::get($version);
+        $version2 = $plugin->ensureValidVersion($version);
+        $this->assertSame($version, $version2);
+        $this->assertInstanceOf('Xi\Filelib\Version', $version2);
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "xi/filelib",
     "type": "library",
-    "description": "File library for PHP 5.3",
+    "description": "File library for PHP",
     "keywords": ["file management", "file", "image", "video"],
     "homepage": "http://github.com/xi-project/xi-filelib",
     "license": "BSD-3-Clause",
@@ -20,7 +20,7 @@
     ],
 
     "require": {
-        "php": ">=5.3.10",
+        "php": ">=5.4.0",
         "symfony/event-dispatcher": "~2.0",
         "dflydev/apache-mime-types": "~1.0",
         "rhumsaa/uuid": "~2.3",

@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\Adapter\AmazonS3PublisherAdapter;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Tests\TestCase;
@@ -36,12 +37,17 @@ class AmazonS3PublisherTest extends TestCase
 
     private $path;
 
+    private $version;
+
     public function setUp()
     {
         if (!getenv('S3_KEY')) {
             $this->markTestSkipped('S3 not configured');
             return;
         }
+
+        $this->version = Version::get('xooxer');
+
         $this->adapter = new AmazonS3PublisherAdapter(getenv('S3_KEY'), getenv('S3_SECRETKEY'), getenv('S3_BUCKET'));
 
         $this->storage = $this->getMockedStorage();
@@ -61,26 +67,26 @@ class AmazonS3PublisherTest extends TestCase
 
         $this->vp
             ->expects($this->any())
-            ->method('getMimetype')
-            ->with($this->file, 'xooxer')
+            ->method('getMimeType')
+            ->with($this->file, $this->version)
             ->will($this->returnValue('image/jpeg'));
 
         $this->vp
             ->expects($this->any())
             ->method('getExtension')
-            ->with($this->file, 'xooxer')
+            ->with($this->file, $this->version)
             ->will($this->returnValue('jpg'));
 
         $this->vp
             ->expects($this->any())
-            ->method('getApplicableStorable')
+            ->method('getApplicableVersionable')
             ->with($this->file)
             ->will($this->returnValue($this->resource));
 
         $this->storage
             ->expects($this->any())
             ->method('retrieveVersion')
-            ->with($this->resource, 'xooxer')
+            ->with($this->resource, $this->version)
             ->will($this->returnValue(ROOT_TESTS . '/data/self-lussing-manatee.jpg'));
 
         $this->path = 'lusso/grande/ankan-lipaisija.jpg';
@@ -88,9 +94,8 @@ class AmazonS3PublisherTest extends TestCase
         $this->linker
             ->expects($this->any())
             ->method('getLink')
-            ->with($this->file, 'xooxer', 'jpg')
+            ->with($this->file, $this->version, 'jpg')
             ->will($this->returnValue($this->path));
-
     }
 
     public function tearDown()
@@ -126,10 +131,10 @@ class AmazonS3PublisherTest extends TestCase
         $client = $this->adapter->getClient();
         $this->assertFalse($client->doesObjectExist(getenv('S3_BUCKET'), $this->path));
 
-        $this->adapter->publish($this->file, 'xooxer', $this->vp, $this->linker);
+        $this->adapter->publish($this->file, $this->version, $this->vp, $this->linker);
         $this->assertTrue($client->doesObjectExist(getenv('S3_BUCKET'), $this->path));
 
-        $this->adapter->unpublish($this->file, 'xooxer', $this->vp, $this->linker);
+        $this->adapter->unpublish($this->file, $this->version, $this->vp, $this->linker);
         $this->assertFalse($client->doesObjectExist(getenv('S3_BUCKET'), $this->path));
     }
 
@@ -138,7 +143,7 @@ class AmazonS3PublisherTest extends TestCase
      */
     public function getsUrl()
     {
-        $url = $this->adapter->getUrl($this->file, 'xooxer', $this->vp, $this->linker);
+        $url = $this->adapter->getUrl($this->file, $this->version, $this->vp, $this->linker);
 
         $this->assertEquals(
             'https://' . getenv('S3_BUCKET') . '.s3.amazonaws.com/' . $this->path,

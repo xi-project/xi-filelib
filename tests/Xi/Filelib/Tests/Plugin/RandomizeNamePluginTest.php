@@ -89,6 +89,9 @@ class RandomizeNamePluginTest extends TestCase
         } else {
             $this->assertArrayNotHasKey('extension', $pinfo);
         }
+
+        $this->assertEquals($name, $file->getData()->get('plugin.randomize_name.original_name'));
+
     }
 
     /**

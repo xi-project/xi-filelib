@@ -20,7 +20,7 @@ $originalPlugin = new OriginalVersionPlugin('original');
 $filelib->addPlugin($originalPlugin, array('default'));
 
 $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-09.jpg');
-$publisher->publish($file);
+$publisher->publishAllVersions($file);
 
 ?>
 

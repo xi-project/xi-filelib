@@ -4,10 +4,11 @@ namespace Xi\Filelib\Tests\File;
 
 use DateTime;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
-use ArrayObject;
+use Xi\Filelib\Tests\BaseVersionableTestCase;
 
-class FileTest extends \Xi\Filelib\Tests\TestCase
+class FileTest extends BaseVersionableTestCase
 {
     /**
      * @test
@@ -15,6 +16,11 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
     public function classShouldExist()
     {
         $this->assertTrue(class_exists('Xi\Filelib\File\File'));
+    }
+
+    public function getClassName()
+    {
+        return 'Xi\Filelib\File\File';
     }
 
     /**
@@ -28,11 +34,11 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'resource' => $resource,
         ));
 
-        $resource->expects($this->once())->method('getMimetype');
-        $resource->expects($this->once())->method('getSize');
+        $resource->expects($this->once())->method('getMimetype')->will($this->returnValue('lus/tus'));
+        $resource->expects($this->once())->method('getSize')->will($this->returnValue(666));
 
-        $ret = $file->getMimetype();
-        $ret = $file->getSize();
+        $this->assertEquals('lus/tus', $file->getMimetype());
+        $this->assertEquals(666, $file->getSize());
 
     }
 
@@ -64,7 +70,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertEquals($val, $file->getName());
 
         $val = new DateTime('1978-01-02');
-        $this->assertNull($file->getDateCreated());
+        $this->assertInstanceOf('DateTime', $file->getDateCreated());
         $this->assertSame($file, $file->setDateCreated($val));
         $this->assertSame($val, $file->getDateCreated());
 
@@ -85,77 +91,44 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
 
         $val = array('lussen', 'le', 'tussen');
         $this->assertEquals(array(), $file->getVersions());
-        $this->assertSame($file, $file->setVersions($val));
+        foreach ($val as $version) {
+            $this->assertSame($file, $file->addVersion(Version::get($version)));
+        }
         $this->assertEquals($val, $file->getVersions());
 
     }
 
     /**
-     * @return array
-     */
-    public function fromArrayProvider()
-    {
-        return array(
-            array(
-                array(
-                    'id' => 1,
-                    'folder_id' => 1,
-                    'mimetype' => 'image/jpeg',
-                    'profile' => 'default',
-                    'size' => 600,
-                    'name' => 'puuppa.jpg',
-                    'link' => 'lussenhoff',
-                    'date_created' => new \DateTime('2010-01-01 01:01:01'),
-                    'status' => 8,
-                    'uuid' => 'uuid-uuid',
-                    'resource' => Resource::create(),
-                    'versions' => array('watussi', 'lussi')
-                ),
-            ),
-            array(
-                array(
-                    'link' => 'lussenhoff',
-                ),
-            ),
-
-        );
-
-    }
-
-    /**
-     * @dataProvider fromArrayProvider
      * @test
      */
-    public function fromArrayShouldWorkAsExpected($data)
+    public function createInitializesValues()
     {
-        $file = File::create();
-        $file->fromArray($data);
-
-        $map = array(
-            'id' => 'getId',
-            'folder_id' => 'getFolderId',
-            'profile' => 'getProfile',
-            'name' => 'getName',
-            'date_created' => 'getDateCreated',
-            'status' => 'getStatus',
-            'resource' => 'getResource',
-            'uuid' => 'getUuid',
-            'versions' => 'getVersions'
+        $data = array(
+            'id' => 'lussen-id',
+            'folder_id' => 'lussen-folder',
+            'profile' => 'lussen-profile',
+            'name' => 'lussen-name',
+            'date_created' => new DateTime('1978-03-21'),
+            'status' => File::STATUS_COMPLETED,
+            'resource' => Resource::create(),
+            'uuid' => 'lussen-uuid',
+            'data' => array(
+                'versions' => array('tussen'),
+                'tenhunen' => 'on suurista suurin'
+            )
         );
 
-        foreach ($map as $key => $method) {
-            if (isset($data[$key])) {
-                $this->assertEquals($data[$key], $file->$method());
-            } else {
+        $file = File::create($data);
 
-                if ($key == 'versions') {
-                    $this->assertEquals(array(), $file->$method());
-                } else {
-                    $this->assertNull($file->$method());
-                }
-            }
-        }
-
+        $this->assertEquals($data['id'], $file->getId());
+        $this->assertEquals($data['folder_id'], $file->getFolderId());
+        $this->assertEquals($data['profile'], $file->getProfile());
+        $this->assertEquals($data['name'], $file->getName());
+        $this->assertSame($data['date_created'], $file->getDateCreated());
+        $this->assertEquals($data['status'], $file->getStatus());
+        $this->assertSame($data['resource'], $file->getResource());
+        $this->assertEquals($data['uuid'], $file->getUuid());
+        $this->assertEquals($data['data'], $file->getData()->toArray());
     }
 
     /**
@@ -172,7 +145,9 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
         $file->setStatus(54);
         $file->setUuid('tussi-poski');
         $file->setResource(Resource::create());
-        $file->setVersions(array('lussi', 'xussi'));
+
+        $file->addVersion(Version::get('lussi'));
+        $file->addVersion(Version::get('xussi'));
 
         $this->assertEquals($file->toArray(), array(
             'id' => 1,
@@ -192,7 +167,7 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
             'folder_id' => null,
             'profile' => null,
             'name' => null,
-            'date_created' => null,
+            'date_created' => new DateTime(),
             'status' => null,
             'uuid' => null,
             'resource' => null,
@@ -209,96 +184,4 @@ class FileTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->assertInstanceOf('Xi\Filelib\File\File', File::create(array()));
     }
-
-    /**
-     * @test
-     */
-    public function getDataShouldReturnACachedArrayObject()
-    {
-        $file = File::create();
-        $data = $file->getData();
-
-        $this->assertInstanceOf('Xi\Filelib\IdentifiableDataContainer', $data);
-        $data->set('tussi', 'lussi');
-
-        $this->assertSame($data, $file->getData());
-
-    }
-
-    /**
-     * @test
-     */
-    public function addVersionShouldAddVersion()
-    {
-        $file = File::create(array('versions' => array('tussi', 'watussi')));
-        $file->addVersion('lussi');
-
-        $this->assertEquals(array('tussi', 'watussi', 'lussi'), $file->getVersions());
-    }
-
-    /**
-     * @test
-     */
-    public function addVersionShouldNotAddVersionIfVersionExists()
-    {
-        $file = File::create(array('versions' => array('tussi', 'watussi')));
-        $file->addVersion('watussi');
-
-        $this->assertEquals(array('tussi', 'watussi'), $file->getVersions());
-    }
-
-    /**
-     * @test
-     */
-    public function removeVersionShouldRemoveVersion()
-    {
-        $file = File::create(array('versions' => array('tussi', 'watussi')));
-        $file->removeVersion('watussi');
-
-        $this->assertEquals(array('tussi'), $file->getVersions());
-    }
-
-    /**
-     * @test
-     */
-    public function hasVersionShouldReturnWhetherResourceHasVersion()
-    {
-        $file = File::create(array('versions' => array('tussi', 'watussi')));
-
-        $this->assertTrue($file->hasVersion('tussi'));
-        $this->assertTrue($file->hasVersion('watussi'));
-        $this->assertFalse($file->hasVersion('lussi'));
-    }
-
-    /**
-     * @test
-     */
-    public function gettingAndSettingDataWorks()
-    {
-        $file = File::create(array());
-        $data = $file->getData();
-        $this->assertInstanceOf('Xi\Filelib\IdentifiableDataContainer', $data);
-
-        $file->setData(array('lusso' => 'magnifico'));
-
-        $data = $file->getData();
-        $this->assertEquals('magnifico', $data->get('lusso'));
-    }
-
-    /**
-     * @test
-     */
-    public function clonesDeeply()
-    {
-        $source = File::create();
-        $sourceData = $source->getData();
-        $sourceData->set('lussutappa', 'tussia');
-
-        $target = clone $source;
-        $targetData = $target->getData();
-
-        $this->assertEquals($source->getData()->toArray(), $target->getData()->toArray());
-        $this->assertNotSame($sourceData, $targetData);
-    }
-
 }

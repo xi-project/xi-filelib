@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Tests\Publisher\Linker;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\Linker\CreationTimeLinker;
 use DateTime;
 
@@ -25,7 +26,7 @@ class CreationTimeLinkerTest extends \Xi\Filelib\Tests\TestCase
     {
         $linker = new CreationTimeLinker();
         $linker->attachTo($this->getMockedFilelib());
-        
+
         $this->assertSame('Y/m/d', $linker->getFormat());
     }
 
@@ -48,7 +49,7 @@ class CreationTimeLinkerTest extends \Xi\Filelib\Tests\TestCase
         $file = File::create(array('date_created' => DateTime::createFromFormat('Y-m-d H:i:s', $date), 'name' => $name));
         $linker = new CreationTimeLinker($format);
 
-        $this->assertSame($expected, $linker->getLink($file, 'lubster', 'tussi'));
+        $this->assertSame($expected, $linker->getLink($file, Version::get('lubster'), 'tussi'));
     }
 
 

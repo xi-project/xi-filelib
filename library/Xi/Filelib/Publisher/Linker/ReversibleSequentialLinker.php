@@ -12,6 +12,7 @@ namespace Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\ReversibleLinker;
 
 /**
@@ -53,6 +54,7 @@ class ReversibleSequentialLinker extends BaseSequentialLinker implements Reversi
         $pinfo = pathinfo($link);
         $split = explode('-', $pinfo['filename']);
         $version = array_pop($split);
+        $version = Version::get($version);
         $uuid = implode('-', $split);
         $file = $this->fileRepository->findByUuid($uuid);
         return array($file, $version);

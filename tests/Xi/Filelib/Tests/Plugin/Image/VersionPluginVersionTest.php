@@ -26,7 +26,6 @@ class VersionPluginVersionTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals('lussogrande', $version->getIdentifier());
-        $this->assertInstanceOf('Xi\Filelib\Plugin\Image\ImageMagickHelper', $version->getHelper());
         $this->assertEquals('image/jpeg', $version->getMimeType());
     }
 }

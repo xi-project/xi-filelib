@@ -61,8 +61,9 @@ class GaufretteStorageAdapterTest extends TestCase
         $filesystem = $this->getFilesystem();
 
         $dc = new TimeDirectoryIdCalculator();
-        $storage = new GaufretteStorageAdapter($filesystem, $dc);
+        $storage = new GaufretteStorageAdapter($filesystem, $dc, false);
 
-        return $storage;
+        return array($storage, true);
     }
+
 }

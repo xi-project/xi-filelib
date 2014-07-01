@@ -71,6 +71,8 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
             $resource->expects($this->once())->method('setHash');
             $backend->expects($this->once())->method('updateResource')->with($resource);
 
+            $resource->expects($this->exactly(2))->method('addVersion');
+
         }
 
         $foop->expects($this->once())->method('findRoot')->will($this->returnValue($rootFolder));
@@ -90,6 +92,8 @@ class ResourceRefactorMigrationTest extends \Xi\Filelib\Tests\TestCase
         $file->expects($this->any())->method('getProfile')->will($this->returnValue('lus'));
         $file->expects($this->once())->method('setUuid')->with($this->isType('string'));
         $file->expects($this->any())->method('getResource')->will($this->returnValue($resource));
+
+
 
         $profile->expects($this->any())->method('getFileVersions')->with($file)->will($this->returnValue(array('lus', 'xoo')));
 

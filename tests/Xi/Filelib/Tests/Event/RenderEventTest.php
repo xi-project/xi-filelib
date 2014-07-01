@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Tests\Event;
 
 use Xi\Filelib\Event\RenderEvent;
+use Xi\Filelib\Version;
 use Xi\Filelib\Renderer\Response;
 use Symfony\Component\HttpFoundation\Response as AdaptedResponse;
 
@@ -28,7 +29,7 @@ class RenderEventTest extends \Xi\Filelib\Tests\TestCase
         $event = new RenderEvent($response, $adaptedResponse, 'gran-tenhunen', $file);
 
         $this->assertSame($file, $event->getFile());
-        $this->assertEquals('gran-tenhunen', $event->getVersion());
+        $this->assertEquals(Version::get('gran-tenhunen'), $event->getVersion());
         $this->assertSame($response, $event->getInternalResponse());
         $this->assertSame($adaptedResponse, $event->getAdaptedResponse());
 

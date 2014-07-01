@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Profile;
 
+use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\File;
@@ -16,6 +17,7 @@ use Xi\Filelib\Event\PluginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Events;
+use Xi\Filelib\Version;
 
 class FileProfile implements EventSubscriberInterface
 {
@@ -128,11 +130,11 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Returns whether a file has a certain version
      *
-     * @param  File    $file    File item
-     * @param  string  $version Version
+     * @param File $file
+     * @param Version $version
      * @return boolean
      */
-    public function fileHasVersion(File $file, $version)
+    public function fileHasVersion(File $file, Version $version)
     {
         try {
             $this->getVersionProvider($file, $version);
@@ -145,19 +147,24 @@ class FileProfile implements EventSubscriberInterface
     /**
      * Returns version provider for a file/version
      *
-     * @param  File                     $file    File item
-     * @param  string                   $version Version
-     * @return VersionProvider          Provider
-     * @throws InvalidArgumentException
+     * @param File $file
+     * @param Version $version
+     * @return VersionProvider
+     * @throws InvalidVersionException
      */
-    public function getVersionProvider(File $file, $version)
+    public function getVersionProvider(File $file, Version $version)
     {
         $versions = $this->getFileVersions($file);
-
-        if (in_array($version, $versions)) {
-            return $this->fileVersions[$version];
+        if (in_array($version->getVersion(), $versions)) {
+            return $this->fileVersions[$version->getVersion()];
         }
-        throw new InvalidArgumentException("File has no version '{$version}'");
+
+        throw new InvalidVersionException(
+            sprintf(
+                "File has no version '%s'",
+                $version->toString()
+            )
+        );
     }
 
     /**

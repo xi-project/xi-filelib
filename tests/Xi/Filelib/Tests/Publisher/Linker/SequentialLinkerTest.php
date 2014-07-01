@@ -10,7 +10,9 @@
 namespace Xi\Filelib\Tests\Linker;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\Linker\SequentialLinker;
+use Xi\Filelib\Folder\Folder;
 
 /**
  * @group linker
@@ -19,6 +21,8 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
 {
     public function setUp()
     {
+        $this->version = Version::get('xoo');
+
         $fo = $this->getMockBuilder('\Xi\Filelib\Folder\FolderRepository')->disableOriginalConstructor()->getMock();
         $fo->expects($this->any())
              ->method('find')
@@ -68,7 +72,7 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $vp->expects($this->any())
              ->method('getExtension')
-             ->with($this->isInstanceOf('Xi\Filelib\File\File'), 'xoo')
+             ->with($this->isInstanceOf('Xi\Filelib\File\File'), $this->version)
              ->will($this->returnValue('xoo'));
 
         $this->versionProvider = $vp;
@@ -119,8 +123,8 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
             $beautifurl[1],
             $linker->getLink(
                 $file,
-                'xoo',
-                $this->versionProvider->getExtension($file, 'xoo')
+                $this->version,
+                $this->versionProvider->getExtension($file, $this->version)
             )
         );
 

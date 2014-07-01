@@ -12,6 +12,7 @@ namespace Xi\Filelib\Profile;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileProfileEvent;
@@ -32,11 +33,11 @@ class ProfileManager
     /**
      * Returns whether a file has a certain version
      *
-     * @param  File    $file    File item
-     * @param  string  $version Version
+     * @param File $file
+     * @param Version $version
      * @return boolean
      */
-    public function hasVersion(File $file, $version)
+    public function hasVersion(File $file, Version $version)
     {
         return $this->getProfile($file->getProfile())->fileHasVersion($file, $version);
     }
@@ -44,11 +45,11 @@ class ProfileManager
     /**
      * Returns version provider for a file/version
      *
-     * @param  File            $file    File item
-     * @param  string          $version Version
+     * @param File $file
+     * @param Version $version
      * @return VersionProvider
      */
-    public function getVersionProvider(File $file, $version)
+    public function getVersionProvider(File $file, Version $version)
     {
         return $this->getProfile($file->getProfile())->getVersionProvider($file, $version);
     }

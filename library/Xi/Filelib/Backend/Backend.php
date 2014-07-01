@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Backend;
 
 use Xi\Collections\Collection\ArrayCollection;
+use Xi\Filelib\Backend\Cache\Adapter\NullCacheAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\Backend\IdentityMap\IdentityMap;
@@ -63,6 +64,11 @@ class Backend
      */
     public function getCache()
     {
+        // NullCacheAdapter just makes sure that theres no need for cache-enabled/disabled checks in client code
+        if (!$this->cache) {
+            $this->cache = new Cache(new NullCacheAdapter());
+        }
+
         return $this->cache;
     }
 

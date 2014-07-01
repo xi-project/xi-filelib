@@ -147,7 +147,6 @@ class WatermarkCommand extends AbstractCommand
                 $y = 0 + $this->getWatermarkPadding();
                 break;
             case 'se':
-            default:
                 $y = $imageHeight - $wHeight - $this->getWatermarkPadding();
                 $x = $imageWidth - $wWidth - $this->getWatermarkPadding();
                 break;
@@ -162,7 +161,7 @@ class WatermarkCommand extends AbstractCommand
     public function getWatermarkResource()
     {
         if (!$this->watermark) {
-            $this->watermark = $this->helper->createImagick($this->getWatermarkImage());
+            $this->watermark = new Imagick($this->getWatermarkImage());
         }
 
         return $this->watermark;

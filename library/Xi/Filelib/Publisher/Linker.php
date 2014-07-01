@@ -11,6 +11,7 @@ namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Attacher;
+use Xi\Filelib\Version;
 
 /**
  * Linker interface
@@ -24,9 +25,9 @@ interface Linker extends Attacher
      * Returns link for a version of a file
      *
      * @param  File   $file
-     * @param  string $version   Version identifier
+     * @param  Version $version   Version identifier
      * @param  string $extension Extension
      * @return string Versioned link
      */
-    public function getLink(File $file, $version, $extension);
+    public function getLink(File $file, Version $version, $extension);
 }

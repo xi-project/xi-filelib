@@ -11,23 +11,52 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Imagick;
 use ImagickException;
-use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Plugin\Image\Command\Command;
+use Xi\Filelib\RuntimeException;
 
-/**
- * ImageMagick helper
- *
- * @author pekkis
- */
 class ImageMagickHelper
 {
-    protected $commands = array();
+    /**
+     * @var string
+     */
+    private $source;
 
-    public function __construct($commandDefinitions = array())
+    /**
+     * @var string
+     */
+    private $outputDir;
+
+    /**
+     * @var array
+     */
+    private $commands = array();
+
+    /**
+     * @var bool
+     */
+    private $isExecuted = false;
+
+    /**
+     * @param string $source
+     * @param string $outputDir
+     * @param array $commandDefinitions
+     */
+    public function __construct($source, $outputDir, $commandDefinitions = array())
     {
+        $this->source = $source;
+        $this->outputDir = $outputDir;
+
         foreach ($commandDefinitions as $key => $definition) {
             $this->addCommand($this->createCommandFromDefinition($key, $definition));
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExecuted()
+    {
+        return $this->isExecuted;
     }
 
     /**
@@ -66,29 +95,37 @@ class ImageMagickHelper
     }
 
     /**
-     * @param Imagick $img
+     * @return string
+     * @throws RuntimeException
      */
-    public function execute(Imagick $img)
+    public function execute()
     {
+        if ($this->isExecuted()) {
+            throw new RuntimeException('Helper already executed');
+        }
+
+        $img = $this->createImagick();
+        $tmp = $this->outputDir . '/' . uniqid('', true);
         foreach ($this->getCommands() as $command) {
             $command->execute($img);
         }
+        $img->writeImage($tmp);
+        $this->isExecuted = true;
+
+        return $tmp;
     }
 
     /**
-     * Creates a new imagick resource from path
-     *
-     * @param  string                   $path Image path
      * @return Imagick
-     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
-    public function createImagick($path)
+    private function createImagick()
     {
         try {
-            return new Imagick($path);
+            return new Imagick($this->source);
         } catch (ImagickException $e) {
-            throw new InvalidArgumentException(
-                sprintf("ImageMagick could not be created from path '%s'", $path),
+            throw new RuntimeException(
+                sprintf("ImageMagick could not be created from path '%s'", $this->source),
                 500,
                 $e
             );

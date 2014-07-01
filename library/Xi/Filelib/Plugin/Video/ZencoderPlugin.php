@@ -15,10 +15,12 @@ use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
+use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\RuntimeException;
 use Aws\S3\S3Client;
+use Xi\Filelib\Version;
 
 class ZencoderPlugin extends VersionProvider
 {
@@ -192,12 +194,12 @@ class ZencoderPlugin extends VersionProvider
      *
      * @param string $version
      */
-    public function getExtension(File $file, $version)
+    public function getExtension(File $file, Version $version)
     {
-        if (preg_match("#thumbnail$#", $version)) {
+        if (preg_match("#thumbnail$#", $version->toString())) {
             return 'png';
         }
-        return $this->outputs[$version]['extension'];
+        return $this->outputs[$version->toString()]['extension'];
     }
 
     /**
@@ -227,10 +229,8 @@ class ZencoderPlugin extends VersionProvider
      * @return array
      * @throws RuntimeException
      */
-    public function createTemporaryVersions(File $file)
+    protected function doCreateAllTemporaryVersions(File $file)
     {
-        $awsPath = $this->getAwsBucket() . '/' . $file->getUuid();
-
         $retrieved = $this->storage->retrieve($file->getResource());
 
         /** @var Model $result */
@@ -357,6 +357,21 @@ class ZencoderPlugin extends VersionProvider
     public function areSharedVersionsAllowed()
     {
         return true;
+    }
+
+    public function ensureValidVersion(Version $version)
+    {
+        $version = parent::ensureValidVersion($version);
+
+        if (count($version->getParams())) {
+            throw new InvalidVersionException("Version has parameters");
+        }
+
+        if (count($version->getModifiers())) {
+            throw new InvalidVersionException("Version has modifiers");
+        }
+
+        return $version;
     }
 
     private function waitUntilJobFinished(Job $job)

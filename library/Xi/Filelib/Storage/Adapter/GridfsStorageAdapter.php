@@ -15,14 +15,16 @@ use MongoGridFSFile;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Storage\Retrieved;
+use Xi\Filelib\Versionable;
+use Xi\Filelib\Version;
 
 /**
  * Stores files in MongoDB's GridFS filesystem
  *
  * @author pekkis
  */
-class GridfsStorageAdapter extends BaseStorageAdapter
+class GridfsStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
 {
     /**
      * @var MongoDB Mongo reference
@@ -45,14 +47,13 @@ class GridfsStorageAdapter extends BaseStorageAdapter
     private $tempFiles = array();
 
     /**
-     * @param  MongoDB       $mongo   A MongoDB instance
-     * @param  string        $tempDir Temporary directory
-     * @return GridfsStorage
+     * @param MongoDB $mongo
+     * @param string $prefix
+     * @param null $tempDir
      */
-    public function __construct(MongoDB $mongo, $prefix = 'xi_filelib', $tempDir = null)
+    public function __construct(MongoDB $mongo, $prefix = 'xi_filelib')
     {
         $this->mongo = $mongo;
-        $this->tempFiles = new TemporaryFileContainer($tempDir);
         $this->prefix = $prefix;
     }
 
@@ -100,9 +101,9 @@ class GridfsStorageAdapter extends BaseStorageAdapter
     }
 
 
-    public function versionExists(Storable $storable, $version)
+    public function versionExists(Versionable $versionable, Version $version)
     {
-        $filename = $this->getFilenameVersion($storable, $version);
+        $filename = $this->getFilenameVersion($versionable, $version);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
 
         return (bool) $file;
@@ -118,12 +119,9 @@ class GridfsStorageAdapter extends BaseStorageAdapter
      */
     private function toTemp(MongoGridFSFile $file)
     {
-        $tmp = $this->tempFiles->getTemporaryFilename();
-
+        $tmp = $this->getTemporaryFilename();
         $file->write($tmp);
-        $this->tempFiles->registerTemporaryFile($tmp);
-
-        return $tmp;
+        return new Retrieved($tmp, true);
     }
 
     public function store(Resource $resource, $tempFile)
@@ -141,16 +139,16 @@ class GridfsStorageAdapter extends BaseStorageAdapter
         );
     }
 
-    public function storeVersion(Storable $storable, $version, $tempFile)
+    public function storeVersion(Versionable $versionable, Version $version, $tempFile)
     {
-        $filename = $this->getFilenameVersion($storable, $version);
+        $filename = $this->getFilenameVersion($versionable, $version);
         $this->getGridFS()->storeFile(
             $tempFile,
             array(
                 'filename' => $filename,
                 'metadata' => array(
-                    'id' => $storable->getId(),
-                    'version' => $version
+                    'id' => $versionable->getId(),
+                    'version' => $version->toString()
                 )
             )
         );
@@ -164,9 +162,9 @@ class GridfsStorageAdapter extends BaseStorageAdapter
         return $this->toTemp($file);
     }
 
-    public function retrieveVersion(Storable $storable, $version)
+    public function retrieveVersion(Versionable $versionable, Version $version)
     {
-        $filename = $this->getFilenameVersion($storable, $version);
+        $filename = $this->getFilenameVersion($versionable, $version);
         $file = $this->getGridFS()->findOne(array('filename' => $filename));
 
         return $this->toTemp($file);
@@ -178,9 +176,9 @@ class GridfsStorageAdapter extends BaseStorageAdapter
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
-    public function deleteVersion(Storable $storable, $version)
+    public function deleteVersion(Versionable $versionable, Version $version)
     {
-        $filename = $this->getFilenameVersion($storable, $version);
+        $filename = $this->getFilenameVersion($versionable, $version);
         $this->getGridFS()->remove(array('filename' => $filename));
     }
 
@@ -189,11 +187,11 @@ class GridfsStorageAdapter extends BaseStorageAdapter
         return $resource->getId();
     }
 
-    private function getFilenameVersion(Storable $storable, $version)
+    private function getFilenameVersion(Versionable $versionable, Version $version)
     {
-        list($resource, $file) = $this->extractResourceAndFileFromStorable($storable);
+        list($resource, $file) = $this->extractResourceAndFileFromVersionable($versionable);
 
-        $path = $resource->getId() . '/' . $version;
+        $path = $resource->getId() . '/' . $version->toString();
         if ($file) {
             $path = '/' . $file->getId();
         }

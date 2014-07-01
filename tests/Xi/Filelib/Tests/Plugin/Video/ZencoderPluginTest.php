@@ -14,6 +14,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Events;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Version;
 
 /**
  * @group plugin
@@ -185,10 +186,10 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $file = $this->getMockedFile();
 
-        $this->assertEquals('lussen', $this->plugin->getExtension($file, 'pygmi'));
-        $this->assertEquals('dorfer', $this->plugin->getExtension($file, 'watussi'));
+        $this->assertEquals('lussen', $this->plugin->getExtension($file, Version::get('pygmi')));
+        $this->assertEquals('dorfer', $this->plugin->getExtension($file, Version::get('watussi')));
 
-        $this->assertEquals('png', $this->plugin->getExtension($file, 'watussi_thumbnail'));
+        $this->assertEquals('png', $this->plugin->getExtension($file, Version::get('watussi_thumbnail')));
 
     }
 
@@ -291,7 +292,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
         $this->plugin->setSleepyTime(0);
 
-        $ret = $this->plugin->createTemporaryVersions($file);
+        $ret = $this->plugin->createAllTemporaryVersions($file);
 
         $this->assertInternalType('array', $ret);
         $this->assertCount(4, $ret);
@@ -396,7 +397,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             500
         );
 
-        $this->plugin->createTemporaryVersions($file);
+        $this->plugin->createAllTemporaryVersions($file);
     }
 
     private function getMockedAwsService()
@@ -453,6 +454,41 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         );
 
         return $details;
+    }
+
+    /**
+     * @return array
+     */
+    public function provideVersionsAndValidities()
+    {
+        return array(
+            array('pygmi', true),
+            array('pygmi@mod', false),
+            array('watussi', true),
+            array('watussi::xoo:xoo', false),
+            array('watussix', false),
+            array('watussi_thumbnail', true),
+            array('watussi__thumbnail', false),
+            array('pygmi_thumbnailx', false),
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideVersionsAndValidities
+     */
+    public function checksVersionValidity($version, $expected)
+    {
+        if (!$expected) {
+            $this->setExpectedException('Xi\Filelib\InvalidVersionException');
+        }
+
+        $plugin = $this->plugin;
+
+        $version = Version::get($version);
+        $version2 = $plugin->ensureValidVersion($version);
+        $this->assertSame($version, $version2);
+        $this->assertInstanceOf('Xi\Filelib\Version', $version2);
     }
 
 }

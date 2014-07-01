@@ -9,9 +9,10 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Versionable;
 
 /**
  * Abstract storage convenience base class with common methods implemented
@@ -20,17 +21,21 @@ use Xi\Filelib\Storage\Storable;
  */
 abstract class BaseStorageAdapter implements StorageAdapter
 {
+    public function attachTo(FileLibrary $filelib)
+    {
+    }
+
     /**
-     * @param Storable $storable
+     * @param Versionable $versionable
      * @return array Tuple of storage and file (or null)
      */
-    protected function extractResourceAndFileFromStorable(Storable $storable)
+    protected function extractResourceAndFileFromVersionable(Versionable $versionable)
     {
-        if ($storable instanceof File) {
-            $file = $storable;
+        if ($versionable instanceof File) {
+            $file = $versionable;
             $resource = $file->getResource();
         } else {
-            $resource = $storable;
+            $resource = $versionable;
             $file = null;
         }
         return array($resource, $file);

@@ -7,13 +7,12 @@ use DateTime;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;
 
 /**
- * @author Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
- *
  * @group backend
  */
 abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
@@ -76,12 +75,12 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
         $data = array(
             'hash' => 'hashendaal',
             'date_created' => new DateTime('2010-10-10 10:10:10'),
-            'versions' => array('loso', 'puuppa'),
             'size' => 6000,
             'mimetype' => 'lussuta/tussia',
             'exclusive' => true,
             'data' => array(
-                'grande' => 'lusso'
+                'grande' => 'lusso',
+                'versions' => array('loso', 'puuppa'),
             )
         );
 
@@ -149,12 +148,15 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
         $this->assertNotEquals($versions, $resource->getVersions());
         $this->assertTrue($resource->isExclusive());
 
-        $resource->setVersions($versions);
+        $expectedVersions = array_merge($resource->getVersions(), $versions);
+        foreach ($versions as $version) {
+            $resource->addVersion(Version::get($version));
+        }
         $resource->setExclusive(false);
         $this->assertTrue($this->backend->updateResource($resource));
 
         $resource2 = $this->findResource($resourceId);
-        $this->assertEquals($versions, $resource2->getVersions());
+        $this->assertEquals($expectedVersions, $resource2->getVersions());
         $this->assertFalse($resource2->isExclusive());
     }
 
@@ -419,7 +421,6 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
             'status' => 5,
             'uuid' => 'uuid-lussid',
             'resource' => Resource::create(array('id' => 1)),
-            'versions' => array(),
         );
 
         $fodata = array(
@@ -444,7 +445,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals($fidata['status'], $file->getStatus());
         $this->assertEquals($fidata['uuid'], $file->getUuid());
         $this->assertEquals($fidata['resource'], $file->getResource());
-        $this->assertEquals($fidata['versions'], $file->getVersions());
+        $this->assertEquals(array(), $file->getVersions());
     }
 
     /**

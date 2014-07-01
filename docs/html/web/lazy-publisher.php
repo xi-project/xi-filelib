@@ -4,7 +4,7 @@ require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../lazy-publisher-common.php';
 
 $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-25.jpg');
-$publisher->publish($file);
+// $publisher->publishAllVersions($file);
 ?>
 
 <html>
@@ -26,6 +26,10 @@ $publisher->publish($file);
 
             <p>
                 <img src="<?php echo $publisher->getUrl($file, 'cinemascope'); ?>" />
+            </p>
+
+            <p>
+                <img src="<?php echo $publisher->getUrl($file, 'arbitrary::x:500'); ?>" />
             </p>
 
         </div>

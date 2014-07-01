@@ -36,6 +36,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
                 'commander' => null,
                 'queue' => null,
                 'pm' => null,
+                'tempDir' => null,
             );
 
             $mocks = array_merge($defaults, $args[1]);
@@ -59,6 +60,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
         }
 
         $ret = $filelib->getMock();
+
+        if (isset($tempDir)) {
+            $ret->expects($this->any())->method('getTempDir')->will($this->returnValue($tempDir));
+        }
 
         if ($fire) {
             $ret->expects($this->any())->method('getFileRepository')->will($this->returnValue($fire));
@@ -208,6 +213,17 @@ class TestCase extends \PHPUnit_Framework_TestCase
     public function getMockedReversibleLinker()
     {
         return $this->getMock('Xi\Filelib\Publisher\ReversibleLinker');
+    }
+
+    public function getMockedImagick($path = null)
+    {
+        if (!$path) {
+            $path = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        }
+        return $this
+            ->getMockBuilder('\Imagick')
+            ->setConstructorArgs(array($path))
+            ->getMock();
     }
 
     /**
@@ -423,15 +439,27 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getMockedVersionProvider($versions = array(), $lazy = false)
-    {
+    public function getMockedVersionProvider(
+        $versions = array(),
+        $lazy = false,
+        $methods = array(
+            'getMimeType',
+            'getApplicableVersionable',
+            'getExtension',
+            'provideVersions',
+            'provideVersion',
+            'isApplicableTo',
+            'ensureValidVersion',
+        )
+    ) {
         $class = $lazy ? 'Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider'
             : 'Xi\Filelib\Plugin\VersionProvider\VersionProvider';
 
         $versionProvider = $this
             ->getMockBuilder($class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->setMethods($methods)
+            ->getMockForAbstractClass();
 
         $versionProvider
             ->expects($this->any())

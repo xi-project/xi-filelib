@@ -11,6 +11,7 @@ namespace Xi\Filelib\Publisher\Linker;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\Linker;
+use Xi\Filelib\Version;
 
 /**
  * Calculates directory id by formatting an objects creation date
@@ -42,16 +43,16 @@ abstract class BaseCreationTimeLinker
 
     /**
      * @param File $file
-     * @param string $version
+     * @param Version $version
      * @param string $extension
      * @return string
      */
-    public function getLink(File $file, $version, $extension)
+    public function getLink(File $file, Version $version, $extension)
     {
         $pinfo = pathinfo($this->getFileName($file));
 
         return $file->getDateCreated()->format($this->getFormat()) . '/' . $pinfo['filename']
-           . '-' . $version . '.' . $extension;
+           . '-' . $version->toString() . '.' . $extension;
     }
 
     /**

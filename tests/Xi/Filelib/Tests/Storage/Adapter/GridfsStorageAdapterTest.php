@@ -37,9 +37,9 @@ class GridFsStorageAdapterTest extends TestCase
         }
 
         $this->mongo = $mongo->filelib_tests;
-        $storage = new GridfsStorageAdapter($this->mongo, ROOT_TESTS . '/data/temp');
+        $storage = new GridfsStorageAdapter($this->mongo);
 
-        return $storage;
+        return array($storage, true);
     }
 
     protected function tearDown()
@@ -56,30 +56,7 @@ class GridFsStorageAdapterTest extends TestCase
      */
     public function defaultsShouldProvideSaneStorage()
     {
-        $storage = new GridfsStorageAdapter($this->getMockBuilder('MongoDB')->disableOriginalConstructor()->getMock());
+        list ($storage,) = $this->getStorage();
         $this->assertSame('xi_filelib', $storage->getPrefix());
     }
-
-    /**
-     * @test
-     */
-    public function destructorShouldDeleteRetrievedFile()
-    {
-        $this->storage->store($this->resource, $this->resourcePath);
-
-        $file = $this->storage->getGridFs()->findOne(array(
-            'filename' => 1,
-        ));
-
-        $this->assertInstanceOf('\\MongoGridFSFile', $file);
-
-        $retrieved = $this->storage->retrieve($this->resource);
-
-        $this->assertFileExists($retrieved);
-
-        unset($this->storage);
-
-        $this->assertFileNotExists($retrieved);
-    }
-
 }

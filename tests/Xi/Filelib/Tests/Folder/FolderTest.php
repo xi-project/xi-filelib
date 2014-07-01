@@ -3,15 +3,16 @@
 namespace Xi\Filelib\Tests\Folder;
 
 use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Tests\BaseIdentifiableTestCase;
 
-class FolderTest extends \Xi\Filelib\Tests\TestCase
+class FolderTest extends BaseIdentifiableTestCase
 {
     /**
      * @test
      */
-    public function classShouldExist()
+    public function getClassName()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Folder\Folder'));
+        return 'Xi\Filelib\Folder\Folder';
     }
 
         /**
@@ -76,35 +77,28 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
     }
 
     /**
-     * @dataProvider fromArrayProvider
      * @test
      */
-    public function fromArrayShouldWorkAsExpected($data)
+    public function createInitializesValues()
     {
-        $folder = Folder::create($data);
-
-        $map = array(
-            'id' => 'getId',
-            'parent_id' => 'getParentId',
-            'name' => 'getName',
-            'url' => 'getUrl',
-            'uuid' => 'getUuid',
+        $data = array(
+            'id' => 1,
+            'parent_id' => 1,
+            'name' => 'puuppa.jpg',
+            'url' => 'lussenhoff',
+            'uuid' => 'uuid-lusser',
+            'data' => array(
+                'lussen' => 'zu tussen',
+            )
         );
 
-        foreach ($map as $key => $method) {
-            if (isset($data[$key])) {
-
-                if ($key === 'data') {
-                    $this->assertEquals($data[$key], $folder->getData()->toArray());
-                } else {
-                    $this->assertEquals($data[$key], $folder->$method());
-                }
-
-            } else {
-                $this->assertNull($folder->$method());
-            }
-        }
-
+        $folder = Folder::create($data);
+        $this->assertEquals($data['id'], $folder->getId());
+        $this->assertEquals($data['parent_id'], $folder->getParentId());
+        $this->assertEquals($data['url'], $folder->getUrl());
+        $this->assertEquals($data['name'], $folder->getName());
+        $this->assertEquals($data['uuid'], $folder->getUuid());
+        $this->assertEquals($data['data'], $folder->getData()->toArray());
     }
 
     /**
@@ -119,7 +113,7 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
         $folder->setUrl('/lussen/hofen');
         $folder->setUuid('luss3r');
         $folder->setData(array(
-            'tenhusta suurempi' => 'on vain tenhunen'
+            'tenhusta-suurempi' => 'on vain tenhunen'
         ));
 
         $this->assertEquals($folder->toArray(), array(
@@ -129,7 +123,7 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
             'url' => '/lussen/hofen',
             'uuid' => 'luss3r',
             'data' => array(
-                'tenhusta suurempi' => 'on vain tenhunen'
+                'tenhusta-suurempi' => 'on vain tenhunen'
             )
         ));
 
@@ -144,30 +138,5 @@ class FolderTest extends \Xi\Filelib\Tests\TestCase
         ));
 
     }
-
-    /**
-     * @test
-     */
-    public function createShouldCreateNewInstance()
-    {
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', Folder::create(array()));
-    }
-
-    /**
-     * @test
-     */
-    public function clonesDeeply()
-    {
-        $source = Folder::create();
-        $sourceData = $source->getData();
-        $sourceData->set('lussutappa', 'tussia');
-
-        $target = clone $source;
-        $targetData = $target->getData();
-
-        $this->assertEquals($source->getData()->toArray(), $target->getData()->toArray());
-        $this->assertNotSame($sourceData, $targetData);
-    }
-
 
 }

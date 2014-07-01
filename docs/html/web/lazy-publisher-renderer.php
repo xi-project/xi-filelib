@@ -20,6 +20,7 @@ $renderer = new Renderer(
     $rendererAdapter
 );
 
+
 /** @var Response $response */
 $response = $renderer->render($file, $version, array('download' => false));
 

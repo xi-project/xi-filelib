@@ -11,6 +11,7 @@ namespace Xi\Filelib\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\File;
+use Xi\Filelib\Version;
 use Xi\Filelib\Renderer\Response;
 
 /**
@@ -48,7 +49,7 @@ class RenderEvent extends Event
     {
         $this->internalResponse = $internalResponse;
         $this->adaptedResponse = $adaptedResponse;
-        $this->version = $version;
+        $this->version = Version::get($version);
         $this->file = $file;
     }
 

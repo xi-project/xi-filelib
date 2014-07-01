@@ -5,8 +5,10 @@ namespace Xi\Filelib\Tests\Renderer;
 use Xi\Filelib\Renderer\AcceleratedRenderer;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Renderer\Events;
+use Xi\Filelib\Version;
+use Xi\Filelib\Resource\Resource;
 
-class AcceleratedRendererTest extends RendererTest
+class AcceleratedRendererTest extends RendererTestCase
 {
     /**
      * @var AcceleratedRenderer
@@ -31,56 +33,55 @@ class AcceleratedRendererTest extends RendererTest
     }
 
     /**
-     * @return
-     */
-    public function  shouldSetupAccelerationCorrectly()
-    {
-        $this->renderer->enableAcceleration(true);
-    }
-
-    /**
      * @test
      * @dataProvider provideOptions
      */
     public function shouldDefaultToUnacceleratedFunctionalityWhenCantAccelerate($download, $sharedVersions)
     {
-        $resource = $this->getMockedResource();
-        $file = File::create(array('resource' => $resource, 'name' => 'lussuti.pdf'));
+        $resource = Resource::create()->addVersion(Version::get('xooxer'));
+        $file = File::create(
+            array(
+                'resource' => $resource, 'name' => 'lussuti.pdf'
+            )
+        )->addVersion(Version::get('xooxer'));
 
         $this->ed
             ->expects($this->at(0))
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $this->pm
-            ->expects($this->once())
-            ->method('hasVersion')
-            ->with($file, 'xooxer')
-            ->will($this->returnValue(true));
-
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
-            ->with($sharedVersions ? $resource : $file, 'xooxer')
+            ->with($sharedVersions ? $resource : $file, Version::get('xooxer'))
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider();
         $vp
             ->expects($this->any())
-            ->method('getApplicableStorable')
+            ->method('getApplicableVersionable')
             ->will($this->returnValue($sharedVersions ? $resource : $file));
 
+        $vp
+            ->expects($this->any())
+            ->method('ensureValidVersion')
+            ->with($this->isInstanceOf('Xi\Filelib\Version'))
+            ->will($this->returnArgument(0));
+
+
         $this->pm
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('getVersionProvider')
-            ->with($file, 'xooxer')
+            ->with($file, Version::get('xooxer'))
             ->will($this->returnValue($vp));
 
-        $ret = $this->renderer->render($file, 'xooxer', array('download' => $download));
+        $ret = $this->renderer->render($file, Version::get('xooxer'), array('download' => $download));
 
         $this->assertInstanceOf('Xi\Filelib\Renderer\Response', $ret);
-        $this->assertNotSame('', $ret->getContent());
-        $this->assertSame(200, $ret->getStatusCode());
+
+        $this->assertEquals(200, $ret->getStatusCode());
+        $this->assertNotEquals('', $ret->getContent());
+
 
         $expectedHeaders = array(
             'Content-Type' => 'application/pdf',
@@ -128,8 +129,12 @@ class AcceleratedRendererTest extends RendererTest
         $this->renderer->stripPrefixFromPath($stripPrefix);
         $this->renderer->addPrefixToPath($addPrefix);
 
-        $resource = $this->getMockedResource();
-        $file = File::create(array('resource' => $resource, 'name' => 'lussuti.pdf'));
+        $resource = Resource::create()->addVersion(Version::get('xooxer'));
+        $file = File::create(
+            array(
+                'resource' => $resource, 'name' => 'lussuti.pdf'
+            )
+        )->addVersion(Version::get('xooxer'));
 
         $this->adapter
             ->expects($this->any())
@@ -146,35 +151,33 @@ class AcceleratedRendererTest extends RendererTest
             ->method('dispatch')
             ->with(Events::RENDERER_BEFORE_RENDER, $this->isInstanceOf('Xi\Filelib\Event\FileEvent'));
 
-        $this->pm
-            ->expects($this->once())
-            ->method('hasVersion')
-            ->with($file, 'xooxer')
-            ->will($this->returnValue(true));
-
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xooxer')
+            ->with($resource, Version::get('xooxer'))
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider();
         $vp
             ->expects($this->any())
-            ->method('getApplicableStorable')
+            ->method('getApplicableVersionable')
             ->will($this->returnValue($resource));
 
+        $vp->expects($this->any())
+            ->method('ensureValidVersion')
+            ->with($this->equalTo(Version::get('xooxer')))
+            ->will($this->returnArgument(0));
+
         $this->pm
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('getVersionProvider')
-            ->with($file, 'xooxer')
+            ->with($file, Version::get('xooxer'))
             ->will($this->returnValue($vp));
 
-        $ret = $this->renderer->render($file, 'xooxer', array('download' => $download));
+        $ret = $this->renderer->render($file, Version::get('xooxer'), array('download' => $download));
 
         $this->assertInstanceOf('Xi\Filelib\Renderer\Response', $ret);
-
-        $this->assertSame(200, $ret->getStatusCode());
+        $this->assertEquals(200, $ret->getStatusCode());
 
         $expectedHeaders = array(
             'Content-Type' => 'application/pdf',
@@ -183,26 +186,22 @@ class AcceleratedRendererTest extends RendererTest
             $expectedHeaders['Content-disposition'] = "attachment; filename={$file->getName()}";
         }
 
-
-
         if (!$expectAccel) {
-            $this->assertNotSame('', $ret->getContent());
+            $this->assertNotEquals('', $ret->getContent());
         } else {
-            $this->assertSame('', $ret->getContent());
+            $this->assertEquals('', $ret->getContent());
             $expectedHeaders[$expectedHeader] = $expectedPath . '/refcard.pdf';
         }
 
         $this->assertEquals($expectedHeaders, $ret->getHeaders());
     }
 
-
-
-    protected function getAdapter()
+    public function getAdapter()
     {
         return $this->getMock('Xi\Filelib\Renderer\AcceleratedRendererAdapter');
     }
 
-    protected function getRenderer($adapter)
+    public function getRenderer($adapter)
     {
         $renderer = new AcceleratedRenderer(
             $this->filelib,

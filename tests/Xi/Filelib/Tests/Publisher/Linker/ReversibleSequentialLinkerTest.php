@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Tests\Linker;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Version;
 use Xi\Filelib\Publisher\Linker\ReversibleSequentialLinker;
 use Xi\Filelib\Folder\Folder;
 
@@ -24,7 +25,7 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         $vp->expects($this->any())
              ->method('getExtension')
-             ->with($this->isInstanceOf('Xi\Filelib\File\File'), 'xoo')
+             ->with($this->isInstanceOf('Xi\Filelib\File\File'), Version::get('xoo'))
              ->will($this->returnValue('xoo'));
 
         $this->versionProvider = $vp;
@@ -76,8 +77,8 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
             $beautifurl,
             $linker->getLink(
                 $file,
-                'xoo',
-                $this->versionProvider->getExtension($file, 'xoo')
+                Version::get('xoo'),
+                $this->versionProvider->getExtension($file, Version::get('xoo'))
             )
         );
     }
@@ -105,12 +106,15 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
             ->with('uuid-lusso-grande')
             ->will($this->returnValue($file));
 
-        $link = '1/9/58/1457/uuid-lusso-grande-xoo.jpg';
+        $link = '1/9/58/1457/uuid-lusso-grande-xoo::narf:archive;year:1666.jpg';
 
         list ($reversed, $version) = $linker->reverseLink($link);
 
+        $this->assertInstanceOf('Xi\Filelib\Version', $version);
+        $expectedVersion = new Version('xoo', array('narf' => 'archive', 'year' => '1666'));
+
         $this->assertSame($file, $reversed);
-        $this->assertEquals('xoo', $version);
+        $this->assertEquals($expectedVersion, $version);
     }
 
 

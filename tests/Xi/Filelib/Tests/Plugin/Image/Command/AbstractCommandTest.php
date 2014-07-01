@@ -22,7 +22,10 @@ class AbstractCommandTest extends TestCase
      */
     public function addHelperReturnsSelf()
     {
-        $helper = new ImageMagickHelper();
+        $helper = new ImageMagickHelper(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp'
+        );
 
         $command = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Image\Command\AbstractCommand');
         $this->assertSame($command, $command->setHelper($helper));

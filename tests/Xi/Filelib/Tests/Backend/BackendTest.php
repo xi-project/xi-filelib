@@ -515,7 +515,6 @@ class BackendTest extends TestCase
     public function cacheCanBeSet()
     {
         $cache = new Cache($this->getMockedCacheAdapter());
-        $this->assertNull($this->backend->getCache());
         $this->assertSame($this->backend, $this->backend->setCache($cache));
         $this->assertSame($cache, $this->backend->getCache());
     }
@@ -526,5 +525,69 @@ class BackendTest extends TestCase
     public function getsIdentityMap()
     {
         $this->assertInstanceOf('Xi\Filelib\Backend\IdentityMap\IdentityMap', $this->backend->getIdentityMap());
+    }
+
+    /**
+     * @test
+     */
+    public function resolversWithoutCache()
+    {
+        $adapter = $this->getMockedBackendAdapter();
+        $ed = $this->getMockedEventDispatcher();
+        $backend = new Backend(
+            $ed,
+            $adapter
+        );
+
+        $this->assertSame(
+            array(
+                $backend->getIdentityMap(),
+                $adapter
+            ),
+            $backend->getResolvers()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function resolversWithCache()
+    {
+        $adapter = $this->getMockedBackendAdapter();
+        $ed = $this->getMockedEventDispatcher();
+        $cache = new Cache($this->getMockedCacheAdapter());
+
+        $backend = new Backend(
+            $ed,
+            $adapter
+        );
+
+        $backend->setCache($cache);
+
+        $this->assertSame(
+            array(
+                $backend->getIdentityMap(),
+                $cache,
+                $adapter,
+            ),
+            $backend->getResolvers()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function cacheDefaultsToNullCache()
+    {
+        $adapter = $this->getMockedBackendAdapter();
+        $ed = $this->getMockedEventDispatcher();
+
+        $backend = new Backend(
+            $ed,
+            $adapter
+        );
+
+        $cache = $backend->getCache();
+        $this->assertInstanceOf('Xi\Filelib\Backend\Cache\Adapter\NullCacheAdapter', $cache->getAdapter());
     }
 }

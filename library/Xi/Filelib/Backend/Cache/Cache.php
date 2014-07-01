@@ -34,6 +34,14 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
     }
 
     /**
+     * @return CacheAdapter
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
+    }
+
+    /**
      * @return array
      */
     public static function getSubscribedEvents()
@@ -129,5 +137,10 @@ class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
     public function onCreate(IdentifiableEvent $event)
     {
         $this->save($event->getIdentifiable());
+    }
+
+    public function clear()
+    {
+        $this->adapter->clear();
     }
 }

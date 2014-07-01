@@ -11,17 +11,19 @@ namespace Xi\Filelib\Publisher;
 
 use Xi\Filelib\Attacher;
 use Xi\Filelib\Event\FileCopyEvent;
+use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Event\PublisherEvent;
+use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\RuntimeException;
-use Xi\Filelib\Storage\FileIOException;
+use Xi\Filelib\FilelibException;
 
 /**
  * Publisher
@@ -82,17 +84,40 @@ class Publisher implements EventSubscriberInterface, Attacher
      * @param File $file
      * @return array
      */
-    protected function getVersions(File $file)
+    protected function getVersionsToPublish(File $file)
     {
-        return $this->profiles->getProfile($file->getProfile())->getFileVersions($file);
+        $ret = $this->profiles->getProfile($file->getProfile())->getFileVersions($file);
+        return array_map(
+            function ($version) {
+                return Version::get($version);
+            },
+            $ret
+        );
     }
 
     /**
      * @param File $file
-     * @param string $version
+     * @return array
+     */
+    protected function getVersionsToUnpublish(File $file)
+    {
+        $versionUrls = $file->getData()->get('publisher.version_url', array());
+        $ret = array_keys($versionUrls);
+        return array_map(
+            function ($version) {
+                return Version::get($version);
+            },
+            $ret
+        );
+    }
+
+
+    /**
+     * @param File $file
+     * @param Version $version
      * @return VersionProvider
      */
-    protected function getVersionProvider(File $file, $version)
+    protected function getVersionProvider(File $file, Version $version)
     {
         return $this->profiles->getVersionProvider($file, $version);
     }
@@ -108,94 +133,132 @@ class Publisher implements EventSubscriberInterface, Attacher
         );
     }
 
+    public function publishVersion(File $file, Version $version)
+    {
+        $event = new PublisherEvent($file, array($version->toString()));
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_PUBLISH, $event);
+
+        if ($this->versionPublisher($file, $version)) {
+            $this->fileRepository->update($file);
+            $event = new PublisherEvent($file, array($version->toString()));
+            $this->eventDispatcher->dispatch(Events::FILE_AFTER_PUBLISH, $event);
+            return true;
+        }
+
+        return false;
+    }
+
+
+    private function versionPublisher(File $file, Version $version)
+    {
+        $versionUrls = $file->getData()->get('publisher.version_url', array());
+        try {
+            $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+            $versionUrls[$version->toString()] = $this->getUrl($file, $version);
+            $file->getData()->set('publisher.version_url', $versionUrls);
+            return true;
+        } catch (FilelibException $e) {
+            return false;
+        }
+    }
+
+    private function versionUnpublisher(File $file, Version $version)
+    {
+        $versionUrls = $file->getData()->get('publisher.version_url', array());
+        try {
+            $this->adapter->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+            unset($versionUrls[$version->toString()]);
+            $file->getData()->set('publisher.version_url', $versionUrls);
+            return true;
+        } catch (FilelibException $e) {
+            return false;
+        }
+    }
+
     /**
      * @param File $file
      */
-    public function publish(File $file)
+    public function publishAllVersions(File $file)
     {
-        if ($this->isPublished($file)) {
-            return;
-        }
+        $versions = $this->getVersionsToPublish($file);
 
-        $event = new FileEvent($file);
+        $event = new PublisherEvent($file, $versions);
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_PUBLISH, $event);
 
-        $versionUrls = $file->getData()->get('publisher.version_url', array());
-
-        foreach ($this->getVersions($file) as $version) {
-
-            try {
-                $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
-                $versionUrls[$version] = $this->getUrl($file, $version);
-            } catch (FileIOException $e) {
-                // Version does not exists, but it shall not stop us!
-            }
-
+        foreach ($versions as $version) {
+            $this->versionPublisher($file, $version);
         }
-
-        $file->getData()->set('publisher.published', 1);
-        $file->getData()->set('publisher.version_url', $versionUrls);
 
         $this->fileRepository->update($file);
 
-        $event = new FileEvent($file);
+        $event = new PublisherEvent($file, $versions);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_PUBLISH, $event);
     }
 
     /**
      * @param File $file
      */
-    public function unpublish(File $file)
+    public function unpublishAllVersions(File $file)
     {
-        if (!$this->isPublished($file)) {
-            return;
-        }
+        $versions = $this->getVersionsToUnpublish($file);
 
-        $event = new FileEvent($file);
+        $event = new PublisherEvent($file, $versions);
         $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UNPUBLISH, $event);
 
-        foreach ($this->getVersions($file) as $version) {
-            try {
-                $this->adapter->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
-            } catch (FileIOException $e) {
-                // Version does not exists
-            }
+        foreach ($versions as $version) {
+            $this->versionUnpublisher($file, $version);
         }
-
-        $data = $file->getData();
-        $data->set('publisher.published', 0);
-        $data->delete('publisher.version_url');
 
         $this->fileRepository->update($file);
 
-        $event = new FileEvent($file);
+        $event = new PublisherEvent($file, $versions);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
 
-        $data = $file->getData();
+        return true;
     }
 
     /**
      * @param File $file
-     * @return bool
      */
-    public function isPublished(File $file)
+    public function unpublishVersion(File $file, Version $version)
     {
-        if ($file->getData()->get('publisher.published', 0)) {
+        $event = new PublisherEvent($file, array($version));
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UNPUBLISH, $event);
+
+        if ($this->versionUnpublisher($file, $version)) {
+            $this->fileRepository->update($file);
+
+            $event = new PublisherEvent($file, array($version));
+            $this->eventDispatcher->dispatch(Events::FILE_AFTER_UNPUBLISH, $event);
+
             return true;
         }
+
         return false;
     }
 
     /**
      * @param File $file
-     * @param string $version
+     * @return int
+     */
+    public function getNumberOfPublishedVersions(File $file)
+    {
+        $versionUrls = $file->getData()->get('publisher.version_url', array());
+        return count($versionUrls);
+    }
+
+    /**
+     * @param File $file
+     * @param Version|string $version
      * @return string
      */
     public function getUrl(File $file, $version)
     {
+        $version = Version::get($version);
+
         $versionUrls = $file->getData()->get('publisher.version_url');
-        if (isset($versionUrls[$version])) {
-            return $versionUrls[$version];
+        if (isset($versionUrls[$version->toString()])) {
+            return $versionUrls[$version->toString()];
         }
 
         $url = $this->adapter->getUrl(
@@ -210,7 +273,7 @@ class Publisher implements EventSubscriberInterface, Attacher
     public function reverseUrl($url)
     {
         if (!$this->linker instanceof ReversibleLinker) {
-            throw new RuntimeException("Reversable linker needed to reverse an url");
+            throw new RuntimeException("Reversible linker is needed to reverse an url");
         }
         return $this->linker->reverseLink($url);
     }
@@ -222,7 +285,7 @@ class Publisher implements EventSubscriberInterface, Attacher
     public function onBeforeDelete(FileEvent $event)
     {
         $file = $event->getFile();
-        $this->unpublish($file);
+        $this->unpublishAllVersions($file);
     }
 
     /**
@@ -232,8 +295,6 @@ class Publisher implements EventSubscriberInterface, Attacher
     {
         $target = $event->getTarget();
         $data = $target->getData();
-
-        $data->delete('publisher.published');
         $data->delete('publisher.version_url');
     }
 }

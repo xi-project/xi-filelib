@@ -9,16 +9,20 @@
 
 namespace Xi\Filelib\Tests\Plugin\VersionProvider;
 
+use Xi\Filelib\Event\VersionProviderEvent;
+use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
+use Xi\Filelib\Version;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Plugin\VersionProvider\Events as VPEvents;
 
 /**
  * @group plugin
@@ -31,12 +35,12 @@ class VersionProviderTest extends TestCase
     private $pm;
 
     /**
-     * @var Storage
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $storage;
 
     /**
-     * @var VersionProvider
+     * @var LazyVersionProvider
      */
     private $plugin;
 
@@ -47,6 +51,16 @@ class VersionProviderTest extends TestCase
 
     private $filelib;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $ed;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $fire;
+
     public function setUp()
     {
         parent::setUp();
@@ -54,6 +68,10 @@ class VersionProviderTest extends TestCase
         $this->storage = $this->getMockedStorage();
 
         $this->pm = $this->getMockedProfileManager(array('tussi', 'lussi'));
+
+        $this->ed = $this->getMockedEventDispatcher();
+
+        $this->fire = $this->getMockedFileRepository();
 
         $this->plugin = $this
             ->getMockBuilder('Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider')
@@ -67,10 +85,17 @@ class VersionProviderTest extends TestCase
             ->getMockForAbstractClass();
 
 
-        $filelib = $this->getMockedFilelib(null, null, null, $this->storage, null, null, null, null, $this->pm);
-
+        $filelib = $this->getMockedFilelib(
+            null,
+            array(
+                'storage' => $this->storage,
+                'pm' => $this->pm,
+                'ed' => $this->ed,
+                'tempDir' => ROOT_TESTS . '/data/temp',
+                'fire' => $this->fire,
+            )
+        );
         $this->filelib = $filelib;
-
     }
 
     /**
@@ -106,12 +131,12 @@ class VersionProviderTest extends TestCase
         if ($expectResourceGetVersions) {
             $resource->expects($this->atLeastOnce())
                 ->method('hasVersion')
-                ->with($this->isType('string'))
+                ->with($this->equalTo(Version::get('tussi')))
                 ->will($this->returnValue(true));
         } else {
             $file->expects($this->atLeastOnce())
                 ->method('hasVersion')
-                ->with($this->isType('string'))
+                ->with($this->equalTo(Version::get('tussi')))
                 ->will($this->returnValue(true));
         }
 
@@ -188,10 +213,18 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(
                     array(
-                        'resource' => Resource::create(array('mimetype' => 'image/xoo', 'versions' => array('reiska'))),
-                        'profile' => 'tussi',
+                        'resource' => Resource::create(
+                            array(
+                                'mimetype' => 'image/xoo',
+                                'data' => array(
+                                    'versions' => array('reiska')
+                                )
+                            )
+                        ),
+                        'profile' => 'tussi'
                     )
                 );
+
         $event = new FileEvent($file);
 
         $this->plugin->onAfterUpload($event);
@@ -217,10 +250,11 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(
             array(
-                'resource' => Resource::create(array('mimetype' => 'image/xoo', 'versions' => array('reiska'))),
+                'resource' => Resource::create(array('mimetype' => 'image/xoo')),
                 'profile' => 'tussi',
             )
-        );
+        )->addVersion(Version::get('reiska'));
+
         $event = new FileEvent($file);
 
         $this->plugin->onAfterUpload($event);
@@ -249,7 +283,7 @@ class VersionProviderTest extends TestCase
         $pluginVersions = array('xooxer', 'losobees');
         $this->plugin->expects($this->any())->method('getProvidedVersions')->will($this->returnValue($pluginVersions));
 
-        $this->plugin->expects($this->once())->method('createTemporaryVersions')
+        $this->plugin->expects($this->once())->method('doCreateAllTemporaryVersions')
              ->with($this->isInstanceOf('Xi\Filelib\File\File'))
              ->will($this->returnValue(array('xooxer' => ROOT_TESTS . '/data/temp/life-is-my-enemy-xooxer.jpg', 'losobees' => ROOT_TESTS . '/data/temp/life-is-my-enemy-losobees.jpg')));
 
@@ -263,7 +297,7 @@ class VersionProviderTest extends TestCase
         $this->storage->expects($this->exactly(2))->method('storeVersion')
                 ->with(
                     $sharedVersionsAllowed ? $this->isInstanceOf('Xi\Filelib\Resource\Resource') : $this->isInstanceOf('Xi\Filelib\File\File'),
-                    $this->isType('string'),
+                    $this->isInstanceOf('Xi\Filelib\Version'),
                     $this->isType('string')
                 );
 
@@ -347,18 +381,40 @@ class VersionProviderTest extends TestCase
         $this->storage->expects($this->once())->method('deleteVersion')
              ->with(
                      $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
-                     $this->equalTo('lusser')
+                     $this->equalTo(Version::get('lusser'))
               );
 
-        $this->storage->expects($this->exactly(2))->method('versionExists')
-            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'), $this->isType('string'))
+        $this->storage
+            ->expects($this->exactly(2))
+            ->method('versionExists')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                $this->isInstanceOf('Xi\Filelib\Version')
+            )
             ->will($this->onConsecutiveCalls(false, true));
+
+        $resource = Resource::create(array('mimetype' => 'image/png'));
+
+        $this->ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                VPEvents::VERSIONS_UNPROVIDED,
+                new VersionProviderEvent(
+                    $this->plugin,
+                    $resource,
+                    array(
+                        Version::get('xooxer'),
+                        Version::get('lusser')
+                    )
+                )
+            );
 
         $this->plugin->setProfiles(array('tussi', 'lussi'));
         $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
                      ->will($this->returnValue(array('xooxer', 'lusser')));
 
-        $resource = Resource::create(array('mimetype' => 'image/png'));
+
         $this->plugin->deleteProvidedVersions($resource);
     }
 
@@ -421,14 +477,20 @@ class VersionProviderTest extends TestCase
         $this->plugin->expects($this->atLeastOnce())->method('getProvidedVersions')
              ->will($this->returnValue(array('xooxer', 'lusser')));
 
-        $this->storage->expects($this->exactly(2))->method('versionExists')
-             ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'),
-                    $this->isType('string'))
-             ->will($this->onConsecutiveCalls(true, false));
+        $this->storage
+            ->expects($this->exactly(2))->method('versionExists')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                $this->isInstanceOf('Xi\Filelib\Version')
+            )
+            ->will($this->onConsecutiveCalls(true, false));
 
         $this->storage->expects($this->once())
-             ->method('deleteVersion')
-             ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'), $this->isType('string'));
+            ->method('deleteVersion')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                $this->isInstanceOf('Xi\Filelib\Version')
+            );
 
         $resource = Resource::create(array('mimetype' => 'image/png'));
         $event = new ResourceEvent($resource);
@@ -463,19 +525,29 @@ class VersionProviderTest extends TestCase
         $this->storage
             ->expects($this->once())
             ->method('retrieveVersion')
-            ->with($resource, 'xoox')
+            ->with($resource, Version::get('xoox'))
             ->will($this->returnValue($filename));
 
-        $mimeType = $this->plugin->getMimeType($file, 'xoox');
+        $mimeType = $this->plugin->getMimeType($file, Version::get('xoox'));
         $this->assertSame($expected, $mimeType);
     }
 
+    /**
+     * @test
+     */
+    public function provideReplacables()
+    {
+        return array(
+            array('jpg', 'image/jpeg'),
+            array('png', 'image/png')
+        );
+    }
 
     /**
      * @test
-     * @dataProvider provideFiles
+     * @dataProvider provideReplacables
      */
-    public function getExtensionShouldQueryExtensionAndReplaceFugly($expected, $filename)
+    public function getExtensionShouldQueryExtensionAndReplaceFugly($expected, $mime)
     {
         $file = File::create();
 
@@ -495,11 +567,205 @@ class VersionProviderTest extends TestCase
         $plugin
             ->expects($this->once())
             ->method('getMimeType')
-            ->with($file, 'xooxer')
-            ->will($this->returnValue('image/jpeg'));
+            ->with($file, Version::get('xooxer'))
+            ->will($this->returnValue($mime));
 
-        $extension = $plugin->getExtension($file, 'xooxer');
-        $this->assertEquals('jpg', $extension);
+        $extension = $plugin->getExtension($file, Version::get('xooxer'));
+        $this->assertEquals($expected, $extension);
     }
+
+    /**
+     * @test
+     */
+    public function providesVersion()
+    {
+        copy(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+        );
+
+        $this->assertFileExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+        );
+
+        $file = File::create(
+            array(
+                'resource' => Resource::create(),
+            )
+        );
+
+        $this->plugin->attachTo($this->filelib);
+
+        $this->plugin
+            ->expects($this->any())
+            ->method('getProvidedVersions')
+            ->will($this->returnValue(array('tooxer')));
+
+        $this->plugin
+            ->expects($this->once())
+            ->method('doCreateTemporaryVersion')
+            ->will($this->returnValue(array('tooxer', ROOT_TESTS . '/data/temp/temporary-manatee.jpg')));
+
+        $this->plugin
+            ->expects($this->exactly(1))
+            ->method('areSharedVersionsAllowed')
+            ->will($this->returnValue(false));
+
+        $this->storage
+            ->expects($this->once())
+            ->method('storeVersion')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\File\File'),
+                Version::get('tooxer'),
+                ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+            );
+
+        $this->fire
+            ->expects($this->once())
+            ->method('update')
+            ->with(
+                $file
+            );
+
+        $this->ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                VPEvents::VERSIONS_PROVIDED,
+                new VersionProviderEvent($this->plugin, $file, array(Version::get('tooxer')))
+            );
+
+        $this->plugin->provideVersion(
+            $file,
+            Version::get('tooxer')
+        );
+
+        $this->assertFileNotExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+        );
+    }
+
+
+    /**
+     * @test
+     */
+    public function providesAllVersions()
+    {
+        copy(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+        );
+
+        copy(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            ROOT_TESTS . '/data/temp/temporary-manatee2.jpg'
+        );
+
+        $this->assertFileExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+        );
+
+        $this->assertFileExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee2.jpg'
+        );
+
+        $file = File::create(
+            array(
+                'resource' => Resource::create(),
+            )
+        );
+
+        $this->plugin->attachTo($this->filelib);
+
+        $this->plugin
+            ->expects($this->any())
+            ->method('getProvidedVersions')
+            ->will($this->returnValue(array('tooxer', 'mooxer')));
+
+        $this->plugin
+            ->expects($this->once())
+            ->method('doCreateAllTemporaryVersions')
+            ->will($this->returnValue(
+                array(
+                    'tooxer' => ROOT_TESTS . '/data/temp/temporary-manatee.jpg',
+                    'mooxer' => ROOT_TESTS . '/data/temp/temporary-manatee2.jpg'
+                )
+            ));
+
+        $this->plugin
+            ->expects($this->exactly(1))
+            ->method('areSharedVersionsAllowed')
+            ->will($this->returnValue(false));
+
+        $this->storage
+            ->expects($this->exactly(2))
+            ->method('storeVersion')
+            ->with(
+                $this->isInstanceOf('Xi\Filelib\File\File'),
+                $this->isInstanceOf('Xi\Filelib\Version'),
+                $this->isType('string')
+            );
+
+        $this->fire
+            ->expects($this->once())
+            ->method('update')
+            ->with(
+                $file
+            );
+
+        $this->ed
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                VPEvents::VERSIONS_PROVIDED,
+                new VersionProviderEvent($this->plugin, $file, array(Version::get('tooxer'), Version::get('mooxer')))
+            );
+
+        $this->plugin->provideAllVersions(
+            $file
+        );
+
+        $this->assertFileNotExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee.jpg'
+        );
+
+        $this->assertFileNotExists(
+            ROOT_TESTS . '/data/temp/temporary-manatee2.jpg'
+        );
+    }
+
+
+    /**
+     * @test
+     */
+    public function ensuresValidVersion()
+    {
+        $this->plugin
+            ->expects($this->once())
+            ->method('getProvidedVersions')
+            ->will($this->returnValue(array('tooxer')));
+
+        $version = Version::get('tooxer');
+
+        $ret = $this->plugin->ensureValidVersion($version);
+        $this->assertSame($version, $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function throwsUpInvalidVersion()
+    {
+        $this->plugin
+            ->expects($this->once())
+            ->method('getProvidedVersions')
+            ->will($this->returnValue(array('sooxer')));
+
+        $version = Version::get('tooxer');
+
+        $this->setExpectedException('Xi\Filelib\InvalidVersionException');
+        $this->plugin->ensureValidVersion($version);
+    }
+
 
 }

@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Tests\Plugin\Image;
 
+use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Plugin\Image\ChangeFormatPlugin;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Events;
@@ -41,7 +42,7 @@ class ChangeFormatPluginTest extends TestCase
 
         $filelib = $this->getMockedFilelib(null, $this->fileRepository);
         $filelib
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('getTempDir')
             ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
 
@@ -86,17 +87,13 @@ class ChangeFormatPluginTest extends TestCase
      */
     public function beforeUploadShouldReturnSameUploadWhenNotImage()
     {
-        $upload = $this->getMockBuilder('Xi\Filelib\File\Upload\FileUpload')
-                       ->setConstructorArgs(array(ROOT_TESTS . '/data/refcard.pdf'))
-                       ->getMock();
-
         $this->plugin->setProfiles(array('tussi'));
 
-        $upload->expects($this->once())->method('getMimeType')->will($this->returnValue('video/lus'));
+        $upload = new FileUpload(ROOT_TESTS . '/data/refcard.pdf');
 
         $folder = $this->getMockedFolder();
-        $profile = $this->getMockedFileProfile();
-        $profile->expects($this->atLeastOnce())->method('getIdentifier')->will($this->returnValue('tussi'));
+        $profile = new FileProfile('tussi');
+
         $event = new FileUploadEvent($upload, $folder, $profile);
 
         $this->plugin->beforeUpload($event);
@@ -109,29 +106,17 @@ class ChangeFormatPluginTest extends TestCase
      */
     public function beforeUploadShouldReturnNewUploadWhenImage()
     {
-        $helper = $this->getMock('Xi\Filelib\Plugin\Image\ImageMagickHelper');
-
         $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
 
-        $plugin = new ChangeFormatPlugin();
+        $this->plugin->setProfiles(array('tussi'));
 
-        $filelib = $this->getMockedFilelib(null, $this->fileRepository);
-        $filelib
-            ->expects($this->once())
-            ->method('getTempDir')
-            ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
-
-        $plugin->attachTo($filelib);
-
-        $plugin->setProfiles(array('tussi'));
-
-        $folder = $this->getMockedFolder();
+        $folder = Folder::create();
 
         $profile = new FileProfile('tussi');
 
         $event = new FileUploadEvent($upload, $folder, $profile);
 
-        $plugin->beforeUpload($event);
+        $this->plugin->beforeUpload($event);
 
         $xupload = $event->getFileUpload();
         $this->assertInstanceOf('Xi\Filelib\File\Upload\FileUpload', $xupload);

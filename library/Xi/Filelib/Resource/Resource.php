@@ -10,39 +10,17 @@
 namespace Xi\Filelib\Resource;
 
 use DateTime;
-use Xi\Filelib\BaseStorable;
+use Xi\Filelib\BaseVersionable;
 use Xi\Filelib\Identifiable;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\IdentifiableDataContainer;
+use Xi\Filelib\Versionable;
 
 /**
  * Resource
  */
-class Resource extends BaseStorable implements Identifiable, Storable
+class Resource extends BaseVersionable implements Identifiable, Versionable
 {
     /**
-     * Key to method mapping for fromArray
-     *
-     * @var array
-     */
-    protected static $map = array(
-        'id' => 'setId',
-        'hash' => 'setHash',
-        'date_created' => 'setDateCreated',
-        'data' => 'setData',
-        'mimetype' => 'setMimetype',
-        'size' => 'setSize',
-        'exclusive' => 'setExclusive',
-        'versions' => 'setVersions',
-    );
-
-    /**
-     *
-     * @var mixed
-     */
-    private $id;
-
-    /**
-     *
      * @var string
      */
     private $hash;
@@ -66,27 +44,6 @@ class Resource extends BaseStorable implements Identifiable, Storable
      * @var integer
      */
     private $size;
-
-    /**
-     * Sets id
-     *
-     * @param  mixed    $id
-     * @return Resource
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Sets create datetime
@@ -212,22 +169,6 @@ class Resource extends BaseStorable implements Identifiable, Storable
         );
     }
 
-    /**
-     * Sets data from array
-     *
-     * @param  array    $data
-     * @return Resource
-     */
-    public function fromArray(array $data)
-    {
-        foreach (static::$map as $key => $method) {
-            if (isset($data[$key])) {
-                $this->$method($data[$key]);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * Creates an instance with data
@@ -237,7 +178,26 @@ class Resource extends BaseStorable implements Identifiable, Storable
      */
     public static function create(array $data = array())
     {
-        $resource = new self();
-        return $resource->fromArray($data);
+        $defaults = array(
+            'id' => null,
+            'hash' => null,
+            'date_created' => new DateTime(),
+            'data' => new IdentifiableDataContainer(array()),
+            'mimetype' => null,
+            'size' => null,
+            'exclusive' => false
+        );
+        $data = array_merge($defaults, $data);
+
+        $obj = new self();
+        $obj->setId($data['id']);
+        $obj->setHash($data['hash']);
+        $obj->setDateCreated($data['date_created']);
+        $obj->setData($data['data']);
+        $obj->setMimetype($data['mimetype']);
+        $obj->setSize($data['size']);
+        $obj->setExclusive($data['exclusive']);
+
+        return $obj;
     }
 }

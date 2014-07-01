@@ -2,6 +2,10 @@
 
 namespace Xi\Filelib\Tests\Integration;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+use Xi\Filelib\Backend\Adapter\DoctrineDbalBackendAdapter;
 use Xi\Filelib\Backend\Adapter\MongoBackendAdapter;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
@@ -55,9 +59,15 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     protected $memcached;
 
+    /**
+     * @var Connection
+     */
+    protected $conn;
+
 
     public function setUp()
     {
+        /*
         if (!extension_loaded('mongo')) {
             $this->markTestSkipped('MongoDB extension is not loaded.');
         }
@@ -68,25 +78,33 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
             return $this->markTestSkipped('Can not connect to MongoDB.');
         }
 
-        $this->mongo = $mongoClient->selectDb('filelib_tests');
 
+        $this->mongo = $mongoClient->selectDb('filelib_tests');
+        */
         $stopwatch = new Stopwatch();
 
         $ed = new TraceableEventDispatcher(new EventDispatcher(), $stopwatch);
 
+        $this->conn = DriverManager::getConnection(
+            array(
+                'driver' => 'pdo_' . PDO_DRIVER,
+                'dbname' => PDO_DBNAME,
+                'user' => PDO_USERNAME,
+                'password' => PDO_PASSWORD,
+                'host' => PDO_HOST,
+            )
+        );
+
         $filelib = new FileLibrary(
             new FilesystemStorageAdapter(ROOT_TESTS . '/data/files', new TimeDirectoryIdCalculator()),
-            new MongoBackendAdapter(
-                $this->mongo
+            new DoctrineDbalBackendAdapter(
+                $this->conn
             ),
             $ed
         );
 
         $memcached = new Memcached();
         $memcached->addServer('localhost', 11211);
-        $filelib->createCacheFromAdapter(
-            new MemcachedCacheAdapter($memcached)
-        );
         $this->memcached = $memcached;
 
         $filelib->addPlugin(new RandomizeNamePlugin());
@@ -124,6 +142,15 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
                         array('sepiaToneImage', 90),
                         'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(ROOT_TESTS . '/data/watermark.png', 'se', 10),
                     )
+                ),
+                'croppo' => array(
+                    array(
+                        array('setImageCompression',Imagick::COMPRESSION_JPEG),
+                        array('setImageFormat', 'jpg'),
+                        array('setImageCompressionQuality', 80),
+                        array('cropThumbnailImage', array(400, 400)),
+                        'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(ROOT_TESTS . '/data/watermark.png', 'se', 10),
+                    )
                 )
             )
         );
@@ -157,9 +184,17 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
             }
         }
 
+        $this->conn->exec("DELETE FROM xi_filelib_file");
+        $this->conn->exec("DELETE FROM xi_filelib_resource");
+        $this->conn->exec("DELETE FROM xi_filelib_folder");
+
+        /*
         $this->mongo->selectCollection('resources')->drop();
         $this->mongo->selectCollection('folders')->drop();
         $this->mongo->selectCollection('files')->drop();
+        */
+
+        $this->memcached->flush();
     }
 
 
@@ -191,6 +226,15 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
         }
 
         $this->assertEquals($expectedCount, $count);
+    }
+
+    protected function setupCache($enabled)
+    {
+        if ($enabled) {
+            $this->filelib->createCacheFromAdapter(
+                new MemcachedCacheAdapter($this->memcached)
+            );
+        }
     }
 
 }

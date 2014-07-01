@@ -12,6 +12,7 @@ namespace Xi\Filelib\Publisher\Adapter;
 use Aws\S3\Enum\CannedAcl;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\Publisher\PublisherAdapter;
@@ -68,12 +69,11 @@ class AmazonS3PublisherAdapter implements PublisherAdapter
 
     /**
      * @param File $file
-     * @param string $version
+     * @param Version $version
      * @param VersionProvider $version
      * @param Linker $linker
-     * @return bool
      */
-    public function publish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
+    public function publish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)
     {
         /** @var Model $result */
         $this->client->putObject(
@@ -81,7 +81,7 @@ class AmazonS3PublisherAdapter implements PublisherAdapter
                 'Bucket' => $this->bucket,
                 'Key'    => $linker->getLink($file, $version, $versionProvider->getExtension($file, $version)),
                 'SourceFile' => $this->storage->retrieveVersion(
-                    $versionProvider->getApplicableStorable($file),
+                    $versionProvider->getApplicableVersionable($file),
                     $version
                 ),
                 'ACL' => CannedAcl::PUBLIC_READ,
@@ -92,11 +92,11 @@ class AmazonS3PublisherAdapter implements PublisherAdapter
 
     /**
      * @param File $file
-     * @param VersionProvider $version
+     * @param Version $version
+     * @param VersionProvider $versionProvider
      * @param Linker $linker
-     * @return bool
      */
-    public function unpublish(File $file, $version, VersionProvider $versionProvider, Linker $linker)
+    public function unpublish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)
     {
         $this->client->deleteObject(
             array(
@@ -108,11 +108,12 @@ class AmazonS3PublisherAdapter implements PublisherAdapter
 
     /**
      * @param File $file
-     * @param VersionProvider $version
+     * @param Version $version
+     * @param VersionProvider $versionProvider
      * @param Linker $linker
      * @return string
      */
-    public function getUrl(File $file, $version, VersionProvider $versionProvider, Linker $linker)
+    public function getUrl(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)
     {
         return $this->client->getObjectUrl(
             $this->bucket,

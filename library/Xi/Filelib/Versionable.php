@@ -7,9 +7,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage;
+namespace Xi\Filelib;
 
-interface Storable
+use Xi\Filelib\Version;
+
+interface Versionable
 {
     /**
      * @return mixed
@@ -22,19 +24,19 @@ interface Storable
     public function getVersions();
 
     /**
-     * @param string $version
+     * @param mixed $version
      * @return self
      */
     public function addVersion($version);
 
     /**
-     * @param string $version
+     * @param mixed $version
      * @return self
      */
     public function removeVersion($version);
 
     /**
-     * @param string $version
+     * @param mixed $version
      * @return bool
      */
     public function hasVersion($version);

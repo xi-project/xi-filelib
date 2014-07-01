@@ -72,15 +72,4 @@ class ExecuteMethodCommandTest extends TestCase
         $command->execute($imagick);
     }
 
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    public function getMockedImagick()
-    {
-        $imagick = $this->getMockBuilder('\Imagick')->disableOriginalConstructor()
-            ->setMethods(array('cropThumbnailImage'))
-            ->getMock();
-
-        return $imagick;
-    }
 }

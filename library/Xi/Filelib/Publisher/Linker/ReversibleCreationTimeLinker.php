@@ -13,6 +13,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\ReversibleLinker;
+use Xi\Filelib\Version;
 
 /**
  * Calculates directory id by formatting an objects creation date
@@ -50,6 +51,7 @@ class ReversibleCreationTimeLinker extends BaseCreationTimeLinker implements Rev
         $pinfo = pathinfo($link);
         $split = explode('-', $pinfo['filename']);
         $version = array_pop($split);
+        $version = Version::get($version);
         $uuid = implode('-', $split);
         $file = $this->fileRepository->findByUuid($uuid);
         return array($file, $version);

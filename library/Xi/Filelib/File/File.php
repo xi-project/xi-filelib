@@ -10,33 +10,16 @@
 namespace Xi\Filelib\File;
 
 use DateTime;
-use Xi\Filelib\BaseStorable;
+use Xi\Filelib\BaseVersionable;
 use Xi\Filelib\Identifiable;
+use Xi\Filelib\IdentifiableDataContainer;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Storable;
+use Xi\Filelib\Versionable;
 
-class File extends BaseStorable implements Identifiable, Storable
+class File extends BaseVersionable implements Identifiable, Versionable
 {
     const STATUS_RAW = 1;
     const STATUS_COMPLETED = 2;
-
-    /**
-     * Key to method mapping for fromArray
-     *
-     * @var array
-     */
-    protected static $map = array(
-        'id' => 'setId',
-        'folder_id' => 'setFolderId',
-        'profile' => 'setProfile',
-        'name' => 'setName',
-        'date_created' => 'setDateCreated',
-        'status' => 'setStatus',
-        'uuid' => 'setUuid',
-        'resource' => 'setResource',
-        'versions' => 'setVersions',
-        'data' => 'setData'
-    );
 
     /**
      * @var mixed
@@ -232,7 +215,7 @@ class File extends BaseStorable implements Identifiable, Storable
      * @param  Resource $resource
      * @return File
      */
-    public function setResource(Resource $resource)
+    public function setResource(Resource $resource = null)
     {
         $this->resource = $resource;
 
@@ -285,24 +268,29 @@ class File extends BaseStorable implements Identifiable, Storable
      */
     public static function create(array $data = array())
     {
+        $defaults = array(
+            'id' => null,
+            'folder_id' => null,
+            'profile' => null,
+            'name' => null,
+            'date_created' => new DateTime(),
+            'status' => null,
+            'resource' => null,
+            'uuid' => null,
+            'data' => new IdentifiableDataContainer(array())
+        );
+        $data = array_merge($defaults, $data);
+
         $obj = new self();
-        return $obj->fromArray($data);
-    }
-
-    /**
-     * Sets data from array
-     *
-     * @param  array $data
-     * @return File
-     */
-    public function fromArray(array $data)
-    {
-        foreach (static::$map as $key => $method) {
-            if (isset($data[$key])) {
-                $this->$method($data[$key]);
-            }
-        }
-
-        return $this;
+        $obj->setId($data['id']);
+        $obj->setFolderId($data['folder_id']);
+        $obj->setProfile($data['profile']);
+        $obj->setName($data['name']);
+        $obj->setDateCreated($data['date_created']);
+        $obj->setStatus($data['status']);
+        $obj->setResource($data['resource']);
+        $obj->setUuid($data['uuid']);
+        $obj->setData($data['data']);
+        return $obj;
     }
 }

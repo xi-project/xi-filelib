@@ -171,7 +171,6 @@ class ResourceRepository extends AbstractRepository
             $resource->setHash($hash);
             $resource->setSize($upload->getSize());
             $resource->setMimetype($upload->getMimeType());
-            $resource->setVersions(array());
             $file->setResource($resource);
             if (!$profileObj->isSharedResourceAllowed($file)) {
                 $resource->setExclusive(true);

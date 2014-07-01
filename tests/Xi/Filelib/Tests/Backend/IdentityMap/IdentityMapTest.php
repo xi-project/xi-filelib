@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Backend\IdentityMap;
 
+use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Backend\IdentityMap\IdentityMap;
 use Xi\Filelib\Identifiable;
@@ -374,4 +375,44 @@ class IdentityMapTest extends TestCase
         $this->assertAttributeEquals(array(), 'objects', $this->im);
         $this->assertAttributeEquals(array(), 'objectIdentifiers', $this->im);
     }
+
+    /**
+     * @test
+     */
+    public function findByIdsDoesntFulfillRequestWhenNotFound()
+    {
+        $request = new FindByIdsRequest(
+            array('xoo'),
+            'Xi\Filelib\Resource\Resource'
+        );
+
+        $ret = $this->im->findByIds($request);
+        $this->assertFalse($ret->isFulfilled());
+    }
+
+    /**
+     * @test
+     */
+    public function findByIdsFulfillsRequestWhenFound()
+    {
+        $request = new FindByIdsRequest(
+            array('xoo'),
+            'Xi\Filelib\Resource\Resource'
+        );
+
+        $resource = Resource::create(array('id' => 'xoo'));
+        $this->im->add($resource);
+
+        $ret = $this->im->findByIds($request);
+        $this->assertTrue($ret->isFulfilled());
+    }
+
+    /**
+     * @test
+     */
+    public function isNotOrigin()
+    {
+        $this->assertFalse($this->im->isOrigin());
+    }
+
 }

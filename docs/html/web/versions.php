@@ -68,7 +68,7 @@ $versionPlugin = new VersionPlugin(
 $filelib->addPlugin($versionPlugin, array('default'));
 
 $file = $filelib->uploadFile(__DIR__ . '/../manatees/manatus-12.jpg');
-$publisher->publish($file);
+$publisher->publishAllVersions($file);
 
 ?>
 

@@ -16,6 +16,7 @@ use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\Version;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\File\File;
@@ -81,7 +82,11 @@ class ResourceRefactorMigration implements Command
             try {
                 $retrieved = $this->storage->retrieve($resource);
                 $resource->setHash(sha1_file($retrieved));
-                $resource->setVersions($profile->getFileVersions($file));
+
+                foreach ($profile->getFileVersions($file) as $version) {
+                    $resource->addVersion(Version::get($version));
+                }
+
                 $this->filelib->getBackend()->updateResource($resource);
             } catch (\Exception $e) {
                 // Loo
