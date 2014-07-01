@@ -10,8 +10,8 @@
 namespace Xi\Filelib\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
 
 class VersionProviderEvent extends Event

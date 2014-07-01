@@ -9,18 +9,17 @@
 
 namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 
-use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\LogicException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Version;
-use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\Publisher\Linker;
+use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Publisher\Linker;
-use Xi\Filelib\LogicException;
-use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\Version;
 
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage

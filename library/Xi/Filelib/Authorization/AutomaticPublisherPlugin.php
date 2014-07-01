@@ -10,13 +10,12 @@
 namespace Xi\Filelib\Authorization;
 
 use Xi\Filelib\Event\FileEvent;
-use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\VersionProviderEvent;
-use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Plugin\VersionProvider\Events as VPEvents;
 use Xi\Filelib\Events as CoreEvents;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Plugin\BasePlugin;
+use Xi\Filelib\Plugin\VersionProvider\Events as VPEvents;
+use Xi\Filelib\Publisher\Publisher;
 
 /**
  * Automatically publishes all anonymous-readable files, emulating the pre-0.8 behavior

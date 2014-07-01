@@ -9,14 +9,14 @@
 
 namespace Xi\Filelib\Backend\Adapter;
 
-use Xi\Filelib\Backend\FindByIdsRequest;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Backend\Finder\Finder;
 use ArrayIterator;
-use Rhumsaa\Uuid\Uuid;
 use DateTime;
+use Rhumsaa\Uuid\Uuid;
+use Xi\Filelib\Backend\FindByIdsRequest;
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\File\File;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Resource\Resource;
 
 /**
  * Json platform for development purposes

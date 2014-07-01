@@ -9,10 +9,10 @@
 
 namespace Xi\Filelib\Resource\Command;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Command\Command;
 use Xi\Filelib\FileLibrary;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Resource\ResourceRepository;
 use Xi\Filelib\Storage\Storage;
 

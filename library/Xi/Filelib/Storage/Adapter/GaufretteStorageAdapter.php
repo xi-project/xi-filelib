@@ -9,16 +9,14 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileObject;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Xi\Filelib\Identifiable;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Gaufrette\Filesystem;
+use Xi\Filelib\Identifiable;
+use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\Storage\Retrieved;
-use Xi\Filelib\Versionable;
 use Xi\Filelib\Version;
+use Xi\Filelib\Versionable;
 
 /**
  * Stores files in a filesystem

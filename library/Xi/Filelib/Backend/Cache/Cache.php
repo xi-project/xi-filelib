@@ -9,14 +9,14 @@
 
 namespace Xi\Filelib\Backend\Cache;
 
+use ArrayIterator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Xi\Filelib\Backend\Cache\Adapter\CacheAdapter;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\FindByIdsRequestResolver;
-use Xi\Filelib\Backend\Cache\Adapter\CacheAdapter;
 use Xi\Filelib\Event\IdentifiableEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\Identifiable;
-use ArrayIterator;
 
 class Cache implements FindByIdsRequestResolver, EventSubscriberInterface
 {

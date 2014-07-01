@@ -10,10 +10,10 @@
 namespace Xi\Filelib\Publisher\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Tool\Slugifier\Slugifier;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Publisher\Linker;
-use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Version;
 
 /**

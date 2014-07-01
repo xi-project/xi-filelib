@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Event;
 
-use Xi\Filelib\Event\IdentifiableEvent;
 use Xi\Filelib\File\File;
 
 /**

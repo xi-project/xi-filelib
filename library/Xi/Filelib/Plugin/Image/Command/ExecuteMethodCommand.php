@@ -9,8 +9,8 @@
 
 namespace Xi\Filelib\Plugin\Image\Command;
 
-use Imagick;
 use BadMethodCallException;
+use Imagick;
 
 class ExecuteMethodCommand extends AbstractCommand
 {

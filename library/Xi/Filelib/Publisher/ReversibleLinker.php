@@ -9,8 +9,6 @@
 
 namespace Xi\Filelib\Publisher;
 
-use Xi\Filelib\File\File;
-
 /**
  * Reversable linker
  *

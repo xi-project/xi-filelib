@@ -11,11 +11,9 @@ namespace Xi\Filelib\Folder;
 
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\AbstractRepository;
-use Xi\Filelib\Command\CommandDefinition;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\Backend\Finder\FolderFinder;
+use Xi\Filelib\Command\CommandDefinition;
 
 class FolderRepository extends AbstractRepository
 {

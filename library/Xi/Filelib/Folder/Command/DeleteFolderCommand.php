@@ -9,13 +9,12 @@
 
 namespace Xi\Filelib\Folder\Command;
 
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\FolderRepository;
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
-use Pekkis\Queue\Message;
+use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Folder\FolderRepository;
 
 class DeleteFolderCommand extends BaseFolderCommand
 {

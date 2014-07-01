@@ -10,15 +10,15 @@
 namespace Xi\Filelib\Publisher\Adapter;
 
 use Aws\S3\Enum\CannedAcl;
+use Aws\S3\S3Client;
+use Guzzle\Service\Resource\Model;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Version;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Storage\Storage;
-use Aws\S3\S3Client;
-use Guzzle\Service\Resource\Model;
+use Xi\Filelib\Version;
 
 class AmazonS3PublisherAdapter implements PublisherAdapter
 {

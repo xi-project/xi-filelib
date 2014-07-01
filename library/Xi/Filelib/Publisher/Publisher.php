@@ -9,21 +9,21 @@
 
 namespace Xi\Filelib\Publisher;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Xi\Filelib\Attacher;
 use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\Event\FileEvent;
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\File\File;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\PublisherEvent;
-use Xi\Filelib\Version;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Events as CoreEvents;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\RuntimeException;
-use Xi\Filelib\FilelibException;
+use Xi\Filelib\Version;
 
 /**
  * Publisher

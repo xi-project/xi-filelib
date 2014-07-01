@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Tool\MimeTypeResolver;
 
-use \finfo;
+use finfo;
 
 class FinfoMimeTypeResolver implements MimeTypeResolver
 {

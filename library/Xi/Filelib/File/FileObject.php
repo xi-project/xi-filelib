@@ -10,8 +10,8 @@
 namespace Xi\Filelib\File;
 
 use SplFileObject;
-use Xi\Filelib\Tool\MimeTypeResolver\MimeTypeResolver;
 use Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver;
+use Xi\Filelib\Tool\MimeTypeResolver\MimeTypeResolver;
 
 /**
  * Extends SplFileObject to offer mime type detection via Fileinfo.

@@ -2,20 +2,20 @@
 
 namespace Xi\Filelib\Renderer;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Authorization\AccessDeniedException;
+use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\RenderEvent;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
-use Xi\Filelib\Version;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Storage;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Filelib\Event\FileEvent;
-use Xi\Filelib\FilelibException;
+use Xi\Filelib\Version;
 
 class Renderer
 {

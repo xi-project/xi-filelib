@@ -9,17 +9,16 @@
 
 namespace Xi\Filelib\Plugin\Video;
 
+use Aws\S3\S3Client;
 use Guzzle\Service\Resource\Model;
 use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\File\File;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\RuntimeException;
-use Aws\S3\S3Client;
 use Xi\Filelib\Version;
 
 class ZencoderPlugin extends VersionProvider
@@ -78,7 +77,6 @@ class ZencoderPlugin extends VersionProvider
     ) {
         parent::__construct(
             function (File $file) {
-                // @todo: maybe some more complex mime type based checking
                 return (bool) preg_match("/^video/", $file->getMimetype());
             }
         );

@@ -9,10 +9,8 @@
 
 namespace Xi\Filelib\Renderer\Adapter;
 
-use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileObject;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Xi\Filelib\Renderer\AcceleratedRendererAdapter;
 use Xi\Filelib\Renderer\Response as InternalResponse;
 

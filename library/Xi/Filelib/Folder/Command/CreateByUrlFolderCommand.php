@@ -9,9 +9,8 @@
 
 namespace Xi\Filelib\Folder\Command;
 
-use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
-use Pekkis\Queue\Message;
+use Xi\Filelib\Folder\FolderRepository;
 
 class CreateByUrlFolderCommand extends BaseFolderCommand
 {

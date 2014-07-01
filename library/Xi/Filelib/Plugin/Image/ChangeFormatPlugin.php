@@ -9,13 +9,12 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
-use Xi\Filelib\File\MimeType;
-use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Event\FileUploadEvent;
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Events;
+use Xi\Filelib\File\MimeType;
 use Xi\Filelib\File\Upload\FileUpload;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\BasePlugin;
 
 /**
  * Changes images' formats before uploading

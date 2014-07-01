@@ -9,11 +9,9 @@
 
 namespace Xi\Filelib\File\Command;
 
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\File\File;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
-use Pekkis\Queue\Message;
+use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\ResourceRepository;
 
 class UpdateFileCommand extends BaseFileCommand

@@ -9,18 +9,17 @@
 
 namespace Xi\Filelib\File;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
+use Xi\Filelib\AbstractRepository;
+use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Command\CommandDefinition;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
-use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Folder\FolderRepository;
-use Xi\Filelib\AbstractRepository;
-use Xi\Filelib\FilelibException;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\Backend\Finder\FileFinder;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Folder\FolderRepository;
 
 /**
  * File repository
@@ -127,7 +126,6 @@ class FileRepository extends AbstractRepository
     /**
      * @param $uuid
      * @return File
-     * @todo switch uuid and id as internal primary id
      */
     public function findByUuid($uuid)
     {

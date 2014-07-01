@@ -10,13 +10,10 @@
 namespace Xi\Filelib\Folder\Command;
 
 use Rhumsaa\Uuid\Uuid;
-use Xi\Filelib\Folder\FolderRepository;
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\LogicException;
-use Pekkis\Queue\Message;
 use Xi\Filelib\Queue\UuidReceiver;
 
 class CreateFolderCommand extends BaseFolderCommand implements UuidReceiver

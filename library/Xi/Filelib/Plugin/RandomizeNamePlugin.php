@@ -12,7 +12,6 @@ namespace Xi\Filelib\Plugin;
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
-use Xi\Filelib\File\File;
 
 /**
  * Randomizes all uploads' file names before uploading. Ensures that same file

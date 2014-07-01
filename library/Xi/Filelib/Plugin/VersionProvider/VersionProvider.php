@@ -9,23 +9,22 @@
 
 namespace Xi\Filelib\Plugin\VersionProvider;
 
-use Xi\Filelib\Event\VersionProviderEvent;
-use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\InvalidVersionException;
-use Xi\Filelib\Profile\ProfileManager;
-use Xi\Filelib\Plugin\BasePlugin;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\ResourceEvent;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Versionable;
-use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Event\VersionProviderEvent;
 use Xi\Filelib\Events as CoreEvents;
-use Xi\Filelib\File\MimeType;
+use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\File\MimeType;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\InvalidVersionException;
+use Xi\Filelib\Plugin\BasePlugin;
+use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Version;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Versionable;
 
 /**
  * Base version provider
@@ -283,7 +282,6 @@ abstract class VersionProvider extends BasePlugin
      *
      * @param string $extension
      * @return string
-     * @todo allow user to edit / add his own replacements?
      *
      */
     protected function doExtensionReplacement($extension)

@@ -9,19 +9,19 @@
 
 namespace Xi\Filelib\Backend;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
+use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\Cache\Adapter\NullCacheAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
-use Xi\Filelib\Identifiable;
-use Xi\Filelib\Backend\IdentityMap\IdentityMap;
-use Xi\Filelib\Backend\Adapter\BackendAdapter;
-use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\Backend\IdentityMap\IdentityMap;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Identifiable;
+use Xi\Filelib\Resource\Resource;
 
 class Backend
 {
@@ -268,7 +268,6 @@ class Backend
      *
      * @param  Resource         $resource
      * @throws FilelibException If resource could not be deleted.
-     * @todo The event part seems misplaced here.
      */
     public function deleteResource(Resource $resource)
     {

@@ -9,8 +9,6 @@
 
 namespace Xi\Filelib\File\Upload;
 
-use Xi\Filelib\File\Upload\FileUpload;
-
 /**
  * Limits file types that are allowed / denied to be uploaded
  *

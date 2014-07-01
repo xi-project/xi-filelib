@@ -9,8 +9,8 @@
 
 namespace Xi\Filelib\Event;
 
-use Xi\Filelib\Identifiable;
 use Symfony\Component\EventDispatcher\Event;
+use Xi\Filelib\Identifiable;
 
 /**
  * Identifiable event

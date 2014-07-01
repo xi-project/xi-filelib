@@ -9,14 +9,13 @@
 
 namespace Xi\Filelib\Storage;
 
+use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Attacher;
 use Xi\Filelib\Event\StorageEvent;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
-use Exception;
-use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
 

@@ -9,10 +9,6 @@
 
 namespace Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
-use DateTime;
-use Xi\Filelib\FilelibException;
-use Xi\Filelib\Identifiable;
-
 /**
  * Calculates directory id by formatting an objects creation date
  */

@@ -11,11 +11,11 @@ namespace Xi\Filelib\Command;
 
 use Pekkis\Queue\QueueInterface;
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
+use Xi\Filelib\Command\ExecutionStrategy\AsynchronousExecutionStrategy;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
+use Xi\Filelib\Command\ExecutionStrategy\SynchronousExecutionStrategy;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\Command\ExecutionStrategy\SynchronousExecutionStrategy;
-use Xi\Filelib\Command\ExecutionStrategy\AsynchronousExecutionStrategy;
 use Xi\Filelib\RuntimeException;
 
 class Commander

@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib\Command\ExecutionStrategy;
 
-use Pekkis\Queue\Message;
 use Xi\Filelib\Command\Command;
 
 class SynchronousExecutionStrategy implements ExecutionStrategy

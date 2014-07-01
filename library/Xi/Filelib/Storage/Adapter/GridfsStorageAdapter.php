@@ -12,12 +12,11 @@ namespace Xi\Filelib\Storage\Adapter;
 use MongoDB;
 use MongoGridFS;
 use MongoGridFSFile;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Retrieved;
-use Xi\Filelib\Versionable;
 use Xi\Filelib\Version;
+use Xi\Filelib\Versionable;
 
 /**
  * Stores files in MongoDB's GridFS filesystem

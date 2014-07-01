@@ -9,14 +9,14 @@
 
 namespace Xi\Filelib\Profile;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Xi\Filelib\Event\PluginEvent;
+use Xi\Filelib\Events;
+use Xi\Filelib\File\File;
+use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Event\PluginEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\Events;
 use Xi\Filelib\Version;
 
 class FileProfile implements EventSubscriberInterface

@@ -9,12 +9,10 @@
 
 namespace Xi\Filelib\File\Command;
 
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\File\File;
+use Serializable;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
-use Pekkis\Queue\Message;
-use Serializable;
+use Xi\Filelib\File\File;
 
 class AfterUploadFileCommand extends BaseFileCommand implements Serializable
 {
@@ -40,7 +38,6 @@ class AfterUploadFileCommand extends BaseFileCommand implements Serializable
         $event = new FileEvent($this->file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_AFTERUPLOAD, $event);
 
-        // @todo: actual statuses
         $this->file->setStatus(File::STATUS_COMPLETED);
 
         return $this->fileRepository->createCommand(

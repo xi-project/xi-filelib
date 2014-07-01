@@ -10,13 +10,12 @@
 namespace Xi\Filelib\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Publisher\PublisherAdapter;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Version;
-use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Publisher\Linker;
+use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Storage\Storage;
+use Xi\Filelib\Version;
 
 /**
  * Publishes files in a filesystem by retrieving them from storage and creating a copy

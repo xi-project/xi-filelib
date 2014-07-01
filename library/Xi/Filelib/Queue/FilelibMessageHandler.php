@@ -11,9 +11,9 @@ namespace Xi\Filelib\Queue;
 
 use Pekkis\Queue\Message;
 use Pekkis\Queue\Processor\MessageHandler;
-use Xi\Filelib\Command\Command;
-use Pekkis\Queue\QueueInterface;
 use Pekkis\Queue\Processor\Result;
+use Pekkis\Queue\QueueInterface;
+use Xi\Filelib\Command\Command;
 
 class FilelibMessageHandler implements MessageHandler
 {

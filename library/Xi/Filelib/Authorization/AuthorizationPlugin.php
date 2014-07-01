@@ -9,16 +9,15 @@
 
 namespace Xi\Filelib\Authorization;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\FolderEvent;
+use Xi\Filelib\Event\IdentifiableEvent;
+use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\Plugin\BasePlugin;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\Publisher\Events as PublisherEvents;
-use Xi\Filelib\Authorization\AccessDeniedException;
-use Xi\Filelib\Event\IdentifiableEvent;
 use Xi\Filelib\Renderer\Events as RendererEvents;
 
 class AuthorizationPlugin extends BasePlugin

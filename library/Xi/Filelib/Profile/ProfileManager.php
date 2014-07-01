@@ -9,14 +9,14 @@
 
 namespace Xi\Filelib\Profile;
 
-use Xi\Collections\Collection\ArrayCollection;
-use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
-use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\File\File;
+use Xi\Filelib\InvalidArgumentException;
+use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
+use Xi\Filelib\Version;
 
 class ProfileManager
 {

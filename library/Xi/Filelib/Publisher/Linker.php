@@ -9,8 +9,8 @@
 
 namespace Xi\Filelib\Publisher;
 
-use Xi\Filelib\File\File;
 use Xi\Filelib\Attacher;
+use Xi\Filelib\File\File;
 use Xi\Filelib\Version;
 
 /**

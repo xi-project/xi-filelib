@@ -9,11 +9,11 @@
 
 namespace Xi\Filelib\Command\ExecutionStrategy;
 
-use Xi\Filelib\InvalidArgumentException;
 use Pekkis\Queue\Message;
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
-use Xi\Filelib\Command\Command;
 use Serializable;
+use Xi\Filelib\Command\Command;
+use Xi\Filelib\InvalidArgumentException;
 
 class AsynchronousExecutionStrategy implements ExecutionStrategy
 {

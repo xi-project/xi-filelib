@@ -9,8 +9,6 @@
 
 namespace Xi\Filelib\Backend\Finder;
 
-use Xi\Filelib\Backend\Finder\FinderException;
-
 /**
  * Convenience class for concrete finders
  *

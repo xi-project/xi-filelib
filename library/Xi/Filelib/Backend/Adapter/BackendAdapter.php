@@ -9,13 +9,13 @@
 
 namespace Xi\Filelib\Backend\Adapter;
 
-use Xi\Filelib\Backend\FindByIdsRequestResolver;
-use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\FilelibException;
-use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\FindByIdsRequest;
+use Xi\Filelib\Backend\FindByIdsRequestResolver;
+use Xi\Filelib\Backend\Finder\Finder;
+use Xi\Filelib\File\File;
+use Xi\Filelib\FilelibException;
+use Xi\Filelib\Folder\Folder;
+use Xi\Filelib\Resource\Resource;
 
 /**
  * Filelib backend platform interface

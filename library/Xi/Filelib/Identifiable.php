@@ -9,8 +9,6 @@
 
 namespace Xi\Filelib;
 
-use Xi\Filelib\IdentifiableDataContainer;
-
 /**
  * Interface for identifiable objects
  */
