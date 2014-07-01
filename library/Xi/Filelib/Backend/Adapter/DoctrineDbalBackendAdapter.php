@@ -25,48 +25,9 @@ use Xi\Filelib\Resource\Resource;
  * Doctrine Dbal backend for filelib. Only supports postgresql and mysql because of portability stuff.
  * Strongly suggest you use the ORM version because it is much more portable.
  */
-class DoctrineDbalBackendAdapter implements BackendAdapter
+class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements BackendAdapter
 {
     private $supportedPlatforms = array('postgresql', 'mysql');
-
-    /**
-     * @var array
-     */
-    private $finderMap = array(
-        'Xi\Filelib\Resource\Resource' => array(
-            'id' => 'id',
-            'hash' => 'hash',
-        ),
-        'Xi\Filelib\File\File' => array(
-            'id' => 'id',
-            'folder_id' => 'folder_id',
-            'name' => 'filename',
-            'uuid' => 'uuid',
-        ),
-        'Xi\Filelib\Folder\Folder' => array(
-            'id' => 'id',
-            'parent_id' => 'parent_id',
-            'url' => 'folderurl',
-        ),
-    );
-
-    private $classNameToResources = array(
-        'Xi\Filelib\Resource\Resource' => array(
-            'table' => 'xi_filelib_resource',
-            'exporter' => 'exportResources',
-            'getEntityName' => 'getResourceEntityName',
-        ),
-        'Xi\Filelib\File\File' => array(
-            'table' => 'xi_filelib_file',
-            'exporter' => 'exportFiles',
-            'getEntityName' => 'getFileEntityName',
-        ),
-        'Xi\Filelib\Folder\Folder' => array(
-            'table' => 'xi_filelib_folder',
-            'exporter' => 'exportFolders',
-            'getEntityName' => 'getFolderEntityName',
-        ),
-    );
 
     /**
      * @param Connection $conn
@@ -78,11 +39,6 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
         if (!$this->isPlatformSupported($this->conn->getDatabasePlatform())) {
             throw new \RuntimeException("Unsupported Doctrine platform");
         }
-    }
-
-    public function isOrigin()
-    {
-        return true;
     }
 
     /**
@@ -121,7 +77,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
      */
     public function deleteFile(File $file)
     {
-        $stmt = $this->conn->prepare($sql = "DELETE FROM xi_filelib_file WHERE id = ?");
+        $stmt = $this->conn->prepare("DELETE FROM xi_filelib_file WHERE id = ?");
         $stmt->execute(array($file->getId()));
 
         return (bool) $stmt->rowCount();
@@ -208,7 +164,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
      */
     public function deleteFolder(Folder $folder)
     {
-        $stmt = $this->conn->prepare($sql = "DELETE FROM xi_filelib_folder WHERE id = ?");
+        $stmt = $this->conn->prepare("DELETE FROM xi_filelib_folder WHERE id = ?");
         $stmt->execute(array($folder->getId()));
 
         return (bool) $stmt->rowCount();
@@ -219,7 +175,7 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
      */
     public function deleteResource(Resource $resource)
     {
-        $stmt = $this->conn->prepare($sql = "DELETE FROM xi_filelib_resource WHERE id = ?");
+        $stmt = $this->conn->prepare("DELETE FROM xi_filelib_resource WHERE id = ?");
         $stmt->execute(array($resource->getId()));
 
         return (bool) $stmt->rowCount();
@@ -456,21 +412,6 @@ class DoctrineDbalBackendAdapter implements BackendAdapter
 
         return $ret;
     }
-
-    /**
-     * @param  Finder $finder
-     * @return array
-     */
-    protected function finderParametersToInternalParameters(Finder $finder)
-    {
-        $ret = array();
-        foreach ($finder->getParameters() as $key => $value) {
-            $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
-        }
-
-        return $ret;
-    }
-
 
     /**
      * @param AbstractPlatform $platform
