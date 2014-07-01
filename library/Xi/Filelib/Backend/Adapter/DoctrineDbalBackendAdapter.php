@@ -30,6 +30,11 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
     private $supportedPlatforms = array('postgresql', 'mysql');
 
     /**
+     * @var Connection
+     */
+    private $conn;
+
+    /**
      * @param Connection $conn
      */
     public function __construct(Connection $conn)
