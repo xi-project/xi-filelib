@@ -1,8 +1,7 @@
 <?php
 
-use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
+use Xi\Filelib\File\FileRepository;
 
 if (is_file(__DIR__ . '/../filelib-example.json')) {
     unlink(__DIR__ . '/../filelib-example.json');

@@ -41,11 +41,6 @@ class GridfsStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     private $gridFs;
 
     /**
-     * @var array Registered temporary files
-     */
-    private $tempFiles = array();
-
-    /**
      * @param MongoDB $mongo
      * @param string $prefix
      * @param null $tempDir

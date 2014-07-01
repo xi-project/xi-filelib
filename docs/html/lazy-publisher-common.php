@@ -1,15 +1,15 @@
 <?php
 
-use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
-use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
+use Xi\Filelib\Event\VersionProviderEvent;
+use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\Image\ArbitraryVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
-use Xi\Filelib\Publisher\Linker\ReversibleCreationTimeLinker;
-use Xi\Filelib\Version;
-use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\Events as VersionProviderEvents;
-use Xi\Filelib\Event\VersionProviderEvent;
+use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
+use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
+use Xi\Filelib\Publisher\Linker\ReversibleCreationTimeLinker;
+use Xi\Filelib\Publisher\Publisher;
+use Xi\Filelib\Version;
 
 $publisher = new Publisher(
     new SymlinkFilesystemPublisherAdapter(__DIR__ . '/web/lazy-files', '600', '700', 'lazy-files'),

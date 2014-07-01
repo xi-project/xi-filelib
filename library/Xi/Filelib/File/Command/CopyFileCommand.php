@@ -102,8 +102,6 @@ class CopyFileCommand extends BaseFileCommand implements UuidReceiver
         $oldResource = $file->getResource();
         if ($oldResource->isExclusive()) {
 
-            $retrieved = $this->storage->retrieve($oldResource);
-
             $resource = Resource::create();
             $resource->setDateCreated(new DateTime());
             $resource->setHash($oldResource->getHash());

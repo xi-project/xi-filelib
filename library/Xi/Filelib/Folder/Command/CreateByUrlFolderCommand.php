@@ -42,8 +42,6 @@ class CreateByUrlFolderCommand extends BaseFolderCommand
         $created = null;
         $previous = null;
 
-        $count = 0;
-
         while (sizeof($exploded) || !$created) {
 
             $folderNames[] = $folderCurrent = array_shift($exploded);

@@ -1,8 +1,8 @@
 <?php
 
-use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\Plugin;
+use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../lazy-publisher-common.php';

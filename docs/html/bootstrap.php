@@ -1,15 +1,10 @@
 <?php
 
-use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Backend\Adapter\JsonBackendAdapter;
-use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
-use Xi\Filelib\Backend\Cache\Cache;
-use Xi\Filelib\Backend\Cache\Adapter\MemcachedCacheAdapter;
-use Xi\Filelib\Backend\Adapter\DoctrineDbalBackendAdapter;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
+use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 

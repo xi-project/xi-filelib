@@ -203,10 +203,6 @@ class CopyFileCommandTest extends \Xi\Filelib\Tests\TestCase
 
         if ($exclusiveResource) {
 
-            $storage->expects($this->once())->method('retrieve')
-                     ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
-                     ->will($this->returnValue('xooxoo'));
-
             $rere
                 ->expects($this->once())
                 ->method('createCommand')

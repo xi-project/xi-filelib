@@ -32,8 +32,6 @@ class AutomaticPublisherPlugin extends BasePlugin
      */
     private $adapter;
 
-    private $executing = false;
-
     /**
      * @var array
      */

@@ -28,7 +28,7 @@ use Xi\Filelib\Resource\Resource;
  * @author   Mikko Hirvonen <mikko.petteri.hirvonen@gmail.com>
  * @author   pekkis
  */
-class DoctrineOrmBackendAdapter implements BackendAdapter
+class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements BackendAdapter
 {
     /**
      * @var string
@@ -51,55 +51,11 @@ class DoctrineOrmBackendAdapter implements BackendAdapter
     private $em;
 
     /**
-     * @var array
-     */
-    private $finderMap = array(
-        'Xi\Filelib\Resource\Resource' => array(
-            'id' => 'id',
-            'hash' => 'hash',
-        ),
-        'Xi\Filelib\File\File' => array(
-            'id' => 'id',
-            'folder_id' => 'folder_id',
-            'name' => 'filename',
-            'uuid' => 'uuid',
-        ),
-        'Xi\Filelib\Folder\Folder' => array(
-            'id' => 'id',
-            'parent_id' => 'parent_id',
-            'url' => 'folderurl',
-        ),
-    );
-
-    private $classNameToResources = array(
-        'Xi\Filelib\Resource\Resource' => array(
-            'table' => 'xi_filelib_resource',
-            'exporter' => 'exportResources',
-            'getEntityName' => 'getResourceEntityName',
-        ),
-        'Xi\Filelib\File\File' => array(
-            'table' => 'xi_filelib_file',
-            'exporter' => 'exportFiles',
-            'getEntityName' => 'getFileEntityName',
-        ),
-        'Xi\Filelib\Folder\Folder' => array(
-            'table' => 'xi_filelib_folder',
-            'exporter' => 'exportFolders',
-            'getEntityName' => 'getFolderEntityName',
-        ),
-    );
-
-    /**
      * @param EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
-    }
-
-    public function isOrigin()
-    {
-        return true;
     }
 
     /**
@@ -523,19 +479,5 @@ class DoctrineOrmBackendAdapter implements BackendAdapter
     public function getFolderReference($id)
     {
         return $this->em->getReference($this->folderEntityName, $id);
-    }
-
-    /**
-     * @param  Finder $finder
-     * @return array
-     */
-    protected function finderParametersToInternalParameters(Finder $finder)
-    {
-        $ret = array();
-        foreach ($finder->getParameters() as $key => $value) {
-            $ret[$this->finderMap[$finder->getResultClass()][$key]] = $value;
-        }
-
-        return $ret;
     }
 }

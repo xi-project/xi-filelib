@@ -174,7 +174,7 @@ class FolderRepository extends AbstractRepository
      */
     public function findParentFolder(Folder $folder)
     {
-        if (!$parentId = $folder->getParentId()) {
+        if (!$folder->getParentId()) {
             return false;
         }
 
