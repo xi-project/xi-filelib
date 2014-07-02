@@ -38,6 +38,7 @@ class NullCacheAdapter implements CacheAdapter
      */
     public function save(Identifiable $identifiable)
     {
+        return null;
     }
 
     /**
@@ -46,9 +47,11 @@ class NullCacheAdapter implements CacheAdapter
      */
     public function delete(Identifiable $identifiable)
     {
+        return null;
     }
 
     public function clear()
     {
+        return null;
     }
 }

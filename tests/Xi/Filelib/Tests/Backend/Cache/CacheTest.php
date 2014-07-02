@@ -79,6 +79,18 @@ class CacheTest extends TestCase
     /**
      * @test
      */
+    public function clearDelegates()
+    {
+        $this->adapter
+            ->expects($this->once())
+            ->method('clear');
+
+        $this->cache->clear();
+    }
+
+    /**
+     * @test
+     */
     public function saveDelegates()
     {
         $identifiable = File::create();

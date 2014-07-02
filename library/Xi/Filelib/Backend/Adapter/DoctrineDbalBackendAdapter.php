@@ -16,7 +16,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Iterator;
 use PDO;
 use Xi\Filelib\Backend\FindByIdsRequest;
-use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Resource\Resource;
@@ -269,49 +268,6 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
     }
 
     /**
-     * @see BackendAdapter::findByFinder
-     */
-    public function findByFinder(Finder $finder)
-    {
-        $resources = $this->classNameToResources[$finder->getResultClass()];
-        $params = $this->finderParametersToInternalParameters($finder);
-
-        $tableName = $resources['table'];
-        $conn = $this->conn;
-
-        $qb = $conn->createQueryBuilder();
-        $qb->select("id")->from($tableName, 't');
-
-        $bindParams = array();
-        foreach ($params as $param => $value) {
-
-            if ($value === null) {
-                $qb->andWhere("t.{$param} IS NULL");
-            } else {
-                $qb->andWhere("t.{$param} = :{$param}");
-                $bindParams[$param] = $value;
-            }
-
-        }
-
-        $sql = $qb->getSQL();
-        $stmt = $conn->prepare($sql);
-        foreach ($bindParams as $param => $value) {
-            $stmt->bindValue($param, $value);
-        }
-        $stmt->execute();
-
-        $ret = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_map(
-            function ($ret) {
-                return $ret['id'];
-            },
-            $ret
-        );
-    }
-
-    /**
      * @see BackendAdapter::findByIds
      */
     public function findByIds(FindByIdsRequest $request)
@@ -425,5 +381,13 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
     private function isPlatformSupported(AbstractPlatform $platform)
     {
         return in_array($platform->getName(), $this->supportedPlatforms);
+    }
+
+    /**
+     * @return Connection
+     */
+    protected function getConnection()
+    {
+        return $this->conn;
     }
 }
