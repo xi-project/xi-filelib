@@ -23,61 +23,43 @@ use Xi\Filelib\Folder\Folder;
 class SimpleAuthorizationAdapter implements AuthorizationAdapter
 {
     /**
-     * @var bool
+     * @var callable
      */
     private $folderReadableByAnonymous;
 
     /**
-     * @var bool
+     * @var callable
      */
     private $fileReadableByAnonymous;
 
     /**
-     * @var bool
+     * @var callable
      */
     private $fileReadable;
 
     /**
-     * @var bool
+     * @var callable
      */
     private $fileWritable;
 
     /**
-     * @var bool
+     * @var callable
      */
     private $folderReadable;
 
     /**
-     * @var bool
+     * @var callable
      */
     private $folderWritable;
 
-
     public function __construct()
     {
-        $this->fileReadable = function () {
-            return true;
-        };
-
-        $this->fileReadableByAnonymous = function () {
-            return true;
-        };
-
-        $this->fileWritable = function () {
-            return true;
-        };
-
-        $this->folderReadableByAnonymous = function () {
-            return true;
-        };
-
-        $this->folderReadable = function () {
-            return true;
-        };
-
-        $this->folderWritable = function () {
-            return true;
-        };
+        $this->setFileReadable(true);
+        $this->setFileReadableByAnonymous(true);
+        $this->setFileWritable(true);
+        $this->setFolderReadable(true);
+        $this->setFolderWritable(true);
+        $this->setFolderReadableByAnonymous(true);
     }
 
     /**
@@ -194,7 +176,10 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
         return $this;
     }
 
-
+    /**
+     * @param mixed $value
+     * @return callable
+     */
     private function wrap($value)
     {
         if (!is_callable($value)) {
@@ -207,6 +192,5 @@ class SimpleAuthorizationAdapter implements AuthorizationAdapter
 
     public function attachTo(FileLibrary $filelib)
     {
-
     }
 }

@@ -10,12 +10,11 @@
 namespace Xi\Filelib\Backend\Adapter;
 
 use ArrayIterator;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Iterator;
-use PDO;
 use Xi\Filelib\Backend\FindByIdsRequest;
-use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Resource\Resource;
@@ -315,49 +314,6 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     }
 
     /**
-     * @see BackendAdapter::findByFinder
-     */
-    public function findByFinder(Finder $finder)
-    {
-        $resources = $this->classNameToResources[$finder->getResultClass()];
-        $params = $this->finderParametersToInternalParameters($finder);
-
-        $tableName = $resources['table'];
-        $conn = $this->em->getConnection();
-
-        $qb = $conn->createQueryBuilder();
-        $qb->select("id")->from($tableName, 't');
-
-        $bindParams = array();
-        foreach ($params as $param => $value) {
-
-            if ($value === null) {
-                $qb->andWhere("t.{$param} IS NULL");
-            } else {
-                $qb->andWhere("t.{$param} = :{$param}");
-                $bindParams[$param] = $value;
-            }
-
-        }
-
-        $sql = $qb->getSQL();
-        $stmt = $conn->prepare($sql);
-        foreach ($bindParams as $param => $value) {
-            $stmt->bindValue($param, $value);
-        }
-        $stmt->execute();
-
-        $ret = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_map(
-            function ($ret) {
-                return $ret['id'];
-            },
-            $ret
-        );
-    }
-
-    /**
      * @see BackendAdapter::findByIds
      */
     public function findByIds(FindByIdsRequest $request)
@@ -479,5 +435,13 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     public function getFolderReference($id)
     {
         return $this->em->getReference($this->folderEntityName, $id);
+    }
+
+    /**
+     * @return Connection
+     */
+    protected function getConnection()
+    {
+        return $this->em->getConnection();
     }
 }

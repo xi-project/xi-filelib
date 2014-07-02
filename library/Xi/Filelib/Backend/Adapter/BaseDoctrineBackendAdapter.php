@@ -9,6 +9,8 @@
 
 namespace Xi\Filelib\Backend\Adapter;
 
+use Doctrine\DBAL\Connection;
+use PDO;
 use Xi\Filelib\Backend\Finder\Finder;
 
 /**
@@ -74,4 +76,52 @@ abstract class BaseDoctrineBackendAdapter
 
         return $ret;
     }
+
+    /**
+     * @see BackendAdapter::findByFinder
+     */
+    public function findByFinder(Finder $finder)
+    {
+        $resources = $this->classNameToResources[$finder->getResultClass()];
+        $params = $this->finderParametersToInternalParameters($finder);
+
+        $tableName = $resources['table'];
+        $conn = $this->getConnection();
+
+        $qb = $conn->createQueryBuilder();
+        $qb->select("id")->from($tableName, 't');
+
+        $bindParams = array();
+        foreach ($params as $param => $value) {
+
+            if ($value === null) {
+                $qb->andWhere("t.{$param} IS NULL");
+            } else {
+                $qb->andWhere("t.{$param} = :{$param}");
+                $bindParams[$param] = $value;
+            }
+        }
+
+        $sql = $qb->getSQL();
+        $stmt = $conn->prepare($sql);
+        foreach ($bindParams as $param => $value) {
+            $stmt->bindValue($param, $value);
+        }
+        $stmt->execute();
+
+        $ret = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(
+            function ($ret) {
+                return $ret['id'];
+            },
+            $ret
+        );
+    }
+
+    /**
+     * @return Connection
+     */
+    abstract protected function getConnection();
+
 }

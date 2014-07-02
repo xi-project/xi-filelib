@@ -138,4 +138,20 @@ class MemcachedCacheAdapterTest extends TestCase
 
         $this->assertFalse($this->cache->findById($doNotDelete->getId(), get_class($doNotDelete)));
     }
+
+    /**
+     * @test
+     */
+    public function clears()
+    {
+        $obj = File::create(['id' => 'xooooooooxers']);
+        $this->cache->save($obj);
+
+        $cached = $this->cache->findById($obj->getId(), get_class($obj));
+        $this->assertEquals($obj, $cached);
+
+        $this->cache->clear();
+
+        $this->assertFalse($this->cache->findById($obj->getId(), get_class($obj)));
+    }
 }

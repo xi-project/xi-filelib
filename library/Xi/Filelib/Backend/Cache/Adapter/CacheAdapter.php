@@ -34,7 +34,6 @@ interface CacheAdapter
 
     /**
      * @param Identifiable $identifiable
-     * @return mixed
      */
     public function delete(Identifiable $identifiable);
 
