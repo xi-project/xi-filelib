@@ -21,9 +21,9 @@ before_script:
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE xi_filelib_test;' -U postgres; psql xi_filelib_test -f docs/schema-postgresql.sql; fi"
   - curl -s http://getcomposer.org/installer | php && php composer.phar install --dev
   - phpenv rehash
-  - wget http://pecl.php.net/get/mongo-1.4.5.tgz
-  - tar -xzf mongo-1.4.5.tgz
-  - sh -c "cd mongo-1.4.5 && phpize && ./configure --enable-mongo && make && sudo make install"
+  - wget http://pecl.php.net/get/mongo-1.5.4.tgz
+  - tar -xzf mongo-1.5.4.tgz
+  - sh -c "cd mongo-1.5.4 && phpize && ./configure --enable-mongo && make && sudo make install"
   - echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - sudo apt-get install -y imagemagick libtiff-dev libjpeg-dev libdjvulibre-dev libwmf-dev libmagickcore-dev libmagickwand-dev
   - wget http://pecl.php.net/get/imagick-3.1.2.tgz
@@ -35,13 +35,9 @@ before_script:
   - sh -c "cd translit-0.6.1 && phpize && ./configure --with-imagick=/usr/local && make && sudo make install"
   - echo "extension=translit.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - sudo apt-get install -y librabbitmq-dev
-  - wget http://pecl.php.net/get/amqp-1.2.0.tgz
-  - tar -xzf amqp-1.2.0.tgz
-  - sh -c "cd amqp-1.2.0 && phpize && ./configure && make && sudo make install"
-  - echo "extension=amqp.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
-  - wget http://pecl.php.net/get/memcached-2.2.0RC1.tgz
-  - tar -xzf memcached-2.2.0RC1.tgz
-  - sh -c "cd memcached-2.2.0RC1 && phpize && ./configure && make && sudo make install"
+  - wget http://pecl.php.net/get/memcached-2.2.0.tgz
+  - tar -xzf memcached-2.2.0.tgz
+  - sh -c "cd memcached-2.2.0 && phpize && ./configure && make && sudo make install"
   - echo "extension=memcached.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 script: cd tests && ../vendor/bin/phpunit -v --configuration travis/$DB.travis.xml
