@@ -24,10 +24,11 @@
         "symfony/event-dispatcher": "~2.0",
         "dflydev/apache-mime-types": "~1.0",
         "rhumsaa/uuid": "~2.3",
-        "pekkis/queue": "0.4.*",
-        "cocur/slugify": "v0.5",
+        "cocur/slugify": "~0.9",
         "xi/transliterator": "0.5.*",
-        "xi/collections": "0.3.*"
+        "pekkis/queue": "0.5.*",
+        "xi/collections": "0.3.*",
+        "zencoder/zencoder-php": "~2.1"
     },
 
     "require-dev": {
@@ -42,18 +43,13 @@
         "symfony/security": "~2.2",
         "symfony/console": "~2.2",
         "symfony/stopwatch": "~2.2",
-        "videlalvaro/php-amqplib": "~2.2",
-        "zencoder/zencoder-php": "~2.1",
-        "knplabs/gaufrette": "~0.1",
-        "aws/aws-sdk-php": "~2.5"
+        "knplabs/gaufrette": "~0.1"
     },
 
     "suggest": {
-        "videlalvaro/php-amqplib": "Pure PHP library for RabbitMQ support",
-        "iron-io/iron_mq": "For IronMQ support",
-        "zencoder/zencoder-php": "For Zencoder support",
-        "aws/aws-sdk-php": "For Zencoder and AWS support",
-        "doctrine/orm": "For Doctrine ORM support",
+        "ext-mongo": "For MongoDB backend and GridFS storage",
+        "doctrine/dbal": "For Doctrine DBAL backend",
+        "doctrine/orm": "For Doctrine ORM backend",
         "knplabs/gaufrette": "For Gaufrette support"
     },
 
