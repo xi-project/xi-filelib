@@ -123,5 +123,4 @@ abstract class BaseDoctrineBackendAdapter
      * @return Connection
      */
     abstract protected function getConnection();
-
 }

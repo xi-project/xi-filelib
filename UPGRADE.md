@@ -8,6 +8,7 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
 * Feature freeze. No more stuff before 1.0!
 * Uh oh. Data is not backwards compatible. This is the last time before 1.0.
 * All version identifiers are now classes of Xi\Filelib\Plugin\VersionProvider\Version.
+* Version providers and all things related were heavily refactored.
 * Publisher was heavily refactored. publish() is now publishAllVersions(). Functionality changed: read it through.
 * Folders now have a data container object.
 * Filelib's upload() shortcut is now uploadFile().
@@ -32,6 +33,7 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
   Lazy versions can be used to save space in large systems by deleting old / rarely used / whatever versions.
   They are then recreated when needed. When used in combination with the publisher, redirecting not-found
   published files to PHP backend must of course be done. (see docs/ for examples).
+* There may be even more. Lost track at some point.
 
 ### PostgreSQL migration
 
