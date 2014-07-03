@@ -70,7 +70,9 @@ class VersionTest extends \PHPUnit_Framework_TestCase
             array('tehnunen1', true),
             array('tehnunen-1', true),
             array('tehnunen_1', true),
-            array('9-tehnunen', false),
+            array('9-tehnunen', true),
+            array('_9-tenhunen', false),
+            array('911', true),
             array('_tenhusen-suuruuden-ylistyksen-versio', false),
             array('tenhusen-suuruuden-ylistyksen-versio-2_alaversion-666', true),
             array('tenhusen-suuruuden-ylistyksen-versio-2_alaver%sion-666', false),
@@ -92,6 +94,7 @@ class VersionTest extends \PHPUnit_Framework_TestCase
             array('lussogrande::nusso:-6000;tusso:_6500@x2;y5', true),
             array('lussogrande::nusso:-6000;tusso:_6500@@x2:y5', false),
             array('lussogrande@x2', true),
+            array('720p_webm', true),
         );
 
     }

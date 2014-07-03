@@ -4,7 +4,7 @@ namespace Xi\Filelib;
 
 class Version
 {
-    const PATTERN_NAME = '#^[a-z]([a-z0-9-_])*$#';
+    const PATTERN_NAME = '#^[a-z0-9]([a-z0-9-_])*$#';
 
     const PATTERN_VALUE = '#^([a-z0-9-_])+$#';
 
