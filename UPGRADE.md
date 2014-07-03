@@ -1,13 +1,15 @@
 # Upgrading Filelib
 
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
-It's been developed for years. If you're using 0.9 or greater, good for you! If not, good luck. Trust me. I know.
+It's been developed for years. Too much incubation is too much.
 
 ## From version 0.11.x to version 0.12.x
 
+* Bumped up PHP requirement to 5.4.x
 * Feature freeze. No more stuff before 1.0!
 * Uh oh. Data is not backwards compatible. This is the last time before 1.0.
 * All version identifiers are now classes of Xi\Filelib\Plugin\VersionProvider\Version.
+* Version providers and all things related were heavily refactored.
 * Publisher was heavily refactored. publish() is now publishAllVersions(). Functionality changed: read it through.
 * Folders now have a data container object.
 * Filelib's upload() shortcut is now uploadFile().
@@ -32,6 +34,7 @@ It's been developed for years. If you're using 0.9 or greater, good for you! If 
   Lazy versions can be used to save space in large systems by deleting old / rarely used / whatever versions.
   They are then recreated when needed. When used in combination with the publisher, redirecting not-found
   published files to PHP backend must of course be done. (see docs/ for examples).
+* There may be even more. Lost track at some point.
 
 ### PostgreSQL migration
 

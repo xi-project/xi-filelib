@@ -64,6 +64,11 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
     private $allowSharedVersions;
 
     /**
+     * @var callable
+     */
+    private $eagerCreationParamsGetter;
+
+    /**
      * @param callable $identifier
      * @param callable $allowedParamsGetter
      * @param callable $allowedModifiersGetter
@@ -81,7 +86,8 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         \Closure $versionValidityChecker,
         \Closure $commandDefinitionsGetter,
         $mimeTypeGetter,
-        $allowSharedVersions = true
+        $allowSharedVersions = true,
+        $eagerCreationParamsGetter = null
     ) {
         parent::__construct(
             function (File $file) {
@@ -97,6 +103,18 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
         $this->mimeTypeGetter = $this->createMimeTypeGetter($mimeTypeGetter);
         $this->allowSharedVersions = $allowSharedVersions;
         $this->enableLazyMode(true);
+
+        if (!$eagerCreationParamsGetter) {
+            $eagerCreationParamsGetter = function () {
+                return [
+                    [
+                        call_user_func($this->defaultParamsGetter),
+                        []
+                    ],
+                ];
+            };
+        }
+        $this->eagerCreationParamsGetter = $eagerCreationParamsGetter;
     }
 
     /**
@@ -114,10 +132,18 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
      */
     protected function doCreateAllTemporaryVersions(File $file)
     {
-        list ($identifier, $path) = $this->doCreateTemporaryVersion($file, Version::get($this->identifier));
-        return array(
-            $identifier => $path
-        );
+        $eagerCreationParams = call_user_func($this->eagerCreationParamsGetter);
+
+        $ret = [];
+        foreach ($eagerCreationParams as $paramsAndModifiers) {
+            list ($params, $modifiers) = $paramsAndModifiers;
+            list ($identifier, $path) = $this->doCreateTemporaryVersion(
+                $file,
+                new Version($this->identifier, $params, $modifiers)
+            );
+            $ret[$identifier] = $path;
+        }
+        return $ret;
     }
 
     /**
