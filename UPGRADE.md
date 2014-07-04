@@ -50,7 +50,9 @@ ALTER TABLE xi_filelib_folder ADD COLUMN data TEXT NOT NULL DEFAULT '{}';
 
 ### MongoDB migration
 
-Todo.
+```
+db.folders.update( { }, { $set: { data: {} } }, { multi: true });
+```
 
 ## From version 0.10.x to version 0.11.x
 
