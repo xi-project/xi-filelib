@@ -9,10 +9,10 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
-use Xi\Filelib\LogicException;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
@@ -52,7 +52,7 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
     ) {
 
         if (!is_dir($root) || !is_writable($root)) {
-            throw new LogicException("Root directory '{$root}' is not writable");
+            throw new FileIOException("Root directory '{$root}' is not writable");
         }
 
         $this->root = $root;
@@ -133,13 +133,16 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         return $path;
     }
 
+    /**
+     * @param Resource $resource
+     * @param string $tempFile
+     */
     public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
 
         if (!is_dir(dirname($pathName))) {
-            // Sorry for the silencer but it is needed here
-            @mkdir(dirname($pathName), $this->getDirectoryPermission(), true);
+            $this->createDirectory(dirname($pathName));
         }
         copy($tempFile, $pathName);
         chmod($pathName, $this->getFilePermission());
@@ -150,8 +153,7 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         $pathName = $this->getVersionPathName($versionable, $version);
 
         if (!is_dir(dirname($pathName))) {
-            // Sorry for the silencer but it is needed here
-            @mkdir(dirname($pathName), $this->getDirectoryPermission(), true);
+            $this->createDirectory(dirname($pathName));
         }
         copy($tempFile, $pathName);
     }
@@ -189,5 +191,22 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
     public function versionExists(Versionable $versionable, Version $version)
     {
         return file_exists($this->getVersionPathName($versionable, $version));
+    }
+
+    /**
+     * @param $dir
+     * @throws FileIOException
+     */
+    private function createDirectory($dir)
+    {
+        $created = @mkdir($dir, $this->getDirectoryPermission(), true);
+        if (!$created) {
+            throw new FileIOException(
+                sprintf(
+                    "Directory '%s' could not be created",
+                    $dir
+                )
+            );
+        }
     }
 }

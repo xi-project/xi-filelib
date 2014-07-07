@@ -9,15 +9,27 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
-use Xi\Filelib\LogicException;
+use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
-use Xi\Filelib\Storage\FileIOException;
+use Xi\Filelib\Version;
 
 /**
  * @group storage
  */
 class FilesystemStorageAdapterTest extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+        chmod(ROOT_TESTS . '/data/files', 0775);
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+        chmod(ROOT_TESTS . '/data/files', 0775);
+    }
+
     protected function getStorage()
     {
         $dc = $this->getMock('\Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
@@ -50,11 +62,51 @@ class FilesystemStorageAdapterTest extends TestCase
 
     /**
      * @test
-     * @expectedException LogicException
      */
     public function rootMustBeWritableToInstantiate()
     {
         $root = ROOT_TESTS . '/data/illusive_directory';
+
+        $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
+        new FilesystemStorageAdapter($root);
+    }
+
+    /**
+     * @test
+     */
+    public function storeFailsIfDirectoryNotCreatable()
+    {
+        $root = ROOT_TESTS . '/data/files';
         $storage = new FilesystemStorageAdapter($root);
+
+        chmod($root, 0400);
+
+        $resource = Resource::create(['id' => 666]);
+
+        $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
+        $storage->store(
+            $resource,
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function storeVersionFailsIfDirectoryNotCreatable()
+    {
+        $root = ROOT_TESTS . '/data/files';
+        $storage = new FilesystemStorageAdapter($root);
+
+        chmod($root, 0400);
+
+        $resource = Resource::create(['id' => 666]);
+
+        $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
+        $storage->storeVersion(
+            $resource,
+            Version::get('puupster'),
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
+        );
     }
 }
