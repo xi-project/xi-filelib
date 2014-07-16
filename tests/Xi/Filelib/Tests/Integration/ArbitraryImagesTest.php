@@ -6,6 +6,7 @@ use Imagick;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\Image\ArbitraryVersionPlugin;
+use Xi\Filelib\Plugin\Image\Command\Command;
 use Xi\Filelib\Version;
 
 class ArbitraryImagesTest extends TestCase
@@ -62,12 +63,14 @@ class ArbitraryImagesTest extends TestCase
                     $params['x'] = $params['x'] * 2;
                 }
 
-                return array(
-                    array('setImageCompression', Imagick::COMPRESSION_JPEG),
-                    array('setImageFormat', 'jpg'),
-                    array('setImageCompressionQuality', 80),
-                    array('cropThumbnailImage', array($params['x'], round($params['x'] / 4))),
-                    'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(ROOT_TESTS . '/data/watermark.png', 'se', 10),
+                return Command::createCommandsFromDefinitions(
+                    [
+                        array('setImageCompression', Imagick::COMPRESSION_JPEG),
+                        array('setImageFormat', 'jpg'),
+                        array('setImageCompressionQuality', 80),
+                        array('cropThumbnailImage', array($params['x'], round($params['x'] / 4))),
+                        'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array(ROOT_TESTS . '/data/watermark.png', 'se', 10)
+                    ]
                 );
             },
             'image/jpeg',
