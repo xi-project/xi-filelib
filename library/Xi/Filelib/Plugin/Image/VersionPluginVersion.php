@@ -9,6 +9,8 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
+use Xi\Filelib\Plugin\Image\Command\Command;
+
 class VersionPluginVersion
 {
     /**
@@ -34,7 +36,7 @@ class VersionPluginVersion
     /**
      * @var array
      */
-    protected $commandDefinitions;
+    protected $commands = array();
 
     /**
      * @param string $identifier
@@ -48,7 +50,10 @@ class VersionPluginVersion
     ) {
         $this->mimeType = $mimeType;
         $this->identifier = $identifier;
-        $this->commandDefinitions = $commandDefinitions;
+
+        foreach ($commandDefinitions as $key => $commandDefinition) {
+            $this->addCommand(Command::createCommandFromDefinition($key, $commandDefinition));
+        }
     }
 
     /**
@@ -56,7 +61,7 @@ class VersionPluginVersion
      */
     public function getHelper($source, $outputDir)
     {
-        return new ImageMagickHelper($source, $outputDir, $this->commandDefinitions);
+        return new ImageMagickHelper($source, $outputDir, $this->getCommands());
     }
 
     /**
@@ -73,5 +78,53 @@ class VersionPluginVersion
     public function getMimeType()
     {
         return $this->mimeType;
+    }
+
+    /**
+     * @param $key
+     * @return Command
+     */
+    public function getCommand($key)
+    {
+        return $this->commands[$key];
+    }
+
+    /**
+     * @param $key
+     * @param array $definition
+     * @return VersionPluginVersion
+     */
+    public function setCommand($key, Command $command)
+    {
+        $this->commands[$key] = $command;
+        return $this;
+    }
+
+    /**
+     * @param Command[] $commands
+     * @return VersionPluginVersion
+     */
+    public function setCommands(array $commands)
+    {
+        $this->commands = $commands;
+        return $this;
+    }
+
+    /**
+     * @param Command $command
+     * @return $this
+     */
+    public function addCommand(Command $command)
+    {
+        $this->commands[] = $command;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommands()
+    {
+        return $this->commands;
     }
 }

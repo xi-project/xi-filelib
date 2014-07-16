@@ -12,7 +12,7 @@ namespace Xi\Filelib\Plugin\Image\Command;
 use BadMethodCallException;
 use Imagick;
 
-class ExecuteMethodCommand extends AbstractCommand
+class ExecuteMethodCommand extends Command
 {
     /**
      * @var string
