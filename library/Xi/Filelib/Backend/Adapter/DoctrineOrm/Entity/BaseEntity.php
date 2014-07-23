@@ -12,7 +12,7 @@ namespace Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\MappedSuperClass
+ * @ORM\MappedSuperclass
  */
 abstract class BaseEntity
 {
