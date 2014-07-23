@@ -49,7 +49,6 @@ class VersionPlugin extends LazyVersionProvider
                 isset($definition[1]) ? $definition[1] : null
             );
         }
-
     }
 
     /**

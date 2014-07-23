@@ -13,7 +13,7 @@ use Imagick;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 
-class WatermarkCommand extends AbstractCommand
+class WatermarkCommand extends Command
 {
     /**
      * @var string Watermark image

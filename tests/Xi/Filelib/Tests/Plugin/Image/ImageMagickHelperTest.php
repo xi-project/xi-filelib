@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Tests\Plugin\Image;
 
+use Xi\Filelib\Plugin\Image\Command\WatermarkCommand;
 use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 use Xi\Filelib\Plugin\Image\Command\ExecuteMethodCommand;
 
@@ -48,9 +49,9 @@ class ImageMagickHelperTest extends TestCase
             ROOT_TESTS . '/data/self-lussing-manatee.jpg',
             ROOT_TESTS . '/data/temp',
             array(
-                array('setImageGreenPrimary', array(6, 66)),
-                array('setImageScene', 4),
-                'Xi\Filelib\Plugin\Image\Command\WatermarkCommand' => array('lussen', 'se', 5),
+                new ExecuteMethodCommand('setImageGreenPrimary', array(6, 66)),
+                new ExecuteMethodCommand('setImageScene', array(4)),
+                new WatermarkCommand('lussen', 'se', 5),
                 new ExecuteMethodCommand('lussen', 'le tusse'),
             )
         );

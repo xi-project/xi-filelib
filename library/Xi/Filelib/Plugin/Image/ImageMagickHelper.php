@@ -39,15 +39,14 @@ class ImageMagickHelper
     /**
      * @param string $source
      * @param string $outputDir
-     * @param array $commandDefinitions
+     * @param Command[] $commands
      */
-    public function __construct($source, $outputDir, $commandDefinitions = array())
+    public function __construct($source, $outputDir, $commands = array())
     {
         $this->source = $source;
         $this->outputDir = $outputDir;
-
-        foreach ($commandDefinitions as $key => $definition) {
-            $this->addCommand($this->createCommandFromDefinition($key, $definition));
+        foreach ($commands as $command) {
+            $this->addCommand($command);
         }
     }
 
@@ -130,22 +129,5 @@ class ImageMagickHelper
                 $e
             );
         }
-    }
-
-    /**
-     * @param mixed $key
-     * @param mixed $definition
-     */
-    private function createCommandFromDefinition($key, $definition)
-    {
-        if ($definition instanceof Command) {
-            return $definition;
-        }
-
-        $commandClass = (is_numeric($key)) ? 'Xi\Filelib\Plugin\Image\Command\ExecuteMethodCommand' : $key;
-        $reflClass = new \ReflectionClass($commandClass);
-        $command = $reflClass->newInstanceArgs($definition);
-
-        return $command;
     }
 }

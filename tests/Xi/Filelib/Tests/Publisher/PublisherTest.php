@@ -204,6 +204,50 @@ class PublisherTest extends TestCase
 
     /**
      * @test
+     */
+    public function isVersionPublishedReturnsCorrectResults()
+    {
+        $file = File::create();
+        $this->assertFalse($this->publisher->isVersionPublished($file, 'tooxer'));
+
+        $data = $file->getData();
+        $data->set(
+            'publisher.version_url',
+            [
+                'tooxer' => 'toooooooxers'
+            ]
+        );
+
+        $this->assertTrue($this->publisher->isVersionPublished($file, 'tooxer'));
+    }
+
+    /**
+     * @test
+     */
+    public function getPublishedVersionsReturnsPublishedVersions()
+    {
+        $file = File::create();
+        $this->assertEquals([], $this->publisher->getPublishedVersions($file));
+
+        $file->getData()->set(
+            'publisher.version_url',
+            [
+                'sooser' => 'tenhunen',
+                'turvaamistoimi' => 'toimii-aina'
+            ]
+        );
+
+        $this->assertEquals(
+            [
+                'sooser',
+                'turvaamistoimi'
+            ],
+            $this->publisher->getPublishedVersions($file)
+        );
+    }
+
+    /**
+     * @test
      * @dataProvider provideVersions
      */
     public function getUrlShouldDelegateToAdapterIfNoCachedData($version)
