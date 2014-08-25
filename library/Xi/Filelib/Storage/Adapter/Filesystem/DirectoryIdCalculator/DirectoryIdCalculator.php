@@ -10,14 +10,15 @@
 namespace Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Versionable;
 
 interface DirectoryIdCalculator
 {
     /**
      * Calculates directory id (path) for a resource or a file
      *
-     * @param Resource|File $obj
+     * @param Versionable $obj
      * @return string
      */
-    public function calculateDirectoryId($obj);
+    public function calculateDirectoryId(Versionable $obj);
 }

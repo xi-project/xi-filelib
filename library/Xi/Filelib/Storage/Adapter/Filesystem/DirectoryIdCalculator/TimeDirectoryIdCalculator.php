@@ -9,6 +9,8 @@
 
 namespace Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
+use Xi\Filelib\Versionable;
+
 /**
  * Calculates directory id by formatting an objects creation date
  */
@@ -40,7 +42,7 @@ class TimeDirectoryIdCalculator implements DirectoryIdCalculator
     /**
      * @see DirectoryIdCalculator::calculateDirectoryId
      */
-    public function calculateDirectoryId($obj)
+    public function calculateDirectoryId(Versionable $obj)
     {
         $dt = $obj->getDateCreated();
         $path = $dt->format($this->getFormat());

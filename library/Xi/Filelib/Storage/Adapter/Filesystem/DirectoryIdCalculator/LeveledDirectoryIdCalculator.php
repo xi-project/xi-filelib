@@ -11,6 +11,7 @@ namespace Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator;
 
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\LogicException;
+use Xi\Filelib\Versionable;
 
 /**
  * Creates directories in a leveled hierarchy based on a numeric file id
@@ -65,7 +66,7 @@ class LeveledDirectoryIdCalculator implements DirectoryIdCalculator
     /**
      * @see DirectoryIdCalculator::calculateDirectoryId
      */
-    public function calculateDirectoryId($obj)
+    public function calculateDirectoryId(Versionable $obj)
     {
         if (!is_numeric($obj->getId())) {
             throw new LogicException(
