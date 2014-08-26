@@ -8,9 +8,9 @@ use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Xi\Filelib\Backend\Adapter\DoctrineDbalBackendAdapter;
 use Xi\Filelib\Backend\Adapter\MongoBackendAdapter;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\Backend\Cache\Adapter\MemcachedCacheAdapter;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -96,7 +96,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
         );
 
         $filelib = new FileLibrary(
-            new FilesystemStorageAdapter(ROOT_TESTS . '/data/files', new TimeDirectoryIdCalculator()),
+            new FilesystemStorageAdapter(ROOT_TESTS . '/data/files', new LegacyPathCalculator()),
             new DoctrineDbalBackendAdapter(
                 $this->conn
             ),
@@ -105,7 +105,9 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $memcached = new Memcached();
         $memcached->addServer('localhost', 11211);
+
         $this->memcached = $memcached;
+        $this->memcached->flush();
 
         $filelib->addPlugin(new RandomizeNamePlugin());
 
@@ -193,8 +195,6 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->mongo->selectCollection('folders')->drop();
         $this->mongo->selectCollection('files')->drop();
         */
-
-        $this->memcached->flush();
     }
 
 
