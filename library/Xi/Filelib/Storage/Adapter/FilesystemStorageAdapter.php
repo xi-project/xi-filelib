@@ -10,9 +10,9 @@
 namespace Xi\Filelib\Storage\Adapter;
 
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Xi\Filelib\Storage\FileIOException;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\PathCalculator;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
@@ -40,13 +40,13 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
     private $filePermission = 0600;
 
     /**
-     * @var DirectoryIdCalculator
+     * @var PathCalculator
      */
-    private $directoryIdCalculator;
+    private $pathCalculator;
 
     public function __construct(
         $root,
-        DirectoryIdCalculator $directoryIdCalculator = null,
+        PathCalculator $pathCalculator = null,
         $filePermission = "600",
         $directoryPermission = "700"
     ) {
@@ -56,30 +56,9 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         }
 
         $this->root = $root;
-        $this->directoryIdCalculator = $directoryIdCalculator ?: new TimeDirectoryIdCalculator();
+        $this->pathCalculator = $pathCalculator ?: new LegacyPathCalculator();
         $this->filePermission = octdec($filePermission);
         $this->directoryPermission = octdec($directoryPermission);
-    }
-
-    /**
-     * Returns directory id calculator
-     *
-     * @return DirectoryIdCalculator
-     */
-    public function getDirectoryIdCalculator()
-    {
-        return $this->directoryIdCalculator;
-    }
-
-    /**
-     * Returns directory id for a file
-     *
-     * @param  Resource $resource
-     * @return string
-     */
-    public function getDirectoryId(Versionable $versionable)
-    {
-        return $this->getDirectoryIdCalculator()->calculateDirectoryId($versionable);
     }
 
     /**
@@ -114,23 +93,12 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
 
     private function getPathName(Resource $resource)
     {
-        $dir = $this->getRoot() . '/' . $this->getDirectoryId($resource);
-        $fileTarget = $dir . '/' . $resource->getId();
-
-        return $fileTarget;
+        return $this->getRoot() . '/' . $this->pathCalculator->getPath($resource);
     }
 
     private function getVersionPathName(Versionable $versionable, Version $version)
     {
-        list($resource, $file) = $this->extractResourceAndFileFromVersionable($versionable);
-
-        $path = $this->getRoot() . '/' . $this->getDirectoryId($resource) . '/' . $version->toString();
-        if ($file) {
-            $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file);
-        }
-        $path .= '/' . (($file) ? $file->getId() : $resource->getId());
-
-        return $path;
+        return $this->getRoot() . '/' . $this->pathCalculator->getPathVersion($versionable, $version);
     }
 
     /**

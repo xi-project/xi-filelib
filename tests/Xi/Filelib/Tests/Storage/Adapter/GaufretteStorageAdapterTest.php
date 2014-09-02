@@ -13,9 +13,9 @@ use Aws\S3\S3Client;
 use Xi\Filelib\Storage\Adapter\GaufretteStorageAdapter;
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use Gaufrette\Filesystem;
-
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Adapter\AwsS3 as AwsAdapter;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 
 /**
  * @group storage
@@ -61,7 +61,9 @@ class GaufretteStorageAdapterTest extends TestCase
         $filesystem = $this->getFilesystem();
 
         $dc = new TimeDirectoryIdCalculator();
-        $storage = new GaufretteStorageAdapter($filesystem, $dc, false);
+        $pc = new LegacyPathCalculator($dc);
+
+        $storage = new GaufretteStorageAdapter($filesystem, $pc, false);
 
         return array($storage, true);
     }

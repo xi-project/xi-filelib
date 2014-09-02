@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
 use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Version;
 
@@ -32,14 +33,7 @@ class FilesystemStorageAdapterTest extends TestCase
 
     protected function getStorage()
     {
-        $dc = $this->getMock('\Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
-
-        $dc->expects($this->any())
-             ->method('calculateDirectoryId')
-             ->will($this->returnValue('1'));
-
-        $storage = new FilesystemStorageAdapter(ROOT_TESTS . '/data/files', $dc);
-
+        $storage = new FilesystemStorageAdapter(ROOT_TESTS . '/data/files');
         return array($storage, false);
     }
 
@@ -53,10 +47,6 @@ class FilesystemStorageAdapterTest extends TestCase
         $storage = new FilesystemStorageAdapter($root);
         $this->assertSame(0700, $storage->getDirectoryPermission());
         $this->assertSame(0600, $storage->getFilePermission());
-        $this->assertInstanceOf(
-            'Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator',
-            $storage->getDirectoryIdCalculator()
-        );
         $this->assertEquals($root, $storage->getRoot());
     }
 

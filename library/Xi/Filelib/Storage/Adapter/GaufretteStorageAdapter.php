@@ -12,8 +12,8 @@ namespace Xi\Filelib\Storage\Adapter;
 use Gaufrette\Filesystem;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\PathCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
@@ -31,66 +31,33 @@ class GaufretteStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     private $filesystem;
 
     /**
-     * @var DirectoryIdCalculator
+     * @var PathCalculator
      */
-    private $directoryIdCalculator;
+    private $pathCalculator;
 
     /**
      * @param Filesystem $filesystem
-     * @param DirectoryIdCalculator $directoryIdCalculator
+     * @param PathCalculator $pathCalculator
      * @param string $tempDir
      */
     public function __construct(
         Filesystem $filesystem,
-        DirectoryIdCalculator $directoryIdCalculator = null,
+        PathCalculator $pathCalculator,
         $tempDir = null
     ) {
 
         $this->filesystem = $filesystem;
-        $this->directoryIdCalculator = $directoryIdCalculator ?: new TimeDirectoryIdCalculator();
-    }
-
-    /**
-     * Returns directory id calculator
-     *
-     * @return DirectoryIdCalculator
-     */
-    public function getDirectoryIdCalculator()
-    {
-        return $this->directoryIdCalculator;
-    }
-
-
-    /**
-     * Returns directory id for a file
-     *
-     * @param  Resource $resource
-     * @return string
-     */
-    public function getDirectoryId(Identifiable $identifiable)
-    {
-        return $this->getDirectoryIdCalculator()->calculateDirectoryId($identifiable);
+        $this->pathCalculator = ($pathCalculator) ?: new LegacyPathCalculator();
     }
 
     private function getPathName(Resource $resource)
     {
-        $dir = $this->getDirectoryId($resource);
-        $fileTarget = $dir . '/' . $resource->getId();
-
-        return $fileTarget;
+        return $this->pathCalculator->getPath($resource);
     }
 
     private function getVersionPathName(Versionable $versionable, Version $version)
     {
-        list($resource, $file) = $this->extractResourceAndFileFromVersionable($versionable);
-
-        $path = $this->getDirectoryId($resource) . '/' . $version->toString();
-        if ($file) {
-            $path .= '/sub/' . $resource->getId() . '/' . $this->getDirectoryId($file);
-        }
-        $path .= '/' . (($file) ? $file->getId() : $resource->getId());
-
-        return $path;
+        return $this->pathCalculator->getPathVersion($versionable, $version);
     }
 
     public function store(Resource $resource, $tempFile)

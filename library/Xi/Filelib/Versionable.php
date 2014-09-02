@@ -9,12 +9,19 @@
 
 namespace Xi\Filelib;
 
+use DateTime;
+
 interface Versionable
 {
     /**
      * @return mixed
      */
     public function getId();
+
+    /**
+     * @return DateTime
+     */
+    public function getDateCreated();
 
     /**
      * @return array
