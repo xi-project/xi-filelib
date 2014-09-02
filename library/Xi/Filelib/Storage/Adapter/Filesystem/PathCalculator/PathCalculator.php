@@ -15,7 +15,16 @@ use Xi\Filelib\Versionable;
 
 interface PathCalculator
 {
+    /**
+     * @param Resource $resource
+     * @return string
+     */
     public function getPath(Resource $resource);
 
+    /**
+     * @param Versionable $versionable
+     * @param Version $version
+     * @return string
+     */
     public function getPathVersion(Versionable $versionable, Version $version);
 }

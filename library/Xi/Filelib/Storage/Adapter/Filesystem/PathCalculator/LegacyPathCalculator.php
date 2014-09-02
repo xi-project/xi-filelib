@@ -33,11 +33,20 @@ class LegacyPathCalculator implements PathCalculator
         $this->directoryIdCalculator = $directoryIdCalculator ?: new LeveledDirectoryIdCalculator();
     }
 
+    /**
+     * @param Resource $resource
+     * @return string
+     */
     public function getPath(Resource $resource)
     {
         return $this->directoryIdCalculator->calculateDirectoryId($resource) . '/' . $resource->getId();
     }
 
+    /**
+     * @param Versionable $versionable
+     * @param Version $version
+     * @return string
+     */
     public function getPathVersion(Versionable $versionable, Version $version)
     {
         list($resource, $file) = $this->extractResourceAndFileFromVersionable($versionable);
@@ -62,6 +71,7 @@ class LegacyPathCalculator implements PathCalculator
             $resource = $versionable;
             $file = null;
         }
-        return array($resource, $file);
+
+        return [$resource, $file];
     }
 }
