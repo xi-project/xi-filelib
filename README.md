@@ -50,11 +50,11 @@ so thanks for all past and present early adopters!
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Backend\Adapter\JsonBackendAdapter;
-use Xi\Filelib\Storage\FilesystemStorage;
+use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 
 $filelib = new FileLibrary(
-    new FilesystemStorage(__DIR__ . '/files', new TimeDirectoryIdCalculator()),
+    new FilesystemStorageAdapter(__DIR__ . '/files', new TimeDirectoryIdCalculator()),
     new JsonBackendAdapter(__DIR__ . '/filelib-example.json')
 );
 
