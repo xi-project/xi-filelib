@@ -11,7 +11,7 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Events;
-use Xi\Filelib\File\MimeType;
+use Xi\Filelib\File\MimeTypes;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\BasePlugin;
@@ -76,8 +76,9 @@ class ChangeFormatPlugin extends BasePlugin
         $nupload = new FileUpload($tempnam);
         $nupload->setTemporary(true);
 
-        $extensions = MimeType::mimeTypeToExtensions($nupload->getMimeType());
-        $extension = array_shift($extensions);
+        $mimeTypes = new MimeTypes();
+        $extension = $mimeTypes->mimeTypeToExtension($nupload->getMimeType());
+
         $nupload->setOverrideFilename($pinfo['filename'] . '.' . $extension);
 
         $event->setFileUpload($nupload);

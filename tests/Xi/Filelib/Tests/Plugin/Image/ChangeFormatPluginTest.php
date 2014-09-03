@@ -121,7 +121,7 @@ class ChangeFormatPluginTest extends TestCase
         $xupload = $event->getFileUpload();
         $this->assertInstanceOf('Xi\Filelib\File\Upload\FileUpload', $xupload);
         $this->assertNotSame($upload, $xupload);
-        $this->assertEquals('self-lussing-manatee.jpeg', $xupload->getUploadFilename());
+        $this->assertEquals('self-lussing-manatee.jpg', $xupload->getUploadFilename());
     }
 
     /**
