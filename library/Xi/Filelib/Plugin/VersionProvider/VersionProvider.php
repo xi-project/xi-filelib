@@ -17,7 +17,7 @@ use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\File\MimeType;
+use Xi\Filelib\File\MimeTypes;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\BasePlugin;
@@ -56,11 +56,6 @@ abstract class VersionProvider extends BasePlugin
      * @var ProfileManager
      */
     protected $profiles;
-
-    /**
-     * @var array
-     */
-    protected $extensionReplacements = array('jpeg' => 'jpg');
 
     /**
      * @var EventDispatcherInterface
@@ -273,22 +268,7 @@ abstract class VersionProvider extends BasePlugin
      */
     protected function getExtensionFromMimeType($mimeType)
     {
-        $extensions = MimeType::mimeTypeToExtensions($mimeType);
-        return $this->doExtensionReplacement(array_shift($extensions));
-    }
-
-    /**
-     * Apache derived parsings produce unwanted results (jpeg). Switcheroo for those.
-     *
-     * @param string $extension
-     * @return string
-     *
-     */
-    protected function doExtensionReplacement($extension)
-    {
-        if (isset($this->extensionReplacements[$extension])) {
-            return $this->extensionReplacements[$extension];
-        }
-        return $extension;
+        $mimeTypes = new MimeTypes();
+        return $mimeTypes->mimeTypeToExtension($mimeType);
     }
 }

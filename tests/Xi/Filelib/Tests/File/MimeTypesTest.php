@@ -3,16 +3,17 @@
 namespace Xi\Filelib\Tests\File;
 use Xi\Filelib\Tests\TestCase;
 
-use Xi\Filelib\File\MimeType;
+use Xi\Filelib\File\MimeTypes;
 
-class MimeTypeTest extends TestCase
+class MimeTypesTest extends TestCase
 {
     /**
      * @test
      */
     public function invalidMimeTypeShouldNotResolveToExtension()
     {
-        $this->assertCount(0, MimeType::mimeTypeToExtensions('gran/lusso'));
+        $mimeType = new MimeTypes();
+        $this->assertCount(0, $mimeType->mimeTypeToExtensions('gran/lusso'));
     }
 
     public function provideMimeTypesAndExtensions()
@@ -31,7 +32,8 @@ class MimeTypeTest extends TestCase
      */
     public function mimeTypesShouldResolveToExtensions($mimeType, $expectedExtension)
     {
-        $extensions = MimeType::mimeTypeToExtensions($mimeType);
+        $mimeTypes = new MimeTypes();
+        $extensions = $mimeTypes->mimeTypeToExtensions($mimeType);
         $this->assertGreaterThanOrEqual(1, count($extensions));
         $this->assertContains($expectedExtension, $extensions);
     }
@@ -42,8 +44,23 @@ class MimeTypeTest extends TestCase
      */
     public function extensionShouldResolveToMimeType($expectedMimeType, $extension)
     {
-        $mimetype = MimeType::extensionToMimeType($extension);
-        $this->assertSame($expectedMimeType, $mimetype);
+        $mimeType = new MimeTypes();
+        $mimetype = $mimeType->extensionToMimeType($extension);
+        $this->assertEquals($expectedMimeType, $mimetype);
     }
 
+    /**
+     * @test
+     */
+    public function extensionsCanBeOverridden()
+    {
+        $mimeType = new MimeTypes();
+        $this->assertEquals('jpg', $mimeType->mimeTypeToExtension('image/jpeg'));
+        $this->assertEquals('png', $mimeType->mimeTypeToExtension('image/png'));
+
+        $this->assertEquals(
+            'tussi',
+            $mimeType->removeOverride('jpg')->override('png', 'tussi')->mimeTypeToExtension('image/png')
+        );
+    }
 }
