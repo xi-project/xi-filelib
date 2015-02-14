@@ -30,7 +30,7 @@ so thanks for all past and present early adopters!
 ## Hard requirements
 
 - A client software that needs file management
-- PHP 5.3.x
+- PHP 5.4.x
 - Json support for a poor poor man's data storage
 
 ## Soft requirements (for harder use)

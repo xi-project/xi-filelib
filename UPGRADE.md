@@ -3,6 +3,11 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. Too much incubation is too much.
 
+## From version 0.12.x to version 0.13.x
+
+* Some storages (Gaufrette, Filesystem) now expect an instance of PathCalculator so their signatures are
+  changed a bit. Supply a LegacyPathCalculator and everything is well.
+
 ## From version 0.11.x to version 0.12.x
 
 * Bumped up PHP requirement to 5.4.x
