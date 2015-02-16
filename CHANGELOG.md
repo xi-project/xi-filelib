@@ -3,6 +3,10 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. Too much incubation is too much.
 
+## 0.13.1
+
+* Added support for [Flysystem](https://github.com/thephpleague/flysystem)
+
 ## From version 0.12.x to version 0.13.x
 
 * Some storages (Gaufrette, Filesystem) now expect an instance of PathCalculator so their signatures are
