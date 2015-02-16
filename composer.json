@@ -43,7 +43,8 @@
         "symfony/security": "~2.2",
         "symfony/console": "~2.2",
         "symfony/stopwatch": "~2.2",
-        "knplabs/gaufrette": "~0.1"
+        "knplabs/gaufrette": "~0.1",
+        "league/flysystem": "~1.0"
     },
 
     "suggest": {
