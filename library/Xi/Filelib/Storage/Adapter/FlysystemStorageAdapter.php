@@ -9,9 +9,7 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
-use League\Flysystem\AdapterInterface;
 use League\Flysystem\Filesystem;
-use Xi\Filelib\Identifiable;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\PathCalculator;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
