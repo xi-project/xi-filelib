@@ -3,6 +3,10 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. Too much incubation is too much.
 
+## 0.13.2
+
+* Added a [Flysystem](https://github.com/thephpleague/flysystem) publisher adapter.
+
 ## 0.13.1
 
 * Added support for [Flysystem](https://github.com/thephpleague/flysystem)
