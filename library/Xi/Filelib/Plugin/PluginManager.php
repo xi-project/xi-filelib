@@ -13,10 +13,16 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Events;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidArgumentException;
 
 class PluginManager
 {
+    /**
+     * @var FileLibrary
+     */
+    private $filelib;
+
     /**
      * @var EventDispatcherInterface
      */
@@ -27,9 +33,12 @@ class PluginManager
      */
     private $plugins = array();
 
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+
+
+    public function __construct(FileLibrary $filelib)
     {
-        $this->eventDispatcher = $eventDispatcher;
+        $this->filelib = $filelib;
+        $this->eventDispatcher = $filelib->getEventDispatcher();
     }
 
     /**
@@ -79,7 +88,7 @@ class PluginManager
         $this->setResolverFunction($plugin, $profiles);
 
         $this->eventDispatcher->addSubscriber($plugin);
-        $event = new PluginEvent($plugin);
+        $event = new PluginEvent($plugin, $this->filelib);
         $this->eventDispatcher->dispatch(Events::PLUGIN_AFTER_ADD, $event);
 
         return $this;

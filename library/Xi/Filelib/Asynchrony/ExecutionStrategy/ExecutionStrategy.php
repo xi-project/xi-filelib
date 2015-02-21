@@ -7,14 +7,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Command\ExecutionStrategy;
+namespace Xi\Filelib\Asynchrony\ExecutionStrategy;
 
 use Xi\Filelib\Command\Command;
 
 interface ExecutionStrategy
 {
-    const STRATEGY_SYNCHRONOUS = 'sync';
-    const STRATEGY_ASYNCHRONOUS = 'async';
+    public function getIdentifier();
 
-    public function execute(Command $command);
+    public function execute(callable $callback, $params = []);
 }

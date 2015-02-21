@@ -15,13 +15,15 @@ use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Queue\UuidReceiver;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Resource\ResourceRepository;
+use Xi\Filelib\Storage\Storage;
 
-class CopyFileCommand extends BaseFileCommand implements UuidReceiver
+class FileCopier
 {
     /**
      *
@@ -36,27 +38,29 @@ class CopyFileCommand extends BaseFileCommand implements UuidReceiver
     private $folder;
 
     /**
-     * @var string
+     * @var ResourceRepository
      */
-    private $uuid = null;
-
-    public function __construct(File $file, Folder $folder)
-    {
-        $this->file = $file;
-        $this->folder = $folder;
-    }
-
-    public function setUuid($uuid)
-    {
-        $this->uuid = $uuid;
-    }
+    private $resourceRepository;
 
     /**
-     * @return string
+     * @var Storage
      */
-    public function getUuid()
+    private $storage;
+
+    public function __construct(
+        ResourceRepository $resourceRepository,
+        FileRepository $fileRepository,
+        Storage $storage
+    ) {
+        $this->resourceRepository = $resourceRepository;
+        $this->fileRepository = $fileRepository;
+        $this->storage = $storage;
+    }
+
+
+    public function copy(File $file, Folder $folder)
     {
-        return $this->uuid ?: Uuid::uuid4()->toString();
+        return $this->getCopy($file);
     }
 
     /**
@@ -66,7 +70,7 @@ class CopyFileCommand extends BaseFileCommand implements UuidReceiver
      * @return string
      * @throws InvalidArgumentException
      */
-    public function getCopyName($oldName)
+    private function getCopyName($oldName)
     {
         $pinfo = pathinfo($oldName);
 
@@ -97,10 +101,12 @@ class CopyFileCommand extends BaseFileCommand implements UuidReceiver
      *
      * @param File $file
      */
-    public function handleImpostorResource(File $file)
+    private function handleImpostorResource(File $file)
     {
         $oldResource = $file->getResource();
         if ($oldResource->isExclusive()) {
+
+            $retrieved = $this->storage->retrieve($oldResource);
 
             $resource = Resource::create();
             $resource->setDateCreated(new DateTime());
@@ -108,16 +114,15 @@ class CopyFileCommand extends BaseFileCommand implements UuidReceiver
             $resource->setSize($oldResource->getSize());
             $resource->setMimetype($oldResource->getMimetype());
 
-            $this->resourceRepository->createCommand(
-                ResourceRepository::COMMAND_CREATE,
-                array($resource)
-            )->execute();
+            $this->resourceRepository->create(
+                $resource,
+                $retrieved
+            );
 
             $file->setResource($resource);
         }
 
     }
-
 
     /**
      * Clones the original file and iterates the impostor's names until
@@ -125,10 +130,10 @@ class CopyFileCommand extends BaseFileCommand implements UuidReceiver
      *
      * @return File
      */
-    public function getImpostor()
+    private function getCopy()
     {
         $impostor = clone $this->file;
-        $impostor->setUuid($this->getUuid());
+        $impostor->setUuid(Uuid::uuid4());
 
         foreach ($impostor->getVersions() as $version) {
             $impostor->removeVersion($version);
@@ -149,27 +154,6 @@ class CopyFileCommand extends BaseFileCommand implements UuidReceiver
         $impostor->setFolderId($this->folder->getId());
 
         return $impostor;
-    }
-
-    public function execute()
-    {
-        $impostor = $this->getImpostor($this->file);
-
-        $event = new FileCopyEvent($this->file, $impostor);
-        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_COPY, $event);
-
-        $event = new FolderEvent($this->folder);
-        $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
-
-        $this->backend->createFile($impostor, $this->folder);
-
-        $event = new FileCopyEvent($this->file, $impostor);
-        $this->eventDispatcher->dispatch(Events::FILE_AFTER_COPY, $event);
-
-        return $this->fileRepository->createCommand(
-            'Xi\Filelib\File\Command\AfterUploadFileCommand',
-            array($impostor)
-        )->execute();
     }
 
     public function getTopic()

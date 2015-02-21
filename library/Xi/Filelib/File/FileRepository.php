@@ -9,17 +9,27 @@
 
 namespace Xi\Filelib\File;
 
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Command\CommandDefinition;
 use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
+use Xi\Filelib\Event\FileCopyEvent;
+use Xi\Filelib\Event\FileUploadEvent;
+use Xi\Filelib\Event\FolderEvent;
+use Xi\Filelib\Events;
+use Xi\Filelib\File\Command\FileCopier;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\Profile\ProfileManager;
+use Xi\Filelib\Resource\ResourceRepository;
+use Xi\Filelib\Event\FileEvent;
+use Xi\Filelib\Storage\Storage;
 
 /**
  * File repository
@@ -27,14 +37,8 @@ use Xi\Filelib\Folder\FolderRepository;
  * @author pekkis
  *
  */
-class FileRepository extends AbstractRepository
+class FileRepository extends AbstractRepository implements FileRepositoryInterface
 {
-    const COMMAND_UPLOAD = 'Xi\Filelib\File\Command\UploadFileCommand';
-    const COMMAND_AFTERUPLOAD = 'Xi\Filelib\File\Command\AfterUploadFileCommand';
-    const COMMAND_UPDATE = 'Xi\Filelib\File\Command\UpdateFileCommand';
-    const COMMAND_DELETE = 'Xi\Filelib\File\Command\DeleteFileCommand';
-    const COMMAND_COPY = 'Xi\Filelib\File\Command\CopyFileCommand';
-
     /**
      * @var FolderRepository
      */
@@ -45,40 +49,29 @@ class FileRepository extends AbstractRepository
      */
     private $eventDispatcher;
 
+    /**
+     * @var ResourceRepository
+     */
+    private $resourceRepository;
+
+    /**
+     * @var ProfileManager
+     */
+    private $profiles;
+
+    /**
+     * @var Storage
+     */
+    private $storage;
+
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
+        $this->resourceRepository = $filelib->getResourceRepository();
         $this->folderRepository = $filelib->getFolderRepository();
         $this->eventDispatcher = $filelib->getEventDispatcher();
-    }
-
-    /**
-     * @return array
-     */
-    public function getCommandDefinitions()
-    {
-        return array(
-            new CommandDefinition(
-                self::COMMAND_UPLOAD
-            ),
-            new CommandDefinition(
-                self::COMMAND_AFTERUPLOAD,
-                ExecutionStrategy::STRATEGY_SYNCHRONOUS,
-                array(
-                    ExecutionStrategy::STRATEGY_SYNCHRONOUS,
-                    ExecutionStrategy::STRATEGY_ASYNCHRONOUS,
-                )
-            ),
-            new CommandDefinition(
-                self::COMMAND_UPDATE
-            ),
-            new CommandDefinition(
-                self::COMMAND_DELETE
-            ),
-            new CommandDefinition(
-                self::COMMAND_COPY
-            ),
-        );
+        $this->profiles = $filelib->getProfileManager();
+        $this->storage = $filelib->getStorage();
     }
 
     /**
@@ -89,9 +82,15 @@ class FileRepository extends AbstractRepository
      */
     public function update(File $file)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_UPDATE, array($file))
-            ->execute();
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_UPDATE, $event);
+        $this->resourceRepository->update($file->getResource());
+        $this->backend->updateFile($file);
+
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_UPDATE, $event);
+
+        return $file;
     }
 
     /**
@@ -175,10 +174,53 @@ class FileRepository extends AbstractRepository
             $folder = $this->folderRepository->findRoot();
         }
 
-        return $this->commander
-            ->createExecutable(self::COMMAND_UPLOAD, array($upload, $folder, $profile))
-            ->execute();
+        $event = new FolderEvent($folder);
+        $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
+
+        $profileObj = $this->profiles->getProfile($profile);
+        $event = new FileUploadEvent($upload, $folder, $profileObj);
+        $this->eventDispatcher->dispatch(Events::FILE_UPLOAD, $event);
+
+        $upload = $event->getFileUpload();
+
+        $file = File::create(
+            array(
+                'folder_id' => $folder->getId(),
+                'name' => $upload->getUploadFilename(),
+                'profile' => $profile,
+                'date_created' => $upload->getDateUploaded(),
+                'uuid' => Uuid::uuid4()->toString(),
+            )
+        );
+
+        $file->setStatus(File::STATUS_RAW);
+
+        $resource = $this->resourceRepository->findResourceForUpload($file, $upload);
+        $file->setResource($resource);
+
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_CREATE, $event);
+
+        $this->backend->createFile($file, $folder);
+
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_CREATE, $event);
+
+        return $file;
     }
+
+    public function afterUpload(File $file)
+    {
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_AFTERUPLOAD, $event);
+
+        $file->setStatus(File::STATUS_COMPLETED);
+
+        $this->update($file);
+
+        return $file;
+    }
+
 
     /**
      * Deletes a file
@@ -187,9 +229,19 @@ class FileRepository extends AbstractRepository
      */
     public function delete(File $file)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_DELETE, array($file))
-            ->execute();
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_DELETE, $event);
+
+        $this->backend->deleteFile($file);
+
+        if ($file->getResource()->isExclusive()) {
+            $this->resourceRepository->delete($file->getResource());
+        }
+
+        $event = new FileEvent($file);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_DELETE, $event);
+
+        return true;
     }
 
     /**
@@ -200,8 +252,25 @@ class FileRepository extends AbstractRepository
      */
     public function copy(File $file, Folder $folder)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_COPY, array($file, $folder))
-            ->execute();
+        $event = new FolderEvent($folder);
+        $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
+
+        $copier = new FileCopier(
+            $this->resourceRepository,
+            $this,
+            $this->storage
+        );
+
+        $copy = $copier->copy($file, $folder);
+
+        $event = new FileCopyEvent($file, $copy);
+        $this->eventDispatcher->dispatch(Events::FILE_BEFORE_COPY, $event);
+
+        $this->backend->createFile($copy, $folder);
+
+        $event = new FileCopyEvent($this->file, $copy);
+        $this->eventDispatcher->dispatch(Events::FILE_AFTER_COPY, $event);
+
+        return $copy;
     }
 }
