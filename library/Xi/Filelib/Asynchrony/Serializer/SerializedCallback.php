@@ -7,10 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Asynchrony\Command;
+namespace Xi\Filelib\Asynchrony\Serializer;
 
-
-class Command
+class SerializedCallback
 {
     public $callback;
 

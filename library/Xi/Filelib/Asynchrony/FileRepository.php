@@ -1,10 +1,17 @@
 <?php
 
+/**
+ * This file is part of the Xi Filelib package.
+ *
+ * For copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Xi\Filelib\Asynchrony;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\FileRepository as BaseFileRepository;
 use Xi\Filelib\File\FileRepositoryInterface;
-
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\LogicException;
 
@@ -17,7 +24,7 @@ class FileRepository implements FileRepositoryInterface
     const COMMAND_COPY = 'xi_filelib.asynchrony.copy';
 
     /**
-     * @var FileRepositoryInterface
+     * @var BaseFileRepository
      */
     private $innerRepository;
 
@@ -32,7 +39,7 @@ class FileRepository implements FileRepositoryInterface
      * @param FileRepositoryInterface $innerRepository
      */
     public function __construct(
-        FileRepositoryInterface $innerRepository,
+        BaseFileRepository $innerRepository,
         Asynchrony $asynchrony
     ) {
         $this->innerRepository = $innerRepository;
@@ -45,6 +52,14 @@ class FileRepository implements FileRepositoryInterface
             self::COMMAND_DELETE => ExecutionStrategies::STRATEGY_SYNC,
             self::COMMAND_COPY => ExecutionStrategies::STRATEGY_SYNC
         ];
+    }
+
+    /**
+     * @return FileRepositoryInterface
+     */
+    public function getInnerRepository()
+    {
+        return $this->innerRepository;
     }
 
     /**
@@ -82,6 +97,11 @@ class FileRepository implements FileRepositoryInterface
         }
 
         $this->strategies[$command] = $strategy;
+    }
+
+    public function find($id)
+    {
+        return $this->innerRepository->find($id);
     }
 
 

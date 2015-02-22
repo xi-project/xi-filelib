@@ -10,4 +10,12 @@ interface FileRepositoryInterface
 
     public function afterUpload(File $file);
 
+    /**
+     * Finds file by id
+     *
+     * @param  mixed $id File id or array of file ids
+     * @return File
+     */
+    public function find($id);
+
 }

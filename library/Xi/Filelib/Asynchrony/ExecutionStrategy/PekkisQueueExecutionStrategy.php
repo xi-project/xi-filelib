@@ -39,9 +39,16 @@ class PekkisQueueExecutionStrategy implements ExecutionStrategy
             $queue,
             $filelib->getEventDispatcher()
         );
-
-        $this->queue = $queue;
     }
+
+    /**
+     * @return EventDispatchingQueue
+     */
+    public function getQueue()
+    {
+        return $this->queue;
+    }
+
 
     public function getIdentifier()
     {

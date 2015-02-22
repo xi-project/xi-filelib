@@ -10,16 +10,9 @@
 namespace Xi\Filelib;
 
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\Command\Commander;
-use Xi\Filelib\Command\CommanderClient;
 
 abstract class AbstractRepository implements Attacher
 {
-    /**
-     * @var Commander
-     */
-    protected $commander;
-
     /**
      * @var Backend
      */

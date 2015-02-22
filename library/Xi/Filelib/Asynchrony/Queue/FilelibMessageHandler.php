@@ -7,28 +7,28 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Queue;
+namespace Xi\Filelib\Asynchrony\Queue;
 
 use Pekkis\Queue\Message;
 use Pekkis\Queue\Processor\MessageHandler;
 use Pekkis\Queue\Processor\Result;
 use Pekkis\Queue\QueueInterface;
-use Xi\Filelib\Command\Command;
+use Xi\Filelib\Asynchrony\Serializer\SerializedCallback;
 
 class FilelibMessageHandler implements MessageHandler
 {
     public function willHandle(Message $message)
     {
-        return ($message->getData() instanceof Command);
+        return ($message->getData() instanceof SerializedCallback);
     }
 
     public function handle(Message $message, QueueInterface $queue)
     {
+        /** @var SerializedCallback $command */
         $command = $message->getData();
-        if ($command instanceof UuidReceiver) {
-            $command->setUuid($message->getUuid());
-        }
-        $command->execute();
+
+        call_user_func_array($command->callback, $command->params);
+
         return new Result(true);
     }
 }
