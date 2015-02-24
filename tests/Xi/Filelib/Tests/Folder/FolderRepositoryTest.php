@@ -2,29 +2,23 @@
 
 namespace Xi\Filelib\Tests\Folder;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Collections\Collection\ArrayCollection;
+use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
+use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
 
 class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var FileLibrary
      */
     private $filelib;
-
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $backend;
-
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $commander;
 
     /**
      * @var FolderRepository
@@ -33,13 +27,27 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->commander = $this->getMockedCommander();
+        $this->ed = $this->prophesize('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $this->filelib = $this->getFilelib(true);
 
-        $this->backend = $this->getMockedBackend();
-        $this->filelib = $this->getMockedFilelib(null, null, null, null, null, $this->backend, $this->commander);
-        $this->op = new FolderRepository();
-        $this->op->attachTo($this->filelib);
+        $this->op = $this->filelib->getFolderRepository();
     }
+
+    /**
+     * @param bool $mockedEventDispatcher
+     * @return FileLibrary
+     */
+    private function getFilelib($mockedEventDispatcher)
+    {
+        $filelib = new FileLibrary(
+            new MemoryStorageAdapter(),
+            new MemoryBackendAdapter(),
+            ($mockedEventDispatcher) ? $this->ed->reveal() : new EventDispatcher()
+        );
+
+        return $filelib;
+    }
+
 
     /**
      * @test
@@ -494,25 +502,19 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
     /**
      * @test
+     * @group lussi
      */
     public function createByUrlCreatesExecutableAndExecutes()
     {
-        $url = 'arto/tenhunen/on/losonaama/ja/imaisee/mehevaa';
-        $command = $this->getMockedCommand('topic', 'xoo');
+        $folder = $this->op->createByUrl('tenhunen/imaisee/mehevaa');
+        $folder2 = $this->op->createByUrl('tenhunen/imaisee/mehevaa/ankkaa');
 
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FolderRepository::COMMAND_CREATE_BY_URL,
-                array(
-                    $url
-                )
-            )
-            ->will($this->returnValue($command));
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder2);
 
-
-        $this->op->createByUrl($url);
+        $this->assertEquals('tenhunen/imaisee/mehevaa', $folder->getUrl());
+        $this->assertEquals('tenhunen/imaisee/mehevaa/ankkaa', $folder2->getUrl());
+        $this->assertEquals($folder->getId(), $folder2->getParentId());
     }
 
 }
