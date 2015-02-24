@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\File\Command;
+namespace Xi\Filelib\File;
 
 use DateTime;
 use Rhumsaa\Uuid\Uuid;
@@ -18,7 +18,6 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\Queue\UuidReceiver;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Resource\ResourceRepository;
 use Xi\Filelib\Storage\Storage;
@@ -60,7 +59,7 @@ class FileCopier
 
     public function copy(File $file, Folder $folder)
     {
-        return $this->getCopy($file);
+        return $this->getCopy($file, $folder);
     }
 
     /**
@@ -130,9 +129,9 @@ class FileCopier
      *
      * @return File
      */
-    private function getCopy()
+    private function getCopy(File $file, Folder $folder)
     {
-        $impostor = clone $this->file;
+        $impostor = clone $file;
         $impostor->setUuid(Uuid::uuid4());
 
         foreach ($impostor->getVersions() as $version) {
@@ -140,7 +139,7 @@ class FileCopier
         }
         $this->handleImpostorResource($impostor);
 
-        $found = $this->fileRepository->findByFilename($this->folder, $impostor->getName());
+        $found = $this->fileRepository->findByFilename($folder, $impostor->getName());
 
         if (!$found) {
             return $impostor;
@@ -148,16 +147,11 @@ class FileCopier
 
         do {
             $impostor->setName($this->getCopyName($impostor->getName()));
-            $found = $this->fileRepository->findByFilename($this->folder, $impostor->getName());
+            $found = $this->fileRepository->findByFilename($folder, $impostor->getName());
         } while ($found);
 
-        $impostor->setFolderId($this->folder->getId());
+        $impostor->setFolderId($folder->getId());
 
         return $impostor;
-    }
-
-    public function getTopic()
-    {
-        return 'xi_filelib.command.file.copy';
     }
 }

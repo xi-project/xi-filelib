@@ -20,6 +20,7 @@ class File extends BaseVersionable implements Identifiable, Versionable
 {
     const STATUS_RAW = 1;
     const STATUS_COMPLETED = 2;
+    const STATUS_DELETED = 3;
 
     /**
      * @var mixed

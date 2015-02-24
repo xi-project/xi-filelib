@@ -43,9 +43,12 @@ class FileProfile implements EventSubscriberInterface
      */
     private $plugins = array();
 
-    public function __construct($identifier)
+    private $allowSharedResource = true;
+
+    public function __construct($identifier, $allowSharedResource = true)
     {
         $this->identifier = $identifier;
+        $this->allowSharedResource = $allowSharedResource;
     }
 
     /**
@@ -186,6 +189,7 @@ class FileProfile implements EventSubscriberInterface
      *
      * @param  File    $file
      * @return boolean
+     * @todo Fucktor to events / decision voting stuff
      */
     public function isSharedResourceAllowed(File $file)
     {
@@ -198,6 +202,6 @@ class FileProfile implements EventSubscriberInterface
             }
         }
 
-        return true;
+        return $this->allowSharedResource;
     }
 }

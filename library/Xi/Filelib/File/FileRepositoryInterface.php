@@ -82,6 +82,8 @@ interface FileRepositoryInterface
      *
      * @param File   $file
      * @param Folder $folder
+     *
+     * @return File
      */
     public function copy(File $file, Folder $folder);
 }

@@ -14,13 +14,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use Xi\Filelib\Command\CommandDefinition;
-use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;
-use Xi\Filelib\File\Command\FileCopier;
+use Xi\Filelib\File\FileCopier;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\FileLibrary;
@@ -234,6 +232,8 @@ class FileRepository extends AbstractRepository implements FileRepositoryInterfa
 
         $this->backend->deleteFile($file);
 
+        $file->setStatus(File::STATUS_DELETED);
+
         if ($file->getResource()->isExclusive()) {
             $this->resourceRepository->delete($file->getResource());
         }
@@ -249,6 +249,8 @@ class FileRepository extends AbstractRepository implements FileRepositoryInterfa
      *
      * @param File   $file
      * @param Folder $folder
+     *
+     * @return File
      */
     public function copy(File $file, Folder $folder)
     {
@@ -268,7 +270,7 @@ class FileRepository extends AbstractRepository implements FileRepositoryInterfa
 
         $this->backend->createFile($copy, $folder);
 
-        $event = new FileCopyEvent($this->file, $copy);
+        $event = new FileCopyEvent($file, $copy);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_COPY, $event);
 
         return $copy;

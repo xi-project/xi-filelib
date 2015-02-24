@@ -10,8 +10,8 @@
 namespace Xi\Filelib\Migration;
 
 use Rhumsaa\Uuid\Uuid;
+use Xi\Filelib\Attacher;
 use Xi\Filelib\Backend\Backend;
-use Xi\Filelib\Command\Command;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
@@ -24,7 +24,7 @@ use Xi\Filelib\Version;
 /**
  * Migration command to be run after resourcification (v0.7.0)
  */
-class ResourceRefactorMigration implements Command
+class ResourceRefactorMigration implements Attacher
 {
     /**
      * @var ProfileManager
