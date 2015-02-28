@@ -22,6 +22,10 @@ class PekkisQueueExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
+        if (!RABBIMQ_HOST) {
+            return $this->markTestSkipped('RabbitMQ not configured');
+        }
+
         $this->adapter = new PhpAMQPAdapter(
             RABBITMQ_HOST,
             RABBITMQ_PORT,
