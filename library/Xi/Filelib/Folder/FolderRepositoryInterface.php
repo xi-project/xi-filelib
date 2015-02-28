@@ -50,6 +50,7 @@ interface FolderRepositoryInterface
 
     /**
      * @param $url
+     * @return Folder
      */
     public function createByUrl($url);
 

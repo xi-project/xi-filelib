@@ -205,6 +205,7 @@ class MemoryBackendAdapter implements BackendAdapter
         $this->create('resources', $document['id'], $document);
 
         $resource->setId($document['id']);
+
         return $resource;
     }
 
@@ -213,7 +214,7 @@ class MemoryBackendAdapter implements BackendAdapter
      */
     public function deleteResource(Resource $resource)
     {
-        return $this->remove('resources', $resource->getId());
+        $this->remove('resources', $resource->getId());
     }
 
     /**
@@ -270,6 +271,7 @@ class MemoryBackendAdapter implements BackendAdapter
 
         $ids = $request->getNotFoundIds();
         $className = $request->getClassName();
+
 
         $resources = $this->classNameToResources[$className];
 

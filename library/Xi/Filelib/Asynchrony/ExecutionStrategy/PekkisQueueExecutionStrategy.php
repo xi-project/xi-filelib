@@ -13,9 +13,9 @@ use Pekkis\Queue\Adapter\Adapter;
 use Pekkis\Queue\Message;
 use Pekkis\Queue\Queue;
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
-use Xi\Filelib\Asynchrony\Command\Command;
 use Xi\Filelib\Asynchrony\ExecutionStrategies;
-use Xi\Filelib\Asynchrony\Command\CommandDataSerializer;
+use Xi\Filelib\Asynchrony\Serializer\AsynchronyDataSerializer;
+use Xi\Filelib\Asynchrony\Serializer\SerializedCallback;
 use Xi\Filelib\FileLibrary;
 
 class PekkisQueueExecutionStrategy implements ExecutionStrategy
@@ -32,7 +32,7 @@ class PekkisQueueExecutionStrategy implements ExecutionStrategy
     {
         $queue = new Queue($adapter);
         $queue->addDataSerializer(
-            new CommandDataSerializer($filelib)
+            new AsynchronyDataSerializer($filelib)
         );
 
         $this->queue = new EventDispatchingQueue(
@@ -56,12 +56,13 @@ class PekkisQueueExecutionStrategy implements ExecutionStrategy
     }
 
     /**
-     * @param Command $command
+     * @param callable $callback
+     * @param array $params
      * @return Message
      */
     public function execute(callable $callback, $params = [])
     {
-        $command = new Command(
+        $command = new SerializedCallback(
             $callback,
             $params
         );

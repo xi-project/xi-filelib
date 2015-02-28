@@ -162,6 +162,7 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
             foreach ($resources as $resource) {
                 if (!$resource->isExclusive()) {
                     $file->setResource($resource);
+
                     if (!$profileObj->isSharedResourceAllowed($file)) {
                         $file->unsetResource();
                     }

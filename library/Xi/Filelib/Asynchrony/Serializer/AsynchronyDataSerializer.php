@@ -15,7 +15,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\LogicException;
 
-class AsyncronyDataSerializer extends AbstractDataSerializer implements DataSerializer
+class AsynchronyDataSerializer extends AbstractDataSerializer implements DataSerializer
 {
     /**
      * @var FileLibrary
@@ -47,7 +47,9 @@ class AsyncronyDataSerializer extends AbstractDataSerializer implements DataSeri
      */
     public function serialize($unserialized)
     {
-        $unserialized->callback[0] = get_class($unserialized->callback[0]);
+        if (is_array($unserialized->callback)) {
+            $unserialized->callback[0] = get_class($unserialized->callback[0]);
+        }
 
         $serializedParams = [];
         foreach ($unserialized->params as $key => $param) {
@@ -73,18 +75,20 @@ class AsyncronyDataSerializer extends AbstractDataSerializer implements DataSeri
         /** @var SerializedCallback $serializedCallback */
         $serializedCallback = unserialize($serialized);
 
-        switch ($serializedCallback->callback[0]) {
+        if (is_array($serializedCallback->callback[0])) {
+            switch ($serializedCallback->callback[0]) {
 
-            case 'Xi\Filelib\File\FileRepository':
-                $substitute = $this->fileRepository;
-                break;
+                case 'Xi\Filelib\File\FileRepository':
+                    $substitute = $this->fileRepository;
+                    break;
 
-            default:
-                throw new LogicException('Unknown class');
+                default:
+                    throw new LogicException('Unknown class');
 
+            }
+            $serializedCallback->callback[0] = $substitute;
         }
 
-        $serializedCallback->callback[0] = $substitute;
 
         $deserializedParams = [];
         foreach ($serializedCallback->params as $key => $param) {

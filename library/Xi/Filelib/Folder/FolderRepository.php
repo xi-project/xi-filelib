@@ -82,7 +82,7 @@ class FolderRepository extends AbstractRepository implements FolderRepositoryInt
 
         $route = $this->buildRoute($folder);
         $folder->setUrl($route);
-        $folder->setUuid(Uuid::uuid4());
+        $folder->setUuid(Uuid::uuid4()->toString());
 
         $event = new FolderEvent($folder);
         $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_CREATE, $event);
