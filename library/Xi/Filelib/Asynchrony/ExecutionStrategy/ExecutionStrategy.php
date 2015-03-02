@@ -9,9 +9,9 @@
 
 namespace Xi\Filelib\Asynchrony\ExecutionStrategy;
 
-use Xi\Filelib\Command\Command;
+use Xi\Filelib\Attacher;
 
-interface ExecutionStrategy
+interface ExecutionStrategy extends Attacher
 {
     public function getIdentifier();
 

@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Asynchrony\ExecutionStrategy;
 
+use Xi\Filelib\LogicException;
 use Pekkis\Queue\Adapter\Adapter;
 use Pekkis\Queue\Message;
 use Pekkis\Queue\Queue;
@@ -21,6 +22,11 @@ use Xi\Filelib\FileLibrary;
 class PekkisQueueExecutionStrategy implements ExecutionStrategy
 {
     /**
+     * @var Adapter
+     */
+    private $adapter;
+
+    /**
      * @var EventDispatchingQueue
      */
     private $queue;
@@ -28,11 +34,19 @@ class PekkisQueueExecutionStrategy implements ExecutionStrategy
     /**
      * @param EventDispatchingQueue $queue
      */
-    public function __construct(Adapter $adapter, FileLibrary $filelib)
+    public function __construct(Adapter $adapter)
     {
-        $queue = new Queue($adapter);
+        $this->adapter = $adapter;
+    }
+
+    public function attachTo(FileLibrary $filelib)
+    {
+        $serializer = new AsynchronyDataSerializer();
+        $serializer->attachTo($filelib);
+
+        $queue = new Queue($this->adapter);
         $queue->addDataSerializer(
-            new AsynchronyDataSerializer($filelib)
+            $serializer
         );
 
         $this->queue = new EventDispatchingQueue(
@@ -62,6 +76,10 @@ class PekkisQueueExecutionStrategy implements ExecutionStrategy
      */
     public function execute(callable $callback, $params = [])
     {
+        if (!$this->queue) {
+            throw new LogicException('Must be attached to a file library');
+        }
+
         $command = new SerializedCallback(
             $callback,
             $params

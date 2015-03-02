@@ -12,7 +12,6 @@ namespace Xi\Filelib\Asynchrony;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\File\File;
-use Xi\Filelib\File\FileRepository as BaseFileRepository;
 use Xi\Filelib\File\FileRepositoryInterface;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\LogicException;
@@ -23,7 +22,7 @@ class FileRepository implements FileRepositoryInterface
     const COMMAND_AFTERUPLOAD = 'xi_filelib.asynchrony.afterUpload';
 
     /**
-     * @var BaseFileRepository
+     * @var FileRepositoryInterface
      */
     private $innerRepository;
 
@@ -38,7 +37,7 @@ class FileRepository implements FileRepositoryInterface
      * @param FileRepositoryInterface $innerRepository
      */
     public function __construct(
-        BaseFileRepository $innerRepository,
+        FileRepositoryInterface $innerRepository,
         Asynchrony $asynchrony
     ) {
         $this->innerRepository = $innerRepository;
@@ -47,9 +46,6 @@ class FileRepository implements FileRepositoryInterface
         $this->strategies = [
             self::COMMAND_UPLOAD => ExecutionStrategies::STRATEGY_SYNC,
             self::COMMAND_AFTERUPLOAD => ExecutionStrategies::STRATEGY_SYNC,
-            self::COMMAND_UPDATE => ExecutionStrategies::STRATEGY_SYNC,
-            self::COMMAND_DELETE => ExecutionStrategies::STRATEGY_SYNC,
-            self::COMMAND_COPY => ExecutionStrategies::STRATEGY_SYNC
         ];
     }
 
@@ -96,6 +92,7 @@ class FileRepository implements FileRepositoryInterface
         }
 
         $this->strategies[$command] = $strategy;
+        return $this;
     }
 
     public function upload($upload, Folder $folder = null, $profile = 'default')

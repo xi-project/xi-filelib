@@ -24,10 +24,10 @@ class FilelibMessageHandler implements MessageHandler
 
     public function handle(Message $message, QueueInterface $queue)
     {
-        /** @var SerializedCallback $command */
-        $command = $message->getData();
+        /** @var SerializedCallback $callback */
+        $callback = $message->getData();
 
-        call_user_func_array($command->callback, $command->params);
+        call_user_func_array($callback->callback, $callback->params);
 
         return new Result(true);
     }

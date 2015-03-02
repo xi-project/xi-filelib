@@ -47,11 +47,6 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
      */
     private $op;
 
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $commander;
-
     public function setUp()
     {
         $this->ed = $this->prophesize('Symfony\Component\EventDispatcher\EventDispatcherInterface');

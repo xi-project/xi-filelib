@@ -33,8 +33,6 @@ class PluginManager
      */
     private $plugins = array();
 
-
-
     public function __construct(FileLibrary $filelib)
     {
         $this->filelib = $filelib;

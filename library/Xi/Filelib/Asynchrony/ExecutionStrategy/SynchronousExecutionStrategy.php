@@ -11,16 +11,29 @@ namespace Xi\Filelib\Asynchrony\ExecutionStrategy;
 
 use Xi\Filelib\Asynchrony\ExecutionStrategies;
 use Xi\Filelib\Command\Command;
+use Xi\Filelib\FileLibrary;
 
 class SynchronousExecutionStrategy implements ExecutionStrategy
 {
+    /**
+     * @return string
+     */
     public function getIdentifier()
     {
         return ExecutionStrategies::STRATEGY_SYNC;
     }
 
     /**
-     * @param callable $command
+     * @param FileLibrary $filelib
+     */
+    public function attachTo(FileLibrary $filelib)
+    {
+
+    }
+
+    /**
+     * @param callable $callback
+     * @param array $params
      * @return mixed
      */
     public function execute(callable $callback, $params = [])

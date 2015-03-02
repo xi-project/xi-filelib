@@ -9,8 +9,6 @@
 
 namespace Xi\Filelib;
 
-use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
-use Pekkis\Queue\Queue;
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -20,8 +18,6 @@ use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Backend\Cache\Adapter\CacheAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use Xi\Filelib\Command\CommandDataSerializer;
-use Xi\Filelib\Command\Commander;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\FileRepositoryInterface;

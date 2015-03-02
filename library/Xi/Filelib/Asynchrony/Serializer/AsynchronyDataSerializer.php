@@ -11,23 +11,20 @@ namespace Xi\Filelib\Asynchrony\Serializer;
 
 use Pekkis\Queue\Data\AbstractDataSerializer;
 use Pekkis\Queue\Data\DataSerializer;
+use Xi\Filelib\Attacher;
+use Xi\Filelib\File\FileRepositoryInterface;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\LogicException;
 
-class AsynchronyDataSerializer extends AbstractDataSerializer implements DataSerializer
+class AsynchronyDataSerializer extends AbstractDataSerializer implements DataSerializer, Attacher
 {
     /**
-     * @var FileLibrary
+     * @var FileRepositoryInterface
      */
-    private $filelib;
-
     private $fileRepository;
 
-    /**
-     * @param FileLibrary $filelib
-     */
-    public function __construct(FileLibrary $filelib)
+    public function attachTo(FileLibrary $filelib)
     {
         $this->fileRepository = $filelib->getFileRepository();
     }

@@ -14,11 +14,6 @@
         <const name="PDO_PASSWORD" value="" />
         <const name="MONGO_DNS" value="mongodb://localhost:27017/" />
         <env name="S3_BUCKET" value="puuppafilelib" />
-        <const name="RABBITMQ_HOST" value="localhost" />
-        <const name="RABBITMQ_PORT" value="5672" />
-        <const name="RABBITMQ_VHOST" value="/" />
-        <const name="RABBITMQ_USERNAME" value="guest" />
-        <const name="RABBITMQ_PASSWORD" value="guest" />
         <const name="ZENCODER_S3_BUCKET" value="puuppafilelibzencoder" />
     </php>
 </phpunit>
