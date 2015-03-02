@@ -42,8 +42,10 @@ class AsynchronyDataSerializer extends AbstractDataSerializer implements DataSer
      * @param SerializedCallback $unserialized
      * @return string
      */
-    public function serialize($unserialized)
+    public function serialize($original)
     {
+        $unserialized = clone $original;
+
         if (is_array($unserialized->callback)) {
             $unserialized->callback[0] = get_class($unserialized->callback[0]);
         }
@@ -72,7 +74,7 @@ class AsynchronyDataSerializer extends AbstractDataSerializer implements DataSer
         /** @var SerializedCallback $serializedCallback */
         $serializedCallback = unserialize($serialized);
 
-        if (is_array($serializedCallback->callback[0])) {
+        if (is_array($serializedCallback->callback)) {
             switch ($serializedCallback->callback[0]) {
 
                 case 'Xi\Filelib\File\FileRepository':

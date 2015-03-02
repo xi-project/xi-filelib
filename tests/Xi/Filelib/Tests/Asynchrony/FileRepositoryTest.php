@@ -79,7 +79,7 @@ class FileRepositoryTest extends TestCase
     public function afterUploads()
     {
         $file = File::create();
-        
+
         $this->repo->afterUpload($file)->shouldBeCalled()->willReturn('jippikaijea');
         $ret = $this->filelib->getFileRepository()->afterUpload($file);
         $this->assertEquals('jippikaijea', $ret);
