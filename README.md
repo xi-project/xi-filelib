@@ -6,6 +6,18 @@ Filelib is a file library component for PHP, providing a virtual filesystem for 
 It can be used to manage both your application's internal and user-uploaded files in many ways. What it (at least for now)
 is NOT is a place to store your assets like css, js and similar.
 
+## Getting Started
+
+* [Code examples are here](https://github.com/xi-project/xi-filelib-examples)
+* [Symfony 2 Bundle is here](https://github.com/xi-project/xi-bundle-filelib)
+* We also have plenty of other stuff, but the guy writing this edit just does not know about it
+
+We should add simple copy/paste instructions for composer.json files and other necessary "try this" information but for some reason we still haven't done it.
+
+We are currently using GitHub Wiki's to document our project. You can improve the documentation easily at here GitHub by editing the documentation, which will crete a fork of your edits and then you can submit a pull request, which will be handled by our contributors. Same goes for the README.md files of each separate repository.
+
+## What Filelib is for
+
 Let's face it: practically all web apps have to store documents, media and such and the needs are same.
 Filelib takes care of all the hard and/or repetetive tasks and abstracts away and reveals all the related changeable
 components as loosely coupled subsystems:
