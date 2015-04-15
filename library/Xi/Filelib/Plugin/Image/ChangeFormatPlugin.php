@@ -15,6 +15,7 @@ use Xi\Filelib\File\MimeTypes;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\BasePlugin;
+use Xi\Filelib\Plugin\Image\Command\Command;
 
 /**
  * Changes images' formats before uploading
@@ -64,10 +65,12 @@ class ChangeFormatPlugin extends BasePlugin
             return;
         }
 
+        $commands = Command::createCommandsFromDefinitions($this->commandDefinitions);
+
         $helper = new ImageMagickHelper(
             $upload->getRealPath(),
             $this->tempDir,
-            $this->commandDefinitions
+            $commands
         );
         $tempnam = $helper->execute();
 
