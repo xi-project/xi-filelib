@@ -33,7 +33,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
                 'storage' => null,
                 'ed' => null,
                 'backend' => null,
-                'commander' => null,
                 'queue' => null,
                 'pm' => null,
                 'tempDir' => null,
@@ -96,11 +95,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
         if ($pm) {
             $ret->expects($this->any())->method('getProfileManager')->will($this->returnValue($pm));
         }
-
-        if (!$commander) {
-            $commander = $this->getMockedCommander();
-        }
-        $ret->expects($this->any())->method('getCommander')->will($this->returnValue($commander));
 
         return $ret;
     }
@@ -275,15 +269,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         return $this->getMock('Xi\Filelib\Backend\Adapter\BackendAdapter');
     }
-
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    public function getMockedCommander()
-    {
-        return $this->getMockBuilder('Xi\Filelib\Command\Commander')->disableOriginalConstructor()->getMock();
-    }
-
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject

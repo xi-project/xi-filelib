@@ -9,18 +9,32 @@
 
 namespace Xi\Filelib\Tests\File;
 
+use Doctrine\Common\Util\Debug;
+use Prophecy\Argument;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Xi\Collections\Collection\ArrayCollection;
+use Xi\Filelib\Events;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Plugin\RandomizeNamePlugin;
+use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
+use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
+use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
+use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
+use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
+use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
 
 class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var FileLibrary
      */
     private $filelib;
 
@@ -40,27 +54,37 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
     private $foop;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $commander;
-
-    /**
      * @var FileRepository
      */
     private $op;
 
     public function setUp()
     {
-        $this->commander = $this->getMockedCommander();
-        $this->backend = $this->getMockedBackend();
-        $this->ed = $this->getMockedEventDispatcher();
-        $this->foop = $this->getMockedFolderRepository();
+        $this->ed = $this->prophesize('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $this->filelib = $this->getFilelib(true);
 
-        $this->filelib = $this->getMockedFilelib(null, null, $this->foop, null, $this->ed, $this->backend, $this->commander);
+        $this->op = $this->filelib->getFileRepository();
+    }
 
-        $this->op = new FileRepository();
-        $this->op->attachTo($this->filelib);
+    private function getFilelib($mockedEventDispatcher)
+    {
+        $filelib = new FileLibrary(
+            new MemoryStorageAdapter(),
+            new MemoryBackendAdapter(),
+            ($mockedEventDispatcher) ? $this->ed->reveal() : new EventDispatcher()
+        );
 
+        $filelib->addProfile(new FileProfile(
+            'tussi', false
+        ));
+
+        return $filelib;
+    }
+
+    public function tearDown()
+    {
+        $deletor = new RecursiveDirectoryDeletor('files');
+        $deletor->delete();
     }
 
     /**
@@ -83,68 +107,95 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
      * @test
      * @dataProvider provideUploads
      */
-    public function uploadCreatesExecutableAndExecutes($upload)
+    public function uploads($upload)
     {
-        $folder = $this->getMockedFolder();
-        $profile = 'versioned';
+        $folder = $this->filelib->createFolderByUrl('xooxer/looxer');
 
-        $command = $this->getMockedExecutable('xoo');
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FileRepository::COMMAND_UPLOAD,
-                $this->isType('array')
-            )
-            ->will($this->returnValue($command));
+        $file = $this->filelib->getFileRepository()->upload($upload, $folder, 'default');
 
-        $this->foop->expects($this->never())->method('findRoot');
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
+        $this->assertEquals(File::STATUS_RAW, $file->getStatus());
+        $this->assertUuid($file->getId());
+        $this->assertUuid($file->getUuid());
+        $this->assertEquals('default', $file->getProfile());
+        $this->assertInstanceof('DateTime', $file->getDateCreated());
+        $this->assertEquals($folder->getId(), $file->getFolderId());
 
-        $this->op->upload($upload, $folder, $profile);
+        $this->ed->dispatch(
+            Events::RESOURCE_BEFORE_CREATE,
+            Argument::type('Xi\Filelib\Event\ResourceEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->ed->dispatch(
+            Events::FOLDER_BEFORE_WRITE_TO,
+            Argument::type('Xi\Filelib\Event\FolderEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->ed->dispatch(
+            Events::FILE_UPLOAD,
+            Argument::type('Xi\Filelib\Event\FileUploadEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->ed->dispatch(
+            Events::FILE_BEFORE_CREATE,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->ed->dispatch(
+            Events::FILE_AFTER_CREATE,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->assertTrue($this->filelib->getStorage()->exists($file->getResource()));
 
     }
 
     /**
      * @test
+     * @dataProvider provideUploads
      */
-    public function uploadShouldFindRootFolderIfNoFolderIsSupplied()
+    public function uploadShouldFindRootFolderIfNoFolderIsSupplied($upload)
     {
-        $folder = $this->getMockedFolder();
-        $profile = 'versioned';
+        $file = $this->filelib->getFileRepository()->upload($upload, null);
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
 
-        $command = $this->getMockedExecutable('xoo');
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FileRepository::COMMAND_UPLOAD,
-                $this->isType('array')
-            )
-            ->will($this->returnValue($command));
-
-        $this->foop->expects($this->once())->method('findRoot')->will($this->returnValue($folder));
-
-        $upload = new FileUpload(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
-
-        $this->op->upload($upload, null, $profile);
+        $this->assertEquals(
+            $this->filelib->getFolderRepository()->findRoot()->getId(),
+            $file->getFolderId()
+        );
     }
 
+    /**
+     * @test
+     */
+    public function afterUploadDispatches()
+    {
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->getFileRepository()->upload($upload, null);
 
+        $file2 = $this->filelib->getFileRepository()->afterUpload($file);
+
+        $this->assertSame($file, $file2);
+
+        $this->ed->dispatch(
+            Events::FILE_AFTER_AFTERUPLOAD,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->ed->dispatch(
+            Events::FILE_AFTER_UPDATE,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->assertEquals(File::STATUS_COMPLETED, $file->getStatus());
+    }
 
     /**
      * @test
      */
     public function findShouldReturnFalseIfFileIsNotFound()
     {
-        $id = 1;
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByIds')
-            ->with(array($id), 'Xi\Filelib\File\File')
-            ->will($this->returnValue(ArrayCollection::create(array())));
-
-
+        $id = 'xooxoox';
         $file = $this->op->find($id);
         $this->assertEquals(false, $file);
     }
@@ -154,18 +205,10 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
      */
     public function findShouldReturnFileInstanceIfFileIsFound()
     {
-        $id = 1;
-
-        $file = File::create();
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByIds')
-            ->with(array($id))
-            ->will($this->returnValue(ArrayCollection::create(array($file))));
-
-        $ret = $this->op->find($id);
-        $this->assertSame($file, $ret);
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->getFileRepository()->upload($upload, null);
+        $ret = $this->op->find($file->getId());
+        $this->assertEquals($file, $ret);
     }
 
     /**
@@ -173,19 +216,15 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
      */
     public function findManyDelegatesToBackend()
     {
-        $ids = array(1, 666);
+        $filelib = $this->getFilelib(false);
+        $filelib->addPlugin(new RandomizeNamePlugin());
 
-        $file = File::create();
-        $coll = ArrayCollection::create(array($file));
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $filelib->getFileRepository()->upload($upload, null);
+        $file2 = $filelib->getFileRepository()->upload($upload, null);
 
-        $this->backend
-            ->expects($this->once())
-            ->method('findByIds')
-            ->with($this->equalTo($ids))
-            ->will($this->returnValue($coll));
-
-        $ret = $this->op->findMany($ids);
-        $this->assertSame($coll, $ret);
+        $ret = $filelib->getFileRepository()->findMany([$file->getId(), $file2->getId()]);
+        $this->assertCount(2, $ret);
     }
 
 
@@ -194,22 +233,7 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
      */
     public function findByFilenameShouldReturnFalseIfFileIsNotFound()
     {
-        $folder = Folder::create(array('id' => 6));
-
-        $finder = new FileFinder(
-            array(
-                'folder_id' => 6,
-                'name' => 'lussname',
-            )
-        );
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')->with(
-                $this->equalTo($finder)
-            )
-            ->will($this->returnValue(ArrayCollection::create(array())));
-
+        $folder = $this->filelib->createFolderByUrl('tussen/lussen');
         $ret = $this->op->findByFilename($folder, 'lussname');
         $this->assertFalse($ret);
     }
@@ -217,25 +241,16 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function findByUuidsFindsWithFinder()
+    public function findsByUuid()
     {
-        $finder = new FileFinder(
-            array(
-                'uuid' => 'tenhusen-hubriksen-uuid',
-            )
-        );
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')->with(
-                $this->equalTo($finder)
-            )
-            ->will($this->returnValue(ArrayCollection::create(array(
-                File::create(array('uuid' => 'tenhusen-hubriksen-uuid'))
-            ))));
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->getFileRepository()->upload($upload, null);
 
         $ret = $this->op->findByUuid('tenhusen-hubriksen-uuid');
-        $this->assertInstanceOf('Xi\Filelib\File\File', $ret);
+        $this->assertFalse($ret);
+
+        $ret2 = $this->op->findByUuid($file->getUuid());
+        $this->assertInstanceOf('Xi\Filelib\File\File', $ret2);
     }
 
 
@@ -244,46 +259,23 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
      */
     public function findByFilenameShouldReturnFileInstanceIfFileIsFound()
     {
-        $id = 1;
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
-        $folder = Folder::create(array('id' => 6));
+        $folder = $this->filelib->getFolderRepository()->createByUrl('arto/tenhusen/suuruuden/ylistyskansio');
+        $file = $this->filelib->getFileRepository()->upload($upload, $folder);
 
-        $file = File::create();
-
-        $finder = new FileFinder(
-            array(
-                'folder_id' => 6,
-                'name' => 'lussname',
-            )
-        );
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')->with(
-                $this->equalTo($finder)
-            )
-            ->will($this->returnValue(ArrayCollection::create(array($file))));
-
-        $ret = $this->op->findByFilename($folder, 'lussname');
-        $this->assertSame($file, $ret);
+        $ret = $this->op->findByFilename($folder, 'self-lussing-manatee.jpg');
+        $this->assertEquals($file, $ret);
     }
 
-      /**
+    /**
      * @test
+     * @group tussi
      */
     public function findAllShouldReturnEmptyIfNoFilesAreFound()
     {
-        $finder = new FileFinder();
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')
-            ->with($this->equalTo($finder))
-            ->will($this->returnValue(ArrayCollection::create(array())));
-
         $files = $this->op->findAll();
         $this->assertCount(0, $files);
-
     }
 
     /**
@@ -291,93 +283,168 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
      */
     public function findAllShouldReturnAnArrayOfFileInstancesIfFilesAreFound()
     {
-        $finder = new FileFinder();
-
-        $iter = ArrayCollection::create(array(
-            File::create(),
-            File::create(),
-            File::create(),
-        ));
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')->with(
-            $this->equalTo($finder)
-        )
-            ->will($this->returnValue($iter));
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $this->filelib->getFileRepository()->upload(
+            $upload,
+            $this->filelib->getFolderRepository()->createByUrl('arto-tenhunen')
+        );
+        $this->filelib->getFileRepository()->upload(
+            $upload,
+            $this->filelib->getFolderRepository()->createByUrl('arto-tenhunen/on')
+        );
+        $this->filelib->getFileRepository()->upload(
+            $upload,
+            $this->filelib->getFolderRepository()->createByUrl('arto-tenhunen/on/suurmies')
+        );
 
         $files = $this->op->findAll();
-        $this->assertSame($iter, $files);
+        $this->assertCount(3, $files);
     }
 
     /**
      * @test
+     * @group luszo
      */
-    public function updateCreatesExecutableAndExecutes()
+    public function updates()
     {
-        $file = File::create();
-        $command = $this->getMockedCommand('topic', 'xoo');
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->getFileRepository()->upload($upload, null);
 
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FileRepository::COMMAND_UPDATE,
-                array(
-                    $file
-                )
-            )
-            ->will($this->returnValue($command));
+        $this->filelib->getFileRepository()->update($file);
 
+        $this->ed->dispatch(
+            Events::FILE_BEFORE_UPDATE,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
 
-        $this->op->update($file);
+        $this->ed->dispatch(
+            Events::FILE_AFTER_UPDATE,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
+
     }
 
     /**
      * @test
+     * @group luszo
      */
-    public function copyCreatesExecutableAndExecutes()
+    public function copies()
     {
-        $file = File::create();
-        $folder = Folder::create();
-        $command = $this->getMockedCommand('topic', 'xoo');
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->getFileRepository()->upload($upload, null);
+        $this->filelib->getFileRepository()->afterUpload($file);
 
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FileRepository::COMMAND_COPY,
-                array(
-                    $file,
-                    $folder
-                )
-            )
-            ->will($this->returnValue($command));
+        $folder = $this->filelib->createFolderByUrl('tussen/lussen/luu');
 
-        $this->op->copy($file, $folder);
+        $file2 = $this->filelib->getFileRepository()->copy($file, $folder);
+        $this->assertInstanceof('Xi\Filelib\File\File', $file2);
+        $this->assertNotSame($file, $file2);
+        $this->assertNotEquals($file->getFolderId(), $file2->getFolderId());
+
+        $this->assertEquals($file2->getFolderId(), $folder->getId());
+
+        $this->ed->dispatch(
+            Events::FILE_BEFORE_COPY,
+            Argument::type('Xi\Filelib\Event\FileCopyEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->ed->dispatch(
+            Events::FILE_AFTER_CREATE,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->ed->dispatch(
+            Events::FILE_AFTER_COPY,
+            Argument::type('Xi\Filelib\Event\FileCopyEvent')
+        )->shouldHaveBeenCalled();
     }
 
     /**
      * @test
+     * @group luszo
      */
-    public function deleteCreatesExecutableAndExecutes()
+    public function copiesMultipleTimes()
     {
-        $file = File::create();
-        $command = $this->getMockedCommand('topic', 'xoo');
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->getFileRepository()->upload($upload, null);
+        $this->filelib->getFileRepository()->afterUpload($file);
 
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FileRepository::COMMAND_DELETE,
-                array(
-                    $file
-                )
-            )
-            ->will($this->returnValue($command));
+        $folder = $this->filelib->createFolderByUrl('tussen/lussen/luu');
+        $file2 = $this->filelib->getFileRepository()->copy($file, $folder);
+
+        $file3 = $this->filelib->getFileRepository()->copy($file, $folder);
+        $file4 = $this->filelib->getFileRepository()->copy($file, $folder);
+
+        $file5 = $this->filelib->getFileRepository()->copy($file4, $folder);
+        $file6 = $this->filelib->getFileRepository()->copy($file5, $folder);
 
 
-        $this->op->delete($file);
+        $this->assertEquals('self-lussing-manatee.jpg', $file2->getName());
+        $this->assertEquals('self-lussing-manatee copy 4.jpg', $file6->getName());
+
+        $this->assertSame($file->getResource(), $file6->getResource());
+    }
+
+    /**
+     * @test
+     * @group luszo
+     */
+    public function createsNewResourceWhenCopyingIfExclusive()
+    {
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->getFileRepository()->upload($upload, null, 'tussi');
+        $this->filelib->getFileRepository()->afterUpload($file);
+
+        $folder = $this->filelib->createFolderByUrl('exclusivo');
+        $file2 = $this->filelib->getFileRepository()->copy($file, $folder);
+
+        $this->assertInstanceOf('Xi\Filelib\File\File', $file);
+        $this->assertTrue($file->getResource()->isExclusive());
+        $this->assertNotSame($file->getResource(), $file2->getResource());
+    }
+
+
+    /**
+     * @test
+     * @group luszo
+     */
+    public function deletes()
+    {
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+        $file = $this->filelib->getFileRepository()->upload($upload, null);
+
+        $this->filelib->getFileRepository()->delete($file);
+
+        $this->ed->dispatch(
+            Events::FILE_BEFORE_DELETE,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->ed->dispatch(
+            Events::FILE_AFTER_DELETE,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->assertEquals(File::STATUS_DELETED, $file->getStatus());
+        $this->assertFalse($this->filelib->getFileRepository()->find($file->getId()));
+        $this->assertTrue($this->filelib->getStorage()->exists($file->getResource()));
+    }
+
+    /**
+     * @test
+     * @group luszo
+     */
+    public function deletesExclusiveResource()
+    {
+        $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
+
+        $file = $this->filelib->getFileRepository()->upload($upload, null, 'tussi');
+        $this->filelib->getFileRepository()->delete($file);
+        $this->ed->dispatch(
+            Events::FILE_AFTER_DELETE,
+            Argument::type('Xi\Filelib\Event\FileEvent')
+        )->shouldHaveBeenCalled();
+        $this->assertFalse($this->filelib->getStorage()->exists($file->getResource()));
     }
 
 }

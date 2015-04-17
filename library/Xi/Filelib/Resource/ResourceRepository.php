@@ -15,10 +15,13 @@ use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use Xi\Filelib\Command\CommandDefinition;
+use Xi\Filelib\Event\ResourceEvent;
+use Xi\Filelib\Events;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Profile\ProfileManager;
+use Xi\Filelib\Storage\Storage;
 
 /**
  * Resource repository
@@ -26,12 +29,8 @@ use Xi\Filelib\Profile\ProfileManager;
  * @author pekkis
  *
  */
-class ResourceRepository extends AbstractRepository
+class ResourceRepository extends AbstractRepository implements ResourceRepositoryInterface
 {
-    const COMMAND_CREATE = 'Xi\Filelib\Resource\Command\CreateResourceCommand';
-    const COMMAND_UPDATE = 'Xi\Filelib\Resource\Command\UpdateResourceCommand';
-    const COMMAND_DELETE = 'Xi\Filelib\Resource\Command\DeleteResourceCommand';
-
     /**
      * @var EventDispatcherInterface
      */
@@ -41,6 +40,11 @@ class ResourceRepository extends AbstractRepository
      * @var ProfileManager
      */
     private $profiles;
+
+    /**
+     * @var Storage
+     */
+    private $storage;
 
     /**
      * @param FileLibrary $filelib
@@ -54,24 +58,6 @@ class ResourceRepository extends AbstractRepository
     }
 
     /**
-     * @return array
-     */
-    public function getCommandDefinitions()
-    {
-        return array(
-            new CommandDefinition(
-                self::COMMAND_UPDATE
-            ),
-            new CommandDefinition(
-                self::COMMAND_DELETE
-            ),
-            new CommandDefinition(
-                self::COMMAND_CREATE
-            ),
-        );
-    }
-
-    /**
      * Updates a resource
      *
      * @param  Resource         $resource
@@ -79,9 +65,15 @@ class ResourceRepository extends AbstractRepository
      */
     public function update(Resource $resource)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_UPDATE, array($resource))
-            ->execute();
+        $event = new ResourceEvent($resource);
+        $this->eventDispatcher->dispatch(Events::RESOURCE_BEFORE_UPDATE, $event);
+
+        $this->backend->updateResource($resource);
+
+        $event = new ResourceEvent($resource);
+        $this->eventDispatcher->dispatch(Events::RESOURCE_AFTER_UPDATE, $event);
+
+        return $resource;
     }
 
     /**
@@ -119,9 +111,16 @@ class ResourceRepository extends AbstractRepository
      */
     public function delete(Resource $resource)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_DELETE, array($resource))
-            ->execute();
+        $event = new ResourceEvent($resource);
+        $this->eventDispatcher->dispatch(Events::RESOURCE_BEFORE_DELETE, $event);
+
+        $this->backend->deleteResource($resource);
+        $this->storage->delete($resource);
+
+        $event = new ResourceEvent($resource);
+        $this->eventDispatcher->dispatch(Events::RESOURCE_AFTER_DELETE, $event);
+
+        return $resource;
     }
 
     /**
@@ -132,9 +131,16 @@ class ResourceRepository extends AbstractRepository
      */
     public function create(Resource $resource, $path)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_CREATE, array($resource, $path))
-            ->execute();
+        $event = new ResourceEvent($resource);
+        $this->eventDispatcher->dispatch(Events::RESOURCE_BEFORE_CREATE, $event);
+
+        $this->backend->createResource($resource);
+        $this->storage->store($resource, $path);
+
+        $event = new ResourceEvent($resource);
+        $this->eventDispatcher->dispatch(Events::RESOURCE_AFTER_CREATE, $event);
+
+        return $resource;
     }
 
     /**
@@ -156,6 +162,7 @@ class ResourceRepository extends AbstractRepository
             foreach ($resources as $resource) {
                 if (!$resource->isExclusive()) {
                     $file->setResource($resource);
+
                     if (!$profileObj->isSharedResourceAllowed($file)) {
                         $file->unsetResource();
                     }

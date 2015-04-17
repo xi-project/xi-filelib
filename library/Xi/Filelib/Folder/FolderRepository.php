@@ -9,30 +9,36 @@
 
 namespace Xi\Filelib\Folder;
 
+use Rhumsaa\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Command\CommandDefinition;
+use Xi\Filelib\Event\FolderEvent;
+use Xi\Filelib\Events;
+use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\FileLibrary;
+use Xi\Filelib\LogicException;
 
-class FolderRepository extends AbstractRepository
+class FolderRepository extends AbstractRepository implements FolderRepositoryInterface
 {
-    const COMMAND_CREATE = 'Xi\Filelib\Folder\Command\CreateFolderCommand';
-    const COMMAND_DELETE = 'Xi\Filelib\Folder\Command\DeleteFolderCommand';
-    const COMMAND_UPDATE = 'Xi\Filelib\Folder\Command\UpdateFolderCommand';
-    const COMMAND_CREATE_BY_URL = 'Xi\Filelib\Folder\Command\CreateByUrlFolderCommand';
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
-     * @return array
+     * @var FileRepository
      */
-    public function getCommandDefinitions()
+    private $fileRepository;
+
+    public function attachTo(FileLibrary $filelib)
     {
-        return array(
-            new CommandDefinition(self::COMMAND_CREATE),
-            new CommandDefinition(self::COMMAND_CREATE_BY_URL),
-            new CommandDefinition(self::COMMAND_DELETE),
-            new CommandDefinition(self::COMMAND_UPDATE),
-        );
+        parent::attachTo($filelib);
+        $this->eventDispatcher = $filelib->getEventDispatcher();
+        $this->fileRepository = $filelib->getFileRepository();
     }
 
     /**
@@ -41,7 +47,7 @@ class FolderRepository extends AbstractRepository
      * @param  Folder $folder
      * @return string
      */
-    public function buildRoute(Folder $folder)
+    private function buildRoute(Folder $folder)
     {
         $rarr = array();
 
@@ -64,9 +70,29 @@ class FolderRepository extends AbstractRepository
      */
     public function create(Folder $folder)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_CREATE, array($folder))
-            ->execute();
+        if ($folder->getParentId() === null && $folder->getName() !== 'root') {
+            throw new LogicException('Only one root folder may exist');
+        }
+
+        if ($folder->getParentId()) {
+            $parentFolder = $this->find($folder->getParentId());
+            $event = new FolderEvent($parentFolder);
+            $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_WRITE_TO, $event);
+        }
+
+        $route = $this->buildRoute($folder);
+        $folder->setUrl($route);
+        $folder->setUuid(Uuid::uuid4()->toString());
+
+        $event = new FolderEvent($folder);
+        $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_CREATE, $event);
+
+        $this->backend->createFolder($folder);
+
+        $event = new FolderEvent($folder);
+        $this->eventDispatcher->dispatch(Events::FOLDER_AFTER_CREATE, $event);
+
+        return $folder;
     }
 
     /**
@@ -76,9 +102,26 @@ class FolderRepository extends AbstractRepository
      */
     public function delete(Folder $folder)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_DELETE, array($folder))
-            ->execute();
+        $event = new FolderEvent($folder);
+        $this->eventDispatcher->dispatch(Events::FOLDER_BEFORE_DELETE, $event);
+
+        foreach ($this->findSubFolders($folder) as $childFolder) {
+            $this->delete($childFolder);
+        }
+
+        foreach ($this->findFiles($folder) as $file) {
+            $this->fileRepository->delete($file);
+        }
+
+        $this->backend->deleteFolder($folder);
+
+        $event = new FolderEvent($folder);
+        $this->eventDispatcher->dispatch(
+            Events::FOLDER_AFTER_DELETE,
+            $event
+        );
+
+        return true;
     }
 
     /**
@@ -88,9 +131,23 @@ class FolderRepository extends AbstractRepository
      */
     public function update(Folder $folder)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_UPDATE, array($folder))
-            ->execute();
+        $route = $this->buildRoute($folder);
+        $folder->setUrl($route);
+
+        $this->backend->updateFolder($folder);
+
+        foreach ($this->findFiles($folder) as $file) {
+            $this->fileRepository->update($file);
+        }
+
+        foreach ($this->findSubFolders($folder) as $subFolder) {
+            $this->update($subFolder);
+        }
+
+        $event = new FolderEvent($folder);
+        $this->eventDispatcher->dispatch(Events::FOLDER_AFTER_UPDATE, $event);
+
+        return $folder;
     }
 
     /**
@@ -146,9 +203,39 @@ class FolderRepository extends AbstractRepository
 
     public function createByUrl($url)
     {
-        return $this->commander
-            ->createExecutable(self::COMMAND_CREATE_BY_URL, array($url))
-            ->execute();
+        $folder = $this->findByUrl($url);
+        if ($folder) {
+            return $folder;
+        }
+
+        $rootFolder = $this->findRoot();
+
+        $exploded = explode('/', $url);
+
+        $folderNames = array();
+
+        $created = null;
+        $previous = null;
+
+        while (sizeof($exploded) || !$created) {
+
+            $folderNames[] = $folderCurrent = array_shift($exploded);
+            $folderName = implode('/', $folderNames);
+            $created = $this->findByUrl($folderName);
+
+            if (!$created) {
+                $created = Folder::create(
+                    array(
+                        'parent_id' => $previous ? $previous->getId() : $rootFolder->getId(),
+                        'name' => $folderCurrent,
+                    )
+                );
+
+                $this->create($created);
+            }
+            $previous = $created;
+        }
+        return $created;
     }
 
     /**

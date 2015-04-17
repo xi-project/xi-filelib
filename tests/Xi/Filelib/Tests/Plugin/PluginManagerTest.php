@@ -2,10 +2,13 @@
 
 namespace Xi\Filelib\Tests\Plugin;
 
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\PluginManager;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Events;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
+use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
+use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
 
 class PluginManagerTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -19,13 +22,19 @@ class PluginManagerTest extends \Xi\Filelib\Tests\TestCase
      */
     private $manager;
 
+    private $filelib;
+
     public function setUp()
     {
         $this->ed = $this->getMockedEventDispatcher();
 
-        $this->manager = new PluginManager(
+        $this->filelib = new FileLibrary(
+            new MemoryStorageAdapter(),
+            new MemoryBackendAdapter(),
             $this->ed
         );
+
+        $this->manager = new PluginManager($this->filelib);
     }
 
     /**
