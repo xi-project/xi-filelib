@@ -5,6 +5,8 @@ namespace Xi\Filelib\Tests;
 use Xi\Filelib\Authorization\AuthorizationPlugin;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Backend\Finder\FileFinder;
+use Xi\Filelib\File\File;
+use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Profile\FileProfile;
@@ -39,7 +41,7 @@ class FileLibraryTest extends TestCase
      */
     public function correctVersion()
     {
-        $this->assertEquals('0.12.0-dev', FileLibrary::VERSION);
+        $this->assertEquals('0.14.0-dev', FileLibrary::VERSION);
     }
 
     /**
@@ -57,30 +59,6 @@ class FileLibraryTest extends TestCase
     {
         $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
         $this->assertInstanceOf('Xi\Filelib\Storage\Storage', $filelib->getStorage());
-    }
-
-    /**
-     * @test
-     */
-    public function queueSetterAndGetterShouldWork()
-    {
-        $commander = $this->getMockedCommander();
-        $commander
-            ->expects($this->once())
-            ->method('setQueue')
-            ->with($this->isInstanceOf('Pekkis\Queue\SymfonyBridge\EventDispatchingQueue'));
-
-        $filelib = new FileLibrary(
-            $this->getMockedStorageAdapter(),
-            $this->getMockedBackendAdapter(),
-            $this->getMockedEventDispatcher(),
-            $commander
-        );
-        $this->assertNull($filelib->getQueue());
-
-        $adapter = $this->getMockedQueueAdapter();
-        $this->assertSame($filelib, $filelib->createQueueFromAdapter($adapter));
-        $this->assertInstanceOf('Pekkis\Queue\SymfonyBridge\EventDispatchingQueue', $filelib->getQueue());
     }
 
     /**
@@ -272,10 +250,10 @@ class FileLibraryTest extends TestCase
             ->expects($this->once())
             ->method('upload')
             ->with('lussutus', $folder, 'tussi')
-            ->will($this->returnValue('xooxer'));
+            ->will($this->returnValue(File::create()));
 
         $ret = $filelib->uploadFile('lussutus', $folder, 'tussi');
-        $this->assertSame('xooxer', $ret);
+        $this->assertEquals(File::create(), $ret);
     }
 
     /**
@@ -372,5 +350,44 @@ class FileLibraryTest extends TestCase
         $adapter = $this->getMockedCacheAdapter();
         $this->assertSame($filelib, $filelib->createCacheFromAdapter($adapter));
         $this->assertInstanceOf('Xi\Filelib\Backend\Cache\Cache', $filelib->getCache());
+    }
+
+    /**
+     * @test
+     */
+    public function fileRepositoryCanBeSet()
+    {
+        $repo = $this->prophesize('Xi\Filelib\File\FileRepositoryInterface')->reveal();
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
+
+        $filelib->setFileRepository($repo);
+        $this->assertSame($repo, $filelib->getFileRepository());
+
+    }
+
+    /**
+     * @test
+     */
+    public function folderRepositoryCanBeSet()
+    {
+        $repo = $this->prophesize('Xi\Filelib\Folder\FolderRepositoryInterface')->reveal();
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
+
+        $filelib->setFolderRepository($repo);
+        $this->assertSame($repo, $filelib->getFolderRepository());
+
+    }
+
+    /**
+     * @test
+     */
+    public function resourceRepositoryCanBeSet()
+    {
+        $repo = $this->prophesize('Xi\Filelib\Resource\ResourceRepositoryInterface')->reveal();
+        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
+
+        $filelib->setResourceRepository($repo);
+        $this->assertSame($repo, $filelib->getResourceRepository());
+
     }
 }

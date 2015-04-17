@@ -25,9 +25,13 @@ class PluginEventTest extends \Xi\Filelib\Tests\TestCase
     public function eventShouldInitializeCorrectly()
     {
         $plugin = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Plugin');
-        $event = new PluginEvent($plugin);
+        $filelib = $this->getMockedFilelib();
+
+        $event = new PluginEvent($plugin, $filelib);
 
         $plugin2 = $event->getPlugin();
         $this->assertSame($plugin, $plugin2);
+
+        $this->assertSame($filelib, $event->getFilelib());
     }
 }

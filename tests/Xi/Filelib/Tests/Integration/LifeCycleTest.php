@@ -107,51 +107,6 @@ class LifeCycleTest extends TestCase
      * @dataProvider provideParams
      * @coversNothing
      */
-    public function canUploadAsynchronouslyWithQueue($isCached)
-    {
-        $this->setupCache($isCached);
-
-        if (!RABBITMQ_HOST) {
-            return $this->markTestSkipped('RabbitMQ not configured');
-        }
-
-        $adapter = new PhpAMQPAdapter(
-            RABBITMQ_HOST,
-            RABBITMQ_PORT,
-            RABBITMQ_USERNAME,
-            RABBITMQ_PASSWORD,
-            RABBITMQ_VHOST,
-            'filelib_test_exchange',
-            'filelib_test_queue'
-        );
-
-        $queue = $this->filelib->createQueueFromAdapter(
-            $adapter
-        )->getQueue();
-        $queue->purge();
-
-        $this->filelib->getFileRepository()->setExecutionStrategy(
-            FileRepository::COMMAND_AFTERUPLOAD,
-            ExecutionStrategy::STRATEGY_ASYNCHRONOUS
-        );
-
-        $manateePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $file = $this->filelib->uploadFile($manateePath);
-        $this->assertEquals(File::STATUS_RAW, $file->getStatus());
-
-        $msg = $queue->dequeue();
-
-        $command = $msg->getData();
-        $command->execute();
-
-        $this->assertEquals(File::STATUS_COMPLETED, $file->getStatus());
-    }
-
-    /**
-     * @test
-     * @dataProvider provideParams
-     * @coversNothing
-     */
     public function uploadsToUnspoiledProfile($isCached)
     {
         $this->setupCache($isCached);

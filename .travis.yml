@@ -11,6 +11,8 @@ env:
     - secure: "r1N09NYwuby34+uKzzTnSmQLkd0pfAQ/x7j/I0+TuS2QiBntfk6mMFUsChEK37ztqOXSpWgyij63967ZypeE0WeuSZXY4hgKDRlGs51ktJsdW/Kv030bYJ1hpPpMXsaH+xFiovkRNCbNcjaxbmhc73xp6oFUExpZ6ggP2j6rGuY="
     - secure: "fMmdDicrwFZPKGCWEu5AfGZFkrEj5FhMyawr3c0cqbvl7T2rHhywxQjpLmdR6CMPdGR+Fvdb0dTfNUIb55PxjuQoPtLGVmFo96bynuaqwXol8/sKfsg48fNdEHGdXbdXLJAjRK4bk+E6Hv4SQbV3oMSJXqogN/i6n3VVKuYR/fU="
     - secure: "hEsZj6vNUfW3QCbxe3xYi7SFTK0zivoMbDuMQFbEIWfNGaK6xhkBFYqIWhOwzBlh0zL2yZ+7awg2KPIn7J78cmKBGQEaJeFLa4uMTQXwX3RMQO7TMEu6Z7RRnMwjSj55uqW6xRSN0S6DY54HVGrLu0tw6ptntkn+T8MNsvj2eDo="
+    - secure: "G6eTpsxTyIbH5yHJdr4zP828MKFVD6B+6L+5eiVJnP+uZwRSDjlVPWIt2v7znq2ryfLATbFFLWVH5xO8teMRSlQ8WwxYeRmHmaN7wg+Whd6CXBFO2xMPoUr9TDpeqlIY3/fR66EDpdYKLqIpLdCNXDTHFXUukWs3PPekBpZj41s="
+    - secure: "BH8B+fQhNISxNC2xfTzAuKuCfvPxGtwRWZ81sRPf4/986eLGRVZEalgD/rCd7ls1BIeEGyHMnJfytUo5rDq3Lf6tbwvrKXKdEe8y6CxsAzZkEtXgrs9Knpnp1BSIpwmuIgQyRITzzonIDUd2qUHZlNYZqHYuEd38RfAytVAPRh8="
 
 services:
   - mongodb

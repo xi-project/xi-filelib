@@ -2,29 +2,25 @@
 
 namespace Xi\Filelib\Tests\Folder;
 
+use Prophecy\Argument;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Xi\Filelib\Events;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Collections\Collection\ArrayCollection;
+use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
+use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
 
 class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var FileLibrary
      */
     private $filelib;
-
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $backend;
-
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $commander;
 
     /**
      * @var FolderRepository
@@ -33,13 +29,27 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->commander = $this->getMockedCommander();
+        $this->ed = $this->prophesize('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $this->filelib = $this->getFilelib(true);
 
-        $this->backend = $this->getMockedBackend();
-        $this->filelib = $this->getMockedFilelib(null, null, null, null, null, $this->backend, $this->commander);
-        $this->op = new FolderRepository();
-        $this->op->attachTo($this->filelib);
+        $this->op = $this->filelib->getFolderRepository();
     }
+
+    /**
+     * @param bool $mockedEventDispatcher
+     * @return FileLibrary
+     */
+    private function getFilelib($mockedEventDispatcher)
+    {
+        $filelib = new FileLibrary(
+            new MemoryStorageAdapter(),
+            new MemoryBackendAdapter(),
+            ($mockedEventDispatcher) ? $this->ed->reveal() : new EventDispatcher()
+        );
+
+        return $filelib;
+    }
+
 
     /**
      * @test
@@ -52,467 +62,297 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function findShouldReturnFalseIfFileIsNotFound()
+    public function findReturnsFalseWhenNotFound()
     {
-        $id = 1;
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
 
-        $this->backend
-            ->expects($this->once())
-            ->method('findById')
-            ->with($id, 'Xi\Filelib\Folder\Folder')
-            ->will($this->returnValue(false));
-
-        $folder = $this->op->find($id);
-        $this->assertFalse($folder);
+        $this->assertFalse($op->find('xoo-xoo'));
     }
 
     /**
      * @test
      */
-    public function findShouldReturnFolderInstanceIfFileIsFound()
+    public function findReturnsFolder()
     {
-        $id = 1;
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
 
-        $folder = Folder::create();
+        $folder = $op->createByUrl('lubbo');
 
-        $this->backend
-            ->expects($this->once())
-            ->method('findById')
-            ->with($id, 'Xi\Filelib\Folder\Folder')
-            ->will($this->returnValue($folder));
-
-        $ret = $this->op->find($id);
-        $this->assertSame($folder, $ret);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $op->find($folder->getId()));
     }
 
     /**
      * @test
      */
-    public function findFilesShouldReturnEmptyTraversableWhenNoFilesAreFound()
+    public function findsFiles()
     {
-        $finder = new FileFinder(
-            array(
-                'folder_id' => 500,
-            )
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
+
+        $folder = $op->createByUrl('laa-laa/pai/isohali');
+
+        $filelib->uploadFile(
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg',
+            $folder
         );
 
-        $folders = ArrayCollection::create(array());
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')->with(
-                $this->equalTo($finder)
-            )
-            ->will($this->returnValue($folders));
-
-        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
-        $files = $this->op->findFiles($folder);
-
-        $this->assertInstanceOf('Traversable', $files);
-        $this->assertCount(0, $files);
+        $this->assertCount(1, $op->findFiles($folder));
     }
 
     /**
      * @test
      */
-    public function findFilesShouldReturnNonEmptyTraversableWhenFilesAreFound()
+    public function findsParentFolder()
     {
-        $finder = new FileFinder(
-            array(
-                'folder_id' => 500,
-            )
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
+
+        $root = $op->findRoot();
+        $this->assertFalse($op->findParentFolder($root));
+
+        $folder = $op->create(Folder::create([
+            'name' => 'lipaiseppa-manaattia',
+            'parent_id' => $root->getId()
+        ]));
+
+        $this->assertEquals($root, $op->findParentFolder($folder));
+    }
+
+    /**
+     * @test
+     */
+    public function findsSubFolders()
+    {
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
+
+        $folder = $op->createByUrl('sopranon/tuloksen/tappion/ylistys');
+
+        $this->assertContains(
+            $folder,
+            $op->findSubFolders($op->findByUrl('sopranon/tuloksen/tappion'))
         );
+    }
 
-        $files = ArrayCollection::create(
-            array(
-                File::create(),
-                File::create(),
-                File::create(),
-            )
-        );
+    /**
+     * @test
+     */
+    public function findsCorrectSubFolders()
+    {
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
 
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')->with(
-            $this->equalTo($finder)
-        )
-            ->will($this->returnValue($files));
+        $folder1 = $op->createByUrl('tenhusen/suuruus');
+        $folder2 = $op->createByUrl('tenhusen/pienuus/on-suurta-sekin');
+        $folder3 = $op->createByUrl('tenhusen/pienuus/on-valetta');
 
-        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
-        $files = $this->op->findFiles($folder);
 
-        $this->assertInstanceOf('Traversable', $files);
-        $this->assertCount(3, $files);
+        $this->assertCount(0, $op->findSubFolders($op->findByUrl('tenhusen/suuruus')));
+        $this->assertCount(2, $op->findSubFolders($op->findByUrl('tenhusen/pienuus')));
 
     }
 
     /**
      * @test
      */
-    public function findParentFolderShouldReturnFalseWhenParentIdIsNull()
+    public function findsByUrl()
     {
-        $id = null;
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
 
-        $this->backend->expects($this->never())->method('findById');
+        $this->assertFalse($op->findByUrl('banaani/ei-ole/banaani'));
+        $op->createByUrl('banaani/ei-ole/banaani');
 
-        $folder = Folder::create(array('parent_id' => $id));
-        $parent = $this->op->findParentFolder($folder);
-        $this->assertFalse($parent);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $op->findByUrl('banaani/ei-ole/banaani'));
+    }
+
+    /**
+     * @test
+     * @group tissu
+     */
+    public function findsRoot()
+    {
+        $root = $this->op->findRoot();
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $root);
+
+        $this->assertEquals('root', $root->getUrl());
+        $this->assertEquals('root', $root->getName());
+    }
+
+
+    /**
+     * @test
+     */
+    public function creates()
+    {
+        $root = $this->op->findRoot();
+
+        $folder = Folder::create(
+            [
+                'name' => 'tussi',
+                'parent_id' => $root->getId()
+            ]
+        );
+
+        $this->op->create($folder);
+
+        $this->ed->dispatch(
+            Events::FOLDER_BEFORE_WRITE_TO,
+            Argument::type('Xi\Filelib\Event\FolderEvent')
+        )->shouldHaveBeenCalledTimes(1);
+
+        $this->ed->dispatch(
+            Events::FOLDER_BEFORE_CREATE,
+            Argument::type('Xi\Filelib\Event\FolderEvent')
+        )->shouldHaveBeenCalledTimes(2);
+
+        $this->ed->dispatch(
+            Events::FOLDER_AFTER_CREATE,
+            Argument::type('Xi\Filelib\Event\FolderEvent')
+        )->shouldHaveBeenCalledTimes(2);
     }
 
     /**
      * @test
      */
-    public function findParentFolderShouldReturnFalseWhenParentIsNotFound()
+    public function creatingRootLevelFolderFails()
     {
-        $id = 5;
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findById')
-            ->with(5, 'Xi\Filelib\Folder\Folder')
-            ->will($this->returnValue(false));
-
-        $folder = Folder::create(array('parent_id' => $id));
-
-        $parent = $this->op->findParentFolder($folder);
-        $this->assertFalse($parent);
-    }
-
-    /**
-     * @test
-     */
-    public function findParentFolderShouldReturnFolderWhenParentIsFound()
-    {
-        $id = 5;
-        $parentFolder = Folder::create();
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findById')
-            ->with(5, 'Xi\Filelib\Folder\Folder')
-            ->will($this->returnValue($parentFolder));
-
-        $folder = Folder::create(array('parent_id' => $id));
-
-        $ret = $this->op->findParentFolder($folder);
-        $this->assertSame($parentFolder, $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function findSubFoldersShouldReturnEmptyCollectionnWhenNoSubFoldersAreFound()
-    {
-        $finder = new FolderFinder(
-            array(
-                'parent_id' => 500,
-            )
+        $folder = Folder::create(
+            [
+                'name' => 'krook',
+                'parent_id' => null
+            ]
         );
 
-        $folders = ArrayCollection::create(array());
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')
-            ->with(
-                $this->equalTo($finder)
-            )
-            ->will($this->returnValue($folders));
-
-        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
-        $files = $this->op->findSubFolders($folder);
-
-        $this->assertInstanceOf('Traversable', $files);
-        $this->assertCount(0, $files);
-    }
-
-    /**
-     * @test
-     */
-    public function findSubFoldersShouldReturnNonEmptyTraversableWhenSubFoldersAreFound()
-    {
-       $finder = new FolderFinder(
-            array(
-                'parent_id' => 500,
-            )
-        );
-
-        $folders = ArrayCollection::create(
-            array(
-                Folder::create(),
-                Folder::create(),
-                Folder::create(),
-            )
-        );
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')->with(
-            $this->equalTo($finder)
-        )
-            ->will($this->returnValue($folders));
-
-        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
-        $files = $this->op->findSubFolders($folder);
-
-        $this->assertInstanceOf('Traversable', $files);
-        $this->assertCount(3, $files);
-    }
-
-    /**
-     * @test
-     */
-    public function findByUrlShouldReturnFolderWhenFolderIsFound()
-    {
-        $finder = new FolderFinder(
-            array(
-                'url' => 'lussen/tussi',
-            )
-        );
-
-        $folders = ArrayCollection::create(
-            array(
-                Folder::create(),
-            )
-        );
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')
-            ->with(
-                $this->equalTo($finder)
-            )
-            ->will($this->returnValue($folders));
-
-        $folder = Folder::create(array('id' => 500, 'parent_id' => 499));
-
-        $id = 'lussen/tussi';
-
-        $folder = $this->op->findByUrl($id);
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-    }
-
-    /**
-     * @test
-     * @group luzzo
-     */
-    public function findRootShouldCreateRootWhenItIsNotFound()
-    {
-        $command = $this->getMockedCommand();
-        $command
-            ->expects($this->once())
-            ->method('execute');
-
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FolderRepository::COMMAND_CREATE
-            )
-            ->will($this->returnValue($command));
-
-        $finder = new FolderFinder(
-            array(
-                'parent_id' => null,
-            )
-        );
-
-        $folders = ArrayCollection::create(
-            array(
-            )
-        );
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')->with(
-                $this->equalTo($finder)
-            )
-            ->will($this->returnValue($folders));
-
-
-        $folder = $this->op->findRoot();
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-        $this->assertEquals('root', $folder->getName());
-        $this->assertNull($folder->getParentId());
-    }
-
-    /**
-     * @test
-     */
-    public function findRootShouldReturnFolderWhenRootFolderIsFound()
-    {
-        $finder = new FolderFinder(
-            array(
-                'parent_id' => null,
-            )
-        );
-
-        $folders = ArrayCollection::create(
-            array(
-                Folder::create(),
-            )
-        );
-
-        $this->backend
-            ->expects($this->once())
-            ->method('findByFinder')->with(
-            $this->equalTo($finder)
-        )
-            ->will($this->returnValue($folders));
-
-        $folder = $this->op->findRoot();
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
-    }
-
-    public function provideDataForBuildRouteTest()
-    {
-        return array(
-            array('lussutus/bansku/tohtori vesala/lamantiini/kaskas/losoboesk', 10),
-            array('lussutus/bansku/tohtori vesala/lamantiini/kaskas', 9),
-            array('lussutus/bansku/tohtori vesala', 4),
-            array('lussutus/bansku/tohtori vesala/lamantiini/klaus kulju', 8),
-            array('lussutus/bansku/tohtori vesala/lamantiini/puppe', 6),
-        );
-    }
-
-    /**
-     * @test
-     * @dataProvider provideDataForBuildRouteTest
-     */
-    public function buildRouteShouldBuildBeautifulRoute($expected, $folderId)
-    {
-        $backend = $this->getMockedBackend();
-        $filelib = $this->getMockedFilelib(null, null, null, null, null, $backend);
-        $op = new FolderRepository();
-        $op->attachTo($filelib);
-
-        // $op->expects($this->exactly(4))->method('buildRoute')->with($this->isInstanceOf('Xi\Filelib\Folder\Folder'));
-
-        $backend->expects($this->any())
-                ->method('findById')
-                ->with($this->isType('int'), 'Xi\Filelib\Folder\Folder')
-                ->will($this->returnCallback(function($folderId, $class) {
-
-                    $farr = array(
-                        1 => Folder::create(array('parent_id' => null, 'name' => 'root')),
-                        2 => Folder::create(array('parent_id' => 1, 'name' => 'lussutus')),
-                        3 => Folder::create(array('parent_id' => 2, 'name' => 'bansku')),
-                        4 => Folder::create(array('parent_id' => 3, 'name' => 'tohtori vesala')),
-                        5 => Folder::create(array('parent_id' => 4, 'name' => 'lamantiini')),
-                        6 => Folder::create(array('parent_id' => 5, 'name' => 'puppe')),
-                        7 => Folder::create(array('parent_id' => 6, 'name' => 'nilkki')),
-                        8 => Folder::create(array('parent_id' => 5, 'name' => 'klaus kulju')),
-                        9 => Folder::create(array('parent_id' => 5, 'name' => 'kaskas')),
-                        10 => Folder::create(array('parent_id' => 9, 'name' => 'losoboesk'))
-                    );
-
-                    if (isset($farr[$folderId])) {
-                        return $farr[$folderId];
-                    }
-
-                    return false;
-                }
-            )
-        );
-
-        $folder = $op->find($folderId);
-
-        $route = $op->buildRoute($folder);
-
-        $this->assertEquals($expected, $route);
-    }
-
-    /**
-     * @test
-     */
-    public function createCreatesExecutableAndExecutes()
-    {
-        $folder = Folder::create();
-        $command = $this->getMockedCommand('topic', 'xoo');
-
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FolderRepository::COMMAND_CREATE,
-                array(
-                    $folder
-                )
-            )
-            ->will($this->returnValue($command));
-
-
+        $this->setExpectedException('Xi\Filelib\LogicException');
         $this->op->create($folder);
     }
 
     /**
      * @test
+     * @group tissu
      */
-    public function deleteCreatesExecutableAndExecutes()
+    public function deletes()
     {
-        $folder = Folder::create();
-        $command = $this->getMockedCommand('topic', 'xoo');
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
 
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FolderRepository::COMMAND_DELETE,
-                array(
-                    $folder
-                )
-            )
-            ->will($this->returnValue($command));
+        $root = $op->findRoot();
 
+        $folder = Folder::create(
+            [
+                'name' => 'tussi',
+                'parent_id' => $root->getId()
+            ]
+        );
 
-        $this->op->delete($folder);
+        $folder2 = $op->create($folder);
+
+        $folder3 = $op->create(Folder::create([
+            'name' => 'watussi',
+            'parent_id' => $folder2->getId()
+        ]));
+
+        $this->assertNotFalse($op->findByUrl('tussi/watussi'));
+
+        $file = $filelib->uploadFile(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $folder3);
+
+        $this->assertEquals(File::STATUS_COMPLETED, $file->getStatus());
+
+        $op->delete($folder);
+
+        $this->assertEquals(File::STATUS_DELETED, $file->getStatus());
+
+        $this->assertFalse($op->findByUrl('tussi/watussi'));
     }
 
     /**
      * @test
      */
-    public function updateCreatesExecutableAndExecutes()
+    public function updates()
     {
-        $folder = Folder::create();
-        $command = $this->getMockedCommand('topic', 'xoo');
+        $root = $this->op->findRoot();
 
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FolderRepository::COMMAND_UPDATE,
-                array(
-                    $folder
-                )
-            )
-            ->will($this->returnValue($command));
+        $folder = Folder::create(
+            [
+                'name' => 'tussi',
+                'parent_id' => $root->getId()
+            ]
+        );
 
+        $folder2 = $this->op->create($folder);
+
+        $this->assertSame($folder, $folder2);
 
         $this->op->update($folder);
+
+        $this->ed->dispatch(
+            Events::FOLDER_AFTER_UPDATE,
+            Argument::type('Xi\Filelib\Event\FolderEvent')
+        )->shouldHaveBeenCalledTimes(1);
     }
 
     /**
      * @test
      */
-    public function createByUrlCreatesExecutableAndExecutes()
+    public function updatesRecursively()
     {
-        $url = 'arto/tenhunen/on/losonaama/ja/imaisee/mehevaa';
-        $command = $this->getMockedCommand('topic', 'xoo');
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
 
-        $this->commander
-            ->expects($this->once())
-            ->method('createExecutable')
-            ->with(
-                FolderRepository::COMMAND_CREATE_BY_URL,
-                array(
-                    $url
-                )
-            )
-            ->will($this->returnValue($command));
+        $root = $op->findRoot();
 
+        $folder = Folder::create(
+            [
+                'name' => 'tussi',
+                'parent_id' => $root->getId()
+            ]
+        );
 
-        $this->op->createByUrl($url);
+        $folder2 = $op->create($folder);
+
+        $folder3 = $op->create(Folder::create([
+            'name' => 'watussi',
+            'parent_id' => $folder2->getId()
+        ]));
+
+        $this->assertEquals('tussi/watussi', $folder3->getUrl());
+
+        $file = $filelib->uploadFile(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $folder3);
+
+        $folder->setName('xooxer');
+
+        $op->update($folder);
+
+        $this->assertEquals('xooxer/watussi', $folder3->getUrl());
     }
+
+    /**
+     * @test
+     */
+    public function createsByUrl()
+    {
+        $filelib = $this->getFilelib(false);
+        $op = $filelib->getFolderRepository();
+
+        $folder = $op->createByUrl('tenhunen/imaisee/mehevaa');
+        $folder2 = $op->createByUrl('tenhunen/imaisee/mehevaa/ankkaa');
+
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder);
+        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $folder2);
+
+        $this->assertUuid($folder->getUuid());
+
+        $this->assertEquals('tenhunen/imaisee/mehevaa', $folder->getUrl());
+        $this->assertEquals('tenhunen/imaisee/mehevaa/ankkaa', $folder2->getUrl());
+        $this->assertEquals($folder->getId(), $folder2->getParentId());
+
+        $folder3 = $op->createByUrl('tenhunen/imaisee/mehevaa');
+        $this->assertSame($folder, $folder3);
+    }
+
+
 
 }

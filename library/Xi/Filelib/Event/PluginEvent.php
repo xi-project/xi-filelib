@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Event;
 
 use Symfony\Component\EventDispatcher\Event;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Plugin;
 
 /**
@@ -22,9 +23,15 @@ class PluginEvent extends Event
      */
     private $plugin;
 
-    public function __construct(Plugin $plugin)
+    /**
+     * @var FileLibrary
+     */
+    private $filelib;
+
+    public function __construct(Plugin $plugin, FileLibrary $filelib)
     {
         $this->plugin = $plugin;
+        $this->filelib = $filelib;
     }
 
     /**
@@ -35,5 +42,13 @@ class PluginEvent extends Event
     public function getPlugin()
     {
         return $this->plugin;
+    }
+
+    /**
+     * @return FileLibrary
+     */
+    public function getFilelib()
+    {
+        return $this->filelib;
     }
 }

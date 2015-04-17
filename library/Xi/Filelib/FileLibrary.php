@@ -9,8 +9,6 @@
 
 namespace Xi\Filelib;
 
-use Pekkis\Queue\Adapter\Adapter as QueueAdapter;
-use Pekkis\Queue\Queue;
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -20,24 +18,25 @@ use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Backend\Cache\Adapter\CacheAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use Xi\Filelib\Command\CommandDataSerializer;
-use Xi\Filelib\Command\Commander;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
+use Xi\Filelib\File\FileRepositoryInterface;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Folder\FolderRepository;
+use Xi\Filelib\Folder\FolderRepositoryInterface;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\PluginManager;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Resource\ResourceRepository;
+use Xi\Filelib\Resource\ResourceRepositoryInterface;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\Storage\Storage;
 
 class FileLibrary
 {
-    const VERSION = '0.12.0-dev';
+    const VERSION = '0.14.0-dev';
 
     /**
      * @var EventDispatcherInterface
@@ -55,17 +54,17 @@ class FileLibrary
     private $storage;
 
     /**
-     * @var ResourceRepository
+     * @var ResourceRepositoryInterface
      */
     private $resourceRepository;
 
     /**
-     * @var FileRepository
+     * @var FileRepositoryInterface
      */
     private $fileRepository;
 
     /**
-     * @var FolderRepository
+     * @var FolderRepositoryInterface
      */
     private $folderRepository;
 
@@ -82,12 +81,7 @@ class FileLibrary
     /**
      * @var BackendAdapter
      */
-    private $platform;
-
-    /**
-     * @var Commander
-     */
-    private $commander;
+    private $backendAdapter;
 
     /**
      * @var ProfileManager
@@ -101,27 +95,21 @@ class FileLibrary
 
     public function __construct(
         StorageAdapter $storageAdapter,
-        BackendAdapter $platform,
-        EventDispatcherInterface $eventDispatcher = null,
-        Commander $commander = null
+        BackendAdapter $backendAdapter,
+        EventDispatcherInterface $eventDispatcher = null
     ) {
         if (!$eventDispatcher) {
             $eventDispatcher = new EventDispatcher();
         }
 
-        if (!$commander) {
-            $commander = new Commander($this);
-        }
-
-        $this->platform = $platform;
+        $this->backendAdapter = $backendAdapter;
         $this->eventDispatcher = $eventDispatcher;
         $this->profileManager = new ProfileManager($this->eventDispatcher);
-        $this->pluginManager = new PluginManager($this->eventDispatcher);
-        $this->commander = $commander;
+        $this->pluginManager = new PluginManager($this);
 
         $this->backend = new Backend(
             $this->getEventDispatcher(),
-            $this->platform
+            $this->backendAdapter
         );
 
         $this->storage = new Storage(
@@ -142,7 +130,10 @@ class FileLibrary
      */
     public function uploadFile($file, $folder = null, $profile = 'default')
     {
-        return $this->getFileRepository()->upload($file, $folder, $profile);
+        $file = $this->getFileRepository()->upload($file, $folder, $profile);
+        $this->getFileRepository()->afterUpload($file);
+
+        return $file;
     }
 
     /**
@@ -242,7 +233,7 @@ class FileLibrary
     /**
      * Returns resource repository
      *
-     * @return ResourceRepository
+     * @return ResourceRepositoryInterface
      */
     public function getResourceRepository()
     {
@@ -253,11 +244,20 @@ class FileLibrary
         return $this->resourceRepository;
     }
 
+    /**
+     * @param ResourceRepositoryInterface $resourceRepository
+     * @return FileLibrary
+     */
+    public function setResourceRepository(ResourceRepositoryInterface $resourceRepository)
+    {
+        $this->resourceRepository = $resourceRepository;
+        return $this;
+    }
 
     /**
      * Returns file repository
      *
-     * @return FileRepository
+     * @return FileRepositoryInterface
      */
     public function getFileRepository()
     {
@@ -269,9 +269,19 @@ class FileLibrary
     }
 
     /**
+     * @param FileRepositoryInterface $fileRepository
+     * @return FileLibrary
+     */
+    public function setFileRepository(FileRepositoryInterface $fileRepository)
+    {
+        $this->fileRepository = $fileRepository;
+        return $this;
+    }
+
+    /**
      * Returns folder repository
      *
-     * @return FolderRepository
+     * @return FolderRepositoryInterface
      */
     public function getFolderRepository()
     {
@@ -281,6 +291,16 @@ class FileLibrary
         }
 
         return $this->folderRepository;
+    }
+
+    /**
+     * @param FolderRepositoryInterface $folderRepository
+     * @return FileLibrary
+     */
+    public function setFolderRepository(FolderRepositoryInterface $folderRepository)
+    {
+        $this->folderRepository = $folderRepository;
+        return $this;
     }
 
     /**
@@ -346,52 +366,13 @@ class FileLibrary
     }
 
     /**
-     * Sets queue
-     *
-     * @param QueueAdapter $adapter
-     */
-    public function createQueueFromAdapter(QueueAdapter $adapter)
-    {
-        $queue = new Queue($adapter);
-        $queue->addDataSerializer(
-            new CommandDataSerializer($this)
-        );
-
-        $this->queue = new EventDispatchingQueue(
-            $queue,
-            $this->getEventDispatcher()
-        );
-
-        $this->commander->setQueue($this->queue);
-        return $this;
-    }
-
-    /**
-     * Returns queue
-     *
-     * @return EventDispatchingQueue
-     */
-    public function getQueue()
-    {
-        return $this->queue;
-    }
-
-    /**
-     * Returns platform
+     * Returns backend adapter
      *
      * @return BackendAdapter
      */
     public function getBackendAdapter()
     {
-        return $this->platform;
-    }
-
-    /**
-     * @return Commander
-     */
-    public function getCommander()
-    {
-        return $this->commander;
+        return $this->backendAdapter;
     }
 
     /**

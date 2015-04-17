@@ -49,7 +49,8 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->any())->method('belongsToProfile')->will($this->returnValue(true));
 
-        $this->fileProfile->onPluginAdd(new PluginEvent($plugin));
+
+        $this->fileProfile->onPluginAdd(new PluginEvent($plugin, $this->getMockedFilelib()));
 
         $this->assertContains($plugin, $this->fileProfile->getPlugins());
     }
@@ -62,7 +63,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $plugin = $this->getMock('Xi\Filelib\Plugin\Plugin');
         $plugin->expects($this->any())->method('belongsToProfile')->will($this->returnValue(false));
 
-        $this->fileProfile->onPluginAdd(new PluginEvent($plugin));
+        $this->fileProfile->onPluginAdd(new PluginEvent($plugin, $this->getMockedFilelib()));
 
         $this->assertNotContains($plugin, $this->fileProfile->getPlugins());
     }
