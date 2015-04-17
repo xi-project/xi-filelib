@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\Tool\LazyReferenceResolver;
 use Xi\Filelib\Version;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
@@ -70,7 +71,9 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->versionProvider = $versionProvider;
         $this->version = Version::get('xooxer');
 
-        $adapter = $this->getMockedStorageAdapter();
+        $resolver = $this->getMockedStorageAdapter();
+        $adapter = $resolver->resolve();
+
         $adapter
             ->expects($this->any())
             ->method('getRoot')
@@ -101,7 +104,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $this->adapter = $adapter;
 
-        $this->storage = $this->getMockedStorage($this->adapter);
+        $this->storage = $this->getMockedStorage($this->resolver);
 
         $this->filelib = $this->getMockedFilelib(null, null, null, $this->storage);
 
@@ -168,8 +171,11 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function getMockedStorageAdapter()
     {
-        $ret = $this->getMockBuilder('Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter')->disableOriginalConstructor()->getMock();
-        return $ret;
+        $adapter = $this->getMockBuilder('Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter')->disableOriginalConstructor()->getMock();
+
+        $resolver = new LazyReferenceResolver($adapter);
+
+        return $resolver;
     }
 
 }

@@ -3,8 +3,11 @@
 namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
+use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
+use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
+use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
 
 class SymlinkFilesystemPublisherAdapterTest extends TestCase
 {
@@ -34,13 +37,14 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
      */
     public function attachToFailsWithNonFilesystemStorage()
     {
-        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
-        $storage = $this->getMockedStorage();
-        $filelib = $this->getMockedFilelib(null, null, null, $storage);
+        $filelib = new FileLibrary(
+            new MemoryStorageAdapter(),
+            new MemoryBackendAdapter()
+        );
+
         $publisher = new SymlinkFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
 
         $publisher->attachTo($filelib);
-
     }
 
 

@@ -47,7 +47,7 @@ class Backend
 
     /**
      * @param EventDispatcherInterface $eventDispatcher
-     * @param BackendAdapter                 $platform
+     * @param BackendAdapter $platform
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
