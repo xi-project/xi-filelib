@@ -351,6 +351,10 @@ class Publisher implements EventSubscriberInterface, Attacher
      */
     private function getResolvedAdapter()
     {
+        $ret = $this->adapter->resolve();
+
+        var_dump($ret);
+
         return $this->adapter->resolve();
     }
 }

@@ -9,10 +9,10 @@
 
 namespace Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator;
 
+use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\UniversalLeveledDirectoryIdCalculator;
 use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\LeveledDirectoryIdCalculator;
 use Xi\Filelib\Versionable;
 use Xi\Filelib\File\File;
 use Closure;
@@ -30,7 +30,7 @@ class LegacyPathCalculator implements PathCalculator
      */
     public function __construct(DirectoryIdCalculator $directoryIdCalculator = null)
     {
-        $this->directoryIdCalculator = $directoryIdCalculator ?: new LeveledDirectoryIdCalculator();
+        $this->directoryIdCalculator = $directoryIdCalculator ?: new UniversalLeveledDirectoryIdCalculator();
     }
 
     /**

@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
@@ -71,7 +72,7 @@ class FilesystemStorageAdapterTest extends TestCase
 
         chmod($root, 0400);
 
-        $resource = Resource::create(['id' => 666]);
+        $resource = Resource::create(['id' => 666, 'uuid' => Uuid::uuid4()]);
 
         $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
         $storage->store(

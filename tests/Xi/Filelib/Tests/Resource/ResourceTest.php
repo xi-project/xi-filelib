@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib\Tests\File;
+namespace Xi\Filelib\Tests\Resource;
 
 use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
@@ -97,6 +97,7 @@ class ResourceTest extends BaseVersionableTestCase
     {
         $resource = Resource::create();
         $resource->setHash('hashisen-kone');
+        $resource->setUuid('uuid');
         $resource->setId(655);
         $resource->setDateCreated(new \DateTime('1978-03-21'));
         $resource->setMimetype('video/lus');
@@ -108,6 +109,7 @@ class ResourceTest extends BaseVersionableTestCase
 
         $this->assertEquals(array(
             'id' => 655,
+            'uuid' => 'uuid',
             'hash' => 'hashisen-kone',
             'date_created' => new \DateTime('1978-03-21'),
             'data' => array('versions' => array('kraa', 'xoo')),

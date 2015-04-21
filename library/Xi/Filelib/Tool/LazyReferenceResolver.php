@@ -33,6 +33,8 @@ class LazyReferenceResolver
      */
     private $filelib = null;
 
+    private $resolved = false;
+
     /**
      * @param string $reference
      * @param string|null $expectedClass
@@ -52,10 +54,11 @@ class LazyReferenceResolver
         if ($this->reference instanceof Closure) {
             $reference = $this->reference;
             $this->reference = $reference();
+        }
 
-            if ($this->filelib) {
-                $this->reference->attachTo($this->filelib);
-            }
+        if (!$this->resolved && $this->filelib) {
+            $this->resolved = true;
+            $this->reference->attachTo($this->filelib);
         }
 
         if ($this->expectedClass) {
