@@ -191,6 +191,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     {
         try {
             $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
+            $resourceRow->setUuid($resource->getUuid());
             $resourceRow->setData($resource->getData()->toArray());
             $resourceRow->setExclusive($resource->isExclusive());
             $resourceRow->setHash($resource->getHash());
@@ -250,6 +251,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     public function createResource(Resource $resource)
     {
         $resourceRow = new $this->resourceEntityName();
+        $resourceRow->setUuid($resource->getUuid());
         $resourceRow->setHash($resource->getHash());
         $resourceRow->setDateCreated($resource->getDateCreated());
         $resourceRow->setMimetype($resource->getMimetype());
@@ -405,6 +407,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
                 Resource::create(
                     array(
                         'id' => $resource->getId(),
+                        'uuid' => $resource->getUuid(),
                         'hash' => $resource->getHash(),
                         'date_created' => $resource->getDateCreated(),
                         'data' => $resource->getData(),

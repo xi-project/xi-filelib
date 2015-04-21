@@ -8,6 +8,8 @@ use Xi\Filelib\Version;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {
+
+    /*
     protected $versionProvider;
 
     protected $linker;
@@ -29,11 +31,16 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
     public $linkPaths = array();
 
     protected $plinker;
+    */
 
     public function setUp()
     {
-        parent::setUp();
 
+
+
+        // parent::setUp();
+
+        /*
         chmod(ROOT_TESTS . '/data/publisher/unwritable_dir', 0444);
         parent::setUp();
 
@@ -104,7 +111,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $this->adapter = $adapter;
 
-        $this->storage = $this->getMockedStorage($this->resolver);
+        $this->storage = $this->getMockedStorage($this->adapter);
 
         $this->filelib = $this->getMockedFilelib(null, null, null, $this->storage);
 
@@ -135,11 +142,14 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
             );
 
         $this->plinker = $plinker;
+        */
     }
 
     public function tearDown()
     {
+        /*
         parent::tearDown();
+
 
         chmod(ROOT_TESTS . '/data/publisher/unwritable_dir', 0755);
         parent::tearDown();
@@ -164,6 +174,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
                 }
             }
         }
+        */
     }
 
     /**

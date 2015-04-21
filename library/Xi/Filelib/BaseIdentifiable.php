@@ -20,6 +20,11 @@ abstract class BaseIdentifiable
     private $id;
 
     /**
+     * @var string
+     */
+    private $uuid;
+
+    /**
      * @var IdentifiableDataContainer
      */
     private $data;
@@ -48,6 +53,25 @@ abstract class BaseIdentifiable
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param string $uuid
+     * @return $this
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
     }
 
     /**

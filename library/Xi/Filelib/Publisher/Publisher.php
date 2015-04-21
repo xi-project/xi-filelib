@@ -262,6 +262,14 @@ class Publisher implements EventSubscriberInterface, Attacher
     }
 
     /**
+     * @return LazyReferenceResolver
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
+    }
+
+    /**
      * @param File $file
      * @return array
      */

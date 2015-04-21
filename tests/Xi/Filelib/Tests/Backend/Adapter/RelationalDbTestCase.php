@@ -369,6 +369,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                 'xi_filelib_resource' => array(
                     array(
                         'id' => 1,
+                        'uuid' => 'ruuid-1',
                         'hash' => 'hash-1',
                         'date_created' => '1978-03-21 06:06:06',
                         'data' => json_encode(array('versions' => array('tussi', 'watussi', 'pygmi'))),
@@ -378,6 +379,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                     ),
                     array(
                         'id' => 2,
+                        'uuid' => 'ruuid-2',
                         'hash' => 'hash-2',
                         'date_created' => '1988-03-21 06:06:06',
                         'data' => json_encode(array('versions' => array())),
@@ -387,6 +389,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                     ),
                     array(
                         'id' => 3,
+                        'uuid' => 'ruuid-3',
                         'hash' => 'hash-2',
                         'date_created' => '1998-03-21 06:06:06',
                         'data' => json_encode(array('versions' => array('pygmi', 'tussi'))),
@@ -396,6 +399,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                     ),
                     array(
                         'id' => 4,
+                        'uuid' => 'ruuid-4',
                         'hash' => 'hash-3',
                         'date_created' => '2008-03-21 06:06:06',
                         'data' => json_encode(array('versions' => array('watussi'))),
@@ -405,6 +409,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                     ),
                     array(
                         'id' => 5,
+                        'uuid' => 'ruuid-5',
                         'hash' => 'hash-5',
                         'date_created' => '2009-03-21 06:06:06',
                         'data' => json_encode(array('versions' => array('watussi', 'loso'))),

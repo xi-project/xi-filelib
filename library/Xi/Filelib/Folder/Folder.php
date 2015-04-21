@@ -37,11 +37,6 @@ class Folder extends BaseIdentifiable implements Identifiable
     private $url;
 
     /**
-     * @var string
-     */
-    private $uuid;
-
-    /**
      *
      * @param  mixed  $parentId
      * @return Folder
@@ -100,24 +95,6 @@ class Folder extends BaseIdentifiable implements Identifiable
         return $this->url;
     }
 
-    /**
-     * @param string $uuid
-     * @return $this
-     */
-    public function setUuid($uuid)
-    {
-        $this->uuid = $uuid;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUuid()
-    {
-        return $this->uuid;
-    }
 
     /**
      * @return array

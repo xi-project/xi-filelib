@@ -83,13 +83,22 @@ class PublisherTest extends TestCase
 
 
         $this->adapter = $this->getMock('Xi\Filelib\Publisher\PublisherAdapter');
-        $this->adapter->expects($this->once())->method('attachTo')->with($filelib);
+        $this->adapter->expects($this->never())->method('attachTo')->with($filelib);
 
         $this->linker = $this->getMockedLinker();
         $this->linker->expects($this->once())->method('attachTo')->with($filelib);
 
         $this->publisher = new Publisher($this->adapter, $this->linker);
         $this->publisher->attachTo($filelib);
+    }
+
+    /**
+     * @test
+     */
+    public function adapterResolves()
+    {
+        $this->assertInstanceOf('Xi\Filelib\Tool\LazyReferenceResolver', $this->publisher->getAdapter());
+        $this->assertSame($this->adapter, $this->publisher->getAdapter()->resolve());
     }
 
     /**

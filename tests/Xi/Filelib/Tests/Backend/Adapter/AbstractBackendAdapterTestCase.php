@@ -74,6 +74,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 
         $data = array(
             'hash' => 'hashendaal',
+            'uuid' => 'uuid-xooxers',
             'date_created' => new DateTime('2010-10-10 10:10:10'),
             'size' => 6000,
             'mimetype' => 'lussuta/tussia',
@@ -144,6 +145,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $resource);
 
+        $this->assertNotNull($resource->getUuid());
         $this->assertEquals($resourceId, $resource->getId());
         $this->assertNotEquals($versions, $resource->getVersions());
         $this->assertTrue($resource->isExclusive());

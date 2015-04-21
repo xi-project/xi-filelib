@@ -3,6 +3,30 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. Too much incubation is too much.
 
+## 0.14.0
+
+* Resources have uuids. (needs migration!)
+* Universal leveled calculator
+* Lazy instantiation of adapters of different subsystems (external integrations can be unlazy themselves)
+* Refactored the asynchrony component (asynchronous operations)
+
+### PostgreSQL migration (you may have to install an extension to get the uuid function)
+
+ALTER TABLE xi_filelib_resource ADD COLUMN uuid VARCHAR(36) NULL;
+UPDATE xi_filelib_resource SET uuid = uuid_generate_v4();
+ALTER TABLE xi_filelib_resource ALTER COLUMN uuid SET NOT NULL;
+
+### MySQL migration
+
+ALTER TABLE xi_filelib_resource ADD COLUMN uuid VARCHAR(36) NULL;
+UPDATE xi_filelib_resource SET uuid = UUID();
+ALTER TABLE xi_filelib_resource CHANGE uuid uuid varchar(36) NOT NULL;
+
+### MongoDB migration
+
+Generate uuids (field 'uuid') to all resources.
+
+
 ## 0.13.2
 
 * Added a [Flysystem](https://github.com/thephpleague/flysystem) publisher adapter.

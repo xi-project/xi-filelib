@@ -53,11 +53,6 @@ class File extends BaseVersionable implements Identifiable, Versionable
     private $resource;
 
     /**
-     * @var string
-     */
-    private $uuid;
-
-    /**
      * Sets folder id
      *
      * @param  mixed $folderId
@@ -190,25 +185,6 @@ class File extends BaseVersionable implements Identifiable, Versionable
     public function getStatus()
     {
         return $this->status;
-    }
-
-    /**
-     * @return File
-     */
-    public function setUuid($uuid)
-    {
-        $this->uuid = $uuid;
-
-        return $this;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getUuid()
-    {
-        return $this->uuid;
     }
 
     /**

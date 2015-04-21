@@ -4,20 +4,43 @@ namespace Xi\Filelib\Tests\Publisher\Adapter\Filesystem;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Publisher\Linker\ReversibleSequentialLinker;
+use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
+use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
+use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
+use Xi\Filelib\Tests\TestCase;
 
 class SymlinkFilesystemPublisherAdapterTest extends TestCase
 {
+    /**
+     * @var FileLibrary
+     */
+    private $filelib;
+
+    private $publisher;
+
     public function setUp()
     {
-        parent::setUp();
+        $this->filelib = new FileLibrary(
+            new FilesystemStorageAdapter(ROOT_TESTS . '/data/files'),
+            new MemoryBackendAdapter()
+        );
     }
+
+    public function tearDown()
+    {
+        $deletor = new RecursiveDirectoryDeletor('files');
+        $deletor->delete();
+    }
+
 
     /**
      * @test
+     * @group persu
      */
     public function shouldInitialize()
     {
@@ -28,12 +51,12 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
             '',
             null
         );
-
         $this->assertNull($publisher->getRelativePathToRoot());
     }
 
     /**
      * @test
+     * @group persu
      */
     public function attachToFailsWithNonFilesystemStorage()
     {
@@ -42,19 +65,20 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
             new MemoryBackendAdapter()
         );
 
-        $publisher = new SymlinkFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
+        $this->setExpectedException('Xi\Filelib\InvalidArgumentException');
 
-        $publisher->attachTo($filelib);
+        $adapter = new SymlinkFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public');
+        $adapter->attachTo($filelib);
     }
 
 
     /**
      * @test
-     * @expectedException Xi\Filelib\FilelibException
+     * @group persu
      */
     public function getRelativePathToVersionShouldFailWhenRelativePathToRootIsMissing()
     {
-        $publisher = new SymlinkFilesystemPublisherAdapter(
+        $adapter = new SymlinkFilesystemPublisherAdapter(
             ROOT_TESTS . '/data/publisher/public',
             "600",
             "700",
@@ -62,35 +86,15 @@ class SymlinkFilesystemPublisherAdapterTest extends TestCase
             null
         );
 
-        $file = File::create(array('id' => 1));
-        $publisher->getRelativePathToVersion($file, $this->version, $this->versionProvider, 'tussi');
-    }
-
-    public function provideDataForRelativePathTest()
-    {
-        return array(
-
-            array(
-                File::create(array('id' => 1, 'resource' => Resource::create(array('id' => 1)))),
-                0,
-                false,
-            ),
-            array(
-                File::create(array('id' => 2, 'resource' => Resource::create(array('id' => 2)))),
-                3,
-                true,
-            ),
-            array(
-                File::create(array('id' => 3, 'resource' => Resource::create(array('id' => 3)))),
-                2,
-                true,
-            ),
-            array(
-                File::create(array('id' => 4, 'resource' => Resource::create(array('id' => 4)))),
-                1,
-                false
-            ),
+        $publisher = new Publisher(
+            $adapter,
+            new ReversibleSequentialLinker()
         );
+        $publisher->attachTo($this->filelib);
+
+        $file = $this->filelib->uploadFile(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
+
+        $publisher->getRelativePathToVersion($file, $this->version, $this->versionProvider, 'tussi');
     }
 
     /**

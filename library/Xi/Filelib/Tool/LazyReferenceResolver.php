@@ -73,6 +73,11 @@ class LazyReferenceResolver
         return $this->reference;
     }
 
+    public function getExpectedClass()
+    {
+        return $this->expectedClass;
+    }
+
     /**
      * @param FileLibrary $filelib
      */

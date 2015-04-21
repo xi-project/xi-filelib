@@ -19,6 +19,11 @@ interface Versionable
     public function getId();
 
     /**
+     * @return string
+     */
+    public function getUuid();
+
+    /**
      * @return DateTime
      */
     public function getDateCreated();

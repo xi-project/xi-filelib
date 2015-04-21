@@ -55,13 +55,10 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
     public function attachTo(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
+        $this->adapter = $filelib->getStorage()->getAdapter();
 
-        // This be kludgy. Rethink.
-
-        var_dump($filelib->getStorage());
-
-        $this->adapter = $filelib->getStorage()->getAdapter()->resolve();
-        if (!$this->adapter instanceof FilesystemStorageAdapter) {
+        // @todo This has to be non kludged someday methinks.
+        if (!$this->adapter->getExpectedClass() !== 'Xi\Filelib\Storage\Adapter\FilesystemAdapter') {
             throw new InvalidArgumentException("Symlink filesystem publisher requires filesystem storage");
         }
     }
