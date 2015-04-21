@@ -108,10 +108,9 @@ class CopyFilesystemPublisherAdapterTest extends TestCase
         $path = ROOT_TESTS . '/data/publisher/public/' . $publisher->getUrl($file, Version::get('original'));
 
         $this->assertFileExists($path);
-        $this->assertTrue(is_link($path));
+        $this->assertFalse(is_link($path));
 
         $publisher->unpublishVersion($file, Version::get('original'));
-
         $this->assertFileNotExists($path);
     }
 

@@ -82,8 +82,7 @@ class PublisherTest extends TestCase
         $filelib = $this->getMockedFilelib(null, $this->fiop, null, null, $this->ed, null, null, null, $this->pm);
 
 
-        $this->adapter = $this->getMock('Xi\Filelib\Publisher\PublisherAdapter');
-
+        $this->adapter = $this->getMockedPublisherAdapter();
         $this->linker = $this->getMockedLinker();
 
         $this->publisher = new Publisher($this->adapter, $this->linker);
@@ -329,7 +328,7 @@ class PublisherTest extends TestCase
             ->with(Events::FILE_BEFORE_PUBLISH, $this->isInstanceOf('Xi\Filelib\Event\PublisherEvent'));
 
         $this->adapter
-            ->expects($this->at(0))
+            ->expects($this->at(1))
             ->method('publish')
             ->with(
                 $file,
@@ -339,7 +338,7 @@ class PublisherTest extends TestCase
             );
 
         $this->adapter
-            ->expects($this->at(1))
+            ->expects($this->at(2))
             ->method('getUrl')
             ->with(
                 $file,
@@ -350,7 +349,7 @@ class PublisherTest extends TestCase
             ->will($this->returnValue('tenhusen-suuruuden-ylistyksen-url'));
 
         $this->adapter
-            ->expects($this->at(2))
+            ->expects($this->at(3))
             ->method('publish')
             ->with(
                 $file,
@@ -360,7 +359,7 @@ class PublisherTest extends TestCase
             );
 
         $this->adapter
-            ->expects($this->at(3))
+            ->expects($this->at(4))
             ->method('getUrl')
             ->with(
                 $file,
@@ -415,7 +414,7 @@ class PublisherTest extends TestCase
             ->with(Events::FILE_BEFORE_UNPUBLISH, $this->isInstanceOf('Xi\Filelib\Event\PublisherEvent'));
 
         $this->adapter
-            ->expects($this->at(0))
+            ->expects($this->at(1))
             ->method('unpublish')
             ->with(
                 $file,
@@ -425,7 +424,7 @@ class PublisherTest extends TestCase
             );
 
         $this->adapter
-            ->expects($this->at(1))
+            ->expects($this->at(2))
             ->method('unpublish')
             ->with(
                 $file,
@@ -490,7 +489,7 @@ class PublisherTest extends TestCase
         $version = Version::get('ankan');
 
         $this->adapter
-            ->expects($this->at(0))
+            ->expects($this->at(1))
             ->method('publish')
             ->with(
                 $file,
@@ -523,7 +522,7 @@ class PublisherTest extends TestCase
         $version = Version::get('ankan');
 
         $this->adapter
-            ->expects($this->at(0))
+            ->expects($this->at(1))
             ->method('publish')
             ->with(
                 $file,
@@ -554,7 +553,7 @@ class PublisherTest extends TestCase
         $version = Version::get('ankan');
 
         $this->adapter
-            ->expects($this->at(0))
+            ->expects($this->at(1))
             ->method('unpublish')
             ->with(
                 $file,
@@ -587,7 +586,7 @@ class PublisherTest extends TestCase
         $version = Version::get('ankan');
 
         $this->adapter
-            ->expects($this->at(0))
+            ->expects($this->at(1))
             ->method('unpublish')
             ->with(
                 $file,
