@@ -51,13 +51,16 @@ class LazyReferenceResolver
      */
     public function resolve()
     {
+        if ($this->resolved === true) {
+            return $this->reference;
+        }
+
         if ($this->reference instanceof Closure) {
             $reference = $this->reference;
             $this->reference = $reference();
         }
 
-        if (!$this->resolved && $this->filelib) {
-            $this->resolved = true;
+        if ($this->filelib) {
             $this->reference->attachTo($this->filelib);
         }
 
@@ -72,6 +75,8 @@ class LazyReferenceResolver
                 );
             }
         }
+
+        $this->resolved = true;
 
         return $this->reference;
     }
