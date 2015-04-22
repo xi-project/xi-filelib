@@ -268,6 +268,7 @@ class JsonBackendAdapter implements BackendAdapter
     {
         $document = array(
             'hash' => $resource->getHash(),
+            'uuid' => $resource->getUuid(),
             'mimetype' => $resource->getMimetype(),
             'size' => $resource->getSize(),
             'date_created' => $resource->getDateCreated()->format('Y-m-d H:i:s'),
@@ -441,10 +442,12 @@ class JsonBackendAdapter implements BackendAdapter
         $ret = new ArrayIterator(array());
 
         foreach ($iter as $resource) {
+
             $ret->append(
                 Resource::create(
                     array(
                         'id' => (string) $resource['id'],
+                        'uuid' => $resource['uuid'],
                         'hash' => $resource['hash'],
                         'mimetype' => $resource['mimetype'],
                         'size' => $resource['size'],

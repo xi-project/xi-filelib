@@ -16,13 +16,14 @@ use Xi\Filelib\Event\StorageEvent;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
+use Xi\Filelib\Tool\LazyReferenceResolver;
 use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
 
 class Storage implements Attacher
 {
     /**
-     * @var StorageAdapter
+     * @var LazyReferenceResolver
      */
     private $adapter;
 
@@ -33,9 +34,9 @@ class Storage implements Attacher
 
     private $cache;
 
-    public function __construct(StorageAdapter $adapter, RetrievedCache $cache = null)
+    public function __construct($adapter, RetrievedCache $cache = null)
     {
-        $this->adapter = $adapter;
+        $this->adapter = new LazyReferenceResolver($adapter, 'Xi\Filelib\Storage\Adapter\StorageAdapter');
 
         if (!$cache) {
             $cache = new RetrievedCache();
@@ -50,7 +51,7 @@ class Storage implements Attacher
     }
 
     /**
-     * @return StorageAdapter
+     * @return LazyReferenceResolver
      */
     public function getAdapter()
     {
@@ -71,8 +72,8 @@ class Storage implements Attacher
                 )
             );
         }
+        $retrieved = $this->getResolvedAdapter()->retrieve($resource);
 
-        $retrieved = $this->adapter->retrieve($resource);
         $event = new StorageEvent($retrieved);
         $this->eventDispatcher->dispatch(Events::AFTER_RETRIEVE, $event);
 
@@ -92,7 +93,7 @@ class Storage implements Attacher
         }
 
         $this->cache->delete($resource);
-        return $this->adapter->delete($resource);
+        return $this->getResolvedAdapter()->delete($resource);
     }
 
     public function store(Resource $resource, $tempFile)
@@ -100,7 +101,8 @@ class Storage implements Attacher
         try {
             $event = new StorageEvent($tempFile);
             $this->eventDispatcher->dispatch(Events::BEFORE_STORE, $event);
-            return $this->adapter->store($resource, $tempFile);
+            $this->cache->delete($resource);
+            return $this->getResolvedAdapter()->store($resource, $tempFile);
         } catch (\Exception $e) {
             throw new FileIOException(
                 sprintf(
@@ -115,6 +117,7 @@ class Storage implements Attacher
 
     public function retrieveVersion(Versionable $versionable, Version $version)
     {
+
         if ($retrieved = $this->cache->getVersion($versionable, $version)) {
             return $retrieved->getPath();
         }
@@ -130,7 +133,7 @@ class Storage implements Attacher
             );
         }
 
-        $retrieved = $this->adapter->retrieveVersion($versionable, $version);
+        $retrieved = $this->getResolvedAdapter()->retrieveVersion($versionable, $version);
         $event = new StorageEvent($retrieved);
         $this->eventDispatcher->dispatch(Events::AFTER_RETRIEVE, $event);
 
@@ -152,7 +155,7 @@ class Storage implements Attacher
         }
 
         $this->cache->deleteVersion($versionable, $version);
-        return $this->adapter->deleteVersion($versionable, $version);
+        return $this->getResolvedAdapter()->deleteVersion($versionable, $version);
     }
 
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
@@ -160,7 +163,8 @@ class Storage implements Attacher
         try {
             $event = new StorageEvent($tempFile);
             $this->eventDispatcher->dispatch(Events::BEFORE_STORE, $event);
-            return $this->adapter->storeVersion($versionable, $version, $tempFile);
+            $this->cache->deleteVersion($versionable, $version);
+            return $this->getResolvedAdapter()->storeVersion($versionable, $version, $tempFile);
         } catch (\Exception $e) {
 
             throw new FileIOException(
@@ -182,7 +186,7 @@ class Storage implements Attacher
      */
     public function exists(Resource $resource)
     {
-        return $this->adapter->exists($resource);
+        return $this->getResolvedAdapter()->exists($resource);
     }
 
     /**
@@ -192,6 +196,14 @@ class Storage implements Attacher
      */
     public function versionExists(Versionable $versionable, Version $version)
     {
-        return $this->adapter->versionExists($versionable, $version);
+        return $this->getResolvedAdapter()->versionExists($versionable, $version);
+    }
+
+    /**
+     * @return StorageAdapter
+     */
+    private function getResolvedAdapter()
+    {
+        return $this->adapter->resolve();
     }
 }

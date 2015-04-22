@@ -243,6 +243,7 @@ class MongoBackendAdapter implements BackendAdapter
     public function createResource(Resource $resource)
     {
         $document = array(
+            'uuid' => $resource->getUuid(),
             'hash' => $resource->getHash(),
             'mimetype' => $resource->getMimetype(),
             'size' => $resource->getSize(),
@@ -440,6 +441,7 @@ class MongoBackendAdapter implements BackendAdapter
                 Resource::create(
                     array(
                         'id' => (string) $resource['_id'],
+                        'uuid' => $resource['uuid'],
                         'hash' => $resource['hash'],
                         'mimetype' => $resource['mimetype'],
                         'size' => $resource['size'],

@@ -10,6 +10,7 @@ use Xi\Filelib\File\File;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use DateTime;
+use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 use Xi\Filelib\Version;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
@@ -70,20 +71,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
     protected function tearDown()
     {
-        $diter = new RecursiveDirectoryIterator(ROOT_TESTS . '/data/files');
-        $riter = new RecursiveIteratorIterator($diter, \RecursiveIteratorIterator::CHILD_FIRST);
-
-        foreach ($riter as $item) {
-            if ($item->isFile() && $item->getFilename() !== '.gitignore') {
-                @unlink($item->getPathName());
-            }
-        }
-
-        foreach ($riter as $item) {
-            if ($item->isDir() && !in_array($item->getPathName(), array('.', '..'))) {
-                @rmdir($item->getPathName());
-            }
-        }
+        $deletor = new RecursiveDirectoryDeletor('files');
+        $deletor->delete();
     }
 
     /**
@@ -153,4 +142,48 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertFalse($this->storage->versionExists($this->file, $this->version));
 
     }
+
+    /**
+     * @test
+     */
+    public function overwrites()
+    {
+        $tussi = ROOT_TESTS . '/data/tussi.txt';
+        $lussi = ROOT_TESTS . '/data/lussi.txt';
+
+        $this->storage->attachTo($this->filelib);
+        $this->assertFalse($this->storage->exists($this->resource));
+        $this->storage->store($this->resource, $tussi);
+        $this->assertTrue($this->storage->exists($this->resource));
+        $retrieved = $this->storage->retrieve($this->resource);
+        $this->assertFileEquals($retrieved->getPath(), $tussi);
+        $this->storage->store($this->resource, $lussi);
+        $this->assertTrue($this->storage->exists($this->resource));
+        $retrieved2 = $this->storage->retrieve($this->resource);
+        $this->assertFileEquals($lussi, $retrieved2->getPath());
+    }
+
+    /**
+     * @test
+     */
+    public function overwritesVersions()
+    {
+        $tussi = ROOT_TESTS . '/data/tussi.txt';
+        $lussi = ROOT_TESTS . '/data/lussi.txt';
+
+        $version = Version::get('xooxoo');
+
+        $this->storage->attachTo($this->filelib);
+        $this->assertFalse($this->storage->versionExists($this->resource, $version));
+        $this->storage->storeVersion($this->resource, $version, $tussi);
+        $this->assertTrue($this->storage->versionExists($this->resource, $version));
+        $retrieved = $this->storage->retrieveVersion($this->resource, $version);
+        $this->assertFileEquals($retrieved->getPath(), $tussi);
+        $this->storage->storeVersion($this->resource, $version, $lussi);
+        $this->assertTrue($this->storage->versionExists($this->resource, $version));
+        $retrieved2 = $this->storage->retrieveVersion($this->resource, $version);
+        $this->assertFileEquals($lussi, $retrieved2->getPath());
+    }
+
+
 }

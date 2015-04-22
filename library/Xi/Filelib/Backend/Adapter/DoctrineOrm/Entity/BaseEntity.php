@@ -24,6 +24,11 @@ abstract class BaseEntity
     private $id;
 
     /**
+     * @ORM\Column(name="uuid", type="string", length=36, nullable=false, unique=true)
+     */
+    private $uuid;
+
+    /**
      * @ORM\Column(name="data", type="json_array")
      */
     private $data = array();
@@ -34,6 +39,26 @@ abstract class BaseEntity
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Sets uuid
+     *
+     * @param string $uuid
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * Returns uuid
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
     }
 
     /**

@@ -46,6 +46,11 @@ class Resource extends BaseVersionable implements Identifiable, Versionable
     private $size;
 
     /**
+     * @var string
+     */
+    private $uuid;
+
+    /**
      * Sets create datetime
      *
      * @param  DateTime $dateCreated
@@ -160,6 +165,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable
     {
         return array(
             'id' => $this->getId(),
+            'uuid' => $this->getUuid(),
             'hash' => $this->getHash(),
             'date_created' => $this->getDateCreated(),
             'data' => $this->getData()->toArray(),
@@ -180,6 +186,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable
     {
         $defaults = array(
             'id' => null,
+            'uuid' => null,
             'hash' => null,
             'date_created' => new DateTime(),
             'data' => new IdentifiableDataContainer(array()),
@@ -190,6 +197,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable
         $data = array_merge($defaults, $data);
 
         $obj = new self();
+        $obj->setUuid($data['uuid']);
         $obj->setId($data['id']);
         $obj->setHash($data['hash']);
         $obj->setDateCreated($data['date_created']);

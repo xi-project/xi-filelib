@@ -95,7 +95,8 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function getAdapterReturnsAdapter()
     {
-        $this->assertSame($this->adapter, $this->storage->getAdapter());
+        $this->assertInstanceOf('Xi\Filelib\Tool\LazyReferenceResolver', $this->storage->getAdapter());
+        $this->assertSame($this->adapter, $this->storage->getAdapter()->resolve());
     }
 
     /**

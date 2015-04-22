@@ -55,7 +55,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
     public function attachTo(FileLibrary $filelib)
     {
         $this->storage = $filelib->getStorage();
-        $this->adapter = $filelib->getStorage()->getAdapter();
+        $this->adapter = $filelib->getStorage()->getAdapter()->resolve();
 
         if (!$this->adapter instanceof FilesystemStorageAdapter) {
             throw new InvalidArgumentException("Symlink filesystem publisher requires filesystem storage");
@@ -138,6 +138,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
                 symlink($fp, $link);
                 chdir($oldCwd);
             } else {
+
                 symlink(
                     $this->storage->retrieveVersion(
                         $versionProvider->getApplicableVersionable($file),

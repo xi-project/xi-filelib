@@ -10,7 +10,6 @@
 namespace Xi\Filelib\Storage\Adapter;
 
 use Gaufrette\Filesystem;
-use Xi\Filelib\Identifiable;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\PathCalculator;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
@@ -63,13 +62,23 @@ class GaufretteStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
-        $this->filesystem->write($pathName, file_get_contents($tempFile));
+
+        if ($this->exists($resource)) {
+            $this->delete($resource);
+        }
+
+        $this->filesystem->write($pathName, file_get_contents($tempFile), true);
     }
 
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
     {
         $pathName = $this->getVersionPathName($versionable, $version);
-        $this->filesystem->write($pathName, file_get_contents($tempFile));
+
+        if ($this->versionExists($versionable, $version)) {
+            $this->deleteVersion($versionable, $version);
+        }
+
+        $this->filesystem->write($pathName, file_get_contents($tempFile), true);
     }
 
     public function retrieve(Resource $resource)

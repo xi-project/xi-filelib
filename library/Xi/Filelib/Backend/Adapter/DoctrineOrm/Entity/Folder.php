@@ -28,11 +28,6 @@ class Folder extends BaseEntity
     private $url;
 
     /**
-     * @ORM\Column(name="uuid", type="string", length=36, nullable=false, unique=true)
-     */
-    private $uuid;
-
-    /**
      * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent")
      */
     private $children;
@@ -87,26 +82,6 @@ class Folder extends BaseEntity
     public function getUrl()
     {
         return $this->url;
-    }
-
-    /**
-     * Sets uuid
-     *
-     * @param string $uuid
-     */
-    public function setUuid($uuid)
-    {
-        $this->uuid = $uuid;
-    }
-
-    /**
-     * Returns uuid
-     *
-     * @return string
-     */
-    public function getUuid()
-    {
-        return $this->uuid;
     }
 
     /**

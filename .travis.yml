@@ -14,6 +14,9 @@ env:
     - secure: "G6eTpsxTyIbH5yHJdr4zP828MKFVD6B+6L+5eiVJnP+uZwRSDjlVPWIt2v7znq2ryfLATbFFLWVH5xO8teMRSlQ8WwxYeRmHmaN7wg+Whd6CXBFO2xMPoUr9TDpeqlIY3/fR66EDpdYKLqIpLdCNXDTHFXUukWs3PPekBpZj41s="
     - secure: "BH8B+fQhNISxNC2xfTzAuKuCfvPxGtwRWZ81sRPf4/986eLGRVZEalgD/rCd7ls1BIeEGyHMnJfytUo5rDq3Lf6tbwvrKXKdEe8y6CxsAzZkEtXgrs9Knpnp1BSIpwmuIgQyRITzzonIDUd2qUHZlNYZqHYuEd38RfAytVAPRh8="
 
+addons:
+  postgresql: "9.3"
+
 services:
   - mongodb
   - rabbitmq

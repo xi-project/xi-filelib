@@ -148,12 +148,13 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
     {
         $sql = "
         UPDATE xi_filelib_resource
-        SET hash = :hash, exclusive = :exclusive, data = :data
+        SET uuid = :uuid, hash = :hash, exclusive = :exclusive, data = :data
         WHERE id = :id
         ";
 
         $stmt = $this->conn->prepare($sql);
 
+        $stmt->bindValue('uuid', $resource->getUuid(), PDO::PARAM_STR);
         $stmt->bindValue('hash', $resource->getHash(), PDO::PARAM_STR);
         $stmt->bindValue('exclusive', $resource->isExclusive(), PDO::PARAM_BOOL);
         $stmt->bindValue('data', json_encode($resource->getData()->toArray()), PDO::PARAM_STR);
@@ -199,6 +200,7 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
             'xi_filelib_resource',
             array(
                 'id' => $id,
+                'uuid' => $resource->getUuid(),
                 'hash' => $resource->getHash(),
                 'date_created' => $resource->getDateCreated()->format('Y-m-d H:i:s'),
                 'mimetype' => $resource->getMimetype(),
@@ -208,6 +210,7 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
             ),
             array(
                 PDO::PARAM_INT,
+                PDO::PARAM_STR,
                 PDO::PARAM_STR,
                 PDO::PARAM_STR,
                 PDO::PARAM_STR,
@@ -360,6 +363,7 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
                 Resource::create(
                     array(
                         'id' => $resource['id'],
+                        'uuid' => $resource['uuid'],
                         'hash' => $resource['hash'],
                         'date_created' => new DateTime($resource['date_created']),
                         'data' => json_decode($resource['data'], true),

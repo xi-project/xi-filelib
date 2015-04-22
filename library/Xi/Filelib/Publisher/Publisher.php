@@ -23,6 +23,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\RuntimeException;
+use Xi\Filelib\Tool\LazyReferenceResolver;
 use Xi\Filelib\Version;
 
 /**
@@ -42,7 +43,7 @@ class Publisher implements EventSubscriberInterface, Attacher
     private $linker;
 
     /**
-     * @var PublisherAdapter
+     * @var LazyReferenceResolver
      */
     private $adapter;
 
@@ -57,12 +58,12 @@ class Publisher implements EventSubscriberInterface, Attacher
     private $profiles;
 
     /**
-     * @param PublisherAdapter $adapter
+     * @param $adapter
      * @param Linker $linker
      */
-    public function __construct(PublisherAdapter $adapter, Linker $linker)
+    public function __construct($adapter, Linker $linker)
     {
-        $this->adapter = $adapter;
+        $this->adapter = new LazyReferenceResolver($adapter, 'Xi\Filelib\Publisher\PublisherAdapter');
         $this->linker = $linker;
     }
 
@@ -218,7 +219,7 @@ class Publisher implements EventSubscriberInterface, Attacher
             return $versionUrls[$version->toString()];
         }
 
-        $url = $this->adapter->getUrl(
+        $url = $this->getResolvedAdapter()->getUrl(
             $file,
             $version,
             $this->getVersionProvider($file, $version),
@@ -258,6 +259,14 @@ class Publisher implements EventSubscriberInterface, Attacher
         $target = $event->getTarget();
         $data = $target->getData();
         $data->delete('publisher.version_url');
+    }
+
+    /**
+     * @return LazyReferenceResolver
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
     }
 
     /**
@@ -310,7 +319,7 @@ class Publisher implements EventSubscriberInterface, Attacher
     {
         $versionUrls = $file->getData()->get('publisher.version_url', array());
         try {
-            $this->adapter->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+            $this->getResolvedAdapter()->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
             $versionUrls[$version->toString()] = $this->getUrl($file, $version);
             $file->getData()->set('publisher.version_url', $versionUrls);
             return true;
@@ -328,12 +337,20 @@ class Publisher implements EventSubscriberInterface, Attacher
     {
         $versionUrls = $file->getData()->get('publisher.version_url', array());
         try {
-            $this->adapter->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+            $this->getResolvedAdapter()->unpublish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
             unset($versionUrls[$version->toString()]);
             $file->getData()->set('publisher.version_url', $versionUrls);
             return true;
         } catch (FilelibException $e) {
             return false;
         }
+    }
+
+    /**
+     * @return PublisherAdapter
+     */
+    private function getResolvedAdapter()
+    {
+        return $this->adapter->resolve();
     }
 }

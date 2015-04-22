@@ -115,6 +115,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
             'resources' => array(
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166101'),
+                    'uuid' => 'ruuid-1',
                     'hash' => 'hash-1',
                     'date_created' => new DateTime('1978-03-21 06:06:06'),
                     'data' => array(
@@ -126,6 +127,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166102'),
+                    'uuid' => 'ruuid-2',
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1988-03-21 06:06:06'),
                     'data' => array(
@@ -137,6 +139,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166103'),
+                    'uuid' => 'ruuid-3',
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1998-03-21 06:06:06'),
                     'data' => array(
@@ -148,6 +151,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166104'),
+                    'uuid' => 'ruuid-4',
                     'hash' => 'hash-3',
                     'date_created' => new DateTime('2008-03-21 06:06:06'),
                     'data' => array(
@@ -159,6 +163,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                 ),
                 array(
                     '_id' => new MongoId('48a7011a05c677b9a9166105'),
+                    'uuid' => 'ruuid-5',
                     'hash' => 'hash-5',
                     'date_created' => new DateTime('2009-03-21 06:06:06'),
                     'data' => array(

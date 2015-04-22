@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Resource;
 
 use DateTime;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\AbstractRepository;
@@ -133,7 +134,7 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
     {
         $event = new ResourceEvent($resource);
         $this->eventDispatcher->dispatch(Events::RESOURCE_BEFORE_CREATE, $event);
-
+        $resource->setUuid(Uuid::uuid4()->toString());
         $this->backend->createResource($resource);
         $this->storage->store($resource, $path);
 
