@@ -121,6 +121,7 @@ class GridfsStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     public function store(Resource $resource, $tempFile)
     {
         $filename = $this->getFilename($resource);
+        $this->delete($resource);
         $this->getGridFS()->storeFile(
             $tempFile,
             array(
@@ -136,6 +137,7 @@ class GridfsStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
     {
         $filename = $this->getFilenameVersion($versionable, $version);
+        $this->deleteVersion($versionable, $version);
         $this->getGridFS()->storeFile(
             $tempFile,
             array(

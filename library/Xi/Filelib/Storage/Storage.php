@@ -101,6 +101,7 @@ class Storage implements Attacher
         try {
             $event = new StorageEvent($tempFile);
             $this->eventDispatcher->dispatch(Events::BEFORE_STORE, $event);
+            $this->cache->delete($resource);
             return $this->getResolvedAdapter()->store($resource, $tempFile);
         } catch (\Exception $e) {
             throw new FileIOException(
@@ -116,6 +117,7 @@ class Storage implements Attacher
 
     public function retrieveVersion(Versionable $versionable, Version $version)
     {
+
         if ($retrieved = $this->cache->getVersion($versionable, $version)) {
             return $retrieved->getPath();
         }
@@ -161,6 +163,7 @@ class Storage implements Attacher
         try {
             $event = new StorageEvent($tempFile);
             $this->eventDispatcher->dispatch(Events::BEFORE_STORE, $event);
+            $this->cache->deleteVersion($versionable, $version);
             return $this->getResolvedAdapter()->storeVersion($versionable, $version, $tempFile);
         } catch (\Exception $e) {
 

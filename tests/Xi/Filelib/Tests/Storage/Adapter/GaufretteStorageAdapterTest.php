@@ -27,16 +27,6 @@ class GaufretteStorageAdapterTest extends TestCase
      */
     private function getFilesystem()
     {
-        /*
-        $config = array(
-            'key'    => S3_KEY,
-            'secret' => S3_SECRETKEY
-        );
-
-        $client = S3Client::factory($config);
-        $adapter = new AwsAdapter($client, S3_BUCKET);
-        */
-
         $adapter = new LocalAdapter(ROOT_TESTS . '/data/files');
         $filesystem = new Filesystem($adapter);
 

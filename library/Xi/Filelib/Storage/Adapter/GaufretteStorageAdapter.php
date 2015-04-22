@@ -63,13 +63,23 @@ class GaufretteStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
-        $this->filesystem->write($pathName, file_get_contents($tempFile));
+
+        if ($this->exists($resource)) {
+            $this->delete($resource);
+        }
+
+        $this->filesystem->write($pathName, file_get_contents($tempFile), true);
     }
 
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
     {
         $pathName = $this->getVersionPathName($versionable, $version);
-        $this->filesystem->write($pathName, file_get_contents($tempFile));
+
+        if ($this->versionExists($versionable, $version)) {
+            $this->deleteVersion($versionable, $version);
+        }
+
+        $this->filesystem->write($pathName, file_get_contents($tempFile), true);
     }
 
     public function retrieve(Resource $resource)
