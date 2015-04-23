@@ -16,7 +16,6 @@ class RecursiveDirectoryDeletor
         if (!is_dir($this->dir)) {
             throw new \Exception('Not a directory');
         }
-
     }
 
     public function delete()

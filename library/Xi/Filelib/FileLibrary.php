@@ -94,8 +94,8 @@ class FileLibrary
     private $pluginManager;
 
     public function __construct(
-        StorageAdapter $storageAdapter,
-        BackendAdapter $backendAdapter,
+        $storageAdapter,
+        $backendAdapter,
         EventDispatcherInterface $eventDispatcher = null
     ) {
         if (!$eventDispatcher) {

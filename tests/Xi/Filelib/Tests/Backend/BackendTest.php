@@ -74,9 +74,10 @@ class BackendTest extends TestCase
     /**
      * @test
      */
-    public function getBackendAdapterShouldReturnBackendAdapter()
+    public function getAdapterShouldReturnLazyReferencedBackendAdapter()
     {
-        $this->assertSame($this->platform, $this->backend->getBackendAdapter());
+        $this->assertInstanceOf('Xi\Filelib\Tool\LazyReferenceResolver', $this->backend->getAdapter());
+        $this->assertSame($this->platform, $this->backend->getAdapter()->resolve());
     }
 
     /**

@@ -388,6 +388,29 @@ class FileLibraryTest extends TestCase
 
         $filelib->setResourceRepository($repo);
         $this->assertSame($repo, $filelib->getResourceRepository());
-
     }
+
+    /**
+     * @test
+     */
+    public function adaptersCanBeGivenLazily()
+    {
+        $storageAdapter = function() {
+            return $this->getMockedStorageAdapter();
+        };
+
+        $backendAdapter = function() {
+            return $this->getMockedBackendAdapter();
+        };
+
+        $filelib = new FileLibrary(
+            $storageAdapter,
+            $backendAdapter
+        );
+
+        $this->assertInstanceOf('Xi\Filelib\Storage\Storage', $filelib->getStorage());
+        $this->assertInstanceOf('Xi\Filelib\Backend\Backend', $filelib->getBackend());
+    }
+
+
 }

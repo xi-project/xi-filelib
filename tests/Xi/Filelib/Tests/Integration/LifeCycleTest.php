@@ -4,7 +4,6 @@ namespace Xi\Filelib\Tests\Integration;
 
 
 use Xi\Filelib\Authorization\AutomaticPublisherPlugin;
-use Xi\Filelib\Command\ExecutionStrategy\ExecutionStrategy;
 use Xi\Filelib\File\File;
 
 use Pekkis\Queue\Adapter\PhpAMQPAdapter;
