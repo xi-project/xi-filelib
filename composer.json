@@ -23,7 +23,7 @@
         "php": ">=5.4.0",
         "symfony/event-dispatcher": "~2.0",
         "dflydev/apache-mime-types": "~1.0",
-        "rhumsaa/uuid": "~2.3",
+        "ramsey/uuid": "~2.8",
         "cocur/slugify": "~1.0",
         "xi/transliterator": "0.5.*",
         "pekkis/queue": "0.5.*",

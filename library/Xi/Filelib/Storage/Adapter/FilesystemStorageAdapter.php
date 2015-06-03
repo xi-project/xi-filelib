@@ -10,8 +10,8 @@
 namespace Xi\Filelib\Storage\Adapter;
 
 use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\FileIOException;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\PathCalculator;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Version;
@@ -56,7 +56,7 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         }
 
         $this->root = $root;
-        $this->pathCalculator = $pathCalculator ?: new LegacyPathCalculator();
+        $this->pathCalculator = $pathCalculator ?: new ImprovedPathCalculator();
         $this->filePermission = octdec($filePermission);
         $this->directoryPermission = octdec($directoryPermission);
     }

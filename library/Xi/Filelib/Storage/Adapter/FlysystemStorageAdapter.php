@@ -12,7 +12,7 @@ namespace Xi\Filelib\Storage\Adapter;
 use League\Flysystem\Filesystem;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\PathCalculator;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
@@ -41,12 +41,12 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
      */
     public function __construct(
         Filesystem $filesystem,
-        PathCalculator $pathCalculator,
+        PathCalculator $pathCalculator = null,
         $tempDir = null
     ) {
 
         $this->filesystem = $filesystem;
-        $this->pathCalculator = ($pathCalculator) ?: new LegacyPathCalculator();
+        $this->pathCalculator = ($pathCalculator) ?: new ImprovedPathCalculator();
     }
 
     private function getPathName(Resource $resource)

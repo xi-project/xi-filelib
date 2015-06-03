@@ -19,3 +19,5 @@ spl_autoload_register(function($class) {
     }
     return class_exists($class, false);
 });
+
+error_reporting(E_ALL ^ E_USER_DEPRECATED);

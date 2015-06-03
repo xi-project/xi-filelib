@@ -8,7 +8,6 @@ use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Xi\Filelib\Backend\Adapter\DoctrineDbalBackendAdapter;
 use Xi\Filelib\Backend\Adapter\MongoBackendAdapter;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Backend\Cache\Adapter\MemcachedCacheAdapter;
@@ -96,7 +95,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
         );
 
         $filelib = new FileLibrary(
-            new FilesystemStorageAdapter(ROOT_TESTS . '/data/files', new LegacyPathCalculator()),
+            new FilesystemStorageAdapter(ROOT_TESTS . '/data/files'),
             new DoctrineDbalBackendAdapter(
                 $this->conn
             ),

@@ -15,7 +15,7 @@ use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdC
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Adapter\AwsS3 as AwsAdapter;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
 
 /**
  * @group storage
@@ -51,7 +51,7 @@ class GaufretteStorageAdapterTest extends TestCase
         $filesystem = $this->getFilesystem();
 
         $dc = new TimeDirectoryIdCalculator();
-        $pc = new LegacyPathCalculator($dc);
+        $pc = new ImprovedPathCalculator($dc);
 
         $storage = new GaufretteStorageAdapter($filesystem, $pc, false);
 

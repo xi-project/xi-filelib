@@ -9,6 +9,8 @@ It's been developed for years. Too much incubation is too much.
 * Universal leveled calculator
 * Lazy instantiation of adapters of different subsystems (external integrations can be unlazy themselves)
 * Refactored the asynchrony component (asynchronous operations)
+* ImprovedPathCalculator is now the default path calculator.
+* Rhumsaa was abandoned. Use Ramsey.
 
 ### PostgreSQL migration (you may have to install an extension to get the uuid function)
 

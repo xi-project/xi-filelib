@@ -13,7 +13,7 @@ use League\Flysystem\Plugin\ListFiles;
 use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
+use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Adapter\FlysystemStorageAdapter;
 
 /**
@@ -53,7 +53,7 @@ class FlysystemStorageAdapterTest extends TestCase
         $filesystem->addPlugin(new ListFiles());
 
         $dc = new TimeDirectoryIdCalculator();
-        $pc = new LegacyPathCalculator($dc);
+        $pc = new ImprovedPathCalculator($dc);
         $storage = new FlysystemStorageAdapter($filesystem, $pc, false);
         return array($storage, true);
     }
