@@ -89,4 +89,56 @@ class ImprovedPathCalculatorTest extends TestCase
             $pc->getPathVersion($file, Version::get('luslus'))
         );
     }
+
+    public function providePrefixes()
+    {
+        return [
+            ['/tussi/'],
+            ['nussi/'],
+            ['/xussi'],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider providePrefixes
+     */
+    public function getPathrespectsPrefixes($prefix)
+    {
+        $dc = $this->getMock('Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+        $dc->expects($this->any())->method('calculateDirectoryId')->will($this->returnValue('1/2/3'));
+
+        $pc = new ImprovedPathCalculator($dc, $prefix);
+
+        $resource = Resource::create([
+            'id' => 'xooxoo'
+        ]);
+
+        $this->assertEquals(
+            trim($prefix, '/') .  '/resources/1/2/3/xooxoo',
+            $pc->getPath($resource)
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider providePrefixes
+     */
+    public function getPathVersionRespectsPrefixes($prefix)
+    {
+        $dc = $this->getMock('Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+        $dc->expects($this->any())->method('calculateDirectoryId')->will($this->returnValue('1/2/3'));
+
+        $pc = new ImprovedPathCalculator($dc, $prefix);
+
+        $resource = Resource::create([
+            'id' => 'xooxoo'
+        ]);
+
+        $this->assertEquals(
+            trim($prefix, '/') . '/resources/1/2/3/luslus/xooxoo',
+            $pc->getPathVersion($resource, Version::get('luslus'))
+        );
+    }
+
 }

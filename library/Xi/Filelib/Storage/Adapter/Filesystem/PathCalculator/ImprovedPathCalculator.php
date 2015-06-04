@@ -20,6 +20,11 @@ use Closure;
 class ImprovedPathCalculator implements PathCalculator
 {
     /**
+     * @var string
+     */
+    private $prefix;
+
+    /**
      * @var DirectoryIdCalculator
      */
     private $directoryIdCalculator;
@@ -28,9 +33,10 @@ class ImprovedPathCalculator implements PathCalculator
      * @param DirectoryIdCalculator $directoryIdCalculator
      * @param Closure $callback
      */
-    public function __construct(DirectoryIdCalculator $directoryIdCalculator = null)
+    public function __construct(DirectoryIdCalculator $directoryIdCalculator = null, $prefix = '')
     {
         $this->directoryIdCalculator = $directoryIdCalculator ?: new UniversalLeveledDirectoryIdCalculator();
+        $this->prefix = $prefix;
     }
 
     /**
@@ -39,7 +45,15 @@ class ImprovedPathCalculator implements PathCalculator
      */
     public function getPath(Resource $resource)
     {
-        return 'resources/' . $this->directoryIdCalculator->calculateDirectoryId($resource) . '/' . $resource->getId();
+        return $this->getPrefix() . 'resources/' . $this->directoryIdCalculator->calculateDirectoryId($resource) . '/' . $resource->getId();
+    }
+
+    /**
+     * @return string
+     */
+    private function getPrefix()
+    {
+        return (!$this->prefix) ? '' : trim($this->prefix, '/') . '/';
     }
 
     /**
@@ -51,10 +65,12 @@ class ImprovedPathCalculator implements PathCalculator
     {
         list($resource, $file) = $this->extractResourceAndFileFromVersionable($versionable);
 
+        $path = $this->getPrefix();
+
         if ($file) {
-            $path = 'files/';
+            $path .= 'files/';
         } else {
-            $path = 'resources/';
+            $path .= 'resources/';
         }
 
         $path .= $this->directoryIdCalculator->calculateDirectoryId($file ?: $resource) . '/' . $version->toString();
