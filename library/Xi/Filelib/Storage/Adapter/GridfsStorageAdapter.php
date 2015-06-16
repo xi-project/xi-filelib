@@ -132,6 +132,8 @@ class GridfsStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
                 )
             )
         );
+
+        return new Retrieved($tempFile, true);
     }
 
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
@@ -148,6 +150,8 @@ class GridfsStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
                 )
             )
         );
+
+        return new Retrieved($tempFile, true);
     }
 
     public function retrieve(Resource $resource)

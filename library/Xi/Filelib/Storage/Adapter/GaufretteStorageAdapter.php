@@ -68,6 +68,8 @@ class GaufretteStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
         }
 
         $this->filesystem->write($pathName, file_get_contents($tempFile), true);
+
+        return new Retrieved($tempFile, true);
     }
 
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
@@ -79,6 +81,8 @@ class GaufretteStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
         }
 
         $this->filesystem->write($pathName, file_get_contents($tempFile), true);
+
+        return new Retrieved($tempFile, true);
     }
 
     public function retrieve(Resource $resource)

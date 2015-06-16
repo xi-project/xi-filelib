@@ -63,12 +63,16 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     {
         $pathName = $this->getPathName($resource);
         $this->filesystem->put($pathName, file_get_contents($tempFile));
+
+        return new Retrieved($tempFile, true);
     }
 
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
     {
         $pathName = $this->getVersionPathName($versionable, $version);
         $this->filesystem->put($pathName, file_get_contents($tempFile));
+
+        return new Retrieved($tempFile, true);
     }
 
     public function retrieve(Resource $resource)

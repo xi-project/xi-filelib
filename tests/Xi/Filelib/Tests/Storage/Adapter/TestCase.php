@@ -57,9 +57,9 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
             )
         );
 
-        $this->resourcePath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
-        $this->resourceVersionPath = ROOT_TESTS . '/data/self-lussing-manatee-mini.jpg';
-        $this->fileSpecificVersionPath = ROOT_TESTS . '/data/self-lussing-manatee-file-specific.jpg';
+        $this->resourcePath = $this->getSelfLussingManatee();
+        $this->resourceVersionPath = $this->getSelfLussingManatee();
+        $this->fileSpecificVersionPath = $this->getSelfLussingManatee();
 
         $this->version = Version::get('xoo');
 
@@ -90,7 +90,8 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->storage->attachTo($this->filelib);
 
         $this->assertFalse($this->storage->exists($this->resource));
-        $this->storage->store($this->resource, $this->resourcePath);
+        $ret = $this->storage->store($this->resource, $this->resourcePath);
+        $this->assertInstanceOf('Xi\Filelib\Storage\Retrieved', $ret);
 
         $this->assertTrue($this->storage->exists($this->resource), 'Storage did not store');
 
@@ -119,11 +120,13 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version));
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version, $this->file));
 
-        $this->storage->storeVersion($this->resource, $this->version, $this->resourceVersionPath);
+        $ret1 = $this->storage->storeVersion($this->resource, $this->version, $this->resourceVersionPath);
         $this->assertTrue($this->storage->versionExists($this->resource, $this->version));
         $this->assertFalse($this->storage->versionExists($this->file, $this->version));
 
-        $this->storage->storeVersion($this->file, $this->version, $this->fileSpecificVersionPath);
+        $ret2 = $this->storage->storeVersion($this->file, $this->version, $this->fileSpecificVersionPath);
+        $this->assertInstanceOf('Xi\Filelib\Storage\Retrieved', $ret2);
+
         $this->assertTrue($this->storage->versionExists($this->resource, $this->version));
         $this->assertTrue($this->storage->versionExists($this->file, $this->version));
 
@@ -148,16 +151,16 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function overwrites()
     {
-        $tussi = ROOT_TESTS . '/data/tussi.txt';
-        $lussi = ROOT_TESTS . '/data/lussi.txt';
+        $tussi = $this->getTussi();
+        $lussi = $this->getLussi();
 
         $this->storage->attachTo($this->filelib);
         $this->assertFalse($this->storage->exists($this->resource));
-        $this->storage->store($this->resource, $tussi);
+        $ret = $this->storage->store($this->resource, $tussi);
         $this->assertTrue($this->storage->exists($this->resource));
         $retrieved = $this->storage->retrieve($this->resource);
         $this->assertFileEquals($retrieved->getPath(), $tussi);
-        $this->storage->store($this->resource, $lussi);
+        $ret2 = $this->storage->store($this->resource, $lussi);
         $this->assertTrue($this->storage->exists($this->resource));
         $retrieved2 = $this->storage->retrieve($this->resource);
         $this->assertFileEquals($lussi, $retrieved2->getPath());
@@ -168,18 +171,18 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function overwritesVersions()
     {
-        $tussi = ROOT_TESTS . '/data/tussi.txt';
-        $lussi = ROOT_TESTS . '/data/lussi.txt';
+        $tussi = $this->getTussi();
+        $lussi = $this->getLussi();
 
         $version = Version::get('xooxoo');
 
         $this->storage->attachTo($this->filelib);
         $this->assertFalse($this->storage->versionExists($this->resource, $version));
-        $this->storage->storeVersion($this->resource, $version, $tussi);
+        $ret1 = $this->storage->storeVersion($this->resource, $version, $tussi);
         $this->assertTrue($this->storage->versionExists($this->resource, $version));
         $retrieved = $this->storage->retrieveVersion($this->resource, $version);
         $this->assertFileEquals($retrieved->getPath(), $tussi);
-        $this->storage->storeVersion($this->resource, $version, $lussi);
+        $ret2 = $this->storage->storeVersion($this->resource, $version, $lussi);
         $this->assertTrue($this->storage->versionExists($this->resource, $version));
         $retrieved2 = $this->storage->retrieveVersion($this->resource, $version);
         $this->assertFileEquals($lussi, $retrieved2->getPath());

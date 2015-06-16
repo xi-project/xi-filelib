@@ -65,6 +65,7 @@ class Storage implements Attacher
         }
 
         if (!$this->exists($resource)) {
+
             throw new FileIOException(
                 sprintf(
                     "Physical file for resource #%s does not exist",

@@ -465,5 +465,25 @@ class TestCase extends \PHPUnit_Framework_TestCase
         );
     }
 
+    protected function getCopyOf($path)
+    {
+        $tempLusser = tempnam(ROOT_TESTS . '/tmp', 'lub');
+        copy($path, $tempLusser);
+        return $tempLusser;
+    }
 
+    protected function getSelfLussingManatee()
+    {
+        return $this->getCopyOf(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
+    }
+
+    protected function getTussi()
+    {
+        return $this->getCopyOf(ROOT_TESTS . '/data/tussi.txt');
+    }
+
+    protected function getLussi()
+    {
+        return $this->getCopyOf(ROOT_TESTS . '/data/lussi.txt');
+    }
 }

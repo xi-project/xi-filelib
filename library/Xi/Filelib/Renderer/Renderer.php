@@ -101,6 +101,7 @@ class Renderer
             );
         }
 
+
         try {
             $provider = $this->profiles->getVersionProvider($file, $version);
             $version = $provider->ensureValidVersion($version);
@@ -126,6 +127,7 @@ class Renderer
             $response->setHeader('Content-disposition', "attachment; filename={$file->getName()}");
         }
         $retrieved = new FileObject($this->retrieve($file, $version));
+
         $response->setHeader('Content-Type', $retrieved->getMimetype());
 
         $this->injectContentToResponse($retrieved, $response);

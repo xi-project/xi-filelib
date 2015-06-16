@@ -24,6 +24,8 @@ use Xi\Filelib\Version;
  */
 class UniversalSequentialLinker implements ReversibleLinker
 {
+    private $prefix;
+
     /**
      * @var DirectoryIdCalculator
      */
@@ -34,9 +36,10 @@ class UniversalSequentialLinker implements ReversibleLinker
      */
     protected $fileRepository;
 
-    public function __construct($directoryLevels = 3, $filesPerDirectory = 500)
+    public function __construct($prefix = '')
     {
-        $this->directoryIdCalculator = new UniversalLeveledDirectoryIdCalculator($directoryLevels, $filesPerDirectory);
+        $this->prefix = trim($prefix, '/');
+        $this->directoryIdCalculator = new UniversalLeveledDirectoryIdCalculator();
     }
 
     /**
@@ -114,7 +117,6 @@ class UniversalSequentialLinker implements ReversibleLinker
         $name = $this->getFileName($file);
         $url[] = $name;
         $url = implode(DIRECTORY_SEPARATOR, $url);
-
-        return $url;
+        return ($this->prefix) ? $this->prefix . '/' . $url : $url;
     }
 }

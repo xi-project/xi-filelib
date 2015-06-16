@@ -14,8 +14,14 @@ use Xi\Filelib\Versionable;
 
 class CachingStorageAdapter implements StorageAdapter
 {
+    /**
+     * @var LazyReferenceResolver
+     */
     private $actualAdapter;
 
+    /**
+     * @var LazyReferenceResolver
+     */
     private $cacheAdapter;
 
     /**
@@ -46,8 +52,9 @@ class CachingStorageAdapter implements StorageAdapter
      */
     public function store(Resource $resource, $tempResource)
     {
-        $this->resolveCacheAdapter()->store($resource, $tempResource);
-        return $this->resolveActualAdapter()->store($resource, $tempResource);
+        $ret = $this->resolveCacheAdapter()->store($resource, $tempResource);
+        $this->resolveActualAdapter()->store($resource, $tempResource);
+        return $ret;
     }
 
     /**
@@ -59,15 +66,12 @@ class CachingStorageAdapter implements StorageAdapter
      */
     public function retrieve(Resource $resource)
     {
-
         if ($this->resolveCacheAdapter()->exists($resource)) {
             return $this->resolveCacheAdapter()->retrieve($resource);
         }
 
         $ret = $this->resolveActualAdapter()->retrieve($resource);
-        $this->resolveCacheAdapter()->store($resource, $ret->getPath());
-
-        return $ret;
+        return $this->resolveCacheAdapter()->store($resource, $ret->getPath());
     }
 
     /**
@@ -106,8 +110,9 @@ class CachingStorageAdapter implements StorageAdapter
      */
     public function storeVersion(Versionable $versionable, Version $version, $tempResource)
     {
-        $this->resolveCacheAdapter()->storeVersion($versionable, $version, $tempResource);
-        return $this->resolveActualAdapter()->storeVersion($versionable, $version, $tempResource);
+        $ret = $this->resolveCacheAdapter()->storeVersion($versionable, $version, $tempResource);
+        $this->resolveActualAdapter()->storeVersion($versionable, $version, $tempResource);
+        return $ret;
     }
 
     /**
@@ -123,9 +128,7 @@ class CachingStorageAdapter implements StorageAdapter
         }
 
         $ret = $this->resolveActualAdapter()->retrieveVersion($versionable, $version);
-        $this->resolveCacheAdapter()->storeVersion($versionable, $version, $ret->getPath());
-
-        return $ret;
+        return $this->resolveCacheAdapter()->storeVersion($versionable, $version, $ret->getPath());
     }
 
     /**

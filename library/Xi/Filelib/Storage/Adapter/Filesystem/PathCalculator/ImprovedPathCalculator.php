@@ -36,7 +36,7 @@ class ImprovedPathCalculator implements PathCalculator
     public function __construct(DirectoryIdCalculator $directoryIdCalculator = null, $prefix = '')
     {
         $this->directoryIdCalculator = $directoryIdCalculator ?: new UniversalLeveledDirectoryIdCalculator();
-        $this->prefix = $prefix;
+        $this->prefix = trim($prefix, '/');
     }
 
     /**
@@ -53,7 +53,7 @@ class ImprovedPathCalculator implements PathCalculator
      */
     private function getPrefix()
     {
-        return (!$this->prefix) ? '' : trim($this->prefix, '/') . '/';
+        return (!$this->prefix) ? '' : $this->prefix . '/';
     }
 
     /**

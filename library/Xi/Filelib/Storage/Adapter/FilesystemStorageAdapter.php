@@ -114,6 +114,8 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         }
         copy($tempFile, $pathName);
         chmod($pathName, $this->getFilePermission());
+
+        return new Retrieved($pathName, false);
     }
 
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
@@ -124,6 +126,8 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
             $this->createDirectory(dirname($pathName));
         }
         copy($tempFile, $pathName);
+
+        return new Retrieved($pathName, false);
     }
 
     public function retrieve(Resource $resource)

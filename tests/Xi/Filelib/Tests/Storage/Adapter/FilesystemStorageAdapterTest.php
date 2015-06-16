@@ -76,7 +76,7 @@ class FilesystemStorageAdapterTest extends TestCase
         $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
         $storage->store(
             $resource,
-            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
+            $this->getSelfLussingManatee()
         );
     }
 
@@ -96,7 +96,7 @@ class FilesystemStorageAdapterTest extends TestCase
         $storage->storeVersion(
             $resource,
             Version::get('puupster'),
-            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
+            $this->getSelfLussingManatee()
         );
     }
 }
