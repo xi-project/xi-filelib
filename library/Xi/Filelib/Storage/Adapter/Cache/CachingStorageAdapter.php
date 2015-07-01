@@ -98,7 +98,10 @@ class CachingStorageAdapter implements StorageAdapter
      */
     public function delete(Resource $resource)
     {
-        $this->resolveCacheAdapter()->delete($resource);
+        if ($this->resolveCacheAdapter()->exists($resource) === true) {
+            $this->resolveCacheAdapter()->delete($resource);
+        }
+
         return $this->resolveActualAdapter()->delete($resource);
     }
 
@@ -138,15 +141,17 @@ class CachingStorageAdapter implements StorageAdapter
      */
     public function deleteVersion(Versionable $versionable, Version $version)
     {
-        $this->resolveCacheAdapter()->deleteVersion($versionable, $version);
-        return $this->resolveActualAdapter()->deleteVersion($versionable, $version);
-
+        if ($this->resolveCacheAdapter()->versionExists($versionable, $version)) {
+            $this->resolveCacheAdapter()->deleteVersion($versionable, $version);
+        }
+        $this->resolveActualAdapter()->deleteVersion($versionable, $version);
     }
 
     /**
      * @param Versionable $versionable
      * @param Version $version
      * @throws FileIOException
+     * @return bool
      */
     public function versionExists(Versionable $versionable, Version $version)
     {
