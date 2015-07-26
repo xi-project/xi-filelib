@@ -65,6 +65,7 @@ class ZencoderPlugin extends VersionProvider
             }
         );
 
+        $this->apiKey = $apiKey;
         $this->client = $client;
         $this->awsBucket = $awsBucket;
         $this->setOutputs($outputs);
