@@ -11,6 +11,8 @@ It's been developed for years. Too much incubation is too much.
 * Refactored the asynchrony component (asynchronous operations)
 * ImprovedPathCalculator is now the default path calculator.
 * Rhumsaa was abandoned. Use Ramsey.
+* Refactored the temporary file management (pekkis/temporary-file-manager). Should affect you only positively.
+* Removed own slugifier component completely.
 
 ### PostgreSQL migration (you may have to install an extension to get the uuid function)
 
