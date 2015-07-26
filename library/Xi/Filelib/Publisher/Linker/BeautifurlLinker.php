@@ -9,11 +9,11 @@
 
 namespace Xi\Filelib\Publisher\Linker;
 
+use Cocur\Slugify\Slugify;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Publisher\Linker;
-use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Version;
 
 /**
@@ -29,7 +29,7 @@ class BeautifurlLinker implements Linker
     private $excludeRoot = false;
 
     /**
-     * @var Slugifier
+     * @var Slugify
      */
     private $slugifier;
 
@@ -40,13 +40,12 @@ class BeautifurlLinker implements Linker
 
     /**
      * @param FileLibrary $filelib
-     * @param Slugifier $slugifier
      * @param bool $excludeRoot
      */
-    public function __construct(Slugifier $slugifier = null, $excludeRoot = true)
+    public function __construct($excludeRoot = true)
     {
         $this->excludeRoot = $excludeRoot;
-        $this->slugifier = $slugifier;
+        $this->slugifier = Slugify::create();
     }
 
     public function attachTo(FileLibrary $filelib)
@@ -63,16 +62,6 @@ class BeautifurlLinker implements Linker
     public function getExcludeRoot()
     {
         return $this->excludeRoot;
-    }
-
-    /**
-     * Returns slugifier
-     *
-     * @return Slugifier
-     */
-    public function getSlugifier()
-    {
-        return $this->slugifier;
     }
 
     /**
@@ -117,14 +106,12 @@ class BeautifurlLinker implements Linker
             $beautifurl[] = $folder->getName();
         }
 
-        if ($slugifier = $this->getSlugifier()) {
-            array_walk(
-                $beautifurl,
-                function (&$frag) use ($slugifier) {
-                    $frag = $slugifier->slugify($frag);
-                }
-            );
-        }
+        $beautifurl = array_map(
+            function ($fragment) {
+                return $this->slugifier->slugify($fragment);
+            },
+            $beautifurl
+        );
 
         $beautifurl[] = $file->getName();
 

@@ -25,7 +25,6 @@
         "dflydev/apache-mime-types": "~1.0",
         "ramsey/uuid": "~2.8",
         "cocur/slugify": "~1.0",
-        "xi/transliterator": "0.5.*",
         "pekkis/queue": "~1.0",
         "pekkis/temporary-file-manager": "~0.1",
         "xi/collections": "0.3.*",

@@ -17,7 +17,6 @@ use Symfony\Component\Stopwatch\Stopwatch;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
 use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
-use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Authorization\Adapter\SimpleAuthorizationAdapter;
@@ -122,9 +121,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $publisher = new Publisher(
             new SymlinkFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public', '600', '700', 'files'),
-            new BeautifurlLinker(
-                new Slugifier()
-            )
+            new BeautifurlLinker()
         );
         $publisher->attachTo($filelib);
         $this->publisher = $publisher;
