@@ -40,7 +40,7 @@ class ChangeFormatPlugin extends BasePlugin
     /**
      * @var TemporaryFileManager
      */
-    private $tempDir;
+    private $tempFiles;
 
     /**
      * @param string $targetExtension
@@ -67,7 +67,7 @@ class ChangeFormatPlugin extends BasePlugin
 
         $helper = new ImageMagickHelper(
             $upload->getRealPath(),
-            $this->tempDir,
+            $this->tempFiles,
             $this->commandDefinitions
         );
         $tempnam = $helper->execute();
@@ -90,6 +90,6 @@ class ChangeFormatPlugin extends BasePlugin
      */
     public function attachTo(FileLibrary $filelib)
     {
-        $this->tempDir = $filelib->getTemporaryFileManager();
+        $this->tempFiles = $filelib->getTemporaryFileManager();
     }
 }

@@ -27,7 +27,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
     /**
      * @var TemporaryFileManager
      */
-    protected $tempDir;
+    protected $tempFiles;
 
     /**
      * @var string
@@ -124,7 +124,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->tempDir = $filelib->getTemporaryFileManager();
+        $this->tempFiles = $filelib->getTemporaryFileManager();
     }
 
     /**
@@ -169,7 +169,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
             )
         );
 
-        $helper = new ImageMagickHelper($retrieved, $this->tempDir, $commandDefinitions);
+        $helper = new ImageMagickHelper($retrieved, $this->tempFiles, $commandDefinitions);
 
         return array(
             $version->toString(),

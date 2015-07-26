@@ -24,7 +24,7 @@ class VersionPlugin extends LazyVersionProvider
     /**
      * @var TemporaryFileManager
      */
-    protected $tempDir;
+    protected $tempFiles;
 
     /**
      * @var VersionPluginVersion[]
@@ -58,7 +58,7 @@ class VersionPlugin extends LazyVersionProvider
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->tempDir = $filelib->getTemporaryFileManager();
+        $this->tempFiles = $filelib->getTemporaryFileManager();
     }
 
     /**
@@ -76,7 +76,7 @@ class VersionPlugin extends LazyVersionProvider
 
         return array(
             $version->toString(),
-            $versionVersion->getHelper($retrieved, $this->tempDir)->execute(),
+            $versionVersion->getHelper($retrieved, $this->tempFiles)->execute(),
         );
     }
 

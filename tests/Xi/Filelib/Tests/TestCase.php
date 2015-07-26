@@ -64,10 +64,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
             ->method('getTemporaryFileManager')
             ->will($this->returnValue(new TemporaryFileManager(ROOT_TESTS . '/data/temp')));
 
-        if (isset($tempDir)) {
-            $ret->expects($this->any())->method('getTempDir')->will($this->returnValue($tempDir));
-        }
-
         if ($fire) {
             $ret->expects($this->any())->method('getFileRepository')->will($this->returnValue($fire));
         }

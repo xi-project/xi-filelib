@@ -23,7 +23,7 @@ class OriginalVersionPlugin extends VersionProvider
     /**
      * @var TemporaryFileManager
      */
-    private $tempDir;
+    private $tempFiles;
 
     /**
      * @var string
@@ -44,13 +44,13 @@ class OriginalVersionPlugin extends VersionProvider
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->tempDir = $filelib->getTemporaryFileManager();
+        $this->tempFiles = $filelib->getTemporaryFileManager();
     }
 
     protected function doCreateAllTemporaryVersions(File $file)
     {
         return array(
-            $this->identifier => $this->tempDir->addFile($this->storage->retrieve($file->getResource())),
+            $this->identifier => $this->tempFiles->addFile($this->storage->retrieve($file->getResource())),
         );
     }
 

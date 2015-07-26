@@ -89,7 +89,7 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     public function retrieve(Resource $resource)
     {
         return new Retrieved(
-            $this->tempDir->add(
+            $this->tempFiles->add(
                 $this->filesystem->get($this->getPathName($resource))->read()
             )
         );
@@ -98,7 +98,7 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     public function retrieveVersion(Versionable $versionable, Version $version)
     {
         return new Retrieved(
-            $this->tempDir->add(
+            $this->tempFiles->add(
                 $this->filesystem->get($this->getVersionPathName($versionable, $version))->read()
             )
         );

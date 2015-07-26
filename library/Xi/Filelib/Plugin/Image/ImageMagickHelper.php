@@ -25,7 +25,7 @@ class ImageMagickHelper
     /**
      * @var TemporaryFileManager
      */
-    private $outputDir;
+    private $tempFiles;
 
     /**
      * @var array
@@ -39,13 +39,13 @@ class ImageMagickHelper
 
     /**
      * @param string $source
-     * @param TemporaryFileManager $outputDir
+     * @param TemporaryFileManager $tempFiles
      * @param Command[] $commands
      */
-    public function __construct($source, TemporaryFileManager $outputDir, $commands = array())
+    public function __construct($source, TemporaryFileManager $tempFiles, $commands = array())
     {
         $this->source = $source;
-        $this->outputDir = $outputDir;
+        $this->tempFiles = $tempFiles;
         foreach ($commands as $command) {
             $this->addCommand($command);
         }
@@ -114,7 +114,7 @@ class ImageMagickHelper
 
         $this->isExecuted = true;
 
-        return $this->outputDir->add($img->getImageBlob());
+        return $this->tempFiles->add($img->getImageBlob());
     }
 
     /**

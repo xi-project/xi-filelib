@@ -31,7 +31,7 @@ class ZencoderPlugin extends VersionProvider
     /**
      * @var TemporaryFileManager
      */
-    private $tempDir;
+    private $tempFiles;
 
     /**
      * @var array
@@ -74,7 +74,7 @@ class ZencoderPlugin extends VersionProvider
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->tempDir = $filelib->getTemporaryFileManager();
+        $this->tempFiles = $filelib->getTemporaryFileManager();
     }
 
     /**
@@ -254,9 +254,9 @@ class ZencoderPlugin extends VersionProvider
         $output = $job->outputs[$version];
         $details = $this->getService()->outputs->details($output->id);
 
-        $tempnam = $this->tempDir->add(file_get_contents($details->url));
+        $tempnam = $this->tempFiles->add(file_get_contents($details->url));
         $thumb = array_shift($details->thumbnails[0]->images);
-        $thumbnam = $this->tempDir->add(file_get_contents($thumb->url));
+        $thumbnam = $this->tempFiles->add(file_get_contents($thumb->url));
 
         return array(
             $tempnam,

@@ -17,10 +17,10 @@ abstract class BaseTemporaryRetrievingStorageAdapter extends BaseStorageAdapter
     /**
      * @var TemporaryFileManager
      */
-    protected $tempDir;
+    protected $tempFiles;
 
     public function attachTo(FileLibrary $filelib)
     {
-        $this->tempDir = $filelib->getTemporaryFileManager();
+        $this->tempFiles = $filelib->getTemporaryFileManager();
     }
 }
