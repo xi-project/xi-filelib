@@ -15,6 +15,8 @@ use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Events;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Version;
+use Aws\S3\S3Client;
+use Rhumsaa\Uuid\Uuid;
 
 /**
  * @group plugin
@@ -92,10 +94,9 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             ->getMock();
 
         $this->plugin = new ZencoderPlugin(
-            'api key',
-            'aws key',
-            'aws secret key',
-            'aws bucket',
+            getenv('ZENCODER_KEY'),
+            getenv('S3_BUCKET'),
+            $this->amazonService,
             $this->config['outputs']
         );
 
@@ -108,7 +109,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
 
     public function tearDown()
     {
-        if (!class_exists('Aws\S3\S3Client')) {
+        if (!class_exists(S3Client::class)) {
             return;
         }
 
@@ -126,13 +127,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
      */
     public function settersAndGettersShouldWorkAsExpected()
     {
-        $this->assertEquals('api key', $this->plugin->getApiKey());
-
-        $this->assertEquals('aws key', $this->plugin->getAwsKey());
-
-        $this->assertEquals('aws secret key', $this->plugin->getAwsSecretKey());
-
-        $this->assertEquals('aws bucket', $this->plugin->getAwsBucket());
+        $this->assertEquals(getenv('S3_BUCKET'), $this->plugin->getAwsBucket());
 
         $val = 1;
         $this->assertEquals(5, $this->plugin->getSleepyTime());
@@ -221,6 +216,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     {
         $file = File::create(
             array(
+                'uuid' => Uuid::uuid4()->toString(),
                 'profile' => 'default',
                 'resource' => Resource::create(
                     array(
@@ -269,7 +265,6 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     public function createProvidedVersionsShouldCreateVersions()
     {
         $this->setupStubsForZencoderService();
-        $this->plugin->setClient($this->amazonService);
         $this->plugin->setService($this->zencoderService);
 
         $this->amazonService
@@ -282,7 +277,13 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             ->method('deleteObject')
             ->with($this->isType('array'));
 
-        $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
+        $file = File::create(
+            array(
+                'id' => 1,
+                'uuid' => Uuid::uuid4()->toString(),
+                'name' => 'hauska-joonas.mp4',
+                'resource' => Resource::create(array('id' => 1)))
+        );
 
         $this->storage
             ->expects($this->once())
@@ -367,7 +368,6 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
      */
     public function createProvidedVersionsShouldThrowExceptionOnZencoderError()
     {
-        $this->plugin->setClient($this->amazonService);
         $this->plugin->setService($this->zencoderService);
 
         $this->zencoderService->jobs->expects($this->once())->method('create')
@@ -383,7 +383,12 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             ->method('putObject')
             ->with($this->isType('array'));
 
-        $file = File::create(array('id' => 1, 'name' => 'hauska-joonas.mp4', 'resource' => Resource::create(array('id' => 1))));
+        $file = File::create(
+            array('id' => 1,
+                'uuid' => Uuid::uuid4()->toString(),
+                'name' => 'hauska-joonas.mp4',
+                'resource' => Resource::create(array('id' => 1)))
+        );
 
         $this->storage
             ->expects($this->once())

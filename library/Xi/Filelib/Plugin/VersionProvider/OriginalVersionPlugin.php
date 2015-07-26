@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Plugin\VersionProvider;
 
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
@@ -20,7 +21,7 @@ use Xi\Filelib\Version;
 class OriginalVersionPlugin extends VersionProvider
 {
     /**
-     * @var string
+     * @var TemporaryFileManager
      */
     private $tempDir;
 
@@ -43,18 +44,13 @@ class OriginalVersionPlugin extends VersionProvider
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->tempDir = $filelib->getTempDir();
+        $this->tempDir = $filelib->getTemporaryFileManager();
     }
 
     protected function doCreateAllTemporaryVersions(File $file)
     {
-        $retrieved = $this->storage->retrieve($file->getResource());
-        $tmp = $this->tempDir . '/' . uniqid('', true);
-
-        copy($retrieved, $tmp);
-
         return array(
-            $this->identifier => $tmp,
+            $this->identifier => $this->tempDir->addFile($this->storage->retrieve($file->getResource())),
         );
     }
 

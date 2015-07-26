@@ -10,6 +10,7 @@
 namespace Xi\Filelib;
 
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
@@ -93,14 +94,30 @@ class FileLibrary
      */
     private $pluginManager;
 
+    /**
+     * @var TemporaryFileManager
+     */
+    private $temporaryFileManager;
+
     public function __construct(
         $storageAdapter,
         $backendAdapter,
-        EventDispatcherInterface $eventDispatcher = null
+        EventDispatcherInterface $eventDispatcher = null,
+        $tempDir = null
     ) {
         if (!$eventDispatcher) {
             $eventDispatcher = new EventDispatcher();
         }
+
+        if (!$tempDir) {
+            $tempDir = sys_get_temp_dir();
+        }
+
+        if (!$tempDir instanceof TemporaryFileManager) {
+            $tempDir = new TemporaryFileManager($tempDir);
+        }
+
+        $this->temporaryFileManager = $tempDir;
 
         $this->backendAdapter = $backendAdapter;
         $this->eventDispatcher = $eventDispatcher;
@@ -199,35 +216,13 @@ class FileLibrary
     }
 
     /**
-     * Sets temporary directory
-     *
-     * @param string $tempDir
-     */
-    public function setTempDir($tempDir)
-    {
-        if (!is_dir($tempDir) || !is_writable($tempDir)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Temp dir "%s" is not writable or does not exist',
-                    $tempDir
-                )
-            );
-        }
-        $this->tempDir = $tempDir;
-    }
-
-    /**
-     * Returns temporary directory
+     * Returns temporary file manager
      *
      * @return string
      */
-    public function getTempDir()
+    public function getTemporaryFileManager()
     {
-        if (!$this->tempDir) {
-            $this->setTempDir(sys_get_temp_dir());
-        }
-
-        return $this->tempDir;
+        return $this->temporaryFileManager;
     }
 
     /**

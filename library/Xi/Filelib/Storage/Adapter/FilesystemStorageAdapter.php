@@ -21,6 +21,7 @@ use Xi\Filelib\Versionable;
  * Stores files in a filesystem
  *
  * @author pekkis
+ * @deprecated Use FlysystemAdapter
  */
 class FilesystemStorageAdapter extends BaseStorageAdapter
 {

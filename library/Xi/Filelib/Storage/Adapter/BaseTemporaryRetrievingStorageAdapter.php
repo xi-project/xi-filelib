@@ -9,25 +9,18 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\FileLibrary;
 
 abstract class BaseTemporaryRetrievingStorageAdapter extends BaseStorageAdapter
 {
     /**
-     * @var string
+     * @var TemporaryFileManager
      */
-    private $tempDir;
+    protected $tempDir;
 
     public function attachTo(FileLibrary $filelib)
     {
-        $this->tempDir = $filelib->getTempDir();
-    }
-
-    /**
-     * @return string
-     */
-    public function getTemporaryFilename()
-    {
-        return tempnam($this->tempDir, 'str');
+        $this->tempDir = $filelib->getTemporaryFileManager();
     }
 }

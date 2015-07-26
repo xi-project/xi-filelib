@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\File\MimeTypes;
@@ -37,7 +38,7 @@ class ChangeFormatPlugin extends BasePlugin
     protected $commandDefinitions;
 
     /**
-     * @var string
+     * @var TemporaryFileManager
      */
     private $tempDir;
 
@@ -89,6 +90,6 @@ class ChangeFormatPlugin extends BasePlugin
      */
     public function attachTo(FileLibrary $filelib)
     {
-        $this->tempDir = $filelib->getTempDir();
+        $this->tempDir = $filelib->getTemporaryFileManager();
     }
 }

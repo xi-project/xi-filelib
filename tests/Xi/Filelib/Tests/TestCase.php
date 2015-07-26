@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests;
 
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\Profile\FileProfile;
 
 class TestCase extends \PHPUnit_Framework_TestCase
@@ -35,7 +36,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
                 'backend' => null,
                 'queue' => null,
                 'pm' => null,
-                'tempDir' => null,
             );
 
             $mocks = array_merge($defaults, $args[1]);
@@ -59,6 +59,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
         }
 
         $ret = $filelib->getMock();
+
+        $ret->expects($this->any())
+            ->method('getTemporaryFileManager')
+            ->will($this->returnValue(new TemporaryFileManager(ROOT_TESTS . '/data/temp')));
 
         if (isset($tempDir)) {
             $ret->expects($this->any())->method('getTempDir')->will($this->returnValue($tempDir));

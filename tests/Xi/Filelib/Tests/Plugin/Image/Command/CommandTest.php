@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Tests\Plugin\Image\Command;
 
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\Plugin\Image\Command\Command;
 use Xi\Filelib\Plugin\Image\Command\ExecuteMethodCommand;
 use Xi\Filelib\Plugin\Image\ImageMagickHelper;
@@ -26,7 +27,7 @@ class CommandTest extends TestCase
     {
         $helper = new ImageMagickHelper(
             ROOT_TESTS . '/data/self-lussing-manatee.jpg',
-            ROOT_TESTS . '/data/temp'
+            new TemporaryFileManager(ROOT_TESTS . '/data/temp')
         );
 
         $command = $this->getMockForAbstractClass('Xi\Filelib\Plugin\Image\Command\Command');

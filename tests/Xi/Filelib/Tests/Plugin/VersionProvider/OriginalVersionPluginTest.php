@@ -113,7 +113,6 @@ class OriginalVersionPluginTest extends TestCase
                 'ed' => $ed
             )
         );
-        $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
 
         $plugin = new OriginalVersionPlugin();
         $plugin->attachTo($filelib);

@@ -17,18 +17,11 @@ class Retrieved
     private $path;
 
     /**
-     * @var bool
-     */
-    private $isTemporary;
-
-    /**
      * @param string $path
-     * @param bool $isTemporary
      */
-    public function __construct($path, $isTemporary)
+    public function __construct($path)
     {
         $this->path = $path;
-        $this->isTemporary = $isTemporary;
     }
 
     /**
@@ -37,20 +30,5 @@ class Retrieved
     public function getPath()
     {
         return $this->path;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isTemporary()
-    {
-        return $this->isTemporary;
-    }
-
-    public function __destruct()
-    {
-        if ($this->isTemporary()) {
-            unlink($this->getPath());
-        }
     }
 }

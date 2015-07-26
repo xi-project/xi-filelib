@@ -170,18 +170,11 @@ class ArbitraryVersionPluginTest extends TestCase
         $filelib = $this->getMockedFilelib(
             null,
             array(
-                'tempDir' => 'lussogrande',
                 'storage' => $storage
             )
         );
 
         $plugin->attachTo($filelib);
-
-        $this->assertAttributeEquals(
-            'lussogrande',
-            'tempDir',
-            $plugin
-        );
 
         $this->assertSame(
             $storage,

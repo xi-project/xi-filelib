@@ -21,25 +21,10 @@ class RetrievedTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function nonTemporaryRetrievedIsNotDeleted()
+    public function initializes()
     {
         $this->assertFileExists(ROOT_TESTS . '/data/temp/sad-manatee.jpg');
         $retrieved = new Retrieved(ROOT_TESTS . '/data/temp/sad-manatee.jpg', false);
-
-        unset($retrieved);
-        $this->assertFileExists(ROOT_TESTS . '/data/temp/sad-manatee.jpg');
+        $this->assertEquals(ROOT_TESTS . '/data/temp/sad-manatee.jpg', $retrieved->getPath());
     }
-
-    /**
-     * @test
-     */
-    public function temporaryRetrievedIsDeleted()
-    {
-        $this->assertFileExists(ROOT_TESTS . '/data/temp/sad-manatee.jpg');
-        $retrieved = new Retrieved(ROOT_TESTS . '/data/temp/sad-manatee.jpg', true);
-
-        unset($retrieved);
-        $this->assertFileNotExists(ROOT_TESTS . '/data/temp/sad-manatee.jpg');
-    }
-
 }

@@ -80,13 +80,6 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function storeAndRetrieveAndDeleteShouldWorkInHarmony()
     {
-        if ($this->storage instanceof BaseTemporaryRetrievingStorageAdapter) {
-            $this->filelib
-                ->expects($this->once())
-                ->method('getTempDir')
-                ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
-        }
-
         $this->storage->attachTo($this->filelib);
 
         $this->assertFalse($this->storage->exists($this->resource));
@@ -109,12 +102,6 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function versionStoreAndRetrieveAndDeleteShouldWorkInHarmony()
     {
-        if ($this->storage instanceof BaseTemporaryRetrievingStorageAdapter) {
-            $this->filelib
-                ->expects($this->once())
-                ->method('getTempDir')
-                ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
-        }
         $this->storage->attachTo($this->filelib);
 
         $this->assertFalse($this->storage->versionExists($this->resource, $this->version));

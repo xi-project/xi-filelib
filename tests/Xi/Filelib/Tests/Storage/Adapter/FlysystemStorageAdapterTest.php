@@ -15,6 +15,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Adapter\FlysystemStorageAdapter;
+use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 
 /**
  * @group storage
@@ -38,13 +39,8 @@ class FlysystemStorageAdapterTest extends TestCase
 
     protected function tearDown()
     {
-        $filesystem = $this->getFilesystem();
-        foreach ($filesystem->listFiles('', true) as $file) {
-
-            if (!preg_match('#\.gitignore#', $file['path'])) {
-                $filesystem->delete($file['path']);
-            }
-        }
+        $deletor = new RecursiveDirectoryDeletor('files');
+        $deletor->delete();
     }
 
     protected function getStorage()

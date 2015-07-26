@@ -11,6 +11,7 @@ namespace Xi\Filelib\Plugin\Image;
 
 use Imagick;
 use ImagickException;
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\Plugin\Image\Command\Command;
 use Xi\Filelib\RuntimeException;
 
@@ -22,7 +23,7 @@ class ImageMagickHelper
     private $source;
 
     /**
-     * @var string
+     * @var TemporaryFileManager
      */
     private $outputDir;
 
@@ -38,10 +39,10 @@ class ImageMagickHelper
 
     /**
      * @param string $source
-     * @param string $outputDir
+     * @param TemporaryFileManager $outputDir
      * @param Command[] $commands
      */
-    public function __construct($source, $outputDir, $commands = array())
+    public function __construct($source, TemporaryFileManager $outputDir, $commands = array())
     {
         $this->source = $source;
         $this->outputDir = $outputDir;
@@ -104,14 +105,16 @@ class ImageMagickHelper
         }
 
         $img = $this->createImagick();
-        $tmp = $this->outputDir . '/' . uniqid('', true);
+
+
+
         foreach ($this->getCommands() as $command) {
             $command->execute($img);
         }
-        $img->writeImage($tmp);
+
         $this->isExecuted = true;
 
-        return $tmp;
+        return $this->outputDir->add($img->getImageBlob());
     }
 
     /**
