@@ -14,6 +14,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Version;
+use Pekkis\DirectoryCalculator\DirectoryCalculator;
 
 /**
  * @group storage
@@ -25,8 +26,8 @@ class LegacyPathCalculatorTest extends TestCase
      */
     public function getsPath()
     {
-        $dc = $this->getMock('Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
-        $dc->expects($this->any())->method('calculateDirectoryId')->will($this->returnValue('1/2/3'));
+        $dc = $this->getMock(DirectoryCalculator::class);
+        $dc->expects($this->any())->method('calculateDirectory')->will($this->returnValue('1/2/3'));
 
         $pc = new LegacyPathCalculator($dc);
 
@@ -45,8 +46,8 @@ class LegacyPathCalculatorTest extends TestCase
      */
     public function getsPathVersionForResource()
     {
-        $dc = $this->getMock('Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
-        $dc->expects($this->any())->method('calculateDirectoryId')->will($this->returnValue('1/2/3'));
+        $dc = $this->getMock(DirectoryCalculator::class);
+        $dc->expects($this->any())->method('calculateDirectory')->will($this->returnValue('1/2/3'));
 
         $pc = new LegacyPathCalculator($dc);
 
@@ -65,10 +66,10 @@ class LegacyPathCalculatorTest extends TestCase
      */
     public function getsPathVersionForFile()
     {
-        $dc = $this->getMock('Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator');
+        $dc = $this->getMock(DirectoryCalculator::class);
         $dc
             ->expects($this->exactly(2))
-            ->method('calculateDirectoryId')
+            ->method('calculateDirectory')
             ->will($this->onConsecutiveCalls('1/2/3', '3/2/1'));
 
         $pc = new LegacyPathCalculator($dc);

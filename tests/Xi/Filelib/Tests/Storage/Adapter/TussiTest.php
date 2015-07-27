@@ -13,7 +13,6 @@ use League\Flysystem\Plugin\ListFiles;
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
@@ -21,12 +20,11 @@ use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Storage\Adapter\FlysystemStorageAdapter;
 use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
-use Xi\Filelib\Tests\TestCase;
 
 /**
  * @group storage
  */
-class TussiTest extends TestCase
+class TussiTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
      * @test

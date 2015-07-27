@@ -9,12 +9,12 @@
 
 namespace Xi\Filelib\Publisher\Linker;
 
+use Pekkis\DirectoryCalculator\DirectoryCalculator;
+use Pekkis\DirectoryCalculator\Strategy\UniversalLeveledStrategy;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\ReversibleLinker;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\UniversalLeveledDirectoryIdCalculator;
 use Xi\Filelib\Version;
 
 /**
@@ -27,7 +27,7 @@ class UniversalSequentialLinker implements ReversibleLinker
     private $prefix;
 
     /**
-     * @var DirectoryIdCalculator
+     * @var DirectoryCalculator
      */
     private $directoryIdCalculator;
 
@@ -39,7 +39,9 @@ class UniversalSequentialLinker implements ReversibleLinker
     public function __construct($prefix = '')
     {
         $this->prefix = trim($prefix, '/');
-        $this->directoryIdCalculator = new UniversalLeveledDirectoryIdCalculator();
+        $this->directoryIdCalculator = new DirectoryCalculator(
+            new UniversalLeveledStrategy()
+        );
     }
 
     /**
@@ -82,7 +84,7 @@ class UniversalSequentialLinker implements ReversibleLinker
      */
     public function getDirectoryId(File $file)
     {
-        return $this->directoryIdCalculator->calculateDirectoryId($file);
+        return $this->directoryIdCalculator->calculateDirectory($file);
     }
 
     /**

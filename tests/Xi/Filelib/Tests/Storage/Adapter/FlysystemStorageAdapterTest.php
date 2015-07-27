@@ -10,9 +10,10 @@
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
 use League\Flysystem\Plugin\ListFiles;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
+use Pekkis\DirectoryCalculator\DirectoryCalculator;
+use Pekkis\DirectoryCalculator\Strategy\TimeStrategy;
 use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Adapter\FlysystemStorageAdapter;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
@@ -48,7 +49,7 @@ class FlysystemStorageAdapterTest extends TestCase
         $filesystem = $this->getFilesystem();
         $filesystem->addPlugin(new ListFiles());
 
-        $dc = new TimeDirectoryIdCalculator();
+        $dc = new DirectoryCalculator(new TimeStrategy());
         $pc = new ImprovedPathCalculator($dc);
         $storage = new FlysystemStorageAdapter($filesystem, $pc, false);
         return array($storage, true);
