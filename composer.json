@@ -26,8 +26,8 @@
         "ramsey/uuid": "~2.8",
         "cocur/slugify": "~1.0",
         "pekkis/queue": "~1.0",
-        "pekkis/temporary-file-manager": "~0.1",
-        "pekkis/directory-calculator": "~0.1",
+        "pekkis/temporary-file-manager": "~1.0",
+        "pekkis/directory-calculator": "~1.0",
         "xi/collections": "0.3.*",
         "zencoder/zencoder-php": "~2.1",
         "aws/aws-sdk-php": "~3.2"

@@ -24,11 +24,6 @@ use Xi\Filelib\Version;
 class BeautifurlLinker implements Linker
 {
     /**
-     * @var boolean Exclude root folder from beautifurls or not
-     */
-    private $excludeRoot = false;
-
-    /**
      * @var Slugify
      */
     private $slugifier;
@@ -39,29 +34,16 @@ class BeautifurlLinker implements Linker
     private $folderRepository;
 
     /**
-     * @param FileLibrary $filelib
      * @param bool $excludeRoot
      */
-    public function __construct($excludeRoot = true)
+    public function __construct()
     {
-        $this->excludeRoot = $excludeRoot;
         $this->slugifier = Slugify::create();
     }
 
     public function attachTo(FileLibrary $filelib)
     {
         $this->folderRepository = $filelib->getFolderRepository();
-    }
-
-
-    /**
-     * Returns whether the root folder is to be excluded from beautifurls.
-     *
-     * @return string
-     */
-    public function getExcludeRoot()
-    {
-        return $this->excludeRoot;
     }
 
     /**
@@ -92,19 +74,15 @@ class BeautifurlLinker implements Linker
      */
     protected function getBaseLink(File $file)
     {
-        $folders = array();
-        $folders[] = $folder = $this->folderRepository->find($file->getFolderId());
+        $folder = $this->folderRepository->find($file->getFolderId());
+        $beautifurl = explode('/', $folder->getUrl());
 
-        while ($folder->getParentId()) {
-            $folder = $this->folderRepository->find($folder->getParentId());
-            array_unshift($folders, $folder);
-        }
-
-        $beautifurl = array();
-
-        foreach ($folders as $folder) {
-            $beautifurl[] = $folder->getName();
-        }
+        $beautifurl = array_filter(
+            $beautifurl,
+            function ($beautifurl) {
+                return (bool) $beautifurl;
+            }
+        );
 
         $beautifurl = array_map(
             function ($fragment) {
@@ -114,10 +92,6 @@ class BeautifurlLinker implements Linker
         );
 
         $beautifurl[] = $file->getName();
-
-        if ($this->getExcludeRoot()) {
-            array_shift($beautifurl);
-        }
 
         $beautifurl = implode(DIRECTORY_SEPARATOR, $beautifurl);
 

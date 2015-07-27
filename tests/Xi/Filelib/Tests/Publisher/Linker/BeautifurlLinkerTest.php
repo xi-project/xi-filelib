@@ -70,9 +70,9 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                  } elseif ($id == 5) {
                      return Folder::create(array(
                          'id' => 5,
-                         'name' => 'sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú',
+                         'name' => 'sûürën ÜGRÎLÄISÊN KÄNSÄN Sïëlú',
                          'parent_id' => 4,
-                         'url' => '/lussuttaja/banaanin/suuren-ugrilaisen-kansan-sielu'
+                         'url' => '/lussuttaja/banaanin/sûürën-ÜGRÎLÄISÊN-KÄNSÄN-Sïëlú'
                      ));
                  }
 
@@ -128,7 +128,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $beautifurl)
     {
-        $linker = new BeautifurlLinker(true);
+        $linker = new BeautifurlLinker();
         $linker->attachTo($this->filelib);
 
         $versionProvider = $this->getMockedVersionProvider();
@@ -152,7 +152,6 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function linkerShouldExcludeRootProperly()
     {
-        $version = Version::get('lus');
         $extension = 'lus';
 
         $file = File::create(array(
@@ -161,29 +160,12 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
             'resource' => Resource::create(array('id' => 1)),
         ));
 
-        $linker = new BeautifurlLinker(false);
-        $linker->attachTo($this->filelib);
-
-        $this->assertEquals(
-            'root/lussuttaja/lamantiini-loso.lus',
-            $linker->getLink($file, Version::get('loso'), $extension)
-        );
-
-        $linker = new BeautifurlLinker(true);
+        $linker = new BeautifurlLinker();
         $linker->attachTo($this->filelib);
 
         $this->assertEquals(
             'lussuttaja/lamantiini-loso.lus',
             $linker->getLink($file, Version::get('loso'), $extension)
         );
-    }
-
-    /**
-     * @test
-     */
-    public function excludeRootGetterShouldWork()
-    {
-        $linker = new BeautifurlLinker(false);
-        $this->assertFalse($linker->getExcludeRoot());
     }
 }

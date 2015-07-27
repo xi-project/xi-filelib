@@ -13,6 +13,10 @@ It's been developed for years. Too much incubation is too much.
 * Rhumsaa was abandoned. Use Ramsey.
 * Refactored the temporary file management (pekkis/temporary-file-manager). Should affect you only positively.
 * Removed own slugifier component completely.
+* Extracted (and refactored) directory calculator out of library (pekkis/directory-calculator)
+* Removed Gaufrette storage adapter (use Flysystem)
+* Removed Gridfs storage adapter (use Gridfs via Flysystem)
+* Refactored linkers to use directory calculator.
 
 ### PostgreSQL migration (you may have to install an extension to get the uuid function)
 
@@ -29,7 +33,6 @@ ALTER TABLE xi_filelib_resource CHANGE uuid uuid varchar(36) NOT NULL;
 ### MongoDB migration
 
 Generate uuids (field 'uuid') to all resources.
-
 
 ## 0.13.2
 

@@ -129,29 +129,4 @@ class SequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
         );
 
     }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\InvalidArgumentException
-     */
-    public function getDirectoryIdShouldThrowExceptionWithNonNumericFileIds()
-    {
-        $linker = new SequentialLinker(3, 100);
-        $file = File::create(array('id' => 'xoo-xoo'));
-
-        $linker->getDirectoryId($file);
-
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\InvalidArgumentException
-     */
-    public function getDirectoryIdShouldThrowExceptionWhenDirectoryLevelsIsLessThanOne()
-    {
-        $linker = new SequentialLinker(0, 100);
-        $file = File::create(array('id' => 1));
-
-        $ret = $linker->getDirectoryId($file);
-    }
 }

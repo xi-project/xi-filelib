@@ -24,8 +24,6 @@ use Xi\Filelib\Version;
  */
 class UniversalSequentialLinker implements ReversibleLinker
 {
-    private $prefix;
-
     /**
      * @var DirectoryCalculator
      */
@@ -38,9 +36,9 @@ class UniversalSequentialLinker implements ReversibleLinker
 
     public function __construct($prefix = '')
     {
-        $this->prefix = trim($prefix, '/');
         $this->directoryIdCalculator = new DirectoryCalculator(
-            new UniversalLeveledStrategy()
+            new UniversalLeveledStrategy(),
+            $prefix
         );
     }
 
@@ -77,17 +75,6 @@ class UniversalSequentialLinker implements ReversibleLinker
     }
 
     /**
-     * Returns directory path for specified file id
-     *
-     * @param  File   $file
-     * @return string
-     */
-    public function getDirectoryId(File $file)
-    {
-        return $this->directoryIdCalculator->calculateDirectory($file);
-    }
-
-    /**
      * Returns link for a version of a file
      *
      * @param  File   $file
@@ -97,7 +84,6 @@ class UniversalSequentialLinker implements ReversibleLinker
      */
     public function getLink(File $file, Version $version, $extension)
     {
-
         $link = $this->getBaseLink($file);
         $pinfo = pathinfo($link);
         $link = $pinfo['dirname'] . '/' . $pinfo['filename'] . '-' . $version->toString();
@@ -115,10 +101,10 @@ class UniversalSequentialLinker implements ReversibleLinker
     protected function getBaseLink(File $file)
     {
         $url = array();
-        $url[] = $this->getDirectoryId($file);
+        $url[] = $this->directoryIdCalculator->calculateDirectory($file);
         $name = $this->getFileName($file);
         $url[] = $name;
         $url = implode(DIRECTORY_SEPARATOR, $url);
-        return ($this->prefix) ? $this->prefix . '/' . $url : $url;
+        return $url;
     }
 }

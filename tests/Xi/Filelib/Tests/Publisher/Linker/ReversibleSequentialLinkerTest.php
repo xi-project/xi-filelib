@@ -116,30 +116,4 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
         $this->assertSame($file, $reversed);
         $this->assertEquals($expectedVersion, $version);
     }
-
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\InvalidArgumentException
-     */
-    public function getDirectoryIdShouldThrowExceptionWithNonNumericFileIds()
-    {
-        $linker = new ReversibleSequentialLinker(3, 100);
-        $file = File::create(array('id' => 'xoo-xoo'));
-
-        $linker->getDirectoryId($file);
-
-    }
-
-    /**
-     * @test
-     * @expectedException Xi\Filelib\InvalidArgumentException
-     */
-    public function getDirectoryIdShouldThrowExceptionWhenDirectoryLevelsIsLessThanOne()
-    {
-        $linker = new ReversibleSequentialLinker(0, 100);
-        $file = File::create(array('id' => 1));
-
-        $ret = $linker->getDirectoryId($file);
-    }
 }
