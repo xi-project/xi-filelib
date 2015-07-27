@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Adapter\BaseTemporaryRetrievingStorageAdapter;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
@@ -47,11 +48,16 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->resource = Resource::create(array('id' => 1, 'date_created' => new DateTime()));
+        $this->resource = Resource::create([
+            'id' => 1,
+            'date_created' => new DateTime(),
+            'uuid' => Uuid::uuid4(),
+        ]);
 
         $this->file = File::create(
             array(
                 'id' => 666,
+                'uuid' => Uuid::uuid4(),
                 'date_created' => new DateTime(),
                 'resource' => $this->resource,
             )

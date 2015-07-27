@@ -28,7 +28,7 @@ class ImprovedPathCalculatorTest extends TestCase
      */
     public function getsPath()
     {
-        $dc = $this->getMock(DirectoryCalculator::class);
+        $dc = $this->getMockBuilder(DirectoryCalculator::class)->disableOriginalConstructor()->getMock();
         $dc->expects($this->any())->method('calculateDirectory')->will($this->returnValue('1/2/3'));
 
         $pc = new ImprovedPathCalculator($dc);
@@ -48,7 +48,7 @@ class ImprovedPathCalculatorTest extends TestCase
      */
     public function getsPathVersionForResource()
     {
-        $dc = $this->getMock(DirectoryCalculator::class);
+        $dc = $this->getMockBuilder(DirectoryCalculator::class)->disableOriginalConstructor()->getMock();
         $dc->expects($this->any())->method('calculateDirectory')->will($this->returnValue('1/2/3'));
 
         $pc = new ImprovedPathCalculator($dc);
@@ -68,7 +68,7 @@ class ImprovedPathCalculatorTest extends TestCase
      */
     public function getsPathVersionForFile()
     {
-        $dc = $this->getMock(DirectoryCalculator::class);
+        $dc = $this->getMockBuilder(DirectoryCalculator::class)->disableOriginalConstructor()->getMock();
         $dc
             ->expects($this->once())
             ->method('calculateDirectory')
@@ -106,7 +106,7 @@ class ImprovedPathCalculatorTest extends TestCase
      */
     public function getPathrespectsPrefixes($prefix)
     {
-        $dc = $this->getMock(DirectoryCalculator::class);
+        $dc = $this->getMockBuilder(DirectoryCalculator::class)->disableOriginalConstructor()->getMock();
         $dc->expects($this->any())->method('calculateDirectory')->will($this->returnValue('1/2/3'));
 
         $pc = new ImprovedPathCalculator($dc, $prefix);
@@ -127,7 +127,7 @@ class ImprovedPathCalculatorTest extends TestCase
      */
     public function getPathVersionRespectsPrefixes($prefix)
     {
-        $dc = $this->getMock(DirectoryCalculator::class);
+        $dc = $this->getMockBuilder(DirectoryCalculator::class)->disableOriginalConstructor()->getMock();
         $dc->expects($this->any())->method('calculateDirectory')->will($this->returnValue('1/2/3'));
 
         $pc = new ImprovedPathCalculator($dc, $prefix);

@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Folder;
 
+use Pekkis\DirectoryCalculator\UniversallyIdentifiable;
 use Xi\Filelib\BaseIdentifiable;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
@@ -19,7 +20,7 @@ use Xi\Filelib\IdentifiableDataContainer;
  * @author pekkis
  *
  */
-class Folder extends BaseIdentifiable implements Identifiable
+class Folder extends BaseIdentifiable implements Identifiable, UniversallyIdentifiable
 {
     /**
      * @var mixed

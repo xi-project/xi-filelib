@@ -90,7 +90,7 @@ class FilesystemStorageAdapterTest extends TestCase
 
         chmod($root, 0400);
 
-        $resource = Resource::create(['id' => 666]);
+        $resource = Resource::create(['id' => 666, 'uuid' => Uuid::uuid4()]);
 
         $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
         $storage->storeVersion(
