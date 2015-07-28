@@ -27,7 +27,7 @@ class UniversalSequentialLinker implements ReversibleLinker
     /**
      * @var DirectoryCalculator
      */
-    private $directoryIdCalculator;
+    private $directoryCalculator;
 
     /**
      * @var FileRepository
@@ -36,7 +36,7 @@ class UniversalSequentialLinker implements ReversibleLinker
 
     public function __construct($prefix = '')
     {
-        $this->directoryIdCalculator = new DirectoryCalculator(
+        $this->directoryCalculator = new DirectoryCalculator(
             new UniversalLeveledStrategy(),
             $prefix
         );
@@ -101,7 +101,7 @@ class UniversalSequentialLinker implements ReversibleLinker
     protected function getBaseLink(File $file)
     {
         $url = array();
-        $url[] = $this->directoryIdCalculator->calculateDirectory($file);
+        $url[] = $this->directoryCalculator->calculateDirectory($file);
         $name = $this->getFileName($file);
         $url[] = $name;
         $url = implode(DIRECTORY_SEPARATOR, $url);

@@ -22,15 +22,15 @@ class LegacyPathCalculator implements PathCalculator
     /**
      * @var DirectoryCalculator
      */
-    private $directoryIdCalculator;
+    private $directoryCalculator;
 
     /**
-     * @param DirectoryCalculator $directoryIdCalculator
+     * @param DirectoryCalculator $directoryCalculator
      * @param Closure $callback
      */
-    public function __construct(DirectoryCalculator $directoryIdCalculator = null)
+    public function __construct(DirectoryCalculator $directoryCalculator = null)
     {
-        $this->directoryIdCalculator = $directoryIdCalculator ?: new DirectoryCalculator(
+        $this->directoryCalculator = $directoryCalculator ?: new DirectoryCalculator(
             new UniversalLeveledStrategy()
         );
     }
@@ -41,7 +41,7 @@ class LegacyPathCalculator implements PathCalculator
      */
     public function getPath(Resource $resource)
     {
-        return $this->directoryIdCalculator->calculateDirectory($resource) . '/' . $resource->getId();
+        return $this->directoryCalculator->calculateDirectory($resource) . '/' . $resource->getId();
     }
 
     /**
@@ -52,9 +52,9 @@ class LegacyPathCalculator implements PathCalculator
     public function getPathVersion(Versionable $versionable, Version $version)
     {
         list($resource, $file) = $this->extractResourceAndFileFromVersionable($versionable);
-        $path = $this->directoryIdCalculator->calculateDirectory($resource) . '/' . $version->toString();
+        $path = $this->directoryCalculator->calculateDirectory($resource) . '/' . $version->toString();
         if ($file) {
-            $path .= '/sub/' . $resource->getId() . '/' . $this->directoryIdCalculator->calculateDirectory($file);
+            $path .= '/sub/' . $resource->getId() . '/' . $this->directoryCalculator->calculateDirectory($file);
         }
         $path .= '/' . (($file) ? $file->getId() : $resource->getId());
         return $path;

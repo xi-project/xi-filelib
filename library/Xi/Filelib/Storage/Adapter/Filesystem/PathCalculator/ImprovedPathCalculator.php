@@ -27,15 +27,15 @@ class ImprovedPathCalculator implements PathCalculator
     /**
      * @var DirectoryCalculator
      */
-    private $directoryIdCalculator;
+    private $directoryCalculator;
 
     /**
-     * @param DirectoryCalculator $directoryIdCalculator
+     * @param DirectoryCalculator $directoryCalculator
      * @param Closure $callback
      */
-    public function __construct(DirectoryCalculator $directoryIdCalculator = null, $prefix = '')
+    public function __construct(DirectoryCalculator $directoryCalculator = null, $prefix = '')
     {
-        $this->directoryIdCalculator = $directoryIdCalculator ?: new DirectoryCalculator(
+        $this->directoryCalculator = $directoryCalculator ?: new DirectoryCalculator(
             new UniversalLeveledStrategy()
         );
         $this->prefix = trim($prefix, '/');
@@ -47,7 +47,7 @@ class ImprovedPathCalculator implements PathCalculator
      */
     public function getPath(Resource $resource)
     {
-        return $this->getPrefix() . 'resources/' . $this->directoryIdCalculator->calculateDirectory($resource) . '/' . $resource->getId();
+        return $this->getPrefix() . 'resources/' . $this->directoryCalculator->calculateDirectory($resource) . '/' . $resource->getId();
     }
 
     /**
@@ -75,7 +75,7 @@ class ImprovedPathCalculator implements PathCalculator
             $path .= 'resources/';
         }
 
-        $path .= $this->directoryIdCalculator->calculateDirectory($file ?: $resource) . '/' . $version->toString();
+        $path .= $this->directoryCalculator->calculateDirectory($file ?: $resource) . '/' . $version->toString();
         $path .= '/' . (($file) ? $file->getId() : $resource->getId());
 
         return $path;
