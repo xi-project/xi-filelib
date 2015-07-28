@@ -7,18 +7,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Tests\Storage\Adapter\Filesystem\PathCalculator;
+namespace Xi\Filelib\Tests\Tool\PathCalculator;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
+use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Version;
 use Pekkis\DirectoryCalculator\DirectoryCalculator;
 
-/**
- * @group storage
- */
 class ImprovedPathCalculatorTest extends TestCase
 {
 

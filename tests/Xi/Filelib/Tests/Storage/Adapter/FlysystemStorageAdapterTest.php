@@ -14,7 +14,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
 use Pekkis\DirectoryCalculator\DirectoryCalculator;
 use Pekkis\DirectoryCalculator\Strategy\TimeStrategy;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
+use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Adapter\FlysystemStorageAdapter;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 

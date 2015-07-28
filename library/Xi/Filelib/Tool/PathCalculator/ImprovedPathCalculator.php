@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator;
+namespace Xi\Filelib\Tool\PathCalculator;
 
 use Pekkis\DirectoryCalculator\Strategy\UniversalLeveledStrategy;
 use Pekkis\DirectoryCalculator\DirectoryCalculator;

@@ -15,7 +15,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
+use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Storage\Adapter\FlysystemStorageAdapter;
 use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;

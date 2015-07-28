@@ -10,9 +10,9 @@
 namespace Xi\Filelib\Storage\Adapter;
 
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\ImprovedPathCalculator;
+use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\FileIOException;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\PathCalculator;
+use Xi\Filelib\Tool\PathCalculator\PathCalculator;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
