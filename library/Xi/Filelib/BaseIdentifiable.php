@@ -87,6 +87,9 @@ abstract class BaseIdentifiable
         if (is_array($data)) {
             $data = new IdentifiableDataContainer($data);
         }
+
+
+
         $this->data = $data;
         return $this;
     }

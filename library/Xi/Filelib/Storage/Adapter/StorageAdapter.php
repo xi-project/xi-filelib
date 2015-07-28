@@ -12,10 +12,7 @@ namespace Xi\Filelib\Storage\Adapter;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Storage\Retrieved;
-use Xi\Filelib\Version;
-use Xi\Filelib\Versionable;
 
 /**
  * Storage interface
@@ -59,34 +56,4 @@ interface StorageAdapter
      * @throws FilelibException
      */
     public function delete(Resource $resource);
-
-    /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @param string $tempResource
-     * @throws FileIOException
-     */
-    public function storeVersion(Versionable $versionable, Version $version, $tempResource);
-
-    /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @return Retrieved
-     * @throws FileIOException
-     */
-    public function retrieveVersion(Versionable $versionable, Version $version);
-
-    /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @throws FileIOException
-     */
-    public function deleteVersion(Versionable $versionable, Version $version);
-
-    /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @throws FileIOException
-     */
-    public function versionExists(Versionable $versionable, Version $version);
 }

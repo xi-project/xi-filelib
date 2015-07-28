@@ -97,11 +97,6 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         return $this->getRoot() . '/' . $this->pathCalculator->getPath($resource);
     }
 
-    private function getVersionPathName(Versionable $versionable, Version $version)
-    {
-        return $this->getRoot() . '/' . $this->pathCalculator->getPathVersion($versionable, $version);
-    }
-
     /**
      * @param Resource $resource
      * @param string $tempFile
@@ -119,29 +114,9 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         return new Retrieved($pathName, false);
     }
 
-    public function storeVersion(Versionable $versionable, Version $version, $tempFile)
-    {
-        $pathName = $this->getVersionPathName($versionable, $version);
-
-        if (!is_dir(dirname($pathName))) {
-            $this->createDirectory(dirname($pathName));
-        }
-        copy($tempFile, $pathName);
-
-        return new Retrieved($pathName, false);
-    }
-
     public function retrieve(Resource $resource)
     {
         return new Retrieved($this->getPathName($resource), false);
-    }
-
-    public function retrieveVersion(Versionable $versionable, Version $version)
-    {
-        return new Retrieved(
-            $this->getVersionPathName($versionable, $version),
-            false
-        );
     }
 
     public function delete(Resource $resource)
@@ -150,20 +125,9 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         unlink($path);
     }
 
-    public function deleteVersion(Versionable $versionable, Version $version)
-    {
-        $path = $this->getVersionPathName($versionable, $version);
-        unlink($path);
-    }
-
     public function exists(Resource $resource)
     {
         return file_exists($this->getPathName($resource));
-    }
-
-    public function versionExists(Versionable $versionable, Version $version)
-    {
-        return file_exists($this->getVersionPathName($versionable, $version));
     }
 
     /**

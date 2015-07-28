@@ -53,11 +53,6 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
         return $this->pathCalculator->getPath($resource);
     }
 
-    private function getVersionPathName(Versionable $versionable, Version $version)
-    {
-        return $this->pathCalculator->getPathVersion($versionable, $version);
-    }
-
     public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
@@ -72,20 +67,6 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
         return new Retrieved($tempFile);
     }
 
-    public function storeVersion(Versionable $versionable, Version $version, $tempFile)
-    {
-        $pathName = $this->getVersionPathName($versionable, $version);
-
-        $this->filesystem->put(
-            $pathName,
-            file_get_contents($tempFile),
-            [
-                'visibility' => AdapterInterface::VISIBILITY_PRIVATE
-            ]
-        );
-        return new Retrieved($tempFile);
-    }
-
     public function retrieve(Resource $resource)
     {
         return new Retrieved(
@@ -95,32 +76,13 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
         );
     }
 
-    public function retrieveVersion(Versionable $versionable, Version $version)
-    {
-        return new Retrieved(
-            $this->tempFiles->add(
-                $this->filesystem->get($this->getVersionPathName($versionable, $version))->read()
-            )
-        );
-    }
-
     public function delete(Resource $resource)
     {
         $this->filesystem->delete($this->getPathName($resource));
     }
 
-    public function deleteVersion(Versionable $versionable, Version $version)
-    {
-        $this->filesystem->delete($this->getVersionPathName($versionable, $version));
-    }
-
     public function exists(Resource $resource)
     {
         return $this->filesystem->has($this->getPathName($resource));
-    }
-
-    public function versionExists(Versionable $versionable, Version $version)
-    {
-        return $this->filesystem->has($this->getVersionPathName($versionable, $version));
     }
 }
