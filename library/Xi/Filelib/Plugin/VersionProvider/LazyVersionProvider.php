@@ -12,7 +12,7 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\VersionProviderEvent;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Lazy version provider

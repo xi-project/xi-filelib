@@ -3,7 +3,7 @@
 namespace Xi\Filelib\Tests\Storage;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Storage\RetrievedCache;

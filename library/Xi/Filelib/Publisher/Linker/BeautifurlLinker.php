@@ -14,7 +14,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Folder\FolderRepository;
 use Xi\Filelib\Publisher\Linker;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Creates beautifurls(tm) from the virtual directory structure and file names.

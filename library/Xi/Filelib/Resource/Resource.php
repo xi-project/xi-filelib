@@ -12,10 +12,10 @@ namespace Xi\Filelib\Resource;
 use DateTime;
 use Pekkis\DirectoryCalculator\Dateable;
 use Pekkis\DirectoryCalculator\UniversallyIdentifiable;
-use Xi\Filelib\BaseVersionable;
+use Xi\Filelib\Versionable\BaseVersionable;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
-use Xi\Filelib\Versionable;
+use Xi\Filelib\Versionable\Versionable;
 
 /**
  * Resource

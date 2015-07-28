@@ -14,7 +14,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Versions an image

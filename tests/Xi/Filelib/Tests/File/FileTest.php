@@ -4,9 +4,10 @@ namespace Xi\Filelib\Tests\File;
 
 use DateTime;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Tests\Versionable\BaseVersionableTestCase;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Tests\BaseVersionableTestCase;
+
 
 class FileTest extends BaseVersionableTestCase
 {

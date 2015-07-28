@@ -13,7 +13,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\ReversibleLinker;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Calculates directory id by formatting an objects creation date

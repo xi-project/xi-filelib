@@ -12,11 +12,11 @@ namespace Xi\Filelib\File;
 use DateTime;
 use Pekkis\DirectoryCalculator\Dateable;
 use Pekkis\DirectoryCalculator\UniversallyIdentifiable;
-use Xi\Filelib\BaseVersionable;
+use Xi\Filelib\Versionable\BaseVersionable;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Versionable;
+use Xi\Filelib\Versionable\Versionable;
 
 class File extends BaseVersionable implements Identifiable, Versionable, UniversallyIdentifiable, Dateable
 {

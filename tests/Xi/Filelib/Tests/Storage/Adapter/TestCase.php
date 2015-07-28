@@ -12,7 +12,7 @@ use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use DateTime;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 {

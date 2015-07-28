@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Renderer;
 
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\RuntimeException;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Renderer\Renderer;
 use Xi\Filelib\Renderer\Events;
 use Xi\Filelib\Authorization\AccessDeniedException;

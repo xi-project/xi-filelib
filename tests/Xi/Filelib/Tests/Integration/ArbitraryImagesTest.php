@@ -7,7 +7,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\Plugin\Image\ArbitraryVersionPlugin;
 use Xi\Filelib\Plugin\Image\Command\Command;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class ArbitraryImagesTest extends TestCase
 {

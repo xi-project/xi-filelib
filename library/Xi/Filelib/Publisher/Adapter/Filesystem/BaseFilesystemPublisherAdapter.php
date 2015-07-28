@@ -14,7 +14,7 @@ use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\Publisher\PublisherAdapter;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Abstract filesystem publisher convenience class

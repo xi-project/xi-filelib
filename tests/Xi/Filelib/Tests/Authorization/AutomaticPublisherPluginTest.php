@@ -9,6 +9,7 @@ use Xi\Filelib\Plugin\VersionProvider\Events;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Versionable\Version;
 
 class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
 {
@@ -82,7 +83,7 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
         $this->publisher
             ->expects($this->exactly(2))
             ->method('publishVersion')
-            ->with($this->file, $this->isInstanceOf('Xi\Filelib\Version'));
+            ->with($this->file, $this->isInstanceOf(Version::class));
 
         $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
 
@@ -137,7 +138,7 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
         $this->publisher
             ->expects($this->exactly(3))
             ->method('unpublishVersion')
-            ->with($this->file, $this->isInstanceOf('Xi\Filelib\Version'));
+            ->with($this->file, $this->isInstanceOf(Version::class));
 
         $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
         $event = new VersionProviderEvent($vp, $this->file, array('lusso', 'con-tusso', 'loso'));

@@ -11,7 +11,7 @@ namespace Xi\Filelib\Storage\Adapter;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Versionable;
+use Xi\Filelib\Versionable\Versionable;
 
 /**
  * Abstract storage convenience base class with common methods implemented

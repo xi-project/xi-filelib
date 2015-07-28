@@ -14,8 +14,8 @@ use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Tool\PathCalculator\PathCalculator;
 use Xi\Filelib\Storage\Retrieved;
-use Xi\Filelib\Version;
-use Xi\Filelib\Versionable;
+use Xi\Filelib\Versionable\Version;
+use Xi\Filelib\Versionable\Versionable;
 
 /**
  * Stores files in a filesystem

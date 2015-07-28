@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\Profile;
 
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\File\File;

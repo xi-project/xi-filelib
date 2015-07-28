@@ -11,7 +11,7 @@ use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 use Xi\Filelib\Tests\TestCase;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class CopyFilesystemPublisherAdapterTest extends TestCase
 {

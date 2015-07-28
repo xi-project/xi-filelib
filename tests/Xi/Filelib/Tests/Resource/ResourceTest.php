@@ -2,10 +2,10 @@
 
 namespace Xi\Filelib\Tests\Resource;
 
-use Xi\Filelib\Version;
+use Xi\Filelib\Tests\Versionable\BaseVersionableTestCase;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Resource\Resource;
 use DateTime;
-use Xi\Filelib\Tests\BaseVersionableTestCase;
 
 class ResourceTest extends BaseVersionableTestCase
 {

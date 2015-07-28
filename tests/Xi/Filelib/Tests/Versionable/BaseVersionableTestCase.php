@@ -1,9 +1,10 @@
 <?php
 
-namespace Xi\Filelib\Tests;
+namespace Xi\Filelib\Tests\Versionable;
 
-use Xi\Filelib\Version;
-use Xi\Filelib\Versionable;
+use Xi\Filelib\Tests\BaseIdentifiableTestCase;
+use Xi\Filelib\Versionable\Version;
+use Xi\Filelib\Versionable\Versionable;
 
 abstract class BaseVersionableTestCase extends BaseIdentifiableTestCase
 {

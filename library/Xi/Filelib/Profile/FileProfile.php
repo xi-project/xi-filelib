@@ -17,7 +17,7 @@ use Xi\Filelib\InvalidArgumentException;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class FileProfile implements EventSubscriberInterface
 {

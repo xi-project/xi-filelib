@@ -17,7 +17,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use League\Flysystem\Filesystem;
 
 class FlysystemPublisherAdapter implements PublisherAdapter

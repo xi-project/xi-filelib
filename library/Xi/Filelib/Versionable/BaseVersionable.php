@@ -7,7 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib;
+namespace Xi\Filelib\Versionable;
+
+use Xi\Filelib\BaseIdentifiable;
 
 abstract class BaseVersionable extends BaseIdentifiable
 {

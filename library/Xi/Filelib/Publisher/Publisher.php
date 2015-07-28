@@ -24,7 +24,7 @@ use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Tool\LazyReferenceResolver;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Publisher

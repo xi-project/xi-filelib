@@ -13,7 +13,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Tests\TestCase;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class OriginalVersionPluginTest extends TestCase
 {
@@ -71,7 +71,7 @@ class OriginalVersionPluginTest extends TestCase
         $version = Version::get($version);
         $version2 = $plugin->ensureValidVersion($version);
         $this->assertSame($version, $version2);
-        $this->assertInstanceOf('Xi\Filelib\Version', $version2);
+        $this->assertInstanceOf(Version::class, $version2);
     }
 
     /**

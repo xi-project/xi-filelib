@@ -19,7 +19,7 @@ use Xi\Filelib\Publisher\Linker;
 use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage

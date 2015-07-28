@@ -9,8 +9,8 @@ use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Tool\LazyReferenceResolver;
-use Xi\Filelib\Version;
-use Xi\Filelib\Versionable;
+use Xi\Filelib\Versionable\Version;
+use Xi\Filelib\Versionable\Versionable;
 
 class CachingStorageAdapter implements StorageAdapter
 {

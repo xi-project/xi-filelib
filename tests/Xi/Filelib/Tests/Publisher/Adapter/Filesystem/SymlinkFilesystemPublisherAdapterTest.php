@@ -13,7 +13,7 @@ use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
 use Xi\Filelib\Tests\TestCase;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class SymlinkFilesystemPublisherAdapterTest extends TestCase
 {

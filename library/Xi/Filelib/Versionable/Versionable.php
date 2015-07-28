@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib;
+namespace Xi\Filelib\Versionable;
 
 use DateTime;
 

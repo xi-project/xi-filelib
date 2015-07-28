@@ -12,7 +12,7 @@ namespace Xi\Filelib\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Renderer\Response;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * File event

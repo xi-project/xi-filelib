@@ -13,7 +13,7 @@ use Pekkis\DirectoryCalculator\DirectoryCalculator;
 use Pekkis\DirectoryCalculator\Strategy\LeveledStrategy;
 use Xi\Filelib\File\File;
 use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Base class for sequential linkers

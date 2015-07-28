@@ -5,7 +5,7 @@ namespace Xi\Filelib\Tests\Renderer;
 use Xi\Filelib\Renderer\AcceleratedRenderer;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Renderer\Events;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Resource\Resource;
 
 class AcceleratedRendererTest extends RendererTestCase
@@ -65,7 +65,7 @@ class AcceleratedRendererTest extends RendererTestCase
         $vp
             ->expects($this->any())
             ->method('ensureValidVersion')
-            ->with($this->isInstanceOf('Xi\Filelib\Version'))
+            ->with($this->isInstanceOf(Version::class))
             ->will($this->returnArgument(0));
 
 

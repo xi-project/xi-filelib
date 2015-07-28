@@ -17,8 +17,8 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\Tool\LazyReferenceResolver;
-use Xi\Filelib\Version;
-use Xi\Filelib\Versionable;
+use Xi\Filelib\Versionable\Version;
+use Xi\Filelib\Versionable\Versionable;
 
 class Storage implements Attacher
 {

@@ -8,7 +8,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Publisher\Adapter\FlysystemPublisherAdapter;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Publisher\Adapter\AmazonS3PublisherAdapter;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Tests\TestCase;

@@ -13,7 +13,7 @@ use Xi\Filelib\Attacher;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Publisher\Linker;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Publisher adapter interface

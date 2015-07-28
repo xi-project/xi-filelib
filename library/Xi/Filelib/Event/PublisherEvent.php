@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Event;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class PublisherEvent extends FileEvent
 {

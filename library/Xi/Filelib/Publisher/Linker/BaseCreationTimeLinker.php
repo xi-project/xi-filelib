@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Publisher\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Calculates directory id by formatting an objects creation date

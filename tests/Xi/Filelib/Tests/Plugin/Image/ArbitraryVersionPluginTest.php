@@ -14,7 +14,7 @@ use Xi\Filelib\Plugin\Image\ArbitraryVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Resource\Resource;
 
@@ -68,7 +68,7 @@ class ArbitraryVersionPluginTest extends TestCase
 
         $func = function (File $file, Version $version) {
             $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-            $this->assertInstanceOf('Xi\Filelib\Version', $version);
+            $this->assertInstanceOf(Version::class, $version);
             return 'lusso/tus';
         };
 
@@ -316,7 +316,7 @@ class ArbitraryVersionPluginTest extends TestCase
         $version2 = $plugin->ensureValidVersion($version);
 
         $this->assertNotSame($version, $version2);
-        $this->assertInstanceOf('Xi\Filelib\Version', $version2);
+        $this->assertInstanceOf(Version::class, $version2);
     }
 
     /**

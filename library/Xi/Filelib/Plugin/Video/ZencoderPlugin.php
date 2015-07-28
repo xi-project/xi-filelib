@@ -19,7 +19,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\RuntimeException;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class ZencoderPlugin extends VersionProvider
 {

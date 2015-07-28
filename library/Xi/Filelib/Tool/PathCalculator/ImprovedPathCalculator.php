@@ -11,9 +11,9 @@ namespace Xi\Filelib\Tool\PathCalculator;
 
 use Pekkis\DirectoryCalculator\Strategy\UniversalLeveledStrategy;
 use Pekkis\DirectoryCalculator\DirectoryCalculator;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Versionable;
+use Xi\Filelib\Versionable\Versionable;
 use Xi\Filelib\File\File;
 use Closure;
 

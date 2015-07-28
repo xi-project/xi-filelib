@@ -13,7 +13,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Tool\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Tests\TestCase;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Pekkis\DirectoryCalculator\DirectoryCalculator;
 
 class LegacyPathCalculatorTest extends TestCase

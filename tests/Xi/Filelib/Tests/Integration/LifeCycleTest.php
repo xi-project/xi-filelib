@@ -9,7 +9,7 @@ use Xi\Filelib\File\File;
 use Pekkis\Queue\Adapter\PhpAMQPAdapter;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Profile\FileProfile;
 
 class LifeCycleTest extends TestCase

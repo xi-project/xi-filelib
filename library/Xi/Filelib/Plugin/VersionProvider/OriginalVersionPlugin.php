@@ -13,7 +13,7 @@ use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 /**
  * Mirrors the original file as a version

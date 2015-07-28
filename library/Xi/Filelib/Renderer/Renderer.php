@@ -17,7 +17,7 @@ use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Renderer\Adapter\RendererAdapter;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class Renderer implements Attacher
 {

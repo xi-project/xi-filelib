@@ -1,6 +1,6 @@
 <?php
 
-namespace Xi\Filelib;
+namespace Xi\Filelib\Versionable;
 
 class Version
 {

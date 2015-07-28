@@ -7,7 +7,7 @@ use DateTime;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;

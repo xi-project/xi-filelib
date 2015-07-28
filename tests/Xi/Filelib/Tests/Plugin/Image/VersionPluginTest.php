@@ -14,7 +14,7 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Resource\Resource;
@@ -255,6 +255,6 @@ class VersionPluginTest extends TestCase
         $version = Version::get($version);
         $version2 = $plugin->ensureValidVersion($version);
         $this->assertSame($version, $version2);
-        $this->assertInstanceOf('Xi\Filelib\Version', $version2);
+        $this->assertInstanceOf(Version::class, $version2);
     }
 }

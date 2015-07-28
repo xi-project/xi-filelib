@@ -6,7 +6,7 @@ use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\File;
 use Xi\Filelib\RuntimeException;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Events as CoreEvents;

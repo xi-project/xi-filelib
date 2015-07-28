@@ -13,9 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="xi_filelib_versionable")
+ * @ORM\Table(name="xi_filelib_versioned")
  */
-class Versionable
+class Versioned
 {
     /**
      * @ORM\Column(name="uuid", type="string", length=255)

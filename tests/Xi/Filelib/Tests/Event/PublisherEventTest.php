@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Event;
 
 use Xi\Filelib\Event\PublisherEvent;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class PublisherEventTest extends \Xi\Filelib\Tests\TestCase
 {

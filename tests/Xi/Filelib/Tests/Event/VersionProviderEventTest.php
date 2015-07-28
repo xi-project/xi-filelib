@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Event;
 
 use Xi\Filelib\Event\VersionProviderEvent;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 
 class VersionProviderEventTest extends \Xi\Filelib\Tests\TestCase
 {

@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Publisher\Linker\ReversibleSequentialLinker;
 use Xi\Filelib\Folder\Folder;
 
@@ -110,7 +110,7 @@ class ReversibleSequentialLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         list ($reversed, $version) = $linker->reverseLink($link);
 
-        $this->assertInstanceOf('Xi\Filelib\Version', $version);
+        $this->assertInstanceOf(Version::class, $version);
         $expectedVersion = new Version('xoo', array('narf' => 'archive', 'year' => '1666'));
 
         $this->assertSame($file, $reversed);

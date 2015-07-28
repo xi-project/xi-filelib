@@ -23,8 +23,8 @@ use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Version;
-use Xi\Filelib\Versionable;
+use Xi\Filelib\Versionable\Version;
+use Xi\Filelib\Versionable\Versionable;
 
 /**
  * Base version provider

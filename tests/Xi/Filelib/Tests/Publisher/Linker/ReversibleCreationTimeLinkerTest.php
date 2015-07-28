@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Publisher\Linker;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Publisher\Linker\ReversibleCreationTimeLinker;
 use DateTime;
 
@@ -84,7 +84,7 @@ class ReversibleCreationTimeLinkerTest extends \Xi\Filelib\Tests\TestCase
 
         list ($reversed, $version) = $linker->reverseLink($link);
 
-        $this->assertInstanceOf('Xi\Filelib\Version', $version);
+        $this->assertInstanceOf(Version::class, $version);
         $expectedVersion = new Version('xoo', array('lusso' => 'tussi'));
         $this->assertSame($file, $reversed);
         $this->assertEquals($expectedVersion, $version);

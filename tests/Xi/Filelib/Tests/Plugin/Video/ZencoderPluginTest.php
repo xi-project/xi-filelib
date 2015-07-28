@@ -14,7 +14,7 @@ use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Events;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Version;
+use Xi\Filelib\Versionable\Version;
 use Aws\S3\S3Client;
 use Rhumsaa\Uuid\Uuid;
 
@@ -493,7 +493,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
         $version = Version::get($version);
         $version2 = $plugin->ensureValidVersion($version);
         $this->assertSame($version, $version2);
-        $this->assertInstanceOf('Xi\Filelib\Version', $version2);
+        $this->assertInstanceOf(Version::class, $version2);
     }
 
 }
