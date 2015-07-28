@@ -26,7 +26,7 @@ class VersionPluginVersion
     /**
      * @var string
      */
-    protected $tempDir;
+    protected $tempFiles;
 
     /**
      * @var string

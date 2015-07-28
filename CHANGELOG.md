@@ -9,6 +9,19 @@ It's been developed for years. Too much incubation is too much.
 * Universal leveled calculator
 * Lazy instantiation of adapters of different subsystems (external integrations can be unlazy themselves)
 * Refactored the asynchrony component (asynchronous operations)
+* ImprovedPathCalculator is now the default path calculator.
+* Rhumsaa was abandoned. Use Ramsey.
+* Refactored the temporary file management (pekkis/temporary-file-manager). Should affect you only positively.
+* Removed own slugifier component completely.
+* Extracted (and refactored) directory calculator out of library (pekkis/directory-calculator)
+* Removed Gaufrette storage adapter (use Flysystem)
+* Removed Gridfs storage adapter (use Gridfs via Flysystem)
+* Refactored linkers to use directory calculator.
+* Extracted mime type handling to pekkis/mime-types and refactored to it.
+* Removed upload limiter. Hook to before upload event to achieve same results.
+* PathCalculator namespace was changed.
+* RendererAdapter interfaces were moved to Renderer\Adapter namespace.
+* Renderer now implements Attacher like everybody else.
 
 ### PostgreSQL migration (you may have to install an extension to get the uuid function)
 
@@ -25,7 +38,6 @@ ALTER TABLE xi_filelib_resource CHANGE uuid uuid varchar(36) NOT NULL;
 ### MongoDB migration
 
 Generate uuids (field 'uuid') to all resources.
-
 
 ## 0.13.2
 

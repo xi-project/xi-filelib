@@ -17,7 +17,7 @@ use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileObject;
 use Xi\Filelib\File\FileRepository;
-use Xi\Filelib\File\MimeTypes;
+use Pekkis\MimeTypes\MimeTypes;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\BasePlugin;

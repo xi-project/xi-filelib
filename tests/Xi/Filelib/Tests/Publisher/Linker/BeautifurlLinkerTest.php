@@ -15,11 +15,6 @@ use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
 
-use Xi\Filelib\Tool\Slugifier\Adapter\CocurSlugifierAdapter;
-use Xi\Filelib\Tool\Slugifier\Adapter\PreTransliterator;
-use Xi\Transliterator\StupidTransliterator;
-use Xi\Filelib\Tool\Slugifier\Slugifier;
-
 /**
  * @group linker
  */
@@ -75,9 +70,9 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                  } elseif ($id == 5) {
                      return Folder::create(array(
                          'id' => 5,
-                         'name' => 'sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú',
+                         'name' => 'sûürën ÜGRÎLÄISÊN KÄNSÄN Sïëlú',
                          'parent_id' => 4,
-                         'url' => '/lussuttaja/banaanin/suuren-ugrilaisen-kansan-sielu'
+                         'url' => '/lussuttaja/banaanin/sûürën-ÜGRÎLÄISÊN-KÄNSÄN-Sïëlú'
                      ));
                  }
 
@@ -86,9 +81,6 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
              }));
 
         $this->filelib = $this->getMockedFilelib(null, null, $foop);
-        $this->slugifier = new Slugifier(
-            new PreTransliterator(new StupidTransliterator(), new CocurSlugifierAdapter())
-        );
     }
 
     public function provideFiles()
@@ -123,7 +115,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                     'name' => 'salainen-suunnitelma.pdf',
                     'folder_id' => 5,
                     'resource' => Resource::create(array('id' => 1)),
-                )), array('lussuttaja/banaanin/suuren-ugrilaisen-kansan-sielu/salainen-suunnitelma.pdf', 'lussuttaja/banaanin/suuren-ugrilaisen-kansan-sielu/salainen-suunnitelma-xoo.xoo'),
+                )), array('lussuttaja/banaanin/suueren-uegrilaeisen-kaensaen-sielu/salainen-suunnitelma.pdf', 'lussuttaja/banaanin/suueren-uegrilaeisen-kaensaen-sielu/salainen-suunnitelma-xoo.xoo'),
 
             ),
 
@@ -136,7 +128,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function versionLinkerShouldCreateProperBeautifurlLinks($file, $beautifurl)
     {
-        $linker = new BeautifurlLinker($this->slugifier, true);
+        $linker = new BeautifurlLinker();
         $linker->attachTo($this->filelib);
 
         $versionProvider = $this->getMockedVersionProvider();
@@ -160,7 +152,6 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
      */
     public function linkerShouldExcludeRootProperly()
     {
-        $version = Version::get('lus');
         $extension = 'lus';
 
         $file = File::create(array(
@@ -169,59 +160,12 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
             'resource' => Resource::create(array('id' => 1)),
         ));
 
-        $linker = new BeautifurlLinker($this->slugifier, false);
-        $linker->attachTo($this->filelib);
-
-        $this->assertEquals(
-            'root/lussuttaja/lamantiini-loso.lus',
-            $linker->getLink($file, Version::get('loso'), $extension)
-        );
-
-        $linker = new BeautifurlLinker($this->slugifier, true);
+        $linker = new BeautifurlLinker();
         $linker->attachTo($this->filelib);
 
         $this->assertEquals(
             'lussuttaja/lamantiini-loso.lus',
             $linker->getLink($file, Version::get('loso'), $extension)
         );
-    }
-
-    /**
-     * @test
-     */
-    public function linkerShouldNotSlugifyWhenTheresNoSlugifier()
-    {
-        $linker = new BeautifurlLinker(null, false);
-        $linker->attachTo($this->filelib);
-
-        $file = File::create(array(
-            'name' => 'lamantiini.lus',
-            'folder_id' => 5,
-            'resource' => Resource::create(array('id' => 1)),
-        ));
-
-        $this->assertEquals(
-            'root/lussuttaja/banaanin/sûürën ÜGRÎLÄISÊN KÄNSÄN SïëLú/lamantiini-loso.lus',
-             $linker->getLink($file, Version::get('loso'), 'lus')
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function excludeRootGetterShouldWork()
-    {
-        $linker = new BeautifurlLinker(null, false);
-        $this->assertFalse($linker->getExcludeRoot());
-    }
-
-    /**
-     * @test
-     */
-    public function getSlugifierShouldReturnSlugifier()
-    {
-        $linker = new BeautifurlLinker($this->slugifier, false);
-        $slugifier = $linker->getSlugifier();
-        $this->assertSame($this->slugifier, $slugifier);
     }
 }

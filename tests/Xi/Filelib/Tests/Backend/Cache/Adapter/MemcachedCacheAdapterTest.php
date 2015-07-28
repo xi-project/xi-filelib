@@ -24,6 +24,10 @@ class MemcachedCacheAdapterTest extends TestCase
 
     public function setUp()
     {
+        if (!class_exists('Memcached')) {
+            return $this->markTestSkipped('Memcached not installed');
+        }
+
         $this->memcached = new Memcached();
         $this->memcached->addServer('127.0.0.1', 11211);
         $this->cache = new MemcachedCacheAdapter($this->memcached, 'test___');

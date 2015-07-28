@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Renderer;
 
 use Xi\Filelib\File\FileObject;
-use Xi\Filelib\FileLibrary;
+use Xi\Filelib\Renderer\Adapter\AcceleratedRendererAdapter;
 
 class AcceleratedRenderer extends Renderer
 {
@@ -50,12 +50,11 @@ class AcceleratedRenderer extends Renderer
     private $header;
 
     public function __construct(
-        FileLibrary $filelib,
         AcceleratedRendererAdapter $adapter,
         $stripPrefixFromPath = '',
         $addPrefixToPath = ''
     ) {
-        parent::__construct($filelib, $adapter);
+        parent::__construct($adapter);
         $this->stripPrefixFromPath = $stripPrefixFromPath;
         $this->addPrefixToPath = $addPrefixToPath;
     }

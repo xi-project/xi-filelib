@@ -10,13 +10,14 @@
 namespace Xi\Filelib\Tool;
 
 use Closure;
+use Xi\Filelib\Attacher;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\LogicException;
 
 /**
  * Some adapters / bridges / etc might not be lazy, so we wrap them with a lazy reference resolver
  */
-class LazyReferenceResolver
+class LazyReferenceResolver implements Attacher
 {
     /**
      * @var string

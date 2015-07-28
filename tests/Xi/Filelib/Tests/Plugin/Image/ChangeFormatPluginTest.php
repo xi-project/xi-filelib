@@ -41,10 +41,6 @@ class ChangeFormatPluginTest extends TestCase
             ->getMock();
 
         $filelib = $this->getMockedFilelib(null, $this->fileRepository);
-        $filelib
-            ->expects($this->any())
-            ->method('getTempDir')
-            ->will($this->returnValue(ROOT_TESTS . '/data/temp'));
 
         $this->plugin = new ChangeFormatPlugin(
             array()

@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Plugin\Video;
 
 use Aws\S3\S3Client;
-use Guzzle\Service\Resource\Model;
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Exception;
 use Services_Zencoder_Job as Job;
@@ -29,9 +29,9 @@ class ZencoderPlugin extends VersionProvider
     private $zencoderService;
 
     /**
-     * @var string
+     * @var TemporaryFileManager
      */
-    private $tempDir;
+    private $tempFiles;
 
     /**
      * @var array
@@ -42,21 +42,6 @@ class ZencoderPlugin extends VersionProvider
      * @var string
      */
     private $apiKey;
-
-    /**
-     * @var string
-     */
-    private $awsKey;
-
-    /**
-     * @var string
-     */
-    private $awsSecretKey;
-
-    /**
-     * @var string
-     */
-    private $awsBucket;
 
     /**
      * @var S3Client
@@ -70,9 +55,8 @@ class ZencoderPlugin extends VersionProvider
 
     public function __construct(
         $apiKey,
-        $awsKey,
-        $awsSecretKey,
         $awsBucket,
+        S3Client $client,
         $outputs = array()
     ) {
         parent::__construct(
@@ -82,8 +66,7 @@ class ZencoderPlugin extends VersionProvider
         );
 
         $this->apiKey = $apiKey;
-        $this->awsKey = $awsKey;
-        $this->awsSecretKey = $awsSecretKey;
+        $this->client = $client;
         $this->awsBucket = $awsBucket;
         $this->setOutputs($outputs);
     }
@@ -91,15 +74,7 @@ class ZencoderPlugin extends VersionProvider
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->tempDir = $filelib->getTempDir();
-    }
-
-    /**
-     * @return string
-     */
-    public function getAwsKey()
-    {
-        return $this->awsKey;
+        $this->tempFiles = $filelib->getTemporaryFileManager();
     }
 
     /**
@@ -108,14 +83,6 @@ class ZencoderPlugin extends VersionProvider
     public function getAwsBucket()
     {
         return $this->awsBucket;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAwsSecretKey()
-    {
-        return $this->awsSecretKey;
     }
 
     /**
@@ -131,20 +98,7 @@ class ZencoderPlugin extends VersionProvider
      */
     public function getClient()
     {
-        if (!$this->client) {
-            $this->client = S3Client::factory(
-                array(
-                    'key'    => $this->awsKey,
-                    'secret' => $this->awsSecretKey
-                )
-            );
-        }
         return $this->client;
-    }
-
-    public function setClient(S3Client $client)
-    {
-        $this->client = $client;
     }
 
     public function setService(ZencoderService $service)
@@ -231,13 +185,12 @@ class ZencoderPlugin extends VersionProvider
     {
         $retrieved = $this->storage->retrieve($file->getResource());
 
-        /** @var Model $result */
         $result = $this->getClient()->putObject(
-            array(
+            [
                 'Bucket' => $this->awsBucket,
                 'Key'    => $file->getUuid(),
                 'SourceFile' => $retrieved,
-            )
+            ]
         );
 
         $options = array(
@@ -298,16 +251,12 @@ class ZencoderPlugin extends VersionProvider
      */
     protected function fetchOutput(Job $job, $version)
     {
-        $tempnam = tempnam($this->tempDir, 'zen');
-        $thumbnam = tempnam($this->tempDir, 'zen');
-
         $output = $job->outputs[$version];
         $details = $this->getService()->outputs->details($output->id);
 
-        file_put_contents($tempnam, file_get_contents($details->url));
-
+        $tempnam = $this->tempFiles->add(file_get_contents($details->url));
         $thumb = array_shift($details->thumbnails[0]->images);
-        file_put_contents($thumbnam, file_get_contents($thumb->url));
+        $thumbnam = $this->tempFiles->add(file_get_contents($thumb->url));
 
         return array(
             $tempnam,

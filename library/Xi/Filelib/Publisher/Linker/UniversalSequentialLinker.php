@@ -9,12 +9,12 @@
 
 namespace Xi\Filelib\Publisher\Linker;
 
+use Pekkis\DirectoryCalculator\DirectoryCalculator;
+use Pekkis\DirectoryCalculator\Strategy\UniversalLeveledStrategy;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\ReversibleLinker;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\UniversalLeveledDirectoryIdCalculator;
 use Xi\Filelib\Version;
 
 /**
@@ -25,18 +25,21 @@ use Xi\Filelib\Version;
 class UniversalSequentialLinker implements ReversibleLinker
 {
     /**
-     * @var DirectoryIdCalculator
+     * @var DirectoryCalculator
      */
-    private $directoryIdCalculator;
+    private $directoryCalculator;
 
     /**
      * @var FileRepository
      */
     protected $fileRepository;
 
-    public function __construct($directoryLevels = 3, $filesPerDirectory = 500)
+    public function __construct($prefix = '')
     {
-        $this->directoryIdCalculator = new UniversalLeveledDirectoryIdCalculator($directoryLevels, $filesPerDirectory);
+        $this->directoryCalculator = new DirectoryCalculator(
+            new UniversalLeveledStrategy(),
+            $prefix
+        );
     }
 
     /**
@@ -72,17 +75,6 @@ class UniversalSequentialLinker implements ReversibleLinker
     }
 
     /**
-     * Returns directory path for specified file id
-     *
-     * @param  File   $file
-     * @return string
-     */
-    public function getDirectoryId(File $file)
-    {
-        return $this->directoryIdCalculator->calculateDirectoryId($file);
-    }
-
-    /**
      * Returns link for a version of a file
      *
      * @param  File   $file
@@ -92,7 +84,6 @@ class UniversalSequentialLinker implements ReversibleLinker
      */
     public function getLink(File $file, Version $version, $extension)
     {
-
         $link = $this->getBaseLink($file);
         $pinfo = pathinfo($link);
         $link = $pinfo['dirname'] . '/' . $pinfo['filename'] . '-' . $version->toString();
@@ -110,11 +101,10 @@ class UniversalSequentialLinker implements ReversibleLinker
     protected function getBaseLink(File $file)
     {
         $url = array();
-        $url[] = $this->getDirectoryId($file);
+        $url[] = $this->directoryCalculator->calculateDirectory($file);
         $name = $this->getFileName($file);
         $url[] = $name;
         $url = implode(DIRECTORY_SEPARATOR, $url);
-
         return $url;
     }
 }

@@ -10,11 +10,13 @@
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
 use League\Flysystem\Plugin\ListFiles;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
+use Pekkis\DirectoryCalculator\DirectoryCalculator;
+use Pekkis\DirectoryCalculator\Strategy\TimeStrategy;
+use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Adapter\FlysystemStorageAdapter;
+use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 
 /**
  * @group storage
@@ -38,13 +40,8 @@ class FlysystemStorageAdapterTest extends TestCase
 
     protected function tearDown()
     {
-        $filesystem = $this->getFilesystem();
-        foreach ($filesystem->listFiles('', true) as $file) {
-
-            if (!preg_match('#\.gitignore#', $file['path'])) {
-                $filesystem->delete($file['path']);
-            }
-        }
+        $deletor = new RecursiveDirectoryDeletor('files');
+        $deletor->delete();
     }
 
     protected function getStorage()
@@ -52,8 +49,8 @@ class FlysystemStorageAdapterTest extends TestCase
         $filesystem = $this->getFilesystem();
         $filesystem->addPlugin(new ListFiles());
 
-        $dc = new TimeDirectoryIdCalculator();
-        $pc = new LegacyPathCalculator($dc);
+        $dc = new DirectoryCalculator(new TimeStrategy());
+        $pc = new ImprovedPathCalculator($dc);
         $storage = new FlysystemStorageAdapter($filesystem, $pc, false);
         return array($storage, true);
     }

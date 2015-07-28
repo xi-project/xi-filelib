@@ -9,10 +9,11 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
+use League\Flysystem\AdapterInterface;
 use League\Flysystem\Filesystem;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\PathCalculator;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
+use Xi\Filelib\Tool\PathCalculator\PathCalculator;
+use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
@@ -37,16 +38,14 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     /**
      * @param Filesystem $filesystem
      * @param PathCalculator $pathCalculator
-     * @param string $tempDir
      */
     public function __construct(
         Filesystem $filesystem,
-        PathCalculator $pathCalculator,
-        $tempDir = null
+        PathCalculator $pathCalculator = null
     ) {
 
         $this->filesystem = $filesystem;
-        $this->pathCalculator = ($pathCalculator) ?: new LegacyPathCalculator();
+        $this->pathCalculator = ($pathCalculator) ?: new ImprovedPathCalculator();
     }
 
     private function getPathName(Resource $resource)
@@ -62,36 +61,47 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
-        $this->filesystem->put($pathName, file_get_contents($tempFile));
+        $this->filesystem->put(
+            $pathName,
+            file_get_contents($tempFile),
+            [
+                'visibility' => AdapterInterface::VISIBILITY_PRIVATE
+            ]
+        );
+
+        return new Retrieved($tempFile);
     }
 
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
     {
         $pathName = $this->getVersionPathName($versionable, $version);
-        $this->filesystem->put($pathName, file_get_contents($tempFile));
+
+        $this->filesystem->put(
+            $pathName,
+            file_get_contents($tempFile),
+            [
+                'visibility' => AdapterInterface::VISIBILITY_PRIVATE
+            ]
+        );
+        return new Retrieved($tempFile);
     }
 
     public function retrieve(Resource $resource)
     {
-        $tmp = $this->getTemporaryFilename();
-        $file =
-        file_put_contents(
-            $tmp,
-            $this->filesystem->get($this->getPathName($resource))->read()
+        return new Retrieved(
+            $this->tempFiles->add(
+                $this->filesystem->get($this->getPathName($resource))->read()
+            )
         );
-        return new Retrieved($tmp, true);
     }
 
     public function retrieveVersion(Versionable $versionable, Version $version)
     {
-        $tmp = $this->getTemporaryFilename();
-        file_put_contents(
-            $tmp,
-            $this->filesystem->get(
-                $this->getVersionPathName($versionable, $version)
-            )->read()
+        return new Retrieved(
+            $this->tempFiles->add(
+                $this->filesystem->get($this->getVersionPathName($versionable, $version))->read()
+            )
         );
-        return new Retrieved($tmp, true);
     }
 
     public function delete(Resource $resource)

@@ -2,7 +2,10 @@
 
 namespace Xi\Filelib\Tests;
 
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Authorization\AuthorizationPlugin;
+use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\File\File;
@@ -11,31 +14,10 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\Events;
+use Xi\Filelib\Storage\Adapter\StorageAdapter;
 
 class FileLibraryTest extends TestCase
 {
-    private $dirname;
-
-    /**
-     * @var FileLibrary
-     */
-    private $filelib;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->dirname = ROOT_TESTS . '/data/publisher/unwritable_dir';
-
-        chmod($this->dirname, 0444);
-
-    }
-
-    public function tearDown()
-    {
-        parent::tearDown();
-        chmod($this->dirname, 0755);
-    }
-
     /**
      * @test
      */
@@ -77,55 +59,6 @@ class FileLibraryTest extends TestCase
     {
         $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
         $this->assertInstanceOf('Xi\Filelib\Backend\Backend', $filelib->getBackend());
-    }
-
-    /**
-     * @test
-     */
-    public function tempDirShouldDefaultToSystemTempDir()
-    {
-        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
-        $this->assertEquals(sys_get_temp_dir(), $filelib->getTempDir());
-    }
-
-    /**
-     * @test
-     */
-    public function setTempDirShouldFailWhenDirectoryDoesNotExists()
-    {
-        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
-
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            sprintf(
-                'Temp dir "%s" is not writable or does not exist',
-                ROOT_TESTS . '/nonexisting_directory'
-            )
-        );
-
-        $filelib->setTempDir(ROOT_TESTS . '/nonexisting_directory');
-    }
-
-    /**
-     * @test
-     */
-    public function setTempDirShouldFailWhenDirectoryIsNotWritable()
-    {
-        $dirname = ROOT_TESTS . '/data/publisher/unwritable_dir';
-        $this->assertTrue(is_dir($this->dirname));
-        $this->assertFalse(is_writable($this->dirname));
-
-        $filelib = new FileLibrary($this->getMockedStorageAdapter(), $this->getMockedBackendAdapter());
-
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            sprintf(
-                'Temp dir "%s" is not writable or does not exist',
-                $dirname
-            )
-        );
-
-        $filelib->setTempDir($dirname);
     }
 
     /**
@@ -388,6 +321,59 @@ class FileLibraryTest extends TestCase
 
         $filelib->setResourceRepository($repo);
         $this->assertSame($repo, $filelib->getResourceRepository());
+    }
 
+    /**
+     * @test
+     */
+    public function adaptersCanBeGivenLazily()
+    {
+        $storageAdapter = function() {
+            return $this->getMockedStorageAdapter();
+        };
+
+        $backendAdapter = function() {
+            return $this->getMockedBackendAdapter();
+        };
+
+        $filelib = new FileLibrary(
+            $storageAdapter,
+            $backendAdapter
+        );
+
+        $this->assertInstanceOf('Xi\Filelib\Storage\Storage', $filelib->getStorage());
+        $this->assertInstanceOf('Xi\Filelib\Backend\Backend', $filelib->getBackend());
+    }
+
+    /**
+     * @test
+     */
+    public function tempDirAcceptsDirectory()
+    {
+        $filelib = new FileLibrary(
+            $this->prophesize(StorageAdapter::class)->reveal(),
+            $this->prophesize(BackendAdapter::class)->reveal(),
+            $this->prophesize(EventDispatcherInterface::class)->reveal(),
+            sys_get_temp_dir()
+        );
+
+        $this->assertInstanceOf(TemporaryFileManager::class, $filelib->getTemporaryFileManager());
+    }
+
+    /**
+     * @test
+     */
+    public function tempDirAcceptsObject()
+    {
+        $tfm = new TemporaryFileManager(sys_get_temp_dir());
+
+        $filelib = new FileLibrary(
+            $this->prophesize(StorageAdapter::class)->reveal(),
+            $this->prophesize(BackendAdapter::class)->reveal(),
+            $this->prophesize(EventDispatcherInterface::class)->reveal(),
+            $tfm
+        );
+
+        $this->assertSame($tfm, $filelib->getTemporaryFileManager());
     }
 }

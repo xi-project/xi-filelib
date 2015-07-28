@@ -8,7 +8,6 @@ use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Xi\Filelib\Backend\Adapter\DoctrineDbalBackendAdapter;
 use Xi\Filelib\Backend\Adapter\MongoBackendAdapter;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
 use Xi\Filelib\Backend\Cache\Adapter\MemcachedCacheAdapter;
@@ -18,7 +17,6 @@ use Symfony\Component\Stopwatch\Stopwatch;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Publisher\Adapter\Filesystem\SymlinkFilesystemPublisherAdapter;
 use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
-use Xi\Filelib\Tool\Slugifier\Slugifier;
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Plugin\Image\VersionPlugin;
 use Xi\Filelib\Authorization\Adapter\SimpleAuthorizationAdapter;
@@ -96,7 +94,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
         );
 
         $filelib = new FileLibrary(
-            new FilesystemStorageAdapter(ROOT_TESTS . '/data/files', new LegacyPathCalculator()),
+            new FilesystemStorageAdapter(ROOT_TESTS . '/data/files'),
             new DoctrineDbalBackendAdapter(
                 $this->conn
             ),
@@ -123,9 +121,7 @@ class TestCase extends \Xi\Filelib\Tests\TestCase
 
         $publisher = new Publisher(
             new SymlinkFilesystemPublisherAdapter(ROOT_TESTS . '/data/publisher/public', '600', '700', 'files'),
-            new BeautifurlLinker(
-                new Slugifier()
-            )
+            new BeautifurlLinker()
         );
         $publisher->attachTo($filelib);
         $this->publisher = $publisher;

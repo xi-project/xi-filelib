@@ -9,24 +9,15 @@
 
 namespace Xi\Filelib\Tests\File;
 
-use Doctrine\Common\Util\Debug;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Events;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\RandomizeNamePlugin;
-use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
 use Xi\Filelib\Profile\FileProfile;
-use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Filelib\Backend\Finder\FileFinder;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\TimeDirectoryIdCalculator;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
-use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;

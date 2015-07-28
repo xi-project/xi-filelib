@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Publisher\Adapter;
 
+use League\Flysystem\AdapterInterface;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Attacher;
@@ -78,7 +79,13 @@ class FlysystemPublisherAdapter implements PublisherAdapter
             return false;
         }
 
-        $this->filesystem->write($path, file_get_contents($tmp));
+        $this->filesystem->write(
+            $path,
+            file_get_contents($tmp),
+            [
+                'visibility' => AdapterInterface::VISIBILITY_PUBLIC
+            ]
+        );
         return true;
     }
 

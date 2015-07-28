@@ -135,7 +135,6 @@ class VersionPluginTest extends TestCase
                 'ed' => $ed
             )
         );
-        $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue(ROOT_TESTS . '/data/temp'));
 
         $this->plugin->attachTo($filelib);
         $ret = $this->plugin->createAllTemporaryVersions($file);
@@ -218,15 +217,6 @@ class VersionPluginTest extends TestCase
         $ret = $plugin->getExtension($file, Version::get('xooxoo'));
 
         $this->assertSame('jpg', $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function injectsTempDirFromFilelib()
-    {
-        $filelib = $this->getMockedFilelib();
-        $filelib->expects($this->any())->method('getTempDir')->will($this->returnValue('lussutushovi'));
     }
 
     /**

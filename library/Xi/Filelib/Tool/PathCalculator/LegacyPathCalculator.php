@@ -7,12 +7,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator;
+namespace Xi\Filelib\Tool\PathCalculator;
 
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\UniversalLeveledDirectoryIdCalculator;
+use Pekkis\DirectoryCalculator\DirectoryCalculator;
+use Pekkis\DirectoryCalculator\Strategy\UniversalLeveledStrategy;
 use Xi\Filelib\Version;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Adapter\Filesystem\DirectoryIdCalculator\DirectoryIdCalculator;
 use Xi\Filelib\Versionable;
 use Xi\Filelib\File\File;
 use Closure;
@@ -20,17 +20,19 @@ use Closure;
 class LegacyPathCalculator implements PathCalculator
 {
     /**
-     * @var DirectoryIdCalculator
+     * @var DirectoryCalculator
      */
-    private $directoryIdCalculator;
+    private $directoryCalculator;
 
     /**
-     * @param DirectoryIdCalculator $directoryIdCalculator
+     * @param DirectoryCalculator $directoryCalculator
      * @param Closure $callback
      */
-    public function __construct(DirectoryIdCalculator $directoryIdCalculator = null)
+    public function __construct(DirectoryCalculator $directoryCalculator = null)
     {
-        $this->directoryIdCalculator = $directoryIdCalculator ?: new UniversalLeveledDirectoryIdCalculator();
+        $this->directoryCalculator = $directoryCalculator ?: new DirectoryCalculator(
+            new UniversalLeveledStrategy()
+        );
     }
 
     /**
@@ -39,7 +41,7 @@ class LegacyPathCalculator implements PathCalculator
      */
     public function getPath(Resource $resource)
     {
-        return $this->directoryIdCalculator->calculateDirectoryId($resource) . '/' . $resource->getId();
+        return $this->directoryCalculator->calculateDirectory($resource) . '/' . $resource->getId();
     }
 
     /**
@@ -50,9 +52,9 @@ class LegacyPathCalculator implements PathCalculator
     public function getPathVersion(Versionable $versionable, Version $version)
     {
         list($resource, $file) = $this->extractResourceAndFileFromVersionable($versionable);
-        $path = $this->directoryIdCalculator->calculateDirectoryId($resource) . '/' . $version->toString();
+        $path = $this->directoryCalculator->calculateDirectory($resource) . '/' . $version->toString();
         if ($file) {
-            $path .= '/sub/' . $resource->getId() . '/' . $this->directoryIdCalculator->calculateDirectoryId($file);
+            $path .= '/sub/' . $resource->getId() . '/' . $this->directoryCalculator->calculateDirectory($file);
         }
         $path .= '/' . (($file) ? $file->getId() : $resource->getId());
         return $path;

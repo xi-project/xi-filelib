@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Renderer;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Xi\Filelib\Attacher;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\RenderEvent;
@@ -14,10 +15,11 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
+use Xi\Filelib\Renderer\Adapter\RendererAdapter;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Version;
 
-class Renderer
+class Renderer implements Attacher
 {
     /**
      * @var array Default options
@@ -53,11 +55,17 @@ class Renderer
 
     /**
      * @param FileLibrary $filelib
-     * @param RendererAdapter $adapter
      */
-    public function __construct(FileLibrary $filelib, RendererAdapter $adapter)
+    public function __construct(RendererAdapter $adapter)
     {
         $this->adapter = $adapter;
+    }
+
+    /**
+     * @param FileLibrary $filelib
+     */
+    public function attachTo(FileLibrary $filelib)
+    {
         $this->fileRepository = $filelib->getFileRepository();
         $this->profiles = $filelib->getProfileManager();
         $this->storage = $filelib->getStorage();
@@ -101,6 +109,7 @@ class Renderer
             );
         }
 
+
         try {
             $provider = $this->profiles->getVersionProvider($file, $version);
             $version = $provider->ensureValidVersion($version);
@@ -126,6 +135,7 @@ class Renderer
             $response->setHeader('Content-disposition', "attachment; filename={$file->getName()}");
         }
         $retrieved = new FileObject($this->retrieve($file, $version));
+
         $response->setHeader('Content-Type', $retrieved->getMimetype());
 
         $this->injectContentToResponse($retrieved, $response);

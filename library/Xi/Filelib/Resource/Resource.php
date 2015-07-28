@@ -10,6 +10,8 @@
 namespace Xi\Filelib\Resource;
 
 use DateTime;
+use Pekkis\DirectoryCalculator\Dateable;
+use Pekkis\DirectoryCalculator\UniversallyIdentifiable;
 use Xi\Filelib\BaseVersionable;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
@@ -18,7 +20,7 @@ use Xi\Filelib\Versionable;
 /**
  * Resource
  */
-class Resource extends BaseVersionable implements Identifiable, Versionable
+class Resource extends BaseVersionable implements Identifiable, Versionable, UniversallyIdentifiable, Dateable
 {
     /**
      * @var string

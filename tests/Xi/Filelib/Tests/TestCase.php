@@ -2,6 +2,7 @@
 
 namespace Xi\Filelib\Tests;
 
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\Profile\FileProfile;
 
 class TestCase extends \PHPUnit_Framework_TestCase
@@ -35,7 +36,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
                 'backend' => null,
                 'queue' => null,
                 'pm' => null,
-                'tempDir' => null,
             );
 
             $mocks = array_merge($defaults, $args[1]);
@@ -60,9 +60,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         $ret = $filelib->getMock();
 
-        if (isset($tempDir)) {
-            $ret->expects($this->any())->method('getTempDir')->will($this->returnValue($tempDir));
-        }
+        $ret->expects($this->any())
+            ->method('getTemporaryFileManager')
+            ->will($this->returnValue(new TemporaryFileManager(ROOT_TESTS . '/data/temp')));
 
         if ($fire) {
             $ret->expects($this->any())->method('getFileRepository')->will($this->returnValue($fire));
@@ -465,5 +465,25 @@ class TestCase extends \PHPUnit_Framework_TestCase
         );
     }
 
+    protected function getCopyOf($path)
+    {
+        $tempLusser = tempnam(ROOT_TESTS . '/tmp', 'lub');
+        copy($path, $tempLusser);
+        return $tempLusser;
+    }
 
+    protected function getSelfLussingManatee()
+    {
+        return $this->getCopyOf(ROOT_TESTS . '/data/self-lussing-manatee.jpg');
+    }
+
+    protected function getTussi()
+    {
+        return $this->getCopyOf(ROOT_TESTS . '/data/tussi.txt');
+    }
+
+    protected function getLussi()
+    {
+        return $this->getCopyOf(ROOT_TESTS . '/data/lussi.txt');
+    }
 }

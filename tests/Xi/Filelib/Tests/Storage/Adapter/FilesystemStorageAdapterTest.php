@@ -11,7 +11,6 @@ namespace Xi\Filelib\Tests\Storage\Adapter;
 
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\Resource\Resource;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Version;
 
@@ -77,7 +76,7 @@ class FilesystemStorageAdapterTest extends TestCase
         $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
         $storage->store(
             $resource,
-            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
+            $this->getSelfLussingManatee()
         );
     }
 
@@ -91,13 +90,13 @@ class FilesystemStorageAdapterTest extends TestCase
 
         chmod($root, 0400);
 
-        $resource = Resource::create(['id' => 666]);
+        $resource = Resource::create(['id' => 666, 'uuid' => Uuid::uuid4()]);
 
         $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
         $storage->storeVersion(
             $resource,
             Version::get('puupster'),
-            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
+            $this->getSelfLussingManatee()
         );
     }
 }

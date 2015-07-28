@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Xi\Filelib\Renderer;
+namespace Xi\Filelib\Renderer\Adapter;
 
 /**
  * Interface for accelerated renderers

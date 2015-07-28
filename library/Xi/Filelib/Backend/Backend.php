@@ -22,6 +22,7 @@ use Xi\Filelib\FilelibException;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Tool\LazyReferenceResolver;
 
 class Backend
 {
@@ -31,9 +32,9 @@ class Backend
     private $eventDispatcher;
 
     /**
-     * @var BackendAdapter
+     * @var LazyReferenceResolver
      */
-    private $platform;
+    private $adapter;
 
     /**
      * @var IdentityMap
@@ -47,15 +48,14 @@ class Backend
 
     /**
      * @param EventDispatcherInterface $eventDispatcher
-     * @param BackendAdapter $platform
+     * @param BackendAdapter $adapter
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
-        BackendAdapter $platform
+        $adapter
     ) {
-        $this->platform = $platform;
+        $this->adapter = new LazyReferenceResolver($adapter, 'Xi\Filelib\Backend\Adapter\BackendAdapter');
         $this->eventDispatcher = $eventDispatcher;
-
         $this->identityMap = new IdentityMap($this->eventDispatcher);
     }
 
@@ -101,11 +101,11 @@ class Backend
     }
 
     /**
-     * @return BackendAdapter
+     * @return LazyReferenceResolver
      */
-    public function getBackendAdapter()
+    public function getAdapter()
     {
-        return $this->platform;
+        return $this->adapter;
     }
 
     public function getResolvers()
@@ -114,11 +114,11 @@ class Backend
             array(
                 $this->identityMap,
                 $this->cache,
-                $this->platform
+                $this->resolveAdapter()
             ) :
             array(
                 $this->identityMap,
-                $this->platform
+                $this->resolveAdapter()
             );
     }
 
@@ -130,7 +130,7 @@ class Backend
      */
     public function findByFinder(Finder $finder)
     {
-        $ids = $this->getBackendAdapter()->findByFinder($finder);
+        $ids = $this->resolveAdapter()->findByFinder($finder);
         $className = $finder->getResultClass();
 
         $request = new FindByIdsRequest($ids, $className, $this->eventDispatcher);
@@ -190,13 +190,14 @@ class Backend
                 )
             );
         }
-        return $this->platform->createFile($file, $folder);
+        return $this->resolveAdapter()->createFile($file, $folder);
     }
 
     /**
      * Creates a folder
      *
-     * @param  Folder           $folder
+     * @param  Folder $folder
+     * @return Folder
      * @throws FilelibException If folder could not be created.
      */
     public function createFolder(Folder $folder)
@@ -208,7 +209,7 @@ class Backend
                 );
             }
         }
-        return $this->platform->createFolder($folder);
+        return $this->resolveAdapter()->createFolder($folder);
     }
 
     /**
@@ -219,7 +220,7 @@ class Backend
      */
     public function deleteFile(File $file)
     {
-        return $this->platform->deleteFile($file);
+        return $this->resolveAdapter()->deleteFile($file);
     }
 
     /**
@@ -233,7 +234,7 @@ class Backend
         if ($this->findByFinder(new FileFinder(array('folder_id' => $folder->getId())))->count()) {
             throw new FolderNotEmptyException('Can not delete folder with files');
         }
-        return $this->platform->deleteFolder($folder);
+        return $this->resolveAdapter()->deleteFolder($folder);
     }
 
     /**
@@ -249,7 +250,7 @@ class Backend
                 sprintf('Folder was not found with id "%s"', $file->getFolderId())
             );
         }
-        $this->getBackendAdapter()->updateFile($file);
+        $this->resolveAdapter()->updateFile($file);
     }
 
     /**
@@ -260,7 +261,7 @@ class Backend
      */
     public function updateFolder(Folder $folder)
     {
-        $this->getBackendAdapter()->updateFolder($folder);
+        $this->resolveAdapter()->updateFolder($folder);
     }
 
     /**
@@ -280,7 +281,7 @@ class Backend
                 )
             );
         }
-        $this->platform->deleteResource($resource);
+        $this->resolveAdapter()->deleteResource($resource);
     }
 
     /**
@@ -291,7 +292,7 @@ class Backend
      */
     public function createResource(Resource $resource)
     {
-        return $this->platform->createResource($resource);
+        return $this->resolveAdapter()->createResource($resource);
     }
 
     /**
@@ -302,7 +303,7 @@ class Backend
      */
     public function updateResource(Resource $resource)
     {
-        $this->getBackendAdapter()->updateResource($resource);
+        $this->resolveAdapter()->updateResource($resource);
     }
 
     /**
@@ -313,6 +314,14 @@ class Backend
      */
     public function getNumberOfReferences(Resource $resource)
     {
-        return $this->getBackendAdapter()->getNumberOfReferences($resource);
+        return $this->resolveAdapter()->getNumberOfReferences($resource);
+    }
+
+    /**
+     * @return BackendAdapter
+     */
+    private function resolveAdapter()
+    {
+        return $this->adapter->resolve();
     }
 }

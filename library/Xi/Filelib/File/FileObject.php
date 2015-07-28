@@ -9,9 +9,8 @@
 
 namespace Xi\Filelib\File;
 
+use Pekkis\MimeTypes\MimeTypes;
 use SplFileObject;
-use Xi\Filelib\Tool\MimeTypeResolver\FinfoMimeTypeResolver;
-use Xi\Filelib\Tool\MimeTypeResolver\MimeTypeResolver;
 
 /**
  * Extends SplFileObject to offer mime type detection via Fileinfo.
@@ -22,50 +21,12 @@ use Xi\Filelib\Tool\MimeTypeResolver\MimeTypeResolver;
 class FileObject extends SplFileObject
 {
     /**
-     * @var string Mimetype
-     */
-    private $mimeType;
-
-    /**
-     * @var MimeTypeResolver
-     */
-    private static $typeResolver;
-
-    /**
-     * Sets type resolver
-     *
-     * @param MimeTypeResolver $typeResolver
-     */
-    public static function setMimeTypeResolver(MimeTypeResolver $typeResolver)
-    {
-        self::$typeResolver = $typeResolver;
-    }
-
-    /**
-     * Returns type resolver.
-     *
-     * @return MimeTypeResolver
-     */
-    public static function getMimeTypeResolver()
-    {
-        if (!self::$typeResolver) {
-            self::$typeResolver = new FinfoMimeTypeResolver();
-        }
-
-        return self::$typeResolver;
-    }
-
-    /**
      * Returns file's mime type (via type resolver).
      *
      * @return string
      */
     public function getMimeType()
     {
-        if (!$this->mimeType) {
-            $this->mimeType = self::getMimeTypeResolver()->resolveMimeType($this->getRealPath());
-        }
-
-        return $this->mimeType;
+        return (new MimeTypes())->resolveMimeType($this->getRealPath());
     }
 }

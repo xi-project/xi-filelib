@@ -9,9 +9,10 @@
 
 namespace Xi\Filelib\Plugin\Image;
 
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Events;
-use Xi\Filelib\File\MimeTypes;
+use Pekkis\MimeTypes\MimeTypes;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\BasePlugin;
@@ -37,9 +38,9 @@ class ChangeFormatPlugin extends BasePlugin
     protected $commandDefinitions;
 
     /**
-     * @var string
+     * @var TemporaryFileManager
      */
-    private $tempDir;
+    private $tempFiles;
 
     /**
      * @param string $targetExtension
@@ -66,7 +67,7 @@ class ChangeFormatPlugin extends BasePlugin
 
         $helper = new ImageMagickHelper(
             $upload->getRealPath(),
-            $this->tempDir,
+            $this->tempFiles,
             $this->commandDefinitions
         );
         $tempnam = $helper->execute();
@@ -89,6 +90,6 @@ class ChangeFormatPlugin extends BasePlugin
      */
     public function attachTo(FileLibrary $filelib)
     {
-        $this->tempDir = $filelib->getTempDir();
+        $this->tempFiles = $filelib->getTemporaryFileManager();
     }
 }

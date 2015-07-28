@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Tests\Plugin\Image;
 
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\Plugin\Image\Command\WatermarkCommand;
 use Xi\Filelib\Plugin\Image\ImageMagickHelper;
 use Xi\Filelib\Plugin\Image\Command\ExecuteMethodCommand;
@@ -33,7 +34,7 @@ class ImageMagickHelperTest extends TestCase
     {
         $helper = new ImageMagickHelper(
             ROOT_TESTS . '/data/self-lussing-manatee.jpg',
-            ROOT_TESTS . '/data/temp'
+            new TemporaryFileManager(ROOT_TESTS . '/data/temp')
         );
 
         $this->assertFalse($helper->isExecuted());
@@ -47,7 +48,7 @@ class ImageMagickHelperTest extends TestCase
     {
         $helper = new ImageMagickHelper(
             ROOT_TESTS . '/data/self-lussing-manatee.jpg',
-            ROOT_TESTS . '/data/temp',
+            new TemporaryFileManager(ROOT_TESTS . '/data/temp'),
             array(
                 new ExecuteMethodCommand('setImageGreenPrimary', array(6, 66)),
                 new ExecuteMethodCommand('setImageScene', array(4)),
@@ -67,7 +68,7 @@ class ImageMagickHelperTest extends TestCase
     {
         $helper = new ImageMagickHelper(
             ROOT_TESTS . '/data/self-lussing-manatee.jpg',
-            ROOT_TESTS . '/data/temp'
+            new TemporaryFileManager(ROOT_TESTS . '/data/temp')
         );
 
         $this->assertCount(0, $helper->getCommands());
@@ -95,7 +96,7 @@ class ImageMagickHelperTest extends TestCase
     {
         $helper = new ImageMagickHelper(
             ROOT_TESTS . '/data/self-lussing-manatee.jpg',
-            ROOT_TESTS . '/data/temp'
+            new TemporaryFileManager(ROOT_TESTS . '/data/temp')
         );
 
         $mock = $this->getMock('Xi\Filelib\Plugin\Image\Command\Command');
@@ -126,7 +127,7 @@ class ImageMagickHelperTest extends TestCase
     {
         $helper = new ImageMagickHelper(
             ROOT_TESTS . '/data/self-lussing-manatee.jpg',
-            ROOT_TESTS . '/data/temp'
+            new TemporaryFileManager(ROOT_TESTS . '/data/temp')
         );
 
         $helper->execute();
@@ -142,7 +143,7 @@ class ImageMagickHelperTest extends TestCase
     {
         $helper = new ImageMagickHelper(
             ROOT_TESTS . '/data/illusive-manatee.jpg',
-            ROOT_TESTS . '/data/temp'
+            new TemporaryFileManager(ROOT_TESTS . '/data/temp')
         );
 
         $this->setExpectedException('Xi\Filelib\RuntimeException');
@@ -160,7 +161,7 @@ class ImageMagickHelperTest extends TestCase
 
         $helper = new ImageMagickHelper(
             ROOT_TESTS . '/data/self-lussing-manatee.jpg',
-            ROOT_TESTS . '/data/temp',
+            new TemporaryFileManager(ROOT_TESTS . '/data/temp'),
             array(
                 $first,
                 $second

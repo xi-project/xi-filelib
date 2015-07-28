@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Plugin\Image;
 
 use Closure;
+use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
@@ -24,9 +25,9 @@ use Xi\Filelib\Version;
 class ArbitraryVersionPlugin extends LazyVersionProvider
 {
     /**
-     * @var string
+     * @var TemporaryFileManager
      */
-    protected $tempDir;
+    protected $tempFiles;
 
     /**
      * @var string
@@ -123,7 +124,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
     public function attachTo(FileLibrary $filelib)
     {
         parent::attachTo($filelib);
-        $this->tempDir = $filelib->getTempDir();
+        $this->tempFiles = $filelib->getTemporaryFileManager();
     }
 
     /**
@@ -168,7 +169,7 @@ class ArbitraryVersionPlugin extends LazyVersionProvider
             )
         );
 
-        $helper = new ImageMagickHelper($retrieved, $this->tempDir, $commandDefinitions);
+        $helper = new ImageMagickHelper($retrieved, $this->tempFiles, $commandDefinitions);
 
         return array(
             $version->toString(),

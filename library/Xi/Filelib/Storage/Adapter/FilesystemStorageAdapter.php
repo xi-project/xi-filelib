@@ -10,9 +10,9 @@
 namespace Xi\Filelib\Storage\Adapter;
 
 use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\FileIOException;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\LegacyPathCalculator;
-use Xi\Filelib\Storage\Adapter\Filesystem\PathCalculator\PathCalculator;
+use Xi\Filelib\Tool\PathCalculator\PathCalculator;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Version;
 use Xi\Filelib\Versionable;
@@ -21,6 +21,7 @@ use Xi\Filelib\Versionable;
  * Stores files in a filesystem
  *
  * @author pekkis
+ * @deprecated Use FlysystemAdapter
  */
 class FilesystemStorageAdapter extends BaseStorageAdapter
 {
@@ -56,7 +57,7 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         }
 
         $this->root = $root;
-        $this->pathCalculator = $pathCalculator ?: new LegacyPathCalculator();
+        $this->pathCalculator = $pathCalculator ?: new ImprovedPathCalculator();
         $this->filePermission = octdec($filePermission);
         $this->directoryPermission = octdec($directoryPermission);
     }
@@ -114,6 +115,8 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         }
         copy($tempFile, $pathName);
         chmod($pathName, $this->getFilePermission());
+
+        return new Retrieved($pathName, false);
     }
 
     public function storeVersion(Versionable $versionable, Version $version, $tempFile)
@@ -124,6 +127,8 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
             $this->createDirectory(dirname($pathName));
         }
         copy($tempFile, $pathName);
+
+        return new Retrieved($pathName, false);
     }
 
     public function retrieve(Resource $resource)

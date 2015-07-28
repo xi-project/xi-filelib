@@ -20,15 +20,18 @@
     ],
 
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.0",
         "symfony/event-dispatcher": "~2.0",
         "dflydev/apache-mime-types": "~1.0",
-        "rhumsaa/uuid": "~2.3",
+        "ramsey/uuid": "~2.8",
         "cocur/slugify": "~1.0",
-        "xi/transliterator": "0.5.*",
-        "pekkis/queue": "0.5.*",
+        "pekkis/queue": "~1.0",
+        "pekkis/temporary-file-manager": "~1.0",
+        "pekkis/directory-calculator": "~1.0",
+        "pekkis/mime-types": "~1.0",
         "xi/collections": "0.3.*",
-        "zencoder/zencoder-php": "~2.1"
+        "zencoder/zencoder-php": "~2.1",
+        "aws/aws-sdk-php": "~3.2"
     },
 
     "require-dev": {
