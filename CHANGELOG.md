@@ -21,6 +21,7 @@ It's been developed for years. Too much incubation is too much.
 * Removed upload limiter. Hook to before upload event to achieve same results.
 * PathCalculator namespace was changed.
 * RendererAdapter interfaces were moved to Renderer\Adapter namespace.
+* Renderer now implements Attacher like everybody else.
 
 ### PostgreSQL migration (you may have to install an extension to get the uuid function)
 
