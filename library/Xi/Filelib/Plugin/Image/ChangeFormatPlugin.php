@@ -12,7 +12,7 @@ namespace Xi\Filelib\Plugin\Image;
 use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\Event\FileUploadEvent;
 use Xi\Filelib\Events;
-use Xi\Filelib\File\MimeTypes;
+use Pekkis\MimeTypes\MimeTypes;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Plugin\BasePlugin;

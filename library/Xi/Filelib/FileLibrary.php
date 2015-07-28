@@ -9,7 +9,6 @@
 
 namespace Xi\Filelib;
 
-use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
 use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -70,16 +69,6 @@ class FileLibrary
     private $folderRepository;
 
     /**
-     * @var string
-     */
-    private $tempDir;
-
-    /**
-     * @var EventDispatchingQueue
-     */
-    private $queue;
-
-    /**
      * @var BackendAdapter
      */
     private $backendAdapter;
@@ -118,7 +107,6 @@ class FileLibrary
         }
 
         $this->temporaryFileManager = $tempDir;
-
         $this->backendAdapter = $backendAdapter;
         $this->eventDispatcher = $eventDispatcher;
         $this->profileManager = new ProfileManager($this->eventDispatcher);
@@ -388,4 +376,5 @@ class FileLibrary
     {
         return $this->getBackend()->getCache();
     }
+
 }

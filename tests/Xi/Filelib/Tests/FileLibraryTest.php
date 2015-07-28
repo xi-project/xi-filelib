@@ -18,28 +18,6 @@ use Xi\Filelib\Storage\Adapter\StorageAdapter;
 
 class FileLibraryTest extends TestCase
 {
-    private $dirname;
-
-    /**
-     * @var FileLibrary
-     */
-    private $filelib;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->dirname = ROOT_TESTS . '/data/publisher/unwritable_dir';
-
-        chmod($this->dirname, 0444);
-
-    }
-
-    public function tearDown()
-    {
-        parent::tearDown();
-        chmod($this->dirname, 0755);
-    }
-
     /**
      * @test
      */
@@ -398,5 +376,4 @@ class FileLibraryTest extends TestCase
 
         $this->assertSame($tfm, $filelib->getTemporaryFileManager());
     }
-
 }
