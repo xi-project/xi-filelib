@@ -17,6 +17,8 @@ It's been developed for years. Too much incubation is too much.
 * Removed Gaufrette storage adapter (use Flysystem)
 * Removed Gridfs storage adapter (use Gridfs via Flysystem)
 * Refactored linkers to use directory calculator.
+* Extracted mime type handling to pekkis/mime-types and refactored to it.
+* Removed upload limiter
 
 ### PostgreSQL migration (you may have to install an extension to get the uuid function)
 
