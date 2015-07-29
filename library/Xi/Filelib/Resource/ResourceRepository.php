@@ -19,6 +19,7 @@ use Xi\Filelib\Command\CommandDefinition;
 use Xi\Filelib\Event\ResourceEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\File\File;
+use Xi\Filelib\File\FileObject;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Profile\ProfileManager;
@@ -144,6 +145,32 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
         return $resource;
     }
 
+    public function findOrCreateResourceForPath($path)
+    {
+        if (!$path instanceof FileObject) {
+            $path = new FileObject($path);
+        }
+
+        $hash = sha1_file($path->getRealPath());
+        $finder = new ResourceFinder(array('hash' => $hash));
+        $resources = $this->backend->findByFinder($finder);
+
+        if ($resources->count()) {
+            return $resources->first();
+        }
+
+        $resource = Resource::create();
+        $resource->setDateCreated(new DateTime());
+        $resource->setHash($hash);
+        $resource->setSize($path->getSize());
+        $resource->setMimetype($path->getMimeType());
+
+        $this->create($resource, $path->getRealPath());
+
+    }
+
+
+
     /**
      * @param  File       $file
      * @param  FileUpload $upload
@@ -151,42 +178,6 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
      */
     public function findResourceForUpload(File $file, FileUpload $upload)
     {
-        $file = clone $file;
-
-        $hash = sha1_file($upload->getRealPath());
-        $profileObj = $this->profiles->getProfile($file->getProfile());
-
-        $finder = new ResourceFinder(array('hash' => $hash));
-        $resources = $this->backend->findByFinder($finder);
-
-        if ($resources) {
-            foreach ($resources as $resource) {
-                if (!$resource->isExclusive()) {
-                    $file->setResource($resource);
-
-                    if (!$profileObj->isSharedResourceAllowed($file)) {
-                        $file->unsetResource();
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (!$file->getResource()) {
-            $resource = Resource::create();
-            $resource->setDateCreated(new DateTime());
-            $resource->setHash($hash);
-            $resource->setSize($upload->getSize());
-            $resource->setMimetype($upload->getMimeType());
-            $file->setResource($resource);
-            if (!$profileObj->isSharedResourceAllowed($file)) {
-                $resource->setExclusive(true);
-            }
-
-            $this->create($resource, $upload->getRealPath());
-            $file->setResource($resource);
-        }
-
-        return $file->getResource();
+        return $this->findOrCreateResourceForPath($upload->getFileObject());
     }
 }

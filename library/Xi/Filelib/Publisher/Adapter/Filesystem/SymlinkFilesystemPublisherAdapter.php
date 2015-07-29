@@ -20,6 +20,7 @@ use Xi\Filelib\Publisher\PublisherAdapter;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Versionable\Version;
+use Xi\Filelib\Versionable\Versionable;
 
 /**
  * Publishes files in a filesystem by creating a symlink to the original file in the filesystem storage
@@ -93,10 +94,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
 
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
-        $retrieved = $this->storage->retrieveVersion(
-            $versionProvider->getApplicableVersionable($file),
-            $version
-        );
+        $retrieved = $this->retrieveVersion($file, $version, $versionProvider);
 
         $path = preg_replace("[^{$this->adapter->getRoot()}]", $relativePath, $retrieved);
 
@@ -105,6 +103,8 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
 
     public function publish(File $file, Version $version, VersionProvider $versionProvider, Linker $linker)
     {
+
+
         $link = $this->getPublicRoot() . '/' .
             $linker->getLink(
                 $file,
@@ -139,11 +139,11 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
                 chdir($oldCwd);
             } else {
 
+
+
                 symlink(
-                    $this->storage->retrieveVersion(
-                        $versionProvider->getApplicableVersionable($file),
-                        $version
-                    ),
+
+                    $this->retrieveVersion($file, $version, $versionProvider),
                     $link
                 );
             }
@@ -157,5 +157,13 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
         if (is_link($link)) {
             unlink($link);
         }
+    }
+
+    private function retrieveVersion(File $file, $version, VersionProvider $vp)
+    {
+        return $this->storage->retrieve(
+            $vp->getApplicableVersionable($file)->getVersion($version)->getResource(),
+            $version
+        );
     }
 }

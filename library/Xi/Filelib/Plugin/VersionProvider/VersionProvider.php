@@ -22,6 +22,8 @@ use Xi\Filelib\FileLibrary;
 use Xi\Filelib\InvalidVersionException;
 use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Profile\ProfileManager;
+use Xi\Filelib\Resource\ResourceRepository;
+use Xi\Filelib\Resource\ResourceRepositoryInterface;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Versionable\Versionable;
@@ -68,6 +70,11 @@ abstract class VersionProvider extends BasePlugin
     protected $fileRepository;
 
     /**
+     * @var ResourceRepositoryInterface
+     */
+    protected $resourceRepository;
+
+    /**
      * @param callable $isApplicableTo
      */
     public function __construct($isApplicableTo)
@@ -97,6 +104,7 @@ abstract class VersionProvider extends BasePlugin
         $this->profiles = $filelib->getProfileManager();
         $this->eventDispatcher = $filelib->getEventDispatcher();
         $this->fileRepository = $filelib->getFileRepository();
+        $this->resourceRepository = $filelib->getResourceRepository();
     }
 
     public function provideAllVersions(File $file)
@@ -105,9 +113,14 @@ abstract class VersionProvider extends BasePlugin
         $versions = $this->createAllTemporaryVersions($file);
 
         foreach ($versions as $version => $tmp) {
+
             $version = Version::get($version);
-            $this->storage->storeVersion($versionable, $version, $tmp);
-            $versionable->addVersion($version);
+
+            $resource = $this->resourceRepository->findOrCreateResourceForPath($tmp);
+            $versionable->addVersion($version, $resource);
+
+            // $this->storage->storeVersion($versionable, $version, $tmp);
+
             unlink($tmp);
         }
 
@@ -229,9 +242,12 @@ abstract class VersionProvider extends BasePlugin
      */
     public function getMimeType(File $file, Version $version)
     {
-        $retrieved = $this->storage->retrieveVersion(
-            $this->getApplicableVersionable($file),
-            $version
+        $versionable = $this->getApplicableVersionable($file);
+
+        $versioned = $versionable->getVersion($version);
+
+        $retrieved = $this->storage->retrieve(
+            $versioned->getResource()
         );
 
         $fileObj = new FileObject($retrieved);

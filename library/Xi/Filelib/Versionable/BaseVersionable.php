@@ -10,9 +10,15 @@
 namespace Xi\Filelib\Versionable;
 
 use Xi\Filelib\BaseIdentifiable;
+use Xi\Filelib\Resource\Resource;
 
-abstract class BaseVersionable extends BaseIdentifiable
+abstract class BaseVersionable extends BaseIdentifiable implements Versionable
 {
+    /**
+     * @var array
+     */
+    private $versions = [];
+
     /**
      * Returns currently created versions
      *
@@ -20,7 +26,12 @@ abstract class BaseVersionable extends BaseIdentifiable
      */
     public function getVersions()
     {
-        return $this->getData()->get('versions', array());
+        return $this->versions;
+    }
+
+    public function getVersion($version)
+    {
+        return $this->versions[Version::get($version)->toString()];
     }
 
     /**
@@ -29,15 +40,10 @@ abstract class BaseVersionable extends BaseIdentifiable
      * @param mixed $version
      * @return self
      */
-    public function addVersion($version)
+    public function addVersion($version, Resource $resource)
     {
-        $version = Version::get($version);
-
-        $versions = $this->getVersions();
-        if (!in_array($version->toString(), $versions)) {
-            array_push($versions, $version->toString());
-            $this->setVersions($versions);
-        }
+        $versioned = new Versioned($version, $resource);
+        $this->versions[$versioned->getVersion()->toString()] = $versioned;
 
         return $this;
     }
@@ -51,10 +57,9 @@ abstract class BaseVersionable extends BaseIdentifiable
     public function removeVersion($version)
     {
         $version = Version::get($version);
+        unset($this->versions[$version->toString()]);
 
-        $versions = $this->getVersions();
-        $versions = array_diff($versions, array($version->toString()));
-        return $this->setVersions($versions);
+        return $this;
     }
 
     /**
@@ -66,8 +71,7 @@ abstract class BaseVersionable extends BaseIdentifiable
     public function hasVersion($version)
     {
         $version = Version::get($version);
-
-        return in_array($version->toString(), $this->getVersions());
+        return isset($this->versions[$version->toString()]);
     }
 
     /**

@@ -52,4 +52,6 @@ interface ResourceRepositoryInterface
      * @return Resource
      */
     public function findResourceForUpload(File $file, FileUpload $upload);
+
+    public function findOrCreateResourceForPath($path);
 }

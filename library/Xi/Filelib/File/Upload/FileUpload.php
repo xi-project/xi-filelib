@@ -202,6 +202,12 @@ class FileUpload
         return $this->fileObject->getRealPath();
     }
 
+    public function getFileObject()
+    {
+        return $this->fileObject;
+    }
+
+
     /**
      * Deletes on destruct if temporary
      */
@@ -211,4 +217,6 @@ class FileUpload
             unlink($this->fileObject->getRealPath());
         }
     }
+
+
 }

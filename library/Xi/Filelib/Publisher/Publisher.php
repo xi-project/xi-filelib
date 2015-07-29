@@ -319,7 +319,10 @@ class Publisher implements EventSubscriberInterface, Attacher
     {
         $versionUrls = $file->getData()->get('publisher.version_url', array());
         try {
+
+
             $this->getResolvedAdapter()->publish($file, $version, $this->getVersionProvider($file, $version), $this->linker);
+
             $versionUrls[$version->toString()] = $this->getUrl($file, $version);
             $file->getData()->set('publisher.version_url', $versionUrls);
             return true;
