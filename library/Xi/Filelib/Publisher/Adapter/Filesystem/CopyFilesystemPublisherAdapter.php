@@ -52,9 +52,8 @@ class CopyFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter impl
                 mkdir($path, $this->getDirectoryPermission(), true);
             }
 
-            $tmp = $this->storage->retrieveVersion(
-                $versionProvider->getApplicableVersionable($file),
-                $version
+            $tmp = $this->storage->retrieve(
+                $versionProvider->getApplicableVersionable($file)->getVersion($version)->getResource()
             );
 
             copy($tmp, $link);

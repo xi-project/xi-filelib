@@ -94,7 +94,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
 
         $relativePath = str_repeat("../", $levelsDown) . $relativePath;
 
-        $retrieved = $this->retrieveVersion($file, $version, $versionProvider);
+        $retrieved = $this->retrieve($file, $version, $versionProvider);
 
         $path = preg_replace("[^{$this->adapter->getRoot()}]", $relativePath, $retrieved);
 
@@ -139,11 +139,8 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
                 chdir($oldCwd);
             } else {
 
-
-
                 symlink(
-
-                    $this->retrieveVersion($file, $version, $versionProvider),
+                    $this->retrieve($file, $version, $versionProvider),
                     $link
                 );
             }
@@ -159,11 +156,17 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
         }
     }
 
-    private function retrieveVersion(File $file, $version, VersionProvider $vp)
+    /**
+     * @param File $file
+     * @param $version
+     * @param VersionProvider $vp
+     * @return string
+     * @throws \Xi\Filelib\Storage\FileIOException
+     */
+    private function retrieve(File $file, $version, VersionProvider $vp)
     {
         return $this->storage->retrieve(
-            $vp->getApplicableVersionable($file)->getVersion($version)->getResource(),
-            $version
+            $vp->getApplicableVersionable($file)->getVersion($version)->getResource()
         );
     }
 }

@@ -193,9 +193,10 @@ class Renderer implements Attacher
      */
     private function retrieve(File $file, Version $version)
     {
-        return $this->storage->retrieveVersion(
-            $this->profiles->getVersionProvider($file, $version)->getApplicableVersionable($file),
-            $version
+        $vp = $this->profiles->getVersionProvider($file, $version);
+
+        return $this->storage->retrieve(
+            $vp->getApplicableVersionable($file)->getVersion($version)->getResource()
         );
     }
 

@@ -205,10 +205,13 @@ abstract class VersionProvider extends BasePlugin
 
         foreach ($versions as $version) {
             $version = Version::get($version);
-            $versionable->removeVersion($version);
-            if ($this->storage->versionExists($versionable, $version)) {
-                $this->storage->deleteVersion($versionable, $version);
+
+            $resource = $versionable->getVersion($version)->getResource();
+
+            if ($this->storage->exists($resource)) {
+                $this->storage->delete($resource);
             }
+            $versionable->removeVersion($version);
         }
 
         $event = new VersionProviderEvent($this, $versionable, $versions);

@@ -31,7 +31,7 @@ class Versioned
     }
 
     /**
-     * @return Resource
+     * @return \Xi\Filelib\Resource\Resource
      */
     public function getResource()
     {
