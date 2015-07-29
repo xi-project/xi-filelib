@@ -47,32 +47,4 @@ class RetrievedCacheTest extends TestCase
         $this->cache->delete($resource);
         $this->assertFalse($this->cache->get($resource));
     }
-
-    /**
-     * @test
-     */
-    public function cachesVersions()
-    {
-        $id = 'tusso con lusso';
-        $version = Version::get('tenhunizer');
-        $versionable = File::create(array('id' => $id));
-        $versionable2 = Resource::create(array('id' => $id));
-
-        $this->assertFalse($this->cache->getVersion($versionable, $version));
-
-        $this->cache->setVersion($versionable, $version, $this->retrieved);
-        $this->cache->setVersion($versionable2, $version, $this->retrieved2);
-
-        $this->assertSame($this->retrieved, $this->cache->getVersion($versionable, $version));
-        $this->assertSame($this->retrieved2, $this->cache->getVersion($versionable2, $version));
-
-        $this->assertNotSame(
-            $this->cache->getVersion($versionable, $version),
-            $this->cache->getVersion($versionable2, $version)
-        );
-
-        $this->cache->deleteVersion($versionable, $version);
-        $this->assertFalse($this->cache->getVersion($versionable, $version));
-        $this->assertSame($this->retrieved2, $this->cache->getVersion($versionable2, $version));
-    }
 }

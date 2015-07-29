@@ -116,71 +116,6 @@ class Storage implements Attacher
         }
     }
 
-    public function retrieveVersion(Versionable $versionable, Version $version)
-    {
-
-        if ($retrieved = $this->cache->getVersion($versionable, $version)) {
-            return $retrieved->getPath();
-        }
-
-        if (!$this->versionExists($versionable, $version)) {
-            throw new FileIOException(
-                sprintf(
-                    "Physical file for storable of class '%s', #%s, version '%s' does not exist",
-                    get_class($versionable),
-                    $versionable->getId(),
-                    $version->toString()
-                )
-            );
-        }
-
-        $retrieved = $this->getResolvedAdapter()->retrieveVersion($versionable, $version);
-        $event = new StorageEvent($retrieved);
-        $this->eventDispatcher->dispatch(Events::AFTER_RETRIEVE, $event);
-
-        $this->cache->setVersion($versionable, $version, $retrieved);
-        return $retrieved->getPath();
-    }
-
-    public function deleteVersion(Versionable $versionable, Version $version)
-    {
-        if (!$this->versionExists($versionable, $version)) {
-            throw new FileIOException(
-                sprintf(
-                    "Physical file for storable of class '%s', #%s, version '%s' does not exist",
-                    get_class($versionable),
-                    $versionable->getId(),
-                    $version->toString()
-                )
-            );
-        }
-
-        $this->cache->deleteVersion($versionable, $version);
-        return $this->getResolvedAdapter()->deleteVersion($versionable, $version);
-    }
-
-    public function storeVersion(Versionable $versionable, Version $version, $tempFile)
-    {
-        try {
-            $event = new StorageEvent($tempFile);
-            $this->eventDispatcher->dispatch(Events::BEFORE_STORE, $event);
-            $this->cache->deleteVersion($versionable, $version);
-            return $this->getResolvedAdapter()->storeVersion($versionable, $version, $tempFile);
-        } catch (\Exception $e) {
-
-            throw new FileIOException(
-                sprintf(
-                    "Could not store physical file for storable of class '%s', #%s, version '%s'",
-                    get_class($versionable),
-                    $versionable->getId(),
-                    $version->toString()
-                ),
-                0,
-                $e
-            );
-        }
-    }
-
     /**
      * @param Resource $resource
      * @return bool
@@ -188,16 +123,6 @@ class Storage implements Attacher
     public function exists(Resource $resource)
     {
         return $this->getResolvedAdapter()->exists($resource);
-    }
-
-    /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @return bool
-     */
-    public function versionExists(Versionable $versionable, Version $version)
-    {
-        return $this->getResolvedAdapter()->versionExists($versionable, $version);
     }
 
     /**

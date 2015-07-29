@@ -39,27 +39,4 @@ class RetrievedCache
             unset($this->retrieved[$resource->getId()]);
         }
     }
-
-    /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @return Retrieved
-     */
-    public function getVersion(Versionable $versionable, Version $version)
-    {
-        return (isset($this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()]))
-            ? $this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()] : false;
-    }
-
-    public function setVersion(Versionable $versionable, Version $version, Retrieved $retrieved)
-    {
-        $this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()] = $retrieved;
-    }
-
-    public function deleteVersion(Versionable $versionable, Version $version)
-    {
-        if (isset($this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()])) {
-            unset($this->retrievedVersions[get_class($versionable)][$versionable->getId()][$version->toString()]);
-        }
-    }
 }

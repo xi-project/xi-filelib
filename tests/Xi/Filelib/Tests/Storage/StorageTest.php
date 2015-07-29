@@ -126,31 +126,6 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function storeVersionShouldThrowCorrectException()
-    {
-        $this->ed
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with(Events::BEFORE_STORE, $this->isInstanceOf('Xi\Filelib\Event\StorageEvent'));
-
-
-        $this->adapter->expects($this->once())->method('storeVersion')
-            ->will($this->throwException($this->exception));
-
-        try {
-            $this->storage->storeVersion($this->resource, $this->version, '/lus/hof');
-
-            $this->fail("Did not throw an exception");
-
-        } catch (FileIOException $e) {
-            $this->assertSame($this->exception, $e->getPrevious());
-        }
-
-    }
-
-    /**
-     * @test
-     */
     public function retrieveShouldThrowExceptionIfFileIsNotFound()
     {
         $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
@@ -169,24 +144,6 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function retrieveVersionsShouldThrowExceptionIfFileIsNotFound()
-    {
-        $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
-
-        $this->ed->expects($this->never())->method('dispatch');
-
-        $this->adapter
-            ->expects($this->once())
-            ->method('versionExists')
-            ->with($this->resource)
-            ->will($this->returnValue(false));
-
-        $this->storage->retrieveVersion($this->resource, Version::get('version'));
-    }
-
-    /**
-     * @test
-     */
     public function deleteShouldThrowExceptionIfFileIsNotFound()
     {
         $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
@@ -198,22 +155,6 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnValue(false));
 
         $this->storage->delete($this->resource);
-    }
-
-    /**
-     * @test
-     */
-    public function deleteVersionsShouldThrowExceptionIfFileIsNotFound()
-    {
-        $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
-
-        $this->adapter
-            ->expects($this->once())
-            ->method('versionExists')
-            ->with($this->resource)
-            ->will($this->returnValue(false));
-
-        $this->storage->deleteVersion($this->resource, Version::get('version'));
     }
 
     /**
@@ -236,29 +177,6 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
             ->with(Events::BEFORE_STORE, $this->isInstanceOf('Xi\Filelib\Event\StorageEvent'));
 
         $this->assertEquals('lus', $this->storage->store($resource, $path));
-    }
-
-    /**
-     * @test
-     */
-    public function storeVersionDelegates()
-    {
-        $resource = Resource::create();
-        $path = '/tenhunen/lipaisee.lus';
-        $version = Version::get('lusso');
-
-        $this->adapter
-            ->expects($this->once())
-            ->method('storeVersion')
-            ->with($resource, $version, $path)
-            ->will($this->returnValue('lus'));
-
-        $this->ed
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with(Events::BEFORE_STORE, $this->isInstanceOf('Xi\Filelib\Event\StorageEvent'));
-
-        $this->assertEquals('lus', $this->storage->storeVersion($resource, $version, $path));
     }
 
     /**
@@ -287,34 +205,6 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
 
 
         $this->assertEquals('lus', $this->storage->delete($resource));
-    }
-
-    /**
-     * @test
-     */
-    public function deleteVersionDelegates()
-    {
-        $resource = Resource::create();
-        $version = Version::get('lusso');
-
-        $this->adapter
-            ->expects($this->once())
-            ->method('deleteVersion')
-            ->with($resource, $version)
-            ->will($this->returnValue('lus'));
-
-        $this->adapter
-            ->expects($this->once())
-            ->method('versionExists')
-            ->with($resource, $version)
-            ->will($this->returnValue(true));
-
-        $this->cache
-            ->expects($this->once())
-            ->method('deleteVersion')
-            ->with($resource, $version);
-
-        $this->assertEquals('lus', $this->storage->deleteVersion($resource, $version));
     }
 
     /**
@@ -409,67 +299,6 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnValue('lus'));
 
         $this->assertEquals('lus', $this->storage->exists($resource));
-    }
-
-    /**
-     * @test
-     */
-    public function retrieveVersionDelegates()
-    {
-        $resource = Resource::create();
-        $version = Version::get('lusso');
-        $retrieved = new Retrieved('lus', false);
-
-        $this->adapter
-            ->expects($this->once())
-            ->method('retrieveVersion')
-            ->with($resource, $version)
-            ->will($this->returnValue($retrieved));
-
-        $this->adapter
-            ->expects($this->once())
-            ->method('versionExists')
-            ->with($resource, $version)
-            ->will($this->returnValue(true));
-
-        $this->cache
-            ->expects($this->at(0))
-            ->method('getVersion')
-            ->with($resource, $version)
-            ->will($this->returnValue(false));
-
-        $this->cache
-            ->expects($this->at(1))
-            ->method('setVersion')
-            ->with($resource, $version, $retrieved);
-
-        $this->assertEquals('lus', $this->storage->retrieveVersion($resource, $version));
-    }
-
-    /**
-     * @test
-     */
-    public function retrieveVersionExitsEarlyWithCache()
-    {
-        $resource = Resource::create();
-        $version = Version::get('lusso');
-        $retrieved = new Retrieved('lus', false);
-
-        $this->adapter
-            ->expects($this->never())
-            ->method('retrieveVersion');
-
-        $this->adapter
-            ->expects($this->never())
-            ->method('versionExists');
-
-        $this->cache
-            ->expects($this->at(0))
-            ->method('getVersion')
-            ->with($resource, $version)
-            ->will($this->returnValue($retrieved));
-
-        $this->assertEquals('lus', $this->storage->retrieveVersion($resource, $version));
     }
 
 }

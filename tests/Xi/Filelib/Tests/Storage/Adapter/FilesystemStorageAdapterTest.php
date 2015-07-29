@@ -79,24 +79,4 @@ class FilesystemStorageAdapterTest extends TestCase
             $this->getSelfLussingManatee()
         );
     }
-
-    /**
-     * @test
-     */
-    public function storeVersionFailsIfDirectoryNotCreatable()
-    {
-        $root = ROOT_TESTS . '/data/files';
-        $storage = new FilesystemStorageAdapter($root);
-
-        chmod($root, 0400);
-
-        $resource = Resource::create(['id' => 666, 'uuid' => Uuid::uuid4()]);
-
-        $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
-        $storage->storeVersion(
-            $resource,
-            Version::get('puupster'),
-            $this->getSelfLussingManatee()
-        );
-    }
 }

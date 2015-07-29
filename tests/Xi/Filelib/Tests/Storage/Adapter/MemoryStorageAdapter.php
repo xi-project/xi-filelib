@@ -37,22 +37,9 @@ class MemoryStorageAdapter extends BaseStorageAdapter
         $this->resources[$resource->getId()] = $tempFile;
     }
 
-    public function storeVersion(Versionable $versionable, Version $version, $tempFile)
-    {
-        $this->resources[$versionable->getId() . ';' . $version->toString()] = $tempFile;
-    }
-
     public function retrieve(Resource $resource)
     {
         return new Retrieved($this->resources[$resource->getId()], false);
-    }
-
-    public function retrieveVersion(Versionable $versionable, Version $version)
-    {
-        return new Retrieved(
-            $this->resources[$versionable->getId() . ';' . $version->toString()],
-            false
-        );
     }
 
     public function delete(Resource $resource)
@@ -60,19 +47,9 @@ class MemoryStorageAdapter extends BaseStorageAdapter
         unset($this->resources[$resource->getId()]);
     }
 
-    public function deleteVersion(Versionable $versionable, Version $version)
-    {
-        unset($this->resources[$versionable->getId() . ';' . $version->toString()]);
-    }
-
     public function exists(Resource $resource)
     {
         return isset($this->resources[$resource->getId()]);
 
-    }
-
-    public function versionExists(Versionable $versionable, Version $version)
-    {
-        return isset($this->resources[$versionable->getId() . ';' . $version->toString()]);
     }
 }

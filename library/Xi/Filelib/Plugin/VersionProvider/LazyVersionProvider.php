@@ -58,12 +58,11 @@ abstract class LazyVersionProvider extends VersionProvider
         $version = $this->ensureValidVersion($version);
 
         $versionable = $this->getApplicableVersionable($file);
-        $versionable->addVersion($version);
+
         list(, $tmp) = $this->createTemporaryVersion($file, $version);
 
-        $this->storage->storeVersion($versionable, $version, $tmp);
-
-        unlink($tmp);
+        $resource = $this->resourceRepository->findOrCreateResourceForPath($tmp);
+        $versionable->addVersion($version, $resource);
 
         $this->fileRepository->update($file);
 

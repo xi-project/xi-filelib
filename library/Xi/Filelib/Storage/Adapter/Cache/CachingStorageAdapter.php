@@ -106,64 +106,6 @@ class CachingStorageAdapter implements StorageAdapter
     }
 
     /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @param string $tempResource
-     * @throws FileIOException
-     */
-    public function storeVersion(Versionable $versionable, Version $version, $tempResource)
-    {
-        $ret = $this->resolveCacheAdapter()->storeVersion($versionable, $version, $tempResource);
-        $this->resolveActualAdapter()->storeVersion($versionable, $version, $tempResource);
-        return $ret;
-    }
-
-    /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @return Retrieved
-     * @throws FileIOException
-     */
-    public function retrieveVersion(Versionable $versionable, Version $version)
-    {
-        if ($this->resolveCacheAdapter()->versionExists($versionable, $version)) {
-            return $this->resolveCacheAdapter()->retrieveVersion($versionable, $version);
-        }
-
-        $ret = $this->resolveActualAdapter()->retrieveVersion($versionable, $version);
-        return $this->resolveCacheAdapter()->storeVersion($versionable, $version, $ret->getPath());
-    }
-
-    /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @throws FileIOException
-     */
-    public function deleteVersion(Versionable $versionable, Version $version)
-    {
-        if ($this->resolveCacheAdapter()->versionExists($versionable, $version)) {
-            $this->resolveCacheAdapter()->deleteVersion($versionable, $version);
-        }
-        $this->resolveActualAdapter()->deleteVersion($versionable, $version);
-    }
-
-    /**
-     * @param Versionable $versionable
-     * @param Version $version
-     * @throws FileIOException
-     * @return bool
-     */
-    public function versionExists(Versionable $versionable, Version $version)
-    {
-
-        if ($this->resolveCacheAdapter()->versionExists($versionable, $version) === true) {
-            return true;
-        }
-
-        return $this->resolveActualAdapter()->versionExists($versionable, $version);
-    }
-
-    /**
      * @return StorageAdapter
      */
     private function resolveCacheAdapter()
