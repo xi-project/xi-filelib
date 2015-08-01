@@ -46,15 +46,13 @@
         "symfony/security": "~2.2",
         "symfony/console": "~2.2",
         "symfony/stopwatch": "~2.2",
-        "knplabs/gaufrette": "~0.1",
         "league/flysystem": "~1.0"
     },
 
     "suggest": {
-        "ext-mongo": "For MongoDB backend and GridFS storage",
-        "doctrine/dbal": "For Doctrine DBAL backend",
-        "doctrine/orm": "For Doctrine ORM backend",
-        "knplabs/gaufrette": "For Gaufrette support"
+        "ext-mongo": "MongoDB backend",
+        "doctrine/dbal": "Doctrine DBAL backend",
+        "doctrine/orm": "Doctrine ORM backend"
     },
 
     "autoload": {

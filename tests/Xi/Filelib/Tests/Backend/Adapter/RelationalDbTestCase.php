@@ -365,14 +365,13 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
     {
         return new ArrayDataSet(
             array(
-
                 'xi_filelib_resource' => array(
                     array(
                         'id' => 1,
                         'uuid' => 'ruuid-1',
                         'hash' => 'hash-1',
                         'date_created' => '1978-03-21 06:06:06',
-                        'data' => json_encode(array('versions' => array('tussi', 'watussi', 'pygmi'))),
+                        'data' => json_encode(array()),
                         'mimetype'      => 'image/png',
                         'filesize'      => '1000',
                         'exclusive' => 1,
@@ -382,7 +381,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'uuid' => 'ruuid-2',
                         'hash' => 'hash-2',
                         'date_created' => '1988-03-21 06:06:06',
-                        'data' => json_encode(array('versions' => array())),
+                        'data' => json_encode(array()),
                         'mimetype'      => 'image/png',
                         'filesize'      => '10001',
                         'exclusive' => 0,
@@ -392,7 +391,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'uuid' => 'ruuid-3',
                         'hash' => 'hash-2',
                         'date_created' => '1998-03-21 06:06:06',
-                        'data' => json_encode(array('versions' => array('pygmi', 'tussi'))),
+                        'data' => json_encode(array()),
                         'mimetype'      => 'image/png',
                         'filesize'      => '20000',
                         'exclusive' => 0,
@@ -402,7 +401,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'uuid' => 'ruuid-4',
                         'hash' => 'hash-3',
                         'date_created' => '2008-03-21 06:06:06',
-                        'data' => json_encode(array('versions' => array('watussi'))),
+                        'data' => json_encode(array()),
                         'mimetype'      => 'image/png',
                         'filesize'      => '50000',
                         'exclusive' => 0,
@@ -412,7 +411,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'uuid' => 'ruuid-5',
                         'hash' => 'hash-5',
                         'date_created' => '2009-03-21 06:06:06',
-                        'data' => json_encode(array('versions' => array('watussi', 'loso'))),
+                        'data' => json_encode(array('xooxers' => 'tooxers')),
                         'mimetype'      => 'video/xxx',
                         'filesize'      => '10000',
                         'exclusive' => 0,
@@ -491,7 +490,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'status'        => 1,
                         'uuid'          => 'uuid-1',
                         'resource_id'   => 1,
-                        'data' => json_encode(array('versions' => array())),
+                        'data' => json_encode(array('tooxer' => 'osososo')),
                     ),
                     array(
                         'id'            => 2,
@@ -502,7 +501,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'status'        => 2,
                         'uuid'          => 'uuid-2',
                         'resource_id'   => 2,
-                        'data' => json_encode(array('versions' => array())),
+                        'data' => json_encode(array()),
                     ),
                     array(
                         'id'            => 3,
@@ -513,7 +512,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'status'        => 3,
                         'uuid'          => 'uuid-3',
                         'resource_id'   => 3,
-                        'data' => json_encode(array('versions' => array())),
+                        'data' => json_encode(array()),
                     ),
                     array(
                         'id'            => 4,
@@ -524,7 +523,7 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'status'        => 4,
                         'uuid'          => 'uuid-4',
                         'resource_id'   => 4,
-                        'data' => json_encode(array('versions' => array(), 'lipaiseppa' => 'ankkaa')),
+                        'data' => json_encode(array()),
                     ),
                     array(
                         'id'            => 5,
@@ -535,9 +534,26 @@ abstract class RelationalDbTestCase extends AbstractBackendAdapterTestCase
                         'status'        => 5,
                         'uuid'          => 'uuid-5',
                         'resource_id'   => 4,
-                        'data' => json_encode(array('versions' => array())),
+                        'data' => json_encode(array('looxer' => array('xoxo', 'toxo'))),
                     ),
                 ),
+                'xi_filelib_versioned' => [
+                    [
+                        'uuid' => 'ruuid-1',
+                        'version' => 'lussendorfer',
+                        'resource_id' => 1
+                    ],
+                    [
+                        'uuid' => 'uuid-1',
+                        'version' => 'tussenmeister',
+                        'resource_id' => 3
+                    ],
+                    [
+                        'uuid' => 'uuid-1',
+                        'version' => 'tenhunen',
+                        'resource_id' => 4
+                    ],
+                ],
             )
         );
     }

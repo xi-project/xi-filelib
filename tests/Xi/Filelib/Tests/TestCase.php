@@ -429,7 +429,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $lazy = false,
         $methods = array(
             'getMimeType',
-            'getApplicableVersionable',
             'getExtension',
             'provideVersions',
             'provideVersion',

@@ -234,10 +234,6 @@ class FileRepository extends AbstractRepository implements FileRepositoryInterfa
 
         $file->setStatus(File::STATUS_DELETED);
 
-        if ($file->getResource()->isExclusive()) {
-            $this->resourceRepository->delete($file->getResource());
-        }
-
         $event = new FileEvent($file);
         $this->eventDispatcher->dispatch(Events::FILE_AFTER_DELETE, $event);
 

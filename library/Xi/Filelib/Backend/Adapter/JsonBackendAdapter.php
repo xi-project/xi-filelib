@@ -273,7 +273,6 @@ class JsonBackendAdapter implements BackendAdapter
             'size' => $resource->getSize(),
             'date_created' => $resource->getDateCreated()->format('Y-m-d H:i:s'),
             'data' => $resource->getData()->toArray(),
-            'exclusive' => $resource->isExclusive(),
         );
 
         $document['id'] = $this->createId();

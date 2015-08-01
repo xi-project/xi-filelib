@@ -166,11 +166,10 @@ class Backend
     }
 
     /**
-     * Creates a file
-     *
-     * @param  File             $file
-     * @param  Folder           $folder
-     * @throws FilelibException If file could not be uploaded.
+     * @param File $file
+     * @param Folder $folder
+     * @return File
+     * @throws NonUniqueFileException
      */
     public function createFile(File $file, Folder $folder)
     {

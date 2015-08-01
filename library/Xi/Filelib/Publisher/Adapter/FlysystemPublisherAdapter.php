@@ -71,7 +71,7 @@ class FlysystemPublisherAdapter implements PublisherAdapter
         );
 
         $tmp = $this->storage->retrieve(
-            $versionProvider->getApplicableVersionable($file)->getVersion($version)->getResource()
+            $file->getVersion($version)->getResource()
         );
 
         if ($this->filesystem->has($path)) {

@@ -166,7 +166,7 @@ class SymlinkFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter i
     private function retrieve(File $file, $version, VersionProvider $vp)
     {
         return $this->storage->retrieve(
-            $vp->getApplicableVersionable($file)->getVersion($version)->getResource()
+            $file->getVersion($version)->getResource()
         );
     }
 }

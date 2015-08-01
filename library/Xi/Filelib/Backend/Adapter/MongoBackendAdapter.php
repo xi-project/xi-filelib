@@ -249,7 +249,6 @@ class MongoBackendAdapter implements BackendAdapter
             'size' => $resource->getSize(),
             'date_created' => new MongoDate($resource->getDateCreated()->getTimestamp()),
             'data' => $resource->getData()->toArray(),
-            'exclusive' => $resource->isExclusive(),
         );
 
         $this->getMongo()->resources->ensureIndex(

@@ -12,22 +12,17 @@ namespace Xi\Filelib\Resource;
 use DateTime;
 use Pekkis\DirectoryCalculator\Dateable;
 use Pekkis\DirectoryCalculator\UniversallyIdentifiable;
-use Xi\Filelib\Versionable\BaseVersionable;
+use Xi\Filelib\BaseIdentifiable;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
 use Xi\Filelib\Versionable\Versionable;
 
-class ConcreteResource extends BaseVersionable implements Identifiable, Versionable, UniversallyIdentifiable, Dateable
+class ConcreteResource extends BaseIdentifiable implements Identifiable, UniversallyIdentifiable, Dateable
 {
     /**
      * @var string
      */
     private $hash;
-
-    /**
-     * @var boolean
-     */
-    private $exclusive = false;
 
     /**
      * @var DateTime
@@ -43,11 +38,6 @@ class ConcreteResource extends BaseVersionable implements Identifiable, Versiona
      * @var integer
      */
     private $size;
-
-    /**
-     * @var string
-     */
-    private $uuid;
 
     /**
      * Sets create datetime
@@ -133,29 +123,6 @@ class ConcreteResource extends BaseVersionable implements Identifiable, Versiona
     }
 
     /**
-     * Returns whether resource is marked as exclusive
-     *
-     * @return boolean
-     */
-    public function isExclusive()
-    {
-        return $this->exclusive;
-    }
-
-    /**
-     * Sets resource as exclusive or non exclusive
-     *
-     * @param  boolean  $exclusive
-     * @return ConcreteResource
-     */
-    public function setExclusive($exclusive)
-    {
-        $this->exclusive = $exclusive;
-
-        return $this;
-    }
-
-    /**
      * Returns the resource as array
      *
      * @return array
@@ -170,7 +137,6 @@ class ConcreteResource extends BaseVersionable implements Identifiable, Versiona
             'data' => $this->getData()->toArray(),
             'mimetype' => $this->getMimetype(),
             'size' => $this->getSize(),
-            'exclusive' => $this->isExclusive(),
         );
     }
 
@@ -203,7 +169,6 @@ class ConcreteResource extends BaseVersionable implements Identifiable, Versiona
         $obj->setData($data['data']);
         $obj->setMimetype($data['mimetype']);
         $obj->setSize($data['size']);
-        $obj->setExclusive($data['exclusive']);
 
         return $obj;
     }

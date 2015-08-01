@@ -179,10 +179,6 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider(array('xooxer'), $lazy);
-        $vp
-            ->expects($this->any())
-            ->method('getApplicableVersionable')
-            ->will($this->returnValue($sharedVersions ? $resource : $file));
 
         $vp->expects($this->any())
             ->method('ensureValidVersion')
@@ -249,10 +245,6 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
             ->with($file, Version::get('xooxer'))
             ->will($this->returnValue($vp));
 
-        $vp
-            ->expects($this->never())
-            ->method('getApplicableVersionable');
-
         $vp->expects($this->any())
             ->method('ensureValidVersion')
             ->with($this->equalTo(Version::get('xooxer')))
@@ -285,10 +277,6 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
             ->with($file, Version::get('xooxer'))
             ->will($this->throwException(new InvalidVersionException('Guu guu')));
 
-        $vp
-            ->expects($this->never())
-            ->method('getApplicableVersionable');
-
         $vp->expects($this->never())
             ->method('ensureValidVersion');
 
@@ -318,11 +306,6 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
             ->method('getVersionProvider')
             ->with($file, Version::get('xooxer'))
             ->will($this->returnValue($vp));
-
-        $vp
-            ->expects($this->atLeastOnce())
-            ->method('getApplicableVersionable')
-            ->will($this->returnValue($resource));
 
         $vp->expects($this->atLeastOnce())
             ->method('ensureValidVersion')
@@ -354,11 +337,6 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
             ->method('getVersionProvider')
             ->with($file, Version::get('xooxer'))
             ->will($this->returnValue($vp));
-
-        $vp
-            ->expects($this->atLeastOnce())
-            ->method('getApplicableVersionable')
-            ->will($this->returnValue($resource));
 
         $vp->expects($this->atLeastOnce())
             ->method('ensureValidVersion')

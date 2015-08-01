@@ -57,10 +57,6 @@ class AcceleratedRendererTest extends RendererTestCase
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider();
-        $vp
-            ->expects($this->any())
-            ->method('getApplicableVersionable')
-            ->will($this->returnValue($sharedVersions ? $resource : $file));
 
         $vp
             ->expects($this->any())
@@ -158,10 +154,6 @@ class AcceleratedRendererTest extends RendererTestCase
             ->will($this->returnValue(ROOT_TESTS . '/data/refcard.pdf'));
 
         $vp = $this->getMockedVersionProvider();
-        $vp
-            ->expects($this->any())
-            ->method('getApplicableVersionable')
-            ->will($this->returnValue($resource));
 
         $vp->expects($this->any())
             ->method('ensureValidVersion')

@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Xi\Filelib\Resource\ConcreteResource;
 
 /**
  * @ORM\Entity
@@ -20,18 +21,21 @@ class Versioned
     /**
      * @ORM\Column(name="uuid", type="string", length=255)
      * @ORM\Id
+     * @var string
      */
     private $uuid;
 
     /**
      * @ORM\Column(name="version", type="string", length=255)
      * @ORM\Id
+     * @var string
      */
     private $version;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Resource", inversedBy="versionables", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Resource", inversedBy="versioneds", fetch="EAGER")
      * @ORM\JoinColumn(name="resource_id", referencedColumnName="id", nullable=false)
+     * @var ConcreteResource
      **/
     private $resource;
 
@@ -39,6 +43,22 @@ class Versioned
     {
         $this->uuid = $uuid;
         $this->version = $version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 
     /**

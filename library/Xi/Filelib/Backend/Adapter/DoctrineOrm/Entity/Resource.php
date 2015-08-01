@@ -11,6 +11,7 @@ namespace Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Xi\Filelib\Resource\ConcreteResource;
 
 /**
  * @ORM\Entity
@@ -34,11 +35,6 @@ class Resource extends BaseEntity
     private $size;
 
     /**
-     * @ORM\Column(name="exclusive", type="boolean", nullable=false)
-     */
-    private $exclusive;
-
-    /**
      * @ORM\Column(name="date_created", type="datetime", nullable=false)
      */
     private $dateCreated;
@@ -47,6 +43,11 @@ class Resource extends BaseEntity
      * @ORM\OneToMany(targetEntity="File", mappedBy="resource")
      **/
     private $files;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Versioned", mappedBy="resource")
+     **/
+    private $versioneds;
 
     /**
      * Set hash
@@ -115,28 +116,6 @@ class Resource extends BaseEntity
     public function getSize()
     {
         return $this->size;
-    }
-
-    /**
-     * Returns exclusive
-     *
-     * @return boolean
-     */
-    public function getExclusive()
-    {
-        return $this->exclusive;
-    }
-
-    /**
-     * Sets exclusive
-     *
-     * @param boolean $exclusive
-     */
-    public function setExclusive($exclusive)
-    {
-        $this->exclusive = $exclusive;
-
-        return $this;
     }
 
     /**

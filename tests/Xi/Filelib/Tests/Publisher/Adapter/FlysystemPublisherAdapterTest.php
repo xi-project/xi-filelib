@@ -89,12 +89,6 @@ class FlysystemPublisherAdapterTest extends TestCase
             ->with($this->file, $this->version)
             ->will($this->returnValue('jpg'));
 
-        $this->vp
-            ->expects($this->any())
-            ->method('getApplicableVersionable')
-            ->with($this->file)
-            ->will($this->returnValue($this->resource));
-
         $this->storage
             ->expects($this->any())
             ->method('retrieveVersion')

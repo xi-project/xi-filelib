@@ -387,7 +387,7 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
     public function createsNewResourceWhenCopyingIfExclusive()
     {
         return $this->markTestSkipped('Hangs for the moment');
-        
+
         $upload = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
         $file = $this->filelib->getFileRepository()->upload($upload, null, 'tussi');
         $this->filelib->getFileRepository()->afterUpload($file);
@@ -396,7 +396,6 @@ class FileRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $file2 = $this->filelib->getFileRepository()->copy($file, $folder);
 
         $this->assertInstanceOf('Xi\Filelib\File\File', $file);
-        $this->assertTrue($file->getResource()->isExclusive());
         $this->assertNotSame($file->getResource(), $file2->getResource());
     }
 

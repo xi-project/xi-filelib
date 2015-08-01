@@ -156,7 +156,6 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
 
         $stmt->bindValue('uuid', $resource->getUuid(), PDO::PARAM_STR);
         $stmt->bindValue('hash', $resource->getHash(), PDO::PARAM_STR);
-        $stmt->bindValue('exclusive', $resource->isExclusive(), PDO::PARAM_BOOL);
         $stmt->bindValue('data', json_encode($resource->getData()->toArray()), PDO::PARAM_STR);
         $stmt->bindValue('id', $resource->getId(), PDO::PARAM_INT);
 

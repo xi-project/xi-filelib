@@ -147,19 +147,8 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 
         $this->assertNotNull($resource->getUuid());
         $this->assertEquals($resourceId, $resource->getId());
-        $this->assertNotEquals($versions, $resource->getVersions());
-        $this->assertTrue($resource->isExclusive());
 
-        $expectedVersions = array_merge($resource->getVersions(), $versions);
-        foreach ($versions as $version) {
-            $resource->addVersion(Version::get($version), ConcreteResource::create());
-        }
-        $resource->setExclusive(false);
         $this->assertTrue($this->backend->updateResource($resource));
-
-        $resource2 = $this->findResource($resourceId);
-        $this->assertEquals($expectedVersions, $resource2->getVersions());
-        $this->assertFalse($resource2->isExclusive());
     }
 
     /**

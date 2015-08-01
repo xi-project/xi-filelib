@@ -109,7 +109,6 @@ abstract class VersionProvider extends BasePlugin
 
     public function provideAllVersions(File $file)
     {
-        $versionable = $this->getApplicableVersionable($file);
         $versions = $this->createAllTemporaryVersions($file);
 
         foreach ($versions as $version => $tmp) {
@@ -117,9 +116,7 @@ abstract class VersionProvider extends BasePlugin
             $version = Version::get($version);
 
             $resource = $this->resourceRepository->findOrCreateResourceForPath($tmp);
-            $versionable->addVersion($version, $resource);
-
-            // $this->storage->storeVersion($versionable, $version, $tmp);
+            $file->addVersion($version, $resource);
 
             unlink($tmp);
         }
@@ -220,11 +217,9 @@ abstract class VersionProvider extends BasePlugin
 
     public function areProvidedVersionsCreated(File $file)
     {
-        $versionable = $this->getApplicableVersionable($file);
-
         $count = 0;
         foreach ($this->getProvidedVersions() as $version) {
-            if ($versionable->hasVersion(Version::get($version))) {
+            if ($file->hasVersion(Version::get($version))) {
                 $count++;
             }
         }
@@ -245,12 +240,8 @@ abstract class VersionProvider extends BasePlugin
      */
     public function getMimeType(File $file, Version $version)
     {
-        $versionable = $this->getApplicableVersionable($file);
-
-        $versioned = $versionable->getVersion($version);
-
         $retrieved = $this->storage->retrieve(
-            $versioned->getResource()
+            $file->getVersion($version)->getResource()
         );
 
         $fileObj = new FileObject($retrieved);
@@ -268,17 +259,6 @@ abstract class VersionProvider extends BasePlugin
     {
         $mimeType = $this->getMimeType($file, $version);
         return $this->getExtensionFromMimeType($mimeType);
-    }
-
-    /**
-     * Returns the applicable storable for this plugin
-     *
-     * @param File $file
-     * @return Versionable
-     */
-    public function getApplicableVersionable(File $file)
-    {
-        return ($this->areSharedVersionsAllowed()) ? $file->getResource() : $file;
     }
 
     /**

@@ -56,8 +56,6 @@ class ResourceTest extends BaseVersionableTestCase
         $this->assertEquals($val, $resource->getHash());
 
         $val = true;
-        $this->assertFalse($resource->isExclusive());
-        $this->assertSame($resource, $resource->setExclusive($val));
         $this->assertTrue($val, $resource->getHash());
 
     }
@@ -87,7 +85,6 @@ class ResourceTest extends BaseVersionableTestCase
         $this->assertEquals($data['data'], $resource->getData()->toArray());
         $this->assertEquals($data['size'], $resource->getSize());
         $this->assertEquals($data['mimetype'], $resource->getMimetype());
-        $this->assertEquals($data['exclusive'], $resource->isExclusive());
     }
 
     /**
@@ -102,7 +99,6 @@ class ResourceTest extends BaseVersionableTestCase
         $resource->setDateCreated(new \DateTime('1978-03-21'));
         $resource->setMimetype('video/lus');
         $resource->setSize(5678);
-        $resource->setExclusive(true);
 
         $resource->addVersion(Version::get('kraa'));
         $resource->addVersion(Version::get('xoo'));

@@ -53,7 +53,7 @@ class CopyFilesystemPublisherAdapter extends BaseFilesystemPublisherAdapter impl
             }
 
             $tmp = $this->storage->retrieve(
-                $versionProvider->getApplicableVersionable($file)->getVersion($version)->getResource()
+                $file->getVersion($version)->getResource()
             );
 
             copy($tmp, $link);

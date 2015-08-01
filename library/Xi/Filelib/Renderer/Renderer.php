@@ -168,9 +168,8 @@ class Renderer implements Attacher
     protected function versionIsObtainable(File $file, Version $version)
     {
         $provider = $this->profiles->getVersionProvider($file, $version);
-        $versionable = $provider->getApplicableVersionable($file);
 
-        if ($versionable->hasVersion($version)) {
+        if ($file->hasVersion($version)) {
             return true;
         }
 
@@ -193,10 +192,8 @@ class Renderer implements Attacher
      */
     private function retrieve(File $file, Version $version)
     {
-        $vp = $this->profiles->getVersionProvider($file, $version);
-
         return $this->storage->retrieve(
-            $vp->getApplicableVersionable($file)->getVersion($version)->getResource()
+            $file->getVersion($version)->getResource()
         );
     }
 

@@ -10,6 +10,7 @@
 namespace Xi\Filelib\Backend\Adapter;
 
 use ArrayIterator;
+use Doctrine\Common\Util\Debug;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
@@ -18,6 +19,8 @@ use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Resource\ConcreteResource;
+use Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Versioned;
+use Xi\Filelib\Versionable\Versionable;
 
 /**
  * Doctrine 2 backend for filelib
@@ -193,7 +196,6 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
             $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
             $resourceRow->setUuid($resource->getUuid());
             $resourceRow->setData($resource->getData()->toArray());
-            $resourceRow->setExclusive($resource->isExclusive());
             $resourceRow->setHash($resource->getHash());
             $this->em->flush($resourceRow);
 
@@ -256,7 +258,6 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
         $resourceRow->setDateCreated($resource->getDateCreated());
         $resourceRow->setMimetype($resource->getMimetype());
         $resourceRow->setSize($resource->getSize());
-        $resourceRow->setExclusive($resource->isExclusive());
         $this->em->persist($resourceRow);
         $this->em->flush($resourceRow);
         $resource->setId($resourceRow->getId());
@@ -375,20 +376,24 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
 
             $resources = new ArrayIterator(array($file->getResource()));
 
-            $ret->append(
-                File::create(
-                    array(
-                        'id' => $file->getId(),
-                        'folder_id' => $file->getFolder() ? $file->getFolder()->getId() : null,
-                        'profile' => $file->getProfile(),
-                        'name' => $file->getName(),
-                        'date_created' => $file->getDateCreated(),
-                        'status' => $file->getStatus(),
-                        'uuid' => $file->getUuid(),
-                        'resource' => $this->exportResources($resources)->current(),
-                        'data' => $file->getData(),
-                    )
+            $file = File::create(
+                array(
+                    'id' => $file->getId(),
+                    'folder_id' => $file->getFolder() ? $file->getFolder()->getId() : null,
+                    'profile' => $file->getProfile(),
+                    'name' => $file->getName(),
+                    'date_created' => $file->getDateCreated(),
+                    'status' => $file->getStatus(),
+                    'uuid' => $file->getUuid(),
+                    'resource' => $this->exportResources($resources)->current(),
+                    'data' => $file->getData(),
                 )
+            );
+
+            $this->setVersions($file);
+
+            $ret->append(
+                $file
             );
         }
 
@@ -413,7 +418,6 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
                         'data' => $resource->getData(),
                         'mimetype' => $resource->getMimetype(),
                         'size' => $resource->getSize(),
-                        'exclusive' => $resource->getExclusive(),
                     )
                 )
             );
@@ -446,5 +450,24 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     protected function getConnection()
     {
         return $this->em->getConnection();
+    }
+
+    protected function setVersions(Versionable $versionable)
+    {
+        $versions = $this->em->getRepository(Versioned::class)->findBy([
+            'uuid' => $versionable->getUuid()
+        ]);
+
+        foreach ($versions as $v) {
+            /** @var Versioned $v */
+            $versionable->addVersion(
+                new Versioned(
+                    $v->getUuid(),
+                    $v->getVersion()
+                ),
+                $this->exportResources(new ArrayIterator([$v->getResource()]))->current()
+            );
+        }
+
     }
 }

@@ -96,34 +96,6 @@ class FileCopier
     }
 
     /**
-     * Handles impostor's resource
-     *
-     * @param File $file
-     */
-    private function handleImpostorResource(File $file)
-    {
-        $oldResource = $file->getResource();
-        if ($oldResource->isExclusive()) {
-
-            $retrieved = $this->storage->retrieve($oldResource);
-
-            $resource = ConcreteResource::create();
-            $resource->setDateCreated(new DateTime());
-            $resource->setHash($oldResource->getHash());
-            $resource->setSize($oldResource->getSize());
-            $resource->setMimetype($oldResource->getMimetype());
-
-            $this->resourceRepository->create(
-                $resource,
-                $retrieved
-            );
-
-            $file->setResource($resource);
-        }
-
-    }
-
-    /**
      * Clones the original file and iterates the impostor's names until
      * a free one is found.
      *
@@ -137,7 +109,6 @@ class FileCopier
         foreach ($impostor->getVersions() as $version) {
             $impostor->removeVersion($version);
         }
-        $this->handleImpostorResource($impostor);
 
         $found = $this->fileRepository->findByFilename($folder, $impostor->getName());
 
