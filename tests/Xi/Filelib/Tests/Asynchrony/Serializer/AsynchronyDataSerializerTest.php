@@ -51,7 +51,6 @@ class AsynchronyDataSerializerTest extends TestCase
             ROOT_TESTS . '/data/self-lussing-manatee.jpg'
         );
 
-
         $serializer = new AsynchronyDataSerializer();
         $serializer->attachTo($filelib);
 

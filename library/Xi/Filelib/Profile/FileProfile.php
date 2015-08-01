@@ -14,7 +14,7 @@ use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\File\File;
 use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\InvalidVersionException;
+use Xi\Filelib\Versionable\InvalidVersionException;
 use Xi\Filelib\Plugin\Plugin;
 use Xi\Filelib\Plugin\VersionProvider\VersionProvider;
 use Xi\Filelib\Versionable\Version;

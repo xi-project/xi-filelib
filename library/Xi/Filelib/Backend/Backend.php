@@ -147,7 +147,7 @@ class Backend
      */
     public function findById($id, $className)
     {
-        return $this->findByIds(array($id), $className)->first();
+        return $this->findByIds(array($id), $className)->first()->getOrElse(null);
     }
 
     /**

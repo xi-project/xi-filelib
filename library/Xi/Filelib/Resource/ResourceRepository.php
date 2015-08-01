@@ -167,6 +167,7 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
 
         $this->create($resource, $path->getRealPath());
 
+        return $resource;
     }
 
 

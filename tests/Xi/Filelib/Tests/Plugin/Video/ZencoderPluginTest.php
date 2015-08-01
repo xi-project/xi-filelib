@@ -485,7 +485,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
     public function checksVersionValidity($version, $expected)
     {
         if (!$expected) {
-            $this->setExpectedException('Xi\Filelib\InvalidVersionException');
+            $this->setExpectedException('Xi\Filelib\Versionable\InvalidVersionException');
         }
 
         $plugin = $this->plugin;

@@ -19,7 +19,7 @@ use Xi\Filelib\File\FileObject;
 use Xi\Filelib\File\FileRepository;
 use Pekkis\MimeTypes\MimeTypes;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\InvalidVersionException;
+use Xi\Filelib\Versionable\InvalidVersionException;
 use Xi\Filelib\Plugin\BasePlugin;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Resource\ResourceRepository;

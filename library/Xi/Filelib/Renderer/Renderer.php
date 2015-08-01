@@ -12,7 +12,7 @@ use Xi\Filelib\File\FileObject;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\InvalidVersionException;
+use Xi\Filelib\Versionable\InvalidVersionException;
 use Xi\Filelib\Plugin\VersionProvider\LazyVersionProvider;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Renderer\Adapter\RendererAdapter;

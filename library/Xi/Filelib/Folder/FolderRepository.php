@@ -159,7 +159,7 @@ class FolderRepository extends AbstractRepository implements FolderRepositoryInt
     {
         $folder = $this->backend->findByFinder(
             new FolderFinder(array('parent_id' => null))
-        )->first();
+        )->first()->getOrElse(null);
 
         if (!$folder) {
             $folder = $this->createRoot();
@@ -188,7 +188,6 @@ class FolderRepository extends AbstractRepository implements FolderRepositoryInt
     public function find($id)
     {
         $folder = $this->backend->findById($id, 'Xi\Filelib\Folder\Folder');
-
         return $folder;
     }
 
@@ -196,7 +195,7 @@ class FolderRepository extends AbstractRepository implements FolderRepositoryInt
     {
         $folder = $this->backend->findByFinder(
             new FolderFinder(array('url' => $url))
-        )->first();
+        )->first()->getOrElse(null);
 
         return $folder;
     }

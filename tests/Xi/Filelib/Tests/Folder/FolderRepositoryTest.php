@@ -62,12 +62,12 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
     /**
      * @test
      */
-    public function findReturnsFalseWhenNotFound()
+    public function findReturnsNullWhenNotFound()
     {
         $filelib = $this->getFilelib(false);
         $op = $filelib->getFolderRepository();
 
-        $this->assertFalse($op->find('xoo-xoo'));
+        $this->assertNull($op->find('xoo-xoo'));
     }
 
     /**
@@ -77,6 +77,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
     {
         $filelib = $this->getFilelib(false);
         $op = $filelib->getFolderRepository();
+
 
         $folder = $op->createByUrl('lubbo');
 
@@ -162,7 +163,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $filelib = $this->getFilelib(false);
         $op = $filelib->getFolderRepository();
 
-        $this->assertFalse($op->findByUrl('banaani/ei-ole/banaani'));
+        $this->assertNull($op->findByUrl('banaani/ei-ole/banaani'));
         $op->createByUrl('banaani/ei-ole/banaani');
 
         $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $op->findByUrl('banaani/ei-ole/banaani'));
@@ -265,7 +266,7 @@ class FolderRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertEquals(File::STATUS_DELETED, $file->getStatus());
 
-        $this->assertFalse($op->findByUrl('tussi/watussi'));
+        $this->assertNull($op->findByUrl('tussi/watussi'));
     }
 
     /**

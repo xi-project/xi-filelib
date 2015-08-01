@@ -12,7 +12,7 @@ namespace Xi\Filelib\Plugin\VersionProvider;
 use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\InvalidVersionException;
+use Xi\Filelib\Versionable\InvalidVersionException;
 use Xi\Filelib\Versionable\Version;
 
 /**

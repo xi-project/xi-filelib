@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\Renderer;
 
-use Xi\Filelib\InvalidVersionException;
+use Xi\Filelib\Versionable\InvalidVersionException;
 use Xi\Filelib\RuntimeException;
 use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Renderer\Renderer;

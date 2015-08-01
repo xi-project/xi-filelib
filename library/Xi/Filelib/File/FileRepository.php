@@ -99,7 +99,7 @@ class FileRepository extends AbstractRepository implements FileRepositoryInterfa
      */
     public function find($id)
     {
-        return $this->findMany(array($id))->first();
+        return $this->findMany(array($id))->first()->getOrElse(null);
     }
 
     /**

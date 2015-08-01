@@ -763,7 +763,7 @@ class VersionProviderTest extends TestCase
 
         $version = Version::get('tooxer');
 
-        $this->setExpectedException('Xi\Filelib\InvalidVersionException');
+        $this->setExpectedException('Xi\Filelib\Versionable\InvalidVersionException');
         $this->plugin->ensureValidVersion($version);
     }
 

@@ -278,7 +278,7 @@ class ArbitraryVersionPluginTest extends TestCase
     public function checksVersionValidity($version, $expected)
     {
         if (!$expected) {
-            $this->setExpectedException('Xi\Filelib\InvalidVersionException');
+            $this->setExpectedException('Xi\Filelib\Versionable\InvalidVersionException');
         }
 
         $plugin = new ArbitraryVersionPlugin(
