@@ -15,7 +15,7 @@ use Pekkis\DirectoryCalculator\UniversallyIdentifiable;
 use Xi\Filelib\Versionable\BaseVersionable;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Versionable\Versionable;
 
 class File extends BaseVersionable implements Identifiable, Versionable, UniversallyIdentifiable, Dateable
@@ -191,10 +191,10 @@ class File extends BaseVersionable implements Identifiable, Versionable, Univers
 
     /**
      *
-     * @param  Resource $resource
+     * @param  ConcreteResource $resource
      * @return File
      */
-    public function setResource(Resource $resource = null)
+    public function setResource(ConcreteResource $resource = null)
     {
         $this->resource = $resource;
 
@@ -204,7 +204,7 @@ class File extends BaseVersionable implements Identifiable, Versionable, Univers
     /**
      * Returns resource or null if file doesn't have one
      *
-     * @return Resource
+     * @return ConcreteResource
      */
     public function getResource()
     {

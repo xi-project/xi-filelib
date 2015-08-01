@@ -10,7 +10,7 @@
 use Services_Zencoder as ZencoderService;
 use Services_Zencoder_Exception as ZencoderException;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Plugin\Video\ZencoderPlugin;
 use Xi\Filelib\Events;
 use Xi\Filelib\FileLibrary;
@@ -218,7 +218,7 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             array(
                 'uuid' => Uuid::uuid4()->toString(),
                 'profile' => 'default',
-                'resource' => Resource::create(
+                'resource' => ConcreteResource::create(
                     array(
                         'mimetype' => $mimetype
                     )
@@ -282,13 +282,13 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
                 'id' => 1,
                 'uuid' => Uuid::uuid4()->toString(),
                 'name' => 'hauska-joonas.mp4',
-                'resource' => Resource::create(array('id' => 1)))
+                'resource' => ConcreteResource::create(array('id' => 1)))
         );
 
         $this->storage
             ->expects($this->once())
             ->method('retrieve')
-            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
+            ->with($this->isInstanceOf('Xi\Filelib\Resource\ConcreteResource'))
             ->will($this->returnValue(ROOT_TESTS . '/data/hauska-joonas.mp4'));
 
         $this->plugin->setSleepyTime(0);
@@ -387,13 +387,13 @@ class ZencoderPluginTest extends \Xi\Filelib\Tests\TestCase
             array('id' => 1,
                 'uuid' => Uuid::uuid4()->toString(),
                 'name' => 'hauska-joonas.mp4',
-                'resource' => Resource::create(array('id' => 1)))
+                'resource' => ConcreteResource::create(array('id' => 1)))
         );
 
         $this->storage
             ->expects($this->once())
             ->method('retrieve')
-            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
+            ->with($this->isInstanceOf('Xi\Filelib\Resource\ConcreteResource'))
             ->will($this->returnValue(ROOT_TESTS . '/data/hauska-joonas.mp4'));
 
         $this->setExpectedException(

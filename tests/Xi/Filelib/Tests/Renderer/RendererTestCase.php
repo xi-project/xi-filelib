@@ -9,7 +9,7 @@ use Xi\Filelib\Renderer\Renderer;
 use Xi\Filelib\Renderer\Events;
 use Xi\Filelib\Authorization\AccessDeniedException;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 
 abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
@@ -150,7 +150,7 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function shouldSetupResponseCorrectly($download, $sharedVersions, $lazy, $doVersionsExist)
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $file = File::create(
             array(
                 'resource' => $resource, 'name' => 'lussuti.pdf'
@@ -233,7 +233,7 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function invalidVersionReturns404()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $file = File::create(
             array(
                 'resource' => $resource,
@@ -269,7 +269,7 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function profileDoesntHaveVersionReturns404()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $file = File::create(
             array(
                 'resource' => $resource,
@@ -303,7 +303,7 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function notLazyProviderCantProvideLazily()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $file = File::create(
             array(
                 'resource' => $resource,
@@ -339,7 +339,7 @@ abstract class RendererTestCase extends \Xi\Filelib\Tests\TestCase
      */
     public function failedProviderFails()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $file = File::create(
             array(
                 'resource' => $resource,

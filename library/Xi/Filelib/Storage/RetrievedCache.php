@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Storage;
 
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Versionable\Versionable;
 
@@ -20,20 +20,20 @@ class RetrievedCache
     private $retrievedVersions;
 
     /**
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @return Retrieved
      */
-    public function get(Resource $resource)
+    public function get(ConcreteResource $resource)
     {
         return (isset($this->retrieved[$resource->getId()])) ? $this->retrieved[$resource->getId()] : false;
     }
 
-    public function set(Resource $resource, Retrieved $retrieved)
+    public function set(ConcreteResource $resource, Retrieved $retrieved)
     {
         $this->retrieved[$resource->getId()] = $retrieved;
     }
 
-    public function delete(Resource $resource)
+    public function delete(ConcreteResource $resource)
     {
         if (isset($this->retrieved[$resource->getId()])) {
             unset($this->retrieved[$resource->getId()]);

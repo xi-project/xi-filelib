@@ -17,10 +17,7 @@ use Xi\Filelib\Identifiable;
 use Xi\Filelib\IdentifiableDataContainer;
 use Xi\Filelib\Versionable\Versionable;
 
-/**
- * Resource
- */
-class Resource extends BaseVersionable implements Identifiable, Versionable, UniversallyIdentifiable, Dateable
+class ConcreteResource extends BaseVersionable implements Identifiable, Versionable, UniversallyIdentifiable, Dateable
 {
     /**
      * @var string
@@ -56,7 +53,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable, Uni
      * Sets create datetime
      *
      * @param  DateTime $dateCreated
-     * @return Resource
+     * @return ConcreteResource
      */
     public function setDateCreated(DateTime $dateCreated)
     {
@@ -76,7 +73,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable, Uni
 
     /**
      * @param  string   $hash
-     * @return Resource
+     * @return ConcreteResource
      */
     public function setHash($hash)
     {
@@ -105,7 +102,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable, Uni
     /**
      *
      * @param  string   $mimetype
-     * @return Resource
+     * @return ConcreteResource
      */
     public function setMimetype($mimetype)
     {
@@ -126,7 +123,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable, Uni
     /**
      *
      * @param  integer  $size
-     * @return Resource
+     * @return ConcreteResource
      */
     public function setSize($size)
     {
@@ -149,7 +146,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable, Uni
      * Sets resource as exclusive or non exclusive
      *
      * @param  boolean  $exclusive
-     * @return Resource
+     * @return ConcreteResource
      */
     public function setExclusive($exclusive)
     {
@@ -182,7 +179,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable, Uni
      * Creates an instance with data
      *
      * @param  array    $data
-     * @return Resource
+     * @return ConcreteResource
      */
     public static function create(array $data = array())
     {

@@ -17,10 +17,10 @@ use Xi\Filelib\Events;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Profile\FileProfile;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Resource\ResourceRepository;
 use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
 use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
@@ -85,7 +85,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->assertFalse($this->op->find('xoo-xoo-xoo'));
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xoo-xoo-xoo'
         ]);
 
@@ -94,10 +94,10 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
             ROOT_TESTS . '/data/self-lussing-manatee.jpg'
         );
 
-        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $resource);
+        $this->assertInstanceOf('Xi\Filelib\Resource\ConcreteResource', $resource);
 
         $this->assertInstanceOf(
-            'Xi\Filelib\Resource\Resource',
+            'Xi\Filelib\Resource\ConcreteResource',
             $this->op->find($resource->getId())
         );
     }
@@ -110,14 +110,14 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $this->assertCount(0, $this->op->findAll());
 
         $this->op->create(
-            Resource::create([
+            ConcreteResource::create([
                 'id' => 'xoo-xoo-xoo'
             ]),
             ROOT_TESTS . '/data/self-lussing-manatee.jpg'
         );
 
         $this->op->create(
-            Resource::create([
+            ConcreteResource::create([
                 'id' => 'lus-lus-lus'
             ]),
             ROOT_TESTS . '/data/self-lussing-manatee.jpg'
@@ -131,7 +131,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
      */
     public function creates()
     {
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xoo-xoo-xoo'
         ]);
 
@@ -161,7 +161,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
      */
     public function deletes()
     {
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xoo-xoo-xoo'
         ]);
 
@@ -196,7 +196,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
      */
     public function updates()
     {
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xoo-xoo-xoo'
         ]);
 
@@ -241,7 +241,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $resource = $op->findResourceForUpload($file, new FileUpload($path));
 
         $this->assertInstanceOf(
-            'Xi\Filelib\Resource\Resource',
+            'Xi\Filelib\Resource\ConcreteResource',
             $resource
         );
 
@@ -272,7 +272,7 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
         $resource2 = $op->findResourceForUpload($file2, new FileUpload($path));
 
         $this->assertInstanceOf(
-            'Xi\Filelib\Resource\Resource',
+            'Xi\Filelib\Resource\ConcreteResource',
             $resource2
         );
 

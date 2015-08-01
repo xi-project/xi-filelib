@@ -11,7 +11,7 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
 use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
 

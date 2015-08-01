@@ -17,7 +17,7 @@ use Iterator;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 /**
  * Doctrine 2 backend for filelib
@@ -187,7 +187,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     /**
      * @see BackendAdapter::updateResource
      */
-    public function updateResource(Resource $resource)
+    public function updateResource(ConcreteResource $resource)
     {
         try {
             $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
@@ -227,7 +227,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     /**
      * @see BackendAdapter::deleteResource
      */
-    public function deleteResource(Resource $resource)
+    public function deleteResource(ConcreteResource $resource)
     {
         try {
             $entity = $this->em->find($this->resourceEntityName, $resource->getId());
@@ -248,7 +248,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     /**
      * @see BackendAdapter::createResource
      */
-    public function createResource(Resource $resource)
+    public function createResource(ConcreteResource $resource)
     {
         $resourceRow = new $this->resourceEntityName();
         $resourceRow->setUuid($resource->getUuid());
@@ -303,7 +303,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     /**
      * @see BackendAdapter::getNumberOfReferences
      */
-    public function getNumberOfReferences(Resource $resource)
+    public function getNumberOfReferences(ConcreteResource $resource)
     {
         return $this->em
             ->getConnection()
@@ -404,7 +404,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
         $ret = new ArrayIterator(array());
         foreach ($iter as $resource) {
             $ret->append(
-                Resource::create(
+                ConcreteResource::create(
                     array(
                         'id' => $resource->getId(),
                         'uuid' => $resource->getUuid(),

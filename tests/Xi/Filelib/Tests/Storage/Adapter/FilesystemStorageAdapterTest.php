@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
 use Rhumsaa\Uuid\Uuid;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Versionable\Version;
 
@@ -71,7 +71,7 @@ class FilesystemStorageAdapterTest extends TestCase
 
         chmod($root, 0400);
 
-        $resource = Resource::create(['id' => 666, 'uuid' => Uuid::uuid4()]);
+        $resource = ConcreteResource::create(['id' => 666, 'uuid' => Uuid::uuid4()]);
 
         $this->setExpectedException('Xi\Filelib\Storage\FileIOException');
         $storage->store(

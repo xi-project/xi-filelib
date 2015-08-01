@@ -12,7 +12,7 @@ namespace Xi\Filelib\Tests\Storage\Adapter;
 use League\Flysystem\Plugin\ListFiles;
 use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local as LocalAdapter;
 use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
@@ -54,7 +54,7 @@ class TussiTest extends \Xi\Filelib\Tests\TestCase
         );
         $storage2->attachTo($filelib);
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'lubber',
             'uuid' => Uuid::uuid4()
         ]);

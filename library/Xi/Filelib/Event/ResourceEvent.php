@@ -9,14 +9,14 @@
 
 namespace Xi\Filelib\Event;
 
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 /**
  * Resource event
  */
 class ResourceEvent extends IdentifiableEvent
 {
-    public function __construct(Resource $resource)
+    public function __construct(ConcreteResource $resource)
     {
         parent::__construct($resource);
     }
@@ -24,7 +24,7 @@ class ResourceEvent extends IdentifiableEvent
     /**
      * Returns Resource
      *
-     * @return Resource
+     * @return ConcreteResource
      */
     public function getResource()
     {

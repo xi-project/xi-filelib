@@ -12,7 +12,7 @@ namespace Xi\Filelib\Resource;
 use DateTime;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use Xi\Filelib\Command\CommandDefinition;
@@ -65,7 +65,7 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
      * @param  Resource         $resource
      * @return ResourceRepository
      */
-    public function update(Resource $resource)
+    public function update(ConcreteResource $resource)
     {
         $event = new ResourceEvent($resource);
         $this->eventDispatcher->dispatch(Events::RESOURCE_BEFORE_UPDATE, $event);
@@ -82,11 +82,11 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
      * Finds a resource
      *
      * @param  mixed $id Resource id
-     * @return Resource
+     * @return ConcreteResource
      */
     public function find($id)
     {
-        $resource = $this->backend->findById($id, 'Xi\Filelib\Resource\Resource');
+        $resource = $this->backend->findById($id, 'Xi\Filelib\Resource\ConcreteResource');
 
         if (!$resource) {
             return false;
@@ -98,7 +98,7 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
     /**
      * Finds and returns all resources
      *
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findAll()
     {
@@ -109,9 +109,9 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
     /**
      * Deletes a resource
      *
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      */
-    public function delete(Resource $resource)
+    public function delete(ConcreteResource $resource)
     {
         $event = new ResourceEvent($resource);
         $this->eventDispatcher->dispatch(Events::RESOURCE_BEFORE_DELETE, $event);
@@ -128,10 +128,10 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
     /**
      * Creates a resource
      *
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @param string $path
      */
-    public function create(Resource $resource, $path)
+    public function create(ConcreteResource $resource, $path)
     {
         $event = new ResourceEvent($resource);
         $this->eventDispatcher->dispatch(Events::RESOURCE_BEFORE_CREATE, $event);
@@ -159,7 +159,7 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
             return $resources->first();
         }
 
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $resource->setDateCreated(new DateTime());
         $resource->setHash($hash);
         $resource->setSize($path->getSize());
@@ -174,7 +174,7 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
     /**
      * @param  File       $file
      * @param  FileUpload $upload
-     * @return Resource
+     * @return ConcreteResource
      */
     public function findResourceForUpload(File $file, FileUpload $upload)
     {

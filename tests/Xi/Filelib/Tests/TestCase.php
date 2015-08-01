@@ -383,7 +383,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getMockedResource()
     {
-        return $this->getMockBuilder('Xi\Filelib\Resource\Resource')
+        return $this->getMockBuilder('Xi\Filelib\Resource\ConcreteResource')
             ->disableOriginalConstructor()
             ->getMock();
     }

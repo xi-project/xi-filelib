@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Profile;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Event\FileProfileEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\File\File;
@@ -97,11 +97,11 @@ class ProfileManager
     /**
      * Returns all file profiles
      *
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function getProfiles()
     {
-        return ArrayCollection::create($this->profiles);
+        return new Sequence($this->profiles);
     }
 
     /**

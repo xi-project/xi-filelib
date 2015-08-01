@@ -12,7 +12,7 @@ namespace Xi\Filelib\Tool\PathCalculator;
 use Pekkis\DirectoryCalculator\DirectoryCalculator;
 use Pekkis\DirectoryCalculator\Strategy\UniversalLeveledStrategy;
 use Xi\Filelib\Versionable\Version;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Versionable\Versionable;
 use Xi\Filelib\File\File;
 use Closure;
@@ -36,10 +36,10 @@ class LegacyPathCalculator implements PathCalculator
     }
 
     /**
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @return string
      */
-    public function getPath(Resource $resource)
+    public function getPath(ConcreteResource $resource)
     {
         return $this->directoryCalculator->calculateDirectory($resource) . '/' . $resource->getId();
     }

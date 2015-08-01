@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Filelib\Attacher;
 use Xi\Filelib\Event\StorageEvent;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\Tool\LazyReferenceResolver;
 use Xi\Filelib\Versionable\Version;
@@ -58,7 +58,7 @@ class Storage implements Attacher
         return $this->adapter;
     }
 
-    public function retrieve(Resource $resource)
+    public function retrieve(ConcreteResource $resource)
     {
         if ($retrieved = $this->cache->get($resource)) {
             return $retrieved->getPath();
@@ -82,7 +82,7 @@ class Storage implements Attacher
         return $retrieved->getPath();
     }
 
-    public function delete(Resource $resource)
+    public function delete(ConcreteResource $resource)
     {
         if (!$this->exists($resource)) {
             throw new FileIOException(
@@ -97,7 +97,7 @@ class Storage implements Attacher
         return $this->getResolvedAdapter()->delete($resource);
     }
 
-    public function store(Resource $resource, $tempFile)
+    public function store(ConcreteResource $resource, $tempFile)
     {
         try {
             $event = new StorageEvent($tempFile);
@@ -117,10 +117,10 @@ class Storage implements Attacher
     }
 
     /**
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @return bool
      */
-    public function exists(Resource $resource)
+    public function exists(ConcreteResource $resource)
     {
         return $this->getResolvedAdapter()->exists($resource);
     }

@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Versionable;
 
 use Xi\Filelib\BaseIdentifiable;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 abstract class BaseVersionable extends BaseIdentifiable implements Versionable
 {
@@ -40,7 +40,7 @@ abstract class BaseVersionable extends BaseIdentifiable implements Versionable
      * @param mixed $version
      * @return self
      */
-    public function addVersion($version, Resource $resource)
+    public function addVersion($version, ConcreteResource $resource)
     {
         $versioned = new Versioned($version, $resource);
         $this->versions[$versioned->getVersion()->toString()] = $versioned;

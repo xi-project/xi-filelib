@@ -2,11 +2,11 @@
 
 namespace Xi\Filelib\Tests\Backend;
 
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Events;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 
 class FindByIdsRequestTest extends TestCase
 {
@@ -16,9 +16,9 @@ class FindByIdsRequestTest extends TestCase
     public function instantiates()
     {
         $ed = $this->getMockedEventDispatcher();
-        $request = new FindByIdsRequest(array(1), 'Xi\Filelib\Resource\Resource', $ed);
+        $request = new FindByIdsRequest(array(1), 'Xi\Filelib\Resource\ConcreteResource', $ed);
 
-        $this->assertEquals('Xi\Filelib\Resource\Resource', $request->getClassName());
+        $this->assertEquals('Xi\Filelib\Resource\ConcreteResource', $request->getClassName());
         $this->assertEquals(array(1), $request->getNotFoundIds());
         $this->assertEquals(array(), $request->getFoundIds());
         $this->assertFalse($request->isFulfilled());
@@ -42,7 +42,7 @@ class FindByIdsRequestTest extends TestCase
     public function dispatchesInOriginMode($originMode)
     {
         $ed = $this->getMockedEventDispatcher();
-        $request = new FindByIdsRequest(array(1), 'Xi\Filelib\Resource\Resource', $ed);
+        $request = new FindByIdsRequest(array(1), 'Xi\Filelib\Resource\ConcreteResource', $ed);
 
         $request->isOrigin($originMode);
 
@@ -60,7 +60,7 @@ class FindByIdsRequestTest extends TestCase
                 ->method('dispatch');
         }
 
-        $resource = Resource::create(array('id' => 1));
+        $resource = ConcreteResource::create(array('id' => 1));
         $request->found($resource);
 
         $this->assertTrue($request->isFulfilled());
@@ -97,12 +97,12 @@ class FindByIdsRequestTest extends TestCase
     public function foundManyIterates()
     {
         $ed = $this->getMockedEventDispatcher();
-        $request = new FindByIdsRequest(array(1, 2, 3), 'Xi\Filelib\Resource\Resource', $ed);
+        $request = new FindByIdsRequest(array(1, 2, 3), 'Xi\Filelib\Resource\ConcreteResource', $ed);
 
-        $iter = ArrayCollection::create(
+        $iter = new Sequence(
             array(
-                Resource::create(array('id' => 1)),
-                Resource::create(array('id' => 3)),
+                ConcreteResource::create(array('id' => 1)),
+                ConcreteResource::create(array('id' => 3)),
             )
         );
 

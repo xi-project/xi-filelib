@@ -11,7 +11,7 @@ namespace Xi\Filelib\Folder;
 
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
@@ -242,7 +242,7 @@ class FolderRepository extends AbstractRepository implements FolderRepositoryInt
      * Finds subfolders
      *
      * @param  Folder        $folder
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findSubFolders(Folder $folder)
     {
@@ -272,7 +272,7 @@ class FolderRepository extends AbstractRepository implements FolderRepositoryInt
 
     /**
      * @param  Folder        $folder Folder
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findFiles(Folder $folder)
     {

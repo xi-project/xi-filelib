@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Versionable;
 
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 class Versioned
 {
@@ -16,7 +16,7 @@ class Versioned
      */
     private $resource;
 
-    public function __construct($version, Resource $resource)
+    public function __construct($version, ConcreteResource $resource)
     {
         $this->version = Version::get($version);
         $this->resource = $resource;

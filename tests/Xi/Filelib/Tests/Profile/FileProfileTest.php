@@ -5,7 +5,7 @@ namespace Xi\Filelib\Tests\Profile;
 use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Profile\FileProfile;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Events;
 
@@ -137,7 +137,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->addMockedVersionsToFileProfile();
 
         $file = File::create(array(
-            'resource' => Resource::create(array('mimetype' => 'image/png'))
+            'resource' => ConcreteResource::create(array('mimetype' => 'image/png'))
         ));
         $versionProviders = $this->fileProfile->getFileVersions($file);
 
@@ -146,7 +146,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('imagenizer', $versionProviders);
 
         $file = File::create(array(
-            'resource' => Resource::create(array('mimetype' => 'video/lus'))
+            'resource' => ConcreteResource::create(array('mimetype' => 'video/lus'))
         ));
         $versionProviders = $this->fileProfile->getFileVersions($file);
         $this->assertCount(2, $versionProviders);
@@ -154,7 +154,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->assertContains('videonizer', $versionProviders);
 
         $file = File::create(array(
-            'resource' => Resource::create(array('mimetype' => 'soo/soo'))
+            'resource' => ConcreteResource::create(array('mimetype' => 'soo/soo'))
         ));
         $versionProviders = $this->fileProfile->getFileVersions($file);
         $this->assertCount(1, $versionProviders);
@@ -185,7 +185,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $this->addMockedVersionsToFileProfile();
 
         $file = File::create(array(
-            'resource' => Resource::create(array('mimetype' => $mimetype))
+            'resource' => ConcreteResource::create(array('mimetype' => $mimetype))
         ));
 
         $this->assertEquals($expected, $this->fileProfile->fileHasVersion($file, $versionId));
@@ -198,7 +198,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
     public function getVersionProviderShouldFailWithNonExistingVersion()
     {
         $file = File::create(array(
-            'resource' => Resource::create(array('mimetype' => 'xoo/lus'))
+            'resource' => ConcreteResource::create(array('mimetype' => 'xoo/lus'))
         ));
         $this->fileProfile->getVersionProvider($file, Version::get('globalizer'));
     }
@@ -211,7 +211,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
         $versionProviders = $this->addMockedVersionsToFileProfile();
 
         $file = File::create(array(
-            'resource' => Resource::create(array('mimetype' => 'video/lus'))
+            'resource' => ConcreteResource::create(array('mimetype' => 'video/lus'))
         ));
 
         $vp = $this->fileProfile->getVersionProvider($file, Version::get('globalizer'));
@@ -269,7 +269,7 @@ class FileProfileTest extends \Xi\Filelib\Tests\TestCase
     {
         $this->addMockedVersionsToFileProfile();
 
-        $file = File::create(array('resource' => Resource::create(array('mimetype' => $mimetype))));
+        $file = File::create(array('resource' => ConcreteResource::create(array('mimetype' => $mimetype))));
 
         $this->assertEquals($expected, $this->fileProfile->isSharedResourceAllowed($file));
     }

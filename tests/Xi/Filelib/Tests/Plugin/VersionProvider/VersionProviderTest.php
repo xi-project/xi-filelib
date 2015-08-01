@@ -15,7 +15,7 @@ use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Profile\ProfileManager;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Event\FileEvent;
@@ -164,7 +164,7 @@ class VersionProviderTest extends TestCase
         $this->plugin->attachTo($this->filelib);
 
         $file = $file + array(
-            'resource' => Resource::create($file),
+            'resource' => ConcreteResource::create($file),
         );
 
         $file = File::create($file);
@@ -187,7 +187,7 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(array(
             'profile' => 'tussi',
-            'resource' => Resource::create(array('mimetype' => 'iimage/xoo'))
+            'resource' => ConcreteResource::create(array('mimetype' => 'iimage/xoo'))
         ));
         $event = new FileEvent($file);
 
@@ -213,7 +213,7 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(
                     array(
-                        'resource' => Resource::create(
+                        'resource' => ConcreteResource::create(
                             array(
                                 'mimetype' => 'image/xoo',
                                 'data' => array(
@@ -250,7 +250,7 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(
             array(
-                'resource' => Resource::create(array('mimetype' => 'image/xoo')),
+                'resource' => ConcreteResource::create(array('mimetype' => 'image/xoo')),
                 'profile' => 'tussi',
             )
         )->addVersion(Version::get('reiska'));
@@ -296,12 +296,12 @@ class VersionProviderTest extends TestCase
 
         $this->storage->expects($this->exactly(2))->method('storeVersion')
                 ->with(
-                    $sharedVersionsAllowed ? $this->isInstanceOf('Xi\Filelib\Resource\Resource') : $this->isInstanceOf('Xi\Filelib\File\File'),
+                    $sharedVersionsAllowed ? $this->isInstanceOf('Xi\Filelib\Resource\ConcreteResource') : $this->isInstanceOf('Xi\Filelib\File\File'),
                     $this->isInstanceOf(Version::class),
                     $this->isType('string')
                 );
 
-        $file = File::create(array('profile' => 'tussi', 'resource' => Resource::create(array('mimetype' => 'image/xoo'))));
+        $file = File::create(array('profile' => 'tussi', 'resource' => ConcreteResource::create(array('mimetype' => 'image/xoo'))));
         $event = new FileEvent($file);
 
         $this->createMockedTemporaryFiles();
@@ -329,7 +329,7 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(array(
             'profile' => 'xooxer',
-            'resource' => Resource::create(array('mimetype' => 'image/xoo'))
+            'resource' => ConcreteResource::create(array('mimetype' => 'image/xoo'))
         ));
         $event = new FileEvent($file);
 
@@ -364,7 +364,7 @@ class VersionProviderTest extends TestCase
             ->setMethods(array('deleteProvidedVersions'))
             ->getMockForAbstractClass();
 
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $event = new ResourceEvent($resource);
         $plugin->expects($this->once())->method('deleteProvidedVersions')->with($resource);
         $plugin->onResourceDelete($event);
@@ -380,7 +380,7 @@ class VersionProviderTest extends TestCase
 
         $this->storage->expects($this->once())->method('deleteVersion')
              ->with(
-                     $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                     $this->isInstanceOf('Xi\Filelib\Resource\ConcreteResource'),
                      $this->equalTo(Version::get('lusser'))
               );
 
@@ -388,12 +388,12 @@ class VersionProviderTest extends TestCase
             ->expects($this->exactly(2))
             ->method('versionExists')
             ->with(
-                $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                $this->isInstanceOf('Xi\Filelib\Resource\ConcreteResource'),
                 $this->isInstanceOf(Version::class)
             )
             ->will($this->onConsecutiveCalls(false, true));
 
-        $resource = Resource::create(array('mimetype' => 'image/png'));
+        $resource = ConcreteResource::create(array('mimetype' => 'image/png'));
 
         $this->ed
             ->expects($this->once())
@@ -445,7 +445,7 @@ class VersionProviderTest extends TestCase
     {
         $this->plugin->attachTo($this->filelib);
 
-        $file = File::create(array('id' => 666, 'resource' => Resource::create()));
+        $file = File::create(array('id' => 666, 'resource' => ConcreteResource::create()));
 
         $this->storage
              ->expects($this->once())
@@ -480,7 +480,7 @@ class VersionProviderTest extends TestCase
         $this->storage
             ->expects($this->exactly(2))->method('versionExists')
             ->with(
-                $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                $this->isInstanceOf('Xi\Filelib\Resource\ConcreteResource'),
                 $this->isInstanceOf(Version::class)
             )
             ->will($this->onConsecutiveCalls(true, false));
@@ -488,11 +488,11 @@ class VersionProviderTest extends TestCase
         $this->storage->expects($this->once())
             ->method('deleteVersion')
             ->with(
-                $this->isInstanceOf('Xi\Filelib\Resource\Resource'),
+                $this->isInstanceOf('Xi\Filelib\Resource\ConcreteResource'),
                 $this->isInstanceOf(Version::class)
             );
 
-        $resource = Resource::create(array('mimetype' => 'image/png'));
+        $resource = ConcreteResource::create(array('mimetype' => 'image/png'));
         $event = new ResourceEvent($resource);
 
         $this->plugin->onResourceDelete($event);
@@ -514,7 +514,7 @@ class VersionProviderTest extends TestCase
     {
         $this->plugin->attachTo($this->filelib);
 
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $file = File::create(array('resource' => $resource));
 
         $this->plugin
@@ -590,7 +590,7 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(
             array(
-                'resource' => Resource::create(),
+                'resource' => ConcreteResource::create(),
             )
         );
 
@@ -671,7 +671,7 @@ class VersionProviderTest extends TestCase
 
         $file = File::create(
             array(
-                'resource' => Resource::create(),
+                'resource' => ConcreteResource::create(),
             )
         );
 

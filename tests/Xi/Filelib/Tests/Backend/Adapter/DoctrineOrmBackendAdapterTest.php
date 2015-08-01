@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Backend\Adapter;
 
 use Xi\Filelib\Backend\Adapter\DoctrineOrmBackendAdapter;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityNotFoundException;
@@ -128,7 +128,7 @@ class DoctrineOrmBackendAdapterTest extends RelationalDbTestCase
 
         $backend = new DoctrineOrmBackendAdapter($em);
 
-        $resource = Resource::create(array('id' => 1));
+        $resource = ConcreteResource::create(array('id' => 1));
 
         $this->assertFalse($backend->deleteResource($resource));
     }

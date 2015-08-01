@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Tool\PathCalculator;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Versionable\Version;
@@ -30,7 +30,7 @@ class ImprovedPathCalculatorTest extends TestCase
 
         $pc = new ImprovedPathCalculator($dc);
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xooxoo'
         ]);
 
@@ -50,7 +50,7 @@ class ImprovedPathCalculatorTest extends TestCase
 
         $pc = new ImprovedPathCalculator($dc);
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xooxoo'
         ]);
 
@@ -73,7 +73,7 @@ class ImprovedPathCalculatorTest extends TestCase
 
         $pc = new ImprovedPathCalculator($dc);
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xooxoo'
         ]);
 
@@ -108,7 +108,7 @@ class ImprovedPathCalculatorTest extends TestCase
 
         $pc = new ImprovedPathCalculator($dc, $prefix);
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xooxoo'
         ]);
 
@@ -129,7 +129,7 @@ class ImprovedPathCalculatorTest extends TestCase
 
         $pc = new ImprovedPathCalculator($dc, $prefix);
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xooxoo'
         ]);
 

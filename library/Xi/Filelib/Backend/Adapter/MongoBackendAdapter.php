@@ -19,7 +19,7 @@ use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Identifiable;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 /**
  * MongoDB backend for Filelib
@@ -41,7 +41,7 @@ class MongoBackendAdapter implements BackendAdapter
      * @var array
      */
     private $finderMap = array(
-        'Xi\Filelib\Resource\Resource' => array(
+        'Xi\Filelib\Resource\ConcreteResource' => array(
             'id' => '_id',
             'hash' => 'hash',
         ),
@@ -62,7 +62,7 @@ class MongoBackendAdapter implements BackendAdapter
      * @var array
      */
     private $classNameToResources = array(
-        'Xi\Filelib\Resource\Resource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
+        'Xi\Filelib\Resource\ConcreteResource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
         'Xi\Filelib\File\File' => array('collection' => 'files', 'exporter' => 'exportFiles'),
         'Xi\Filelib\Folder\Folder' => array('collection' => 'folders', 'exporter' => 'exportFolders'),
     );
@@ -191,7 +191,7 @@ class MongoBackendAdapter implements BackendAdapter
         return (bool) $ret['n'];
     }
 
-    public function updateResource(Resource $resource)
+    public function updateResource(ConcreteResource $resource)
     {
         $document = $resource->toArray();
 
@@ -240,7 +240,7 @@ class MongoBackendAdapter implements BackendAdapter
     /**
      * @see BackendAdapter::createResource
      */
-    public function createResource(Resource $resource)
+    public function createResource(ConcreteResource $resource)
     {
         $document = array(
             'uuid' => $resource->getUuid(),
@@ -270,7 +270,7 @@ class MongoBackendAdapter implements BackendAdapter
     /**
      * @see BackendAdapter::deleteResource
      */
-    public function deleteResource(Resource $resource)
+    public function deleteResource(ConcreteResource $resource)
     {
         return $this->deleteIdentifiable($resource);
     }
@@ -278,7 +278,7 @@ class MongoBackendAdapter implements BackendAdapter
     /**
      * @see BackendAdapter::getNumberOfReferences
      */
-    public function getNumberOfReferences(Resource $resource)
+    public function getNumberOfReferences(ConcreteResource $resource)
     {
         $refs = $this
             ->getMongo()
@@ -380,7 +380,7 @@ class MongoBackendAdapter implements BackendAdapter
 
         foreach ($iter as $file) {
 
-            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
+            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\ConcreteResource');
             $resource = $this->findByIds($request)->getResult()->first();
 
             $ret->append(
@@ -438,7 +438,7 @@ class MongoBackendAdapter implements BackendAdapter
 
         foreach ($iter as $resource) {
             $ret->append(
-                Resource::create(
+                ConcreteResource::create(
                     array(
                         'id' => (string) $resource['_id'],
                         'uuid' => $resource['uuid'],

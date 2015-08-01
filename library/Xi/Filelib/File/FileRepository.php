@@ -11,7 +11,7 @@ namespace Xi\Filelib\File;
 
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\AbstractRepository;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Event\FileCopyEvent;
@@ -103,7 +103,7 @@ class FileRepository extends AbstractRepository implements FileRepositoryInterfa
     }
 
     /**
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findMany($ids)
     {
@@ -112,7 +112,7 @@ class FileRepository extends AbstractRepository implements FileRepositoryInterfa
 
     /**
      * @param FileFinder $finder
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findBy(FileFinder $finder)
     {
@@ -147,7 +147,7 @@ class FileRepository extends AbstractRepository implements FileRepositoryInterfa
     /**
      * Finds and returns all files
      *
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findAll()
     {

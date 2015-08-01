@@ -44,7 +44,7 @@ class Versioned
     /**
      * Returns resource
      *
-     * @return Resource
+     * @return ConcreteResource
      */
     public function getResource()
     {
@@ -52,10 +52,10 @@ class Versioned
     }
 
     /**
-     * @param  Resource $resource
+     * @param  ConcreteResource $resource
      * @return File
      */
-    public function setResource(Resource $resource)
+    public function setResource(ConcreteResource $resource)
     {
         $this->resource = $resource;
 

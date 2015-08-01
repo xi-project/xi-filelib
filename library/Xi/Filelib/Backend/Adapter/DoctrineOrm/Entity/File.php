@@ -171,7 +171,7 @@ class File extends BaseEntity
     /**
      * Returns resource
      *
-     * @return Resource
+     * @return ConcreteResource
      */
     public function getResource()
     {
@@ -179,10 +179,10 @@ class File extends BaseEntity
     }
 
     /**
-     * @param  Resource $resource
+     * @param  ConcreteResource $resource
      * @return File
      */
-    public function setResource(Resource $resource)
+    public function setResource(ConcreteResource $resource)
     {
         $this->resource = $resource;
 

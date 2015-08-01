@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Resource;
 
 use Xi\Filelib\Tests\Versionable\BaseVersionableTestCase;
 use Xi\Filelib\Versionable\Version;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use DateTime;
 
 class ResourceTest extends BaseVersionableTestCase
@@ -12,7 +12,7 @@ class ResourceTest extends BaseVersionableTestCase
 
     public function getClassName()
     {
-        return 'Xi\Filelib\Resource\Resource';
+        return 'Xi\Filelib\Resource\ConcreteResource';
     }
 
     /**
@@ -20,7 +20,7 @@ class ResourceTest extends BaseVersionableTestCase
      */
     public function classShouldExist()
     {
-        $this->assertTrue(class_exists('Xi\Filelib\Resource\Resource'));
+        $this->assertTrue(class_exists('Xi\Filelib\Resource\ConcreteResource'));
     }
 
     /**
@@ -28,7 +28,7 @@ class ResourceTest extends BaseVersionableTestCase
      */
     public function gettersAndSettersShouldWorkAsExpected()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
 
         $val = 666;
         $this->assertNull($resource->getId());
@@ -79,7 +79,7 @@ class ResourceTest extends BaseVersionableTestCase
             'exclusive' => true,
         );
 
-        $resource = Resource::create($data);
+        $resource = ConcreteResource::create($data);
 
         $this->assertEquals($data['id'], $resource->getId());
         $this->assertEquals($data['hash'], $resource->getHash());
@@ -95,7 +95,7 @@ class ResourceTest extends BaseVersionableTestCase
      */
     public function toArrayShouldWorkAsExpected()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $resource->setHash('hashisen-kone');
         $resource->setUuid('uuid');
         $resource->setId(655);
@@ -124,6 +124,6 @@ class ResourceTest extends BaseVersionableTestCase
      */
     public function createShouldCreateNewInstance()
     {
-        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', Resource::create(array()));
+        $this->assertInstanceOf('Xi\Filelib\Resource\ConcreteResource', ConcreteResource::create(array()));
     }
 }

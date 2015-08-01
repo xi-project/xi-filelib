@@ -12,7 +12,7 @@ namespace Xi\Filelib\Tests\Publisher\Linker;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Versionable\Version;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Publisher\Linker\BeautifurlLinker;
 
 /**
@@ -90,7 +90,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                 File::create(array(
                     'name' => 'loso.png',
                     'folder_id' => 3,
-                    'resource' => Resource::create(array('id' => 1)),
+                    'resource' => ConcreteResource::create(array('id' => 1)),
                 )), array('lussuttaja/tussin/loso.png', 'lussuttaja/tussin/loso-xoo.xoo'),
 
             ),
@@ -98,7 +98,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                 File::create(array(
                     'name' => 'kim-jong-il',
                     'folder_id' => 4,
-                    'resource' => Resource::create(array('id' => 1)),
+                    'resource' => ConcreteResource::create(array('id' => 1)),
                 )), array('lussuttaja/banaanin/kim-jong-il', 'lussuttaja/banaanin/kim-jong-il-xoo.xoo'),
 
             ),
@@ -106,7 +106,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                 File::create(array(
                     'name' => 'juurekas.nom',
                     'folder_id' => 1,
-                    'resource' => Resource::create(array('id' => 1)),
+                    'resource' => ConcreteResource::create(array('id' => 1)),
                 )), array('juurekas.nom', 'juurekas-xoo.xoo'),
 
             ),
@@ -114,7 +114,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
                 File::create(array(
                     'name' => 'salainen-suunnitelma.pdf',
                     'folder_id' => 5,
-                    'resource' => Resource::create(array('id' => 1)),
+                    'resource' => ConcreteResource::create(array('id' => 1)),
                 )), array('lussuttaja/banaanin/suueren-uegrilaeisen-kaensaen-sielu/salainen-suunnitelma.pdf', 'lussuttaja/banaanin/suueren-uegrilaeisen-kaensaen-sielu/salainen-suunnitelma-xoo.xoo'),
 
             ),
@@ -157,7 +157,7 @@ class BeautifurlLinkerTest extends \Xi\Filelib\Tests\TestCase
         $file = File::create(array(
             'name' => 'lamantiini.lus',
             'folder_id' => 2,
-            'resource' => Resource::create(array('id' => 1)),
+            'resource' => ConcreteResource::create(array('id' => 1)),
         ));
 
         $linker = new BeautifurlLinker();

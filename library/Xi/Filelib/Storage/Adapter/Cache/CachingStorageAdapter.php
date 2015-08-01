@@ -4,7 +4,7 @@ namespace Xi\Filelib\Storage\Adapter\Cache;
 
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
 use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Storage\Retrieved;
@@ -50,7 +50,7 @@ class CachingStorageAdapter implements StorageAdapter
      * @param  string           $tempResource
      * @throws FilelibException
      */
-    public function store(Resource $resource, $tempResource)
+    public function store(ConcreteResource $resource, $tempResource)
     {
         $ret = $this->resolveCacheAdapter()->store($resource, $tempResource);
         $this->resolveActualAdapter()->store($resource, $tempResource);
@@ -60,11 +60,11 @@ class CachingStorageAdapter implements StorageAdapter
     /**
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @return Retrieved
      * @throws FilelibException
      */
-    public function retrieve(Resource $resource)
+    public function retrieve(ConcreteResource $resource)
     {
         if ($this->resolveCacheAdapter()->exists($resource)) {
             return $this->resolveCacheAdapter()->retrieve($resource);
@@ -77,10 +77,10 @@ class CachingStorageAdapter implements StorageAdapter
     /**
      * Returns whether stored file exists
      *
-     * @param  Resource $resource
+     * @param  ConcreteResource $resource
      * @return boolean
      */
-    public function exists(Resource $resource)
+    public function exists(ConcreteResource $resource)
     {
         if ($this->resolveCacheAdapter()->exists($resource) === true) {
             return true;
@@ -96,7 +96,7 @@ class CachingStorageAdapter implements StorageAdapter
      * @return boolean
      * @throws FilelibException
      */
-    public function delete(Resource $resource)
+    public function delete(ConcreteResource $resource)
     {
         if ($this->resolveCacheAdapter()->exists($resource) === true) {
             $this->resolveCacheAdapter()->delete($resource);

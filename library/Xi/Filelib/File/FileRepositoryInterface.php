@@ -3,7 +3,7 @@
 namespace Xi\Filelib\File;
 
 use Xi\Filelib\Folder\Folder;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\FilelibException;
 
@@ -26,13 +26,13 @@ interface FileRepositoryInterface
     public function find($id);
 
     /**
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findMany($ids);
 
     /**
      * @param FileFinder $finder
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findBy(FileFinder $finder);
 
@@ -54,7 +54,7 @@ interface FileRepositoryInterface
     /**
      * Finds and returns all files
      *
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findAll();
 

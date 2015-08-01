@@ -10,7 +10,7 @@ use Xi\Filelib\Publisher\Publisher;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Publisher\Adapter\AmazonS3PublisherAdapter;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Tests\TestCase;
 use Aws\S3\S3Client;
 
@@ -74,7 +74,7 @@ class FlysystemPublisherAdapterTest extends TestCase
 
         $this->vp = $this->getMockedVersionProvider(array('xooxer'), false);
 
-        $this->resource = Resource::create();
+        $this->resource = ConcreteResource::create();
         $this->file = File::create(array('resource' => $this->resource));
 
         $this->vp

@@ -33,6 +33,6 @@ class ResourceFinderTest extends TestCase
 
     public function getExpectedResultClass()
     {
-        return 'Xi\Filelib\Resource\Resource';
+        return 'Xi\Filelib\Resource\ConcreteResource';
     }
 }

@@ -17,7 +17,7 @@ use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Storage\Storage;
 use Xi\Filelib\Publisher\Publisher;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Events;
 
 /**
@@ -83,13 +83,13 @@ class VersionPluginTest extends TestCase
 
         $this->assertFalse(
             $this->plugin->isApplicableTo(
-                File::create(array('resource' => Resource::create(array('mimetype' => 'video/avi'))))
+                File::create(array('resource' => ConcreteResource::create(array('mimetype' => 'video/avi'))))
             )
         );
 
         $this->assertTrue(
             $this->plugin->isApplicableTo(
-                File::create(array('resource' => Resource::create(array('mimetype' => 'image/png'))))
+                File::create(array('resource' => ConcreteResource::create(array('mimetype' => 'image/png'))))
             )
         );
     }
@@ -117,12 +117,12 @@ class VersionPluginTest extends TestCase
     {
         $retrievedPath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
-        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
+        $file = File::create(array('id' => 1, 'resource' => ConcreteResource::create()));
 
         $this->storage
             ->expects($this->exactly(2))
             ->method('retrieve')
-            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
+            ->with($this->isInstanceOf('Xi\Filelib\Resource\ConcreteResource'))
             ->will($this->returnValue($retrievedPath));
 
         $ed = $this->getMockedEventDispatcher();

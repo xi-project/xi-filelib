@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Folder;
 
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 
 interface FolderRepositoryInterface
 {
@@ -58,7 +58,7 @@ interface FolderRepositoryInterface
      * Finds subfolders
      *
      * @param  Folder        $folder
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findSubFolders(Folder $folder);
 
@@ -72,7 +72,7 @@ interface FolderRepositoryInterface
 
     /**
      * @param  Folder        $folder Folder
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findFiles(Folder $folder);
 }

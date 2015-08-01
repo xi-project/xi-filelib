@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Versionable;
 
 use DateTime;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 interface Versionable
 {
@@ -34,7 +34,7 @@ interface Versionable
      */
     public function getVersions();
 
-    public function addVersion($version, Resource $resource);
+    public function addVersion($version, ConcreteResource $resource);
 
     public function removeVersion($version);
 

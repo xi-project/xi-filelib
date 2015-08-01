@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Storage\Adapter;
 
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Tool\PathCalculator\PathCalculator;
@@ -92,16 +92,16 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         return $this->root;
     }
 
-    private function getPathName(Resource $resource)
+    private function getPathName(ConcreteResource $resource)
     {
         return $this->getRoot() . '/' . $this->pathCalculator->getPath($resource);
     }
 
     /**
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @param string $tempFile
      */
-    public function store(Resource $resource, $tempFile)
+    public function store(ConcreteResource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
 
@@ -114,18 +114,18 @@ class FilesystemStorageAdapter extends BaseStorageAdapter
         return new Retrieved($pathName, false);
     }
 
-    public function retrieve(Resource $resource)
+    public function retrieve(ConcreteResource $resource)
     {
         return new Retrieved($this->getPathName($resource), false);
     }
 
-    public function delete(Resource $resource)
+    public function delete(ConcreteResource $resource)
     {
         $path = $this->getPathName($resource);
         unlink($path);
     }
 
-    public function exists(Resource $resource)
+    public function exists(ConcreteResource $resource)
     {
         return file_exists($this->getPathName($resource));
     }

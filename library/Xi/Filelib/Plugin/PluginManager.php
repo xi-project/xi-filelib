@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Plugin;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Event\PluginEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\FileLibrary;
@@ -40,11 +40,11 @@ class PluginManager
     }
 
     /**
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function getPlugins()
     {
-        return ArrayCollection::create($this->plugins);
+        return new Sequence($this->plugins);
     }
 
     /**

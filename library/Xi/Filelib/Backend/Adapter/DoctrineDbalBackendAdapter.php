@@ -18,7 +18,7 @@ use PDO;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 /**
  * Doctrine Dbal backend for filelib. Only supports postgresql and mysql because of portability stuff.
@@ -144,7 +144,7 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
     /**
      * @see BackendAdapter::updateResource
      */
-    public function updateResource(Resource $resource)
+    public function updateResource(ConcreteResource $resource)
     {
         $sql = "
         UPDATE xi_filelib_resource
@@ -178,7 +178,7 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
     /**
      * @see BackendAdapter::deleteResource
      */
-    public function deleteResource(Resource $resource)
+    public function deleteResource(ConcreteResource $resource)
     {
         $stmt = $this->conn->prepare("DELETE FROM xi_filelib_resource WHERE id = ?");
         $stmt->execute(array($resource->getId()));
@@ -189,7 +189,7 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
     /**
      * @see BackendAdapter::createResource
      */
-    public function createResource(Resource $resource)
+    public function createResource(ConcreteResource $resource)
     {
         $id = ($this->conn->getDatabasePlatform()->getName() == 'mysql') ?
             null : $this->conn->fetchColumn(
@@ -260,7 +260,7 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
     /**
      * @see BackendAdapter::getNumberOfReferences
      */
-    public function getNumberOfReferences(Resource $resource)
+    public function getNumberOfReferences(ConcreteResource $resource)
     {
         return $this->conn->fetchColumn(
             "SELECT COUNT(id) FROM xi_filelib_file WHERE resource_id = ?",
@@ -328,7 +328,7 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
         $ret = new ArrayIterator(array());
         foreach ($iter as $file) {
 
-            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
+            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\ConcreteResource');
             $resource = $this->findByIds($request)->getResult()->first();
 
             $ret->append(
@@ -360,7 +360,7 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
         $ret = new ArrayIterator(array());
         foreach ($iter as $resource) {
             $ret->append(
-                Resource::create(
+                ConcreteResource::create(
                     array(
                         'id' => $resource['id'],
                         'uuid' => $resource['uuid'],

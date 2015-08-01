@@ -9,17 +9,17 @@
 
 namespace Xi\Filelib\Tool\PathCalculator;
 
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Versionable\Versionable;
 
 interface PathCalculator
 {
     /**
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @return string
      */
-    public function getPath(Resource $resource);
+    public function getPath(ConcreteResource $resource);
 
     /**
      * @param Versionable $versionable

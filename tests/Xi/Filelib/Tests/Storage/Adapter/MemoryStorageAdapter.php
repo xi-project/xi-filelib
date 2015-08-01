@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Storage\Adapter\BaseStorageAdapter;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Versionable\Version;
@@ -29,25 +29,25 @@ class MemoryStorageAdapter extends BaseStorageAdapter
     }
 
     /**
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @param string $tempFile
      */
-    public function store(Resource $resource, $tempFile)
+    public function store(ConcreteResource $resource, $tempFile)
     {
         $this->resources[$resource->getId()] = $tempFile;
     }
 
-    public function retrieve(Resource $resource)
+    public function retrieve(ConcreteResource $resource)
     {
         return new Retrieved($this->resources[$resource->getId()], false);
     }
 
-    public function delete(Resource $resource)
+    public function delete(ConcreteResource $resource)
     {
         unset($this->resources[$resource->getId()]);
     }
 
-    public function exists(Resource $resource)
+    public function exists(ConcreteResource $resource)
     {
         return isset($this->resources[$resource->getId()]);
 

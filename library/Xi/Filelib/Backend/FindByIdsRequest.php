@@ -11,7 +11,7 @@ namespace Xi\Filelib\Backend;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Traversable;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Event\IdentifiableEvent;
 use Xi\Filelib\Events;
 use Xi\Filelib\Identifiable;
@@ -89,11 +89,11 @@ class FindByIdsRequest
     }
 
     /**
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function getResult()
     {
-        return ArrayCollection::create($this->foundObjects);
+        return new Sequence($this->foundObjects);
     }
 
     /**

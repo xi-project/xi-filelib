@@ -3,6 +3,12 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. Too much incubation is too much.
 
+## 0.15.0
+
+* Renamed Resource to ConcreteResource because of PHP's existing Resource type
+* Refactored Xi Collections to PhpCollections (phpcollection/phpcollection) because of abandonment issues.
+* Refactored Versionable handling to utilize ConcreteResource. [migration needed, TODO]
+
 ## 0.14.0
 
 * Resources have uuids. (needs migration!)

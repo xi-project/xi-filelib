@@ -18,7 +18,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\InvalidArgumentException;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Resource\ResourceRepository;
 use Xi\Filelib\Storage\Storage;
 
@@ -107,7 +107,7 @@ class FileCopier
 
             $retrieved = $this->storage->retrieve($oldResource);
 
-            $resource = Resource::create();
+            $resource = ConcreteResource::create();
             $resource->setDateCreated(new DateTime());
             $resource->setHash($oldResource->getHash());
             $resource->setSize($oldResource->getSize());

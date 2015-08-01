@@ -8,7 +8,7 @@ use Xi\Filelib\Events as CoreEvents;
 use Xi\Filelib\Plugin\VersionProvider\Events;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Versionable\Version;
 
 class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
@@ -105,7 +105,7 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
             ->method('publishVersion');
 
         $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
-        $event = new VersionProviderEvent($vp, Resource::create(), array('lusso', 'con-tusso'));
+        $event = new VersionProviderEvent($vp, ConcreteResource::create(), array('lusso', 'con-tusso'));
         $this->plugin->doPublish($event);
     }
 
@@ -155,7 +155,7 @@ class AutomaticPublisherPluginTest extends \Xi\Filelib\Tests\TestCase
             ->method('unpublishVersion');
 
         $vp = $this->getMockedVersionProvider(array('lusso', 'con-tusso'));
-        $event = new VersionProviderEvent($vp, Resource::create(), array('lusso', 'con-tusso', 'loso'));
+        $event = new VersionProviderEvent($vp, ConcreteResource::create(), array('lusso', 'con-tusso', 'loso'));
         $this->plugin->doUnpublish($event);
     }
 

@@ -17,7 +17,7 @@ use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 /**
  * Memory backend adapter
@@ -36,7 +36,7 @@ class MemoryBackendAdapter implements BackendAdapter
      * @var array
      */
     private $finderMap = array(
-        'Xi\Filelib\Resource\Resource' => array(
+        'Xi\Filelib\Resource\ConcreteResource' => array(
             'id' => 'id',
             'hash' => 'hash',
         ),
@@ -57,7 +57,7 @@ class MemoryBackendAdapter implements BackendAdapter
      * @var array
      */
     private $classNameToResources = array(
-        'Xi\Filelib\Resource\Resource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
+        'Xi\Filelib\Resource\ConcreteResource' => array('collection' => 'resources', 'exporter' => 'exportResources'),
         'Xi\Filelib\File\File' => array('collection' => 'files', 'exporter' => 'exportFiles'),
         'Xi\Filelib\Folder\Folder' => array('collection' => 'folders', 'exporter' => 'exportFolders'),
     );
@@ -161,7 +161,7 @@ class MemoryBackendAdapter implements BackendAdapter
         return $this->update('folders', $folder->getId(), $document);
     }
 
-    public function updateResource(Resource $resource)
+    public function updateResource(ConcreteResource $resource)
     {
         $document = $resource->toArray();
 
@@ -190,7 +190,7 @@ class MemoryBackendAdapter implements BackendAdapter
     /**
      * @see BackendAdapter::createResource
      */
-    public function createResource(Resource $resource)
+    public function createResource(ConcreteResource $resource)
     {
         $document = array(
             'uuid' => $resource->getUuid(),
@@ -213,7 +213,7 @@ class MemoryBackendAdapter implements BackendAdapter
     /**
      * @see BackendAdapter::deleteResource
      */
-    public function deleteResource(Resource $resource)
+    public function deleteResource(ConcreteResource $resource)
     {
         $this->remove('resources', $resource->getId());
     }
@@ -221,7 +221,7 @@ class MemoryBackendAdapter implements BackendAdapter
     /**
      * @see BackendAdapter::getNumberOfReferences
      */
-    public function getNumberOfReferences(Resource $resource)
+    public function getNumberOfReferences(ConcreteResource $resource)
     {
         $count = 0;
         foreach ($this->data['files'] as $file) {
@@ -327,7 +327,7 @@ class MemoryBackendAdapter implements BackendAdapter
 
         foreach ($iter as $file) {
 
-            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\Resource');
+            $request = new FindByIdsRequest(array($file['resource_id']), 'Xi\Filelib\Resource\ConcreteResource');
 
             $resource = $this->findByIds($request)->getResult()->first();
 
@@ -366,7 +366,7 @@ class MemoryBackendAdapter implements BackendAdapter
 
         foreach ($iter as $resource) {
             $ret->append(
-                Resource::create(
+                ConcreteResource::create(
                     array(
                         'id' => (string) $resource['id'],
                         'uuid' => $resource['uuid'],

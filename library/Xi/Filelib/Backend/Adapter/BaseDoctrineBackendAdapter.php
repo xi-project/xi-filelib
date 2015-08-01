@@ -23,7 +23,7 @@ abstract class BaseDoctrineBackendAdapter
      * @var array
      */
     protected $finderMap = array(
-        'Xi\Filelib\Resource\Resource' => array(
+        'Xi\Filelib\Resource\ConcreteResource' => array(
             'id' => 'id',
             'hash' => 'hash',
         ),
@@ -41,7 +41,7 @@ abstract class BaseDoctrineBackendAdapter
     );
 
     protected $classNameToResources = array(
-        'Xi\Filelib\Resource\Resource' => array(
+        'Xi\Filelib\Resource\ConcreteResource' => array(
             'table' => 'xi_filelib_resource',
             'exporter' => 'exportResources',
             'getEntityName' => 'getResourceEntityName',

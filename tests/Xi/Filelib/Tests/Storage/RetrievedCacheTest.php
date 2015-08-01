@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Storage;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Versionable\Version;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Storage\Retrieved;
 use Xi\Filelib\Storage\RetrievedCache;
 use Xi\Filelib\Tests\TestCase;
@@ -39,7 +39,7 @@ class RetrievedCacheTest extends TestCase
     public function caches()
     {
         $id = 'lusso';
-        $resource = Resource::create(array('id' => $id));
+        $resource = ConcreteResource::create(array('id' => $id));
 
         $this->assertFalse($this->cache->get($resource));
         $this->cache->set($resource, $this->retrieved);

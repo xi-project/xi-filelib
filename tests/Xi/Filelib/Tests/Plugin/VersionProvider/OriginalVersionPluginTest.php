@@ -11,7 +11,7 @@ namespace Xi\Filelib\Tests\Plugin\VersionProvider;
 
 use Xi\Filelib\File\File;
 use Xi\Filelib\Plugin\VersionProvider\OriginalVersionPlugin;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Versionable\Version;
 
@@ -96,12 +96,12 @@ class OriginalVersionPluginTest extends TestCase
     {
         $retrievedPath = ROOT_TESTS . '/data/self-lussing-manatee.jpg';
 
-        $file = File::create(array('id' => 1, 'resource' => Resource::create()));
+        $file = File::create(array('id' => 1, 'resource' => ConcreteResource::create()));
         $storage = $this->getMockedStorage();
         $storage
             ->expects($this->exactly(1))
             ->method('retrieve')
-            ->with($this->isInstanceOf('Xi\Filelib\Resource\Resource'))
+            ->with($this->isInstanceOf('Xi\Filelib\Resource\ConcreteResource'))
             ->will($this->returnValue($retrievedPath));
 
         $ed = $this->getMockedEventDispatcher();

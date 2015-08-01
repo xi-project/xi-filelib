@@ -16,7 +16,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepository;
 use Xi\Filelib\Versionable\Version;
 use Xi\Filelib\Storage\Storage;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 /**
  * @group plugin
@@ -131,7 +131,7 @@ class ArbitraryVersionPluginTest extends TestCase
 
         $imageFile = File::create(
             array(
-                'resource' => Resource::create(
+                'resource' => ConcreteResource::create(
                     array('mimetype' => 'image/lus')
                 )
             )
@@ -139,7 +139,7 @@ class ArbitraryVersionPluginTest extends TestCase
 
         $videoFile = File::create(
             array(
-                'resource' => Resource::create(
+                'resource' => ConcreteResource::create(
                     array('mimetype' => 'video/lus')
                 )
             )
@@ -344,7 +344,7 @@ class ArbitraryVersionPluginTest extends TestCase
             }
         );
 
-        $resource = Resource::create(
+        $resource = ConcreteResource::create(
             array('mimetype' => 'image/jpeg')
         );
         $file = File::create(

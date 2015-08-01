@@ -5,11 +5,11 @@ namespace Xi\Filelib\Tests\Backend\Cache;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Cache\Cache;
 use Xi\Filelib\Event\IdentifiableEvent;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Events;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 
 class CacheTest extends TestCase
 {
@@ -55,7 +55,7 @@ class CacheTest extends TestCase
         $request = new FindByIdsRequest($arr, $class);
         $ret = $this->cache->findByIds($request);
 
-        $this->assertEquals(ArrayCollection::create(array($file)), $ret->getResult());
+        $this->assertEquals(new Sequence(array($file)), $ret->getResult());
     }
 
     /**
@@ -155,7 +155,7 @@ class CacheTest extends TestCase
             ->setMethods(array('delete', 'save'))
             ->getMock();
 
-        $identifiable = Resource::create();
+        $identifiable = ConcreteResource::create();
         $event = new IdentifiableEvent($identifiable);
 
         $cache->expects($this->once())->method('delete')->with($identifiable);
@@ -173,7 +173,7 @@ class CacheTest extends TestCase
             ->setMethods(array('delete', 'save'))
             ->getMock();
 
-        $identifiable = Resource::create();
+        $identifiable = ConcreteResource::create();
         $event = new IdentifiableEvent($identifiable);
 
         $cache->expects($this->once())->method('save')->with($identifiable);
@@ -191,7 +191,7 @@ class CacheTest extends TestCase
             ->setMethods(array('delete', 'save'))
             ->getMock();
 
-        $identifiable = Resource::create();
+        $identifiable = ConcreteResource::create();
         $event = new IdentifiableEvent($identifiable);
 
         $cache->expects($this->once())->method('save')->with($identifiable);
@@ -209,7 +209,7 @@ class CacheTest extends TestCase
             ->setMethods(array('delete', 'save'))
             ->getMock();
 
-        $identifiable = Resource::create();
+        $identifiable = ConcreteResource::create();
         $event = new IdentifiableEvent($identifiable);
 
         $cache->expects($this->once())->method('save')->with($identifiable);

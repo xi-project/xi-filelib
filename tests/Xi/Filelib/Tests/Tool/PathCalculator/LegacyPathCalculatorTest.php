@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Tool\PathCalculator;
 
 use Xi\Filelib\File\File;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Tool\PathCalculator\LegacyPathCalculator;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Versionable\Version;
@@ -28,7 +28,7 @@ class LegacyPathCalculatorTest extends TestCase
 
         $pc = new LegacyPathCalculator($dc);
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xooxoo'
         ]);
 
@@ -48,7 +48,7 @@ class LegacyPathCalculatorTest extends TestCase
 
         $pc = new LegacyPathCalculator($dc);
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xooxoo'
         ]);
 
@@ -71,7 +71,7 @@ class LegacyPathCalculatorTest extends TestCase
 
         $pc = new LegacyPathCalculator($dc);
 
-        $resource = Resource::create([
+        $resource = ConcreteResource::create([
             'id' => 'xooxoo'
         ]);
 

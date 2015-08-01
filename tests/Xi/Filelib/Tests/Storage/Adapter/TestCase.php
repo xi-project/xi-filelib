@@ -6,7 +6,7 @@ use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Adapter\BaseTemporaryRetrievingStorageAdapter;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\File\File;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
@@ -48,7 +48,7 @@ abstract class TestCase extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        $this->resource = Resource::create([
+        $this->resource = ConcreteResource::create([
             'id' => 1,
             'date_created' => new DateTime(),
             'uuid' => Uuid::uuid4(),

@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Resource;
 
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\Upload\FileUpload;
 
@@ -11,45 +11,45 @@ interface ResourceRepositoryInterface
     /**
      * Updates a resource
      *
-     * @param  Resource         $resource
+     * @param ConcreteResource $resource
      * @return ResourceRepository
      */
-    public function update(Resource $resource);
+    public function update(ConcreteResource $resource);
 
     /**
      * Finds a resource
      *
      * @param  mixed $id Resource id
-     * @return Resource
+     * @return ConcreteResource
      */
     public function find($id);
 
     /**
      * Finds and returns all resources
      *
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findAll();
 
     /**
      * Deletes a resource
      *
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      */
-    public function delete(Resource $resource);
+    public function delete(ConcreteResource $resource);
 
     /**
      * Creates a resource
      *
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @param string $path
      */
-    public function create(Resource $resource, $path);
+    public function create(ConcreteResource $resource, $path);
 
     /**
      * @param  File       $file
      * @param  FileUpload $upload
-     * @return Resource
+     * @return ConcreteResource
      */
     public function findResourceForUpload(File $file, FileUpload $upload);
 

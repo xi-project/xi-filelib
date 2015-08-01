@@ -6,7 +6,7 @@ use Xi\Filelib\Renderer\AcceleratedRenderer;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Renderer\Events;
 use Xi\Filelib\Versionable\Version;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 class AcceleratedRendererTest extends RendererTestCase
 {
@@ -38,7 +38,7 @@ class AcceleratedRendererTest extends RendererTestCase
      */
     public function shouldDefaultToUnacceleratedFunctionalityWhenCantAccelerate($download, $sharedVersions)
     {
-        $resource = Resource::create()->addVersion(Version::get('xooxer'));
+        $resource = ConcreteResource::create()->addVersion(Version::get('xooxer'));
         $file = File::create(
             array(
                 'resource' => $resource, 'name' => 'lussuti.pdf'
@@ -129,7 +129,7 @@ class AcceleratedRendererTest extends RendererTestCase
         $this->renderer->stripPrefixFromPath($stripPrefix);
         $this->renderer->addPrefixToPath($addPrefix);
 
-        $resource = Resource::create()->addVersion(Version::get('xooxer'));
+        $resource = ConcreteResource::create()->addVersion(Version::get('xooxer'));
         $file = File::create(
             array(
                 'resource' => $resource, 'name' => 'lussuti.pdf'

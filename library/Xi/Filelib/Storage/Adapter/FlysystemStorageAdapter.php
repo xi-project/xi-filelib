@@ -11,7 +11,7 @@ namespace Xi\Filelib\Storage\Adapter;
 
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Filesystem;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Tool\PathCalculator\PathCalculator;
 use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Retrieved;
@@ -48,12 +48,12 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
         $this->pathCalculator = ($pathCalculator) ?: new ImprovedPathCalculator();
     }
 
-    private function getPathName(Resource $resource)
+    private function getPathName(ConcreteResource $resource)
     {
         return $this->pathCalculator->getPath($resource);
     }
 
-    public function store(Resource $resource, $tempFile)
+    public function store(ConcreteResource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
         $this->filesystem->put(
@@ -67,7 +67,7 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
         return new Retrieved($tempFile);
     }
 
-    public function retrieve(Resource $resource)
+    public function retrieve(ConcreteResource $resource)
     {
         return new Retrieved(
             $this->tempFiles->add(
@@ -76,12 +76,12 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
         );
     }
 
-    public function delete(Resource $resource)
+    public function delete(ConcreteResource $resource)
     {
         $this->filesystem->delete($this->getPathName($resource));
     }
 
-    public function exists(Resource $resource)
+    public function exists(ConcreteResource $resource)
     {
         return $this->filesystem->has($this->getPathName($resource));
     }

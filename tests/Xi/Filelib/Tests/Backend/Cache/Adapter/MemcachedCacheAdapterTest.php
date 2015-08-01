@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\Backend\Cache;
 
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Cache\Adapter\MemcachedCacheAdapter;
 use Xi\Filelib\File\File;
@@ -65,7 +65,7 @@ class MemcachedCacheAdapterTest extends TestCase
         return array(
             array(File::create(array('id' => 1, 'data' => array('lus' => 'hof')))),
             array(Folder::create(array('id' => 'xooxooxoo'))),
-            array(Resource::create(array('id' => 'xooxooxoo'))),
+            array(ConcreteResource::create(array('id' => 'xooxooxoo'))),
         );
     }
 

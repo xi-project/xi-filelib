@@ -15,7 +15,7 @@ use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Folder\Folder;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 /**
  * Filelib backend platform interface
@@ -25,10 +25,10 @@ interface BackendAdapter extends FindByIdsRequestResolver
     /**
      * Returns how many times a resource is referenced by files
      *
-     * @param  Resource $resource
+     * @param  ConcreteResource $resource
      * @return int
      */
-    public function getNumberOfReferences(Resource $resource);
+    public function getNumberOfReferences(ConcreteResource $resource);
 
     /**
      * Finds and returns an array of object ids via finder
@@ -105,11 +105,11 @@ interface BackendAdapter extends FindByIdsRequestResolver
     /**
      * Creates a resource
      *
-     * @param  Resource         $resource
-     * @return Resource
+     * @param  ConcreteResource         $resource
+     * @return ConcreteResource
      * @throws FilelibException If resource could not be created.
      */
-    public function createResource(Resource $resource);
+    public function createResource(ConcreteResource $resource);
 
     /**
      * Deletes a resource
@@ -118,7 +118,7 @@ interface BackendAdapter extends FindByIdsRequestResolver
      * @return boolean
      * @throws FilelibException If resource could not be deleted.
      */
-    public function deleteResource(Resource $resource);
+    public function deleteResource(ConcreteResource $resource);
 
     /**
      * Updates a resource
@@ -127,5 +127,5 @@ interface BackendAdapter extends FindByIdsRequestResolver
      * @return boolean
      * @throws FilelibException If resource could not be updated.
      */
-    public function updateResource(Resource $resource);
+    public function updateResource(ConcreteResource $resource);
 }

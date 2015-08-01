@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Backend;
 
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Backend\Cache\Cache;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Tests\TestCase;
@@ -12,7 +12,7 @@ use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 
 class BackendTest extends TestCase
 {
@@ -56,7 +56,7 @@ class BackendTest extends TestCase
      */
     public function getNumberOfReferencesShouldDelegateToBackendAdapter()
     {
-        $resource = Resource::create(array('id' => 1));
+        $resource = ConcreteResource::create(array('id' => 1));
         $this->platform->expects($this->once())->method('getNumberOfReferences')->with($resource)
             ->will($this->returnValue(55));
         $ret = $this->backend->getNumberOfReferences($resource);
@@ -85,7 +85,7 @@ class BackendTest extends TestCase
      */
     public function updateResourceShouldDelegateToBackendAdapter()
     {
-        $obj = Resource::create(array('id' => 1));
+        $obj = ConcreteResource::create(array('id' => 1));
 
         $this->platform
             ->expects($this->once())
@@ -115,7 +115,7 @@ class BackendTest extends TestCase
     {
         $this->setExpectedException('Xi\Filelib\Backend\FolderNotFoundException');
 
-        $resource = Resource::create(array('id' => 2));
+        $resource = ConcreteResource::create(array('id' => 2));
         $file = File::create(array('id' => 1, 'resource' => $resource, 'folder_id' => 666));
 
         $backend = $this->getMockBuilder('Xi\Filelib\Backend\Backend')
@@ -140,7 +140,7 @@ class BackendTest extends TestCase
      */
     public function updateFileShouldDelegateToBackendAdapter()
     {
-        $resource = Resource::create(array('id' => 2));
+        $resource = ConcreteResource::create(array('id' => 2));
         $folder = Folder::create(array('id' => 666));
         $file = File::create(array('id' => 1, 'resource' => $resource, 'folder_id' => 666));
 
@@ -162,7 +162,7 @@ class BackendTest extends TestCase
      */
     public function createResourceShouldDelegateToBackendAdapter()
     {
-        $obj = Resource::create(array('id' => 1));
+        $obj = ConcreteResource::create(array('id' => 1));
 
         $this->platform->expects($this->once())->method('createResource')
             ->with($obj)->will($this->returnArgument(0));
@@ -238,7 +238,7 @@ class BackendTest extends TestCase
             ->expects($this->once())
             ->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(ArrayCollection::create(array($nonUniqueFile))));
+            ->will($this->returnValue(new Sequence(array($nonUniqueFile))));
 
         $this->setExpectedException(
             'Xi\Filelib\Backend\NonUniqueFileException',
@@ -268,7 +268,7 @@ class BackendTest extends TestCase
             ->expects($this->once())
             ->method('findByFinder')
             ->with($this->equalTo($finder))
-            ->will($this->returnValue(ArrayCollection::create(array())));
+            ->will($this->returnValue(new Sequence(array())));
 
         $ret = $backend->createFile($file, $folder);
         $this->assertSame($file, $ret);
@@ -299,7 +299,7 @@ class BackendTest extends TestCase
                         );
                         $self->assertEquals($expectedParams, $finder->getParameters());
 
-                        return ArrayCollection::create(array());
+                        return new Sequence(array());
                     }
                 )
             );
@@ -344,7 +344,7 @@ class BackendTest extends TestCase
                         );
                         $self->assertEquals($expectedParams, $finder->getParameters());
 
-                        return ArrayCollection::create($files);
+                        return new Sequence($files);
                     }
                 )
             );
@@ -376,7 +376,7 @@ class BackendTest extends TestCase
     {
         $this->setExpectedException('Xi\Filelib\Backend\ResourceReferencedException');
 
-        $obj = Resource::create(array('id' => 1));
+        $obj = ConcreteResource::create(array('id' => 1));
 
         $this->platform->expects($this->never())->method('deleteResource');
 
@@ -393,7 +393,7 @@ class BackendTest extends TestCase
      */
     public function deleteResourceShouldDelegateToBackendAdapter()
     {
-        $obj = Resource::create(array('id' => 1));
+        $obj = ConcreteResource::create(array('id' => 1));
 
         $this->platform->expects($this->once())->method('deleteResource')
             ->with($obj)->will($this->returnArgument(0));
@@ -446,7 +446,7 @@ class BackendTest extends TestCase
     {
         return array(
             array('Xi\Filelib\File\File'),
-            array('Xi\Filelib\Resource\Resource'),
+            array('Xi\Filelib\Resource\ConcreteResource'),
             array('Xi\Filelib\Folder\Folder'),
         );
     }

@@ -29,7 +29,7 @@
         "pekkis/temporary-file-manager": "~1.0",
         "pekkis/directory-calculator": "~1.0",
         "pekkis/mime-types": "~1.0",
-        "xi/collections": "0.3.*",
+        "phpcollection/phpcollection": "0.4.*",
         "zencoder/zencoder-php": "~2.1",
         "aws/aws-sdk-php": "~3.2"
     },

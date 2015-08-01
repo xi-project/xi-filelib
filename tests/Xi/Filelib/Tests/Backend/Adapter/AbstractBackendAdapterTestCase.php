@@ -8,7 +8,7 @@ use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Versionable\Version;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Backend\Finder\Finder;
 
@@ -61,7 +61,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
     public function getNumberOfReferencesShouldReturnCorrectCount($numberOfReferences, $resourceId)
     {
         $this->setUpSimpleDataSet();
-        $resource = Resource::create(array('id' => $resourceId));
+        $resource = ConcreteResource::create(array('id' => $resourceId));
         $this->assertEquals($numberOfReferences, $this->backend->getNumberOfReferences($resource));
     }
 
@@ -85,7 +85,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
             )
         );
 
-        $resource = Resource::create($data);
+        $resource = ConcreteResource::create($data);
         $this->assertNull($resource->getId());
         $this->backend->createResource($resource);
 
@@ -105,9 +105,9 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
             'id' => $resourceId,
         );
 
-        $resource = Resource::create($data);
+        $resource = ConcreteResource::create($data);
 
-        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $this->findResource($resourceId));
+        $this->assertInstanceOf('Xi\Filelib\Resource\ConcreteResource', $this->findResource($resourceId));
 
         $this->assertTrue($this->backend->deleteResource($resource));
         $this->assertFalse($this->findResource($resourceId));
@@ -126,7 +126,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
             'id' => $resourceId,
         );
 
-        $resource = Resource::create($data);
+        $resource = ConcreteResource::create($data);
 
         $this->assertFalse($this->backend->deleteResource($resource));
     }
@@ -143,7 +143,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 
         $resource = $this->findResource($resourceId);
 
-        $this->assertInstanceOf('Xi\Filelib\Resource\Resource', $resource);
+        $this->assertInstanceOf('Xi\Filelib\Resource\ConcreteResource', $resource);
 
         $this->assertNotNull($resource->getUuid());
         $this->assertEquals($resourceId, $resource->getId());
@@ -152,7 +152,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 
         $expectedVersions = array_merge($resource->getVersions(), $versions);
         foreach ($versions as $version) {
-            $resource->addVersion(Version::get($version));
+            $resource->addVersion(Version::get($version), ConcreteResource::create());
         }
         $resource->setExclusive(false);
         $this->assertTrue($this->backend->updateResource($resource));
@@ -171,7 +171,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
     {
         $this->setUpEmptyDataSet();
 
-        $resource = Resource::create(
+        $resource = ConcreteResource::create(
             array(
                 'id' => $resourceId,
             )
@@ -422,7 +422,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
             'date_created' => new DateTime('2011-01-01 16:16:16'),
             'status' => 5,
             'uuid' => 'uuid-lussid',
-            'resource' => Resource::create(array('id' => 1)),
+            'resource' => ConcreteResource::create(array('id' => 1)),
         );
 
         $fodata = array(
@@ -513,13 +513,13 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 
     /**
      * @param $id
-     * @return Resource
+     * @return ConcreteResource
      */
     public function findResource($id)
     {
-        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Resource\Resource');
+        $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Resource\ConcreteResource');
         $ret = $this->backend->findByIds($request);
-        return $ret->getResult()->first();
+        return $ret->getResult()->first()->getOrElse(false);
     }
 
     /**
@@ -530,7 +530,7 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
     {
         $request = new FindByIdsRequest(array($id), 'Xi\Filelib\File\File');
         $ret = $this->backend->findByIds($request);
-        return $ret->getResult()->first();
+        return $ret->getResult()->first()->getOrElse(false);
     }
 
     /**
@@ -541,6 +541,6 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
     {
         $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Folder\Folder');
         $ret = $this->backend->findByIds($request);
-        return $ret->getResult()->first();
+        return $ret->getResult()->first()->getOrElse(false);
     }
 }

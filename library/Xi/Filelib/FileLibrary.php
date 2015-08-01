@@ -12,7 +12,7 @@ namespace Xi\Filelib;
 use Pekkis\TemporaryFileManager\TemporaryFileManager;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\Backend;
 use Xi\Filelib\Backend\Cache\Adapter\CacheAdapter;
@@ -163,7 +163,7 @@ class FileLibrary
 
     /**
      * @param array $ids
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findFiles(array $ids = array())
     {
@@ -172,7 +172,7 @@ class FileLibrary
 
     /**
      * @param FileFinder $finder
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findFilesBy(FileFinder $finder)
     {

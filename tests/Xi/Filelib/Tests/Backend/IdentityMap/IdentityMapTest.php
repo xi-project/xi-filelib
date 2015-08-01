@@ -6,12 +6,12 @@ use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Tests\TestCase;
 use Xi\Filelib\Backend\IdentityMap\IdentityMap;
 use Xi\Filelib\Identifiable;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Event\FolderEvent;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Events;
 
 class IdentityMapTest extends TestCase
@@ -61,7 +61,7 @@ class IdentityMapTest extends TestCase
     {
         return array(
             array(File::create(array('id' => 1))),
-            array(Resource::create(array('id' => 'xooxo'))),
+            array(ConcreteResource::create(array('id' => 'xooxo'))),
             array(Folder::create(array('id' => 665))),
         );
     }
@@ -204,7 +204,7 @@ class IdentityMapTest extends TestCase
             Folder::create(array('id' => 6)),
             File::create(array('id' => 6)),
         );
-        $iter = ArrayCollection::create($array);
+        $iter = new Sequence($array);
 
         $im = $this
             ->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
@@ -235,7 +235,7 @@ class IdentityMapTest extends TestCase
             Folder::create(array('id' => 6)),
             File::create(array('id' => 6)),
         );
-        $iter = ArrayCollection::create($array);
+        $iter = new Sequence($array);
 
         $im = $this
             ->getMockBuilder('Xi\Filelib\Backend\IdentityMap\IdentityMap')
@@ -364,7 +364,7 @@ class IdentityMapTest extends TestCase
      */
     public function clears()
     {
-        $resource = Resource::create(array('id' => 'xooxers'));
+        $resource = ConcreteResource::create(array('id' => 'xooxers'));
 
         $this->im->add($resource);
         $this->assertTrue($this->im->has($resource));
@@ -383,7 +383,7 @@ class IdentityMapTest extends TestCase
     {
         $request = new FindByIdsRequest(
             array('xoo'),
-            'Xi\Filelib\Resource\Resource'
+            'Xi\Filelib\Resource\ConcreteResource'
         );
 
         $ret = $this->im->findByIds($request);
@@ -397,10 +397,10 @@ class IdentityMapTest extends TestCase
     {
         $request = new FindByIdsRequest(
             array('xoo'),
-            'Xi\Filelib\Resource\Resource'
+            'Xi\Filelib\Resource\ConcreteResource'
         );
 
-        $resource = Resource::create(array('id' => 'xoo'));
+        $resource = ConcreteResource::create(array('id' => 'xoo'));
         $this->im->add($resource);
 
         $ret = $this->im->findByIds($request);

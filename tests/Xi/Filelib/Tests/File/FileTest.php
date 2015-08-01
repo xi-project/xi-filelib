@@ -6,7 +6,7 @@ use DateTime;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Tests\Versionable\BaseVersionableTestCase;
 use Xi\Filelib\Versionable\Version;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 
 
 class FileTest extends BaseVersionableTestCase
@@ -80,7 +80,7 @@ class FileTest extends BaseVersionableTestCase
         $this->assertSame($file, $file->setStatus($val));
         $this->assertEquals($val, $file->getStatus());
 
-        $val = Resource::create();
+        $val = ConcreteResource::create();
         $this->assertNull($file->getResource());
         $this->assertSame($file, $file->setResource($val));
         $this->assertSame($val, $file->getResource());
@@ -111,7 +111,7 @@ class FileTest extends BaseVersionableTestCase
             'name' => 'lussen-name',
             'date_created' => new DateTime('1978-03-21'),
             'status' => File::STATUS_COMPLETED,
-            'resource' => Resource::create(),
+            'resource' => ConcreteResource::create(),
             'uuid' => 'lussen-uuid',
             'data' => array(
                 'versions' => array('tussen'),
@@ -145,7 +145,7 @@ class FileTest extends BaseVersionableTestCase
         $file->setDateCreated(new \DateTime('1978-03-21'));
         $file->setStatus(54);
         $file->setUuid('tussi-poski');
-        $file->setResource(Resource::create());
+        $file->setResource(ConcreteResource::create());
 
         $file->addVersion(Version::get('lussi'));
         $file->addVersion(Version::get('xussi'));
@@ -158,7 +158,7 @@ class FileTest extends BaseVersionableTestCase
             'date_created' => new \DateTime('1978-03-21'),
             'status' => 54,
             'uuid' => 'tussi-poski',
-            'resource' => Resource::create(),
+            'resource' => ConcreteResource::create(),
             'data' => array('versions' => array('lussi', 'xussi'))
         ));
 

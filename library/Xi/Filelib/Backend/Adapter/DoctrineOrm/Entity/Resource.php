@@ -52,7 +52,7 @@ class Resource extends BaseEntity
      * Set hash
      *
      * @param  string   $hash
-     * @return Resource
+     * @return ConcreteResource
      */
     public function setHash($hash)
     {
@@ -153,7 +153,7 @@ class Resource extends BaseEntity
      * Sets date uploaded
      *
      * @param  DateTime $dateUploaded
-     * @return Resource
+     * @return ConcreteResource
      */
     public function setDateCreated(DateTime $dateCreated)
     {

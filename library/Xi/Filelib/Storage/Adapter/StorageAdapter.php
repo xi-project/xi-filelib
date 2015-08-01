@@ -11,7 +11,7 @@ namespace Xi\Filelib\Storage\Adapter;
 
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\FileLibrary;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Storage\Retrieved;
 
 /**
@@ -29,24 +29,24 @@ interface StorageAdapter
      * @param  string           $tempResource
      * @throws FilelibException
      */
-    public function store(Resource $resource, $tempResource);
+    public function store(ConcreteResource $resource, $tempResource);
 
     /**
      * Retrieves a file and temporarily stores it somewhere so it can be read.
      *
-     * @param Resource $resource
+     * @param ConcreteResource $resource
      * @return Retrieved
      * @throws FilelibException
      */
-    public function retrieve(Resource $resource);
+    public function retrieve(ConcreteResource $resource);
 
     /**
      * Returns whether stored file exists
      *
-     * @param  Resource $resource
+     * @param  ConcreteResource $resource
      * @return boolean
      */
-    public function exists(Resource $resource);
+    public function exists(ConcreteResource $resource);
 
     /**
      * Deletes a file
@@ -55,5 +55,5 @@ interface StorageAdapter
      * @return boolean
      * @throws FilelibException
      */
-    public function delete(Resource $resource);
+    public function delete(ConcreteResource $resource);
 }

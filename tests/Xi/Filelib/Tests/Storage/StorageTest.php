@@ -4,7 +4,7 @@ namespace Xi\Filelib\Tests\Storage;
 
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Versionable\Version;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Storage\Events;
 use Xi\Filelib\Storage\FileIOException;
@@ -69,7 +69,7 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
 
         $this->exception = new \Exception('Throw you like an exception');
 
-        $this->resource = Resource::create();
+        $this->resource = ConcreteResource::create();
         $this->version = Version::get('version');
         $this->file = File::create(array('created_at' => new DateTime()));
     }
@@ -162,7 +162,7 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function storeDelegates()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $path = '/tenhunen/lipaisee.lus';
 
         $this->adapter
@@ -184,7 +184,7 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function deleteDelegates()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
 
         $this->adapter
             ->expects($this->once())
@@ -212,7 +212,7 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function retrieveDelegates()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $retrieved = new Retrieved('lus', false);
 
         $this->adapter
@@ -246,7 +246,7 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function retrieveExitsEarlyWithCache()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
         $retrieved = new Retrieved('lus', false);
 
         $this->adapter
@@ -272,7 +272,7 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function versionExistsDelegates()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
 
         $version = Version::get('lusso');
 
@@ -290,7 +290,7 @@ class StorageTest extends \Xi\Filelib\Tests\TestCase
      */
     public function existsDelegates()
     {
-        $resource = Resource::create();
+        $resource = ConcreteResource::create();
 
         $this->adapter
             ->expects($this->once())

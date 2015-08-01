@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Backend;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\Cache\Adapter\NullCacheAdapter;
 use Xi\Filelib\Backend\Cache\Cache;
@@ -21,7 +21,7 @@ use Xi\Filelib\File\File;
 use Xi\Filelib\FilelibException;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Identifiable;
-use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Tool\LazyReferenceResolver;
 
 class Backend
@@ -126,7 +126,7 @@ class Backend
      * Finds objects via finder
      *
      * @param  Finder        $finder
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findByFinder(Finder $finder)
     {
@@ -155,7 +155,7 @@ class Backend
      *
      * @param array $ids
      * @param string $className
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findByIds(array $ids, $className)
     {
@@ -270,7 +270,7 @@ class Backend
      * @param  Resource         $resource
      * @throws FilelibException If resource could not be deleted.
      */
-    public function deleteResource(Resource $resource)
+    public function deleteResource(ConcreteResource $resource)
     {
         if ($rno = $this->getNumberOfReferences($resource)) {
             throw new ResourceReferencedException(
@@ -290,7 +290,7 @@ class Backend
      * @param  Resource         $resource
      * @throws FilelibException If resource could not be created.
      */
-    public function createResource(Resource $resource)
+    public function createResource(ConcreteResource $resource)
     {
         return $this->resolveAdapter()->createResource($resource);
     }
@@ -301,7 +301,7 @@ class Backend
      * @param  Resource         $resource
      * @throws FilelibException If resource could not be updated.
      */
-    public function updateResource(Resource $resource)
+    public function updateResource(ConcreteResource $resource)
     {
         $this->resolveAdapter()->updateResource($resource);
     }
@@ -309,10 +309,10 @@ class Backend
     /**
      * Returns how many times a resource is referenced by files
      *
-     * @param  Resource $resource
+     * @param  ConcreteResource $resource
      * @return int
      */
-    public function getNumberOfReferences(Resource $resource)
+    public function getNumberOfReferences(ConcreteResource $resource)
     {
         return $this->resolveAdapter()->getNumberOfReferences($resource);
     }

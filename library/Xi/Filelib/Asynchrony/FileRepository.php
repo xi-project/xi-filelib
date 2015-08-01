@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Asynchrony;
 
-use Xi\Collections\Collection\ArrayCollection;
+use PhpCollection\Sequence;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\File\FileRepositoryInterface;
@@ -142,7 +142,7 @@ class FileRepository implements FileRepositoryInterface
     }
 
     /**
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findMany($ids)
     {
@@ -151,7 +151,7 @@ class FileRepository implements FileRepositoryInterface
 
     /**
      * @param FileFinder $finder
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findBy(FileFinder $finder)
     {
@@ -182,7 +182,7 @@ class FileRepository implements FileRepositoryInterface
     /**
      * Finds and returns all files
      *
-     * @return ArrayCollection
+     * @return Sequence
      */
     public function findAll()
     {
