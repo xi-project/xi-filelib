@@ -4,8 +4,6 @@ namespace Xi\Filelib\Tests\Backend\Adapter;
 
 use Xi\Filelib\Backend\Adapter\DoctrineDbalBackendAdapter;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * @group backend

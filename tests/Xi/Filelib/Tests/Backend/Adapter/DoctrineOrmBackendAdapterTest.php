@@ -69,29 +69,6 @@ class DoctrineOrmBackendAdapterTest extends RelationalDbTestCase
     /**
      * @test
      */
-    public function entityClassGettersShouldReturnCorrectClassNames()
-    {
-        $this->setUpEmptyDataSet();
-
-        $this->assertEquals(
-            'Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\File',
-            $this->backend->getFileEntityName()
-        );
-
-        $this->assertEquals(
-            'Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Folder',
-            $this->backend->getFolderEntityName()
-        );
-
-        $this->assertEquals(
-            'Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Resource',
-            $this->backend->getResourceEntityName()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function deleteFolderReturnsFalseOnEntityNotFound()
     {
         $this->setUpEmptyDataSet();
@@ -161,16 +138,5 @@ class DoctrineOrmBackendAdapterTest extends RelationalDbTestCase
         return $this->getMockAndDisableOriginalConstructor(
             'Doctrine\ORM\EntityManager'
         );
-    }
-
-    /**
-     * @test
-     */
-    public function entityManagerGetterShouldWork()
-    {
-        $em = $this->createEntityManagerMock();
-        $platform = new DoctrineOrmBackendAdapter($em);
-
-        $this->assertSame($em, $platform->getEntityManager());
     }
 }

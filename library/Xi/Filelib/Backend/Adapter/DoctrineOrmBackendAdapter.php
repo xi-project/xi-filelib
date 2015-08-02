@@ -22,6 +22,11 @@ use Xi\Filelib\Resource\ConcreteResource;
 use Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Versioned;
 use Xi\Filelib\Versionable\Versionable;
 
+use Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\File as FileEntity;
+use Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Resource as ResourceEntity;
+use Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Folder as FolderEntity;
+
+
 /**
  * Doctrine 2 backend for filelib
  *
@@ -33,24 +38,15 @@ use Xi\Filelib\Versionable\Versionable;
 class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements BackendAdapter
 {
     /**
-     * @var string
-     */
-    private $fileEntityName = 'Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\File';
-
-    /**
-     * @var string
-     */
-    private $folderEntityName = 'Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Folder';
-
-    /**
-     * @var string
-     */
-    private $resourceEntityName = 'Xi\Filelib\Backend\Adapter\DoctrineOrm\Entity\Resource';
-
-    /**
      * @var EntityManager
      */
     private $em;
+
+    private $map = [
+        ConcreteResource::class => ResourceEntity::class,
+        File::class => FileEntity::class,
+        Folder::class => FolderEntity::class
+    ];
 
     /**
      * @param EntityManager $em
@@ -61,58 +57,18 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     }
 
     /**
-     * Returns the fully qualified file entity classname
-     *
-     * @return string
-     */
-    public function getFileEntityName()
-    {
-        return $this->fileEntityName;
-    }
-
-    /**
-     * Returns the entity manager
-     *
-     * @return EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->em;
-    }
-
-    /**
-     * Returns the fully qualified folder entity classname
-     *
-     * @return string
-     */
-    public function getFolderEntityName()
-    {
-        return $this->folderEntityName;
-    }
-
-    /**
-     * Returns the fully qualified resource entity classname
-     *
-     * @return string
-     */
-    public function getResourceEntityName()
-    {
-        return $this->resourceEntityName;
-    }
-
-    /**
      * @see BackendAdapter::updateFile
      */
     public function updateFile(File $file)
     {
-        $entity = $this->getFileReference($file);
-        $entity->setFolder($this->getFolderReference($file->getFolderId()));
+        $entity = $this->em->getReference(FileEntity::class, $file->getId());
+        $entity->setFolder($this->em->getReference(FolderEntity::class, $file->getFolderId()));
         $entity->setProfile($file->getProfile());
         $entity->setName($file->getName());
         $entity->setDateCreated($file->getDateCreated());
         $entity->setStatus($file->getStatus());
         $entity->setUuid($file->getUuid());
-        $entity->setResource($this->em->getReference($this->getResourceEntityName(), $file->getResource()->getId()));
+        $entity->setResource($this->em->getReference(ResourceEntity::class, $file->getResource()->getId()));
         $entity->setData($file->getData()->toArray());
 
         $this->em->flush($entity);
@@ -124,7 +80,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
      */
     public function deleteFile(File $file)
     {
-        if (!$entity = $this->em->find($this->fileEntityName, $file->getId())) {
+        if (!$entity = $this->em->find(FileEntity::class, $file->getId())) {
             return false;
         }
 
@@ -139,10 +95,10 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
      */
     public function createFolder(Folder $folder)
     {
-        $folderEntity = new $this->folderEntityName();
+        $folderEntity = new FolderEntity();
 
         if ($folder->getParentId()) {
-            $folderEntity->setParent($this->getFolderReference($folder->getParentId()));
+            $folderEntity->setParent($this->em->getReference(FolderEntity::class, $folder->getParentId()));
         }
 
         $folderEntity->setName($folder->getName());
@@ -164,11 +120,14 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     public function updateFolder(Folder $folder)
     {
         try {
-            $folderRow = $this->getFolderReference($folder->getId());
+            $folderRow = $this->em->getReference(
+                FolderEntity::class,
+                $folder->getId()
+            );
 
             if ($folder->getParentId()) {
                 $folderRow->setParent(
-                    $this->getFolderReference($folder->getParentId())
+                    $this->em->getReference(FolderEntity::class, $folder->getParentId())
                 );
             } else {
                 $folderRow->removeParent();
@@ -193,7 +152,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     public function updateResource(ConcreteResource $resource)
     {
         try {
-            $resourceRow = $this->em->getReference($this->getResourceEntityName(), $resource->getId());
+            $resourceRow = $this->em->getReference(ResourceEntity::class, $resource->getId());
             $resourceRow->setUuid($resource->getUuid());
             $resourceRow->setData($resource->getData()->toArray());
             $resourceRow->setHash($resource->getHash());
@@ -211,7 +170,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     public function deleteFolder(Folder $folder)
     {
         try {
-            $folderEntity = $this->em->find($this->folderEntityName, $folder->getId());
+            $folderEntity = $this->em->find(FolderEntity::class, $folder->getId());
 
             if (!$folderEntity) {
                 return false;
@@ -232,7 +191,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
     public function deleteResource(ConcreteResource $resource)
     {
         try {
-            $entity = $this->em->find($this->resourceEntityName, $resource->getId());
+            $entity = $this->em->find(ResourceEntity::class, $resource->getId());
 
             if (!$entity) {
                 return false;
@@ -252,7 +211,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
      */
     public function createResource(ConcreteResource $resource)
     {
-        $resourceRow = new $this->resourceEntityName();
+        $resourceRow = new ResourceEntity();
         $resourceRow->setUuid($resource->getUuid());
         $resourceRow->setHash($resource->getHash());
         $resourceRow->setDateCreated($resource->getDateCreated());
@@ -270,14 +229,12 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
      */
     public function createFile(File $file, Folder $folder)
     {
-        $self = $this;
-
         return $this->em->transactional(
-            function (EntityManager $em) use ($self, $file, $folder) {
-                $fileEntityName = $self->getFileEntityName();
+            function (EntityManager $em) use ($file, $folder) {
 
-                $entity = new $fileEntityName;
-                $entity->setFolder($self->getFolderReference($folder->getId()));
+                $entity = new FileEntity();
+
+                $entity->setFolder($this->em->getReference(FolderEntity::class, $folder->getId()));
                 $entity->setName($file->getName());
                 $entity->setProfile($file->getProfile());
                 $entity->setDateCreated($file->getDateCreated());
@@ -287,7 +244,7 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
 
                 $resource = $file->getResource();
                 if ($resource) {
-                    $entity->setResource($em->getReference($self->getResourceEntityName(), $resource->getId()));
+                    $entity->setResource($em->getReference(ResourceEntity::class, $resource->getId()));
                 }
 
                 $em->persist($entity);
@@ -329,7 +286,8 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
         $className = $request->getClassName();
 
         $resources = $this->classNameToResources[$className];
-        $repo = $this->em->getRepository($this->$resources['getEntityName']());
+
+        $repo = $this->em->getRepository($this->map[$className]);
         $rows = $repo->findBy(
             array(
                 'id' => $ids
@@ -424,24 +382,6 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
         }
 
         return $ret;
-    }
-
-    /**
-     * @param  File        $file
-     * @return object|null
-     */
-    public function getFileReference(File $file)
-    {
-        return $this->em->getReference($this->fileEntityName, $file->getId());
-    }
-
-    /**
-     * @param  integer     $id
-     * @return object|null
-     */
-    public function getFolderReference($id)
-    {
-        return $this->em->getReference($this->folderEntityName, $id);
     }
 
     /**

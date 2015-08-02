@@ -4,6 +4,7 @@ namespace Xi\Filelib\Tests\Backend\Adapter;
 
 use PHPUnit_Framework_TestCase;
 use DateTime;
+use Rhumsaa\Uuid\Uuid;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\File\File;
@@ -14,6 +15,7 @@ use Xi\Filelib\Backend\Finder\Finder;
 
 /**
  * @group backend
+ * @runTestsInSeparateProcesses
  */
 abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
 {
@@ -168,161 +170,6 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->backend->updateResource($resource));
     }
 
-    /**
-     * @test
-     * @dataProvider parentFolderIdProvider
-     * @param mixed $parentFolderId
-     */
-    public function createFolderShouldCreateFolder($parentFolderId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $data = array(
-            'parent_id' => $parentFolderId,
-            'name' => 'lusander',
-            'url' => 'lussuttaja/tussin/lusander',
-            'uuid' => 'uuid-f-566',
-        );
-
-        $folder = Folder::create($data);
-
-        $this->backend->createFolder($folder);
-        $this->assertValidCreatedIdentifier($folder->getId());
-
-    }
-
-    /**
-     * @test
-     * @dataProvider filelessFolderIdProvider
-     * @param mixed $folderId
-     */
-    public function deleteFolderShouldDeleteFolder($folderId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $data = array(
-            'id' => $folderId,
-            'parent_id' => null,
-            'name' => 'klus',
-        );
-
-        $folder = Folder::create($data);
-
-        $this->assertInstanceOf('Xi\Filelib\Folder\Folder', $this->findFolder($folderId));
-        $this->assertTrue($this->backend->deleteFolder($folder));
-        $this->assertFalse($this->findFolder($folderId));
-    }
-
-    /**
-     * @test
-     * @dataProvider nonExistingFolderIdProvider
-     * @param mixed $folderId
-     */
-    public function deleteFolderShouldNotDeleteNonExistingFolder($folderId)
-    {
-        $this->setUpEmptyDataSet();
-
-        $folder = Folder::create(
-            array(
-                'id' => $folderId,
-                'parent_id' => null,
-                'name' => 'klus',
-            )
-        );
-
-        $this->assertFalse($this->backend->deleteFolder($folder));
-    }
-
-    /**
-     * @test
-     * @dataProvider updateFolderProvider
-     * @param mixed $folderId
-     * @param mixed $parentFolderId
-     * @param mixed $updatedParentFolderId
-     * @group refactor
-     */
-    public function updateFolderShouldUpdateFolder(
-        $folderId,
-        $parentFolderId,
-        $updatedParentFolderId
-    ) {
-        $this->setUpSimpleDataSet();
-
-        $data = Folder::create(
-            array(
-                'id' => $folderId,
-                'parent_id' => $parentFolderId,
-                'url' => 'lussuttaja/tussin',
-                'name' => 'tussin',
-                'uuid' => 'uuid-f-' . $folderId,
-                'data' => array(
-                    'lusso' => array(
-                        'gran-tusso' => 'libaisu',
-                    )
-                )
-            )
-        );
-
-        $this->assertEquals($data, $this->findFolder($folderId));
-
-
-        $updateData = array(
-            'id' => $folderId,
-            'parent_id' => $updatedParentFolderId,
-            'url' => 'lussuttaja/lussander',
-            'name' => 'lussander',
-            'uuid' => 'sika-uuid',
-            'data' => array(
-                'tenhusta' => 'mina ylistan koska han on suurin kaikista suurempi kuin kim jong un'
-            )
-        );
-        $folder = Folder::create($updateData);
-
-        $this->assertTrue($this->backend->updateFolder($folder));
-        $this->assertEquals($folder, $this->findFolder($folderId));
-    }
-
-    /**
-     * @test
-     * @dataProvider rootFolderIdProvider
-     * @param mixed $folderId
-     * @group refactor
-     */
-    public function updatesRootFolder($folderId)
-    {
-        $this->setUpSimpleDataSet();
-
-        $folder = Folder::create(
-            array(
-                'id' => $folderId,
-                'parent_id' => null,
-                'url' => 'foo/bar',
-                'name' => 'xoo',
-                'uuid' => 'tussi-uuid',
-            )
-        );
-
-        $this->assertTrue($this->backend->updateFolder($folder));
-        $this->assertEquals($folder, $this->findFolder($folderId));
-    }
-
-    /**
-     * @test
-     * @dataProvider nonExistingFolderIdProvider
-     * @param mixed $folderId
-     */
-    public function updateFolderShouldNotUpdateNonExistingFolder($folderId)
-    {
-        $this->setUpEmptyDataSet();
-
-        $folder = Folder::create(
-            array(
-                'id' => $folderId,
-            )
-        );
-
-        $this->assertFalse($this->backend->updateFolder($folder));
-    }
 
     /**
      * @return array
@@ -531,5 +378,173 @@ abstract class AbstractBackendAdapterTestCase extends PHPUnit_Framework_TestCase
         $request = new FindByIdsRequest(array($id), 'Xi\Filelib\Folder\Folder');
         $ret = $this->backend->findByIds($request);
         return $ret->getResult()->first()->getOrElse(false);
+    }
+
+
+    // TUSSI
+
+
+    /**
+     * @test
+     * @group tussi
+     */
+    public function createsRootFolder()
+    {
+        $folder = Folder::create([
+            'parent_id' => null,
+            'name' => 'tenhustelun-kansio',
+            'url' => 'tenhustelun-kansio',
+            'uuid' => Uuid::uuid4()->toString()
+        ]);
+
+        $ret = $this->backend->createFolder($folder);
+        $this->assertSame($ret, $folder);
+        $this->assertValidCreatedIdentifier($ret->getId());
+
+        return $ret;
+    }
+
+    /**
+     * @test
+     * @group tussi
+     * @depends createsRootFolder
+     */
+    public function createsChildFolder(Folder $saved)
+    {
+        $root = $this->findFolder($saved->getId());
+        $this->assertEquals($saved, $root);
+
+        $folder = Folder::create([
+            'parent_id' => $root->getId(),
+            'name' => 'tenhustelun-lapsi',
+            'url' => 'tenhustelun-kansio/tenhustelun-lapsi',
+            'uuid' => Uuid::uuid4()->toString()
+        ]);
+
+        $ret = $this->backend->createFolder($folder);
+
+        $this->assertSame($ret, $folder);
+
+        $this->assertValidCreatedIdentifier($ret->getId());
+
+        return $ret;
+    }
+
+    /**
+     * @test
+     * @group tussi
+     * @depends createsRootFolder
+     */
+    public function createsSecondChildFolder(Folder $saved)
+    {
+        $root = $this->findFolder($saved->getId());
+        $this->assertEquals($saved, $root);
+
+        $folder = Folder::create([
+            'parent_id' => $root->getId(),
+            'name' => 'tenhustelun-lapsi',
+            'url' => 'tenhustelun-kansio/tenhusen-suuruuden-ylistys',
+            'uuid' => Uuid::uuid4()->toString()
+        ]);
+
+        $ret = $this->backend->createFolder($folder);
+
+        $this->assertSame($ret, $folder);
+
+        $this->assertValidCreatedIdentifier($ret->getId());
+
+        return $ret;
+    }
+
+
+    /**
+     * @test
+     * @group tussi
+     * @depends createsChildFolder
+     * @depends createsSecondChildFolder
+     */
+    public function updatesFolder(Folder $saved, Folder $saved2)
+    {
+        $folder = $this->findFolder($saved->getId());
+        $this->assertEquals($saved, $folder);
+
+        $folder->setName('tenhuselle-ansiomitali');
+        $ret = $this->backend->updateFolder($folder);
+        $this->assertTrue($ret);
+        return $folder;
+    }
+
+    /**
+     * @test
+     * @group tussi
+     * @depends updatesFolder
+     * @depends createsSecondChildFolder
+     */
+    public function folderWasUpdated(Folder $saved, Folder $saved2)
+    {
+        $changed = $this->findFolder($saved->getId());
+        $unchanged = $this->findFolder($saved2->getId());
+
+        $this->assertEquals($saved, $changed);
+        $this->assertEquals($saved2, $unchanged);
+
+        return $saved2;
+    }
+
+    /**
+     * @test
+     * @depends folderWasUpdated
+     * @group tussi
+     */
+    public function deletesFolder(Folder $saved)
+    {
+        $this->assertTrue($this->backend->deleteFolder($saved));
+        return $saved;
+    }
+
+    /**
+     * @param Folder $deleted
+     * @test
+     * @depends deletesFolder
+     * @group tussi
+     */
+    public function folderWasDeleted(Folder $deleted)
+    {
+        $this->assertFalse($this->findFolder($deleted->getId()));
+    }
+
+    /**
+     * @test
+     * @group tussi
+     * @dataProvider nonExistingFolderIdProvider
+     * @param mixed $folderId
+     */
+    public function updateFolderDoesntUpdateNonExistingFolder($folderId)
+    {
+        $folder = Folder::create(
+            array(
+                'id' => $folderId,
+            )
+        );
+        $this->assertFalse($this->backend->updateFolder($folder));
+    }
+
+
+    /**
+     * @test
+     * @dataProvider nonExistingFolderIdProvider
+     * @param mixed $folderId
+     * @group tussi
+     */
+    public function deleteFolderDoesntDeleteNonExistingFolder($folderId)
+    {
+        $folder = Folder::create(
+            array(
+                'id' => $folderId,
+                'parent_id' => null,
+                'name' => 'klus',
+            )
+        );
+        $this->assertFalse($this->backend->deleteFolder($folder));
     }
 }

@@ -43,18 +43,14 @@ abstract class BaseDoctrineBackendAdapter
     protected $classNameToResources = array(
         'Xi\Filelib\Resource\ConcreteResource' => array(
             'table' => 'xi_filelib_resource',
-            'exporter' => 'exportResources',
-            'getEntityName' => 'getResourceEntityName',
         ),
         'Xi\Filelib\File\File' => array(
             'table' => 'xi_filelib_file',
             'exporter' => 'exportFiles',
-            'getEntityName' => 'getFileEntityName',
         ),
         'Xi\Filelib\Folder\Folder' => array(
             'table' => 'xi_filelib_folder',
             'exporter' => 'exportFolders',
-            'getEntityName' => 'getFolderEntityName',
         ),
     );
 

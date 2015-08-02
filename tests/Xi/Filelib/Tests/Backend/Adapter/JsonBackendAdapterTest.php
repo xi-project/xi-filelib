@@ -31,27 +31,13 @@ class JsonBackendAdapterTest extends AbstractBackendAdapterTestCase
         return new JsonBackendAdapter(ROOT_TESTS . '/data/temp/json-platform.json');
     }
 
-    public function setUp()
+    public static function setUpBeforeClass()
     {
-        parent::setUp();
+        // parent::setUp();
 
         if (is_file(ROOT_TESTS . '/data/temp/json-platform.json')) {
             unlink(ROOT_TESTS . '/data/temp/json-platform.json');
         }
-    }
-
-    public function tearDown()
-    {
-        parent::tearDown();
-
-        if (is_file(ROOT_TESTS . '/data/temp/json-platform.json')) {
-            unlink(ROOT_TESTS . '/data/temp/json-platform.json');
-        }
-
-        if (is_file(ROOT_TESTS . '/data/temp/temp.json')) {
-            unlink(ROOT_TESTS . '/data/temp/temp.json');
-        }
-
     }
 
     /**

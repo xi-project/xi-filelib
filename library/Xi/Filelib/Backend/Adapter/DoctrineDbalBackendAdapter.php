@@ -203,7 +203,6 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
                 'hash' => $resource->getHash(),
                 'date_created' => $resource->getDateCreated()->format('Y-m-d H:i:s'),
                 'mimetype' => $resource->getMimetype(),
-                'exclusive' => $resource->isExclusive(),
                 'filesize' => $resource->getSize(),
                 'data' => json_encode($resource->getData()->toArray()),
             ),

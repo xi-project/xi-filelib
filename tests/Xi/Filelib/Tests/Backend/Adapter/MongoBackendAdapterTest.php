@@ -43,28 +43,21 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
         }
 
         try {
-            $mongo = new MongoClient(MONGO_DNS);
+            $mongo = (new MongoClient(MONGO_DNS))->selectDB('filelib_test');
         } catch (MongoConnectionException $e) {
             return $this->markTestSkipped('Can not connect to MongoDB.');
         }
 
-        // TODO: Fix hard coded db name.
-        $this->mongo = $mongo->filelib_tests;
-
-        return new MongoBackendAdapter($this->mongo);
+        return new MongoBackendAdapter($mongo);
     }
 
-    protected function tearDown()
+    public static function tearDownAfterClass()
     {
-        if (extension_loaded('mongo') && $this->mongo) {
-            foreach ($this->mongo->listCollections() as $collection) {
-                $collection->drop();
-            }
+        $mongo = (new MongoClient(MONGO_DNS))->selectDB('filelib_test');
+        foreach ($mongo->listCollections() as $collection) {
+            $collection->drop();
         }
-
-        $this->mongo = null;
-
-        parent::tearDown();
+        parent::tearDownAfterClass();
     }
 
     /**
