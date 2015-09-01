@@ -136,12 +136,14 @@ class FileTest extends BaseVersionableTestCase
      */
     public function toArrayShouldWorkAsExpected()
     {
+        $dt = new \DateTime('1978-03-21');
+
         $file = File::create();
         $file->setId(1);
         $file->setFolderId(655);
         $file->setProfile('unknown');
         $file->setName('kukkuu.png');
-        $file->setDateCreated(new \DateTime('1978-03-21'));
+        $file->setDateCreated($dt);
         $file->setStatus(54);
         $file->setUuid('tussi-poski');
         $file->setResource(Resource::create());
@@ -160,21 +162,6 @@ class FileTest extends BaseVersionableTestCase
             'resource' => Resource::create(),
             'data' => array('versions' => array('lussi', 'xussi'))
         ));
-
-        $file = File::create();
-        $this->assertEquals($file->toArray(), array(
-            'id' => null,
-            'folder_id' => null,
-            'profile' => null,
-            'name' => null,
-            'date_created' => new DateTime(),
-            'status' => null,
-            'uuid' => null,
-            'resource' => null,
-            'data' => array(),
-        ));
-
-
     }
 
     /**
