@@ -35,6 +35,10 @@ class MemcachedCacheAdapterTest extends TestCase
 
     public function tearDown()
     {
+        if (empty($this->memcached)) {
+            return;
+        }
+
         $this->memcached->flush();
     }
 
