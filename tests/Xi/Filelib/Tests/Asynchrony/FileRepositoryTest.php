@@ -85,6 +85,42 @@ class FileRepositoryTest extends TestCase
         $this->assertEquals('jippikaijea', $ret);
     }
 
+    /**
+     * @test
+     */
+    public function copies()
+    {
+        $file = File::create();
+        $folder = Folder::create();
+
+        $this->repo->copy($file, $folder)->shouldBeCalled()->willReturn('jippikaijea');
+        $ret = $this->filelib->getFileRepository()->copy($file, $folder);
+        $this->assertEquals('jippikaijea', $ret);
+    }
+
+
+    /**
+     * @test
+     */
+    public function deletes()
+    {
+        $file = File::create();
+
+        $this->repo->delete($file)->shouldBeCalled()->willReturn('jippikaijea');
+        $ret = $this->filelib->getFileRepository()->delete($file);
+        $this->assertEquals('jippikaijea', $ret);
+    }
+
+    /**
+     * @test
+     */
+    public function updates()
+    {
+        $file = File::create();
+        $this->repo->update($file)->shouldBeCalled()->willReturn('jippikaijea');
+        $ret = $this->filelib->getFileRepository()->update($file);
+        $this->assertEquals('jippikaijea', $ret);
+    }
 
     /**
      * @test
@@ -111,10 +147,6 @@ class FileRepositoryTest extends TestCase
             'xooxer',
             $this->filelib->getFileRepository()->getExecutionStrategy(FileRepository::COMMAND_AFTERUPLOAD)
         );
-
-
-
-
     }
 
     /**
@@ -198,31 +230,6 @@ class FileRepositoryTest extends TestCase
         $this->assertEquals($expected, $ret);
     }
 
-    /**
-     * @test
-     */
-    public function updateDelegates()
-    {
-        $param = File::create();
-        $expected = 'tus';
-
-        $this->repo->update($param)->shouldBeCalled()->willReturn($expected);
-        $ret = $this->filelib->getFileRepository()->update($param);
-        $this->assertEquals($expected, $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function deleteDelegates()
-    {
-        $param = File::create();
-        $expected = 'tus';
-
-        $this->repo->delete($param)->shouldBeCalled()->willReturn($expected);
-        $ret = $this->filelib->getFileRepository()->delete($param);
-        $this->assertEquals($expected, $ret);
-    }
 
     /**
      * @test
@@ -247,20 +254,6 @@ class FileRepositoryTest extends TestCase
 
         $this->repo->findByFilename($param1, $param2)->shouldBeCalled()->willReturn($expected);
         $ret = $this->filelib->getFileRepository()->findByFilename($param1, $param2);
-        $this->assertEquals($expected, $ret);
-    }
-
-    /**
-     * @test
-     */
-    public function copyDelegates()
-    {
-        $param1 = File::create();
-        $param2 = Folder::create();
-        $expected = 'tus';
-
-        $this->repo->copy($param1, $param2)->shouldBeCalled()->willReturn($expected);
-        $ret = $this->filelib->getFileRepository()->copy($param1, $param2);
         $this->assertEquals($expected, $ret);
     }
 }

@@ -20,6 +20,9 @@ class FileRepository implements FileRepositoryInterface
 {
     const COMMAND_UPLOAD = 'xi_filelib.asynchrony.upload';
     const COMMAND_AFTERUPLOAD = 'xi_filelib.asynchrony.afterUpload';
+    const COMMAND_DELETE = 'xi_filelib.asynchrony.delete';
+    const COMMAND_UPDATE = 'xi_filelib.asynchrony.update';
+    const COMMAND_COPY = 'xi_filelib.asynchrony.copy';
 
     /**
      * @var FileRepositoryInterface
@@ -46,6 +49,9 @@ class FileRepository implements FileRepositoryInterface
         $this->strategies = [
             self::COMMAND_UPLOAD => ExecutionStrategies::STRATEGY_SYNC,
             self::COMMAND_AFTERUPLOAD => ExecutionStrategies::STRATEGY_SYNC,
+            self::COMMAND_DELETE => ExecutionStrategies::STRATEGY_SYNC,
+            self::COMMAND_UPDATE => ExecutionStrategies::STRATEGY_SYNC,
+            self::COMMAND_COPY => ExecutionStrategies::STRATEGY_SYNC,
         ];
     }
 
@@ -127,7 +133,13 @@ class FileRepository implements FileRepositoryInterface
      */
     public function update(File $file)
     {
-        return $this->innerRepository->update($file);
+        return $this->execute(
+            self::COMMAND_AFTERUPLOAD,
+            [$this->innerRepository, 'update'],
+            [
+                $file,
+            ]
+        );
     }
 
     /**
@@ -196,7 +208,13 @@ class FileRepository implements FileRepositoryInterface
      */
     public function delete(File $file)
     {
-        return $this->innerRepository->delete($file);
+        return $this->execute(
+            self::COMMAND_DELETE,
+            [$this->innerRepository, 'delete'],
+            [
+                $file,
+            ]
+        );
     }
 
     /**
@@ -207,7 +225,14 @@ class FileRepository implements FileRepositoryInterface
      */
     public function copy(File $file, Folder $folder)
     {
-        return $this->innerRepository->copy($file, $folder);
+        return $this->execute(
+            self::COMMAND_COPY,
+            [$this->innerRepository, 'copy'],
+            [
+                $file,
+                $folder
+            ]
+        );
     }
 
     /**
