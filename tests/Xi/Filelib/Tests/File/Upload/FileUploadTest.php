@@ -69,27 +69,6 @@ class FileUploadTest extends TestCase
         unlink($path);
     }
 
-    /**
-     * @test
-     */
-    public function temporaryUploadShouldBeDeletedOnDestruct()
-    {
-        $path = ROOT_TESTS . '/data/temp/self-lussing-manatee-clone.jpg';
-
-        copy(ROOT_TESTS . '/data/self-lussing-manatee.jpg', $path);
-
-        $this->assertFileExists($path);
-
-        $upload = new FileUpload($path);
-        $upload->setTemporary(true);
-
-        $this->assertTrue($upload->isTemporary());
-
-        unset($upload);
-
-        $this->assertFileNotExists($path);
-    }
-
     public function provideOverrideBaseNames()
     {
         return array(

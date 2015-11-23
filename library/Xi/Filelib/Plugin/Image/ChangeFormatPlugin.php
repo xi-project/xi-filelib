@@ -75,7 +75,6 @@ class ChangeFormatPlugin extends BasePlugin
         $pinfo = pathinfo($upload->getUploadFilename());
 
         $nupload = new FileUpload($tempnam);
-        $nupload->setTemporary(true);
 
         $mimeTypes = new MimeTypes();
         $extension = $mimeTypes->mimeTypeToExtension($nupload->getMimeType());

@@ -153,16 +153,6 @@ class FileUpload
     }
 
     /**
-     * Sets whether file is temporary
-     *
-     * @param bool $temporary
-     */
-    public function setTemporary($temporary)
-    {
-        $this->temporary = $temporary;
-    }
-
-    /**
      * Returns whether file is temporary
      *
      * @return bool
