@@ -134,7 +134,7 @@ class FileRepository implements FileRepositoryInterface
     public function update(File $file)
     {
         return $this->execute(
-            self::COMMAND_AFTERUPLOAD,
+            self::COMMAND_UPDATE,
             [$this->innerRepository, 'update'],
             [
                 $file,
