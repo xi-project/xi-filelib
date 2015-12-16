@@ -5,6 +5,8 @@ namespace Xi\Filelib\Tests\Asynchrony\ExecutionStrategy;
 use Pekkis\Queue\Adapter\IronMQAdapter;
 use Pekkis\Queue\Adapter\PhpAMQPAdapter;
 use Pekkis\Queue\Processor\Processor;
+use Pekkis\Queue\Queue;
+use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
 use Xi\Filelib\Asynchrony\ExecutionStrategies;
 use Xi\Filelib\Asynchrony\ExecutionStrategy\PekkisQueueExecutionStrategy;
 use Xi\Filelib\Asynchrony\Queue\FilelibMessageHandler;
@@ -18,9 +20,9 @@ require_once __DIR__ . '/touchMyTrallala.php';
 class PekkisQueueExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
 {
     /**
-     * @var PhpAMQPAdapter
+     * @var Queue
      */
-    private $adapter;
+    private $queue;
 
     public function setUp()
     {
@@ -28,12 +30,14 @@ class PekkisQueueExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
             return $this->markTestSkipped('IronMQ not configured');
         }
 
-        $this->adapter = new IronMQAdapter(
-            getenv("IRONIO_TOKEN"),
-            getenv("IRONIO_PROJECT"),
-            'filelib_tests'
+        $this->queue = new Queue(
+            new IronMQAdapter(
+                getenv("IRONIO_TOKEN"),
+                getenv("IRONIO_PROJECT"),
+                'filelib_tests'
+            )
         );
-        $this->adapter->purge();
+        $this->queue->purge();
     }
 
     public function tearDown()
@@ -48,7 +52,7 @@ class PekkisQueueExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
     public function isNamedCorrectly()
     {
         $strategy = new PekkisQueueExecutionStrategy(
-            $this->adapter
+            $this->queue
         );
         $this->assertEquals(ExecutionStrategies::STRATEGY_ASYNC_PEKKIS_QUEUE, $strategy->getIdentifier());
     }
@@ -61,7 +65,7 @@ class PekkisQueueExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
         $this->assertFileNotExists(ROOT_TESTS . '/data/temp/ping.txt');
 
         $strategy = new PekkisQueueExecutionStrategy(
-            $this->adapter
+            $this->queue
         );
 
         $this->setExpectedException('Xi\Filelib\LogicException');
@@ -82,7 +86,7 @@ class PekkisQueueExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
         $this->assertFileNotExists(ROOT_TESTS . '/data/temp/ping.txt');
 
         $strategy = new PekkisQueueExecutionStrategy(
-            $this->adapter
+            $this->queue
         );
         $strategy->attachTo($filelib);
 
@@ -91,7 +95,7 @@ class PekkisQueueExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
         $this->assertFileNotExists(ROOT_TESTS . '/data/temp/ping.txt');
 
         $processor = new Processor(
-            $strategy->getQueue()
+            new EventDispatchingQueue($strategy->getQueue(), $filelib->getEventDispatcher())
         );
         $processor->registerHandler(new FilelibMessageHandler());
         $result = $processor->process();

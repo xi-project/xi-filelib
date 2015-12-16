@@ -10,7 +10,6 @@
 namespace Xi\Filelib\Asynchrony\ExecutionStrategy;
 
 use Xi\Filelib\LogicException;
-use Pekkis\Queue\Adapter\Adapter;
 use Pekkis\Queue\Message;
 use Pekkis\Queue\Queue;
 use Pekkis\Queue\SymfonyBridge\EventDispatchingQueue;
@@ -22,21 +21,19 @@ use Xi\Filelib\FileLibrary;
 class PekkisQueueExecutionStrategy implements ExecutionStrategy
 {
     /**
-     * @var Adapter
-     */
-    private $adapter;
-
-    /**
      * @var EventDispatchingQueue
      */
     private $queue;
 
+    private $attached = false;
+
     /**
      * @param EventDispatchingQueue $queue
      */
-    public function __construct(Adapter $adapter)
+    public function __construct(Queue $queue)
     {
-        $this->adapter = $adapter;
+        $this->queue = $queue;
+        $this->attached = false;
     }
 
     public function attachTo(FileLibrary $filelib)
@@ -44,15 +41,11 @@ class PekkisQueueExecutionStrategy implements ExecutionStrategy
         $serializer = new AsynchronyDataSerializer();
         $serializer->attachTo($filelib);
 
-        $queue = new Queue($this->adapter);
-        $queue->addDataSerializer(
+        $this->queue->addDataSerializer(
             $serializer
         );
 
-        $this->queue = new EventDispatchingQueue(
-            $queue,
-            $filelib->getEventDispatcher()
-        );
+        $this->attached = true;
     }
 
     /**
@@ -76,7 +69,7 @@ class PekkisQueueExecutionStrategy implements ExecutionStrategy
      */
     public function execute(callable $callback, $params = [])
     {
-        if (!$this->queue) {
+        if (!$this->attached) {
             throw new LogicException('Must be attached to a file library');
         }
 
