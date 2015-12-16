@@ -3,6 +3,10 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. Too much incubation is too much.
 
+## 0.15.0
+
+* Changed Pekkis-Queue asynchrony strategy's constructor to accept queue instead of a queue adapter.
+
 ## 0.14.1
 
 * Removed obsolete and non-working setTemporary() from FileUpload.
