@@ -12,6 +12,7 @@ namespace Xi\Filelib\Storage\Adapter;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Filesystem;
 use Xi\Filelib\Resource\Resource;
+use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Tool\PathCalculator\PathCalculator;
 use Xi\Filelib\Tool\PathCalculator\ImprovedPathCalculator;
 use Xi\Filelib\Storage\Retrieved;
@@ -61,13 +62,19 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
-        $this->filesystem->put(
+        $ret = $this->filesystem->put(
             $pathName,
             file_get_contents($tempFile),
             [
                 'visibility' => AdapterInterface::VISIBILITY_PRIVATE
             ]
         );
+
+        if (!$ret) {
+            throw new FileIOException(
+                sprintf('Failed to store resource #%s', $resource->getId())
+            );
+        }
 
         return new Retrieved($tempFile);
     }
@@ -76,42 +83,88 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     {
         $pathName = $this->getVersionPathName($versionable, $version);
 
-        $this->filesystem->put(
+        $ret = $this->filesystem->put(
             $pathName,
             file_get_contents($tempFile),
             [
                 'visibility' => AdapterInterface::VISIBILITY_PRIVATE
             ]
         );
+
+        if (!$ret) {
+            throw new FileIOException(
+                sprintf(
+                    "Failed to store version '%s' of versionable %s;%s",
+                    $version->toString(),
+                    get_class($versionable),
+                    $versionable->getId()
+                )
+            );
+        }
+
         return new Retrieved($tempFile);
     }
 
     public function retrieve(Resource $resource)
     {
+        $ret = $this->filesystem->get($this->getPathName($resource));
+        if (!$ret) {
+            throw new FileIOException(
+                sprintf('Failed to retrieve resource #%s', $resource->getId())
+            );
+        }
+
         return new Retrieved(
             $this->tempFiles->add(
-                $this->filesystem->get($this->getPathName($resource))->read()
+                $ret->read()
             )
         );
     }
 
     public function retrieveVersion(Versionable $versionable, Version $version)
     {
+        $ret = $this->filesystem->get($this->getVersionPathName($versionable, $version));
+        if (!$ret) {
+            throw new FileIOException(
+                sprintf(
+                    "Failed to retrieve version '%s' of versionable %s;%s",
+                    $version->toString(),
+                    get_class($versionable),
+                    $versionable->getId()
+                )
+            );
+        }
+
         return new Retrieved(
             $this->tempFiles->add(
-                $this->filesystem->get($this->getVersionPathName($versionable, $version))->read()
+                $ret->read()
             )
         );
     }
 
     public function delete(Resource $resource)
     {
-        $this->filesystem->delete($this->getPathName($resource));
+        $ret = $this->filesystem->delete($this->getPathName($resource));
+        if (!$ret) {
+            throw new FileIOException(
+                sprintf('Failed to delete resource #%s', $resource->getId())
+            );
+        }
     }
 
     public function deleteVersion(Versionable $versionable, Version $version)
     {
-        $this->filesystem->delete($this->getVersionPathName($versionable, $version));
+        $ret = $this->filesystem->delete($this->getVersionPathName($versionable, $version));
+        if (!$ret) {
+            throw new FileIOException(
+                sprintf(
+                    "Failed to delete version '%s' of versionable %s;%s",
+                    $version->toString(),
+                    get_class($versionable),
+                    $versionable->getId()
+                )
+            );
+        }
     }
 
     public function exists(Resource $resource)
