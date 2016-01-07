@@ -11,6 +11,7 @@ namespace Xi\Filelib\Asynchrony\Serializer;
 
 use Pekkis\Queue\Data\AbstractDataSerializer;
 use Pekkis\Queue\Data\DataSerializer;
+use Xi\Filelib\Asynchrony\Serializer\DataSerializer\Serializer;
 use Xi\Filelib\Attacher;
 use Xi\Filelib\File\FileRepositoryInterface;
 use Xi\Filelib\FileLibrary;
@@ -20,9 +21,14 @@ use Xi\Filelib\LogicException;
 class AsynchronyDataSerializer extends AbstractDataSerializer implements DataSerializer, Attacher
 {
     /**
-     * @var FileRepositoryInterface
+     * @var Serializer[]
      */
-    private $fileRepository;
+    private $serializers = [];
+
+    public function addSerializer(Serializer $serializer)
+    {
+        $this->serializers[] = $serializer;
+    }
 
     public function attachTo(FileLibrary $filelib)
     {
@@ -75,19 +81,15 @@ class AsynchronyDataSerializer extends AbstractDataSerializer implements DataSer
         $serializedCallback = unserialize($serialized);
 
         if (is_array($serializedCallback->callback)) {
-            switch ($serializedCallback->callback[0]) {
 
-                case 'Xi\Filelib\File\FileRepository':
-                    $substitute = $this->fileRepository;
-                    break;
-
-                default:
-                    throw new LogicException('Unknown class');
-
+            $object = $this->deserializeCallee($serializedCallback->callback[0]);
+            if (!$object) {
+                throw new LogicException(
+                    sprintf("Unknown class '%s'", $serializedCallback->callback[0])
+                );
             }
-            $serializedCallback->callback[0] = $substitute;
+            $serializedCallback->callback[0] = $object;
         }
-
 
         $deserializedParams = [];
         foreach ($serializedCallback->params as $key => $param) {
@@ -95,7 +97,12 @@ class AsynchronyDataSerializer extends AbstractDataSerializer implements DataSer
             if (is_scalar($param) || is_array($param)) {
                 $deserializedParams[$key] = $param;
             } elseif ($param instanceof SerializedIdentifiable) {
-                $deserializedParams[$key] = $this->deserializeIdentifiable($param);
+
+                $deserializedParam = $this->deserializeIdentifiable($param);
+                if (!$deserializedParam) {
+                    throw new LogicException('Unknown identifiable');
+                }
+                $deserializedParams[$key] = $deserializedParam;
             }
         }
 
@@ -103,18 +110,23 @@ class AsynchronyDataSerializer extends AbstractDataSerializer implements DataSer
         return $serializedCallback;
     }
 
+    private function deserializeCallee($class) {
+
+        foreach (array_reverse($this->serializers) as $serializer) {
+            if ($ret = $serializer->deserializeCallee($class)) {
+                return $ret;
+            }
+        }
+        return false;
+    }
+
     private function deserializeIdentifiable(SerializedIdentifiable $serialized)
     {
-        switch ($serialized->className) {
-
-            case 'Xi\Filelib\File\File':
-                return $this->fileRepository->find($serialized->id);
-                break;
-
-            default:
-                throw new LogicException('Unknown identifiable');
-
+        foreach (array_reverse($this->serializers) as $serializer) {
+            if ($ret = $serializer->deserializeIdentifiable($serialized)) {
+                return $ret;
+            }
         }
-
+        return false;
     }
 }

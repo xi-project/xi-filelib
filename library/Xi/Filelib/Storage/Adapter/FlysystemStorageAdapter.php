@@ -61,13 +61,17 @@ class FlysystemStorageAdapter extends BaseTemporaryRetrievingStorageAdapter
     public function store(Resource $resource, $tempFile)
     {
         $pathName = $this->getPathName($resource);
-        $this->filesystem->put(
+        $ret = $this->filesystem->put(
             $pathName,
             file_get_contents($tempFile),
             [
                 'visibility' => AdapterInterface::VISIBILITY_PRIVATE
             ]
         );
+
+        if (!$ret) {
+            throw 
+        }
 
         return new Retrieved($tempFile);
     }

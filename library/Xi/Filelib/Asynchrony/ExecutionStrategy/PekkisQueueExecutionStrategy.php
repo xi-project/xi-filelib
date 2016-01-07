@@ -9,6 +9,7 @@
 
 namespace Xi\Filelib\Asynchrony\ExecutionStrategy;
 
+use Xi\Filelib\Asynchrony\Serializer\DataSerializer\RepositorySerializer;
 use Xi\Filelib\LogicException;
 use Pekkis\Queue\Message;
 use Pekkis\Queue\Queue;
@@ -40,6 +41,10 @@ class PekkisQueueExecutionStrategy implements ExecutionStrategy
     {
         $serializer = new AsynchronyDataSerializer();
         $serializer->attachTo($filelib);
+
+        $repositorySerializer = new RepositorySerializer();
+        $repositorySerializer->attachTo($filelib);
+        $serializer->addSerializer($repositorySerializer);
 
         $this->queue->addDataSerializer(
             $serializer

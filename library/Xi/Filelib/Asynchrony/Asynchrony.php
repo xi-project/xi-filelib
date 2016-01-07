@@ -11,6 +11,7 @@ namespace Xi\Filelib\Asynchrony;
 
 use Xi\Filelib\Asynchrony\ExecutionStrategy\ExecutionStrategy;
 use Xi\Filelib\Asynchrony\ExecutionStrategy\SynchronousExecutionStrategy;
+use Xi\Filelib\Asynchrony\Serializer\DataSerializer\RepositorySerializer;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\LogicException;
 

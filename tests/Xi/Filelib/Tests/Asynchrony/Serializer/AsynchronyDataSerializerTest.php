@@ -3,6 +3,7 @@
 namespace Xi\Filelib\Tests\Asynchrony\Serializer;
 
 use Xi\Filelib\Asynchrony\Serializer\AsynchronyDataSerializer;
+use Xi\Filelib\Asynchrony\Serializer\DataSerializer\RepositorySerializer;
 use Xi\Filelib\Asynchrony\Serializer\SerializedCallback;
 use Xi\Filelib\File\File;
 use Xi\Filelib\FileLibrary;
@@ -24,6 +25,11 @@ class AsynchronyDataSerializerTest extends TestCase
 
         $serializer = new AsynchronyDataSerializer();
         $serializer->attachTo($filelib);
+
+        $unserializer = new RepositorySerializer();
+        $unserializer->attachTo($filelib);
+
+        $serializer->addSerializer($unserializer);
 
         $unserializedCallback = new SerializedCallback(
             [$filelib->getFileRepository(), 'upload'],
@@ -54,6 +60,10 @@ class AsynchronyDataSerializerTest extends TestCase
 
         $serializer = new AsynchronyDataSerializer();
         $serializer->attachTo($filelib);
+
+        $unserializer = new RepositorySerializer();
+        $unserializer->attachTo($filelib);
+        $serializer->addSerializer($unserializer);
 
         $unserializedCallback = new SerializedCallback(
             [$filelib->getFileRepository(), 'afterUpload'],
