@@ -168,26 +168,28 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
             'id' => 'xoo-xoo-xoo'
         ]);
 
-        $res = $this->op->create(
-            $resource,
-            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
-        );
+        $storage = $this->getMock(StorageAdapter::class);
+        $backend = $this->getMock(BackendAdapter::class);
 
-        $storage = $this->prophesize(StorageAdapter::class);
-        $backend = $this->prophesize(BackendAdapter::class);
-
-        $storage->store($res)->shouldBeCalled()->willThrow(new FileIOException('Uh oh!'));
-        $backend->createResource($resource)->shouldNotBeCalled();
+        $storage->expects($this->any())->method('store')->withAnyParameters()->willThrowException(new FileIOException('Uh oh'));
+        $backend->expects($this->once())->method('createResource');
+        $backend->expects($this->once())->method('deleteResource')->with($resource);
 
         $filelib = new FileLibrary(
-            $storage->reveal(),
-            $backend->reveal(),
+            $storage,
+            $backend,
             $this->ed->reveal()
         );
 
-        $this->assertSame($res, $resource);
+        $op = new ResourceRepository();
+        $op->attachTo($filelib);
 
         $this->setExpectedException(FileIOException::class);
+
+        $op->create(
+            $resource,
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
+        );
 
         $this->ed->dispatch(
             Events::RESOURCE_BEFORE_CREATE,
@@ -198,8 +200,6 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
             Events::RESOURCE_AFTER_CREATE,
             Argument::type('Xi\Filelib\Event\ResourceEvent')
         )->shouldHaveBeenCalled();
-        
-        // $this->assertTrue($this->filelib->getStorage()->exists($resource));
     }
 
 

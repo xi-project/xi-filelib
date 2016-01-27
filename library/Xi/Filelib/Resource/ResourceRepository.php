@@ -136,8 +136,15 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
         $this->eventDispatcher->dispatch(Events::RESOURCE_BEFORE_CREATE, $event);
         $resource->setUuid(Uuid::uuid4()->toString());
 
-        $this->storage->store($resource, $path);
         $this->backend->createResource($resource);
+
+        // @todo: this has to be correctly robustified.
+        try {
+            $this->storage->store($resource, $path);
+        } catch (\Exception $e) {
+            $this->backend->deleteResource($resource);
+            throw $e;
+        }
 
         $event = new ResourceEvent($resource);
         $this->eventDispatcher->dispatch(Events::RESOURCE_AFTER_CREATE, $event);
