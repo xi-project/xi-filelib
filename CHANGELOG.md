@@ -8,6 +8,7 @@ It's been developed for years. Too much incubation is too much.
 * Removed Symfony authorization adapter. If someone wants to maintain it, ask for it.
 * Added support for Symfony 3.x
 * Updated Pekkis Queue to 2.x
+* Added support for PHP 7.
 
 ## 0.15.0
 
