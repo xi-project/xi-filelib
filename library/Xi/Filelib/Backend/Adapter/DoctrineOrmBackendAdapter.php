@@ -328,7 +328,6 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
         $className = $request->getClassName();
 
         $resources = $this->classNameToResources[$className];
-
         $entityName = $resources['getEntityName'];
         $repo = $this->em->getRepository($this->$entityName());
         $rows = $repo->findBy(
@@ -338,7 +337,15 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
         );
 
         $rows = new ArrayIterator($rows);
-        return $request->foundMany($this->$resources['exporter']($rows));
+        return $request->foundMany(
+            call_user_func(
+                array(
+                    $this,
+                    $resources['exporter']
+                ),
+                $rows
+            )
+        );
     }
 
     /**
