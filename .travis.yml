@@ -36,7 +36,7 @@ before_script:
   - phpenv rehash
   - curl -s http://getcomposer.org/installer | php
   - php composer.phar install --no-interaction
-  - printf "\n" | pecl install imagick
+  - printf "\n" | pecl install imagick-beta
   - phpenv config-add travis.php.ini
 script: cd tests && ../vendor/bin/phpunit -v --configuration travis/$DB.travis.xml
 
