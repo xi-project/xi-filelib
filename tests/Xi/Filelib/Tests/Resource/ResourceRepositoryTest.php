@@ -12,6 +12,7 @@ namespace Xi\Filelib\Tests\File;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ProphecyInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use Xi\Filelib\Events;
 use Xi\Filelib\File\File;
@@ -22,6 +23,8 @@ use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\File\Upload\FileUpload;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\Resource\ResourceRepository;
+use Xi\Filelib\Storage\Adapter\StorageAdapter;
+use Xi\Filelib\Storage\FileIOException;
 use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
 use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
 
@@ -155,6 +158,50 @@ class ResourceRepositoryTest extends \Xi\Filelib\Tests\TestCase
 
         $this->assertTrue($this->filelib->getStorage()->exists($resource));
     }
+
+    /**
+     * @test
+     */
+    public function createThrowsUpWhenStorageFails()
+    {
+        $resource = Resource::create([
+            'id' => 'xoo-xoo-xoo'
+        ]);
+
+        $res = $this->op->create(
+            $resource,
+            ROOT_TESTS . '/data/self-lussing-manatee.jpg'
+        );
+
+        $storage = $this->prophesize(StorageAdapter::class);
+        $backend = $this->prophesize(BackendAdapter::class);
+
+        $storage->store($res)->shouldBeCalled()->willThrow(new FileIOException('Uh oh!'));
+        $backend->createResource($resource)->shouldNotBeCalled();
+
+        $filelib = new FileLibrary(
+            $storage->reveal(),
+            $backend->reveal(),
+            $this->ed->reveal()
+        );
+
+        $this->assertSame($res, $resource);
+
+        $this->setExpectedException(FileIOException::class);
+
+        $this->ed->dispatch(
+            Events::RESOURCE_BEFORE_CREATE,
+            Argument::type('Xi\Filelib\Event\ResourceEvent')
+        )->shouldHaveBeenCalled();
+
+        $this->ed->dispatch(
+            Events::RESOURCE_AFTER_CREATE,
+            Argument::type('Xi\Filelib\Event\ResourceEvent')
+        )->shouldHaveBeenCalled();
+        
+        // $this->assertTrue($this->filelib->getStorage()->exists($resource));
+    }
+
 
     /**
      * @test
