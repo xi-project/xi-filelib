@@ -291,7 +291,15 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
         );
         $rows = new ArrayIterator($rows);
 
-        return $request->foundMany($this->$resources['exporter']($rows));
+        return $request->foundMany(
+            call_user_func(
+                array(
+                    $this,
+                    $resources['exporter']
+                ),
+                $rows
+            )
+        );
     }
 
     /**
