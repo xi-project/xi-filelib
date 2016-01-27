@@ -328,7 +328,9 @@ class DoctrineOrmBackendAdapter extends BaseDoctrineBackendAdapter implements Ba
         $className = $request->getClassName();
 
         $resources = $this->classNameToResources[$className];
-        $repo = $this->em->getRepository($this->$resources['getEntityName']());
+
+        $entityName = $resources['getEntityName'];
+        $repo = $this->em->getRepository($this->$entityName());
         $rows = $repo->findBy(
             array(
                 'id' => $ids
