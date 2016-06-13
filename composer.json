@@ -21,11 +21,11 @@
 
     "require": {
         "php": ">=5.5.0",
-        "symfony/event-dispatcher": "~2.0",
+        "symfony/event-dispatcher": "~2.2|~3.0",
         "dflydev/apache-mime-types": "~1.0",
         "ramsey/uuid": "~2.8",
         "cocur/slugify": "~1.0",
-        "pekkis/queue": "~1.0",
+        "pekkis/queue": "~3.0",
         "pekkis/temporary-file-manager": "~1.0",
         "pekkis/directory-calculator": "~1.0",
         "pekkis/mime-types": "~1.0",
