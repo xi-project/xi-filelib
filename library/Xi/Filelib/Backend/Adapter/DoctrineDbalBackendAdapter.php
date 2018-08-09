@@ -285,10 +285,12 @@ class DoctrineDbalBackendAdapter extends BaseDoctrineBackendAdapter implements B
         $resources = $this->classNameToResources[$className];
         $tableName = $resources['table'];
 
-        $ids = implode(', ', $ids);
-        $rows = $this->conn->fetchAll(
-            "SELECT * FROM {$tableName} WHERE id IN ({$ids})"
-        );
+
+        $rows = $this->conn->executeQuery("SELECT * FROM {$tableName} WHERE id IN (?)",
+            array($ids),
+            array(Connection::PARAM_INT_ARRAY)
+        )->fetchAll();
+
         $rows = new ArrayIterator($rows);
 
         return $request->foundMany($this->{$resources['exporter']}($rows));
