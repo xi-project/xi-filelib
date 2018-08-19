@@ -11,15 +11,16 @@ namespace Xi\Filelib\Backend\Adapter;
 
 use ArrayIterator;
 use DateTime;
-use MongoDate;
-use MongoDB;
-use MongoId;
+use MongoDB\Model\BSONDocument;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Finder\Finder;
 use Xi\Filelib\File\File;
 use Xi\Filelib\Folder\Folder;
 use Xi\Filelib\Identifiable;
 use Xi\Filelib\Resource\Resource;
+use MongoDB\Database;
+use MongoDB\BSON\UTCDateTime;
+use MongoDB\BSON\ObjectID;
 
 /**
  * MongoDB backend for Filelib
@@ -33,7 +34,7 @@ class MongoBackendAdapter implements BackendAdapter
     /**
      * MongoDB reference
      *
-     * @var MongoDB
+     * @var Database
      */
     private $mongo;
 
@@ -70,30 +71,20 @@ class MongoBackendAdapter implements BackendAdapter
     /**
      * @param MongoDB $mongo
      */
-    public function __construct(MongoDB $mongo)
+    public function __construct(Database $mongo)
     {
-        $this->setMongo($mongo);
+        $this->mongo = $mongo;
     }
 
     public function isOrigin()
     {
         return true;
     }
-
-    /**
-     * Sets MongoDB
-     *
-     * @param MongoDB $mongo
-     */
-    public function setMongo(MongoDB $mongo)
-    {
-        $this->mongo = $mongo;
-    }
-
+    
     /**
      * Returns MongoDB
      *
-     * @return MongoDB
+     * @return Database
      */
     public function getMongo()
     {
@@ -110,13 +101,14 @@ class MongoBackendAdapter implements BackendAdapter
             'name'          => $file->getName(),
             'profile'       => $file->getProfile(),
             'status'        => $file->getStatus(),
-            'date_created'  => new MongoDate($file->getDateCreated()->getTimestamp()),
+            'date_created'  => new UTCDateTime($file->getDateCreated()),
             'uuid'          => $file->getUuid(),
             'resource_id'   => $file->getResource()->getId(),
             'data'      => $file->getData()->toArray(),
         );
 
-        $this->getMongo()->files->ensureIndex(
+        $this->getMongo()->files->
+        createIndex(
             array(
                 'folder_id' => 1,
                 'name'      => 1,
@@ -126,9 +118,9 @@ class MongoBackendAdapter implements BackendAdapter
             )
         );
 
-        $this->getMongo()->files->insert($document, array('w' => true));
+        $ret = $this->getMongo()->files->insertOne($document, array('w' => true));
 
-        $file->setId((string) $document['_id']);
+        $file->setId((string) $ret->getInsertedId());
         $file->setFolderId($folder->getId());
 
         return $file;
@@ -141,16 +133,17 @@ class MongoBackendAdapter implements BackendAdapter
     {
         $document = $folder->toArray();
 
-        $this->getMongo()->folders->insert($document);
+        $ret = $this->getMongo()->folders->insertOne($document);
+
         $this
             ->getMongo()
             ->folders
-            ->ensureIndex(
+            ->createIndex(
                 array('name' => 1),
                 array('unique' => true)
             );
 
-        $folder->setId($document['_id']->__toString());
+        $folder->setId((string) $ret->getInsertedId());
 
         return $folder;
     }
@@ -180,15 +173,17 @@ class MongoBackendAdapter implements BackendAdapter
 
         unset($document['id']);
 
-        $ret = $this->getMongo()->folders->update(
+        $ret = $this->getMongo()->folders->updateOne(
             array(
-                '_id' => new MongoId($folder->getId()),
+                '_id' => new ObjectId($folder->getId()),
             ),
-            $document,
+            [
+                '$set' => $document
+            ],
             array('w' => true)
         );
 
-        return (bool) $ret['n'];
+        return $ret->isAcknowledged() && (bool) $ret->getModifiedCount();
     }
 
     public function updateResource(Resource $resource)
@@ -196,19 +191,21 @@ class MongoBackendAdapter implements BackendAdapter
         $document = $resource->toArray();
 
         if ($document['date_created']) {
-            $document['date_created'] = new MongoDate($resource->getDateCreated()->getTimestamp());
+            $document['date_created'] = new UTCDateTime($resource->getDateCreated());
         }
         unset($document['id']);
 
-        $ret = $this->getMongo()->resources->update(
+        $ret = $this->getMongo()->resources->updateOne(
             array(
-                '_id' => new MongoId($resource->getId()),
+                '_id' => new ObjectId($resource->getId()),
             ),
-            $document,
+            [
+                '$set' => $document
+            ],
             array('w' => true)
         );
 
-        return (bool) $ret['n'];
+        return $ret->isAcknowledged() && (bool) $ret->getModifiedCount();
     }
 
     /**
@@ -222,19 +219,21 @@ class MongoBackendAdapter implements BackendAdapter
         unset($document['id']);
         unset($document['resource']);
 
-        $document['date_created'] = new MongoDate(
-            $document['date_created']->getTimestamp()
+        $document['date_created'] = new UTCDateTime(
+            $document['date_created']
         );
 
-        $ret = $this->getMongo()->files->update(
+        $ret = $this->getMongo()->files->updateOne(
             array(
-                '_id' => new MongoId($file->getId()),
+                '_id' => new ObjectId($file->getId()),
             ),
-            $document,
+            [
+                '$set' => $document
+            ],
             array('w' => true)
         );
 
-        return (bool) $ret['n'];
+        return $ret->isAcknowledged() && (bool) $ret->getModifiedCount();
     }
 
     /**
@@ -247,12 +246,12 @@ class MongoBackendAdapter implements BackendAdapter
             'hash' => $resource->getHash(),
             'mimetype' => $resource->getMimetype(),
             'size' => $resource->getSize(),
-            'date_created' => new MongoDate($resource->getDateCreated()->getTimestamp()),
+            'date_created' => new UTCDateTime($resource->getDateCreated()),
             'data' => $resource->getData()->toArray(),
             'exclusive' => $resource->isExclusive(),
         );
 
-        $this->getMongo()->resources->ensureIndex(
+        $this->getMongo()->resources->createIndex(
             array(
                 'hash' => 1,
             ),
@@ -261,8 +260,8 @@ class MongoBackendAdapter implements BackendAdapter
             )
         );
 
-        $this->getMongo()->resources->insert($document, array('w' => true));
-        $resource->setId((string) $document['_id']);
+        $ret = $this->getMongo()->resources->insertOne($document, array('w' => true));
+        $resource->setId((string) $ret->getInsertedId());
 
         return $resource;
     }
@@ -280,16 +279,15 @@ class MongoBackendAdapter implements BackendAdapter
      */
     public function getNumberOfReferences(Resource $resource)
     {
-        $refs = $this
+        return $this
             ->getMongo()
             ->files
-            ->find(
+            ->countDocuments(
                 array(
                     'resource_id' => $resource->getId(),
                 )
             );
 
-        return $refs->count();
     }
 
     /**
@@ -325,7 +323,7 @@ class MongoBackendAdapter implements BackendAdapter
         array_walk(
             $ids,
             function (&$value) {
-                $value = new MongoId($value);
+                $value = new ObjectId($value);
             }
         );
 
@@ -352,6 +350,7 @@ class MongoBackendAdapter implements BackendAdapter
         $ret = new ArrayIterator(array());
 
         foreach ($iter as $folder) {
+
             $ret->append(
                 Folder::create(
                     array(
@@ -392,10 +391,7 @@ class MongoBackendAdapter implements BackendAdapter
                         'name'          => $file['name'],
                         'link'          => isset($file['link']) ? $file['link'] : null,
                         'status'        => $file['status'],
-                        'date_created'  => DateTime::createFromFormat(
-                            'U',
-                            $file['date_created']->sec
-                        )->setTimezone($date->getTimezone()),
+                        'date_created'  => $file['date_created']->toDateTime()->setTimezone($date->getTimezone()),
                         'uuid'          => $file['uuid'],
                         'resource'      => $resource,
                         'data'      => $file['data'],
@@ -417,14 +413,14 @@ class MongoBackendAdapter implements BackendAdapter
         $ret = $this
             ->getMongo()
             ->selectCollection($resources['collection'])
-            ->remove(
+            ->deleteOne(
                 array(
-                    '_id' => new MongoId($identifiable->getId())
+                    '_id' => new ObjectId($identifiable->getId())
                 ),
                 array('w' => true)
             );
 
-        return (boolean) $ret['n'];
+        return $ret->isAcknowledged() && (bool) $ret->getDeletedCount();
     }
 
     /**
@@ -436,7 +432,9 @@ class MongoBackendAdapter implements BackendAdapter
         $date = new DateTime();
         $ret = new ArrayIterator(array());
 
+
         foreach ($iter as $resource) {
+
             $ret->append(
                 Resource::create(
                     array(
@@ -445,10 +443,7 @@ class MongoBackendAdapter implements BackendAdapter
                         'hash' => $resource['hash'],
                         'mimetype' => $resource['mimetype'],
                         'size' => $resource['size'],
-                        'date_created' => DateTime::createFromFormat(
-                            'U',
-                            $resource['date_created']->sec
-                        )->setTimezone($date->getTimezone()),
+                        'date_created' => $resource['date_created']->toDateTime()->setTimezone($date->getTimezone()),
                         'data' => $resource['data'],
                         'exclusive' => $resource['exclusive'],
                     )
@@ -471,7 +466,7 @@ class MongoBackendAdapter implements BackendAdapter
         }
 
         if (isset($ret['_id'])) {
-            $ret['_id'] = new MongoId($ret['_id']);
+            $ret['_id'] = new ObjectId($ret['_id']);
         }
 
         return $ret;

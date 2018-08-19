@@ -2,7 +2,7 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Storage\Adapter\BaseTemporaryRetrievingStorageAdapter;
 use Xi\Filelib\Storage\Adapter\StorageAdapter;

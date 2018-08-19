@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Xi\Filelib\Resource\Resource;
 use Xi\Filelib\Storage\Adapter\FilesystemStorageAdapter;
 use Xi\Filelib\Version;

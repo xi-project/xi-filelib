@@ -17,8 +17,12 @@
         <env name="S3_SECRETKEY" value="" />
         <env name="S3_BUCKET" value="" />
         <env name="ZENCODER_KEY" value="" />
-        <env name="IRONIO_TOKEN" value="" />
-        <env name="IRONIO_PROJECT" value="" />
         <const name="ZENCODER_S3_BUCKET" value="" />
+        <const name="ZENCODER_S3_BUCKET" value="filelibzencoderpuketti" />
+        <env name="RABBITMQ_HOST" value="localhost" />
+        <env name="RABBITMQ_PORT" value="5672" />
+        <env name="RABBITMQ_VHOST" value="/" />
+        <env name="RABBITMQ_USERNAME" value="guest" />
+        <env name="RABBITMQ_PASSWORD" value="guest" />
     </php>
 </phpunit>

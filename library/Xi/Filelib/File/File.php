@@ -252,7 +252,7 @@ class File extends BaseVersionable implements Identifiable, Versionable, Univers
             'folder_id' => null,
             'profile' => null,
             'name' => null,
-            'date_created' => new DateTime(),
+            'date_created' => new DateTime((new DateTime)->format('Y-m-d H:i:s')),
             'status' => null,
             'resource' => null,
             'uuid' => null,

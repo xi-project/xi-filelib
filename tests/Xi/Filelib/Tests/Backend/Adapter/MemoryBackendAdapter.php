@@ -11,7 +11,7 @@ namespace Xi\Filelib\Tests\Backend\Adapter;
 
 use ArrayIterator;
 use DateTime;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Xi\Filelib\Backend\Adapter\BackendAdapter;
 use Xi\Filelib\Backend\FindByIdsRequest;
 use Xi\Filelib\Backend\Finder\Finder;

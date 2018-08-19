@@ -27,11 +27,16 @@ Filelib is based on my own observations, opinions and experience formed while de
 file- and mediabanks for the last 10 years. It has evolved and keeps evolving with real projects and use cases,
 so thanks for all past and present early adopters!
 
+## Project Status
+
+(2018-08) I've kinda moved on years ago. Not coding much with PHP anymore. Doing React and stuff with JS nowadays.
+It's a shame, because Filebanksta was soooo close to be "finished". It remains useable, though. I just upgraded
+all packages to modern versions. I'll try to do it again a couple times a year, at least. Cheers!
+
 ## Hard requirements
 
 - A client software that needs file management
-- PHP 5.4.x
-- Json support for a poor poor man's data storage
+- PHP 7.1
 
 ## Soft requirements (for harder use)
 

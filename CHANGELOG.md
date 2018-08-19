@@ -3,6 +3,14 @@
 Filelib is slowly but surely approaching acceptable stableness. About frakking time, one would say.
 It's been developed for years. Too much incubation is too much.
 
+## 0.16.0
+
+* Upgraded all packages.
+* Fixed bugs.
+* Bumped reqs to PHP 7.1.
+* Switched legacy mongo to mongodb.
+* Removed symfony authorization adapter. That was some crazy shit, not gonna support it! :D
+
 ## 0.15.0
 
 * Changed Pekkis-Queue asynchrony strategy's constructor to accept queue instead of a queue adapter.

@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Tests\Storage\Adapter;
 
 use League\Flysystem\Plugin\ListFiles;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Resource\Resource;
 use League\Flysystem\Filesystem;

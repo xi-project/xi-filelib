@@ -3,16 +3,15 @@
 namespace Xi\Filelib\Tests\Backend\Adapter;
 
 use Xi\Filelib\Backend\Adapter\MongoBackendAdapter;
-use Xi\Filelib\File\File;
 use Xi\Filelib\Backend\Finder\FileFinder;
 use Xi\Filelib\Backend\Finder\FolderFinder;
 use Xi\Filelib\Backend\Finder\ResourceFinder;
 use DateTime;
-use MongoClient;
-use MongoDB;
-use MongoId;
-use MongoDate;
-use MongoConnectionException;
+use MongoDB\Client;
+use MongoDB\Database;
+use MongoDB\BSON\ObjectID;
+use MongoDB\BSON\UTCDateTime;
+
 
 /**
  * @group backend
@@ -21,7 +20,7 @@ use MongoConnectionException;
 class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
 {
     /**
-     * @var MongoDB
+     * @var Database
      */
     protected $mongo;
 
@@ -38,27 +37,34 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
      */
     protected function setUpBackend()
     {
-        if (!extension_loaded('mongo')) {
+        if (!extension_loaded('mongodb')) {
             $this->markTestSkipped('MongoDB extension is not loaded.');
         }
 
         try {
-            $mongo = new MongoClient(MONGO_DNS);
-        } catch (MongoConnectionException $e) {
+
+            $mongo = new Client(MONGO_DNS, [], [
+                'typeMap' => [
+                    'array' => 'array',
+                    'document' => 'array',
+                    'root' => 'array',
+                ],
+            ]);
+        } catch (\Exception $e) {
             return $this->markTestSkipped('Can not connect to MongoDB.');
         }
 
         // TODO: Fix hard coded db name.
-        $this->mongo = $mongo->filelib_tests;
+        $this->mongo = $mongo->selectDatabase("filelib_test");
 
         return new MongoBackendAdapter($this->mongo);
     }
 
     protected function tearDown()
     {
-        if (extension_loaded('mongo') && $this->mongo) {
+        if (extension_loaded('mongodb') && $this->mongo) {
             foreach ($this->mongo->listCollections() as $collection) {
-                $collection->drop();
+                $this->mongo->dropCollection($collection->getName());
             }
         }
 
@@ -84,14 +90,14 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
 
         foreach ($this->getData() as $coll => $objects) {
             foreach ($objects as $obj) {
-                $this->mongo->$coll->insert($obj);
+                $this->mongo->$coll->insertOne($obj);
             }
         }
     }
 
     private function setUpIndexes()
     {
-        $this->mongo->files->ensureIndex(
+        $this->mongo->files->createIndex(
             array(
                 'folder_id' => 1,
                 'name'      => 1
@@ -99,7 +105,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
             array('unique' => true)
         );
 
-        $this->mongo->folders->ensureIndex(
+        $this->mongo->folders->createIndex(
             array('name' => 1),
             array('unique' => true)
         );
@@ -114,7 +120,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
 
             'resources' => array(
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166101'),
+                    '_id' => new ObjectId('48a7011a05c677b9a9166101'),
                     'uuid' => 'ruuid-1',
                     'hash' => 'hash-1',
                     'date_created' => new DateTime('1978-03-21 06:06:06'),
@@ -126,7 +132,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     'exclusive' => true,
                 ),
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166102'),
+                    '_id' => new ObjectId('48a7011a05c677b9a9166102'),
                     'uuid' => 'ruuid-2',
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1988-03-21 06:06:06'),
@@ -138,7 +144,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     'exclusive' => true,
                 ),
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166103'),
+                    '_id' => new ObjectId('48a7011a05c677b9a9166103'),
                     'uuid' => 'ruuid-3',
                     'hash' => 'hash-2',
                     'date_created' => new DateTime('1998-03-21 06:06:06'),
@@ -150,7 +156,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     'exclusive' => true,
                 ),
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166104'),
+                    '_id' => new ObjectId('48a7011a05c677b9a9166104'),
                     'uuid' => 'ruuid-4',
                     'hash' => 'hash-3',
                     'date_created' => new DateTime('2008-03-21 06:06:06'),
@@ -162,7 +168,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     'exclusive' => true,
                 ),
                 array(
-                    '_id' => new MongoId('48a7011a05c677b9a9166105'),
+                    '_id' => new ObjectId('48a7011a05c677b9a9166105'),
                     'uuid' => 'ruuid-5',
                     'hash' => 'hash-5',
                     'date_created' => new DateTime('2009-03-21 06:06:06'),
@@ -176,7 +182,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
             ),
             'folders' => array(
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166101'),
+                    '_id'       => new ObjectId('49a7011a05c677b9a9166101'),
                     'parent_id' => null,
                     'url'       => '',
                     'name'      => 'root',
@@ -188,7 +194,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     )
                 ),
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166102'),
+                    '_id'       => new ObjectId('49a7011a05c677b9a9166102'),
                     'parent_id' => '49a7011a05c677b9a9166101',
                     'url'       => 'lussuttaja',
                     'name'      => 'lussuttaja',
@@ -200,7 +206,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     )
                 ),
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166103'),
+                    '_id'       => new ObjectId('49a7011a05c677b9a9166103'),
                     'parent_id' => '49a7011a05c677b9a9166102',
                     'url'       => 'lussuttaja/tussin',
                     'name'      => 'tussin',
@@ -212,7 +218,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     )
                 ),
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166104'),
+                    '_id'       => new ObjectId('49a7011a05c677b9a9166104'),
                     'parent_id' => '49a7011a05c677b9a9166102',
                     'url'       => 'lussuttaja/banskun',
                     'name'      => 'banskun',
@@ -224,7 +230,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     )
                 ),
                 array(
-                    '_id'       => new MongoId('49a7011a05c677b9a9166105'),
+                    '_id'       => new ObjectId('49a7011a05c677b9a9166105'),
                     'parent_id' => '49a7011a05c677b9a9166102',
                     'url'       => 'lussuttaja/tiedoton-kansio',
                     'name'      => 'tiedoton-kansio',
@@ -238,7 +244,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
             ),
             'files' => array(
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166106'),
+                    '_id'           => new ObjectId('49a7011a05c677b9a9166106'),
                     'folder_id'     => '49a7011a05c677b9a9166101',
                     'profile'       => 'versioned',
                     'name'          => 'tohtori-vesala.png',
@@ -252,7 +258,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     ),
                 ),
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166107'),
+                    '_id'           => new ObjectId('49a7011a05c677b9a9166107'),
                     'folder_id'     => '49a7011a05c677b9a9166102',
                     'profile'       => 'versioned',
                     'name'          => 'akuankka.png',
@@ -266,7 +272,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     ),
                 ),
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166108'),
+                    '_id'           => new ObjectId('49a7011a05c677b9a9166108'),
                     'folder_id'     => '49a7011a05c677b9a9166103',
                     'profile'       => 'default',
                     'name'          => 'repesorsa.png',
@@ -280,7 +286,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     ),
                 ),
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166109'),
+                    '_id'           => new ObjectId('49a7011a05c677b9a9166109'),
                     'folder_id'     => '49a7011a05c677b9a9166104',
                     'profile'       => 'default',
                     'name'          => 'megatussi.png',
@@ -295,7 +301,7 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
                     ),
                 ),
                 array(
-                    '_id'           => new MongoId('49a7011a05c677b9a9166110'),
+                    '_id'           => new ObjectId('49a7011a05c677b9a9166110'),
                     'folder_id'     => '49a7011a05c677b9a9166104',
                     'profile'       => 'default',
                     'name'          => 'megatussi2.png',
@@ -312,11 +318,11 @@ class MongoBackendAdapterTest extends AbstractBackendAdapterTestCase
         );
 
         foreach ($data['files'] as &$file) {
-            $file['date_created'] = new MongoDate($file['date_created']->getTimeStamp());
+            $file['date_created'] = new UTCDateTime($file['date_created']->getTimeStamp());
         }
 
         foreach ($data['resources'] as &$resource) {
-            $resource['date_created'] = new MongoDate($resource['date_created']->getTimeStamp());
+            $resource['date_created'] = new UtcDateTime($resource['date_created']->getTimeStamp());
         }
 
         return $data;

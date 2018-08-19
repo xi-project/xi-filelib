@@ -190,7 +190,7 @@ class Resource extends BaseVersionable implements Identifiable, Versionable, Uni
             'id' => null,
             'uuid' => null,
             'hash' => null,
-            'date_created' => new DateTime(),
+            'date_created' => new DateTime((new DateTime)->format('Y-m-d H:i:s')),
             'data' => new IdentifiableDataContainer(array()),
             'mimetype' => null,
             'size' => null,

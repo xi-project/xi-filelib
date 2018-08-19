@@ -136,7 +136,7 @@ class FileUpload
     public function getDateUploaded()
     {
         if (!$this->dateUploaded) {
-            $this->dateUploaded = new DateTime();
+            $this->dateUploaded = new DateTime((new DateTime)->format('Y-m-d H:i:s'));
         }
 
         return $this->dateUploaded;

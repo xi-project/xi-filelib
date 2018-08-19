@@ -16,7 +16,7 @@ use Xi\Filelib\Events;
 use Xi\Filelib\FileLibrary;
 use Xi\Filelib\Version;
 use Aws\S3\S3Client;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @group plugin

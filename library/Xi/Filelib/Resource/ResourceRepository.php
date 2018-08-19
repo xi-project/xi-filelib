@@ -10,7 +10,7 @@
 namespace Xi\Filelib\Resource;
 
 use DateTime;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xi\Collections\Collection\ArrayCollection;
 use Xi\Filelib\AbstractRepository;
@@ -182,7 +182,7 @@ class ResourceRepository extends AbstractRepository implements ResourceRepositor
 
         if (!$file->getResource()) {
             $resource = Resource::create();
-            $resource->setDateCreated(new DateTime());
+            $resource->setDateCreated(new DateTime((new DateTime)->format('Y-m-d H:i:s')));
             $resource->setHash($hash);
             $resource->setSize($upload->getSize());
             $resource->setMimetype($upload->getMimeType());

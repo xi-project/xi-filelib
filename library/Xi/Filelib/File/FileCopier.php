@@ -10,7 +10,7 @@
 namespace Xi\Filelib\File;
 
 use DateTime;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Xi\Filelib\Event\FileCopyEvent;
 use Xi\Filelib\Event\FolderEvent;
 use Xi\Filelib\Events;

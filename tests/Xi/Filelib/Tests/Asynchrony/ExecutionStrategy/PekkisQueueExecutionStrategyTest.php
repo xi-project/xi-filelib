@@ -2,7 +2,6 @@
 
 namespace Xi\Filelib\Tests\Asynchrony\ExecutionStrategy;
 
-use Pekkis\Queue\Adapter\IronMQAdapter;
 use Pekkis\Queue\Adapter\PhpAMQPAdapter;
 use Pekkis\Queue\Processor\Processor;
 use Pekkis\Queue\Queue;
@@ -15,6 +14,8 @@ use Xi\Filelib\Tests\Backend\Adapter\MemoryBackendAdapter;
 use Xi\Filelib\Tests\RecursiveDirectoryDeletor;
 use Xi\Filelib\Tests\Storage\Adapter\MemoryStorageAdapter;
 
+use Pekkis\Queue\Adapter\PeclAMQPAdapter;
+
 require_once __DIR__ . '/touchMyTrallala.php';
 
 class PekkisQueueExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
@@ -26,15 +27,19 @@ class PekkisQueueExecutionStrategyTest extends \Xi\Filelib\Tests\TestCase
 
     public function setUp()
     {
-        if (!getenv("IRONIO_TOKEN") || !getenv("IRONIO_PROJECT")) {
-            return $this->markTestSkipped('IronMQ not configured');
+        if (!getenv("RABBITMQ_HOST")) {
+            return $this->markTestSkipped('RabbitMQ not configured');
         }
 
         $this->queue = new Queue(
-            new IronMQAdapter(
-                getenv("IRONIO_TOKEN"),
-                getenv("IRONIO_PROJECT"),
-                'filelib_tests'
+            new PeclAMQPAdapter(
+                getenv("RABBITMQ_HOST"),
+                getenv("RABBITMQ_PORT"),
+                getenv("RABBITMQ_USER"),
+                getenv("RABBITMQ_PASSWORD"),
+                getenv("RABBITMQ_VHOST"),
+                "filelib_e",
+                "filelib_q"
             )
         );
         $this->queue->purge();

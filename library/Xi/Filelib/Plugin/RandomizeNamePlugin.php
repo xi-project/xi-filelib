@@ -9,7 +9,7 @@
 
 namespace Xi\Filelib\Plugin;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Xi\Filelib\Event\FileEvent;
 use Xi\Filelib\Events;
 

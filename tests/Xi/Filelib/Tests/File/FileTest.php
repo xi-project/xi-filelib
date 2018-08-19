@@ -137,6 +137,8 @@ class FileTest extends BaseVersionableTestCase
     public function toArrayShouldWorkAsExpected()
     {
         $dt = new \DateTime('1978-03-21');
+        
+        $resource = Resource::create();
 
         $file = File::create();
         $file->setId(1);
@@ -146,7 +148,7 @@ class FileTest extends BaseVersionableTestCase
         $file->setDateCreated($dt);
         $file->setStatus(54);
         $file->setUuid('tussi-poski');
-        $file->setResource(Resource::create());
+        $file->setResource($resource);
 
         $file->addVersion(Version::get('lussi'));
         $file->addVersion(Version::get('xussi'));
@@ -159,7 +161,7 @@ class FileTest extends BaseVersionableTestCase
             'date_created' => new \DateTime('1978-03-21'),
             'status' => 54,
             'uuid' => 'tussi-poski',
-            'resource' => Resource::create(),
+            'resource' => $resource,
             'data' => array('versions' => array('lussi', 'xussi'))
         ));
     }
